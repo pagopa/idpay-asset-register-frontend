@@ -37,7 +37,6 @@
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "lint": "eslint -f json -o eslint-report.json . -c .eslintrc.js --ext .ts,.tsx --cache",
     "prettify": "prettier --write \"./**/*.{ts,tsx}\"",
-    "generate": "npm-run-all generate:*"
   },
   "eslintConfig": {
     "extends": [
