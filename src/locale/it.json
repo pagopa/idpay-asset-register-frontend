@@ -1,0 +1,75 @@
+{
+  "commons": {
+    "backBtn": "Indietro",
+    "cancelBtn": "Torna indietro",
+    "closeBtn": "Chiudi",
+    "confirmBtn": "Conferma",
+    "continueBtn": "Continua",
+    "copyCodeBtn": "Copia codice",
+    "copyLinkBtn": "Copia link",
+    "discountStatusEnum": {
+      "authorized": "Autorizzato",
+      "authorizationRequested": "Autorizzazione in corso",
+      "cancelled": "Annullato",
+      "identified": "Da autorizzare",
+      "invalidated": "Invalidato",
+      "rejected": "Rifiutato",
+      "rewarded": "Contabilizzato"
+    },
+    "downloadQrBtn": "Scarica codice QR",
+    "exitBtn": "Esci",
+    "filterBtn": "Filtra",
+    "initiativeStatusEnum": {
+      "closed": "Terminata",
+      "published": "In corso"
+    },
+    "removeFiltersBtn": "Rimuovi filtri",
+    "sendBtn": "Invia",
+    "title": "Registro dei beni"
+  },
+  "errors": {
+    "contactAdmin": "Contatta l'assistenza",
+    "genericDescription": "Riprovare",
+    "genericTitle": "Si è verificato un errore",
+    "sessionExpiredMessage": "Ti stiamo reindirizzando alla pagina di accesso",
+    "sessionExpiredTitle": "La tua sessione è scaduta",
+    "tcDescription": "Non siamo riusciti a recuperare le informazioni sull’accettazione dei termini e condizioni d’uso. Riprova.",
+    "tcSave": "Non siamo riusciti a salvare l'accettazione dei Termini e condizioni d’uso. Riprova",
+    "validationDescription": "Verifica che i dati inseriti siano corretti"
+  },
+  "pages": {
+    "tos": {
+      "and": "e l’",
+      "backHome": "Torna alla home",
+      "linkPrivacy": "Informativa Privacy",
+      "linkTos": "Termini e condizioni d’uso",
+      "termsDescription": "Accedendo, accetti i",
+      "termsDescription2": "del servizio e confermi di aver letto l’",
+      "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
+      "title": "Registro dei beni"
+    },
+    "panoramica": {
+      "emptyList": "Nessuna iniziativa disponibile",
+      "initiativeStatus": "Stato",
+      "organizationName": "Creata da",
+      "searchByInitiativeName": "Cerca per nome dell'iniziativa",
+      "serviceId": "Codice identificativo",
+      "spendingPeriod": "Periodo di spesa",
+      "subtitle": "Visualizza e gestisci le iniziative di supporto alla spesa a cui hai aderito.",
+      "title": "Panoramica",
+      "initiativeName": "Nome"
+    }
+  },
+  "roles": {
+    "admin": "Amministratore"
+  },
+  "validation": {
+    "assistanceSubject": "Inserisci l’argomento della tua richiesta",
+    "exactChars": "Deve essere esattamente di {{x}} caratteri",
+    "maxChars": "Scrivi massimo {{x}} caratteri",
+    "minValue": "Inserisci un valore maggiore o uguale a {{x}}",
+    "positiveNumber": "Inserisci un valore positivo",
+    "requiredField": "Campo obbligatorio",
+    "number": "Inserisci un numero"
+  }
+}
