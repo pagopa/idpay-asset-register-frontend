@@ -1,15 +1,5 @@
 # Azure DevOps pipeline to release a new version and deploy to production.
 
-parameters:
-  - name: 'RELEASE_SEMVER'
-    displayName: 'When packing a release, define the version bump to apply'
-    type: string
-    values:
-      - major
-      - minor
-      - patch
-    default: minor
-
 variables:
   NODE_VERSION: '16.14.0'
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
@@ -36,26 +26,20 @@ variables:
     react_app_url_fe_landing: '$(UAT_REACT_APP_URL_FE_LANDING)'
     react_app_url_fe_assistance: '$(UAT_REACT_APP_URL_FE_ASSISTANCE_PORTAL)'
 
-    react_app_url_api_initiative: '$(UAT_REACT_APP_URL_API_INITIATIVE)'
-    react_app_url_api_groups: '$(UAT_REACT_APP_URL_API_GROUPS)'
-    react_app_url_api_role_permission: '$(UAT_REACT_APP_URL_API_ROLE_PERMISSION)'
-    react_app_url_api_email_notification: '$(UAT_REACT_APP_URL_API_EMAIL_NOTIFICATION)'
-    react_app_url_api_merchants: '$(UAT_REACT_APP_URL_API_MERCHANTS)'
+    # react_app_url_storage: '$(UAT_REACT_APP_URL_STORAGE)'
 
-    react_app_url_storage: '$(UAT_REACT_APP_URL_STORAGE)'
+    # react_app_one_trust_base_url: '$(UAT_REACT_APP_URL_CDN)/ot'
+    # react_app_analytics_enabled: '$(UAT_ANALYTICS_ENABLED)'
+    # react_app_analytics_mocked: '$(UAT_ANALYTICS_MOCKED)'
+    # react_app_mixpanel_token: '$(UAT_MIXPANEL_TOKEN)'
+    # react_app_onetrust_domain_id: '$(UAT_ONETRUST_DOMAIN_ID)'
 
-    react_app_one_trust_base_url: '$(UAT_REACT_APP_URL_CDN)/ot'
-    react_app_analytics_enabled: '$(UAT_ANALYTICS_ENABLED)'
-    react_app_analytics_mocked: '$(UAT_ANALYTICS_MOCKED)'
-    react_app_mixpanel_token: '$(UAT_MIXPANEL_TOKEN)'
-    react_app_onetrust_domain_id: '$(UAT_ONETRUST_DOMAIN_ID)'
-
-    react_app_one_trust_otnotice_cdn_url: $(UAT_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
-    react_app_one_trust_otnotice_cdn_settings: $(UAT_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
-    react_app_one_trust_privacy_policy_id: $(UAT_REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID)
-    react_app_one_trust_privacy_policy_json_url: $(UAT_REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL)
-    react_app_one_trust_tos_id: $(UAT_REACT_APP_ONE_TRUST_TOS_ID)
-    react_app_one_trust_tos_json_url: $(UAT_REACT_APP_ONE_TRUST_TOS_JSON_URL)
+    # react_app_one_trust_otnotice_cdn_url: $(UAT_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
+    # react_app_one_trust_otnotice_cdn_settings: $(UAT_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
+    # react_app_one_trust_privacy_policy_id: $(UAT_REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID)
+    # react_app_one_trust_privacy_policy_json_url: $(UAT_REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL)
+    # react_app_one_trust_tos_id: $(UAT_REACT_APP_ONE_TRUST_TOS_ID)
+    # react_app_one_trust_tos_json_url: $(UAT_REACT_APP_ONE_TRUST_TOS_JSON_URL)
 
   ${{ elseif eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
     environment: 'PROD'
@@ -72,26 +56,20 @@ variables:
     react_app_url_fe_landing: '$(PROD_REACT_APP_URL_FE_LANDING)'
     react_app_url_fe_assistance: '$(PROD_REACT_APP_URL_FE_ASSISTANCE_PORTAL)'
 
-    react_app_url_api_initiative: '$(PROD_REACT_APP_URL_API_INITIATIVE)'
-    react_app_url_api_groups: '$(PROD_REACT_APP_URL_API_GROUPS)'
-    react_app_url_api_role_permission: '$(PROD_REACT_APP_URL_API_ROLE_PERMISSION)'
-    react_app_url_api_email_notification: '$(PROD_REACT_APP_URL_API_EMAIL_NOTIFICATION)'
-    react_app_url_api_merchants: '$(PROD_REACT_APP_URL_API_MERCHANTS)'
+    # react_app_url_storage: '$(PROD_REACT_APP_URL_STORAGE)'
 
-    react_app_url_storage: '$(PROD_REACT_APP_URL_STORAGE)'
+    # react_app_one_trust_base_url: '$(PROD_REACT_APP_URL_CDN)/ot'
+    # react_app_analytics_enabled: '$(PROD_ANALYTICS_ENABLED)'
+    # react_app_analytics_mocked: '$(PROD_ANALYTICS_MOCKED)'
+    # react_app_mixpanel_token: '$(PROD_MIXPANEL_TOKEN)'
+    # react_app_onetrust_domain_id: '$(PROD_ONETRUST_DOMAIN_ID)'
 
-    react_app_one_trust_base_url: '$(PROD_REACT_APP_URL_CDN)/ot'
-    react_app_analytics_enabled: '$(PROD_ANALYTICS_ENABLED)'
-    react_app_analytics_mocked: '$(PROD_ANALYTICS_MOCKED)'
-    react_app_mixpanel_token: '$(PROD_MIXPANEL_TOKEN)'
-    react_app_onetrust_domain_id: '$(PROD_ONETRUST_DOMAIN_ID)'
-
-    react_app_one_trust_otnotice_cdn_url: $(PROD_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
-    react_app_one_trust_otnotice_cdn_settings: $(PROD_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
-    react_app_one_trust_privacy_policy_id: $(PROD_REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID)
-    react_app_one_trust_privacy_policy_json_url: $(PROD_REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL)
-    react_app_one_trust_tos_id: $(PROD_REACT_APP_ONE_TRUST_TOS_ID)
-    react_app_one_trust_tos_json_url: $(PROD_REACT_APP_ONE_TRUST_TOS_JSON_URL)
+    # react_app_one_trust_otnotice_cdn_url: $(PROD_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
+    # react_app_one_trust_otnotice_cdn_settings: $(PROD_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
+    # react_app_one_trust_privacy_policy_id: $(PROD_REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID)
+    # react_app_one_trust_privacy_policy_json_url: $(PROD_REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL)
+    # react_app_one_trust_tos_id: $(PROD_REACT_APP_ONE_TRUST_TOS_ID)
+    # react_app_one_trust_tos_json_url: $(PROD_REACT_APP_ONE_TRUST_TOS_JSON_URL)
 
   # every branch different from past will be considered as DEV
   #  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/release-dev') }}:
@@ -105,31 +83,25 @@ variables:
 
     react_app_url_cdn: '$(DEV_REACT_APP_URL_CDN)'
 
+    # react_app_url_storage: '$(DEV_REACT_APP_URL_STORAGE)'
+
     react_app_url_fe_pre_login: '$(DEV_REACT_APP_URL_FE_PRE_LOGIN)'
     react_app_url_fe_auth: '$(DEV_REACT_APP_URL_FE_LOGIN)'
     react_app_url_fe_landing: '$(DEV_REACT_APP_URL_FE_LANDING)'
     react_app_url_fe_assistance: '$(DEV_REACT_APP_URL_FE_ASSISTANCE_PORTAL)'
 
-    react_app_url_api_initiative: '$(DEV_REACT_APP_URL_API_INITIATIVE)'
-    react_app_url_api_groups: '$(DEV_REACT_APP_URL_API_GROUPS)'
-    react_app_url_api_role_permission: '$(DEV_REACT_APP_URL_API_ROLE_PERMISSION)'
-    react_app_url_api_email_notification: '$(DEV_REACT_APP_URL_API_EMAIL_NOTIFICATION)'
-    react_app_url_api_merchants: '$(DEV_REACT_APP_URL_API_MERCHANTS)'
+    # react_app_one_trust_base_url: '$(DEV_REACT_APP_URL_CDN)/ot/test'
+    # react_app_analytics_enabled: '$(DEV_ANALYTICS_ENABLED)'
+    # react_app_analytics_mocked: '$(DEV_ANALYTICS_MOCKED)'
+    # react_app_mixpanel_token: '$(DEV_MIXPANEL_TOKEN)'
+    # react_app_onetrust_domain_id: '$(DEV_ONETRUST_DOMAIN_ID)'
 
-    react_app_url_storage: '$(DEV_REACT_APP_URL_STORAGE)'
-
-    react_app_one_trust_base_url: '$(DEV_REACT_APP_URL_CDN)/ot/test'
-    react_app_analytics_enabled: '$(DEV_ANALYTICS_ENABLED)'
-    react_app_analytics_mocked: '$(DEV_ANALYTICS_MOCKED)'
-    react_app_mixpanel_token: '$(DEV_MIXPANEL_TOKEN)'
-    react_app_onetrust_domain_id: '$(DEV_ONETRUST_DOMAIN_ID)'
-
-    react_app_one_trust_otnotice_cdn_url: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
-    react_app_one_trust_otnotice_cdn_settings: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
-    react_app_one_trust_privacy_policy_id: $(DEV_REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID)
-    react_app_one_trust_privacy_policy_json_url: $(DEV_REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL)
-    react_app_one_trust_tos_id: $(DEV_REACT_APP_ONE_TRUST_TOS_ID)
-    react_app_one_trust_tos_json_url: $(DEV_REACT_APP_ONE_TRUST_TOS_JSON_URL)
+    # react_app_one_trust_otnotice_cdn_url: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
+    # react_app_one_trust_otnotice_cdn_settings: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
+    # react_app_one_trust_privacy_policy_id: $(DEV_REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID)
+    # react_app_one_trust_privacy_policy_json_url: $(DEV_REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL)
+    # react_app_one_trust_tos_id: $(DEV_REACT_APP_ONE_TRUST_TOS_ID)
+    # react_app_one_trust_tos_json_url: $(DEV_REACT_APP_ONE_TRUST_TOS_JSON_URL)
 
 # Automatically triggered on PR
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#pr-trigger
@@ -215,26 +187,6 @@ stages:
               REACT_APP_URL_FE_LANDING: '$(react_app_url_fe_landing)'
               REACT_APP_URL_FE_ASSISTANCE_PORTAL: '$(react_app_url_fe_assistance)'
 
-              REACT_APP_URL_API_INITIATIVE: '$(react_app_url_api_initiative)'
-              REACT_APP_URL_API_GROUPS: '$(react_app_url_api_groups)'
-              REACT_APP_URL_API_ROLE_PERMISSION: '$(react_app_url_api_role_permission)'
-              REACT_APP_URL_API_EMAIL_NOTIFICATION: '$(react_app_url_api_email_notification)'
-              REACT_APP_URL_API_MERCHANTS: '$(react_app_url_api_merchants)'
-
-              REACT_APP_PAGOPA_HELP_EMAIL: '$(react_app_pagopa_help_email)'
-              REACT_APP_URL_INSTITUTION_LOGO_PREFIX: '$(react_app_url_storage)/institutions/'
-              REACT_APP_ANALYTICS_ENABLE: '$(react_app_analytics_enabled)'
-              REACT_APP_ANALYTICS_MOCK: '$(react_app_analytics_mocked)'
-              REACT_APP_MIXPANEL_TOKEN: '$(react_app_mixpanel_token)'
-              REACT_APP_ONE_TRUST_BASE_URL: '$(react_app_one_trust_base_url)'
-              REACT_APP_ONETRUST_DOMAIN_ID: '$(react_app_onetrust_domain_id)'
-
-              REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL: $(react_app_one_trust_otnotice_cdn_url)
-              REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS: $(react_app_one_trust_otnotice_cdn_settings)
-              REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID: $(react_app_one_trust_privacy_policy_id)
-              REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL: $(react_app_one_trust_privacy_policy_json_url)
-              REACT_APP_ONE_TRUST_TOS_ID: $(react_app_one_trust_tos_id)
-              REACT_APP_ONE_TRUST_TOS_JSON_URL: $(react_app_one_trust_tos_json_url)
           - bash: |
               printf "$EXECUTION_ID\n$(git name-rev --name-only FETCH_HEAD) $(git rev-parse HEAD)" > $(System.DefaultWorkingDirectory)/build/build.info
             env:
