@@ -37,9 +37,7 @@
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "lint": "eslint -f json -o eslint-report.json . -c .eslintrc.js --ext .ts,.tsx --cache",
     "prettify": "prettier --write \"./**/*.{ts,tsx}\"",
-    "generate": "npm-run-all generate:*",
-    "clean:api-email-notification": "rimraf src/api/generated/email-notification",
-    "generate:api-email-notification": "yarn run clean:api-email-notification && mkdirp openApi/generated && api-spec-converter --from=openapi_3 --to=swagger_2 openApi/email-notification.openapi.yml > openApi/generated/email-notification-swagger20.json && node ./node_modules/@pagopa/selfcare-common-frontend/utils/fixSwagger20ArraySchemaDef.js openApi/generated/email-notification-swagger20.json && node ./openApi/scripts/api-email-notification_fixPreGen.js && gen-api-models --api-spec openApi/generated/email-notification-swagger20.json --out-dir src/api/generated/email-notification --no-strict --request-types --response-decoders --client && node openApi/scripts/api-email-notification_fixPostGen.js"
+    "generate": "npm-run-all generate:*"
   },
   "eslintConfig": {
     "extends": [
