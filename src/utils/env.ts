@@ -18,10 +18,6 @@ export const ENV = {
     ASSISTANCE_ASSET_REGISTER: env.get('REACT_APP_URL_FE_ASSISTANCE_ASSET_REGISTER').required().asString(),
   },
 
-  URL_API: {
-    ASSET_REGISTER: env.get('REACT_APP_URL_API_ASSET_REGISTER').required().asString(),
-  },
-
   URL_INSTITUTION_LOGO: {
     PREFIX: env.get('REACT_APP_URL_INSTITUTION_LOGO_PREFIX').required().asString(),
     SUFFIX: env.get('REACT_APP_URL_INSTITUTION_LOGO_SUFFIX').required().asString(),
