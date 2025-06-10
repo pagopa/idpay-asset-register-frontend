@@ -89,19 +89,20 @@ variables:
     react_app_url_fe_auth: '$(DEV_REACT_APP_URL_FE_LOGIN)'
     react_app_url_fe_landing: '$(DEV_REACT_APP_URL_FE_LANDING)'
     react_app_url_fe_assistance: '$(DEV_REACT_APP_URL_FE_ASSISTANCE_PORTAL)'
+    REACT_APP_URL_API_ASSET_REGISTER_PORTAL: ''
 
-    react_app_one_trust_base_url: '$(DEV_REACT_APP_URL_CDN)/ot/test'
-    react_app_analytics_enabled: '$(DEV_ANALYTICS_ENABLED)'
-    react_app_analytics_mocked: '$(DEV_ANALYTICS_MOCKED)'
-    react_app_mixpanel_token: '$(DEV_MIXPANEL_TOKEN)'
-    react_app_onetrust_domain_id: '$(DEV_ONETRUST_DOMAIN_ID)'
+    # react_app_one_trust_base_url: '$(DEV_REACT_APP_URL_CDN)/ot/test'
+    # react_app_analytics_enabled: '$(DEV_ANALYTICS_ENABLED)'
+    # react_app_analytics_mocked: '$(DEV_ANALYTICS_MOCKED)'
+    # react_app_mixpanel_token: '$(DEV_MIXPANEL_TOKEN)'
+    # react_app_onetrust_domain_id: '$(DEV_ONETRUST_DOMAIN_ID)'
 
-    react_app_one_trust_otnotice_cdn_url: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
-    react_app_one_trust_otnotice_cdn_settings: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
-    react_app_one_trust_privacy_policy_id: $(DEV_REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID)
-    react_app_one_trust_privacy_policy_json_url: $(DEV_REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL)
-    react_app_one_trust_tos_id: $(DEV_REACT_APP_ONE_TRUST_TOS_ID)
-    react_app_one_trust_tos_json_url: $(DEV_REACT_APP_ONE_TRUST_TOS_JSON_URL)
+    # react_app_one_trust_otnotice_cdn_url: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
+    # react_app_one_trust_otnotice_cdn_settings: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
+    # react_app_one_trust_privacy_policy_id: $(DEV_REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID)
+    # react_app_one_trust_privacy_policy_json_url: $(DEV_REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL)
+    # react_app_one_trust_tos_id: $(DEV_REACT_APP_ONE_TRUST_TOS_ID)
+    # react_app_one_trust_tos_json_url: $(DEV_REACT_APP_ONE_TRUST_TOS_JSON_URL)
 
 # Automatically triggered on PR
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#pr-trigger

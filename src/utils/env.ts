@@ -18,17 +18,6 @@ export const ENV = {
     ASSISTANCE_ASSET_REGISTER: env.get('REACT_APP_URL_FE_ASSISTANCE_ASSET_REGISTER').required().asString(),
   },
 
-  URL_API: {
-    ASSET_REGISTER: env.get('REACT_APP_URL_API_ASSET_REGISTER').required().asString(),
-    ASSET_REGISTER_PORTAL: env.get('REACT_APP_URL_API_ASSET_REGISTER_PORTAL').required().asString(),
-    EMAIL_NOTIFICATION: env.get('REACT_APP_URL_API_EMAIL_NOTIFICATION').required().asString(),
-  },
-
-  API_TIMEOUT_MS: {
-    MERCHANTS_PORTAL: env.get('REACT_APP_API_ASSET_REGISTER_PORTAL_TIMEOUT_MS').required().asInt(),
-    EMAIL_NOTIFICATION: env.get('REACT_APP_API_EMAIL_NOTIFICATION_TIMEOUT_MS').required().asInt(),
-  },
-
   URL_INSTITUTION_LOGO: {
     PREFIX: env.get('REACT_APP_URL_INSTITUTION_LOGO_PREFIX').required().asString(),
     SUFFIX: env.get('REACT_APP_URL_INSTITUTION_LOGO_SUFFIX').required().asString(),
