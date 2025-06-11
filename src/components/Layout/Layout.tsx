@@ -1,9 +1,9 @@
 import { Box } from '@mui/material';
-import { Footer } from '@pagopa/selfcare-common-frontend';
-import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/hooks/useUnloadEventInterceptor';
+import { Footer } from '@pagopa/selfcare-common-frontend/lib';
+import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { userSelectors } from '@pagopa/selfcare-common-frontend/redux/slices/userSlice';
+import { userSelectors } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
 import { useLocation } from 'react-router-dom';
 import { matchPath } from 'react-router';
 import Header from '../Header/Header';

@@ -1,4 +1,4 @@
-import withRetrievedValue from '@pagopa/selfcare-common-frontend/decorators/withRetrievedValue';
+import withRetrievedValue from '@pagopa/selfcare-common-frontend/lib/decorators/withRetrievedValue';
 import { useSelectedParty } from '../hooks/useSelectedParty';
 import { Party } from '../model/Party';
 

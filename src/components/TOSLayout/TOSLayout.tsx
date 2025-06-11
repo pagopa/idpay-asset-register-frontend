@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
-import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/hooks/useUnloadEventInterceptor';
+import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useSelector } from 'react-redux';
-import { userSelectors } from '@pagopa/selfcare-common-frontend/redux/slices/userSlice';
+import { userSelectors } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
 import { useLocation } from 'react-router-dom';
-import { Footer } from '@pagopa/selfcare-common-frontend';
+import { Footer } from '@pagopa/selfcare-common-frontend/lib';
 import Header from '../Header/Header';
 import ROUTES from '../../routes';
 

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import useLoading from '@pagopa/selfcare-common-frontend/hooks/useLoading';
-import { userSelectors } from '@pagopa/selfcare-common-frontend/redux/slices/userSlice';
+import useLoading from '@pagopa/selfcare-common-frontend/lib/hooks/useLoading';
+import { userSelectors } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
 import { useLogin } from '../hooks/useLogin';
 import { LOADING_TASK_LOGIN_CHECK } from '../utils/constants';
 

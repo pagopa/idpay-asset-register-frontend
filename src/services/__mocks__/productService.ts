@@ -1,4 +1,5 @@
 import { Product } from '../../model/Product';
+import { expect } from '@jest/globals';
 
 export const mockedPartyProducts: Array<Product> = [
   {

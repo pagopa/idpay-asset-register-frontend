@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/utils/storage';
-// import { User } from '@pagopa/selfcare-common-frontend/model/User';
+import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+// import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
 import { createStore } from '../../redux/store';
 import withLogin from '../withLogin';
 import { testToken } from '../../utils/constants';

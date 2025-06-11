@@ -1,9 +1,9 @@
 import { ProductEntity } from '@pagopa/mui-italia';
 import { PartySwitchItem } from '@pagopa/mui-italia/dist/components/PartySwitch';
-import { Header as CommonHeader } from '@pagopa/selfcare-common-frontend';
-import { User } from '@pagopa/selfcare-common-frontend/model/User';
-import { trackEvent } from '@pagopa/selfcare-common-frontend/services/analyticsService';
-import { CONFIG } from '@pagopa/selfcare-common-frontend/config/env';
+import { Header as CommonHeader } from '@pagopa/selfcare-common-frontend/lib';
+import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
+import { trackEvent } from '@pagopa/selfcare-common-frontend/lib/services/analyticsService';
+import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WithPartiesProps } from '../../decorators/withParties';

@@ -2,7 +2,7 @@ import {
   Box,
   Paper, Typography,
 } from '@mui/material';
-import { TitleBox } from '@pagopa/selfcare-common-frontend';
+import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 

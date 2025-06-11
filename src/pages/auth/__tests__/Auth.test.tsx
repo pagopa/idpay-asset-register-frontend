@@ -2,8 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import Auth from '../Auth';
 import { ENV } from '../../../utils/env';
-import { User } from '@pagopa/selfcare-common-frontend/model/User';
-import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/utils/storage';
+import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
+import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import ROUTES from '../../../routes';
 import { testToken } from '../../../utils/constants';
 

@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { createStore, RootState } from '../../redux/store';
 import { verifyFetchPartyDetailsMockExecution } from '../../services/__mocks__/partyService';
 import { verifyFetchPartyProductsMockExecution } from '../../services/__mocks__/productService';
-import { storageTokenOps } from '@pagopa/selfcare-common-frontend/utils/storage';
+import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { testToken } from '../../utils/constants';
 import withSelectedPartyProducts from '../withSelectedPartyProducts';
 import React, { Fragment } from 'react';
