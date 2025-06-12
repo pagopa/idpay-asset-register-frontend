@@ -92,6 +92,7 @@
     "rimraf": "^6.0.1"
   },
   "resolutions": {
+    "@types/react": "^18",
     "static-eval": "^2.0.2",
     "yargs": "^17.5.1",
     "jsonpath": "^1.1.1",
