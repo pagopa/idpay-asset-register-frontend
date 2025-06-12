@@ -1,4 +1,4 @@
-import { userSelectors } from '@pagopa/selfcare-common-frontend/redux/slices/userSlice';
+import { userSelectors } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
 import { IDPayUser } from '../model/IDPayUser';
 
 import { useAppSelector } from '../redux/hooks';

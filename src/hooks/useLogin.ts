@@ -1,9 +1,9 @@
 import isEmpty from 'lodash/isEmpty';
 import { useDispatch } from 'react-redux';
-import { CONFIG } from '@pagopa/selfcare-common-frontend/config/env';
-import { User } from '@pagopa/selfcare-common-frontend/model/User';
-import { userActions } from '@pagopa/selfcare-common-frontend/redux/slices/userSlice';
-import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/utils/storage';
+import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
+import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
+import { userActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
+import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { parseJwt } from '../utils/jwt-utils';
 import { JWTUser } from '../model/JwtUser';
 import { IDPayUser } from '../model/IDPayUser';
@@ -77,9 +77,7 @@ export const useLogin = () => {
 */
 
   const attemptSilentLogin = async () => {
-    console.log("attemptSilentLogin");
     if (CONFIG.MOCKS.MOCK_USER) {
-      console.log(CONFIG.MOCKS.MOCK_USER);
       // setUser(mockedUser);
       const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
       setUser(mockedUserFromJWT);

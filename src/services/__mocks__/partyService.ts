@@ -1,4 +1,5 @@
 import { Party } from '../../model/Party';
+import { expect } from '@jest/globals';
 
 export const mockedParties: Array<Party> = [
   {

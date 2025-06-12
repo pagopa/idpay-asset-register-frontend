@@ -1,10 +1,10 @@
+import {Redirect, Route, Switch, useLocation} from "react-router-dom";
 import {
-  ErrorBoundary,
-  LoadingOverlay,
-  UnloadEventHandler,
-  UserNotifyHandle,
-} from '@pagopa/selfcare-common-frontend';
-import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
+    ErrorBoundary,
+    LoadingOverlay,
+    UnloadEventHandler,
+    UserNotifyHandle
+} from "@pagopa/selfcare-common-frontend/lib";
 import withSelectedPartyProducts from './decorators/withSelectedPartyProducts';
 import withLogin from './decorators/withLogin';
 import Layout from './components/Layout/Layout';

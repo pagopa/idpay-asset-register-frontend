@@ -1,6 +1,6 @@
-import useLoading from '@pagopa/selfcare-common-frontend/hooks/useLoading';
-import { storageTokenOps } from '@pagopa/selfcare-common-frontend/utils/storage';
-import { trackEvent } from '@pagopa/selfcare-common-frontend/services/analyticsService';
+import useLoading from '@pagopa/selfcare-common-frontend/lib/hooks/useLoading';
+import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+import { trackEvent } from '@pagopa/selfcare-common-frontend/lib/services/analyticsService';
 import { Party /* PartyRole, UserRole */, PLACEHOLDER_PARTY_LOGO } from '../model/Party';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { partiesActions, partiesSelectors } from '../redux/slices/partiesSlice';
