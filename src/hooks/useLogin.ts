@@ -1,4 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
+import {useErrorDispatcher} from "@pagopa/selfcare-common-frontend/lib";
+import {useTranslation} from "react-i18next";
+import {Dispatch} from "react";
 import { useDispatch } from 'react-redux';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
@@ -7,6 +10,9 @@ import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-fronten
 import { parseJwt } from '../utils/jwt-utils';
 import { JWTUser } from '../model/JwtUser';
 import { IDPayUser } from '../model/IDPayUser';
+import {getUserPermission} from "../services/rolePermissionService";
+import {setPermissionsList, setUserRole} from "../redux/slices/permissionsSlice";
+import {Permission} from "../model/Permission";
 
 // const mockedUser = {
 //   uid: '0',
@@ -46,7 +52,7 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
   };
 };
 
-/* const saveUserPermissions = (dispatch: Dispatch<any>, addError: any, t: any) => {
+const saveUserPermissions = (dispatch: Dispatch<any>, addError: any, t: any) => {
   getUserPermission()
     .then((res) => {
       dispatch(setUserRole(res.role as string));
@@ -65,16 +71,16 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
         showCloseIcon: true,
       });
     });
-}; */
+};
 
 /** A custom hook used to obtain a function to check if there is a valid JWT token, loading into redux the logged user object */
 export const useLogin = () => {
   const dispatch = useDispatch();
   const setUser = (user: User) => dispatch(userActions.setLoggedUser(user));
 
- /* const addError = useErrorDispatcher();
+  const addError = useErrorDispatcher();
   const { t } = useTranslation();
-*/
+
 
   const attemptSilentLogin = async () => {
     if (CONFIG.MOCKS.MOCK_USER) {
@@ -84,9 +90,9 @@ export const useLogin = () => {
       storageTokenOps.write(CONFIG.TEST.JWT);
       // storageUserOps.write(mockedUser);
       storageUserOps.write(mockedUserFromJWT);
-/*
+
       saveUserPermissions(dispatch, addError, t);
-*/
+
       return;
     }
 

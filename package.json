@@ -41,7 +41,10 @@
     "eject": "react-scripts eject",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "lint": "eslint -f json -o eslint-report.json . -c .eslintrc.js --ext .ts,.tsx --cache",
-    "prettify": "prettier --write \"./**/*.{ts,tsx}\""
+    "prettify": "prettier --write \"./**/*.{ts,tsx}\"",
+    "generate": "npm-run-all generate:*",
+    "clean:api-role-permission": "rimraf src/api/generated/role-permission && rimraf openApi/generated",
+    "generate:api-role-permission": "yarn run clean:api-role-permission && mkdirp openApi/generated && api-spec-converter --from=openapi_3 --to=swagger_2 openApi/openapi.role-permission.yml > openApi/generated/role-permission-swagger20.json && node ./node_modules/@pagopa/selfcare-common-frontend/utils/fixSwagger20ArraySchemaDef.js openApi/generated/role-permission-swagger20.json && node ./openApi/scripts/api-role-permission_fixPreGen.js && gen-api-models --api-spec openApi/generated/role-permission-swagger20.json --out-dir src/api/generated/role-permission --no-strict --request-types --response-decoders --client && node openApi/scripts/api-role-permission_fixPostGen.js"
   },
   "eslintConfig": {
     "extends": [
@@ -76,7 +79,6 @@
     "@types/react-router-dom": "^5.1.8",
     "@reduxjs/toolkit": "2.8.2",
     "@types/validator": "13.11.9",
-
     "api-spec-converter": "^2.12.0",
     "craco-module-federation": "^1.1.0",
     "eslint": "7.11.0",

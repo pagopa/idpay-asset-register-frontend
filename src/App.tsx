@@ -14,6 +14,8 @@ import TOSLayout from './components/TOSLayout/TOSLayout';
 import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
 import GestioneBeni from './pages/gestioneBeni/gestioneBeni';
+import TOS from "./pages/tos/TOS";
+import PrivacyPolicy from "./pages/privacyPolicy/PrivacyPolicy";
 
 const SecuredRoutes = withLogin(
   withSelectedPartyProducts(() => {
@@ -49,12 +51,12 @@ const SecuredRoutes = withLogin(
           <Route path={routes.HOME} exact={true}>
             <GestioneBeni />
           </Route>
-          {/* <Route path={routes.TOS} exact={true}>
+          <Route path={routes.TOS} exact={true}>
             <TOS />
           </Route>
           <Route path={routes.PRIVACY_POLICY} exact={true}>
             <PrivacyPolicy />
-          </Route> */}
+          </Route>
           <Route path="*">
             <Redirect to={routes.HOME} />
           </Route>

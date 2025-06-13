@@ -1,8 +1,16 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
+import {useErrorDispatcher} from "@pagopa/selfcare-common-frontend/lib";
+import {useTranslation} from "react-i18next";
+import {getPortalConsent, savePortalConsent} from "../services/rolePermissionService";
 
 const useTCAgreement = () => {
-  const [firstAcceptance, ] = useState<boolean | undefined>(false);
-/*  useEffect(() => {
+  const addError = useErrorDispatcher();
+  const { t } = useTranslation();
+  const [acceptedTOS, setAcceptedTOS] = useState<boolean | undefined>(undefined);
+  const [acceptedTOSVersion, setAcceptedTOSVersion] = useState<string | undefined>();
+  const [firstAcceptance, setFirstAcceptance] = useState<boolean | undefined>(false);
+
+  useEffect(() => {
     getPortalConsent()
       .then((res) => {
         if (Object.keys(res).length) {
@@ -27,10 +35,10 @@ const useTCAgreement = () => {
           showCloseIcon: true,
         });
       });
-  }, []); */
+  }, []);
 
   const acceptTOS = () => {
-    /* savePortalConsent(acceptedTOSVersion)
+    savePortalConsent(acceptedTOSVersion)
       .then((_res) => {
         setAcceptedTOS(true);
       })
@@ -47,11 +55,10 @@ const useTCAgreement = () => {
           component: 'Toast',
           showCloseIcon: true,
         });
-      }); */
+      });
   };
 
-  /* TODO CONFIGURE acceptedTOS:  return { isTOSAccepted: acceptedTOS, acceptTOS, firstAcceptance }; --- acceptedTOS: FORZATO A TRUE */
-  return { isTOSAccepted: true, acceptTOS, firstAcceptance };
+  return { isTOSAccepted: acceptedTOS, acceptTOS, firstAcceptance };
 };
 
 export default useTCAgreement;
