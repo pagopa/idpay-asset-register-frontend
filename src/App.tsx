@@ -1,4 +1,4 @@
-import {Redirect, Route, Switch, useLocation} from "react-router-dom";
+import { Route, Routes, Navigate, useLocation} from "react-router-dom";
 import {
     ErrorBoundary,
     LoadingOverlay,
@@ -14,6 +14,8 @@ import TOSLayout from './components/TOSLayout/TOSLayout';
 import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
 import GestioneBeni from './pages/gestioneBeni/gestioneBeni';
+import TOS from "./pages/tos/TOS";
+import PrivacyPolicy from "./pages/privacyPolicy/PrivacyPolicy";
 
 const SecuredRoutes = withLogin(
   withSelectedPartyProducts(() => {
@@ -45,20 +47,12 @@ const SecuredRoutes = withLogin(
 
     return (
       <Layout>
-        <Switch>
-          <Route path={routes.HOME} exact={true}>
-            <GestioneBeni />
-          </Route>
-          {/* <Route path={routes.TOS} exact={true}>
-            <TOS />
-          </Route>
-          <Route path={routes.PRIVACY_POLICY} exact={true}>
-            <PrivacyPolicy />
-          </Route> */}
-          <Route path="*">
-            <Redirect to={routes.HOME} />
-          </Route>
-        </Switch>
+        <Routes>
+            <Route path={routes.HOME} element={ <GestioneBeni /> } />
+            <Route path={routes.TOS} element={ <TOS /> } />
+            <Route path={routes.PRIVACY_POLICY} element={ <PrivacyPolicy /> } />
+            <Route path="*" element={ <Navigate to={routes.HOME} /> } />
+        </Routes>
       </Layout>
     );
   })
@@ -69,14 +63,10 @@ const App = () => (
     <LoadingOverlay />
     <UserNotifyHandle />
     <UnloadEventHandler />
-    <Switch>
-      <Route path={routes.AUTH}>
-        <Auth />
-      </Route>
-      <Route path="*">
-        <SecuredRoutes />
-      </Route>
-    </Switch>
+    <Routes>
+        <Route path={routes.AUTH} element={ <Auth /> }/>
+        <Route path="*" element={ <SecuredRoutes /> }/>
+    </Routes>
   </ErrorBoundary>
 );
 
