@@ -13,7 +13,7 @@ import TOSWall from './components/TOS/TOSWall';
 import TOSLayout from './components/TOSLayout/TOSLayout';
 import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
-import GestioneBeni from './pages/gestioneBeni/gestioneBeni';
+import Panoramica from './pages/panoramica/panoramica';
 
 const SecuredRoutes = withLogin(
   withSelectedPartyProducts(() => {
@@ -47,7 +47,7 @@ const SecuredRoutes = withLogin(
       <Layout>
         <Switch>
           <Route path={routes.HOME} exact={true}>
-            <GestioneBeni />
+            <Panoramica />
           </Route>
           {/* <Route path={routes.TOS} exact={true}>
             <TOS />
