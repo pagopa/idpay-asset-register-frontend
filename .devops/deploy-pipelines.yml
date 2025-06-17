@@ -191,6 +191,13 @@ stages:
 
               REACT_APP_URL_API_ROLE_PERMISSION: '$(react_app_url_api_role_permission)'
 
+              REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL: $(react_app_one_trust_otnotice_cdn_url)
+              REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS: $(react_app_one_trust_otnotice_cdn_settings)
+              REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID: $(react_app_one_trust_privacy_policy_id)
+              REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL: $(react_app_one_trust_privacy_policy_json_url)
+              REACT_APP_ONE_TRUST_TOS_ID: $(react_app_one_trust_tos_id)
+              REACT_APP_ONE_TRUST_TOS_JSON_URL: $(react_app_one_trust_tos_json_url)
+
           - bash: |
               printf "$EXECUTION_ID\n$(git name-rev --name-only FETCH_HEAD) $(git rev-parse HEAD)" > $(System.DefaultWorkingDirectory)/build/build.info
             env:
