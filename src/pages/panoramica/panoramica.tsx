@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { Box, Paper, Typography, Button } from '@mui/material';
+import { Box, Paper, Typography, Button, Tooltip } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
@@ -96,9 +96,15 @@ const Panoramica: React.FC = () => {
                     <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
                   </Box>
                   <Box sx={{ gridColumn: 'span 9' }}>
-                    <Typography variant="body1">
-                      {truncate ? truncateString(value) : value || '-'}
-                    </Typography>
+                    {truncate && value ? (
+                      <Tooltip title={value}>
+                        <Typography variant="body1" sx={{ cursor: 'pointer' }}>
+                          {truncateString(value)}
+                        </Typography>
+                      </Tooltip>
+                    ) : (
+                      <Typography variant="body1">{value || '-'}</Typography>
+                    )}
                   </Box>
                 </React.Fragment>
               ))}
