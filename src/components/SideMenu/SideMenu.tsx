@@ -1,8 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-import {
-  List,
-  Box
-} from '@mui/material';
+import { List, Box } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +29,7 @@ export default function SideMenu() {
       <Box gridColumn="auto">
         <List data-testid="list-test">
           <SidenavItem
-            title={t('pages.panoramica.title')}
+            title={t('pages.overview.overviewTitle')}
             handleClick={() => onExit(() => history.replace(ROUTES.HOME))}
             isSelected={pathname === ROUTES.HOME}
             icon={ListAltIcon}

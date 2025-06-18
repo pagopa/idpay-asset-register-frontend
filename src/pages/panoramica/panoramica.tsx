@@ -1,21 +1,33 @@
-import {
-  Box,
-  Paper,
-  Typography,
-  Button,
-} from '@mui/material';
+import React, { useEffect, useMemo } from 'react';
+import { Box, Paper, Typography, Button } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 
-const Panoramica = () => {
+const fetchUserFromLocalStorage = (): { [key: string]: string } | null => {
+  try {
+    const userString = localStorage.getItem('user');
+    return userString ? JSON.parse(userString) : null;
+  } catch (error) {
+    console.error('Errore nel recupero dei dati dal localStorage:', error);
+    return null;
+  }
+};
+
+const Panoramica: React.FC = () => {
   const { t } = useTranslation();
+
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
+
+  useEffect(() => {
+    console.log('User recuperato dal localStorage:', user);
+  }, [user]);
 
   return (
     <Box width="100%" px={2}>
       <TitleBox
-        title={t('pages.panoramica.title')}
-        subTitle={"Tieni sotto controllo tutte le tue attività da qui."}
+        title={t('pages.overview.overviewTitle')}
+        subTitle={t('pages.overview.overviewTitleDescription')}
         mbTitle={2}
         mtTitle={2}
         mbSubTitle={5}
@@ -32,6 +44,7 @@ const Panoramica = () => {
           mb: 5,
         }}
       >
+        {/* Sezione Informazioni */}
         <Box sx={{ gridColumn: 'span 6' }}>
           <Paper
             sx={{
@@ -44,11 +57,11 @@ const Panoramica = () => {
             }}
           >
             <TitleBox
-              title="Informazioni"
+              title={t('pages.overview.overviewTitleBoxInfo')}
               mbTitle={2}
               variantTitle="h5"
               variantSubTitle="body1"
-              data-testid="title"
+              data-testid="title-box-info"
             />
             <Box
               sx={{
@@ -58,40 +71,28 @@ const Panoramica = () => {
                 rowGap: 2,
               }}
             >
-              <Box sx={{ gridColumn: 'span 3' }}>
-                <Typography variant="body2">Ragione sociale</Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 9' }}>
-                <Typography variant="body1">AB Electrolux</Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 3' }}>
-                <Typography variant="body2">Codice Fiscale</Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 9' }}>
-                <Typography variant="body1">01724290935</Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 3' }}>
-                <Typography variant="body2">Partita IVA</Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 9' }}>
-                <Typography variant="body1">01724290935</Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 3' }}>
-                <Typography variant="body2">Sede legale</Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 9' }}>
-                <Typography variant="body1">Corso Lino Zanussi 24, 33080 Porcia (PN)</Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 3' }}>
-                <Typography variant="body2">PEC</Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 9' }}>
-                <Typography variant="body1">amministrazione.appliances@electroluxpe...</Typography>
-              </Box>
+              {[
+                { label: 'overviewTitleBoxInfoTitleLblRs', value: user?.org_name },
+                { label: 'overviewTitleBoxInfoTitleLblCf', value: user?.org_taxcode },
+                { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat },
+                { label: 'overviewTitleBoxInfoTitleLblSl', value: user?.org_address },
+                { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec },
+                { label: 'overviewTitleBoxInfoTitleLblEmailOp', value: user?.email },
+              ].map(({ label, value }) => (
+                <React.Fragment key={label}>
+                  <Box sx={{ gridColumn: 'span 3' }}>
+                    <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
+                  </Box>
+                  <Box sx={{ gridColumn: 'span 9' }}>
+                    <Typography variant="body1">{value || '-'}</Typography>
+                  </Box>
+                </React.Fragment>
+              ))}
             </Box>
           </Paper>
         </Box>
 
+        {/* Sezione Prodotti */}
         <Box sx={{ gridColumn: 'span 6' }}>
           <Paper
             sx={{
@@ -104,11 +105,11 @@ const Panoramica = () => {
             }}
           >
             <TitleBox
-              title="Prodotti"
+              title={t('pages.overview.overviewTitleBoxProdTitle')}
               mbTitle={2}
               variantTitle="h5"
               variantSubTitle="body1"
-              data-testid="title"
+              data-testid="title-box-prod"
             />
             <Box
               sx={{
@@ -120,16 +121,16 @@ const Panoramica = () => {
             >
               <Box sx={{ gridColumn: 'span 12' }}>
                 <Typography variant="body2">
-                  Inserisci i tuoi prodotti direttamente sul portale.
+                  {t('pages.overview.overviewTitleBoxProdDescription')}
                 </Typography>
               </Box>
               <Box sx={{ gridColumn: 'span 12', mt: 2 }}>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => console.log("Caricamento .csv")}
+                  onClick={() => console.log('Caricamento file .csv')}
                 >
-                  Carica .csv
+                  {t('pages.overview.overviewTitleBoxProdBtn')}
                 </Button>
               </Box>
             </Box>
@@ -137,17 +138,7 @@ const Panoramica = () => {
         </Box>
       </Box>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(12, 1fr)',
-          columnGap: 2,
-          justifyContent: 'center',
-          width: '100%',
-          mb: 5,
-        }}
-      ></Box>
-
+      {/* Sezione Footer */}
       <Paper
         sx={{
           width: '100%',
@@ -155,8 +146,9 @@ const Panoramica = () => {
           pb: 3,
           backgroundColor: grey.A100,
         }}
-      ></Paper>
+      />
     </Box>
   );
 };
+
 export default Panoramica;
