@@ -32,18 +32,18 @@
   },
   "scripts": {
     "clean": "npm-run-all clean:*",
-    "start": "craco start",
-    "build": "craco build",
     "clean:build": "rimraf build",
+    "clean:coverage": "rimraf coverage",
+    "clean:api-role-permission": "rimraf src/api/generated/role-permission && rimraf openApi/generated",
+    "start": "craco start",
+    "build": "npm run clean:build && craco build",
     "test": "craco test --testPathIgnorePatterns=src/utils/__tests__/test-utils.tsx -i",
     "test:coverage": "craco test --testPathIgnorePatterns=src/utils/__tests__/test-utils.tsx -i --coverage --ci --testResultsProcessor jest-sonar-reporter",
-    "clean:coverage": "rimraf coverage",
     "eject": "react-scripts eject",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "lint": "eslint -f json -o eslint-report.json . -c .eslintrc.js --ext .ts,.tsx --cache",
     "prettify": "prettier --write \"./**/*.{ts,tsx}\"",
     "generate": "npm-run-all generate:*",
-    "clean:api-role-permission": "rimraf src/api/generated/role-permission && rimraf openApi/generated",
     "generate:api-role-permission": "yarn run clean:api-role-permission && mkdirp openApi/generated && api-spec-converter --from=openapi_3 --to=swagger_2 openApi/openapi.role-permission.yml > openApi/generated/role-permission-swagger20.json && node ./node_modules/@pagopa/selfcare-common-frontend/utils/fixSwagger20ArraySchemaDef.js openApi/generated/role-permission-swagger20.json && node ./openApi/scripts/api-role-permission_fixPreGen.js && gen-api-models --api-spec openApi/generated/role-permission-swagger20.json --out-dir src/api/generated/role-permission --no-strict --request-types --response-decoders --client && node openApi/scripts/api-role-permission_fixPostGen.js"
   },
   "eslintConfig": {
