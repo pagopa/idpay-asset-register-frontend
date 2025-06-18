@@ -114,15 +114,13 @@ export const useLogin = () => {
       const user: User = userFromJwtToken(token);
       storageUserOps.write(user);
       setUser(user);
-/*
+
       saveUserPermissions(dispatch, addError, t);
-*/
     } else {
       // Otherwise, set the user to the one stored in the storage
       setUser(sessionStorageUser);
-/*
+
       saveUserPermissions(dispatch, addError, t);
-*/
     }
   };
 
