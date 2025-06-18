@@ -14,6 +14,14 @@ const fetchUserFromLocalStorage = (): { [key: string]: string } | null => {
   }
 };
 
+const truncateString = (str?: string, maxLength: number = 40): string => {
+  if (!str) {
+    return '-';
+  } else {
+    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+  }
+};
+
 const Panoramica: React.FC = () => {
   const { t } = useTranslation();
 
@@ -76,15 +84,21 @@ const Panoramica: React.FC = () => {
                 { label: 'overviewTitleBoxInfoTitleLblCf', value: user?.org_taxcode },
                 { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat },
                 { label: 'overviewTitleBoxInfoTitleLblSl', value: user?.org_address },
-                { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec },
-                { label: 'overviewTitleBoxInfoTitleLblEmailOp', value: user?.email },
-              ].map(({ label, value }) => (
+                { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec, truncate: true },
+                {
+                  label: 'overviewTitleBoxInfoTitleLblEmailOp',
+                  value: user?.org_email,
+                  truncate: true,
+                },
+              ].map(({ label, value, truncate }) => (
                 <React.Fragment key={label}>
                   <Box sx={{ gridColumn: 'span 3' }}>
                     <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
                   </Box>
                   <Box sx={{ gridColumn: 'span 9' }}>
-                    <Typography variant="body1">{value || '-'}</Typography>
+                    <Typography variant="body1">
+                      {truncate ? truncateString(value) : value || '-'}
+                    </Typography>
                   </Box>
                 </React.Fragment>
               ))}
