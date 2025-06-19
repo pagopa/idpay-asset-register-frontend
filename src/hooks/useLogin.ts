@@ -14,15 +14,22 @@ import {getUserPermission} from "../services/rolePermissionService";
 import {setPermissionsList, setUserRole} from "../redux/slices/permissionsSlice";
 import {Permission} from "../model/Permission";
 
-// const mockedUser = {
-//   uid: '0',
-//   taxCode: 'AAAAAA00A00A000A',
-//   name: 'loggedName',
-//   surname: 'loggedSurname',
-//   email: 'loggedEmail@aa.aa',
-//   org_party_role: 'ADMIN',
-//   org_role: 'admin',
-// };
+/*
+ const mockedUser = {
+   uid: '0',
+   taxCode: '',
+   name: 'lorenzo',
+   surname: 'lollo',
+   email: 'l.lollo@elecrolux.aa',
+   org_party_role: 'PRODUTTORE',
+   org_role: 'Operatore',
+   org_name:'Electrolux',
+   org_address: 'Corso Lino Zanussi 24, 33080 Porcia(PN)',
+   org_pec: 'amministrazione.appliance@electrolxxxxx.aa',
+   org_taxcode: '01724290935',
+   org_vat: '01724290935'
+ };
+*/
 
 export const userFromJwtToken: (token: string) => User = function (token: string) {
   const jwtUser: JWTUser = parseJwt(token);
@@ -32,8 +39,13 @@ export const userFromJwtToken: (token: string) => User = function (token: string
     name: jwtUser.name,
     surname: jwtUser.family_name,
     email: jwtUser.email,
+    org_name:jwtUser.org_name,
     org_party_role: jwtUser.org_party_role,
     org_role: jwtUser.org_role,
+    org_address: jwtUser.org_address,
+    org_pec: jwtUser.org_pec,
+    org_taxcode: jwtUser.org_taxcode,
+    org_vat: jwtUser.org_vat
   };
 };
 
@@ -49,6 +61,10 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
     org_name: jwtUser.org_name,
     org_party_role: jwtUser.org_party_role,
     org_role: jwtUser.org_role,
+    org_address: jwtUser.org_address,
+    org_pec: jwtUser.org_pec,
+    org_taxcode: jwtUser.org_taxcode,
+    org_vat: jwtUser.org_vat
   };
 };
 
@@ -84,11 +100,11 @@ export const useLogin = () => {
 
   const attemptSilentLogin = async () => {
     if (CONFIG.MOCKS.MOCK_USER) {
-      // setUser(mockedUser);
-      const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
-      setUser(mockedUserFromJWT);
+     //  setUser(mockedUser);
+       const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
+       setUser(mockedUserFromJWT);
       storageTokenOps.write(CONFIG.TEST.JWT);
-      // storageUserOps.write(mockedUser);
+    //  storageUserOps.write(mockedUser);
       storageUserOps.write(mockedUserFromJWT);
 
       saveUserPermissions(dispatch, addError, t);

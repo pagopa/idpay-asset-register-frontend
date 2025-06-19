@@ -9,7 +9,6 @@ import { matchPath } from 'react-router';
 import Header from '../Header/Header';
 import SideMenu from '../SideMenu/SideMenu';
 import ROUTES from '../../routes';
-import routes from '../../routes';
 
 type Props = {
   children?: React.ReactNode;
@@ -21,11 +20,7 @@ const Layout = ({ children }: Props) => {
   const location = useLocation();
   const [showAssistanceInfo, setShowAssistanceInfo] = useState(true);
 
-  const match = matchPath(location.pathname, {
-    path: [ROUTES.HOME],
-    exact: true,
-    strict: false,
-  });
+  const match = matchPath({ path: ROUTES.HOME, end: true }, location.pathname);
 
   useEffect(() => {
     setShowAssistanceInfo(location.pathname !== ROUTES.ASSISTANCE);
@@ -81,7 +76,7 @@ const Layout = ({ children }: Props) => {
             pt={2}
             gridColumn="span 12"
             maxWidth={
-              location.pathname !== routes.PRIVACY_POLICY && location.pathname !== routes.TOS
+              location.pathname !== ROUTES.PRIVACY_POLICY && location.pathname !== ROUTES.TOS
                 ? 920
                 : '100%'
             }
