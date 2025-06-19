@@ -45,7 +45,8 @@ export const userFromJwtToken: (token: string) => User = function (token: string
     org_address: jwtUser.org_address,
     org_pec: jwtUser.org_pec,
     org_taxcode: jwtUser.org_taxcode,
-    org_vat: jwtUser.org_vat
+    org_vat: jwtUser.org_vat,
+    org_email: jwtUser.org_email
   };
 };
 
@@ -64,7 +65,8 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
     org_address: jwtUser.org_address,
     org_pec: jwtUser.org_pec,
     org_taxcode: jwtUser.org_taxcode,
-    org_vat: jwtUser.org_vat
+    org_vat: jwtUser.org_vat,
+    org_email: jwtUser.org_email
   };
 };
 

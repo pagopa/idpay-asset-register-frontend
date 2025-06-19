@@ -39,6 +39,7 @@ export type JWTUser = {
   org_address: string;
   // ORG -  PEC
   org_pec: string;
+  org_email: string;
   
 };
 
@@ -52,4 +53,5 @@ export const jwt2JWTUser = (resources: JWTUser) => ({
   org_vat: resources.org_vat,
   org_party_role: resources.org_party_role,
   org_role: resources.org_role,
+  org_email: resources.org_email
 });

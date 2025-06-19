@@ -11,6 +11,7 @@ export interface IDPayUser {
   org_pec:  string;
   org_taxcode:  string;
   org_vat:  string;
+  org_email: string;
 }
 
 export const IdPayUser = (resources: IDPayUser) => ({
@@ -25,4 +26,5 @@ export const IdPayUser = (resources: IDPayUser) => ({
   org_pec:  resources.org_pec,
   org_taxcode:  resources.org_taxcode,
   org_vat:  resources.org_vat,
+  org_email: resources.org_email
 });
