@@ -1,20 +1,21 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Box, Paper, Typography, Button, Tooltip } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
+
+const maxLengthEmail: number = 40;
 
 const fetchUserFromLocalStorage = (): { [key: string]: string } | null => {
   try {
     const userString = localStorage.getItem('user');
     return userString ? JSON.parse(userString) : null;
   } catch (error) {
-    console.error('Errore nel recupero dei dati dal localStorage:', error);
     return null;
   }
 };
 
-const truncateString = (str?: string, maxLength: number = 40): string => {
+const truncateString = (str?: string, maxLength: number = maxLengthEmail): string => {
   if (!str) {
     return '-';
   } else {
@@ -26,10 +27,6 @@ const Panoramica: React.FC = () => {
   const { t } = useTranslation();
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-
-  useEffect(() => {
-    console.log('User recuperato dal localStorage:', user);
-  }, [user]);
 
   return (
     <Box width="100%" px={2}>
