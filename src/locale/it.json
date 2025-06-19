@@ -68,6 +68,12 @@
     "operatore": "Operatore",
     "invitalia":  "Operatore"
   },
+  "session": {
+    "expired": {
+      "message": "Ti stiamo reindirizzando alla pagina di accesso",
+      "title": "La tua sessione è scaduta"
+    }
+  },
   "validation": {
     "assistanceSubject": "Inserisci l’argomento della tua richiesta",
     "exactChars": "Deve essere esattamente di {{x}} caratteri",
