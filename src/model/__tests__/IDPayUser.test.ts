@@ -19,6 +19,6 @@ test('Test initiativeGeneral2GeneralInfo', () => {
     email: 'test@token.it',
     taxCode: '2f63a151-da4e-4e1e-acf9-adecc0c4d727',
     org_party_role: 'ADMIN',
-    org_rule: 'admin',
+    org_role: 'admin',
   });
 });

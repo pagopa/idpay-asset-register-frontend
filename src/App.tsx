@@ -13,7 +13,7 @@ import TOSWall from './components/TOS/TOSWall';
 import TOSLayout from './components/TOSLayout/TOSLayout';
 import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
-import GestioneBeni from './pages/gestioneBeni/gestioneBeni';
+import Panoramica from './pages/panoramica/panoramica';
 import TOS from "./pages/tos/TOS";
 import PrivacyPolicy from "./pages/privacyPolicy/PrivacyPolicy";
 
@@ -48,7 +48,7 @@ const SecuredRoutes = withLogin(
     return (
       <Layout>
         <Routes>
-            <Route path={routes.HOME} element={ <GestioneBeni /> } />
+            <Route path={routes.HOME} element={ <Panoramica /> } />
             <Route path={routes.TOS} element={ <TOS /> } />
             <Route path={routes.PRIVACY_POLICY} element={ <PrivacyPolicy /> } />
             <Route path="*" element={ <Navigate to={routes.HOME} /> } />

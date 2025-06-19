@@ -48,16 +48,19 @@
       "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
       "title": "Registro dei beni"
     },
-    "panoramica": {
-      "emptyList": "Nessuna iniziativa disponibile",
-      "initiativeStatus": "Stato",
-      "organizationName": "Creata da",
-      "searchByInitiativeName": "Cerca per nome dell'iniziativa",
-      "serviceId": "Codice identificativo",
-      "spendingPeriod": "Periodo di spesa",
-      "subtitle": "Visualizza e gestisci le iniziative di supporto alla spesa a cui hai aderito.",
-      "title": "Panoramica",
-      "initiativeName": "Nome"
+    "overview": {
+      "overviewTitle": "Panoramica",
+      "overviewTitleDescription": "Tieni sotto controllo tutte le tue attività da qui.",
+      "overviewTitleBoxInfo": "Informazioni",
+      "overviewTitleBoxInfoTitleLblRs": "Ragione sociale",
+      "overviewTitleBoxInfoTitleLblCf": "Codice Fiscale",
+      "overviewTitleBoxInfoTitleLblPiva": "Partita IVA",
+      "overviewTitleBoxInfoTitleLblSl": "Sede legale",
+      "overviewTitleBoxInfoTitleLblPec": "PEC",
+      "overviewTitleBoxInfoTitleLblEmailOp": "E-mail operativa",
+      "overviewTitleBoxProdTitle": "Prodotti",
+      "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
+      "overviewTitleBoxProdBtn": "Carica.csv"
     }
   },
   "roles": {
