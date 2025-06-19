@@ -1,7 +1,7 @@
 import { Box, Breadcrumbs, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { ButtonNaked } from '@pagopa/mui-italia';
-import { useHistory } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 
 interface Props {
   backUrl: string;
@@ -10,13 +10,13 @@ interface Props {
 }
 
 const BreadcrumbsBox = ({ backUrl, backLabel, items }: Props) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
     <Box sx={{ display: 'grid', gridColumn: 'span 12' }}>
       <Breadcrumbs aria-label="breadcrumb">
         <ButtonNaked
           component="button"
-          onClick={() => history.replace(backUrl)}
+          onClick={() => navigate(backUrl, { replace: true })}
           startIcon={<ArrowBackIcon />}
           sx={{ color: 'primary.main', fontSize: '1rem', marginBottom: '3px' }}
           weight="default"

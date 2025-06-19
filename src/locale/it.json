@@ -64,7 +64,8 @@
     }
   },
   "roles": {
-    "admin": "Amministratore"
+    "admin": "Amministratore",
+    "operatore": "Operatore"
   },
   "validation": {
     "assistanceSubject": "Inserisci l’argomento della tua richiesta",

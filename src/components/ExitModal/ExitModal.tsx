@@ -1,7 +1,7 @@
 import { Modal, Backdrop, Fade, Box, Typography, Button } from '@mui/material';
 import { MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   title: string;
@@ -12,10 +12,10 @@ type Props = {
 };
 
 const ExitModal = ({ title, subtitle, openExitModal, handleCloseExitModal, backRoute }: Props) => {
-  const history = useHistory();
-  const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { t } = useTranslation();
   const closeWithoutSaving = (e: any) => {
-    history.replace(backRoute);
+    navigate(backRoute, { replace: true });
     handleCloseExitModal(e);
   };
 
