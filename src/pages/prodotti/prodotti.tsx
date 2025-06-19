@@ -20,7 +20,7 @@ import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import EmptyList from '../components/EmptyList';
-import { Data, EnhancedTableProps, HeadCell, getComparator, Order } from './helpers';
+import { Data, EnhancedTableProps, HeadCell, getComparator, Order, Value } from './helpers';
 import mockdata from './mockdata.json';
 
 const categories = [...new Set(mockdata.map((item) => item.categoria))];
@@ -104,6 +104,13 @@ const Prodotti = () => {
   const [orderBy, setOrderBy] = useState<keyof Data>('categoria');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [branchFilter, setBranchFilter] = useState<string | null>(null);
+  const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
+  const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
+  const [manufacturerFilter, setManufacturerFilter] = useState<string>('');
+  console.log('§>===>', { eprelCodeFilter });
+
   const { t } = useTranslation();
 
   const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Data) => {
@@ -122,6 +129,44 @@ const Prodotti = () => {
     setPage(0);
   };
 
+  const handleCategoryFilterChange = (
+    event: React.SyntheticEvent,
+    value: Value | null,
+    reason: string
+  ) => {
+    console.log(event, reason);
+    setCategoryFilter(value);
+  };
+
+  const handleCategoryBranchChange = (
+    event: React.SyntheticEvent,
+    value: Value | null,
+    reason: string
+  ) => {
+    console.log(event, reason);
+    setBranchFilter(value);
+  };
+
+  const handleEprelCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEprelCodeFilter(event.target.value);
+  };
+
+  const handleGtinCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setGtinCodeFilter(event.target.value);
+  };
+
+  const handleManufacturerFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setManufacturerFilter(event.target.value);
+  };
+
+  const handleDeleteFiltersButtonClick = () => {
+    setCategoryFilter(null);
+    setBranchFilter(null);
+    setEprelCodeFilter('');
+    setGtinCodeFilter('');
+    setManufacturerFilter('');
+  };
+
   const handleListButtonClick = (row: any) => {
     const msg = `id: ${row.id}
 categoria: ${row.categoria}
@@ -132,6 +177,13 @@ lotto: ${row.lotto}
     `;
     alert(msg);
   };
+
+  const noFilterSetted = (): boolean =>
+    categoryFilter === null &&
+    branchFilter === null &&
+    eprelCodeFilter === '' &&
+    gtinCodeFilter === '' &&
+    manufacturerFilter === '';
 
   const visibleRows = useMemo(
     () =>
@@ -160,25 +212,50 @@ lotto: ${row.lotto}
           options={categories}
           sx={{ height: 100, width: 200, mr: 1 }}
           renderInput={(params) => <TextField {...params} label="Categoria" />}
+          value={categoryFilter}
+          onChange={handleCategoryFilterChange}
         />
         <Autocomplete
           disablePortal
           options={batches}
           sx={{ width: 300, mr: 1 }}
           renderInput={(params) => <TextField {...params} label="Lotto" />}
+          value={branchFilter}
+          onChange={handleCategoryBranchChange}
         />
-        <TextField sx={{ mr: 1 }} id="eprel-code-text" label="Codice EPREL" variant="outlined" />
-        <TextField sx={{ mr: 1 }} id="gtin-code-text" label="Codice GTIN" variant="outlined" />
+        <TextField
+          sx={{ mr: 1 }}
+          id="eprel-code-text"
+          label="Codice EPREL"
+          variant="outlined"
+          value={eprelCodeFilter}
+          onChange={handleEprelCodeFilterChange}
+        />
+        <TextField
+          sx={{ mr: 1 }}
+          id="gtin-code-text"
+          label="Codice GTIN"
+          variant="outlined"
+          value={gtinCodeFilter}
+          onChange={handleGtinCodeFilterChange}
+        />
         <TextField
           sx={{ mr: 1 }}
           id="manufacturer-code-text"
           label="Codice Produttore"
           variant="outlined"
+          value={manufacturerFilter}
+          onChange={handleManufacturerFilterChange}
         />
-        <Button disabled variant="outlined" sx={{ height: 60 }}>
+        <Button disabled={noFilterSetted()} variant="outlined" sx={{ height: 60 }}>
           Filtra
         </Button>
-        <Button disabled variant="text" sx={{ height: 60, width: 200 }}>
+        <Button
+          disabled={noFilterSetted()}
+          variant={noFilterSetted() ? 'text' : 'outlined'}
+          sx={{ height: 60, width: 200 }}
+          onClick={handleDeleteFiltersButtonClick}
+        >
           Rimuovi filtri
         </Button>
       </Box>
