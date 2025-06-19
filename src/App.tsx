@@ -1,10 +1,10 @@
-import { Route, Routes, Navigate, useLocation} from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import {
-    ErrorBoundary,
-    LoadingOverlay,
-    UnloadEventHandler,
-    UserNotifyHandle
-} from "@pagopa/selfcare-common-frontend/lib";
+  ErrorBoundary,
+  LoadingOverlay,
+  UnloadEventHandler,
+  UserNotifyHandle,
+} from '@pagopa/selfcare-common-frontend/lib';
 import withSelectedPartyProducts from './decorators/withSelectedPartyProducts';
 import withLogin from './decorators/withLogin';
 import Layout from './components/Layout/Layout';
@@ -14,8 +14,9 @@ import TOSLayout from './components/TOSLayout/TOSLayout';
 import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
 import GestioneBeni from './pages/gestioneBeni/gestioneBeni';
-import TOS from "./pages/tos/TOS";
-import PrivacyPolicy from "./pages/privacyPolicy/PrivacyPolicy";
+import Prodotti from './pages/prodotti/prodotti';
+import TOS from './pages/tos/TOS';
+import PrivacyPolicy from './pages/privacyPolicy/PrivacyPolicy';
 
 const SecuredRoutes = withLogin(
   withSelectedPartyProducts(() => {
@@ -48,10 +49,11 @@ const SecuredRoutes = withLogin(
     return (
       <Layout>
         <Routes>
-            <Route path={routes.HOME} element={ <GestioneBeni /> } />
-            <Route path={routes.TOS} element={ <TOS /> } />
-            <Route path={routes.PRIVACY_POLICY} element={ <PrivacyPolicy /> } />
-            <Route path="*" element={ <Navigate to={routes.HOME} /> } />
+          <Route path={routes.HOME} element={<GestioneBeni />} />
+          <Route path={routes.PRODUCTS} element={<Prodotti />} />
+          <Route path={routes.TOS} element={<TOS />} />
+          <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
+          <Route path="*" element={<Navigate to={routes.HOME} />} />
         </Routes>
       </Layout>
     );
@@ -64,8 +66,8 @@ const App = () => (
     <UserNotifyHandle />
     <UnloadEventHandler />
     <Routes>
-        <Route path={routes.AUTH} element={ <Auth /> }/>
-        <Route path="*" element={ <SecuredRoutes /> }/>
+      <Route path={routes.AUTH} element={<Auth />} />
+      <Route path="*" element={<SecuredRoutes />} />
     </Routes>
   </ErrorBoundary>
 );

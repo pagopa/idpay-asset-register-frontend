@@ -58,6 +58,24 @@
       "subtitle": "Visualizza e gestisci le iniziative di supporto alla spesa a cui hai aderito.",
       "title": "Panoramica",
       "initiativeName": "Nome"
+    },
+    "prodotti": {
+      "emptyList": "Nessuna iniziativa disponibile",
+      "initiativeStatus": "Stato",
+      "organizationName": "Creata da",
+      "searchByInitiativeName": "Cerca per nome dell'iniziativa",
+      "serviceId": "Codice identificativo",
+      "spendingPeriod": "Periodo di spesa",
+      "subtitle": "Visualizza e gestisci le iniziative di supporto alla spesa a cui hai aderito.",
+      "title": "Prodotti",
+      "initiativeName": "Nome",
+      "listHeader": {
+        "category": "Categoria",
+        "energeticClass": "Classe energetica",
+        "eprelCode": "Codice EPREL",
+        "gtinCode": "Codice GTIN/EAN",
+        "branch": "Lotto"
+      }
     }
   },
   "roles": {
