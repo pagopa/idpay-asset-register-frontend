@@ -65,7 +65,8 @@
   },
   "roles": {
     "admin": "Amministratore",
-    "operatore": "Operatore"
+    "operatore": "Operatore",
+    "invitalia":  "Operatore"
   },
   "validation": {
     "assistanceSubject": "Inserisci l’argomento della tua richiesta",
