@@ -56,3 +56,21 @@ export interface EnhancedTableProps {
   orderBy: string;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
 }
+
+export interface DataProp {
+  categoria?: string;
+  classe_energetica?: string;
+  codice_eprel?: string;
+  codice_gtinean?: string;
+  lotto?: string;
+  codice_prodotto?: string;
+  marca?: string;
+  modello?: string;
+  origine?: string;
+}
+
+export interface ProductsDrawerProps {
+  open: boolean;
+  toggleDrawer: (isOpen: boolean) => void;
+  data: DataProp;
+}

@@ -20,7 +20,16 @@ import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import EmptyList from '../components/EmptyList';
-import { Data, EnhancedTableProps, HeadCell, getComparator, Order, Value } from './helpers';
+import ProductsDrawer from './productdrawer';
+import {
+  Data,
+  EnhancedTableProps,
+  HeadCell,
+  getComparator,
+  Order,
+  Value,
+  DataProp,
+} from './helpers';
 import mockdata from './mockdata.json';
 
 const categories = [...new Set(mockdata.map((item) => item.categoria))];
@@ -109,9 +118,14 @@ const Prodotti = () => {
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
   const [manufacturerFilter, setManufacturerFilter] = useState<string>('');
-  console.log('§>===>', { eprelCodeFilter });
+  const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
+  const [drawerData, setDrawerData] = useState<DataProp>({});
 
   const { t } = useTranslation();
+
+  const handleToggleDrawer = (newOpen: boolean) => {
+    setDrawerOpened(newOpen);
+  };
 
   const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -168,14 +182,9 @@ const Prodotti = () => {
   };
 
   const handleListButtonClick = (row: any) => {
-    const msg = `id: ${row.id}
-categoria: ${row.categoria}
-classe energetica: ${row.classe_energetica}
-codice eprel: ${row.codice_eprel}
-codice gtin: ${row.codice_gtinean}
-lotto: ${row.lotto}
-    `;
-    alert(msg);
+    console.log(row);
+    setDrawerData(row);
+    setDrawerOpened(true);
   };
 
   const noFilterSetted = (): boolean =>
@@ -336,6 +345,7 @@ lotto: ${row.lotto}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <ProductsDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer} data={drawerData} />
     </Box>
   );
 };
