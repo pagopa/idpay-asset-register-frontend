@@ -1,0 +1,954 @@
+[
+  {
+    "id": 0,
+    "categoria": "Lavatrice",
+    "classe_energetica": "A",
+    "codice_eprel": "1234567890",
+    "codice_gtinean": "3001234567892",
+    "lotto": "32675198_lavatrici_1.csv"
+  },
+  {
+    "id": 1,
+    "categoria": "Lavastoviglie",
+    "classe_energetica": "C",
+    "codice_eprel": "3456789012",
+    "codice_gtinean": "3001234567894",
+    "lotto": "32675198_lavastoviglie_3.csv"
+  },
+  {
+    "id": 2,
+    "categoria": "Asciugatrice",
+    "classe_energetica": "A++",
+    "codice_eprel": "4567890123",
+    "codice_gtinean": "3001234567895",
+    "lotto": "32675198_asciugatrici_4.csv"
+  },
+  {
+    "id": 3,
+    "categoria": "Forno",
+    "classe_energetica": "A+",
+    "codice_eprel": "5678901234",
+    "codice_gtinean": "3001234567896",
+    "lotto": "32675198_forni_5.csv"
+  },
+  {
+    "id": 4,
+    "categoria": "Microonde",
+    "classe_energetica": "B",
+    "codice_eprel": "6789012345",
+    "codice_gtinean": "3001234567897",
+    "lotto": "32675198_microonde_6.csv"
+  },
+  {
+    "id": 5,
+    "categoria": "Congelatore",
+    "classe_energetica": "A+",
+    "codice_eprel": "7890123456",
+    "codice_gtinean": "3001234567898",
+    "lotto": "32675198_congelatori_7.csv"
+  },
+  {
+    "id": 6,
+    "categoria": "Aspirapolvere",
+    "classe_energetica": "C",
+    "codice_eprel": "8901234567",
+    "codice_gtinean": "3001234567899",
+    "lotto": "32675198_aspirapolvere_8.csv"
+  },
+  {
+    "id": 7,
+    "categoria": "Televisore",
+    "classe_energetica": "A",
+    "codice_eprel": "9012345678",
+    "codice_gtinean": "3001234567800",
+    "lotto": "32675198_tv_9.csv"
+  },
+  {
+    "id": 8,
+    "categoria": "Condizionatore",
+    "classe_energetica": "A++",
+    "codice_eprel": "1123456789",
+    "codice_gtinean": "3001234567801",
+    "lotto": "32675198_condizionatori_10.csv"
+  },
+  {
+    "id": 9,
+    "categoria": "Scaldabagno",
+    "classe_energetica": "B",
+    "codice_eprel": "2234567890",
+    "codice_gtinean": "3001234567802",
+    "lotto": "32675198_scaldabagno_11.csv"
+  },
+  {
+    "id": 10,
+    "categoria": "Ventilatore",
+    "classe_energetica": "C",
+    "codice_eprel": "3345678901",
+    "codice_gtinean": "3001234567803",
+    "lotto": "32675198_ventilatori_12.csv"
+  },
+  {
+    "id": 11,
+    "categoria": "Stufa",
+    "classe_energetica": "A+",
+    "codice_eprel": "4456789012",
+    "codice_gtinean": "3001234567804",
+    "lotto": "32675198_stufe_13.csv"
+  },
+  {
+    "id": 12,
+    "categoria": "Ferro da stiro",
+    "classe_energetica": "B",
+    "codice_eprel": "5567890123",
+    "codice_gtinean": "3001234567805",
+    "lotto": "32675198_ferri_14.csv"
+  },
+  {
+    "id": 13,
+    "categoria": "Macchina caffè",
+    "classe_energetica": "A",
+    "codice_eprel": "6678901234",
+    "codice_gtinean": "3001234567806",
+    "lotto": "32675198_caffe_15.csv"
+  },
+  {
+    "id": 14,
+    "categoria": "Tostapane",
+    "classe_energetica": "C",
+    "codice_eprel": "7789012345",
+    "codice_gtinean": "3001234567807",
+    "lotto": "32675198_tostapane_16.csv"
+  },
+  {
+    "id": 15,
+    "categoria": "Frullatore",
+    "classe_energetica": "A+",
+    "codice_eprel": "8890123456",
+    "codice_gtinean": "3001234567808",
+    "lotto": "32675198_frullatori_17.csv"
+  },
+  {
+    "id": 16,
+    "categoria": "Robot cucina",
+    "classe_energetica": "B",
+    "codice_eprel": "9901234567",
+    "codice_gtinean": "3001234567809",
+    "lotto": "32675198_robot_18.csv"
+  },
+  {
+    "id": 17,
+    "categoria": "Piastra elettrica",
+    "classe_energetica": "A",
+    "codice_eprel": "1012345678",
+    "codice_gtinean": "3001234567810",
+    "lotto": "32675198_piastre_19.csv"
+  },
+  {
+    "id": 18,
+    "categoria": "Frigorifero",
+    "classe_energetica": "B",
+    "codice_eprel": "2345678901",
+    "codice_gtinean": "3001234567893",
+    "lotto": "32675198_frigo_2.csv"
+  },
+  {
+    "id": 19,
+    "categoria": "Purificatore aria",
+    "classe_energetica": "A++",
+    "codice_eprel": "2123456789",
+    "codice_gtinean": "3001234567811",
+    "lotto": "32675198_purificatori_20.csv"
+  },
+  {
+    "id": 20,
+    "categoria": "Friggitrice ad aria",
+    "classe_energetica": "A+",
+    "codice_eprel": "3123456789",
+    "codice_gtinean": "3001234567812",
+    "lotto": "32675198_friggitrici_21.csv"
+  },
+  {
+    "id": 21,
+    "categoria": "Macchina per il pane",
+    "classe_energetica": "B",
+    "codice_eprel": "4234567890",
+    "codice_gtinean": "3001234567813",
+    "lotto": "32675198_pane_22.csv"
+  },
+  {
+    "id": 22,
+    "categoria": "Impastatrice",
+    "classe_energetica": "A++",
+    "codice_eprel": "5345678901",
+    "codice_gtinean": "3001234567814",
+    "lotto": "32675198_impastatrici_23.csv"
+  },
+  {
+    "id": 23,
+    "categoria": "Centrifuga",
+    "classe_energetica": "C",
+    "codice_eprel": "6456789012",
+    "codice_gtinean": "3001234567815",
+    "lotto": "32675198_centrifughe_24.csv"
+  },
+  {
+    "id": 24,
+    "categoria": "Estrattore",
+    "classe_energetica": "A",
+    "codice_eprel": "7567890123",
+    "codice_gtinean": "3001234567816",
+    "lotto": "32675198_estrattori_25.csv"
+  },
+  {
+    "id": 25,
+    "categoria": "Griglia elettrica",
+    "classe_energetica": "B",
+    "codice_eprel": "8678901234",
+    "codice_gtinean": "3001234567817",
+    "lotto": "32675198_griglie_26.csv"
+  },
+  {
+    "id": 26,
+    "categoria": "Macchina sottovuoto",
+    "classe_energetica": "A+",
+    "codice_eprel": "9789012345",
+    "codice_gtinean": "3001234567818",
+    "lotto": "32675198_sottovuoto_27.csv"
+  },
+  {
+    "id": 27,
+    "categoria": "Affettatrice",
+    "classe_energetica": "C",
+    "codice_eprel": "1090123456",
+    "codice_gtinean": "3001234567819",
+    "lotto": "32675198_affettatrici_28.csv"
+  },
+  {
+    "id": 28,
+    "categoria": "Spremiagrumi",
+    "classe_energetica": "A",
+    "codice_eprel": "2101234567",
+    "codice_gtinean": "3001234567820",
+    "lotto": "32675198_spremiagrumi_29.csv"
+  },
+  {
+    "id": 29,
+    "categoria": "Macchina popcorn",
+    "classe_energetica": "B",
+    "codice_eprel": "3212345678",
+    "codice_gtinean": "3001234567821",
+    "lotto": "32675198_popcorn_30.csv"
+  },
+  {
+    "id": 30,
+    "categoria": "Gelatiera",
+    "classe_energetica": "A++",
+    "codice_eprel": "4323456789",
+    "codice_gtinean": "3001234567822",
+    "lotto": "32675198_gelatiere_31.csv"
+  },
+  {
+    "id": 31,
+    "categoria": "Cuociriso",
+    "classe_energetica": "C",
+    "codice_eprel": "5434567890",
+    "codice_gtinean": "3001234567823",
+    "lotto": "32675198_cuociriso_32.csv"
+  },
+  {
+    "id": 32,
+    "categoria": "Bollitore",
+    "classe_energetica": "A+",
+    "codice_eprel": "6545678901",
+    "codice_gtinean": "3001234567824",
+    "lotto": "32675198_bollitori_33.csv"
+  },
+  {
+    "id": 33,
+    "categoria": "Macchina zucchero filato",
+    "classe_energetica": "B",
+    "codice_eprel": "7656789012",
+    "codice_gtinean": "3001234567825",
+    "lotto": "32675198_zuccherofilato_34.csv"
+  },
+  {
+    "id": 34,
+    "categoria": "Piastra waffle",
+    "classe_energetica": "A",
+    "codice_eprel": "8767890123",
+    "codice_gtinean": "3001234567826",
+    "lotto": "32675198_waffle_35.csv"
+  },
+  {
+    "id": 35,
+    "categoria": "Tritatutto",
+    "classe_energetica": "A++",
+    "codice_eprel": "9878901234",
+    "codice_gtinean": "3001234567827",
+    "lotto": "32675198_tritatutto_36.csv"
+  },
+  {
+    "id": 36,
+    "categoria": "Sbattitore",
+    "classe_energetica": "C",
+    "codice_eprel": "1989012345",
+    "codice_gtinean": "3001234567828",
+    "lotto": "32675198_sbattitori_37.csv"
+  },
+  {
+    "id": 37,
+    "categoria": "Friggitrice",
+    "classe_energetica": "A+",
+    "codice_eprel": "2090123456",
+    "codice_gtinean": "3001234567829",
+    "lotto": "32675198_friggitrice_38.csv"
+  },
+  {
+    "id": 38,
+    "categoria": "Piastra panini",
+    "classe_energetica": "B",
+    "codice_eprel": "3101234567",
+    "codice_gtinean": "3001234567830",
+    "lotto": "32675198_panini_39.csv"
+  },
+  {
+    "id": 39,
+    "categoria": "Forno pizza",
+    "classe_energetica": "A",
+    "codice_eprel": "4212345678",
+    "codice_gtinean": "3001234567831",
+    "lotto": "32675198_pizza_40.csv"
+  },
+  {
+    "id": 40,
+    "categoria": "Tostiera",
+    "classe_energetica": "A+",
+    "codice_eprel": "5323456789",
+    "codice_gtinean": "3001234567832",
+    "lotto": "32675198_tostiera_41.csv"
+  },
+  {
+    "id": 41,
+    "categoria": "Macchina per hot dog",
+    "classe_energetica": "B",
+    "codice_eprel": "6434567890",
+    "codice_gtinean": "3001234567833",
+    "lotto": "32675198_hotdog_42.csv"
+  },
+  {
+    "id": 42,
+    "categoria": "Caffettiera americana",
+    "classe_energetica": "A++",
+    "codice_eprel": "7545678901",
+    "codice_gtinean": "3001234567834",
+    "lotto": "32675198_caffettiera_43.csv"
+  },
+  {
+    "id": 43,
+    "categoria": "Macchina per crepes",
+    "classe_energetica": "C",
+    "codice_eprel": "8656789012",
+    "codice_gtinean": "3001234567835",
+    "lotto": "32675198_crepes_44.csv"
+  },
+  {
+    "id": 44,
+    "categoria": "Cuocipasta",
+    "classe_energetica": "A",
+    "codice_eprel": "9767890123",
+    "codice_gtinean": "3001234567836",
+    "lotto": "32675198_cuocipasta_45.csv"
+  },
+  {
+    "id": 45,
+    "categoria": "Cuocipappa",
+    "classe_energetica": "B",
+    "codice_eprel": "1878901234",
+    "codice_gtinean": "3001234567837",
+    "lotto": "32675198_cuocipappa_46.csv"
+  },
+  {
+    "id": 46,
+    "categoria": "Cuociuova",
+    "classe_energetica": "A+",
+    "codice_eprel": "2989012345",
+    "codice_gtinean": "3001234567838",
+    "lotto": "32675198_cuociuova_47.csv"
+  },
+  {
+    "id": 47,
+    "categoria": "Macchina per yogurt",
+    "classe_energetica": "C",
+    "codice_eprel": "3090123456",
+    "codice_gtinean": "3001234567839",
+    "lotto": "32675198_yogurt_48.csv"
+  },
+  {
+    "id": 48,
+    "categoria": "Macchina per pasta",
+    "classe_energetica": "A",
+    "codice_eprel": "4101234567",
+    "codice_gtinean": "3001234567840",
+    "lotto": "32675198_pasta_49.csv"
+  },
+  {
+    "id": 49,
+    "categoria": "Macchina per gnocchi",
+    "classe_energetica": "B",
+    "codice_eprel": "5212345678",
+    "codice_gtinean": "3001234567841",
+    "lotto": "32675198_gnocchi_50.csv"
+  },
+  {
+    "id": 50,
+    "categoria": "Macchina per ravioli",
+    "classe_energetica": "A++",
+    "codice_eprel": "6323456789",
+    "codice_gtinean": "3001234567842",
+    "lotto": "32675198_ravioli_51.csv"
+  },
+  {
+    "id": 51,
+    "categoria": "Macchina per tagliatelle",
+    "classe_energetica": "C",
+    "codice_eprel": "7434567890",
+    "codice_gtinean": "3001234567843",
+    "lotto": "32675198_tagliatelle_52.csv"
+  },
+  {
+    "id": 52,
+    "categoria": "Macchina per cappuccino",
+    "classe_energetica": "A+",
+    "codice_eprel": "8545678901",
+    "codice_gtinean": "3001234567844",
+    "lotto": "32675198_cappuccino_53.csv"
+  },
+  {
+    "id": 53,
+    "categoria": "Macchina per granite",
+    "classe_energetica": "B",
+    "codice_eprel": "9656789012",
+    "codice_gtinean": "3001234567845",
+    "lotto": "32675198_granite_54.csv"
+  },
+  {
+    "id": 54,
+    "categoria": "Macchina per birra",
+    "classe_energetica": "A",
+    "codice_eprel": "1767890123",
+    "codice_gtinean": "3001234567846",
+    "lotto": "32675198_birra_55.csv"
+  },
+  {
+    "id": 55,
+    "categoria": "Macchina per cocktail",
+    "classe_energetica": "A++",
+    "codice_eprel": "2878901234",
+    "codice_gtinean": "3001234567847",
+    "lotto": "32675198_cocktail_56.csv"
+  },
+  {
+    "id": 56,
+    "categoria": "Macchina per ghiaccio",
+    "classe_energetica": "C",
+    "codice_eprel": "3989012345",
+    "codice_gtinean": "3001234567848",
+    "lotto": "32675198_ghiaccio_57.csv"
+  },
+  {
+    "id": 57,
+    "categoria": "Macchina per zucchero filato",
+    "classe_energetica": "A+",
+    "codice_eprel": "4090123456",
+    "codice_gtinean": "3001234567849",
+    "lotto": "32675198_zuccherofilato_58.csv"
+  },
+  {
+    "id": 58,
+    "categoria": "Macchina per popcorn",
+    "classe_energetica": "B",
+    "codice_eprel": "5101234567",
+    "codice_gtinean": "3001234567850",
+    "lotto": "32675198_popcorn_59.csv"
+  },
+  {
+    "id": 59,
+    "categoria": "Macchina per cioccolata",
+    "classe_energetica": "A",
+    "codice_eprel": "6212345678",
+    "codice_gtinean": "3001234567851",
+    "lotto": "32675198_cioccolata_60.csv"
+  },
+  {
+    "id": 60,
+    "categoria": "Macchina per pancakes",
+    "classe_energetica": "A++",
+    "codice_eprel": "7323456789",
+    "codice_gtinean": "3001234567852",
+    "lotto": "32675198_pancakes_61.csv"
+  },
+  {
+    "id": 61,
+    "categoria": "Macchina per churros",
+    "classe_energetica": "C",
+    "codice_eprel": "8434567890",
+    "codice_gtinean": "3001234567853",
+    "lotto": "32675198_churros_62.csv"
+  },
+  {
+    "id": 62,
+    "categoria": "Macchina per donuts",
+    "classe_energetica": "A+",
+    "codice_eprel": "9545678901",
+    "codice_gtinean": "3001234567854",
+    "lotto": "32675198_donuts_63.csv"
+  },
+  {
+    "id": 63,
+    "categoria": "Macchina per muffin",
+    "classe_energetica": "B",
+    "codice_eprel": "1656789012",
+    "codice_gtinean": "3001234567855",
+    "lotto": "32675198_muffin_64.csv"
+  },
+  {
+    "id": 64,
+    "categoria": "Macchina per cupcake",
+    "classe_energetica": "A",
+    "codice_eprel": "2767890123",
+    "codice_gtinean": "3001234567856",
+    "lotto": "32675198_cupcake_65.csv"
+  },
+  {
+    "id": 65,
+    "categoria": "Macchina per brownies",
+    "classe_energetica": "A++",
+    "codice_eprel": "3878901234",
+    "codice_gtinean": "3001234567857",
+    "lotto": "32675198_brownies_66.csv"
+  },
+  {
+    "id": 66,
+    "categoria": "Macchina per biscotti",
+    "classe_energetica": "C",
+    "codice_eprel": "4989012345",
+    "codice_gtinean": "3001234567858",
+    "lotto": "32675198_biscotti_67.csv"
+  },
+  {
+    "id": 67,
+    "categoria": "Macchina per pane",
+    "classe_energetica": "A+",
+    "codice_eprel": "5090123456",
+    "codice_gtinean": "3001234567859",
+    "lotto": "32675198_pane_68.csv"
+  },
+  {
+    "id": 68,
+    "categoria": "Macchina per pizza",
+    "classe_energetica": "B",
+    "codice_eprel": "6101234567",
+    "codice_gtinean": "3001234567860",
+    "lotto": "32675198_pizza_69.csv"
+  },
+  {
+    "id": 69,
+    "categoria": "Macchina per gnocchi",
+    "classe_energetica": "A",
+    "codice_eprel": "7212345678",
+    "codice_gtinean": "3001234567861",
+    "lotto": "32675198_gnocchi_70.csv"
+  },
+  {
+    "id": 70,
+    "categoria": "Macchina per ravioli",
+    "classe_energetica": "A++",
+    "codice_eprel": "8323456789",
+    "codice_gtinean": "3001234567862",
+    "lotto": "32675198_ravioli_71.csv"
+  },
+  {
+    "id": 71,
+    "categoria": "Macchina per tagliatelle",
+    "classe_energetica": "C",
+    "codice_eprel": "9434567890",
+    "codice_gtinean": "3001234567863",
+    "lotto": "32675198_tagliatelle_72.csv"
+  },
+  {
+    "id": 72,
+    "categoria": "Macchina per cappuccino",
+    "classe_energetica": "A+",
+    "codice_eprel": "1545678901",
+    "codice_gtinean": "3001234567864",
+    "lotto": "32675198_cappuccino_73.csv"
+  },
+  {
+    "id": 73,
+    "categoria": "Macchina per granite",
+    "classe_energetica": "B",
+    "codice_eprel": "2656789012",
+    "codice_gtinean": "3001234567865",
+    "lotto": "32675198_granite_74.csv"
+  },
+  {
+    "id": 74,
+    "categoria": "Macchina per birra",
+    "classe_energetica": "A",
+    "codice_eprel": "3767890123",
+    "codice_gtinean": "3001234567866",
+    "lotto": "32675198_birra_75.csv"
+  },
+  {
+    "id": 75,
+    "categoria": "Macchina per cocktail",
+    "classe_energetica": "A++",
+    "codice_eprel": "4878901234",
+    "codice_gtinean": "3001234567867",
+    "lotto": "32675198_cocktail_76.csv"
+  },
+  {
+    "id": 76,
+    "categoria": "Macchina per ghiaccio",
+    "classe_energetica": "C",
+    "codice_eprel": "5989012345",
+    "codice_gtinean": "3001234567868",
+    "lotto": "32675198_ghiaccio_77.csv"
+  },
+  {
+    "id": 77,
+    "categoria": "Macchina per zucchero filato",
+    "classe_energetica": "A+",
+    "codice_eprel": "6090123456",
+    "codice_gtinean": "3001234567869",
+    "lotto": "32675198_zuccherofilato_78.csv"
+  },
+  {
+    "id": 78,
+    "categoria": "Macchina per popcorn",
+    "classe_energetica": "B",
+    "codice_eprel": "7101234567",
+    "codice_gtinean": "3001234567870",
+    "lotto": "32675198_popcorn_79.csv"
+  },
+  {
+    "id": 79,
+    "categoria": "Macchina per cioccolata",
+    "classe_energetica": "A",
+    "codice_eprel": "8212345678",
+    "codice_gtinean": "3001234567871",
+    "lotto": "32675198_cioccolata_80.csv"
+  },
+  {
+    "id": 80,
+    "categoria": "Macchina per pancakes",
+    "classe_energetica": "A++",
+    "codice_eprel": "9323456789",
+    "codice_gtinean": "3001234567872",
+    "lotto": "32675198_pancakes_81.csv"
+  },
+  {
+    "id": 81,
+    "categoria": "Macchina per churros",
+    "classe_energetica": "C",
+    "codice_eprel": "1434567890",
+    "codice_gtinean": "3001234567873",
+    "lotto": "32675198_churros_82.csv"
+  },
+  {
+    "id": 82,
+    "categoria": "Macchina per donuts",
+    "classe_energetica": "A+",
+    "codice_eprel": "2545678901",
+    "codice_gtinean": "3001234567874",
+    "lotto": "32675198_donuts_83.csv"
+  },
+  {
+    "id": 83,
+    "categoria": "Macchina per muffin",
+    "classe_energetica": "B",
+    "codice_eprel": "3656789012",
+    "codice_gtinean": "3001234567875",
+    "lotto": "32675198_muffin_84.csv"
+  },
+  {
+    "id": 84,
+    "categoria": "Macchina per cupcake",
+    "classe_energetica": "A",
+    "codice_eprel": "4767890123",
+    "codice_gtinean": "3001234567876",
+    "lotto": "32675198_cupcake_85.csv"
+  },
+  {
+    "id": 85,
+    "categoria": "Macchina per brownies",
+    "classe_energetica": "A++",
+    "codice_eprel": "5878901234",
+    "codice_gtinean": "3001234567877",
+    "lotto": "32675198_brownies_86.csv"
+  },
+  {
+    "id": 86,
+    "categoria": "Macchina per biscotti",
+    "classe_energetica": "C",
+    "codice_eprel": "6989012345",
+    "codice_gtinean": "3001234567878",
+    "lotto": "32675198_biscotti_87.csv"
+  },
+  {
+    "id": 87,
+    "categoria": "Macchina per pane",
+    "classe_energetica": "A+",
+    "codice_eprel": "7090123456",
+    "codice_gtinean": "3001234567879",
+    "lotto": "32675198_pane_88.csv"
+  },
+  {
+    "id": 88,
+    "categoria": "Macchina per pizza",
+    "classe_energetica": "B",
+    "codice_eprel": "8101234567",
+    "codice_gtinean": "3001234567880",
+    "lotto": "32675198_pizza_89.csv"
+  },
+  {
+    "id": 89,
+    "categoria": "Macchina per gnocchi",
+    "classe_energetica": "A",
+    "codice_eprel": "9212345678",
+    "codice_gtinean": "3001234567881",
+    "lotto": "32675198_gnocchi_90.csv"
+  },
+  {
+    "id": 90,
+    "categoria": "Macchina per ravioli",
+    "classe_energetica": "A++",
+    "codice_eprel": "1323456789",
+    "codice_gtinean": "3001234567882",
+    "lotto": "32675198_ravioli_91.csv"
+  },
+  {
+    "id": 91,
+    "categoria": "Macchina per tagliatelle",
+    "classe_energetica": "C",
+    "codice_eprel": "2434567890",
+    "codice_gtinean": "3001234567883",
+    "lotto": "32675198_tagliatelle_92.csv"
+  },
+  {
+    "id": 92,
+    "categoria": "Macchina per cappuccino",
+    "classe_energetica": "A+",
+    "codice_eprel": "3545678901",
+    "codice_gtinean": "3001234567884",
+    "lotto": "32675198_cappuccino_93.csv"
+  },
+  {
+    "id": 93,
+    "categoria": "Macchina per granite",
+    "classe_energetica": "B",
+    "codice_eprel": "4656789012",
+    "codice_gtinean": "3001234567885",
+    "lotto": "32675198_granite_94.csv"
+  },
+  {
+    "id": 94,
+    "categoria": "Macchina per birra",
+    "classe_energetica": "A",
+    "codice_eprel": "5767890123",
+    "codice_gtinean": "3001234567886",
+    "lotto": "32675198_birra_95.csv"
+  },
+  {
+    "id": 95,
+    "categoria": "Macchina per cocktail",
+    "classe_energetica": "A++",
+    "codice_eprel": "6878901234",
+    "codice_gtinean": "3001234567887",
+    "lotto": "32675198_cocktail_96.csv"
+  },
+  {
+    "id": 96,
+    "categoria": "Macchina per ghiaccio",
+    "classe_energetica": "C",
+    "codice_eprel": "7989012345",
+    "codice_gtinean": "3001234567888",
+    "lotto": "32675198_ghiaccio_97.csv"
+  },
+  {
+    "id": 97,
+    "categoria": "Macchina per zucchero filato",
+    "classe_energetica": "A+",
+    "codice_eprel": "8090123456",
+    "codice_gtinean": "3001234567889",
+    "lotto": "32675198_zuccherofilato_98.csv"
+  },
+  {
+    "id": 98,
+    "categoria": "Macchina per popcorn",
+    "classe_energetica": "B",
+    "codice_eprel": "9101234567",
+    "codice_gtinean": "3001234567890",
+    "lotto": "32675198_popcorn_99.csv"
+  },
+  {
+    "id": 99,
+    "categoria": "Macchina per cioccolata",
+    "classe_energetica": "A",
+    "codice_eprel": "1212345678",
+    "codice_gtinean": "3001234567891",
+    "lotto": "32675198_cioccolata_100.csv"
+  },
+  {
+    "id": 100,
+    "categoria": "Macchina per pancakes",
+    "classe_energetica": "A++",
+    "codice_eprel": "2323456789",
+    "codice_gtinean": "3001234567892",
+    "lotto": "32675198_pancakes_101.csv"
+  },
+  {
+    "id": 101,
+    "categoria": "Macchina per churros",
+    "classe_energetica": "C",
+    "codice_eprel": "3434567890",
+    "codice_gtinean": "3001234567893",
+    "lotto": "32675198_churros_102.csv"
+  },
+  {
+    "id": 102,
+    "categoria": "Macchina per donuts",
+    "classe_energetica": "A+",
+    "codice_eprel": "4545678901",
+    "codice_gtinean": "3001234567894",
+    "lotto": "32675198_donuts_103.csv"
+  },
+  {
+    "id": 103,
+    "categoria": "Macchina per muffin",
+    "classe_energetica": "B",
+    "codice_eprel": "5656789012",
+    "codice_gtinean": "3001234567895",
+    "lotto": "32675198_muffin_104.csv"
+  },
+  {
+    "id": 104,
+    "categoria": "Macchina per cupcake",
+    "classe_energetica": "A",
+    "codice_eprel": "6767890123",
+    "codice_gtinean": "3001234567896",
+    "lotto": "32675198_cupcake_105.csv"
+  },
+  {
+    "id": 105,
+    "categoria": "Macchina per brownies",
+    "classe_energetica": "A++",
+    "codice_eprel": "7878901234",
+    "codice_gtinean": "3001234567897",
+    "lotto": "32675198_brownies_106.csv"
+  },
+  {
+    "id": 106,
+    "categoria": "Macchina per biscotti",
+    "classe_energetica": "C",
+    "codice_eprel": "8989012345",
+    "codice_gtinean": "3001234567898",
+    "lotto": "32675198_biscotti_107.csv"
+  },
+  {
+    "id": 107,
+    "categoria": "Macchina per pane",
+    "classe_energetica": "A+",
+    "codice_eprel": "9090123456",
+    "codice_gtinean": "3001234567899",
+    "lotto": "32675198_pane_108.csv"
+  },
+  {
+    "id": 108,
+    "categoria": "Macchina per pizza",
+    "classe_energetica": "B",
+    "codice_eprel": "1101234567",
+    "codice_gtinean": "3001234567900",
+    "lotto": "32675198_pizza_109.csv"
+  },
+  {
+    "id": 109,
+    "categoria": "Macchina per gnocchi",
+    "classe_energetica": "A",
+    "codice_eprel": "2212345678",
+    "codice_gtinean": "3001234567901",
+    "lotto": "32675198_gnocchi_110.csv"
+  },
+  {
+    "id": 110,
+    "categoria": "Macchina per ravioli",
+    "classe_energetica": "A++",
+    "codice_eprel": "3323456789",
+    "codice_gtinean": "3001234567902",
+    "lotto": "32675198_ravioli_111.csv"
+  },
+  {
+    "id": 111,
+    "categoria": "Macchina per tagliatelle",
+    "classe_energetica": "C",
+    "codice_eprel": "4434567890",
+    "codice_gtinean": "3001234567903",
+    "lotto": "32675198_tagliatelle_112.csv"
+  },
+  {
+    "id": 112,
+    "categoria": "Macchina per cappuccino",
+    "classe_energetica": "A+",
+    "codice_eprel": "5545678901",
+    "codice_gtinean": "3001234567904",
+    "lotto": "32675198_cappuccino_113.csv"
+  },
+  {
+    "id": 113,
+    "categoria": "Macchina per granite",
+    "classe_energetica": "B",
+    "codice_eprel": "6656789012",
+    "codice_gtinean": "3001234567905",
+    "lotto": "32675198_granite_114.csv"
+  },
+  {
+    "id": 114,
+    "categoria": "Macchina per birra",
+    "classe_energetica": "A",
+    "codice_eprel": "7767890123",
+    "codice_gtinean": "3001234567906",
+    "lotto": "32675198_birra_115.csv"
+  },
+  {
+    "id": 115,
+    "categoria": "Macchina per cocktail",
+    "classe_energetica": "A++",
+    "codice_eprel": "8878901234",
+    "codice_gtinean": "3001234567907",
+    "lotto": "32675198_cocktail_116.csv"
+  },
+  {
+    "id": 116,
+    "categoria": "Macchina per ghiaccio",
+    "classe_energetica": "C",
+    "codice_eprel": "9989012345",
+    "codice_gtinean": "3001234567908",
+    "lotto": "32675198_ghiaccio_117.csv"
+  },
+  {
+    "id": 117,
+    "categoria": "Macchina per zucchero filato",
+    "classe_energetica": "A+",
+    "codice_eprel": "1090123457",
+    "codice_gtinean": "3001234567909",
+    "lotto": "32675198_zuccherofilato_118.csv"
+  },
+  {
+    "id": 118,
+    "categoria": "Macchina per popcorn",
+    "classe_energetica": "B",
+    "codice_eprel": "2101234568",
+    "codice_gtinean": "3001234567910",
+    "lotto": "32675198_popcorn_119.csv"
+  }
+]

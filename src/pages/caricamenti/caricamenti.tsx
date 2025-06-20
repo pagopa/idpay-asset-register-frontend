@@ -108,7 +108,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-const Prodotti = () => {
+const Caricamenti = () => {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Data>('categoria');
   const [page, setPage] = useState(0);
@@ -349,4 +349,4 @@ const Prodotti = () => {
     </Box>
   );
 };
-export default Prodotti;
+export default Caricamenti;

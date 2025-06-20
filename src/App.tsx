@@ -15,6 +15,7 @@ import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
 import GestioneBeni from './pages/gestioneBeni/gestioneBeni';
 import Prodotti from './pages/prodotti/prodotti';
+import Caricamenti from './pages/caricamenti/caricamenti';
 import TOS from './pages/tos/TOS';
 import PrivacyPolicy from './pages/privacyPolicy/PrivacyPolicy';
 
@@ -51,6 +52,7 @@ const SecuredRoutes = withLogin(
         <Routes>
           <Route path={routes.HOME} element={<GestioneBeni />} />
           <Route path={routes.PRODUCTS} element={<Prodotti />} />
+          <Route path={routes.UPLOADS} element={<Caricamenti />} />
           <Route path={routes.TOS} element={<TOS />} />
           <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
           <Route path="*" element={<Navigate to={routes.HOME} />} />

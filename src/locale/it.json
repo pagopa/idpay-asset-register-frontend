@@ -76,6 +76,9 @@
         "gtinCode": "Codice GTIN/EAN",
         "branch": "Lotto"
       }
+    },
+    "storico-caricamenti": {
+      "title": "Storico caricamenti"
     }
   },
   "roles": {
