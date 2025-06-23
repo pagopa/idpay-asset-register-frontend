@@ -15,6 +15,7 @@ import {
   TablePagination,
 } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
@@ -32,8 +33,10 @@ import {
 } from './helpers';
 import mockdata from './mockdata.json';
 
-const categories = [...new Set(mockdata.map((item) => item.categoria))];
-const batches = [...new Set(mockdata.map((item) => item.lotto))];
+const mockedData: Array<any> = [...mockdata];
+
+const categories = [...new Set(mockedData.map((item) => item.categoria))];
+const batches = [...new Set(mockedData.map((item) => item.lotto))];
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
@@ -196,7 +199,7 @@ const Prodotti = () => {
 
   const visibleRows = useMemo(
     () =>
-      [...mockdata]
+      [...mockedData]
         .sort(getComparator(order, orderBy))
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [order, orderBy, page, rowsPerPage]
@@ -206,7 +209,7 @@ const Prodotti = () => {
     <Box width="100%" px={2}>
       <TitleBox
         title={t('pages.prodotti.title')}
-        subTitle={'Visualizza tutti i prodotti caricati e i dettagli'}
+        subTitle={t('pages.prodotti.subtitle')}
         mbTitle={2}
         mtTitle={2}
         mbSubTitle={5}
@@ -215,59 +218,66 @@ const Prodotti = () => {
         data-testid="title"
       />
 
-      <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
-        <Autocomplete
-          disablePortal
-          options={categories}
-          sx={{ height: 100, width: 200, mr: 1 }}
-          renderInput={(params) => <TextField {...params} label="Categoria" />}
-          value={categoryFilter}
-          onChange={handleCategoryFilterChange}
-        />
-        <Autocomplete
-          disablePortal
-          options={batches}
-          sx={{ width: 300, mr: 1 }}
-          renderInput={(params) => <TextField {...params} label="Lotto" />}
-          value={branchFilter}
-          onChange={handleCategoryBranchChange}
-        />
-        <TextField
-          sx={{ mr: 1 }}
-          id="eprel-code-text"
-          label="Codice EPREL"
-          variant="outlined"
-          value={eprelCodeFilter}
-          onChange={handleEprelCodeFilterChange}
-        />
-        <TextField
-          sx={{ mr: 1 }}
-          id="gtin-code-text"
-          label="Codice GTIN"
-          variant="outlined"
-          value={gtinCodeFilter}
-          onChange={handleGtinCodeFilterChange}
-        />
-        <TextField
-          sx={{ mr: 1 }}
-          id="manufacturer-code-text"
-          label="Codice Produttore"
-          variant="outlined"
-          value={manufacturerFilter}
-          onChange={handleManufacturerFilterChange}
-        />
-        <Button disabled={noFilterSetted()} variant="outlined" sx={{ height: 60 }}>
-          Filtra
-        </Button>
-        <Button
-          disabled={noFilterSetted()}
-          variant={noFilterSetted() ? 'text' : 'outlined'}
-          sx={{ height: 60, width: 200, ml: '6px' }}
-          onClick={handleDeleteFiltersButtonClick}
-        >
-          Rimuovi filtri
-        </Button>
-      </Box>
+      {mockedData.length > 0 && (
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
+          <Autocomplete
+            disablePortal
+            options={categories}
+            sx={{ height: 100, width: 200, mr: 1 }}
+            renderInput={(params) => (
+              <TextField {...params} label={t('pages.prodotti.filter-labels.category')} />
+            )}
+            popupIcon={<ArrowDropDownIcon />}
+            value={categoryFilter}
+            onChange={handleCategoryFilterChange}
+          />
+          <Autocomplete
+            disablePortal
+            options={batches}
+            sx={{ width: 300, mr: 1 }}
+            renderInput={(params) => (
+              <TextField {...params} label={t('pages.prodotti.filter-labels.branch')} />
+            )}
+            value={branchFilter}
+            onChange={handleCategoryBranchChange}
+          />
+          <TextField
+            sx={{ mr: 1 }}
+            id="eprel-code-text"
+            label={t('pages.prodotti.filter-labels.eprelCode')}
+            variant="outlined"
+            value={eprelCodeFilter}
+            onChange={handleEprelCodeFilterChange}
+          />
+          <TextField
+            sx={{ mr: 1 }}
+            id="gtin-code-text"
+            label={t('pages.prodotti.filter-labels.gtinCode')}
+            variant="outlined"
+            value={gtinCodeFilter}
+            onChange={handleGtinCodeFilterChange}
+          />
+          <TextField
+            sx={{ mr: 1 }}
+            id="manufacturer-code-text"
+            label={t('pages.prodotti.filter-labels.manufacturerCode')}
+            variant="outlined"
+            value={manufacturerFilter}
+            onChange={handleManufacturerFilterChange}
+          />
+          <Button disabled={noFilterSetted()} variant="outlined" sx={{ height: 60 }}>
+            {t('pages.prodotti.filter-labels.filter')}
+          </Button>
+          <Button
+            disabled={noFilterSetted()}
+            variant={noFilterSetted() ? 'text' : 'outlined'}
+            sx={{ height: 60, width: 200, ml: '6px' }}
+            onClick={handleDeleteFiltersButtonClick}
+          >
+            {t('pages.prodotti.filter-labels.deleteFilters')}
+          </Button>
+        </Box>
+      )}
 
       <Paper
         sx={{
@@ -278,7 +288,7 @@ const Prodotti = () => {
         }}
       >
         <TableContainer>
-          {mockdata.length > 0 ? (
+          {mockedData.length > 0 ? (
             <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
               <EnhancedTableHead
                 order={order}
@@ -321,29 +331,31 @@ const Prodotti = () => {
                   textAlign: 'center',
                 }}
               >
-                <EmptyList message={t('pages.initiativesList.emptyList')} />
+                <EmptyList message={t('pages.prodotti.emptyList')} />
               </Box>
             </Box>
           )}
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10]}
-          colSpan={3}
-          count={mockdata.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          component="div"
-          slotProps={{
-            select: {
-              inputProps: {
-                'aria-label': 'rows per page',
+        {mockedData.length > 0 && (
+          <TablePagination
+            rowsPerPageOptions={[10]}
+            colSpan={3}
+            count={mockedData.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            component="div"
+            slotProps={{
+              select: {
+                inputProps: {
+                  'aria-label': 'rows per page',
+                },
+                native: true,
               },
-              native: true,
-            },
-          }}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+            }}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        )}
       </Paper>
       <ProductsDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer} data={drawerData} />
     </Box>

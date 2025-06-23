@@ -60,15 +60,18 @@
       "initiativeName": "Nome"
     },
     "prodotti": {
-      "emptyList": "Nessuna iniziativa disponibile",
-      "initiativeStatus": "Stato",
-      "organizationName": "Creata da",
-      "searchByInitiativeName": "Cerca per nome dell'iniziativa",
-      "serviceId": "Codice identificativo",
-      "spendingPeriod": "Periodo di spesa",
-      "subtitle": "Visualizza e gestisci le iniziative di supporto alla spesa a cui hai aderito.",
+      "emptyList": "Nessun prodotto disponibile",
+      "subtitle": "Visualizza tutti i prodotti caricati e i dettagli",
       "title": "Prodotti",
-      "initiativeName": "Nome",
+      "filter-labels": {
+        "category": "Categoria",
+        "branch": "Lotto",
+        "eprelCode": "Codice EPREL",
+        "gtinCode": "Codice GTIN",
+        "manufacturerCode": "Codice Produttore",
+        "filter": "Filtra",
+        "deleteFilters": "Rimuovi filtri"
+      },
       "listHeader": {
         "category": "Categoria",
         "energeticClass": "Classe energetica",
