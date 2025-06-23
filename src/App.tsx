@@ -16,6 +16,7 @@ import useTCAgreement from './hooks/useTCAgreement';
 import Panoramica from './pages/panoramica/panoramica';
 import TOS from "./pages/tos/TOS";
 import PrivacyPolicy from "./pages/privacyPolicy/PrivacyPolicy";
+import AddProducts from "./pages/aggiungiProdotti/addProducts";
 
 const SecuredRoutes = withLogin(
   withSelectedPartyProducts(() => {
@@ -49,6 +50,7 @@ const SecuredRoutes = withLogin(
       <Layout>
         <Routes>
             <Route path={routes.HOME} element={ <Panoramica /> } />
+            <Route path={routes.ADD_PRODUCTS} element={ <AddProducts /> } />
             <Route path={routes.TOS} element={ <TOS /> } />
             <Route path={routes.PRIVACY_POLICY} element={ <PrivacyPolicy /> } />
             <Route path="*" element={ <Navigate to={routes.HOME} /> } />

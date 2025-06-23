@@ -3,6 +3,9 @@ import { Box, Paper, Typography, Button, Tooltip } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
+import {useUnloadEventOnExit} from "@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor";
+import {useNavigate} from "react-router-dom";
+import ROUTES from "../../routes";
 
 const maxLengthEmail: number = 40;
 
@@ -25,7 +28,8 @@ const truncateString = (str?: string, maxLength: number = maxLengthEmail): strin
 
 const Panoramica: React.FC = () => {
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
+  const onExit = useUnloadEventOnExit();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   return (
@@ -145,7 +149,7 @@ const Panoramica: React.FC = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => console.log('Caricamento file .csv')}
+                  onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
                 >
                   {t('pages.overview.overviewTitleBoxProdBtn')}
                 </Button>
