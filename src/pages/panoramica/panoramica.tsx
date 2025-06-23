@@ -93,18 +93,18 @@ const Panoramica: React.FC = () => {
                 },
               ].map(({ label, value, truncate }) => (
                 <React.Fragment key={label}>
-                  <Box sx={{ gridColumn: 'span 3' }}>
+                  <Box sx={{ gridColumn: 'span 3', alignContent: 'center' }}>
                     <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
                   </Box>
                   <Box sx={{ gridColumn: 'span 9' }}>
                     {truncate && value ? (
                       <Tooltip title={value}>
-                        <Typography variant="body1" sx={{ cursor: 'pointer' }}>
+                        <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight:'600' }}>
                           {truncateString(value)}
                         </Typography>
                       </Tooltip>
                     ) : (
-                      <Typography variant="body1">{value || '-'}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight:'600' }}>{value || '-'}</Typography>
                     )}
                   </Box>
                 </React.Fragment>

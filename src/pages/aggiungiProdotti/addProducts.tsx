@@ -99,7 +99,7 @@ const AddProducts: React.FC = () => {
                     <Button
                         variant="contained"
                         sx={{ gridArea: 'exitBtn', justifySelf: 'end' }}
-                        onClick={(e)=>(console.log(e))}
+                        onClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
                         data-testid="exit-button-test"
                         disabled={!fileAccepted}
                     >
