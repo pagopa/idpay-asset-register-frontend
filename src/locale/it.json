@@ -1,9 +1,15 @@
 {
+  "breadcrumbs": {
+    "back": "Indietro",
+    "exit": "Esci",
+    "home": "Panoramica",
+    "aggiungiProdotti": "Aggiungi prodotti"
+  },
   "commons": {
     "backBtn": "Indietro",
     "cancelBtn": "Torna indietro",
     "closeBtn": "Chiudi",
-    "confirmBtn": "Conferma",
+    "confirmBtn": "Continua",
     "continueBtn": "Continua",
     "copyCodeBtn": "Copia codice",
     "copyLinkBtn": "Copia link",
@@ -61,6 +67,52 @@
       "overviewTitleBoxProdTitle": "Prodotti",
       "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
       "overviewTitleBoxProdBtn": "Carica.csv"
+    },
+    "addProducts": {
+      "title": "Aggiungi prodotti",
+      "boxAddTitle": "Carica i tuoi prodotti",
+      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
+      "boxAddTextProduct": "Prodotto.",
+      "goToManual": "Dubbi? Vai al manuale",
+      "form": {
+        "categoryLabel": "Seleziona la categoria",
+        "categoryPlaceholder": "Categoria",
+        "categories": {
+          "washingmachines": "Lavatrici",
+          "washerdriers": "Asciugatrici",
+          "ovens": "Forni",
+          "rangehoods": "Cappe da cucina",
+          "dishwasher": "Lavastoviglie",
+          "tumbledriers": "Lavasciuga",
+          "refrigeratingappl": "Frigoriferi",
+          "cookinghobs": "Piani cottura"
+        },
+        "fileUpload": {
+          "dragAreaText": "Trascina qui il file csv con la lista dei prodotti o",
+          "dragAreaLink": "selezionalo dal tuo computer",
+          "fileUploadHelpText": "Non sai come preparare il file?",
+          "fileUploadHelpLinkLabel": "Scarica l’esempio",
+          "fileIsLoading": "Caricamento in corso",
+          "validFile": "File valido",
+          "changeFile": "Sostituisci",
+          "fileUploadError": {
+            "errorDescription": "Si è verificato un errore. Riprova",
+            "errorTitle": "II file contiene degli errori",
+            "invalidTypeTitle": "Il formato del file non è valido",
+            "invalidTypeDescription": "È possibile caricare solo file in formato .csv",
+            "fileTooLargeTitle": "Il file non è valido",
+            "fileTooLargeDescription": "La dimensione del file non deve superare i {{x}} mb",
+            "tooMuchProductsTitle": "Il file contiene troppi prodotti",
+            "tooMuchProductsDescription": "È possibile caricare al massimo 100 prodotti per lotto.",
+            "wrongCategoryTitle": "Il file contiene una categoria errata",
+            "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
+            "multipeErrorsTitle": "Il file contiene uno o più errori",
+            "multipleErrorDescription": "Scarica il report per verificare le informazioni e carica di nuovo il file.",
+            "eprelNotWorksTitle": "EPREL è giu ora non funziona",
+            "eprelNotWorksDescription": "Riprova più tardi"
+          }
+        }
+      }
     }
   },
   "roles": {
