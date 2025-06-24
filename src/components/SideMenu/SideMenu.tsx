@@ -20,7 +20,7 @@ export default function SideMenu() {
       <Box gridColumn="auto">
         <List data-testid="list-test">
           <SidenavItem
-            title={t('pages.panoramica.title')}
+            title={t('pages.overview.overviewTitle')}
             handleClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
             isSelected={location.pathname === ROUTES.HOME}
             icon={ListAltIcon}

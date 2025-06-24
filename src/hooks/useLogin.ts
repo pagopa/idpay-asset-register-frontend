@@ -1,4 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
+import {useErrorDispatcher} from "@pagopa/selfcare-common-frontend/lib";
+import {useTranslation} from "react-i18next";
+import {Dispatch} from "react";
 import { useDispatch } from 'react-redux';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
@@ -7,16 +10,26 @@ import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-fronten
 import { parseJwt } from '../utils/jwt-utils';
 import { JWTUser } from '../model/JwtUser';
 import { IDPayUser } from '../model/IDPayUser';
+import {getUserPermission} from "../services/rolePermissionService";
+import {setPermissionsList, setUserRole} from "../redux/slices/permissionsSlice";
+import {Permission} from "../model/Permission";
 
-// const mockedUser = {
-//   uid: '0',
-//   taxCode: 'AAAAAA00A00A000A',
-//   name: 'loggedName',
-//   surname: 'loggedSurname',
-//   email: 'loggedEmail@aa.aa',
-//   org_party_role: 'ADMIN',
-//   org_role: 'admin',
-// };
+/*
+ const mockedUser = {
+   uid: '0',
+   taxCode: '',
+   name: 'lorenzo',
+   surname: 'lollo',
+   email: 'l.lollo@elecrolux.aa',
+   org_party_role: 'PRODUTTORE',
+   org_role: 'Operatore',
+   org_name:'Electrolux',
+   org_address: 'Corso Lino Zanussi 24, 33080 Porcia(PN)',
+   org_pec: 'amministrazione.appliance@electrolxxxxx.aa',
+   org_taxcode: '01724290935',
+   org_vat: '01724290935'
+ };
+*/
 
 export const userFromJwtToken: (token: string) => User = function (token: string) {
   const jwtUser: JWTUser = parseJwt(token);
@@ -26,8 +39,14 @@ export const userFromJwtToken: (token: string) => User = function (token: string
     name: jwtUser.name,
     surname: jwtUser.family_name,
     email: jwtUser.email,
+    org_name:jwtUser.org_name,
     org_party_role: jwtUser.org_party_role,
     org_role: jwtUser.org_role,
+    org_address: jwtUser.org_address,
+    org_pec: jwtUser.org_pec,
+    org_taxcode: jwtUser.org_taxcode,
+    org_vat: jwtUser.org_vat,
+    org_email: jwtUser.org_email
   };
 };
 
@@ -43,10 +62,15 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
     org_name: jwtUser.org_name,
     org_party_role: jwtUser.org_party_role,
     org_role: jwtUser.org_role,
+    org_address: jwtUser.org_address,
+    org_pec: jwtUser.org_pec,
+    org_taxcode: jwtUser.org_taxcode,
+    org_vat: jwtUser.org_vat,
+    org_email: jwtUser.org_email
   };
 };
 
-/* const saveUserPermissions = (dispatch: Dispatch<any>, addError: any, t: any) => {
+const saveUserPermissions = (dispatch: Dispatch<any>, addError: any, t: any) => {
   getUserPermission()
     .then((res) => {
       dispatch(setUserRole(res.role as string));
@@ -65,28 +89,28 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
         showCloseIcon: true,
       });
     });
-}; */
+};
 
 /** A custom hook used to obtain a function to check if there is a valid JWT token, loading into redux the logged user object */
 export const useLogin = () => {
   const dispatch = useDispatch();
   const setUser = (user: User) => dispatch(userActions.setLoggedUser(user));
 
- /* const addError = useErrorDispatcher();
+  const addError = useErrorDispatcher();
   const { t } = useTranslation();
-*/
+
 
   const attemptSilentLogin = async () => {
     if (CONFIG.MOCKS.MOCK_USER) {
-      // setUser(mockedUser);
-      const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
-      setUser(mockedUserFromJWT);
+     //  setUser(mockedUser);
+       const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
+       setUser(mockedUserFromJWT);
       storageTokenOps.write(CONFIG.TEST.JWT);
-      // storageUserOps.write(mockedUser);
+    //  storageUserOps.write(mockedUser);
       storageUserOps.write(mockedUserFromJWT);
-/*
+
       saveUserPermissions(dispatch, addError, t);
-*/
+
       return;
     }
 
@@ -108,15 +132,13 @@ export const useLogin = () => {
       const user: User = userFromJwtToken(token);
       storageUserOps.write(user);
       setUser(user);
-/*
+
       saveUserPermissions(dispatch, addError, t);
-*/
     } else {
       // Otherwise, set the user to the one stored in the storage
       setUser(sessionStorageUser);
-/*
+
       saveUserPermissions(dispatch, addError, t);
-*/
     }
   };
 

@@ -110,3 +110,35 @@ export const formatDate = (date: Date | undefined) => {
   }
   return '';
 };
+
+export const formatFileName = (name: string | undefined): string => {
+    if (typeof name === 'string' && name.length > 15) {
+        const nameArr = name.split('.');
+        const fileExtension = nameArr[nameArr.length - 1];
+        const truncatedName = name.substring(0, 10);
+        return `${truncatedName}... .${fileExtension}`;
+    } else if (typeof name === 'string' && name.length <= 15) {
+        return name;
+    }
+    return '';
+};
+
+export const initUploadBoxStyle = {
+    gridColumn: 'span 12',
+    alignItems: 'center',
+    justifyItems: 'center',
+    width: '100%',
+    border: '1px dashed #0073E6',
+    borderRadius: '10px',
+    backgroundColor: 'rgba(0, 115, 230, 0.08)',
+    p: 3,
+};
+
+export const initUploadHelperBoxStyle = {
+    gridColumn: 'span 12',
+    alignItems: 'center',
+    justifyItems: 'start',
+    width: '100%',
+    py: 1,
+    px: 3,
+};

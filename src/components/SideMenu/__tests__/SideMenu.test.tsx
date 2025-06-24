@@ -16,7 +16,7 @@ describe('Test suite for SideMenu component', () => {
 
   test('User clicks the link to home page', async () => {
     const { history } = renderWithContext(<SideMenu />);
-    const link = await screen.findByText('pages.panoramica.title');
+    const link = await screen.findByText('pages.overview.overviewTitle');
     const user = userEvent.setup();
     await user.click(link);
     await waitFor(() => expect(history.location.pathname === ROUTES.HOME).toBeTruthy());

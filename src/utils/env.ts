@@ -18,6 +18,14 @@ export const ENV = {
     ASSISTANCE_ASSET_REGISTER: env.get('REACT_APP_URL_FE_ASSISTANCE_ASSET_REGISTER').required().asString(),
   },
 
+  URL_API: {
+    ROLE_PERMISSION: env.get('REACT_APP_URL_API_ROLE_PERMISSION').required().asString(),
+  },
+
+  API_TIMEOUT_MS: {
+    ROLE_PERMISSION: env.get('REACT_APP_API_ROLE_PERMISSION_TIMEOUT_MS').required().asInt(),
+  },
+
   URL_INSTITUTION_LOGO: {
     PREFIX: env.get('REACT_APP_URL_INSTITUTION_LOGO_PREFIX').required().asString(),
     SUFFIX: env.get('REACT_APP_URL_INSTITUTION_LOGO_SUFFIX').required().asString(),
