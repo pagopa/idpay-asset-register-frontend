@@ -28,14 +28,23 @@ import ProductsDrawer from './productdrawer';
 import { Data, EnhancedTableProps, HeadCell, getComparator, Order, DataProp } from './helpers';
 import mockdata from './mockdata.json';
 
+const sanitizedData = (arr: Array<DataProp>) =>
+  arr.map((item) => ({
+    ...item,
+    categoria: item.categoria || '-',
+    classe_energetica: item.classe_energetica || '-',
+    codice_eprel: item.codice_eprel || '-',
+    codice_gtinean: item.codice_gtinean || '-',
+    lotto: item.lotto || '-',
+  }));
+
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
   const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
-  const { t } = useTranslation();
 
-  // push di test
+  const { t } = useTranslation();
 
   const headCells: ReadonlyArray<HeadCell> = [
     {
@@ -115,8 +124,7 @@ const Prodotti = () => {
   const [manufacturerFilter, setManufacturerFilter] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<DataProp>({});
-  const [mockedData, setMockedData] = useState<Array<any>>([...mockdata]);
-  console.log('§O===>', { mockedData });
+  const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(mockdata));
 
   const categories = [...new Set(mockedData.map((item) => item.categoria))];
   const branches = [...new Set(mockedData.map((item) => item.lotto))];
@@ -186,7 +194,6 @@ const Prodotti = () => {
   };
 
   const handleListButtonClick = (row: any) => {
-    console.log(row);
     setDrawerData(row);
     setDrawerOpened(true);
   };
