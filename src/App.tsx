@@ -1,10 +1,10 @@
-import { Route, Routes, Navigate, useLocation} from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import {
-    ErrorBoundary,
-    LoadingOverlay,
-    UnloadEventHandler,
-    UserNotifyHandle
-} from "@pagopa/selfcare-common-frontend/lib";
+  ErrorBoundary,
+  LoadingOverlay,
+  UnloadEventHandler,
+  UserNotifyHandle,
+} from '@pagopa/selfcare-common-frontend/lib';
 import withSelectedPartyProducts from './decorators/withSelectedPartyProducts';
 import withLogin from './decorators/withLogin';
 import Layout from './components/Layout/Layout';
@@ -13,6 +13,8 @@ import TOSWall from './components/TOS/TOSWall';
 import TOSLayout from './components/TOSLayout/TOSLayout';
 import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
+import Prodotti from './pages/prodotti/prodotti';
+import Caricamenti from './pages/caricamenti/caricamenti';
 import Panoramica from './pages/panoramica/panoramica';
 import TOS from "./pages/tos/TOS";
 import PrivacyPolicy from "./pages/privacyPolicy/PrivacyPolicy";
@@ -49,11 +51,13 @@ const SecuredRoutes = withLogin(
     return (
       <Layout>
         <Routes>
-            <Route path={routes.HOME} element={ <Panoramica /> } />
-            <Route path={routes.ADD_PRODUCTS} element={ <AddProducts /> } />
-            <Route path={routes.TOS} element={ <TOS /> } />
-            <Route path={routes.PRIVACY_POLICY} element={ <PrivacyPolicy /> } />
-            <Route path="*" element={ <Navigate to={routes.HOME} /> } />
+          <Route path={routes.HOME} element={<Panoramica />} />
+          <Route path={routes.ADD_PRODUCTS} element={ <AddProducts /> } />
+          <Route path={routes.PRODUCTS} element={<Prodotti />} />
+          <Route path={routes.UPLOADS} element={<Caricamenti />} />
+          <Route path={routes.TOS} element={<TOS />} />
+          <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
+          <Route path="*" element={<Navigate to={routes.HOME} />} />
         </Routes>
       </Layout>
     );
@@ -66,8 +70,8 @@ const App = () => (
     <UserNotifyHandle />
     <UnloadEventHandler />
     <Routes>
-        <Route path={routes.AUTH} element={ <Auth /> }/>
-        <Route path="*" element={ <SecuredRoutes /> }/>
+      <Route path={routes.AUTH} element={<Auth />} />
+      <Route path="*" element={<SecuredRoutes />} />
     </Routes>
   </ErrorBoundary>
 );

@@ -118,7 +118,7 @@
   "roles": {
     "admin": "Amministratore",
     "operatore": "Operatore",
-    "invitalia":  "Operatore"
+    "invitalia": "Operatore"
   },
   "session": {
     "expired": {
