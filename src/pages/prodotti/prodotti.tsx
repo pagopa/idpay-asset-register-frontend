@@ -236,8 +236,15 @@ const Prodotti = () => {
       />
 
       {mockedData.length > 0 && (
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, mb: 1 }}>
-          <FormControl fullWidth>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 1,
+            mb: 1,
+          }}
+        >
+          <FormControl fullWidth size="small">
             <InputLabel id="category-filter-select-label">
               {t('pages.prodotti.filterLabels.category')}
             </InputLabel>
@@ -256,7 +263,7 @@ const Prodotti = () => {
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth>
+          <FormControl fullWidth size="small">
             <InputLabel id="branch-filter-select-label">
               {t('pages.prodotti.filterLabels.branch')}
             </InputLabel>
@@ -275,16 +282,20 @@ const Prodotti = () => {
               ))}
             </Select>
           </FormControl>
+
           <TextField
             sx={{ minWidth: 175 }}
+            size="small"
             id="eprel-code-text"
             label={t('pages.prodotti.filterLabels.eprelCode')}
             variant="outlined"
             value={eprelCodeFilter}
             onChange={handleEprelCodeFilterChange}
           />
+
           <TextField
             sx={{ minWidth: 175 }}
+            size="small"
             id="gtin-code-text"
             label={t('pages.prodotti.filterLabels.gtinCode')}
             variant="outlined"
@@ -293,6 +304,7 @@ const Prodotti = () => {
           />
           <TextField
             sx={{ minWidth: 175 }}
+            size="small"
             id="manufacturer-code-text"
             label={t('pages.prodotti.filterLabels.manufacturerCode')}
             variant="outlined"
@@ -302,7 +314,7 @@ const Prodotti = () => {
           <Button
             disabled={noFilterSetted()}
             variant="outlined"
-            sx={{ height: 60, minWidth: 100 }}
+            sx={{ height: 44, minWidth: 100 }}
             onClick={handleFilterButtonClick}
           >
             {t('pages.prodotti.filterLabels.filter')}
@@ -310,7 +322,7 @@ const Prodotti = () => {
           <Button
             disabled={noFilterSetted()}
             variant="text"
-            sx={{ height: 60, minWidth: 140 }}
+            sx={{ height: 44, minWidth: 140 }}
             onClick={handleDeleteFiltersButtonClick}
           >
             {t('pages.prodotti.filterLabels.deleteFilters')}
