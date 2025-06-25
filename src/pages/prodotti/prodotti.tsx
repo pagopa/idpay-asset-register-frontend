@@ -272,7 +272,7 @@ const Prodotti = () => {
           </Button>
           <Button
             disabled={noFilterSetted()}
-            variant={noFilterSetted() ? 'text' : 'outlined'}
+            variant="text"
             sx={{ height: 60, width: 200, ml: '6px' }}
             onClick={handleDeleteFiltersButtonClick}
           >
