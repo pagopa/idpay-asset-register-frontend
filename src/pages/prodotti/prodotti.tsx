@@ -2,9 +2,10 @@ import React, { useState, useMemo } from 'react';
 import {
   Box,
   Paper,
-  TextField,
-  Autocomplete,
   Button,
+  InputLabel,
+  FormControl,
+  MenuItem,
   Table,
   TableContainer,
   TableBody,
@@ -13,9 +14,11 @@ import {
   TableCell,
   TableSortLabel,
   TablePagination,
+  TextField,
 } from '@mui/material';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+// import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +31,7 @@ import {
   HeadCell,
   getComparator,
   Order,
-  Value,
+  // Value,
   DataProp,
 } from './helpers';
 import mockdata from './mockdata.json';
@@ -36,7 +39,7 @@ import mockdata from './mockdata.json';
 const mockedData: Array<any> = [...mockdata];
 
 const categories = [...new Set(mockedData.map((item) => item.categoria))];
-const batches = [...new Set(mockedData.map((item) => item.lotto))];
+const branches = [...new Set(mockedData.map((item) => item.lotto))];
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
@@ -118,8 +121,8 @@ const Prodotti = () => {
   const [orderBy, setOrderBy] = useState<keyof Data>('categoria');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-  const [branchFilter, setBranchFilter] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [branchFilter, setBranchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
   const [manufacturerFilter, setManufacturerFilter] = useState<string>('');
@@ -148,22 +151,12 @@ const Prodotti = () => {
     setPage(0);
   };
 
-  const handleCategoryFilterChange = (
-    event: React.SyntheticEvent,
-    value: Value | null,
-    reason: string
-  ) => {
-    console.log(event, reason);
-    setCategoryFilter(value);
+  const handleCategoryFilterChange = (event: SelectChangeEvent) => {
+    setCategoryFilter(event.target.value as string);
   };
 
-  const handleCategoryBranchChange = (
-    event: React.SyntheticEvent,
-    value: Value | null,
-    reason: string
-  ) => {
-    console.log(event, reason);
-    setBranchFilter(value);
+  const handleCategoryBranchChange = (event: SelectChangeEvent) => {
+    setBranchFilter(event.target.value as string);
   };
 
   const handleEprelCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,8 +172,8 @@ const Prodotti = () => {
   };
 
   const handleDeleteFiltersButtonClick = () => {
-    setCategoryFilter(null);
-    setBranchFilter(null);
+    setCategoryFilter('');
+    setBranchFilter('');
     setEprelCodeFilter('');
     setGtinCodeFilter('');
     setManufacturerFilter('');
@@ -193,8 +186,8 @@ const Prodotti = () => {
   };
 
   const noFilterSetted = (): boolean =>
-    categoryFilter === null &&
-    branchFilter === null &&
+    categoryFilter === '' &&
+    branchFilter === '' &&
     eprelCodeFilter === '' &&
     gtinCodeFilter === '' &&
     manufacturerFilter === '';
@@ -206,6 +199,14 @@ const Prodotti = () => {
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [order, orderBy, page, rowsPerPage]
   );
+
+  const selectMenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: 250,
+      },
+    },
+  };
 
   return (
     <Box width="100%" px={2}>
@@ -221,30 +222,47 @@ const Prodotti = () => {
       />
 
       {mockedData.length > 0 && (
-        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
-          <Autocomplete
-            disablePortal
-            options={categories}
-            sx={{ height: 100, width: 200, mr: 1 }}
-            renderInput={(params) => (
-              <TextField {...params} label={t('pages.prodotti.filterLabels.category')} />
-            )}
-            popupIcon={<ArrowDropDownIcon />}
-            value={categoryFilter}
-            onChange={handleCategoryFilterChange}
-          />
-          <Autocomplete
-            disablePortal
-            options={batches}
-            sx={{ width: 300, mr: 1 }}
-            renderInput={(params) => (
-              <TextField {...params} label={t('pages.prodotti.filterLabels.branch')} />
-            )}
-            value={branchFilter}
-            onChange={handleCategoryBranchChange}
-          />
+        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, mb: 1 }}>
+          <FormControl fullWidth>
+            <InputLabel id="category-filter-select-label">
+              {t('pages.prodotti.filterLabels.category')}
+            </InputLabel>
+            <Select
+              labelId="category-filter-select-label"
+              id="category-filter-select"
+              value={categoryFilter}
+              label={t('pages.prodotti.filterLabels.category')}
+              MenuProps={selectMenuProps}
+              onChange={handleCategoryFilterChange}
+            >
+              {categories.map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="branch-filter-select-label">
+              {t('pages.prodotti.filterLabels.branch')}
+            </InputLabel>
+            <Select
+              labelId="branch-filter-select-label"
+              id="branch-filter-select"
+              value={branchFilter}
+              label={t('pages.prodotti.filterLabels.branch')}
+              MenuProps={selectMenuProps}
+              onChange={handleCategoryBranchChange}
+            >
+              {branches.map((branch) => (
+                <MenuItem key={branch} value={branch}>
+                  {branch}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
-            sx={{ mr: 1 }}
+            sx={{ minWidth: 175 }}
             id="eprel-code-text"
             label={t('pages.prodotti.filterLabels.eprelCode')}
             variant="outlined"
@@ -252,7 +270,7 @@ const Prodotti = () => {
             onChange={handleEprelCodeFilterChange}
           />
           <TextField
-            sx={{ mr: 1 }}
+            sx={{ minWidth: 175 }}
             id="gtin-code-text"
             label={t('pages.prodotti.filterLabels.gtinCode')}
             variant="outlined"
@@ -260,20 +278,20 @@ const Prodotti = () => {
             onChange={handleGtinCodeFilterChange}
           />
           <TextField
-            sx={{ mr: 1 }}
+            sx={{ minWidth: 175 }}
             id="manufacturer-code-text"
             label={t('pages.prodotti.filterLabels.manufacturerCode')}
             variant="outlined"
             value={manufacturerFilter}
             onChange={handleManufacturerFilterChange}
           />
-          <Button disabled={noFilterSetted()} variant="outlined" sx={{ height: 60 }}>
+          <Button disabled={noFilterSetted()} variant="outlined" sx={{ height: 60, minWidth: 100 }}>
             {t('pages.prodotti.filterLabels.filter')}
           </Button>
           <Button
             disabled={noFilterSetted()}
             variant="text"
-            sx={{ height: 60, width: 200, ml: '6px' }}
+            sx={{ height: 60, minWidth: 140 }}
             onClick={handleDeleteFiltersButtonClick}
           >
             {t('pages.prodotti.filterLabels.deleteFilters')}
