@@ -3,6 +3,7 @@ export interface Data {
   classe_energetica: string;
   codice_eprel: string;
   codice_gtinean: string;
+  codice_produttore: string;
   lotto: string;
   id: number;
 }
@@ -58,12 +59,14 @@ export interface EnhancedTableProps {
 }
 
 export interface DataProp {
+  id?: number;
   categoria?: string;
   classe_energetica?: string;
   codice_eprel?: string;
   codice_gtinean?: string;
   lotto?: string;
   codice_prodotto?: string;
+  codice_produttore?: string;
   marca?: string;
   modello?: string;
   origine?: string;

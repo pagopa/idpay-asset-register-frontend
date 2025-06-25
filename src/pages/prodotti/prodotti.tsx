@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Paper,
@@ -25,21 +25,8 @@ import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import EmptyList from '../components/EmptyList';
 import ProductsDrawer from './productdrawer';
-import {
-  Data,
-  EnhancedTableProps,
-  HeadCell,
-  getComparator,
-  Order,
-  // Value,
-  DataProp,
-} from './helpers';
+import { Data, EnhancedTableProps, HeadCell, getComparator, Order, DataProp } from './helpers';
 import mockdata from './mockdata.json';
-
-const mockedData: Array<any> = [...mockdata];
-
-const categories = [...new Set(mockedData.map((item) => item.categoria))];
-const branches = [...new Set(mockedData.map((item) => item.lotto))];
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
@@ -128,8 +115,38 @@ const Prodotti = () => {
   const [manufacturerFilter, setManufacturerFilter] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<DataProp>({});
+  const [mockedData, setMockedData] = useState<Array<any>>([...mockdata]);
+  console.log('§O===>', { mockedData });
+
+  const categories = [...new Set(mockedData.map((item) => item.categoria))];
+  const branches = [...new Set(mockedData.map((item) => item.lotto))];
 
   const { t } = useTranslation();
+
+  const handleFilterButtonClick = () => {
+    const filteredByCategory = [
+      ...mockedData.filter((item) => !categoryFilter || item.categoria === categoryFilter),
+    ];
+    const filteredByBranch = [
+      ...filteredByCategory.filter((item) => !branchFilter || item.lotto === branchFilter),
+    ];
+    const filteredByEprelCode = [
+      ...filteredByBranch.filter(
+        (item) => !eprelCodeFilter || item.codice_eprel?.includes(eprelCodeFilter)
+      ),
+    ];
+    const filteredByGtinCode = [
+      ...filteredByEprelCode.filter(
+        (item) => !gtinCodeFilter || item.codice_gtinean?.includes(gtinCodeFilter)
+      ),
+    ];
+    const filteredByManufacturer = [
+      ...filteredByGtinCode.filter(
+        (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
+      ),
+    ];
+    setMockedData([...filteredByManufacturer]);
+  };
 
   const handleToggleDrawer = (newOpen: boolean) => {
     setDrawerOpened(newOpen);
@@ -177,6 +194,7 @@ const Prodotti = () => {
     setEprelCodeFilter('');
     setGtinCodeFilter('');
     setManufacturerFilter('');
+    setMockedData([...mockdata]);
   };
 
   const handleListButtonClick = (row: any) => {
@@ -192,13 +210,9 @@ const Prodotti = () => {
     gtinCodeFilter === '' &&
     manufacturerFilter === '';
 
-  const visibleRows = useMemo(
-    () =>
-      [...mockedData]
-        .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
-  );
+  const visibleRows = [...mockedData]
+    .sort(getComparator(order, orderBy))
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const selectMenuProps = {
     PaperProps: {
@@ -285,7 +299,12 @@ const Prodotti = () => {
             value={manufacturerFilter}
             onChange={handleManufacturerFilterChange}
           />
-          <Button disabled={noFilterSetted()} variant="outlined" sx={{ height: 60, minWidth: 100 }}>
+          <Button
+            disabled={noFilterSetted()}
+            variant="outlined"
+            sx={{ height: 60, minWidth: 100 }}
+            onClick={handleFilterButtonClick}
+          >
             {t('pages.prodotti.filterLabels.filter')}
           </Button>
           <Button
