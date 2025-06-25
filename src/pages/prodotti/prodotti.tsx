@@ -124,28 +124,16 @@ const Prodotti = () => {
   const { t } = useTranslation();
 
   const handleFilterButtonClick = () => {
-    const filteredByCategory = [
-      ...mockedData.filter((item) => !categoryFilter || item.categoria === categoryFilter),
-    ];
-    const filteredByBranch = [
-      ...filteredByCategory.filter((item) => !branchFilter || item.lotto === branchFilter),
-    ];
-    const filteredByEprelCode = [
-      ...filteredByBranch.filter(
-        (item) => !eprelCodeFilter || item.codice_eprel?.includes(eprelCodeFilter)
-      ),
-    ];
-    const filteredByGtinCode = [
-      ...filteredByEprelCode.filter(
-        (item) => !gtinCodeFilter || item.codice_gtinean?.includes(gtinCodeFilter)
-      ),
-    ];
-    const filteredByManufacturer = [
-      ...filteredByGtinCode.filter(
-        (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
-      ),
-    ];
-    setMockedData([...filteredByManufacturer]);
+    setMockedData(
+      mockedData
+        .filter((item) => !categoryFilter || item.categoria === categoryFilter)
+        .filter((item) => !branchFilter || item.lotto === branchFilter)
+        .filter((item) => !eprelCodeFilter || item.codice_eprel?.includes(eprelCodeFilter))
+        .filter((item) => !gtinCodeFilter || item.codice_gtinean?.includes(gtinCodeFilter))
+        .filter(
+          (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
+        )
+    );
   };
 
   const handleToggleDrawer = (newOpen: boolean) => {
