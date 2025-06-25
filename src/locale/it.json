@@ -113,6 +113,30 @@
           }
         }
       }
+    },
+    "prodotti": {
+      "sideMenuTitle": "Prodotti",
+      "title": "Prodotti",
+      "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
+      "filterLabels": {
+        "category": "Categoria",
+        "branch": "Lotto",
+        "eprelCode": "Codice EPREL",
+        "gtinCode": "Codice GTIN",
+        "manufacturerCode": "Codice produttore",
+        "filter": "Filtra",
+        "deleteFilters": "Rimuovi filtri"
+      },
+      "listHeader": {
+        "category": "Categoria",
+        "energeticClass": "Classe energetica",
+        "eprelCode": "Codice Eprel",
+        "gtinCode": "Codice GTIN/EAN",
+        "branch": "Lotto"
+      }
+    },
+    "storicoCaricamenti": {
+      "sideMenuTitle": "Storico caricamenti"
     }
   },
   "roles": {

@@ -227,7 +227,7 @@ const Prodotti = () => {
             options={categories}
             sx={{ height: 100, width: 200, mr: 1 }}
             renderInput={(params) => (
-              <TextField {...params} label={t('pages.prodotti.filter-labels.category')} />
+              <TextField {...params} label={t('pages.prodotti.filterLabels.category')} />
             )}
             popupIcon={<ArrowDropDownIcon />}
             value={categoryFilter}
@@ -238,7 +238,7 @@ const Prodotti = () => {
             options={batches}
             sx={{ width: 300, mr: 1 }}
             renderInput={(params) => (
-              <TextField {...params} label={t('pages.prodotti.filter-labels.branch')} />
+              <TextField {...params} label={t('pages.prodotti.filterLabels.branch')} />
             )}
             value={branchFilter}
             onChange={handleCategoryBranchChange}
@@ -246,7 +246,7 @@ const Prodotti = () => {
           <TextField
             sx={{ mr: 1 }}
             id="eprel-code-text"
-            label={t('pages.prodotti.filter-labels.eprelCode')}
+            label={t('pages.prodotti.filterLabels.eprelCode')}
             variant="outlined"
             value={eprelCodeFilter}
             onChange={handleEprelCodeFilterChange}
@@ -254,7 +254,7 @@ const Prodotti = () => {
           <TextField
             sx={{ mr: 1 }}
             id="gtin-code-text"
-            label={t('pages.prodotti.filter-labels.gtinCode')}
+            label={t('pages.prodotti.filterLabels.gtinCode')}
             variant="outlined"
             value={gtinCodeFilter}
             onChange={handleGtinCodeFilterChange}
@@ -262,13 +262,13 @@ const Prodotti = () => {
           <TextField
             sx={{ mr: 1 }}
             id="manufacturer-code-text"
-            label={t('pages.prodotti.filter-labels.manufacturerCode')}
+            label={t('pages.prodotti.filterLabels.manufacturerCode')}
             variant="outlined"
             value={manufacturerFilter}
             onChange={handleManufacturerFilterChange}
           />
           <Button disabled={noFilterSetted()} variant="outlined" sx={{ height: 60 }}>
-            {t('pages.prodotti.filter-labels.filter')}
+            {t('pages.prodotti.filterLabels.filter')}
           </Button>
           <Button
             disabled={noFilterSetted()}
@@ -276,7 +276,7 @@ const Prodotti = () => {
             sx={{ height: 60, width: 200, ml: '6px' }}
             onClick={handleDeleteFiltersButtonClick}
           >
-            {t('pages.prodotti.filter-labels.deleteFilters')}
+            {t('pages.prodotti.filterLabels.deleteFilters')}
           </Button>
         </Box>
       )}
