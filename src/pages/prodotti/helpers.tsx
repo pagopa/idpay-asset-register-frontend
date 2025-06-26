@@ -4,7 +4,7 @@ export interface Data {
   eprelCode: string;
   gtinCode: string;
   codice_produttore: string;
-  lotto: string;
+  branchName: string;
   id: number;
 }
 
@@ -64,7 +64,7 @@ export interface DataProp {
   energyClass?: string;
   eprelCode?: string;
   gtinCode?: string;
-  lotto?: string;
+  branchName?: string;
   codice_prodotto?: string;
   codice_produttore?: string;
   marca?: string;

@@ -15,7 +15,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           <Box sx={{ fontSize: '150%', fontWeight: 'bold', mb: 1, ml: 2 }}>Dettaglio prodotto</Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ fontWeight: 'bold', mb: 1 }}>{props.data.lotto}</Box>
+          <Box sx={{ fontWeight: 'bold', mb: 1 }}>{props.data.branchName}</Box>
         </ListItem>
         <Divider sx={{ mb: 2 }} />
 

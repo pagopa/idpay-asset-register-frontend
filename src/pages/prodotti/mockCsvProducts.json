@@ -1,11 +1,11 @@
 [
   {
     "id": 0,
-    "categoria": "Lavatrice",
+    "category": "Lavatrice",
     "energyClass": "A",
     "eprelCode": "1234567890",
     "gtinCode": "3001234567892",
-    "lotto": "32675198_lavatrici_1.csv"
+    "branchName": "32675198_lavatrici_1.csv"
   },
   {
     "id": 1,
@@ -15,24 +15,24 @@
   },
   {
     "id": 2,
-    "categoria": "Asciugatrice",
+    "category": "Asciugatrice",
     "energyClass": "A++",
     "eprelCode": "4567890123",
     "gtinCode": "3001234567895",
-    "lotto": "32675198_asciugatrici_4.csv"
+    "branchName": "32675198_asciugatrici_4.csv"
   },
   {
     "id": 3,
     "energyClass": "A+",
     "eprelCode": "5678901234",
-    "lotto": "32675198_forni_5.csv"
+    "branchName": "32675198_forni_5.csv"
   },
   {
     "id": 4,
-    "categoria": "Microonde",
+    "category": "Microonde",
     "energyClass": "B",
     "gtinCode": "3001234567897",
-    "lotto": "32675198_microonde_6.csv"
+    "branchName": "32675198_microonde_6.csv"
   },
   {
     "id": 5,
@@ -41,26 +41,26 @@
   },
   {
     "id": 6,
-    "categoria": "Aspirapolvere",
+    "category": "Aspirapolvere",
     "energyClass": "C",
     "eprelCode": "8901234567",
     "gtinCode": "3001234567899",
-    "lotto": "32675198_aspirapolvere_8.csv"
+    "branchName": "32675198_aspirapolvere_8.csv"
   },
   {
     "id": 7,
-    "categoria": "Televisore",
+    "category": "Televisore",
     "energyClass": "A",
     "eprelCode": "9012345678",
-    "lotto": "32675198_tv_9.csv"
+    "branchName": "32675198_tv_9.csv"
   },
   {
     "id": 8,
-    "categoria": "Condizionatore",
+    "category": "Condizionatore",
     "energyClass": "A++",
     "eprelCode": "1123456789",
     "gtinCode": "3001234567801",
-    "lotto": "32675198_condizionatori_10.csv"
+    "branchName": "32675198_condizionatori_10.csv"
   },
   {
     "id": 9,
@@ -70,55 +70,55 @@
   },
   {
     "id": 10,
-    "categoria": "Ventilatore",
+    "category": "Ventilatore",
     "energyClass": "C",
-    "lotto": "32675198_ventilatori_12.csv"
+    "branchName": "32675198_ventilatori_12.csv"
   },
   {
     "id": 11,
-    "categoria": "Stufa",
+    "category": "Stufa",
     "eprelCode": "4456789012",
     "gtinCode": "3001234567804",
-    "lotto": "32675198_stufe_13.csv"
+    "branchName": "32675198_stufe_13.csv"
   },
   {
     "id": 12,
-    "categoria": "Ferro da stiro",
+    "category": "Ferro da stiro",
     "energyClass": "B",
     "eprelCode": "5567890123",
     "gtinCode": "3001234567805",
-    "lotto": "32675198_ferri_14.csv"
+    "branchName": "32675198_ferri_14.csv"
   },
   {
     "id": 13,
-    "categoria": "Macchina caffè",
+    "category": "Macchina caffè",
     "energyClass": "A",
     "eprelCode": "6678901234",
     "gtinCode": "3001234567806",
-    "lotto": "32675198_caffe_15.csv"
+    "branchName": "32675198_caffe_15.csv"
   },
   {
     "id": 14,
-    "categoria": "Tostapane",
+    "category": "Tostapane",
     "gtinCode": "3001234567807",
-    "lotto": "32675198_tostapane_16.csv"
+    "branchName": "32675198_tostapane_16.csv"
   },
   {
     "id": 15,
     "energyClass": "A+",
     "eprelCode": "8890123456",
     "gtinCode": "3001234567808",
-    "lotto": "32675198_frullatori_17.csv"
+    "branchName": "32675198_frullatori_17.csv"
   },
   {
     "id": 16,
-    "categoria": "Robot cucina",
+    "category": "Robot cucina",
     "eprelCode": "9901234567",
     "gtinCode": "3001234567809"
   },
   {
     "id": 17,
-    "categoria": "Piastra elettrica",
+    "category": "Piastra elettrica",
     "energyClass": "A",
     "gtinCode": "3001234567810"
   },
@@ -129,20 +129,20 @@
   },
   {
     "id": 19,
-    "categoria": "Purificatore aria",
+    "category": "Purificatore aria",
     "energyClass": "A++",
     "gtinCode": "3001234567811",
-    "lotto": "32675198_purificatori_20.csv"
+    "branchName": "32675198_purificatori_20.csv"
   },
   {
     "id": 20,
-    "categoria": "Friggitrice ad aria",
+    "category": "Friggitrice ad aria",
     "gtinCode": "3001234567812",
-    "lotto": "32675198_friggitrici_21.csv"
+    "branchName": "32675198_friggitrici_21.csv"
   },
   {
     "id": 21,
-    "categoria": "Macchina per il pane",
+    "category": "Macchina per il pane",
     "energyClass": "B",
     "eprelCode": "4234567890",
     "gtinCode": "3001234567813"
@@ -155,19 +155,19 @@
   },
   {
     "id": 23,
-    "categoria": "Centrifuga",
+    "category": "Centrifuga",
     "energyClass": "C",
     "eprelCode": "6456789012",
     "gtinCode": "3001234567815",
-    "lotto": "32675198_centrifughe_24.csv"
+    "branchName": "32675198_centrifughe_24.csv"
   },
   {
     "id": 24,
-    "categoria": "Estrattore",
+    "category": "Estrattore",
     "energyClass": "A",
     "eprelCode": "7567890123",
     "gtinCode": "3001234567816",
-    "lotto": "32675198_estrattori_25.csv"
+    "branchName": "32675198_estrattori_25.csv"
   },
   {
     "id": 25,
@@ -176,258 +176,258 @@
   },
   {
     "id": 26,
-    "categoria": "Macchina sottovuoto",
+    "category": "Macchina sottovuoto",
     "energyClass": "A+",
     "gtinCode": "3001234567818",
-    "lotto": "32675198_sottovuoto_27.csv"
+    "branchName": "32675198_sottovuoto_27.csv"
   },
   {
     "id": 27,
-    "categoria": "Affettatrice",
+    "category": "Affettatrice",
     "energyClass": "C",
     "eprelCode": "1090123456",
     "gtinCode": "3001234567819",
-    "lotto": "32675198_affettatrici_28.csv"
+    "branchName": "32675198_affettatrici_28.csv"
   },
   {
     "id": 28,
-    "categoria": "Spremiagrumi",
+    "category": "Spremiagrumi",
     "energyClass": "A",
     "eprelCode": "2101234567",
     "gtinCode": "3001234567820",
-    "lotto": "32675198_spremiagrumi_29.csv"
+    "branchName": "32675198_spremiagrumi_29.csv"
   },
   {
     "id": 29,
-    "categoria": "Macchina popcorn",
+    "category": "Macchina popcorn",
     "energyClass": "B",
     "eprelCode": "3212345678",
     "gtinCode": "3001234567821",
-    "lotto": "32675198_popcorn_30.csv"
+    "branchName": "32675198_popcorn_30.csv"
   },
   {
     "id": 30,
-    "categoria": "Gelatiera",
+    "category": "Gelatiera",
     "energyClass": "A++",
     "eprelCode": "4323456789",
     "gtinCode": "3001234567822",
-    "lotto": "32675198_gelatiere_31.csv"
+    "branchName": "32675198_gelatiere_31.csv"
   },
   {
     "id": 31,
-    "categoria": "Cuociriso",
+    "category": "Cuociriso",
     "eprelCode": "5434567890",
     "gtinCode": "3001234567823",
-    "lotto": "32675198_cuociriso_32.csv"
+    "branchName": "32675198_cuociriso_32.csv"
   },
   {
     "id": 32,
-    "categoria": "Bollitore",
+    "category": "Bollitore",
     "energyClass": "A+",
     "eprelCode": "6545678901",
     "gtinCode": "3001234567824",
-    "lotto": "32675198_bollitori_33.csv"
+    "branchName": "32675198_bollitori_33.csv"
   },
   {
     "id": 33,
-    "categoria": "Macchina zucchero filato",
+    "category": "Macchina zucchero filato",
     "energyClass": "B",
     "gtinCode": "3001234567825",
-    "lotto": "32675198_zuccherofilato_34.csv"
+    "branchName": "32675198_zuccherofilato_34.csv"
   },
   {
     "id": 34,
-    "categoria": "Piastra waffle",
+    "category": "Piastra waffle",
     "energyClass": "A",
     "eprelCode": "8767890123",
     "gtinCode": "3001234567826"
   },
   {
     "id": 35,
-    "categoria": "Tritatutto",
+    "category": "Tritatutto",
     "eprelCode": "9878901234",
     "gtinCode": "3001234567827",
-    "lotto": "32675198_tritatutto_36.csv"
+    "branchName": "32675198_tritatutto_36.csv"
   },
   {
     "id": 36,
-    "categoria": "Sbattitore",
+    "category": "Sbattitore",
     "energyClass": "C",
     "eprelCode": "1989012345",
     "gtinCode": "3001234567828",
-    "lotto": "32675198_sbattitori_37.csv"
+    "branchName": "32675198_sbattitori_37.csv"
   },
   {
     "id": 37,
-    "categoria": "Friggitrice",
+    "category": "Friggitrice",
     "energyClass": "A+",
     "eprelCode": "2090123456",
     "gtinCode": "3001234567829",
-    "lotto": "32675198_friggitrice_38.csv"
+    "branchName": "32675198_friggitrice_38.csv"
   },
   {
     "id": 38,
-    "categoria": "Piastra panini",
+    "category": "Piastra panini",
     "energyClass": "B",
-    "lotto": "32675198_panini_39.csv"
+    "branchName": "32675198_panini_39.csv"
   },
   {
     "id": 39,
-    "categoria": "Forno pizza",
+    "category": "Forno pizza",
     "energyClass": "A",
     "eprelCode": "4212345678",
-    "lotto": "32675198_pizza_40.csv"
+    "branchName": "32675198_pizza_40.csv"
   },
   {
     "id": 40,
-    "categoria": "Tostiera",
+    "category": "Tostiera",
     "energyClass": "A+",
     "eprelCode": "5323456789",
     "gtinCode": "3001234567832",
-    "lotto": "32675198_tostiera_41.csv"
+    "branchName": "32675198_tostiera_41.csv"
   },
   {
     "id": 41,
-    "categoria": "Macchina per hot dog",
+    "category": "Macchina per hot dog",
     "eprelCode": "6434567890",
     "gtinCode": "3001234567833",
-    "lotto": "32675198_hotdog_42.csv"
+    "branchName": "32675198_hotdog_42.csv"
   },
   {
     "id": 42,
-    "categoria": "Caffettiera americana",
+    "category": "Caffettiera americana",
     "energyClass": "A++",
     "eprelCode": "7545678901",
     "gtinCode": "3001234567834",
-    "lotto": "32675198_caffettiera_43.csv"
+    "branchName": "32675198_caffettiera_43.csv"
   },
   {
     "id": 43,
-    "categoria": "Macchina per crepes",
+    "category": "Macchina per crepes",
     "energyClass": "C",
     "eprelCode": "8656789012",
     "gtinCode": "3001234567835",
-    "lotto": "32675198_crepes_44.csv"
+    "branchName": "32675198_crepes_44.csv"
   },
   {
     "id": 44,
     "gtinCode": "3001234567836",
-    "lotto": "32675198_cuocipasta_45.csv"
+    "branchName": "32675198_cuocipasta_45.csv"
   },
   {
     "id": 45,
     "energyClass": "B",
     "gtinCode": "3001234567837",
-    "lotto": "32675198_cuocipappa_46.csv"
+    "branchName": "32675198_cuocipappa_46.csv"
   },
   {
     "id": 46,
-    "categoria": "Cuociuova",
+    "category": "Cuociuova",
     "eprelCode": "2989012345",
     "gtinCode": "3001234567838",
-    "lotto": "32675198_cuociuova_47.csv"
+    "branchName": "32675198_cuociuova_47.csv"
   },
   {
     "id": 47,
-    "categoria": "Macchina per yogurt",
+    "category": "Macchina per yogurt",
     "energyClass": "C",
     "eprelCode": "3090123456",
     "gtinCode": "3001234567839",
-    "lotto": "32675198_yogurt_48.csv"
+    "branchName": "32675198_yogurt_48.csv"
   },
   {
     "id": 48,
-    "categoria": "Macchina per pasta",
+    "category": "Macchina per pasta",
     "eprelCode": "4101234567",
-    "lotto": "32675198_pasta_49.csv"
+    "branchName": "32675198_pasta_49.csv"
   },
   {
     "id": 49,
-    "categoria": "Macchina per gnocchi",
+    "category": "Macchina per gnocchi",
     "energyClass": "B",
     "eprelCode": "5212345678"
   },
   {
     "id": 50,
-    "categoria": "Macchina per ravioli",
+    "category": "Macchina per ravioli",
     "energyClass": "A++",
     "eprelCode": "6323456789",
     "gtinCode": "3001234567842",
-    "lotto": "32675198_ravioli_51.csv"
+    "branchName": "32675198_ravioli_51.csv"
   },
   {
     "id": 51,
     "energyClass": "C",
     "eprelCode": "7434567890",
     "gtinCode": "3001234567843",
-    "lotto": "32675198_tagliatelle_52.csv"
+    "branchName": "32675198_tagliatelle_52.csv"
   },
   {
     "id": 52,
-    "categoria": "Macchina per cappuccino",
+    "category": "Macchina per cappuccino",
     "eprelCode": "8545678901",
     "gtinCode": "3001234567844",
-    "lotto": "32675198_cappuccino_53.csv"
+    "branchName": "32675198_cappuccino_53.csv"
   },
   {
     "id": 53,
     "energyClass": "B",
     "gtinCode": "3001234567845",
-    "lotto": "32675198_granite_54.csv"
+    "branchName": "32675198_granite_54.csv"
   },
   {
     "id": 54,
-    "categoria": "Macchina per birra",
+    "category": "Macchina per birra",
     "energyClass": "A",
     "gtinCode": "3001234567846",
-    "lotto": "32675198_birra_55.csv"
+    "branchName": "32675198_birra_55.csv"
   },
   {
     "id": 55,
-    "categoria": "Macchina per cocktail",
+    "category": "Macchina per cocktail",
     "energyClass": "A++",
     "eprelCode": "2878901234",
     "gtinCode": "3001234567847",
-    "lotto": "32675198_cocktail_56.csv"
+    "branchName": "32675198_cocktail_56.csv"
   },
   {
     "id": 56,
-    "categoria": "Macchina per ghiaccio",
+    "category": "Macchina per ghiaccio",
     "energyClass": "C",
     "eprelCode": "3989012345",
-    "lotto": "32675198_ghiaccio_57.csv"
+    "branchName": "32675198_ghiaccio_57.csv"
   },
   {
     "id": 57,
-    "categoria": "Macchina per zucchero filato",
+    "category": "Macchina per zucchero filato",
     "energyClass": "A+",
     "eprelCode": "4090123456",
     "gtinCode": "3001234567849",
-    "lotto": "32675198_zuccherofilato_58.csv"
+    "branchName": "32675198_zuccherofilato_58.csv"
   },
   {
     "id": 58,
-    "categoria": "Macchina per popcorn",
+    "category": "Macchina per popcorn",
     "energyClass": "B",
     "eprelCode": "5101234567",
     "gtinCode": "3001234567850",
-    "lotto": "32675198_popcorn_59.csv"
+    "branchName": "32675198_popcorn_59.csv"
   },
   {
     "id": 59,
-    "categoria": "Macchina per cioccolata",
+    "category": "Macchina per cioccolata",
     "energyClass": "A",
     "eprelCode": "6212345678",
     "gtinCode": "3001234567851",
-    "lotto": "32675198_cioccolata_60.csv"
+    "branchName": "32675198_cioccolata_60.csv"
   },
   {
     "id": 60,
-    "categoria": "Macchina per pancakes",
+    "category": "Macchina per pancakes",
     "energyClass": "A++",
     "eprelCode": "7323456789",
     "gtinCode": "3001234567852",
-    "lotto": "32675198_pancakes_61.csv"
+    "branchName": "32675198_pancakes_61.csv"
   },
   {
     "id": 61,
@@ -435,101 +435,101 @@
   },
   {
     "id": 62,
-    "categoria": "Macchina per donuts",
+    "category": "Macchina per donuts",
     "energyClass": "A+",
     "eprelCode": "9545678901",
     "gtinCode": "3001234567854"
   },
   {
     "id": 63,
-    "categoria": "Macchina per muffin",
+    "category": "Macchina per muffin",
     "energyClass": "B",
     "eprelCode": "1656789012",
-    "lotto": "32675198_muffin_64.csv"
+    "branchName": "32675198_muffin_64.csv"
   },
   {
     "id": 64,
-    "categoria": "Macchina per cupcake",
+    "category": "Macchina per cupcake",
     "energyClass": "A",
     "eprelCode": "2767890123",
     "gtinCode": "3001234567856",
-    "lotto": "32675198_cupcake_65.csv"
+    "branchName": "32675198_cupcake_65.csv"
   },
   {
     "id": 65,
-    "categoria": "Macchina per brownies",
+    "category": "Macchina per brownies",
     "energyClass": "A++",
     "eprelCode": "3878901234",
     "gtinCode": "3001234567857",
-    "lotto": "32675198_brownies_66.csv"
+    "branchName": "32675198_brownies_66.csv"
   },
   {
     "id": 66,
-    "categoria": "Macchina per biscotti",
+    "category": "Macchina per biscotti",
     "energyClass": "C",
     "eprelCode": "4989012345",
     "gtinCode": "3001234567858",
-    "lotto": "32675198_biscotti_67.csv"
+    "branchName": "32675198_biscotti_67.csv"
   },
   {
     "id": 67,
     "energyClass": "A+",
     "eprelCode": "5090123456",
-    "lotto": "32675198_pane_68.csv"
+    "branchName": "32675198_pane_68.csv"
   },
   {
     "id": 68,
-    "categoria": "Macchina per pizza",
+    "category": "Macchina per pizza",
     "energyClass": "B",
     "eprelCode": "6101234567",
     "gtinCode": "3001234567860",
-    "lotto": "32675198_pizza_69.csv"
+    "branchName": "32675198_pizza_69.csv"
   },
   {
     "id": 69,
-    "categoria": "Macchina per gnocchi",
+    "category": "Macchina per gnocchi",
     "energyClass": "A",
     "eprelCode": "7212345678",
     "gtinCode": "3001234567861",
-    "lotto": "32675198_gnocchi_70.csv"
+    "branchName": "32675198_gnocchi_70.csv"
   },
   {
     "id": 70,
-    "categoria": "Macchina per ravioli",
+    "category": "Macchina per ravioli",
     "energyClass": "A++",
     "eprelCode": "8323456789",
     "gtinCode": "3001234567862",
-    "lotto": "32675198_ravioli_71.csv"
+    "branchName": "32675198_ravioli_71.csv"
   },
   {
     "id": 71,
-    "categoria": "Macchina per tagliatelle",
+    "category": "Macchina per tagliatelle",
     "eprelCode": "9434567890",
     "gtinCode": "3001234567863",
-    "lotto": "32675198_tagliatelle_72.csv"
+    "branchName": "32675198_tagliatelle_72.csv"
   },
   {
     "id": 72,
-    "categoria": "Macchina per cappuccino",
+    "category": "Macchina per cappuccino",
     "energyClass": "A+",
     "eprelCode": "1545678901",
     "gtinCode": "3001234567864",
-    "lotto": "32675198_cappuccino_73.csv"
+    "branchName": "32675198_cappuccino_73.csv"
   },
   {
     "id": 73,
-    "categoria": "Macchina per granite",
+    "category": "Macchina per granite",
     "energyClass": "B",
     "eprelCode": "2656789012",
     "gtinCode": "3001234567865",
-    "lotto": "32675198_granite_74.csv"
+    "branchName": "32675198_granite_74.csv"
   },
   {
     "id": 74,
     "energyClass": "A",
     "eprelCode": "3767890123",
     "gtinCode": "3001234567866",
-    "lotto": "32675198_birra_75.csv"
+    "branchName": "32675198_birra_75.csv"
   },
   {
     "id": 75,
@@ -539,126 +539,126 @@
   },
   {
     "id": 76,
-    "categoria": "Macchina per ghiaccio",
+    "category": "Macchina per ghiaccio",
     "energyClass": "C",
     "eprelCode": "5989012345",
     "gtinCode": "3001234567868",
-    "lotto": "32675198_ghiaccio_77.csv"
+    "branchName": "32675198_ghiaccio_77.csv"
   },
   {
     "id": 77,
     "eprelCode": "6090123456",
     "gtinCode": "3001234567869",
-    "lotto": "32675198_zuccherofilato_78.csv"
+    "branchName": "32675198_zuccherofilato_78.csv"
   },
   {
     "id": 78,
     "energyClass": "B",
     "eprelCode": "7101234567",
     "gtinCode": "3001234567870",
-    "lotto": "32675198_popcorn_79.csv"
+    "branchName": "32675198_popcorn_79.csv"
   },
   {
     "id": 79,
-    "categoria": "Macchina per cioccolata",
+    "category": "Macchina per cioccolata",
     "energyClass": "A",
     "eprelCode": "8212345678",
     "gtinCode": "3001234567871",
-    "lotto": "32675198_cioccolata_80.csv"
+    "branchName": "32675198_cioccolata_80.csv"
   },
   {
     "id": 80,
-    "categoria": "Macchina per pancakes",
+    "category": "Macchina per pancakes",
     "energyClass": "A++",
     "eprelCode": "9323456789",
     "gtinCode": "3001234567872",
-    "lotto": "32675198_pancakes_81.csv"
+    "branchName": "32675198_pancakes_81.csv"
   },
   {
     "id": 81,
-    "categoria": "Macchina per churros",
+    "category": "Macchina per churros",
     "energyClass": "C",
     "eprelCode": "1434567890",
-    "lotto": "32675198_churros_82.csv"
+    "branchName": "32675198_churros_82.csv"
   },
   {
     "id": 82,
-    "categoria": "Macchina per donuts",
+    "category": "Macchina per donuts",
     "energyClass": "A+",
     "gtinCode": "3001234567874",
-    "lotto": "32675198_donuts_83.csv"
+    "branchName": "32675198_donuts_83.csv"
   },
   {
     "id": 83,
-    "categoria": "Macchina per muffin",
+    "category": "Macchina per muffin",
     "energyClass": "B",
     "gtinCode": "3001234567875",
-    "lotto": "32675198_muffin_84.csv"
+    "branchName": "32675198_muffin_84.csv"
   },
   {
     "id": 84,
-    "categoria": "Macchina per cupcake",
+    "category": "Macchina per cupcake",
     "energyClass": "A",
     "gtinCode": "3001234567876"
   },
   {
     "id": 85,
-    "categoria": "Macchina per brownies",
+    "category": "Macchina per brownies",
     "energyClass": "A++",
     "eprelCode": "5878901234"
   },
   {
     "id": 86,
-    "categoria": "Macchina per biscotti",
+    "category": "Macchina per biscotti",
     "eprelCode": "6989012345",
     "gtinCode": "3001234567878",
-    "lotto": "32675198_biscotti_87.csv"
+    "branchName": "32675198_biscotti_87.csv"
   },
   {
     "id": 87,
-    "categoria": "Macchina per pane",
+    "category": "Macchina per pane",
     "energyClass": "A+",
     "eprelCode": "7090123456",
-    "lotto": "32675198_pane_88.csv"
+    "branchName": "32675198_pane_88.csv"
   },
   {
     "id": 88,
-    "categoria": "Macchina per pizza",
+    "category": "Macchina per pizza",
     "energyClass": "B",
     "eprelCode": "8101234567",
-    "lotto": "32675198_pizza_89.csv"
+    "branchName": "32675198_pizza_89.csv"
   },
   {
     "id": 89,
-    "categoria": "Macchina per gnocchi",
+    "category": "Macchina per gnocchi",
     "eprelCode": "9212345678",
-    "lotto": "32675198_gnocchi_90.csv"
+    "branchName": "32675198_gnocchi_90.csv"
   },
   {
     "id": 90,
-    "categoria": "Macchina per ravioli",
+    "category": "Macchina per ravioli",
     "energyClass": "A++",
     "eprelCode": "1323456789",
     "gtinCode": "3001234567882",
-    "lotto": "32675198_ravioli_91.csv"
+    "branchName": "32675198_ravioli_91.csv"
   },
   {
     "id": 91,
-    "categoria": "Macchina per tagliatelle",
+    "category": "Macchina per tagliatelle",
     "energyClass": "C",
     "eprelCode": "2434567890"
   },
   {
     "id": 92,
-    "categoria": "Macchina per cappuccino",
+    "category": "Macchina per cappuccino",
     "energyClass": "A+"
   },
   {
     "id": 93,
-    "categoria": "Macchina per granite",
+    "category": "Macchina per granite",
     "eprelCode": "4656789012",
     "gtinCode": "3001234567885",
-    "lotto": "32675198_granite_94.csv"
+    "branchName": "32675198_granite_94.csv"
   },
   {
     "id": 94,
@@ -671,46 +671,46 @@
     "energyClass": "A++",
     "eprelCode": "6878901234",
     "gtinCode": "3001234567887",
-    "lotto": "32675198_cocktail_96.csv"
+    "branchName": "32675198_cocktail_96.csv"
   },
   {
     "id": 96,
     "energyClass": "C",
     "eprelCode": "7989012345",
     "gtinCode": "3001234567888",
-    "lotto": "32675198_ghiaccio_97.csv"
+    "branchName": "32675198_ghiaccio_97.csv"
   },
   {
     "id": 97,
-    "categoria": "Macchina per zucchero filato",
-    "lotto": "32675198_zuccherofilato_98.csv"
+    "category": "Macchina per zucchero filato",
+    "branchName": "32675198_zuccherofilato_98.csv"
   },
   {
     "id": 98,
-    "categoria": "Macchina per popcorn",
+    "category": "Macchina per popcorn",
     "energyClass": "B",
     "eprelCode": "9101234567",
     "gtinCode": "3001234567890",
-    "lotto": "32675198_popcorn_99.csv"
+    "branchName": "32675198_popcorn_99.csv"
   },
   {
     "id": 99,
-    "categoria": "Macchina per cioccolata",
+    "category": "Macchina per cioccolata",
     "energyClass": "A",
     "eprelCode": "1212345678",
     "gtinCode": "3001234567891",
-    "lotto": "32675198_cioccolata_100.csv"
+    "branchName": "32675198_cioccolata_100.csv"
   },
   {
     "id": 100,
-    "categoria": "Macchina per pancakes",
+    "category": "Macchina per pancakes",
     "energyClass": "A++",
     "eprelCode": "2323456789",
-    "lotto": "32675198_pancakes_101.csv"
+    "branchName": "32675198_pancakes_101.csv"
   },
   {
     "id": 101,
-    "categoria": "Macchina per churros",
+    "category": "Macchina per churros",
     "energyClass": "C",
     "gtinCode": "3001234567893"
   },
@@ -719,121 +719,121 @@
     "energyClass": "A+",
     "eprelCode": "4545678901",
     "gtinCode": "3001234567894",
-    "lotto": "32675198_donuts_103.csv"
+    "branchName": "32675198_donuts_103.csv"
   },
   {
     "id": 103,
-    "categoria": "Macchina per muffin",
+    "category": "Macchina per muffin",
     "energyClass": "B",
     "eprelCode": "5656789012",
     "gtinCode": "3001234567895",
-    "lotto": "32675198_muffin_104.csv"
+    "branchName": "32675198_muffin_104.csv"
   },
   {
     "id": 104,
-    "categoria": "Macchina per cupcake",
+    "category": "Macchina per cupcake",
     "energyClass": "A",
     "eprelCode": "6767890123",
     "gtinCode": "3001234567896",
-    "lotto": "32675198_cupcake_105.csv"
+    "branchName": "32675198_cupcake_105.csv"
   },
   {
     "id": 105,
-    "categoria": "Macchina per brownies",
+    "category": "Macchina per brownies",
     "energyClass": "A++",
     "eprelCode": "7878901234",
     "gtinCode": "3001234567897"
   },
   {
     "id": 106,
-    "categoria": "Macchina per biscotti",
+    "category": "Macchina per biscotti",
     "energyClass": "C",
     "eprelCode": "8989012345",
     "gtinCode": "3001234567898"
   },
   {
     "id": 107,
-    "categoria": "Macchina per pane",
+    "category": "Macchina per pane",
     "eprelCode": "9090123456",
     "gtinCode": "3001234567899",
-    "lotto": "32675198_pane_108.csv"
+    "branchName": "32675198_pane_108.csv"
   },
   {
     "id": 108,
-    "categoria": "Macchina per pizza",
+    "category": "Macchina per pizza",
     "eprelCode": "1101234567",
     "gtinCode": "3001234567900",
-    "lotto": "32675198_pizza_109.csv"
+    "branchName": "32675198_pizza_109.csv"
   },
   {
     "id": 109,
-    "categoria": "Macchina per gnocchi",
+    "category": "Macchina per gnocchi",
     "energyClass": "A",
     "eprelCode": "2212345678",
     "gtinCode": "3001234567901",
-    "lotto": "32675198_gnocchi_110.csv"
+    "branchName": "32675198_gnocchi_110.csv"
   },
   {
     "id": 110,
-    "categoria": "Macchina per ravioli",
+    "category": "Macchina per ravioli",
     "energyClass": "A++",
     "eprelCode": "3323456789",
     "gtinCode": "3001234567902"
   },
   {
     "id": 111,
-    "categoria": "Macchina per tagliatelle",
+    "category": "Macchina per tagliatelle",
     "eprelCode": "4434567890",
     "gtinCode": "3001234567903",
-    "lotto": "32675198_tagliatelle_112.csv"
+    "branchName": "32675198_tagliatelle_112.csv"
   },
   {
     "id": 112,
     "energyClass": "A+",
     "eprelCode": "5545678901",
     "gtinCode": "3001234567904",
-    "lotto": "32675198_cappuccino_113.csv"
+    "branchName": "32675198_cappuccino_113.csv"
   },
   {
     "id": 113,
-    "categoria": "Macchina per granite",
+    "category": "Macchina per granite",
     "energyClass": "B",
-    "lotto": "32675198_granite_114.csv"
+    "branchName": "32675198_granite_114.csv"
   },
   {
     "id": 114,
-    "categoria": "Macchina per birra",
+    "category": "Macchina per birra",
     "energyClass": "A",
     "eprelCode": "7767890123",
     "gtinCode": "3001234567906",
-    "lotto": "32675198_birra_115.csv"
+    "branchName": "32675198_birra_115.csv"
   },
   {
     "id": 115,
-    "categoria": "Macchina per cocktail",
+    "category": "Macchina per cocktail",
     "energyClass": "A++",
     "eprelCode": "8878901234",
-    "lotto": "32675198_cocktail_116.csv"
+    "branchName": "32675198_cocktail_116.csv"
   },
   {
     "id": 116,
-    "categoria": "Macchina per ghiaccio",
+    "category": "Macchina per ghiaccio",
     "energyClass": "C",
     "eprelCode": "9989012345",
-    "lotto": "32675198_ghiaccio_117.csv"
+    "branchName": "32675198_ghiaccio_117.csv"
   },
   {
     "id": 117,
-    "categoria": "Macchina per zucchero filato",
+    "category": "Macchina per zucchero filato",
     "energyClass": "A+",
     "gtinCode": "3001234567909",
-    "lotto": "32675198_zuccherofilato_118.csv"
+    "branchName": "32675198_zuccherofilato_118.csv"
   },
   {
     "id": 118,
-    "categoria": "Macchina per popcorn",
+    "category": "Macchina per popcorn",
     "energyClass": "B",
     "eprelCode": "2101234568",
-    "lotto": "32675198_popcorn_119.csv"
+    "branchName": "32675198_popcorn_119.csv"
   }
 ]

@@ -5,6 +5,7 @@ import {
   Button,
   InputLabel,
   FormControl,
+  Link,
   MenuItem,
   Table,
   TableContainer,
@@ -25,7 +26,7 @@ import { grey } from '@mui/material/colors';
 import EmptyList from '../components/EmptyList';
 import ProductsDrawer from './productdrawer';
 import { Data, EnhancedTableProps, HeadCell, getComparator, Order, DataProp } from './helpers';
-import mockdata from './mockdata.json';
+import mockdata from './mockCsvProducts.json';
 
 const sanitizedData = (arr: Array<DataProp>) =>
   arr.map((item) => ({
@@ -34,7 +35,7 @@ const sanitizedData = (arr: Array<DataProp>) =>
     energyClass: item.energyClass || '-',
     eprelCode: item.eprelCode || '-',
     gtinCode: item.gtinCode || '-',
-    lotto: item.lotto || '-',
+    branchName: item.branchName || '-',
   }));
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -71,7 +72,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       label: `${t('pages.products.listHeader.gtinCode')}`,
     },
     {
-      id: 'lotto',
+      id: 'branchName',
       numeric: false,
       disablePadding: false,
       label: `${t('pages.products.listHeader.branch')}`,
@@ -92,9 +93,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-              // hideSortIcon={headCell.id === 'spendingPeriod'}
               hideSortIcon={false}
-              // disabled={headCell.id === 'spendingPeriod'}
               disabled={false}
             >
               {headCell.label}
@@ -125,8 +124,8 @@ const Prodotti = () => {
   const [drawerData, setDrawerData] = useState<DataProp>({});
   const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(mockdata));
 
-  const categories = [...new Set(mockedData.map((item) => item.categoria).sort())];
-  const branches = [...new Set(mockedData.map((item) => item.lotto).sort())];
+  const categories = [...new Set(mockedData.map((item) => item.category).sort())];
+  const branches = [...new Set(mockedData.map((item) => item.branchName).sort())];
 
   const { t } = useTranslation();
 
@@ -134,7 +133,7 @@ const Prodotti = () => {
     setMockedData(
       mockedData
         .filter((item) => !categoryFilter || item.category === categoryFilter)
-        .filter((item) => !branchFilter || item.lotto === branchFilter)
+        .filter((item) => !branchFilter || item.branchName === branchFilter)
         .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
         .filter((item) => !gtinCodeFilter || item.gtinCode?.includes(gtinCodeFilter))
         .filter(
@@ -235,7 +234,7 @@ const Prodotti = () => {
             display: 'flex',
             flexDirection: 'row',
             gap: 1,
-            mb: 1,
+            mb: 5,
           }}
         >
           <FormControl fullWidth size="small">
@@ -345,9 +344,11 @@ const Prodotti = () => {
                   <TableRow tabIndex={-1} key={row.id} sx={{}}>
                     <TableCell>{row.category}</TableCell>
                     <TableCell>{row.energyClass}</TableCell>
-                    <TableCell>{row.eprelCode}</TableCell>
+                    <TableCell>
+                      <Link href="#">{row.eprelCode}</Link>
+                    </TableCell>
                     <TableCell>{row.gtinCode}</TableCell>
-                    <TableCell>{row.lotto}</TableCell>
+                    <TableCell>{row.branchName}</TableCell>
                     <TableCell>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
                         <ArrowForwardIosIcon />
