@@ -124,15 +124,20 @@ const Prodotti = () => {
   const [drawerData, setDrawerData] = useState<DataProp>({});
   const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(mockdata));
 
-  const categories = [...new Set(mockedData.map((item) => item.category).sort())];
-  const branches = [...new Set(mockedData.map((item) => item.branchName).sort())];
-
   const { t } = useTranslation();
+
+  const categories = [
+    ...new Set(mockedData.map((item) => t(`pages.products.categories.${item.category}`)).sort()),
+  ];
+  const branches = [...new Set(mockedData.map((item) => item.branchName).sort())];
 
   const handleFilterButtonClick = () => {
     setMockedData(
       mockedData
-        .filter((item) => !categoryFilter || item.category === categoryFilter)
+        .filter(
+          (item) =>
+            !categoryFilter || t(`pages.products.categories.${item.category}`) === categoryFilter
+        )
         .filter((item) => !branchFilter || item.branchName === branchFilter)
         .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
         .filter((item) => !gtinCodeFilter || item.gtinCode?.includes(gtinCodeFilter))
@@ -342,7 +347,7 @@ const Prodotti = () => {
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row) => (
                   <TableRow tabIndex={-1} key={row.id} sx={{}}>
-                    <TableCell>{row.category}</TableCell>
+                    <TableCell>{t(`pages.products.categories.${row.category}`)}</TableCell>
                     <TableCell>{row.energyClass}</TableCell>
                     <TableCell>
                       <Link href="#">{row.eprelCode}</Link>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -6,6 +7,8 @@ import ListItem from '@mui/material/ListItem';
 import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ProductsDrawerProps } from './helpers';
+
+const { t } = useTranslation();
 
 export default function ProductsDrawer(props: ProductsDrawerProps) {
   const DrawerList = (
@@ -48,7 +51,9 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           <Box sx={{ color: 'gray', ml: 2, mb: -1 }}>Categoria</Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ mb: 2 }}>{props.data.category || 'Categoria esempio'}</Box>
+          <Box sx={{ mb: 2 }}>
+            {t(`pages.products.categories.${props.data.category}`) || 'Categoria esempio'}
+          </Box>
         </ListItem>
 
         <ListItem disablePadding>
