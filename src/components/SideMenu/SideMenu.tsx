@@ -28,7 +28,7 @@ export default function SideMenu() {
             data-testid="initiativeList-click-test"
           />
           <SidenavItem
-            title={t('pages.storicoCaricamenti.sideMenuTitle')}
+            title={t('pages.uploadHistory.sideMenuTitle')}
             handleClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
             isSelected={location.pathname === ROUTES.UPLOADS}
             icon={HistoryIcon}
@@ -36,7 +36,7 @@ export default function SideMenu() {
             data-testid="initiativeList-click-test"
           />
           <SidenavItem
-            title={t('pages.prodotti.sideMenuTitle')}
+            title={t('pages.products.sideMenuTitle')}
             handleClick={() => onExit(() => navigate(ROUTES.PRODUCTS, { replace: true }))}
             isSelected={location.pathname === ROUTES.PRODUCTS}
             icon={InventoryIcon}

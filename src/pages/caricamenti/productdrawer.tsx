@@ -27,14 +27,14 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           <Box sx={{ color: 'gray', ml: 2, mb: -1 }}>Codice EPREL</Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ mb: 2 }}>{props.data.codice_eprel || 'Codice EPREL esempio'}</Box>
+          <Box sx={{ mb: 2 }}>{props.data.eprelCode || 'Codice EPREL esempio'}</Box>
         </ListItem>
 
         <ListItem disablePadding>
           <Box sx={{ color: 'gray', ml: 2, mb: -1 }}>Codice GTIN/EAN</Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ mb: 2 }}>{props.data.codice_gtinean || 'Codice GTIN/EAN esempio'}</Box>
+          <Box sx={{ mb: 2 }}>{props.data.gtinCode || 'Codice GTIN/EAN esempio'}</Box>
         </ListItem>
 
         <ListItem disablePadding>
@@ -48,7 +48,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           <Box sx={{ color: 'gray', ml: 2, mb: -1 }}>Categoria</Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ mb: 2 }}>{props.data.categoria || 'Categoria esempio'}</Box>
+          <Box sx={{ mb: 2 }}>{props.data.category || 'Categoria esempio'}</Box>
         </ListItem>
 
         <ListItem disablePadding>

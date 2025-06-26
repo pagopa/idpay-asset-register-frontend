@@ -34,7 +34,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.codice_eprel || 'Codice EPREL esempio'}
+            {props.data.eprelCode || 'Codice EPREL esempio'}
           </Box>
         </ListItem>
 
@@ -45,7 +45,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.codice_gtinean || 'Codice GTIN/EAN esempio'}
+            {props.data.gtinCode || 'Codice GTIN/EAN esempio'}
           </Box>
         </ListItem>
 
@@ -67,7 +67,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.categoria || 'Categoria esempio'}
+            {props.data.category || 'Categoria esempio'}
           </Box>
         </ListItem>
 

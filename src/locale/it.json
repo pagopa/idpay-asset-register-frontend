@@ -114,7 +114,7 @@
         }
       }
     },
-    "prodotti": {
+    "products": {
       "sideMenuTitle": "Prodotti",
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
@@ -136,7 +136,7 @@
       },
       "tablePaginationFrom": "di"
     },
-    "storicoCaricamenti": {
+    "uploadHistory": {
       "sideMenuTitle": "Storico caricamenti"
     }
   },

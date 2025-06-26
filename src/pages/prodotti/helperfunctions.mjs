@@ -14,7 +14,7 @@ function getRandomIndexes(length, percent) {
   return indexes.slice(0, count);
 }
 
-const fields = ['categoria', 'classe_energetica', 'codice_eprel', 'codice_gtinean', 'lotto'];
+const fields = ['category', 'energyClass', 'eprelCode', 'gtinCode', 'lotto'];
 
 fields.forEach((field) => {
   const indexes = getRandomIndexes(data.length, 0.2);
