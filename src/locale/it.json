@@ -31,7 +31,17 @@
     },
     "removeFiltersBtn": "Rimuovi filtri",
     "sendBtn": "Invia",
-    "title": "Registro dei beni"
+    "title": "Registro dei beni",
+    "categories": {
+      "washingmachines": "Lavatrici",
+      "washerdriers": "Asciugatrici",
+      "ovens": "Forni",
+      "rangehoods": "Cappe da cucina",
+      "dishwashers": "Lavastoviglie",
+      "tumbledriers": "Lavasciuga",
+      "refrigeratingappl": "Frigoriferi",
+      "cookinghobs": "Piani cottura"
+    }
   },
   "errors": {
     "contactAdmin": "Contatta l'assistenza",
@@ -77,16 +87,6 @@
       "form": {
         "categoryLabel": "Seleziona la categoria",
         "categoryPlaceholder": "Categoria",
-        "categories": {
-          "washingmachines": "Lavatrici",
-          "washerdriers": "Asciugatrici",
-          "ovens": "Forni",
-          "rangehoods": "Cappe da cucina",
-          "dishwasher": "Lavastoviglie",
-          "tumbledriers": "Lavasciuga",
-          "refrigeratingappl": "Frigoriferi",
-          "cookinghobs": "Piani cottura"
-        },
         "fileUpload": {
           "dragAreaText": "Trascina qui il file csv con la lista dei prodotti o",
           "dragAreaLink": "selezionalo dal tuo computer",
@@ -135,16 +135,6 @@
         "branch": "Lotto"
       },
       "tablePaginationFrom": "di",
-      "categories": {
-        "WASHINGMACHINES": "Lavatrici",
-        "WASHERDRIERS": "Lavasciuga",
-        "OVENS": "Forni",
-        "RANGEHOODS": "Cappe",
-        "DISHWASHERS": "Lavastoviglie",
-        "TUMBLEDRIERS": "Asciugabiancheria",
-        "REFRIGERATINGAPPL": "Frigoriferi",
-        "COOKINGHOBS": "Piani cottura"
-      },
       "emptyList": "Nessun record corrisponde alla ricerca."
     },
     "uploadHistory": {

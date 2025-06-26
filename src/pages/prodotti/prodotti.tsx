@@ -31,7 +31,7 @@ import mockdata from './mockCsvProducts.json';
 const sanitizedData = (arr: Array<DataProp>) =>
   arr.map((item) => ({
     ...item,
-    category: item.category || '-',
+    category: item.category?.toLowerCase() || '-',
     energyClass: item.energyClass || '-',
     eprelCode: item.eprelCode || '-',
     gtinCode: item.gtinCode || '-',
@@ -127,16 +127,16 @@ const Prodotti = () => {
   const { t } = useTranslation();
 
   const categories = [
-    ...new Set(mockedData.map((item) => t(`pages.products.categories.${item.category}`)).sort()),
+    ...new Set(mockedData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()),
   ];
-  const branches = [...new Set(mockedData.map((item) => item.branchName).sort())];
+  const branches = [...new Set(mockedData.map((item) => item.branchName).filter(name => name !== "-").sort())];
 
   const handleFilterButtonClick = () => {
     setMockedData(
       mockedData
         .filter(
           (item) =>
-            !categoryFilter || t(`pages.products.categories.${item.category}`) === categoryFilter
+            !categoryFilter || t(`commons.categories.${item.category.toLowerCase()}`) === categoryFilter
         )
         .filter((item) => !branchFilter || item.branchName === branchFilter)
         .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
@@ -347,7 +347,7 @@ const Prodotti = () => {
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row) => (
                   <TableRow tabIndex={-1} key={row.id} sx={{}}>
-                    <TableCell>{t(`pages.products.categories.${row.category}`)}</TableCell>
+                    <TableCell>{t(`commons.categories.${row.category}`)}</TableCell>
                     <TableCell>{row.energyClass}</TableCell>
                     <TableCell>
                       <Link href="#">{row.eprelCode}</Link>
