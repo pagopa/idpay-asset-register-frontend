@@ -125,8 +125,8 @@ const Prodotti = () => {
   const [drawerData, setDrawerData] = useState<DataProp>({});
   const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(mockdata));
 
-  const categories = [...new Set(mockedData.map((item) => item.categoria))];
-  const branches = [...new Set(mockedData.map((item) => item.lotto))];
+  const categories = [...new Set(mockedData.map((item) => item.categoria).sort())];
+  const branches = [...new Set(mockedData.map((item) => item.lotto).sort())];
 
   const { t } = useTranslation();
 
