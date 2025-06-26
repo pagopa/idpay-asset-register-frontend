@@ -18,7 +18,6 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-// import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
@@ -190,7 +189,7 @@ const Prodotti = () => {
     setEprelCodeFilter('');
     setGtinCodeFilter('');
     setManufacturerFilter('');
-    setMockedData([...mockdata]);
+    setMockedData(sanitizedData(mockdata));
   };
 
   const handleListButtonClick = (row: any) => {
@@ -390,14 +389,9 @@ const Prodotti = () => {
             rowsPerPage={rowsPerPage}
             page={page}
             component="div"
-            slotProps={{
-              select: {
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              },
-            }}
+            labelDisplayedRows={(page) =>
+              `${page.from} - ${page.to} ${t('pages.prodotti.tablePaginationFrom')} ${page.count}`
+            }
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />

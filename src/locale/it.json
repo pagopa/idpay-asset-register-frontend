@@ -133,7 +133,8 @@
         "eprelCode": "Codice Eprel",
         "gtinCode": "Codice GTIN/EAN",
         "branch": "Lotto"
-      }
+      },
+      "tablePaginationFrom": "di"
     },
     "storicoCaricamenti": {
       "sideMenuTitle": "Storico caricamenti"
