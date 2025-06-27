@@ -13,12 +13,12 @@ import TOSWall from './components/TOS/TOSWall';
 import TOSLayout from './components/TOSLayout/TOSLayout';
 import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
-import Prodotti from './pages/prodotti/prodotti';
-import Caricamenti from './pages/caricamenti/caricamenti';
-import Panoramica from './pages/panoramica/panoramica';
+import Products from './pages/products/products';
+import Overview from './pages/overview/overview';
 import TOS from "./pages/tos/TOS";
 import PrivacyPolicy from "./pages/privacyPolicy/PrivacyPolicy";
-import AddProducts from "./pages/aggiungiProdotti/addProducts";
+import AddProducts from "./pages/addProducts/addProducts";
+import UploadsHistory from "./pages/uploadsHistory/uploadsHistory";
 
 const SecuredRoutes = withLogin(
   withSelectedPartyProducts(() => {
@@ -51,10 +51,10 @@ const SecuredRoutes = withLogin(
     return (
       <Layout>
         <Routes>
-          <Route path={routes.HOME} element={<Panoramica />} />
+          <Route path={routes.HOME} element={<Overview />} />
           <Route path={routes.ADD_PRODUCTS} element={ <AddProducts /> } />
-          <Route path={routes.PRODUCTS} element={<Prodotti />} />
-          <Route path={routes.UPLOADS} element={<Caricamenti />} />
+          <Route path={routes.PRODUCTS} element={<Products />} />
+          <Route path={routes.UPLOADS} element={<UploadsHistory />} />
           <Route path={routes.TOS} element={<TOS />} />
           <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
           <Route path="*" element={<Navigate to={routes.HOME} />} />

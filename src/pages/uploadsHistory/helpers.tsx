@@ -1,9 +1,9 @@
 export interface Data {
-  categoria: string;
-  classe_energetica: string;
-  codice_eprel: string;
-  codice_gtinean: string;
-  lotto: string;
+  category: string;
+  energyClass: string;
+  eprelCode: string;
+  gtinCode: string;
+  branchName: string;
   id: number;
 }
 
@@ -58,11 +58,11 @@ export interface EnhancedTableProps {
 }
 
 export interface DataProp {
-  categoria?: string;
-  classe_energetica?: string;
-  codice_eprel?: string;
-  codice_gtinean?: string;
-  lotto?: string;
+  category?: string;
+  energyClass?: string;
+  eprelCode?: string;
+  gtinCode?: string;
+  branchName?: string;
   codice_prodotto?: string;
   marca?: string;
   modello?: string;

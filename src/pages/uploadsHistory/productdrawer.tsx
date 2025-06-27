@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -7,6 +8,8 @@ import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ProductsDrawerProps } from './helpers';
 
+const { t } = useTranslation();
+
 export default function ProductsDrawer(props: ProductsDrawerProps) {
   const DrawerList = (
     <Box sx={{ width: 500 }} role="presentation" onClick={() => props.toggleDrawer(false)}>
@@ -15,7 +18,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           <Box sx={{ fontSize: '150%', fontWeight: 'bold', mb: 1, ml: 2 }}>Dettaglio prodotto</Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ fontWeight: 'bold', mb: 1 }}>{props.data.lotto}</Box>
+          <Box sx={{ fontWeight: 'bold', mb: 1 }}>{props.data.branchName}</Box>
         </ListItem>
         <Divider sx={{ mb: 2 }} />
 
@@ -27,14 +30,14 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           <Box sx={{ color: 'gray', ml: 2, mb: -1 }}>Codice EPREL</Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ mb: 2 }}>{props.data.codice_eprel || 'Codice EPREL esempio'}</Box>
+          <Box sx={{ mb: 2 }}>{props.data.eprelCode || 'Codice EPREL esempio'}</Box>
         </ListItem>
 
         <ListItem disablePadding>
           <Box sx={{ color: 'gray', ml: 2, mb: -1 }}>Codice GTIN/EAN</Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ mb: 2 }}>{props.data.codice_gtinean || 'Codice GTIN/EAN esempio'}</Box>
+          <Box sx={{ mb: 2 }}>{props.data.gtinCode || 'Codice GTIN/EAN esempio'}</Box>
         </ListItem>
 
         <ListItem disablePadding>
@@ -48,7 +51,9 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           <Box sx={{ color: 'gray', ml: 2, mb: -1 }}>Categoria</Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ mb: 2 }}>{props.data.categoria || 'Categoria esempio'}</Box>
+          <Box sx={{ mb: 2 }}>
+            {t(`pages.products.categories.${props.data.category}`) || 'Categoria esempio'}
+          </Box>
         </ListItem>
 
         <ListItem disablePadding>

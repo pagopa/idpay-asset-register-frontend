@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -8,6 +9,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ProductsDrawerProps } from './helpers';
 
 export default function ProductsDrawer(props: ProductsDrawerProps) {
+  const { t } = useTranslation();
+
   const DrawerList = (
     <Box sx={{ width: 500 }} role="presentation" onClick={() => props.toggleDrawer(false)}>
       <List>
@@ -17,7 +20,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           </Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ fontWeight: '600', fontSize: '18px', mb: 1 }}>{props.data.lotto}</Box>
+          <Box sx={{ fontWeight: '600', fontSize: '18px', mb: 1 }}>{props.data.branchName}</Box>
         </ListItem>
         <Divider sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
 
@@ -34,7 +37,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.codice_eprel || 'Codice EPREL esempio'}
+            {props.data.eprelCode || 'Codice EPREL esempio'}
           </Box>
         </ListItem>
 
@@ -45,7 +48,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.codice_gtinean || 'Codice GTIN/EAN esempio'}
+            {props.data.gtinCode || 'Codice GTIN/EAN esempio'}
           </Box>
         </ListItem>
 
@@ -67,7 +70,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.categoria || 'Categoria esempio'}
+            {t(`pages.products.categories.${props.data.category}`) || 'Categoria esempio'}
           </Box>
         </ListItem>
 

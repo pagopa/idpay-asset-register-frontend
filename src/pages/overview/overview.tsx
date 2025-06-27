@@ -26,7 +26,7 @@ const truncateString = (str?: string, maxLength: number = maxLengthEmail): strin
   }
 };
 
-const Panoramica: React.FC = () => {
+const Overview: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const onExit = useUnloadEventOnExit();
@@ -113,7 +113,7 @@ const Panoramica: React.FC = () => {
           </Paper>
         </Box>
 
-        {/* Sezione Prodotti */}
+        {/* Sezione Products */}
         <Box sx={{ gridColumn: 'span 6' }}>
           <Paper
             sx={{
@@ -172,4 +172,4 @@ const Panoramica: React.FC = () => {
   );
 };
 
-export default Panoramica;
+export default Overview;

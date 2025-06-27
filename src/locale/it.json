@@ -31,7 +31,17 @@
     },
     "removeFiltersBtn": "Rimuovi filtri",
     "sendBtn": "Invia",
-    "title": "Registro dei beni"
+    "title": "Registro dei beni",
+    "categories": {
+      "washingmachines": "Lavatrici",
+      "washerdriers": "Asciugatrici",
+      "ovens": "Forni",
+      "rangehoods": "Cappe da cucina",
+      "dishwashers": "Lavastoviglie",
+      "tumbledriers": "Lavasciuga",
+      "refrigeratingappl": "Frigoriferi",
+      "cookinghobs": "Piani cottura"
+    }
   },
   "errors": {
     "contactAdmin": "Contatta l'assistenza",
@@ -77,16 +87,6 @@
       "form": {
         "categoryLabel": "Seleziona la categoria",
         "categoryPlaceholder": "Categoria",
-        "categories": {
-          "washingmachines": "Lavatrici",
-          "washerdriers": "Asciugatrici",
-          "ovens": "Forni",
-          "rangehoods": "Cappe da cucina",
-          "dishwasher": "Lavastoviglie",
-          "tumbledriers": "Lavasciuga",
-          "refrigeratingappl": "Frigoriferi",
-          "cookinghobs": "Piani cottura"
-        },
         "fileUpload": {
           "dragAreaText": "Trascina qui il file csv con la lista dei prodotti o",
           "dragAreaLink": "selezionalo dal tuo computer",
@@ -114,7 +114,7 @@
         }
       }
     },
-    "prodotti": {
+    "products": {
       "sideMenuTitle": "Prodotti",
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
@@ -133,9 +133,11 @@
         "eprelCode": "Codice Eprel",
         "gtinCode": "Codice GTIN/EAN",
         "branch": "Lotto"
-      }
+      },
+      "tablePaginationFrom": "di",
+      "emptyList": "Nessun record corrisponde alla ricerca."
     },
-    "storicoCaricamenti": {
+    "uploadHistory": {
       "sideMenuTitle": "Storico caricamenti"
     }
   },

@@ -5,6 +5,7 @@ import {
   Button,
   InputLabel,
   FormControl,
+  Link,
   MenuItem,
   Table,
   TableContainer,
@@ -18,7 +19,6 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-// import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
@@ -26,16 +26,16 @@ import { grey } from '@mui/material/colors';
 import EmptyList from '../components/EmptyList';
 import ProductsDrawer from './productdrawer';
 import { Data, EnhancedTableProps, HeadCell, getComparator, Order, DataProp } from './helpers';
-import mockdata from './mockdata.json';
+import mockdata from './mockCsvProducts.json';
 
 const sanitizedData = (arr: Array<DataProp>) =>
   arr.map((item) => ({
     ...item,
-    categoria: item.categoria || '-',
-    classe_energetica: item.classe_energetica || '-',
-    codice_eprel: item.codice_eprel || '-',
-    codice_gtinean: item.codice_gtinean || '-',
-    lotto: item.lotto || '-',
+    category: item.category?.toLowerCase() || '-',
+    energyClass: item.energyClass || '-',
+    eprelCode: item.eprelCode || '-',
+    gtinCode: item.gtinCode || '-',
+    branchName: item.branchName || '-',
   }));
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -48,34 +48,34 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
   const headCells: ReadonlyArray<HeadCell> = [
     {
-      id: 'categoria',
+      id: 'category',
       numeric: false,
       disablePadding: false,
-      label: `${t('pages.prodotti.listHeader.category')}`,
+      label: `${t('pages.products.listHeader.category')}`,
     },
     {
-      id: 'classe_energetica',
+      id: 'energyClass',
       numeric: false,
       disablePadding: false,
-      label: `${t('pages.prodotti.listHeader.energeticClass')}`,
+      label: `${t('pages.products.listHeader.energeticClass')}`,
     },
     {
-      id: 'codice_eprel',
+      id: 'eprelCode',
       numeric: false,
       disablePadding: false,
-      label: `${t('pages.prodotti.listHeader.eprelCode')}`,
+      label: `${t('pages.products.listHeader.eprelCode')}`,
     },
     {
-      id: 'codice_gtinean',
+      id: 'gtinCode',
       numeric: false,
       disablePadding: false,
-      label: `${t('pages.prodotti.listHeader.gtinCode')}`,
+      label: `${t('pages.products.listHeader.gtinCode')}`,
     },
     {
-      id: 'lotto',
+      id: 'branchName',
       numeric: false,
       disablePadding: false,
-      label: `${t('pages.prodotti.listHeader.branch')}`,
+      label: `${t('pages.products.listHeader.branch')}`,
     },
   ];
 
@@ -93,9 +93,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-              // hideSortIcon={headCell.id === 'spendingPeriod'}
               hideSortIcon={false}
-              // disabled={headCell.id === 'spendingPeriod'}
               disabled={false}
             >
               {headCell.label}
@@ -112,9 +110,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-const Prodotti = () => {
+const Products = () => {
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Data>('categoria');
+  const [orderBy, setOrderBy] = useState<keyof Data>('category');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
@@ -126,18 +124,23 @@ const Prodotti = () => {
   const [drawerData, setDrawerData] = useState<DataProp>({});
   const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(mockdata));
 
-  const categories = [...new Set(mockedData.map((item) => item.categoria))];
-  const branches = [...new Set(mockedData.map((item) => item.lotto))];
-
   const { t } = useTranslation();
+
+  const categories = [
+    ...new Set(mockedData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()),
+  ];
+  const branches = [...new Set(mockedData.map((item) => item.branchName).filter(name => name !== "-").sort())];
 
   const handleFilterButtonClick = () => {
     setMockedData(
       mockedData
-        .filter((item) => !categoryFilter || item.categoria === categoryFilter)
-        .filter((item) => !branchFilter || item.lotto === branchFilter)
-        .filter((item) => !eprelCodeFilter || item.codice_eprel?.includes(eprelCodeFilter))
-        .filter((item) => !gtinCodeFilter || item.codice_gtinean?.includes(gtinCodeFilter))
+        .filter(
+          (item) =>
+            !categoryFilter || t(`commons.categories.${item.category.toLowerCase()}`) === categoryFilter
+        )
+        .filter((item) => !branchFilter || item.branchName === branchFilter)
+        .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
+        .filter((item) => !gtinCodeFilter || item.gtinCode?.includes(gtinCodeFilter))
         .filter(
           (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
         )
@@ -180,17 +183,13 @@ const Prodotti = () => {
     setGtinCodeFilter(event.target.value);
   };
 
-  const handleManufacturerFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setManufacturerFilter(event.target.value);
-  };
-
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
     setBranchFilter('');
     setEprelCodeFilter('');
     setGtinCodeFilter('');
     setManufacturerFilter('');
-    setMockedData([...mockdata]);
+    setMockedData(sanitizedData(mockdata));
   };
 
   const handleListButtonClick = (row: any) => {
@@ -220,8 +219,8 @@ const Prodotti = () => {
   return (
     <Box width="100%" px={2}>
       <TitleBox
-        title={t('pages.prodotti.title')}
-        subTitle={t('pages.prodotti.subtitle')}
+        title={t('pages.products.title')}
+        subTitle={t('pages.products.subtitle')}
         mbTitle={2}
         mtTitle={2}
         mbSubTitle={5}
@@ -236,18 +235,18 @@ const Prodotti = () => {
             display: 'flex',
             flexDirection: 'row',
             gap: 1,
-            mb: 1,
+            mb: 5,
           }}
         >
           <FormControl fullWidth size="small">
             <InputLabel id="category-filter-select-label">
-              {t('pages.prodotti.filterLabels.category')}
+              {t('pages.products.filterLabels.category')}
             </InputLabel>
             <Select
               labelId="category-filter-select-label"
               id="category-filter-select"
               value={categoryFilter}
-              label={t('pages.prodotti.filterLabels.category')}
+              label={t('pages.products.filterLabels.category')}
               MenuProps={selectMenuProps}
               onChange={handleCategoryFilterChange}
             >
@@ -260,13 +259,13 @@ const Prodotti = () => {
           </FormControl>
           <FormControl fullWidth size="small">
             <InputLabel id="branch-filter-select-label">
-              {t('pages.prodotti.filterLabels.branch')}
+              {t('pages.products.filterLabels.branch')}
             </InputLabel>
             <Select
               labelId="branch-filter-select-label"
               id="branch-filter-select"
               value={branchFilter}
-              label={t('pages.prodotti.filterLabels.branch')}
+              label={t('pages.products.filterLabels.branch')}
               MenuProps={selectMenuProps}
               onChange={handleCategoryBranchChange}
             >
@@ -282,7 +281,7 @@ const Prodotti = () => {
             sx={{ minWidth: 175 }}
             size="small"
             id="eprel-code-text"
-            label={t('pages.prodotti.filterLabels.eprelCode')}
+            label={t('pages.products.filterLabels.eprelCode')}
             variant="outlined"
             value={eprelCodeFilter}
             onChange={handleEprelCodeFilterChange}
@@ -292,19 +291,10 @@ const Prodotti = () => {
             sx={{ minWidth: 175 }}
             size="small"
             id="gtin-code-text"
-            label={t('pages.prodotti.filterLabels.gtinCode')}
+            label={t('pages.products.filterLabels.gtinCode')}
             variant="outlined"
             value={gtinCodeFilter}
             onChange={handleGtinCodeFilterChange}
-          />
-          <TextField
-            sx={{ minWidth: 175 }}
-            size="small"
-            id="manufacturer-code-text"
-            label={t('pages.prodotti.filterLabels.manufacturerCode')}
-            variant="outlined"
-            value={manufacturerFilter}
-            onChange={handleManufacturerFilterChange}
           />
           <Button
             disabled={noFilterSetted()}
@@ -312,7 +302,7 @@ const Prodotti = () => {
             sx={{ height: 44, minWidth: 100 }}
             onClick={handleFilterButtonClick}
           >
-            {t('pages.prodotti.filterLabels.filter')}
+            {t('pages.products.filterLabels.filter')}
           </Button>
           <Button
             disabled={noFilterSetted()}
@@ -320,7 +310,7 @@ const Prodotti = () => {
             sx={{ height: 44, minWidth: 140 }}
             onClick={handleDeleteFiltersButtonClick}
           >
-            {t('pages.prodotti.filterLabels.deleteFilters')}
+            {t('pages.products.filterLabels.deleteFilters')}
           </Button>
         </Box>
       )}
@@ -344,11 +334,13 @@ const Prodotti = () => {
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row) => (
                   <TableRow tabIndex={-1} key={row.id} sx={{}}>
-                    <TableCell>{row.categoria}</TableCell>
-                    <TableCell>{row.classe_energetica}</TableCell>
-                    <TableCell>{row.codice_eprel}</TableCell>
-                    <TableCell>{row.codice_gtinean}</TableCell>
-                    <TableCell>{row.lotto}</TableCell>
+                    <TableCell>{t(`commons.categories.${row.category}`)}</TableCell>
+                    <TableCell>{row.energyClass}</TableCell>
+                    <TableCell>
+                      <Link href="#">{row.eprelCode}</Link>
+                    </TableCell>
+                    <TableCell>{row.gtinCode}</TableCell>
+                    <TableCell>{row.branchName}</TableCell>
                     <TableCell>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
                         <ArrowForwardIosIcon />
@@ -377,7 +369,7 @@ const Prodotti = () => {
                   textAlign: 'center',
                 }}
               >
-                <EmptyList message={t('pages.prodotti.emptyList')} />
+                <EmptyList message={t('pages.products.emptyList')} />
               </Box>
             </Box>
           )}
@@ -390,16 +382,20 @@ const Prodotti = () => {
             rowsPerPage={rowsPerPage}
             page={page}
             component="div"
-            slotProps={{
-              select: {
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              },
-            }}
+            labelDisplayedRows={(page) =>
+              `${page.from} - ${page.to} ${t('pages.products.tablePaginationFrom')} ${page.count}`
+            }
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              '& .MuiTablePagination-actions button': {
+                backgroundColor: 'transparent',
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                },
+              },
+            }}
+
           />
         )}
       </Paper>
@@ -407,4 +403,4 @@ const Prodotti = () => {
     </Box>
   );
 };
-export default Prodotti;
+export default Products;

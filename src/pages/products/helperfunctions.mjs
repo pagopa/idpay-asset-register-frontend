@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-const filePath = './src/pages/prodotti/mockdata.json';
+const filePath = './src/pages/prodotti/mockCsvProducts.json';
 const rawData = fs.readFileSync(filePath, 'utf-8');
 const data = JSON.parse(rawData);
 
@@ -24,4 +24,4 @@ fields.forEach((field) => {
 });
 
 fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-console.log('mockdata.json aggiornato con campi mancanti casuali!');
+console.log('mockCsvProducts.json aggiornato con campi mancanti casuali!');
