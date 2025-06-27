@@ -1,0 +1,1402 @@
+[
+  {
+    "id": 0,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2011-02-21",
+    "lastUpdate": "2025-05-08",
+    "temporaryField": "<100>"
+  },
+  {
+    "id": 1,
+    "manufacturerName": "Beko",
+    "dateCreation": "2012-08-09",
+    "lastUpdate": "2025-06-05",
+    "temporaryField": "<101>"
+  },
+  {
+    "id": 2,
+    "manufacturerName": "Philips",
+    "dateCreation": "2007-12-07",
+    "lastUpdate": "2025-06-12",
+    "temporaryField": "<102>"
+  },
+  {
+    "id": 3,
+    "manufacturerName": "Philips",
+    "dateCreation": "2004-01-26",
+    "lastUpdate": "2025-12-17",
+    "temporaryField": "<103>"
+  },
+  {
+    "id": 4,
+    "manufacturerName": "Hotpoint",
+    "dateCreation": "2018-07-24",
+    "lastUpdate": "2025-09-26",
+    "temporaryField": "<104>"
+  },
+  {
+    "id": 5,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2005-07-03",
+    "lastUpdate": "2025-06-15",
+    "temporaryField": "<105>"
+  },
+  {
+    "id": 6,
+    "manufacturerName": "Electrolux",
+    "dateCreation": "2012-10-27",
+    "lastUpdate": "2025-04-04",
+    "temporaryField": "<106>"
+  },
+  {
+    "id": 7,
+    "manufacturerName": "Miele",
+    "dateCreation": "2016-11-04",
+    "lastUpdate": "2025-10-23",
+    "temporaryField": "<107>"
+  },
+  {
+    "id": 8,
+    "manufacturerName": "Miele",
+    "dateCreation": "2005-12-04",
+    "lastUpdate": "2025-10-26",
+    "temporaryField": "<108>"
+  },
+  {
+    "id": 9,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2001-08-17",
+    "lastUpdate": "2025-08-22",
+    "temporaryField": "<109>"
+  },
+  {
+    "id": 10,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2006-08-24",
+    "lastUpdate": "2025-01-12",
+    "temporaryField": "<110>"
+  },
+  {
+    "id": 11,
+    "manufacturerName": "Beko",
+    "dateCreation": "2008-08-10",
+    "lastUpdate": "2025-09-23",
+    "temporaryField": "<111>"
+  },
+  {
+    "id": 12,
+    "manufacturerName": "Bosch",
+    "dateCreation": "2004-09-01",
+    "lastUpdate": "2025-07-02",
+    "temporaryField": "<112>"
+  },
+  {
+    "id": 13,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2014-11-23",
+    "lastUpdate": "2025-12-01",
+    "temporaryField": "<113>"
+  },
+  {
+    "id": 14,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2020-04-20",
+    "lastUpdate": "2025-11-08",
+    "temporaryField": "<114>"
+  },
+  {
+    "id": 15,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2002-10-04",
+    "lastUpdate": "2025-12-24",
+    "temporaryField": "<115>"
+  },
+  {
+    "id": 16,
+    "manufacturerName": "Philips",
+    "dateCreation": "2022-05-22",
+    "lastUpdate": "2025-04-04",
+    "temporaryField": "<116>"
+  },
+  {
+    "id": 17,
+    "manufacturerName": "Bosch",
+    "dateCreation": "2012-03-02",
+    "lastUpdate": "2025-11-13",
+    "temporaryField": "<117>"
+  },
+  {
+    "id": 18,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2014-11-05",
+    "lastUpdate": "2025-01-26",
+    "temporaryField": "<118>"
+  },
+  {
+    "id": 19,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2002-07-28",
+    "lastUpdate": "2025-07-13",
+    "temporaryField": "<119>"
+  },
+  {
+    "id": 20,
+    "manufacturerName": "Haier",
+    "dateCreation": "2019-02-28",
+    "lastUpdate": "2025-10-16",
+    "temporaryField": "<120>"
+  },
+  {
+    "id": 21,
+    "manufacturerName": "Gorenje",
+    "dateCreation": "2016-12-14",
+    "lastUpdate": "2025-03-01",
+    "temporaryField": "<121>"
+  },
+  {
+    "id": 22,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2021-03-19",
+    "lastUpdate": "2025-05-23",
+    "temporaryField": "<122>"
+  },
+  {
+    "id": 23,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2005-01-21",
+    "lastUpdate": "2025-01-26",
+    "temporaryField": "<123>"
+  },
+  {
+    "id": 24,
+    "manufacturerName": "Electrolux",
+    "dateCreation": "2014-03-22",
+    "lastUpdate": "2025-08-25",
+    "temporaryField": "<124>"
+  },
+  {
+    "id": 25,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2019-04-17",
+    "lastUpdate": "2025-10-21",
+    "temporaryField": "<125>"
+  },
+  {
+    "id": 26,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2002-11-05",
+    "lastUpdate": "2025-05-25",
+    "temporaryField": "<126>"
+  },
+  {
+    "id": 27,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2002-12-09",
+    "lastUpdate": "2025-10-09",
+    "temporaryField": "<127>"
+  },
+  {
+    "id": 28,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2007-11-11",
+    "lastUpdate": "2025-09-01",
+    "temporaryField": "<128>"
+  },
+  {
+    "id": 29,
+    "manufacturerName": "Bosch",
+    "dateCreation": "2022-02-21",
+    "lastUpdate": "2025-01-12",
+    "temporaryField": "<129>"
+  },
+  {
+    "id": 30,
+    "manufacturerName": "Candy",
+    "dateCreation": "2008-04-11",
+    "lastUpdate": "2025-01-20",
+    "temporaryField": "<130>"
+  },
+  {
+    "id": 31,
+    "manufacturerName": "Hisense",
+    "dateCreation": "2024-08-25",
+    "lastUpdate": "2025-07-09",
+    "temporaryField": "<131>"
+  },
+  {
+    "id": 32,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2017-12-22",
+    "lastUpdate": "2025-05-12",
+    "temporaryField": "<132>"
+  },
+  {
+    "id": 33,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2018-07-05",
+    "lastUpdate": "2025-08-09",
+    "temporaryField": "<133>"
+  },
+  {
+    "id": 34,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2024-01-14",
+    "lastUpdate": "2025-12-25",
+    "temporaryField": "<134>"
+  },
+  {
+    "id": 35,
+    "manufacturerName": "Siemens",
+    "dateCreation": "2005-04-07",
+    "lastUpdate": "2025-07-02",
+    "temporaryField": "<135>"
+  },
+  {
+    "id": 36,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2025-03-17",
+    "lastUpdate": "2025-03-02",
+    "temporaryField": "<136>"
+  },
+  {
+    "id": 37,
+    "manufacturerName": "Electrolux",
+    "dateCreation": "2018-04-27",
+    "lastUpdate": "2025-03-03",
+    "temporaryField": "<137>"
+  },
+  {
+    "id": 38,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2015-08-22",
+    "lastUpdate": "2025-03-02",
+    "temporaryField": "<138>"
+  },
+  {
+    "id": 39,
+    "manufacturerName": "Haier",
+    "dateCreation": "2016-06-05",
+    "lastUpdate": "2025-07-02",
+    "temporaryField": "<139>"
+  },
+  {
+    "id": 40,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2013-06-25",
+    "lastUpdate": "2025-05-22",
+    "temporaryField": "<140>"
+  },
+  {
+    "id": 41,
+    "manufacturerName": "Beko",
+    "dateCreation": "2025-09-03",
+    "lastUpdate": "2025-12-21",
+    "temporaryField": "<141>"
+  },
+  {
+    "id": 42,
+    "manufacturerName": "Bosch",
+    "dateCreation": "2013-03-26",
+    "lastUpdate": "2025-09-01",
+    "temporaryField": "<142>"
+  },
+  {
+    "id": 43,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2020-03-11",
+    "lastUpdate": "2025-11-15",
+    "temporaryField": "<143>"
+  },
+  {
+    "id": 44,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2024-10-26",
+    "lastUpdate": "2025-06-09",
+    "temporaryField": "<144>"
+  },
+  {
+    "id": 45,
+    "manufacturerName": "Candy",
+    "dateCreation": "2014-10-25",
+    "lastUpdate": "2025-05-28",
+    "temporaryField": "<145>"
+  },
+  {
+    "id": 46,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2013-07-15",
+    "lastUpdate": "2025-03-16",
+    "temporaryField": "<146>"
+  },
+  {
+    "id": 47,
+    "manufacturerName": "Beko",
+    "dateCreation": "2016-09-02",
+    "lastUpdate": "2025-06-19",
+    "temporaryField": "<147>"
+  },
+  {
+    "id": 48,
+    "manufacturerName": "Candy",
+    "dateCreation": "2015-05-17",
+    "lastUpdate": "2025-01-01",
+    "temporaryField": "<148>"
+  },
+  {
+    "id": 49,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2014-03-06",
+    "lastUpdate": "2025-04-11",
+    "temporaryField": "<149>"
+  },
+  {
+    "id": 50,
+    "manufacturerName": "Philips",
+    "dateCreation": "2001-08-05",
+    "lastUpdate": "2025-06-13",
+    "temporaryField": "<150>"
+  },
+  {
+    "id": 51,
+    "manufacturerName": "LG",
+    "dateCreation": "2002-04-26",
+    "lastUpdate": "2025-09-15",
+    "temporaryField": "<151>"
+  },
+  {
+    "id": 52,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2017-09-14",
+    "lastUpdate": "2025-07-28",
+    "temporaryField": "<152>"
+  },
+  {
+    "id": 53,
+    "manufacturerName": "Miele",
+    "dateCreation": "2025-12-11",
+    "lastUpdate": "2025-04-21",
+    "temporaryField": "<153>"
+  },
+  {
+    "id": 54,
+    "manufacturerName": "Miele",
+    "dateCreation": "2018-02-27",
+    "lastUpdate": "2025-10-03",
+    "temporaryField": "<154>"
+  },
+  {
+    "id": 55,
+    "manufacturerName": "Siemens",
+    "dateCreation": "2013-02-13",
+    "lastUpdate": "2025-11-24",
+    "temporaryField": "<155>"
+  },
+  {
+    "id": 56,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2001-07-12",
+    "lastUpdate": "2025-11-28",
+    "temporaryField": "<156>"
+  },
+  {
+    "id": 57,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2024-05-06",
+    "lastUpdate": "2025-09-12",
+    "temporaryField": "<157>"
+  },
+  {
+    "id": 58,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2007-11-15",
+    "lastUpdate": "2025-08-12",
+    "temporaryField": "<158>"
+  },
+  {
+    "id": 59,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2010-06-01",
+    "lastUpdate": "2025-12-22",
+    "temporaryField": "<159>"
+  },
+  {
+    "id": 60,
+    "manufacturerName": "Miele",
+    "dateCreation": "2009-06-04",
+    "lastUpdate": "2025-06-20",
+    "temporaryField": "<160>"
+  },
+  {
+    "id": 61,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2011-10-06",
+    "lastUpdate": "2025-07-04",
+    "temporaryField": "<161>"
+  },
+  {
+    "id": 62,
+    "manufacturerName": "Candy",
+    "dateCreation": "2007-04-25",
+    "lastUpdate": "2025-11-07",
+    "temporaryField": "<162>"
+  },
+  {
+    "id": 63,
+    "manufacturerName": "Hisense",
+    "dateCreation": "2010-04-15",
+    "lastUpdate": "2025-01-14",
+    "temporaryField": "<163>"
+  },
+  {
+    "id": 64,
+    "manufacturerName": "Gorenje",
+    "dateCreation": "2019-05-16",
+    "lastUpdate": "2025-09-13",
+    "temporaryField": "<164>"
+  },
+  {
+    "id": 65,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2019-11-06",
+    "lastUpdate": "2025-04-08",
+    "temporaryField": "<165>"
+  },
+  {
+    "id": 66,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2004-01-25",
+    "lastUpdate": "2025-06-17",
+    "temporaryField": "<166>"
+  },
+  {
+    "id": 67,
+    "manufacturerName": "Haier",
+    "dateCreation": "2025-11-04",
+    "lastUpdate": "2025-02-12",
+    "temporaryField": "<167>"
+  },
+  {
+    "id": 68,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2010-04-24",
+    "lastUpdate": "2025-04-23",
+    "temporaryField": "<168>"
+  },
+  {
+    "id": 69,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2025-09-23",
+    "lastUpdate": "2025-11-14",
+    "temporaryField": "<169>"
+  },
+  {
+    "id": 70,
+    "manufacturerName": "Bosch",
+    "dateCreation": "2014-06-06",
+    "lastUpdate": "2025-07-21",
+    "temporaryField": "<170>"
+  },
+  {
+    "id": 71,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2022-10-02",
+    "lastUpdate": "2025-04-21",
+    "temporaryField": "<171>"
+  },
+  {
+    "id": 72,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2009-10-14",
+    "lastUpdate": "2025-12-11",
+    "temporaryField": "<172>"
+  },
+  {
+    "id": 73,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2016-11-13",
+    "lastUpdate": "2025-10-23",
+    "temporaryField": "<173>"
+  },
+  {
+    "id": 74,
+    "manufacturerName": "Electrolux",
+    "dateCreation": "2008-07-12",
+    "lastUpdate": "2025-12-18",
+    "temporaryField": "<174>"
+  },
+  {
+    "id": 75,
+    "manufacturerName": "Beko",
+    "dateCreation": "2021-02-23",
+    "lastUpdate": "2025-12-12",
+    "temporaryField": "<175>"
+  },
+  {
+    "id": 76,
+    "manufacturerName": "Miele",
+    "dateCreation": "2011-11-06",
+    "lastUpdate": "2025-06-09",
+    "temporaryField": "<176>"
+  },
+  {
+    "id": 77,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2025-09-10",
+    "lastUpdate": "2025-10-12",
+    "temporaryField": "<177>"
+  },
+  {
+    "id": 78,
+    "manufacturerName": "Beko",
+    "dateCreation": "2008-03-16",
+    "lastUpdate": "2025-12-11",
+    "temporaryField": "<178>"
+  },
+  {
+    "id": 79,
+    "manufacturerName": "Haier",
+    "dateCreation": "2010-11-27",
+    "lastUpdate": "2025-06-18",
+    "temporaryField": "<179>"
+  },
+  {
+    "id": 80,
+    "manufacturerName": "Siemens",
+    "dateCreation": "2013-06-12",
+    "lastUpdate": "2025-09-28",
+    "temporaryField": "<180>"
+  },
+  {
+    "id": 81,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2011-06-07",
+    "lastUpdate": "2025-03-22",
+    "temporaryField": "<181>"
+  },
+  {
+    "id": 82,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2011-10-11",
+    "lastUpdate": "2025-06-23",
+    "temporaryField": "<182>"
+  },
+  {
+    "id": 83,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2017-01-07",
+    "lastUpdate": "2025-10-08",
+    "temporaryField": "<183>"
+  },
+  {
+    "id": 84,
+    "manufacturerName": "Hotpoint",
+    "dateCreation": "2023-07-02",
+    "lastUpdate": "2025-02-21",
+    "temporaryField": "<184>"
+  },
+  {
+    "id": 85,
+    "manufacturerName": "Gorenje",
+    "dateCreation": "2020-03-06",
+    "lastUpdate": "2025-11-01",
+    "temporaryField": "<185>"
+  },
+  {
+    "id": 86,
+    "manufacturerName": "Miele",
+    "dateCreation": "2002-09-14",
+    "lastUpdate": "2025-11-17",
+    "temporaryField": "<186>"
+  },
+  {
+    "id": 87,
+    "manufacturerName": "Gorenje",
+    "dateCreation": "2015-11-18",
+    "lastUpdate": "2025-10-23",
+    "temporaryField": "<187>"
+  },
+  {
+    "id": 88,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2005-11-18",
+    "lastUpdate": "2025-01-10",
+    "temporaryField": "<188>"
+  },
+  {
+    "id": 89,
+    "manufacturerName": "Hotpoint",
+    "dateCreation": "2002-04-26",
+    "lastUpdate": "2025-03-28",
+    "temporaryField": "<189>"
+  },
+  {
+    "id": 90,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2015-01-22",
+    "lastUpdate": "2025-05-27",
+    "temporaryField": "<190>"
+  },
+  {
+    "id": 91,
+    "manufacturerName": "LG",
+    "dateCreation": "2022-06-08",
+    "lastUpdate": "2025-11-10",
+    "temporaryField": "<191>"
+  },
+  {
+    "id": 92,
+    "manufacturerName": "Beko",
+    "dateCreation": "2009-02-23",
+    "lastUpdate": "2025-10-18",
+    "temporaryField": "<192>"
+  },
+  {
+    "id": 93,
+    "manufacturerName": "Candy",
+    "dateCreation": "2015-12-08",
+    "lastUpdate": "2025-04-02",
+    "temporaryField": "<193>"
+  },
+  {
+    "id": 94,
+    "manufacturerName": "Hisense",
+    "dateCreation": "2008-05-27",
+    "lastUpdate": "2025-04-13",
+    "temporaryField": "<194>"
+  },
+  {
+    "id": 95,
+    "manufacturerName": "Gorenje",
+    "dateCreation": "2005-01-09",
+    "lastUpdate": "2025-03-06",
+    "temporaryField": "<195>"
+  },
+  {
+    "id": 96,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2006-02-18",
+    "lastUpdate": "2025-08-04",
+    "temporaryField": "<196>"
+  },
+  {
+    "id": 97,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2019-07-05",
+    "lastUpdate": "2025-05-15",
+    "temporaryField": "<197>"
+  },
+  {
+    "id": 98,
+    "manufacturerName": "Miele",
+    "dateCreation": "2005-07-20",
+    "lastUpdate": "2025-01-16",
+    "temporaryField": "<198>"
+  },
+  {
+    "id": 99,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2024-10-13",
+    "lastUpdate": "2025-09-08",
+    "temporaryField": "<199>"
+  },
+  {
+    "id": 100,
+    "manufacturerName": "Candy",
+    "dateCreation": "2003-08-02",
+    "lastUpdate": "2025-07-15",
+    "temporaryField": "<200>"
+  },
+  {
+    "id": 101,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2004-04-13",
+    "lastUpdate": "2025-03-26",
+    "temporaryField": "<201>"
+  },
+  {
+    "id": 102,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2018-05-13",
+    "lastUpdate": "2025-09-18",
+    "temporaryField": "<202>"
+  },
+  {
+    "id": 103,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2011-02-05",
+    "lastUpdate": "2025-05-09",
+    "temporaryField": "<203>"
+  },
+  {
+    "id": 104,
+    "manufacturerName": "Miele",
+    "dateCreation": "2006-07-22",
+    "lastUpdate": "2025-01-04",
+    "temporaryField": "<204>"
+  },
+  {
+    "id": 105,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2018-11-17",
+    "lastUpdate": "2025-05-01",
+    "temporaryField": "<205>"
+  },
+  {
+    "id": 106,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2009-01-19",
+    "lastUpdate": "2025-12-10",
+    "temporaryField": "<206>"
+  },
+  {
+    "id": 107,
+    "manufacturerName": "Bosch",
+    "dateCreation": "2017-05-19",
+    "lastUpdate": "2025-03-13",
+    "temporaryField": "<207>"
+  },
+  {
+    "id": 108,
+    "manufacturerName": "Beko",
+    "dateCreation": "2011-11-08",
+    "lastUpdate": "2025-08-08",
+    "temporaryField": "<208>"
+  },
+  {
+    "id": 109,
+    "manufacturerName": "Gorenje",
+    "dateCreation": "2017-01-06",
+    "lastUpdate": "2025-10-01",
+    "temporaryField": "<209>"
+  },
+  {
+    "id": 110,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2015-04-22",
+    "lastUpdate": "2025-07-05",
+    "temporaryField": "<210>"
+  },
+  {
+    "id": 111,
+    "manufacturerName": "Bosch",
+    "dateCreation": "2021-11-14",
+    "lastUpdate": "2025-07-10",
+    "temporaryField": "<211>"
+  },
+  {
+    "id": 112,
+    "manufacturerName": "Beko",
+    "dateCreation": "2019-10-15",
+    "lastUpdate": "2025-12-16",
+    "temporaryField": "<212>"
+  },
+  {
+    "id": 113,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2021-01-14",
+    "lastUpdate": "2025-09-18",
+    "temporaryField": "<213>"
+  },
+  {
+    "id": 114,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2016-06-18",
+    "lastUpdate": "2025-06-16",
+    "temporaryField": "<214>"
+  },
+  {
+    "id": 115,
+    "manufacturerName": "Philips",
+    "dateCreation": "2024-11-19",
+    "lastUpdate": "2025-12-23",
+    "temporaryField": "<215>"
+  },
+  {
+    "id": 116,
+    "manufacturerName": "Electrolux",
+    "dateCreation": "2004-01-15",
+    "lastUpdate": "2025-05-15",
+    "temporaryField": "<216>"
+  },
+  {
+    "id": 117,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2005-01-25",
+    "lastUpdate": "2025-12-17",
+    "temporaryField": "<217>"
+  },
+  {
+    "id": 118,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2011-10-02",
+    "lastUpdate": "2025-05-10",
+    "temporaryField": "<218>"
+  },
+  {
+    "id": 119,
+    "manufacturerName": "Gorenje",
+    "dateCreation": "2019-09-28",
+    "lastUpdate": "2025-08-27",
+    "temporaryField": "<219>"
+  },
+  {
+    "id": 120,
+    "manufacturerName": "Philips",
+    "dateCreation": "2025-05-24",
+    "lastUpdate": "2025-07-08",
+    "temporaryField": "<220>"
+  },
+  {
+    "id": 121,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2019-05-16",
+    "lastUpdate": "2025-02-04",
+    "temporaryField": "<221>"
+  },
+  {
+    "id": 122,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2001-07-22",
+    "lastUpdate": "2025-01-22",
+    "temporaryField": "<222>"
+  },
+  {
+    "id": 123,
+    "manufacturerName": "LG",
+    "dateCreation": "2015-03-09",
+    "lastUpdate": "2025-02-22",
+    "temporaryField": "<223>"
+  },
+  {
+    "id": 124,
+    "manufacturerName": "Haier",
+    "dateCreation": "2003-04-15",
+    "lastUpdate": "2025-07-03",
+    "temporaryField": "<224>"
+  },
+  {
+    "id": 125,
+    "manufacturerName": "Candy",
+    "dateCreation": "2010-05-20",
+    "lastUpdate": "2025-03-01",
+    "temporaryField": "<225>"
+  },
+  {
+    "id": 126,
+    "manufacturerName": "Philips",
+    "dateCreation": "2017-02-28",
+    "lastUpdate": "2025-02-20",
+    "temporaryField": "<226>"
+  },
+  {
+    "id": 127,
+    "manufacturerName": "Haier",
+    "dateCreation": "2023-05-26",
+    "lastUpdate": "2025-08-25",
+    "temporaryField": "<227>"
+  },
+  {
+    "id": 128,
+    "manufacturerName": "Haier",
+    "dateCreation": "2022-09-09",
+    "lastUpdate": "2025-11-19",
+    "temporaryField": "<228>"
+  },
+  {
+    "id": 129,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2002-07-02",
+    "lastUpdate": "2025-05-16",
+    "temporaryField": "<229>"
+  },
+  {
+    "id": 130,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2022-07-08",
+    "lastUpdate": "2025-07-08",
+    "temporaryField": "<230>"
+  },
+  {
+    "id": 131,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2019-10-19",
+    "lastUpdate": "2025-02-06",
+    "temporaryField": "<231>"
+  },
+  {
+    "id": 132,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2020-11-24",
+    "lastUpdate": "2025-12-28",
+    "temporaryField": "<232>"
+  },
+  {
+    "id": 133,
+    "manufacturerName": "Miele",
+    "dateCreation": "2003-03-17",
+    "lastUpdate": "2025-11-25",
+    "temporaryField": "<233>"
+  },
+  {
+    "id": 134,
+    "manufacturerName": "Beko",
+    "dateCreation": "2011-11-01",
+    "lastUpdate": "2025-04-17",
+    "temporaryField": "<234>"
+  },
+  {
+    "id": 135,
+    "manufacturerName": "Candy",
+    "dateCreation": "2025-06-16",
+    "lastUpdate": "2025-02-21",
+    "temporaryField": "<235>"
+  },
+  {
+    "id": 136,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2011-09-01",
+    "lastUpdate": "2025-06-11",
+    "temporaryField": "<236>"
+  },
+  {
+    "id": 137,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2017-01-21",
+    "lastUpdate": "2025-08-05",
+    "temporaryField": "<237>"
+  },
+  {
+    "id": 138,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2008-01-09",
+    "lastUpdate": "2025-04-06",
+    "temporaryField": "<238>"
+  },
+  {
+    "id": 139,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2025-03-01",
+    "lastUpdate": "2025-12-11",
+    "temporaryField": "<239>"
+  },
+  {
+    "id": 140,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2019-11-25",
+    "lastUpdate": "2025-08-26",
+    "temporaryField": "<240>"
+  },
+  {
+    "id": 141,
+    "manufacturerName": "Philips",
+    "dateCreation": "2021-03-14",
+    "lastUpdate": "2025-07-06",
+    "temporaryField": "<241>"
+  },
+  {
+    "id": 142,
+    "manufacturerName": "Bosch",
+    "dateCreation": "2008-04-22",
+    "lastUpdate": "2025-12-24",
+    "temporaryField": "<242>"
+  },
+  {
+    "id": 143,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2013-01-27",
+    "lastUpdate": "2025-01-10",
+    "temporaryField": "<243>"
+  },
+  {
+    "id": 144,
+    "manufacturerName": "Electrolux",
+    "dateCreation": "2009-04-14",
+    "lastUpdate": "2025-11-18",
+    "temporaryField": "<244>"
+  },
+  {
+    "id": 145,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2008-11-08",
+    "lastUpdate": "2025-08-22",
+    "temporaryField": "<245>"
+  },
+  {
+    "id": 146,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2012-10-07",
+    "lastUpdate": "2025-03-06",
+    "temporaryField": "<246>"
+  },
+  {
+    "id": 147,
+    "manufacturerName": "Hisense",
+    "dateCreation": "2023-08-19",
+    "lastUpdate": "2025-10-24",
+    "temporaryField": "<247>"
+  },
+  {
+    "id": 148,
+    "manufacturerName": "Haier",
+    "dateCreation": "2016-08-21",
+    "lastUpdate": "2025-06-18",
+    "temporaryField": "<248>"
+  },
+  {
+    "id": 149,
+    "manufacturerName": "LG",
+    "dateCreation": "2011-02-23",
+    "lastUpdate": "2025-04-10",
+    "temporaryField": "<249>"
+  },
+  {
+    "id": 150,
+    "manufacturerName": "Bosch",
+    "dateCreation": "2016-01-23",
+    "lastUpdate": "2025-09-02",
+    "temporaryField": "<250>"
+  },
+  {
+    "id": 151,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2017-06-27",
+    "lastUpdate": "2025-03-02",
+    "temporaryField": "<251>"
+  },
+  {
+    "id": 152,
+    "manufacturerName": "Hotpoint",
+    "dateCreation": "2023-04-13",
+    "lastUpdate": "2025-01-18",
+    "temporaryField": "<252>"
+  },
+  {
+    "id": 153,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2009-04-04",
+    "lastUpdate": "2025-09-22",
+    "temporaryField": "<253>"
+  },
+  {
+    "id": 154,
+    "manufacturerName": "Sharp",
+    "dateCreation": "2023-12-01",
+    "lastUpdate": "2025-04-13",
+    "temporaryField": "<254>"
+  },
+  {
+    "id": 155,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2023-09-18",
+    "lastUpdate": "2025-08-15",
+    "temporaryField": "<255>"
+  },
+  {
+    "id": 156,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2016-05-20",
+    "lastUpdate": "2025-01-03",
+    "temporaryField": "<256>"
+  },
+  {
+    "id": 157,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2019-10-16",
+    "lastUpdate": "2025-10-06",
+    "temporaryField": "<257>"
+  },
+  {
+    "id": 158,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2004-04-05",
+    "lastUpdate": "2025-04-03",
+    "temporaryField": "<258>"
+  },
+  {
+    "id": 159,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2006-10-23",
+    "lastUpdate": "2025-06-08",
+    "temporaryField": "<259>"
+  },
+  {
+    "id": 160,
+    "manufacturerName": "Samsung",
+    "dateCreation": "2012-08-03",
+    "lastUpdate": "2025-05-15",
+    "temporaryField": "<260>"
+  },
+  {
+    "id": 161,
+    "manufacturerName": "Hisense",
+    "dateCreation": "2016-09-13",
+    "lastUpdate": "2025-12-20",
+    "temporaryField": "<261>"
+  },
+  {
+    "id": 162,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2003-04-27",
+    "lastUpdate": "2025-10-22",
+    "temporaryField": "<262>"
+  },
+  {
+    "id": 163,
+    "manufacturerName": "LG",
+    "dateCreation": "2015-03-18",
+    "lastUpdate": "2025-06-07",
+    "temporaryField": "<263>"
+  },
+  {
+    "id": 164,
+    "manufacturerName": "Electrolux",
+    "dateCreation": "2019-02-14",
+    "lastUpdate": "2025-06-19",
+    "temporaryField": "<264>"
+  },
+  {
+    "id": 165,
+    "manufacturerName": "Hotpoint",
+    "dateCreation": "2021-03-03",
+    "lastUpdate": "2025-11-11",
+    "temporaryField": "<265>"
+  },
+  {
+    "id": 166,
+    "manufacturerName": "Candy",
+    "dateCreation": "2004-06-06",
+    "lastUpdate": "2025-07-24",
+    "temporaryField": "<266>"
+  },
+  {
+    "id": 167,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2014-10-08",
+    "lastUpdate": "2025-08-25",
+    "temporaryField": "<267>"
+  },
+  {
+    "id": 168,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2011-06-10",
+    "lastUpdate": "2025-05-07",
+    "temporaryField": "<268>"
+  },
+  {
+    "id": 169,
+    "manufacturerName": "Smeg",
+    "dateCreation": "2020-06-15",
+    "lastUpdate": "2025-07-24",
+    "temporaryField": "<269>"
+  },
+  {
+    "id": 170,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2012-02-18",
+    "lastUpdate": "2025-09-14",
+    "temporaryField": "<270>"
+  },
+  {
+    "id": 171,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2019-04-06",
+    "lastUpdate": "2025-07-07",
+    "temporaryField": "<271>"
+  },
+  {
+    "id": 172,
+    "manufacturerName": "Indesit",
+    "dateCreation": "2017-04-18",
+    "lastUpdate": "2025-04-03",
+    "temporaryField": "<272>"
+  },
+  {
+    "id": 173,
+    "manufacturerName": "LG",
+    "dateCreation": "2018-04-24",
+    "lastUpdate": "2025-09-14",
+    "temporaryField": "<273>"
+  },
+  {
+    "id": 174,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2020-08-08",
+    "lastUpdate": "2025-11-05",
+    "temporaryField": "<274>"
+  },
+  {
+    "id": 175,
+    "manufacturerName": "Candy",
+    "dateCreation": "2013-10-26",
+    "lastUpdate": "2025-02-09",
+    "temporaryField": "<275>"
+  },
+  {
+    "id": 176,
+    "manufacturerName": "Candy",
+    "dateCreation": "2002-05-18",
+    "lastUpdate": "2025-04-02",
+    "temporaryField": "<276>"
+  },
+  {
+    "id": 177,
+    "manufacturerName": "Haier",
+    "dateCreation": "2023-04-27",
+    "lastUpdate": "2025-02-28",
+    "temporaryField": "<277>"
+  },
+  {
+    "id": 178,
+    "manufacturerName": "Gorenje",
+    "dateCreation": "2012-05-11",
+    "lastUpdate": "2025-12-10",
+    "temporaryField": "<278>"
+  },
+  {
+    "id": 179,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2008-09-18",
+    "lastUpdate": "2025-05-13",
+    "temporaryField": "<279>"
+  },
+  {
+    "id": 180,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2014-12-03",
+    "lastUpdate": "2025-12-09",
+    "temporaryField": "<280>"
+  },
+  {
+    "id": 181,
+    "manufacturerName": "LG",
+    "dateCreation": "2004-05-02",
+    "lastUpdate": "2025-03-25",
+    "temporaryField": "<281>"
+  },
+  {
+    "id": 182,
+    "manufacturerName": "Zanussi",
+    "dateCreation": "2023-07-12",
+    "lastUpdate": "2025-03-15",
+    "temporaryField": "<282>"
+  },
+  {
+    "id": 183,
+    "manufacturerName": "Haier",
+    "dateCreation": "2006-10-16",
+    "lastUpdate": "2025-01-26",
+    "temporaryField": "<283>"
+  },
+  {
+    "id": 184,
+    "manufacturerName": "Hotpoint",
+    "dateCreation": "2009-03-17",
+    "lastUpdate": "2025-03-08",
+    "temporaryField": "<284>"
+  },
+  {
+    "id": 185,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2023-10-26",
+    "lastUpdate": "2025-02-22",
+    "temporaryField": "<285>"
+  },
+  {
+    "id": 186,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2022-10-28",
+    "lastUpdate": "2025-11-25",
+    "temporaryField": "<286>"
+  },
+  {
+    "id": 187,
+    "manufacturerName": "Siemens",
+    "dateCreation": "2010-04-10",
+    "lastUpdate": "2025-09-20",
+    "temporaryField": "<287>"
+  },
+  {
+    "id": 188,
+    "manufacturerName": "Whirlpool",
+    "dateCreation": "2001-08-07",
+    "lastUpdate": "2025-04-18",
+    "temporaryField": "<288>"
+  },
+  {
+    "id": 189,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2010-07-06",
+    "lastUpdate": "2025-09-02",
+    "temporaryField": "<289>"
+  },
+  {
+    "id": 190,
+    "manufacturerName": "Candy",
+    "dateCreation": "2007-05-22",
+    "lastUpdate": "2025-05-06",
+    "temporaryField": "<290>"
+  },
+  {
+    "id": 191,
+    "manufacturerName": "Miele",
+    "dateCreation": "2013-08-20",
+    "lastUpdate": "2025-03-26",
+    "temporaryField": "<291>"
+  },
+  {
+    "id": 192,
+    "manufacturerName": "Panasonic",
+    "dateCreation": "2009-01-04",
+    "lastUpdate": "2025-05-03",
+    "temporaryField": "<292>"
+  },
+  {
+    "id": 193,
+    "manufacturerName": "Miele",
+    "dateCreation": "2016-06-11",
+    "lastUpdate": "2025-09-19",
+    "temporaryField": "<293>"
+  },
+  {
+    "id": 194,
+    "manufacturerName": "Ariston",
+    "dateCreation": "2005-07-23",
+    "lastUpdate": "2025-07-20",
+    "temporaryField": "<294>"
+  },
+  {
+    "id": 195,
+    "manufacturerName": "Miele",
+    "dateCreation": "2016-11-27",
+    "lastUpdate": "2025-11-15",
+    "temporaryField": "<295>"
+  },
+  {
+    "id": 196,
+    "manufacturerName": "Beko",
+    "dateCreation": "2016-11-10",
+    "lastUpdate": "2025-08-25",
+    "temporaryField": "<296>"
+  },
+  {
+    "id": 197,
+    "manufacturerName": "Hisense",
+    "dateCreation": "2008-01-02",
+    "lastUpdate": "2025-02-07",
+    "temporaryField": "<297>"
+  },
+  {
+    "id": 198,
+    "manufacturerName": "Siemens",
+    "dateCreation": "2005-12-11",
+    "lastUpdate": "2025-10-24",
+    "temporaryField": "<298>"
+  },
+  {
+    "id": 199,
+    "manufacturerName": "LG",
+    "dateCreation": "2021-11-26",
+    "lastUpdate": "2025-12-28",
+    "temporaryField": "<299>"
+  }
+]

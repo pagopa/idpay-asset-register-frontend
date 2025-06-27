@@ -14,11 +14,12 @@ import TOSLayout from './components/TOSLayout/TOSLayout';
 import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
 import Prodotti from './pages/prodotti/prodotti';
+import InvitPanoramica from './pages/invitPanoramica/invitPanoramica';
 import Caricamenti from './pages/caricamenti/caricamenti';
 import Panoramica from './pages/panoramica/panoramica';
-import TOS from "./pages/tos/TOS";
-import PrivacyPolicy from "./pages/privacyPolicy/PrivacyPolicy";
-import AddProducts from "./pages/aggiungiProdotti/addProducts";
+import TOS from './pages/tos/TOS';
+import PrivacyPolicy from './pages/privacyPolicy/PrivacyPolicy';
+import AddProducts from './pages/aggiungiProdotti/addProducts';
 
 const SecuredRoutes = withLogin(
   withSelectedPartyProducts(() => {
@@ -52,7 +53,8 @@ const SecuredRoutes = withLogin(
       <Layout>
         <Routes>
           <Route path={routes.HOME} element={<Panoramica />} />
-          <Route path={routes.ADD_PRODUCTS} element={ <AddProducts /> } />
+          <Route path={routes.INVITALIA} element={<InvitPanoramica />} />
+          <Route path={routes.ADD_PRODUCTS} element={<AddProducts />} />
           <Route path={routes.PRODUCTS} element={<Prodotti />} />
           <Route path={routes.UPLOADS} element={<Caricamenti />} />
           <Route path={routes.TOS} element={<TOS />} />

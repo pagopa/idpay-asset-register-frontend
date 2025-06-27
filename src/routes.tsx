@@ -10,6 +10,7 @@ const ROUTES = {
   TOS: `${BASE_ROUTE}/terms-of-service`,
   PRIVACY_POLICY: `${BASE_ROUTE}/privacy-policy`,
   PRODUCTS: `${BASE_ROUTE}/prodotti`,
+  INVITALIA: `${BASE_ROUTE}/invitit`,
   UPLOADS: `${BASE_ROUTE}/storico-caricamenti`,
 };
 

@@ -23,7 +23,8 @@ const Layout = ({ children }: Props) => {
   const match =
     matchPath({ path: ROUTES.HOME, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.PRODUCTS, end: true }, location.pathname) ||
-    matchPath({ path: ROUTES.UPLOADS, end: true }, location.pathname);
+    matchPath({ path: ROUTES.UPLOADS, end: true }, location.pathname) ||
+    matchPath({ path: ROUTES.INVITALIA, end: true }, location.pathname);
 
   useEffect(() => {
     setShowAssistanceInfo(location.pathname !== ROUTES.ASSISTANCE);

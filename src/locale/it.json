@@ -137,6 +137,12 @@
     },
     "storicoCaricamenti": {
       "sideMenuTitle": "Storico caricamenti"
+    },
+    "invitView": {
+      "sideTitle": "Panoramica InvIt",
+      "title": "Panoramica",
+      "subTitle": "Consulta i prodotti caricati dai produttori con i relativi dettagli.",
+      "searchPlaceholder": "Cerca per nome produttore"
     }
   },
   "roles": {
