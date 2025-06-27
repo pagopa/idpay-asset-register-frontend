@@ -110,7 +110,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-const Prodotti = () => {
+const Products = () => {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Data>('category');
   const [page, setPage] = useState(0);
@@ -181,10 +181,6 @@ const Prodotti = () => {
 
   const handleGtinCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGtinCodeFilter(event.target.value);
-  };
-
-  const handleManufacturerFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setManufacturerFilter(event.target.value);
   };
 
   const handleDeleteFiltersButtonClick = () => {
@@ -300,15 +296,6 @@ const Prodotti = () => {
             value={gtinCodeFilter}
             onChange={handleGtinCodeFilterChange}
           />
-          <TextField
-            sx={{ minWidth: 175 }}
-            size="small"
-            id="manufacturer-code-text"
-            label={t('pages.products.filterLabels.manufacturerCode')}
-            variant="outlined"
-            value={manufacturerFilter}
-            onChange={handleManufacturerFilterChange}
-          />
           <Button
             disabled={noFilterSetted()}
             variant="outlined"
@@ -400,6 +387,15 @@ const Prodotti = () => {
             }
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              '& .MuiTablePagination-actions button': {
+                backgroundColor: 'transparent',
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                },
+              },
+            }}
+
           />
         )}
       </Paper>
@@ -407,4 +403,4 @@ const Prodotti = () => {
     </Box>
   );
 };
-export default Prodotti;
+export default Products;

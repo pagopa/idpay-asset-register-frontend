@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import EmptyList from '../components/EmptyList';
 
-const Caricamenti = () => (
+const UploadsHistory = () => (
   <Box
     sx={{
       display: 'grid',
@@ -24,4 +24,4 @@ const Caricamenti = () => (
     </Box>
   </Box>
 );
-export default Caricamenti;
+export default UploadsHistory;
