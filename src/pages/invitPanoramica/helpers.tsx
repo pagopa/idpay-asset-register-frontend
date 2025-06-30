@@ -1,11 +1,9 @@
 export interface Data {
-  categoria: string;
-  classe_energetica: string;
-  codice_eprel: string;
-  codice_gtinean: string;
-  codice_produttore: string;
-  lotto: string;
   id: number;
+  manufacturerName: string;
+  dateCreation: string;
+  lastUpdate: string;
+  temporaryField: string;
 }
 
 export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -60,16 +58,10 @@ export interface EnhancedTableProps {
 
 export interface DataProp {
   id?: number;
-  categoria?: string;
-  classe_energetica?: string;
-  codice_eprel?: string;
-  codice_gtinean?: string;
-  lotto?: string;
-  codice_prodotto?: string;
-  codice_produttore?: string;
-  marca?: string;
-  modello?: string;
-  origine?: string;
+  manufacturerName?: string;
+  dateCreation?: string;
+  lastUpdate?: string;
+  temporaryField?: string;
 }
 
 export interface ProductsDrawerProps {

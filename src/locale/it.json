@@ -139,10 +139,18 @@
       "sideMenuTitle": "Storico caricamenti"
     },
     "invitView": {
+      "emptyList": "Nessun produttore corrisponde alla ricerca impostata.",
+      "backToTable": "Torna all'elenco dei produttori",
       "sideTitle": "Panoramica InvIt",
       "title": "Panoramica",
       "subTitle": "Consulta i prodotti caricati dai produttori con i relativi dettagli.",
-      "searchPlaceholder": "Cerca per nome produttore"
+      "searchPlaceholder": "Cerca per nome produttore",
+      "listHeaders": {
+        "manufacturerName": "Nome produttore",
+        "dateCreation": "Creata il",
+        "lastUpdate": "Ultima modifica",
+        "temporaryField": "<?>"
+      }
     }
   },
   "roles": {

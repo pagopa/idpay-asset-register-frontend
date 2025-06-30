@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
 import {
   Box,
-  // Paper,
-  // Button,
+  Paper,
+  Button,
   FormControl,
   IconButton,
   InputAdornment,
+  Link,
   TextField,
-  // Table,
-  // TableContainer,
-  // TableBody,
-  // TableHead,
-  // TableRow,
-  // TableCell,
-  // TableSortLabel,
-  // TablePagination,
+  Table,
+  TableContainer,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableSortLabel,
+  TablePagination,
+  Typography,
 } from '@mui/material';
-// import Select, { SelectChangeEvent } from '@mui/material/Select';
-// import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SearchIcon from '@mui/icons-material/Search';
-// import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-// import { visuallyHidden } from '@mui/utils';
+import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
-// import { grey } from '@mui/material/colors';
-// import EmptyList from '../components/EmptyList';
-// import ProductsDrawer from './productdrawer';
-// import { Data, Order, DataProp } from './helpers';
+import { grey } from '@mui/material/colors';
+import EmptyList from '../components/EmptyList';
+import { EnhancedTableProps, Data, HeadCell, Order, getComparator } from './helpers';
 import mockdata from './mockdata.json';
 
 // const sanitizedData = (arr: Array<DataProp>) =>
@@ -39,180 +38,126 @@ import mockdata from './mockdata.json';
 //     lotto: item.lotto || '-',
 //   }));
 
-// function EnhancedTableHead(props: EnhancedTableProps) {
-//   const { order, orderBy, onRequestSort } = props;
-//   const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-//     onRequestSort(event, property);
-//   };
-
-//   const { t } = useTranslation();
-
-//   const headCells: ReadonlyArray<HeadCell> = [
-//     {
-//       id: 'categoria',
-//       numeric: false,
-//       disablePadding: false,
-//       label: `${t('pages.prodotti.listHeader.category')}`,
-//     },
-//     {
-//       id: 'classe_energetica',
-//       numeric: false,
-//       disablePadding: false,
-//       label: `${t('pages.prodotti.listHeader.energeticClass')}`,
-//     },
-//     {
-//       id: 'codice_eprel',
-//       numeric: false,
-//       disablePadding: false,
-//       label: `${t('pages.prodotti.listHeader.eprelCode')}`,
-//     },
-//     {
-//       id: 'codice_gtinean',
-//       numeric: false,
-//       disablePadding: false,
-//       label: `${t('pages.prodotti.listHeader.gtinCode')}`,
-//     },
-//     {
-//       id: 'lotto',
-//       numeric: false,
-//       disablePadding: false,
-//       label: `${t('pages.prodotti.listHeader.branch')}`,
-//     },
-//   ];
-
-//   return (
-//     <TableHead sx={{ backgroundColor: grey.A100 }}>
-//       <TableRow>
-//         {headCells.map((headCell) => (
-//           <TableCell
-//             key={headCell.id}
-//             align="left"
-//             padding="normal"
-//             sortDirection={orderBy === headCell.id ? order : false}
-//           >
-//             <TableSortLabel
-//               active={orderBy === headCell.id}
-//               direction={orderBy === headCell.id ? order : 'asc'}
-//               onClick={createSortHandler(headCell.id)}
-//               // hideSortIcon={headCell.id === 'spendingPeriod'}
-//               hideSortIcon={false}
-//               // disabled={headCell.id === 'spendingPeriod'}
-//               disabled={false}
-//             >
-//               {headCell.label}
-//               {orderBy === headCell.id ? (
-//                 <Box component="span" sx={visuallyHidden}>
-//                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-//                 </Box>
-//               ) : null}
-//             </TableSortLabel>
-//           </TableCell>
-//         ))}
-//       </TableRow>
-//     </TableHead>
-//   );
-// }
-
-const InvitPanoramica = () => {
-  // const [order, setOrder] = useState<Order>('asc');
-  // const [orderBy, setOrderBy] = useState<keyof Data>('categoria');
-  // const [page, setPage] = useState(0);
-  // const [rowsPerPage, setRowsPerPage] = useState(10);
-  // const [categoryFilter, setCategoryFilter] = useState<string>('');
-  // const [branchFilter, setBranchFilter] = useState<string>('');
-  // const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
-  // const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
-  // const [manufacturerFilter, setManufacturerFilter] = useState<string>('');
-  // const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
-  // const [drawerData, setDrawerData] = useState<DataProp>({});
-  // const [mockedData, setMockedData] = useState<Array<any>>(smockdata);
-  const [searchKey, setSearchKey] = useState('');
-
-  const mockedData = mockdata;
-
-  // const categories = [...new Set(mockedData.map((item) => item.categoria))];
-  // const branches = [...new Set(mockedData.map((item) => item.lotto))];
-  // const manufacturers = [...new Set(mockedData.map((item) => item.manufacturerName).sort())];
+function EnhancedTableHead(props: EnhancedTableProps) {
+  const { order, orderBy, onRequestSort } = props;
+  const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+    onRequestSort(event, property);
+  };
 
   const { t } = useTranslation();
 
-  // const handleFilterButtonClick = () => {
-  //   setMockedData(
-  //     mockedData
-  //       .filter((item) => !categoryFilter || item.categoria === categoryFilter)
-  //       .filter((item) => !branchFilter || item.lotto === branchFilter)
-  //       .filter((item) => !eprelCodeFilter || item.codice_eprel?.includes(eprelCodeFilter))
-  //       .filter((item) => !gtinCodeFilter || item.codice_gtinean?.includes(gtinCodeFilter))
-  //       .filter(
-  //         (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
-  //       )
-  //   );
-  // };
+  const headCells: ReadonlyArray<HeadCell> = [
+    {
+      id: 'manufacturerName',
+      numeric: false,
+      disablePadding: false,
+      label: `${t('pages.invitView.listHeaders.manufacturerName')}`,
+    },
+    {
+      id: 'dateCreation',
+      numeric: false,
+      disablePadding: false,
+      label: `${t('pages.invitView.listHeaders.dateCreation')}`,
+    },
+    {
+      id: 'lastUpdate',
+      numeric: false,
+      disablePadding: false,
+      label: `${t('pages.invitView.listHeaders.lastUpdate')}`,
+    },
+    {
+      id: 'temporaryField',
+      numeric: false,
+      disablePadding: false,
+      label: `${t('pages.invitView.listHeaders.temporaryField')}`,
+    },
+  ];
 
-  // const handleToggleDrawer = (newOpen: boolean) => {
-  //   setDrawerOpened(newOpen);
-  // };
+  return (
+    <TableHead sx={{ backgroundColor: grey.A100 }}>
+      <TableRow>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align="left"
+            padding="normal"
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
+              hideSortIcon={false}
+              disabled={false}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <Box component="span" sx={visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
 
-  // const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Data) => {
-  //   const isAsc = orderBy === property && order === 'asc';
-  //   setOrder(isAsc ? 'desc' : 'asc');
-  //   setOrderBy(property);
-  // };
+const InvitPanoramica = () => {
+  const [order, setOrder] = useState<Order>('asc');
+  const [orderBy, setOrderBy] = useState<keyof Data>('manufacturerName');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchKey, setSearchKey] = useState('');
+  const [mockedData, setMockedData] = useState(mockdata);
 
-  // const handleChangePage = (event: unknown, newPage: number) => {
-  //   console.log(event);
-  //   setPage(newPage);
-  // };
+  const { t } = useTranslation();
 
-  // const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setRowsPerPage(parseInt(event.target.value, 10));
-  //   setPage(0);
-  // };
+  const handleTextFilterKeyUp = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      const filteredData =
+        searchKey !== ''
+          ? mockedData.filter((item) =>
+              item.manufacturerName.toLowerCase().includes(searchKey.toLowerCase())
+            )
+          : mockdata;
+      setMockedData(filteredData);
+    }
+  };
 
-  // const handleCategoryFilterChange = (event: SelectChangeEvent) => {
-  //   setCategoryFilter(event.target.value as string);
-  // };
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Data) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
 
-  // const handleCategoryBranchChange = (event: SelectChangeEvent) => {
-  //   setBranchFilter(event.target.value as string);
-  // };
+  const handleChangePage = (event: unknown, newPage: number) => {
+    console.log(event);
+    setPage(newPage);
+  };
 
-  // const handleEprelCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setEprelCodeFilter(event.target.value);
-  // };
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
-  // const handleGtinCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setGtinCodeFilter(event.target.value);
-  // };
+  const handleListButtonClick = (row: any) => {
+    alert(`
+ID: ${row.id}
+MANUFACTURER: ${row.manufacturerName}
+CREATED: ${row.dateCreation}
+UPDATED: ${row.lastUpdate}
+UNKNOWN: ${row.temporaryField}`);
+  };
 
-  // const handleManufacturerFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setManufacturerFilter(event.target.value);
-  // };
+  const handleBackToTableButtonClick = () => {
+    setMockedData(mockdata);
+  };
 
-  // const handleDeleteFiltersButtonClick = () => {
-  //   setCategoryFilter('');
-  //   setBranchFilter('');
-  //   setEprelCodeFilter('');
-  //   setGtinCodeFilter('');
-  //   setManufacturerFilter('');
-  //   setMockedData([...mockdata]);
-  // };
-
-  // const handleListButtonClick = (row: any) => {
-  //   setDrawerData(row);
-  //   setDrawerOpened(true);
-  // };
-
-  // const noFilterSetted = (): boolean =>
-  //   categoryFilter === '' &&
-  //   branchFilter === '' &&
-  //   eprelCodeFilter === '' &&
-  //   gtinCodeFilter === '' &&
-  //   manufacturerFilter === '';
-
-  // const visibleRows = [...mockedData]
-  //   .sort(getComparator(order, orderBy))
-  //   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const visibleRows = [...mockedData]
+    .sort(getComparator(order, orderBy))
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleTextFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const key = event.target.value as string;
@@ -238,7 +183,7 @@ const InvitPanoramica = () => {
             display: 'flex',
             flexDirection: 'row',
             gap: 1,
-            mb: 1,
+            mb: 5,
           }}
         >
           <FormControl fullWidth size="small">
@@ -268,12 +213,13 @@ const InvitPanoramica = () => {
                 },
               }}
               onChange={handleTextFilterChange}
+              onKeyUp={handleTextFilterKeyUp}
             />
           </FormControl>
         </Box>
       )}
 
-      {/* <Paper
+      <Paper
         sx={{
           width: '100%',
           mb: 2,
@@ -283,7 +229,7 @@ const InvitPanoramica = () => {
       >
         <TableContainer>
           {mockedData.length > 0 ? (
-            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+            <Table size="small" sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
               <EnhancedTableHead
                 order={order}
                 orderBy={orderBy}
@@ -292,11 +238,20 @@ const InvitPanoramica = () => {
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row) => (
                   <TableRow tabIndex={-1} key={row.id} sx={{}}>
-                    <TableCell>{row.categoria}</TableCell>
-                    <TableCell>{row.classe_energetica}</TableCell>
-                    <TableCell>{row.codice_eprel}</TableCell>
-                    <TableCell>{row.codice_gtinean}</TableCell>
-                    <TableCell>{row.lotto}</TableCell>
+                    <TableCell>
+                      <Link href="#">
+                        <Typography variant="body2">{row.manufacturerName}</Typography>
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{row.dateCreation}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{row.lastUpdate}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{row.temporaryField}</Typography>
+                    </TableCell>
                     <TableCell>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
                         <ArrowForwardIosIcon />
@@ -325,7 +280,10 @@ const InvitPanoramica = () => {
                   textAlign: 'center',
                 }}
               >
-                <EmptyList message={t('pages.prodotti.emptyList')} />
+                <EmptyList message={t('pages.invitView.emptyList')} />
+                <Button variant="text" onClick={handleBackToTableButtonClick}>
+                  {t('pages.invitView.backToTable')}
+                </Button>
               </Box>
             </Box>
           )}
@@ -351,7 +309,6 @@ const InvitPanoramica = () => {
           />
         )}
       </Paper>
-      <ProductsDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer} data={drawerData} /> */}
     </Box>
   );
 };
