@@ -127,16 +127,26 @@ const Products = () => {
   const { t } = useTranslation();
 
   const categories = [
-    ...new Set(mockedData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()),
+    ...new Set(
+      mockedData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()
+    ),
   ];
-  const branches = [...new Set(mockedData.map((item) => item.branchName).filter(name => name !== "-").sort())];
+  const branches = [
+    ...new Set(
+      mockedData
+        .map((item) => item.branchName)
+        .filter((name) => name !== '-')
+        .sort()
+    ),
+  ];
 
   const handleFilterButtonClick = () => {
     setMockedData(
       mockedData
         .filter(
           (item) =>
-            !categoryFilter || t(`commons.categories.${item.category.toLowerCase()}`) === categoryFilter
+            !categoryFilter ||
+            t(`commons.categories.${item.category.toLowerCase()}`) === categoryFilter
         )
         .filter((item) => !branchFilter || item.branchName === branchFilter)
         .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
@@ -370,6 +380,9 @@ const Products = () => {
                 }}
               >
                 <EmptyList message={t('pages.products.emptyList')} />
+                <Button variant="text" onClick={handleDeleteFiltersButtonClick}>
+                  {t('pages.products.backToTable')}
+                </Button>
               </Box>
             </Box>
           )}
@@ -395,7 +408,6 @@ const Products = () => {
                 },
               },
             }}
-
           />
         )}
       </Paper>

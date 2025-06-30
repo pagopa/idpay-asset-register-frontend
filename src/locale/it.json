@@ -135,7 +135,8 @@
         "branch": "Lotto"
       },
       "tablePaginationFrom": "di",
-      "emptyList": "Nessun record corrisponde alla ricerca."
+      "emptyList": "Nessun record corrisponde alla ricerca.",
+      "backToTable": "Torna alla tabella"
     },
     "uploadHistory": {
       "sideMenuTitle": "Storico caricamenti"
