@@ -128,7 +128,6 @@ const Products = () => {
   const { t } = useTranslation();
 
   const categories = [
-<<<<<<< HEAD:src/pages/products/products.tsx
     ...new Set(
       mockedData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()
     ),
@@ -141,23 +140,14 @@ const Products = () => {
         .sort()
     ),
   ];
-=======
-    ...new Set(mockedData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()),
-  ];
-  const branches = [...new Set(mockedData.map((item) => item.branchName).filter(name => name !== "-").sort())];
->>>>>>> e420538c54169d650f618e5d6b6b514fb876a5de:src/pages/prodotti/prodotti.tsx
 
   const handleFilterButtonClick = () => {
     setMockedData(
       mockedData
         .filter(
           (item) =>
-<<<<<<< HEAD:src/pages/products/products.tsx
             !categoryFilter ||
             t(`commons.categories.${item.category.toLowerCase()}`) === categoryFilter
-=======
-            !categoryFilter || t(`commons.categories.${item.category.toLowerCase()}`) === categoryFilter
->>>>>>> e420538c54169d650f618e5d6b6b514fb876a5de:src/pages/prodotti/prodotti.tsx
         )
         .filter((item) => !branchFilter || item.branchName === branchFilter)
         .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
@@ -354,7 +344,6 @@ const Products = () => {
               />
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row) => (
-<<<<<<< HEAD:src/pages/products/products.tsx
                   <TableRow tabIndex={-1} key={row.id} sx={{ height: '25px' }}>
                     <TableCell sx={{ width: '132px' }}>
                       <Typography variant="body2">
@@ -376,17 +365,6 @@ const Products = () => {
                       <Typography variant="body2">{row.branchName}</Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'right' }}>
-=======
-                  <TableRow tabIndex={-1} key={row.id} sx={{}}>
-                    <TableCell>{t(`commons.categories.${row.category}`)}</TableCell>
-                    <TableCell>{row.energyClass}</TableCell>
-                    <TableCell>
-                      <Link href="#">{row.eprelCode}</Link>
-                    </TableCell>
-                    <TableCell>{row.gtinCode}</TableCell>
-                    <TableCell>{row.branchName}</TableCell>
-                    <TableCell>
->>>>>>> e420538c54169d650f618e5d6b6b514fb876a5de:src/pages/prodotti/prodotti.tsx
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
                         <ArrowForwardIosIcon />
                       </Button>
@@ -415,12 +393,9 @@ const Products = () => {
                 }}
               >
                 <EmptyList message={t('pages.products.emptyList')} />
-<<<<<<< HEAD:src/pages/products/products.tsx
                 <Button variant="text" onClick={handleDeleteFiltersButtonClick}>
                   {t('pages.products.backToTable')}
                 </Button>
-=======
->>>>>>> e420538c54169d650f618e5d6b6b514fb876a5de:src/pages/prodotti/prodotti.tsx
               </Box>
             </Box>
           )}
@@ -446,10 +421,6 @@ const Products = () => {
                 },
               },
             }}
-<<<<<<< HEAD:src/pages/products/products.tsx
-=======
-
->>>>>>> e420538c54169d650f618e5d6b6b514fb876a5de:src/pages/prodotti/prodotti.tsx
           />
         )}
       </Paper>
