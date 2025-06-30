@@ -28,14 +28,6 @@ export default function SideMenu() {
             data-testid="initiativeList-click-test"
           />
           <SidenavItem
-            title={t('pages.invitView.sideTitle')}
-            handleClick={() => onExit(() => navigate(ROUTES.INVITALIA, { replace: true }))}
-            isSelected={location.pathname === ROUTES.INVITALIA}
-            icon={ListAltIcon}
-            level={0}
-            data-testid="initiativeList-click-test"
-          />
-          <SidenavItem
             title={t('pages.storicoCaricamenti.sideMenuTitle')}
             handleClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
             isSelected={location.pathname === ROUTES.UPLOADS}
