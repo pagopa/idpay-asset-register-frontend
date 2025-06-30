@@ -135,12 +135,8 @@
         "branch": "Lotto"
       },
       "tablePaginationFrom": "di",
-<<<<<<< HEAD
       "emptyList": "Nessun record corrisponde alla ricerca.",
       "backToTable": "Torna alla tabella"
-=======
-      "emptyList": "Nessun record corrisponde alla ricerca."
->>>>>>> e420538c54169d650f618e5d6b6b514fb876a5de
     },
     "uploadHistory": {
       "sideMenuTitle": "Storico caricamenti"
