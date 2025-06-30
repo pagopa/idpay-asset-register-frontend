@@ -16,6 +16,7 @@ import {
   TableSortLabel,
   TablePagination,
   TextField,
+  Typography,
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -85,7 +86,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align="left"
+            align={headCell.id === 'category' || headCell.id === 'branchName' ? 'left' : 'center'}
             padding="normal"
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -335,7 +336,7 @@ const Products = () => {
       >
         <TableContainer>
           {mockedData.length > 0 ? (
-            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+            <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
               <EnhancedTableHead
                 order={order}
                 orderBy={orderBy}
@@ -343,15 +344,27 @@ const Products = () => {
               />
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row) => (
-                  <TableRow tabIndex={-1} key={row.id} sx={{}}>
-                    <TableCell>{t(`commons.categories.${row.category}`)}</TableCell>
-                    <TableCell>{row.energyClass}</TableCell>
-                    <TableCell>
-                      <Link href="#">{row.eprelCode}</Link>
+                  <TableRow tabIndex={-1} key={row.id} sx={{ height: '25px' }}>
+                    <TableCell sx={{ width: '132px' }}>
+                      <Typography variant="body2">
+                        {t(`commons.categories.${row.category}`)}
+                      </Typography>
                     </TableCell>
-                    <TableCell>{row.gtinCode}</TableCell>
-                    <TableCell>{row.branchName}</TableCell>
-                    <TableCell>
+                    <TableCell sx={{ width: '186px', textAlign: 'center' }}>
+                      <Typography variant="body2">{row.energyClass}</Typography>
+                    </TableCell>
+                    <TableCell sx={{ width: '145px', textAlign: 'center' }}>
+                      <Typography variant="body2">
+                        <Link href="#">{row.eprelCode}</Link>
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ width: '186px', textAlign: 'center' }}>
+                      <Typography variant="body2">{row.gtinCode}</Typography>
+                    </TableCell>
+                    <TableCell sx={{ width: '239px' }}>
+                      <Typography variant="body2">{row.branchName}</Typography>
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'right' }}>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
                         <ArrowForwardIosIcon />
                       </Button>
