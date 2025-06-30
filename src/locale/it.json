@@ -80,7 +80,7 @@
     },
     "addProducts": {
       "title": "Aggiungi prodotti",
-      "boxAddTitle": "Carica i tuoi prodotti",
+      "boxAddTitle": "Aggiungi i tuoi prodotti",
       "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
       "boxAddTextProduct": "Prodotto.",
       "goToManual": "Dubbi? Vai al manuale",

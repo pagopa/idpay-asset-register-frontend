@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import RejectedFile from "../../components/RejectedFile/RejectedFile";
 import LoadingFile from "../../components/LoadingFile/LoadingFile";
 import AcceptedFile from "../../components/AcceptedFile/AcceptedFile";
+import {PRODUCTS_CATEGORY} from "../../utils/constants";
 import {initUploadBoxStyle, initUploadHelperBoxStyle} from "../../helpers";
 import InitUploadBox from "../../components/InitUploadBox/InitUploadBox";
 import {categoryList} from "./helpers";
@@ -41,6 +42,11 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
             console.log(values);
         },
     });
+
+    const templateFileName =
+        formik.values.category === PRODUCTS_CATEGORY.COOKINGHOBS
+            ? 'cookinghobs_template.csv'
+            : 'eprel_template.csv';
 
     const setIntiStatus = () => {
         setAlertTitle('');
@@ -104,8 +110,6 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
             sx={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(12, 1fr)',
-                pt: 2,
-                mt: 1,
             }}
         >
             <Box sx={initUploadBoxStyle} {...getRootProps({ className: 'dropzone' })}>
@@ -115,20 +119,25 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                     link={t('pages.addProducts.form.fileUpload.dragAreaLink')}
                 />
             </Box>
-            <Box sx={initUploadHelperBoxStyle}>
-                <FormHelperText sx={{ fontSize: '0.875rem' }}>
-                    {t('pages.addProducts.form.fileUpload.fileUploadHelpText')}&#160;
-                    <Link
-                        href="example_merchant.csv"
-                        download
-                        target="_blank"
-                        variant="body2"
-                        sx={{ fontSize: '0.875rem', fontWeight: 600 }}
-                    >
-                        {t('pages.addProducts.form.fileUpload.fileUploadHelpLinkLabel')}
-                    </Link>
-                </FormHelperText>
-            </Box>
+            { formik.values.category !== '' &&
+                <Box sx={initUploadHelperBoxStyle}>
+                    <FormHelperText sx={{ fontSize: '0.875rem' }}>
+                        {t('pages.addProducts.form.fileUpload.fileUploadHelpText')}&#160;
+                            <Link
+                                href={formik.values.category ? `/${templateFileName}` : undefined}
+                                download={!!formik.values.category}
+                                target="_blank"
+                                variant="body2"
+                                sx={{
+                                    fontSize: '0.875rem',
+                                    fontWeight: 600,
+                                }}
+                            >
+                                {t('pages.addProducts.form.fileUpload.fileUploadHelpLinkLabel')}
+                            </Link>
+                    </FormHelperText>
+                </Box>
+            }
         </Box>
     );
 
