@@ -5,7 +5,7 @@
     "energyClass": "A",
     "eprelCode": "1234567890",
     "gtinCode": "3001234567892",
-    "branchName": "32675198_washingmachines_1.csv"
+    "branchName": "washingmachines_bd849b742c58f6e5c6229c1a"
   },
   {
     "id": 1,
@@ -13,7 +13,7 @@
     "energyClass": "A",
     "eprelCode": "4657822481",
     "gtinCode": "3698751181642",
-    "branchName": "118537478_refrigeratingappl_2.csv"
+    "branchName": "refrigeratingappl_e046fb4ebdeef13987ce762b"
   },
   {
     "id": 2,
@@ -21,7 +21,7 @@
     "energyClass": "F",
     "eprelCode": "9847746768",
     "gtinCode": "3185958633161",
-    "branchName": "442484236_dishwashers_3.csv"
+    "branchName": "dishwashers_967cac9af4bb720067e03315"
   },
   {
     "id": 3,
@@ -29,7 +29,7 @@
     "energyClass": "C",
     "eprelCode": "7164981690",
     "gtinCode": "3949895530280",
-    "branchName": "318436516_tumbledriers_4.csv"
+    "branchName": "tumbledriers_f6a94bede7c4cfcfb5142706"
   },
   {
     "id": 4,
@@ -37,28 +37,28 @@
     "energyClass": "C",
     "eprelCode": "6288242449",
     "gtinCode": "3100997071075",
-    "branchName": "261586782_cookinghobs_5.csv"
+    "branchName": "cookinghobs_30b5033dd1647848ec5b2882"
   },
   {
     "id": 5,
     "category": "COOKINGHOBS",
     "eprelCode": "3685228013",
     "gtinCode": "3841937279561",
-    "branchName": "368414786_cookinghobs_6.csv"
+    "branchName": "cookinghobs_791a22355e0f90e8ffc35248"
   },
   {
     "id": 6,
     "category": "REFRIGERATINGAPPL",
     "energyClass": "D",
     "eprelCode": "3633959333",
-    "branchName": "541565157_refrigeratingappl_7.csv"
+    "branchName": "refrigeratingappl_77100e7dba0d0cb34f41daab"
   },
   {
     "id": 7,
     "category": "REFRIGERATINGAPPL",
     "eprelCode": "6627378682",
     "gtinCode": "3018940193179",
-    "branchName": "657274245_refrigeratingappl_8.csv"
+    "branchName": "refrigeratingappl_23f017fc2469b4758b863ce0"
   },
   {
     "id": 8,
@@ -66,7 +66,7 @@
     "energyClass": "G",
     "eprelCode": "8440276361",
     "gtinCode": "3914358485283",
-    "branchName": "762884524_washerdriers_9.csv"
+    "branchName": "washerdriers_18350d1e141df64b39ca46da"
   },
   {
     "id": 9,
@@ -74,7 +74,7 @@
     "energyClass": "F",
     "eprelCode": "6824284902",
     "gtinCode": "3776971918069",
-    "branchName": "762472565_cookinghobs_10.csv"
+    "branchName": "cookinghobs_dcd871c8c1bff3469a9a769f"
   },
   {
     "id": 10,
@@ -82,7 +82,7 @@
     "energyClass": "F",
     "eprelCode": "9435572949",
     "gtinCode": "3119995985639",
-    "branchName": "171436536_dishwashers_11.csv"
+    "branchName": "dishwashers_591b23bce0b2453f032ca23e"
   },
   {
     "id": 11,
@@ -90,7 +90,7 @@
     "energyClass": "D",
     "eprelCode": "8081163876",
     "gtinCode": "3058649028963",
-    "branchName": "535281573_tumbledriers_12.csv"
+    "branchName": "tumbledriers_9989d2db6eb00a9da59ab96c"
   },
   {
     "id": 12,
@@ -98,13 +98,13 @@
     "energyClass": "F",
     "eprelCode": "1735909094",
     "gtinCode": "3318368975015",
-    "branchName": "481272316_washerdriers_13.csv"
+    "branchName": "washerdriers_82d00b4625ebe650dac0fcf4"
   },
   {
     "id": 13,
     "category": "WASHERDRIERS",
     "eprelCode": "7320659443",
-    "branchName": "736465165_washerdriers_14.csv"
+    "branchName": "washerdriers_b6053da95ef8eb39c6123e9c"
   },
   {
     "id": 14,
@@ -112,14 +112,14 @@
     "energyClass": "B",
     "eprelCode": "4215154570",
     "gtinCode": "3862137881548",
-    "branchName": "273565828_washerdriers_15.csv"
+    "branchName": "washerdriers_ca691bf2e205f5d7f362eb43"
   },
   {
     "id": 15,
     "category": "COOKINGHOBS",
     "eprelCode": "1237600721",
     "gtinCode": "3351717625382",
-    "branchName": "444124664_cookinghobs_16.csv"
+    "branchName": "cookinghobs_5a7d00bbe93dd4cbb91a2d8a"
   },
   {
     "id": 16,
@@ -127,7 +127,7 @@
     "energyClass": "B",
     "eprelCode": "6357838348",
     "gtinCode": "3093507621513",
-    "branchName": "552346842_dishwashers_17.csv"
+    "branchName": "dishwashers_c35207c28fb1af71abbb8621"
   },
   {
     "id": 17,
@@ -135,7 +135,7 @@
     "energyClass": "F",
     "eprelCode": "2823826718",
     "gtinCode": "3753975775262",
-    "branchName": "864345368_ovens_18.csv"
+    "branchName": "ovens_c51f80362804360382fd3357"
   },
   {
     "id": 18,
@@ -150,7 +150,7 @@
     "energyClass": "D",
     "eprelCode": "6465204641",
     "gtinCode": "3398709230843",
-    "branchName": "116483685_cookinghobs_20.csv"
+    "branchName": "cookinghobs_01931d4312475bb698dd5177"
   },
   {
     "id": 20,
@@ -158,7 +158,7 @@
     "energyClass": "C",
     "eprelCode": "4729375279",
     "gtinCode": "3439032846140",
-    "branchName": "677352467_tumbledriers_21.csv"
+    "branchName": "tumbledriers_4267124f63a00ae4139b8a59"
   },
   {
     "id": 21,
@@ -166,14 +166,14 @@
     "energyClass": "D",
     "eprelCode": "4729405989",
     "gtinCode": "3324583804434",
-    "branchName": "246464188_ovens_22.csv"
+    "branchName": "ovens_c8f5a640ca4cbb08d277dd84"
   },
   {
     "id": 22,
     "category": "WASHERDRIERS",
     "energyClass": "D",
     "gtinCode": "3307528591711",
-    "branchName": "316747135_washerdriers_23.csv"
+    "branchName": "washerdriers_b270714f6985b5f88cfddadf"
   },
   {
     "id": 23,
@@ -181,7 +181,7 @@
     "energyClass": "C",
     "eprelCode": "5242750345",
     "gtinCode": "3668307616952",
-    "branchName": "656315681_refrigeratingappl_24.csv"
+    "branchName": "refrigeratingappl_1c244068ec7d25ddb6c5537d"
   },
   {
     "id": 24,
@@ -189,7 +189,7 @@
     "energyClass": "E",
     "eprelCode": "5083786508",
     "gtinCode": "3924271126921",
-    "branchName": "113371211_washerdriers_25.csv"
+    "branchName": "washerdriers_dee245db46470e1517f4494b"
   },
   {
     "id": 25,
@@ -197,14 +197,14 @@
     "energyClass": "E",
     "eprelCode": "6519051353",
     "gtinCode": "3837300051281",
-    "branchName": "226144834_dishwashers_26.csv"
+    "branchName": "dishwashers_132f480a326bd5c8de102d3f"
   },
   {
     "id": 26,
     "category": "OVENS",
     "energyClass": "G",
     "gtinCode": "3728103312990",
-    "branchName": "163327137_ovens_27.csv"
+    "branchName": "ovens_b80763aa2400a13c6086340b"
   },
   {
     "id": 27,
@@ -212,7 +212,7 @@
     "energyClass": "F",
     "eprelCode": "7793752350",
     "gtinCode": "3949193953161",
-    "branchName": "766615211_washerdriers_28.csv"
+    "branchName": "washerdriers_0d3fd4f6505ded30d312b201"
   },
   {
     "id": 28,
@@ -220,7 +220,7 @@
     "energyClass": "F",
     "eprelCode": "5125524651",
     "gtinCode": "3478831631152",
-    "branchName": "812267431_washingmachines_29.csv"
+    "branchName": "washingmachines_d9040ff1134fa3bfb3649283"
   },
   {
     "id": 29,
@@ -228,14 +228,14 @@
     "energyClass": "E",
     "eprelCode": "6050323364",
     "gtinCode": "3651611032735",
-    "branchName": "368664768_tumbledriers_30.csv"
+    "branchName": "tumbledriers_e5cf5be246b7c9b4f0947cb8"
   },
   {
     "id": 30,
     "category": "RANGEHOODS",
     "energyClass": "A",
     "eprelCode": "1470130538",
-    "branchName": "624583388_rangehoods_31.csv"
+    "branchName": "rangehoods_eb9f672d76dc248216be19ac"
   },
   {
     "id": 31,
@@ -257,21 +257,21 @@
     "energyClass": "B",
     "eprelCode": "9100794596",
     "gtinCode": "3926308898719",
-    "branchName": "872666616_washingmachines_34.csv"
+    "branchName": "washingmachines_dd59b697b086df8cdf373dfd"
   },
   {
     "id": 34,
     "category": "WASHINGMACHINES",
     "eprelCode": "1562799542",
     "gtinCode": "3383844763521",
-    "branchName": "525761563_washingmachines_35.csv"
+    "branchName": "washingmachines_e1df51953768c75467023cca"
   },
   {
     "id": 35,
     "category": "WASHINGMACHINES",
     "eprelCode": "2888667262",
     "gtinCode": "3110370452662",
-    "branchName": "151545627_washingmachines_36.csv"
+    "branchName": "washingmachines_1499dc2d4d4782164658f09f"
   },
   {
     "id": 36,
@@ -279,7 +279,7 @@
     "energyClass": "G",
     "eprelCode": "8512339976",
     "gtinCode": "3006668108451",
-    "branchName": "618758347_rangehoods_37.csv"
+    "branchName": "rangehoods_e112428493f374d28ff2c71d"
   },
   {
     "id": 37,
@@ -287,7 +287,7 @@
     "energyClass": "E",
     "eprelCode": "7844431882",
     "gtinCode": "3897055327944",
-    "branchName": "781336842_dishwashers_38.csv"
+    "branchName": "dishwashers_396da99064b2c732b0e2e434"
   },
   {
     "id": 38,
@@ -295,14 +295,14 @@
     "energyClass": "B",
     "eprelCode": "9910692264",
     "gtinCode": "3799817335451",
-    "branchName": "756135387_cookinghobs_39.csv"
+    "branchName": "cookinghobs_a36291ee1cc123d524027734"
   },
   {
     "id": 39,
     "category": "WASHINGMACHINES",
     "energyClass": "D",
     "eprelCode": "4489771822",
-    "branchName": "418675833_washingmachines_40.csv"
+    "branchName": "washingmachines_33f867754fda1dffba6cdb6a"
   },
   {
     "id": 40,
@@ -310,7 +310,7 @@
     "energyClass": "F",
     "eprelCode": "5286415989",
     "gtinCode": "3325216958865",
-    "branchName": "178587743_dishwashers_41.csv"
+    "branchName": "dishwashers_89f2a62eb059e33aaf74bdf3"
   },
   {
     "id": 41,
@@ -318,7 +318,7 @@
     "energyClass": "D",
     "eprelCode": "7185029033",
     "gtinCode": "3664695567728",
-    "branchName": "824566644_refrigeratingappl_42.csv"
+    "branchName": "refrigeratingappl_1cd036c3d2a2701ac3da7755"
   },
   {
     "id": 42,
@@ -332,7 +332,7 @@
     "energyClass": "A",
     "eprelCode": "5373777387",
     "gtinCode": "3871557296956",
-    "branchName": "633768765_tumbledriers_44.csv"
+    "branchName": "tumbledriers_f4e4405b2d509be54b52b944"
   },
   {
     "id": 44,
@@ -340,14 +340,14 @@
     "energyClass": "G",
     "eprelCode": "6364826651",
     "gtinCode": "3903360307561",
-    "branchName": "357115622_tumbledriers_45.csv"
+    "branchName": "tumbledriers_c81f8f5970bb83913a3683e2"
   },
   {
     "id": 45,
     "category": "WASHINGMACHINES",
     "energyClass": "A",
     "gtinCode": "3912375452874",
-    "branchName": "383251211_washingmachines_46.csv"
+    "branchName": "washingmachines_3a7f0c31792ea4794b462567"
   },
   {
     "id": 46,
@@ -355,12 +355,12 @@
     "energyClass": "B",
     "eprelCode": "2279146679",
     "gtinCode": "3589283816836",
-    "branchName": "268585238_rangehoods_47.csv"
+    "branchName": "rangehoods_d6659674fe2c62c30a5c9778"
   },
   {
     "id": 47,
     "category": "WASHERDRIERS",
-    "branchName": "262827717_washerdriers_48.csv"
+    "branchName": "washerdriers_db13597a0ebd6c7efff469fd"
   },
   {
     "id": 48,
@@ -380,7 +380,7 @@
     "category": "RANGEHOODS",
     "energyClass": "D",
     "eprelCode": "9365747625",
-    "branchName": "721717747_rangehoods_51.csv"
+    "branchName": "rangehoods_aae3bd0614d66c336a78d799"
   },
   {
     "id": 51,
@@ -388,7 +388,7 @@
     "energyClass": "A",
     "eprelCode": "5711515645",
     "gtinCode": "3158227866836",
-    "branchName": "317152671_rangehoods_52.csv"
+    "branchName": "rangehoods_dd368aa07bc68928be1c20f7"
   },
   {
     "id": 52,
@@ -396,7 +396,7 @@
     "energyClass": "D",
     "eprelCode": "5146242656",
     "gtinCode": "3108327635825",
-    "branchName": "118234835_ovens_53.csv"
+    "branchName": "ovens_7091f0b321e56c2aec4df080"
   },
   {
     "id": 53,
@@ -411,28 +411,28 @@
     "energyClass": "G",
     "eprelCode": "8615322326",
     "gtinCode": "3666051096019",
-    "branchName": "453116747_cookinghobs_55.csv"
+    "branchName": "cookinghobs_4844656a183395e956416f1e"
   },
   {
     "id": 55,
     "category": "COOKINGHOBS",
     "eprelCode": "7320463164",
     "gtinCode": "3779411303316",
-    "branchName": "381865736_cookinghobs_56.csv"
+    "branchName": "cookinghobs_c80cbac6075e0ec268ef2537"
   },
   {
     "id": 56,
     "category": "TUMBLEDRIERS",
     "energyClass": "B",
     "gtinCode": "3013671661673",
-    "branchName": "226631185_tumbledriers_57.csv"
+    "branchName": "tumbledriers_10fa171f26311b91a89586aa"
   },
   {
     "id": 57,
     "category": "OVENS",
     "energyClass": "E",
     "eprelCode": "2313021554",
-    "branchName": "532631445_ovens_58.csv"
+    "branchName": "ovens_0e9ab88a7e838d8bf7e9e404"
   },
   {
     "id": 58,
@@ -440,7 +440,7 @@
     "energyClass": "G",
     "eprelCode": "7659219875",
     "gtinCode": "3079834493648",
-    "branchName": "527618381_dishwashers_59.csv"
+    "branchName": "dishwashers_a2a20943d18428d890aa0ecb"
   },
   {
     "id": 59,
@@ -448,7 +448,7 @@
     "energyClass": "C",
     "eprelCode": "3388435390",
     "gtinCode": "3058976770399",
-    "branchName": "854485853_washerdriers_60.csv"
+    "branchName": "washerdriers_84657d33d02ed6c05e287a24"
   },
   {
     "id": 60,
@@ -456,7 +456,7 @@
     "energyClass": "F",
     "eprelCode": "2177404857",
     "gtinCode": "3669871473306",
-    "branchName": "433217537_dishwashers_61.csv"
+    "branchName": "dishwashers_eabc8d2f6877b02e6f8da1d0"
   },
   {
     "id": 61,
@@ -464,14 +464,14 @@
     "energyClass": "E",
     "eprelCode": "7206359407",
     "gtinCode": "3319632682422",
-    "branchName": "485474585_washerdriers_62.csv"
+    "branchName": "washerdriers_75343c9f4a9ed7c264f88d3a"
   },
   {
     "id": 62,
     "category": "WASHERDRIERS",
     "energyClass": "B",
     "gtinCode": "3177096878060",
-    "branchName": "755732253_washerdriers_63.csv"
+    "branchName": "washerdriers_110d6723c66fcf6050199bcd"
   },
   {
     "id": 63,
@@ -479,14 +479,14 @@
     "energyClass": "E",
     "eprelCode": "3490370506",
     "gtinCode": "3075751542457",
-    "branchName": "883128843_rangehoods_64.csv"
+    "branchName": "rangehoods_be0bb1c0479e2ba85adeabe5"
   },
   {
     "id": 64,
     "category": "DISHWASHERS",
     "eprelCode": "8910312097",
     "gtinCode": "3915042304526",
-    "branchName": "715442155_dishwashers_65.csv"
+    "branchName": "dishwashers_25f62b626981c497de8f852d"
   },
   {
     "id": 65,
@@ -494,7 +494,7 @@
     "energyClass": "D",
     "eprelCode": "8249971812",
     "gtinCode": "3721646194486",
-    "branchName": "172377243_washerdriers_66.csv"
+    "branchName": "washerdriers_f98e6671ee38aa57df4d2d6f"
   },
   {
     "id": 66,
@@ -502,14 +502,14 @@
     "energyClass": "B",
     "eprelCode": "8787987565",
     "gtinCode": "3549218188745",
-    "branchName": "448147318_washingmachines_67.csv"
+    "branchName": "washingmachines_d7761d251419fb78bdd67a96"
   },
   {
     "id": 67,
     "category": "COOKINGHOBS",
     "energyClass": "D",
     "gtinCode": "3102996444325",
-    "branchName": "524816114_cookinghobs_68.csv"
+    "branchName": "cookinghobs_7b6706bc1eac43f80ff5b81e"
   },
   {
     "id": 68,
@@ -517,14 +517,14 @@
     "energyClass": "E",
     "eprelCode": "8224639404",
     "gtinCode": "3827129446273",
-    "branchName": "456466233_dishwashers_69.csv"
+    "branchName": "dishwashers_03e60ae843c68318a146a43f"
   },
   {
     "id": 69,
     "category": "WASHERDRIERS",
     "energyClass": "G",
     "eprelCode": "7575967874",
-    "branchName": "145314434_washerdriers_70.csv"
+    "branchName": "washerdriers_42d9ea165f12946f628d9146"
   },
   {
     "id": 70,
@@ -532,14 +532,14 @@
     "energyClass": "D",
     "eprelCode": "4708830051",
     "gtinCode": "3388700308910",
-    "branchName": "156387728_refrigeratingappl_71.csv"
+    "branchName": "refrigeratingappl_5a159cec2083ff5d6ca1404f"
   },
   {
     "id": 71,
     "category": "WASHINGMACHINES",
     "eprelCode": "5188202344",
     "gtinCode": "3083912314307",
-    "branchName": "324716773_washingmachines_72.csv"
+    "branchName": "washingmachines_0a3b8ce0e91f054830d1f021"
   },
   {
     "id": 72,
@@ -547,7 +547,7 @@
     "energyClass": "G",
     "eprelCode": "8139870283",
     "gtinCode": "3563864198628",
-    "branchName": "877778266_ovens_73.csv"
+    "branchName": "ovens_a446cf6fa80cec0da5437105"
   },
   {
     "id": 73,
@@ -555,7 +555,7 @@
     "energyClass": "B",
     "eprelCode": "3690223289",
     "gtinCode": "3112794457489",
-    "branchName": "144147687_tumbledriers_74.csv"
+    "branchName": "tumbledriers_adba96dc03927b8e4a5f4efd"
   },
   {
     "id": 74,
@@ -563,7 +563,7 @@
     "energyClass": "G",
     "eprelCode": "3768913536",
     "gtinCode": "3183600259866",
-    "branchName": "462353881_refrigeratingappl_75.csv"
+    "branchName": "refrigeratingappl_5fcfd4b5bbf604138f5489fb"
   },
   {
     "id": 75,
@@ -571,7 +571,7 @@
     "energyClass": "B",
     "eprelCode": "7707343883",
     "gtinCode": "3785122313958",
-    "branchName": "487448553_washingmachines_76.csv"
+    "branchName": "washingmachines_bfc0f79a9ba5e7e129585aec"
   },
   {
     "id": 76,
@@ -579,7 +579,7 @@
     "energyClass": "A",
     "eprelCode": "3100278928",
     "gtinCode": "3652445740325",
-    "branchName": "188851624_cookinghobs_77.csv"
+    "branchName": "cookinghobs_303de6cfd83fbe5c215c0e29"
   },
   {
     "id": 77,
@@ -587,7 +587,7 @@
     "energyClass": "F",
     "eprelCode": "4723174230",
     "gtinCode": "3755702548757",
-    "branchName": "851185342_ovens_78.csv"
+    "branchName": "ovens_c7f84929c474a46abf6eca2c"
   },
   {
     "id": 78,
@@ -595,7 +595,7 @@
     "energyClass": "F",
     "eprelCode": "2594512975",
     "gtinCode": "3490017286921",
-    "branchName": "583751771_ovens_79.csv"
+    "branchName": "ovens_81130a8551d41b57a638d76b"
   },
   {
     "id": 79,
@@ -610,14 +610,14 @@
     "energyClass": "F",
     "eprelCode": "3873652208",
     "gtinCode": "3695184513272",
-    "branchName": "764226862_washingmachines_81.csv"
+    "branchName": "washingmachines_8c3ed4eebe2021491fcb05cc"
   },
   {
     "id": 81,
     "category": "REFRIGERATINGAPPL",
     "energyClass": "F",
     "eprelCode": "9827057471",
-    "branchName": "848668745_refrigeratingappl_82.csv"
+    "branchName": "refrigeratingappl_88aa6d569fda9ac88f7752dd"
   },
   {
     "id": 82,
@@ -625,7 +625,7 @@
     "energyClass": "G",
     "eprelCode": "6277516426",
     "gtinCode": "3232891374325",
-    "branchName": "673725311_dishwashers_83.csv"
+    "branchName": "dishwashers_120ecc816ee5e8007fc6c8eb"
   },
   {
     "id": 83,
@@ -633,7 +633,7 @@
     "energyClass": "B",
     "eprelCode": "2376904725",
     "gtinCode": "3577431077711",
-    "branchName": "552766812_ovens_84.csv"
+    "branchName": "ovens_d4059d5e204e622baf3f4033"
   },
   {
     "id": 84,
@@ -641,7 +641,7 @@
     "energyClass": "A",
     "eprelCode": "5362502636",
     "gtinCode": "3541109786127",
-    "branchName": "314817842_ovens_85.csv"
+    "branchName": "ovens_572ac309d4fb2f19a31c3e97"
   },
   {
     "id": 85,
@@ -649,13 +649,13 @@
     "energyClass": "C",
     "eprelCode": "9581348267",
     "gtinCode": "3588337210559",
-    "branchName": "744822157_cookinghobs_86.csv"
+    "branchName": "cookinghobs_94bafb501476e7339eaba8be"
   },
   {
     "id": 86,
     "category": "REFRIGERATINGAPPL",
     "gtinCode": "3210591827562",
-    "branchName": "716137121_refrigeratingappl_87.csv"
+    "branchName": "refrigeratingappl_2d0c6d47f5e6ca079949b93f"
   },
   {
     "id": 87,
@@ -663,7 +663,7 @@
     "energyClass": "D",
     "eprelCode": "5113198278",
     "gtinCode": "3420844606027",
-    "branchName": "716878826_tumbledriers_88.csv"
+    "branchName": "tumbledriers_35c81303b3de8c476837a509"
   },
   {
     "id": 88,
@@ -671,21 +671,21 @@
     "energyClass": "D",
     "eprelCode": "2159822782",
     "gtinCode": "3774529267331",
-    "branchName": "585352484_dishwashers_89.csv"
+    "branchName": "dishwashers_bc12a6538823243667d27bc1"
   },
   {
     "id": 89,
     "category": "TUMBLEDRIERS",
     "energyClass": "B",
     "eprelCode": "8764532993",
-    "branchName": "841886161_tumbledriers_90.csv"
+    "branchName": "tumbledriers_5abe8962ff7ad9d7546fd202"
   },
   {
     "id": 90,
     "category": "WASHERDRIERS",
     "energyClass": "A",
     "eprelCode": "5260822437",
-    "branchName": "336812171_washerdriers_91.csv"
+    "branchName": "washerdriers_bc6b2382cbad8f0c209b1a38"
   },
   {
     "id": 91,
@@ -693,28 +693,28 @@
     "energyClass": "G",
     "eprelCode": "8880227914",
     "gtinCode": "3609455416247",
-    "branchName": "283476287_refrigeratingappl_92.csv"
+    "branchName": "refrigeratingappl_4f56baf6b38c281ebedd7518"
   },
   {
     "id": 92,
     "category": "TUMBLEDRIERS",
     "energyClass": "C",
     "eprelCode": "3277983749",
-    "branchName": "878344424_tumbledriers_93.csv"
+    "branchName": "tumbledriers_f24b8260ec8f0b1d1ecc1787"
   },
   {
     "id": 93,
     "category": "RANGEHOODS",
     "energyClass": "F",
     "gtinCode": "3513744183289",
-    "branchName": "766267558_rangehoods_94.csv"
+    "branchName": "rangehoods_b27e989c5eaa5c3ee81f8ce5"
   },
   {
     "id": 94,
     "category": "WASHINGMACHINES",
     "energyClass": "E",
     "eprelCode": "8298726729",
-    "branchName": "354547742_washingmachines_95.csv"
+    "branchName": "washingmachines_74fe2f80a3271fe1be38483b"
   },
   {
     "id": 95,
@@ -728,7 +728,7 @@
     "energyClass": "A",
     "eprelCode": "3324690799",
     "gtinCode": "3942805017936",
-    "branchName": "471431453_dishwashers_97.csv"
+    "branchName": "dishwashers_f71e917099d4e00eac798686"
   },
   {
     "id": 97,
@@ -736,7 +736,7 @@
     "energyClass": "C",
     "eprelCode": "2466781895",
     "gtinCode": "3690400956407",
-    "branchName": "211414458_dishwashers_98.csv"
+    "branchName": "dishwashers_5dc694b3cdb6fafaaa4b605d"
   },
   {
     "id": 98,
@@ -744,7 +744,7 @@
     "energyClass": "A",
     "eprelCode": "5814438894",
     "gtinCode": "3133874259548",
-    "branchName": "368347145_refrigeratingappl_99.csv"
+    "branchName": "refrigeratingappl_5d77a237ab88eea3875d9fdd"
   },
   {
     "id": 99,
@@ -759,7 +759,7 @@
     "energyClass": "B",
     "eprelCode": "3427971326",
     "gtinCode": "3026979687102",
-    "branchName": "246368823_ovens_101.csv"
+    "branchName": "ovens_b622077e4173e061207dfc2e"
   },
   {
     "id": 101,
@@ -767,14 +767,14 @@
     "energyClass": "C",
     "eprelCode": "4806344413",
     "gtinCode": "3350690416574",
-    "branchName": "144516846_washingmachines_102.csv"
+    "branchName": "washingmachines_823190a5d31dacc42bf99638"
   },
   {
     "id": 102,
     "category": "OVENS",
     "energyClass": "D",
     "gtinCode": "3740004246866",
-    "branchName": "454532252_ovens_103.csv"
+    "branchName": "ovens_c14be7e1b7ade743dbf35cbe"
   },
   {
     "id": 103,
@@ -787,7 +787,7 @@
     "category": "REFRIGERATINGAPPL",
     "energyClass": "B",
     "eprelCode": "3497925867",
-    "branchName": "276432423_refrigeratingappl_105.csv"
+    "branchName": "refrigeratingappl_5cac3c5b665727b39427d7dc"
   },
   {
     "id": 105,
@@ -795,7 +795,7 @@
     "energyClass": "A",
     "eprelCode": "9962011087",
     "gtinCode": "3457362121106",
-    "branchName": "688188552_washerdriers_106.csv"
+    "branchName": "washerdriers_7057f5fbe561dcd590081801"
   },
   {
     "id": 106,
@@ -803,7 +803,7 @@
     "energyClass": "C",
     "eprelCode": "7457103288",
     "gtinCode": "3508426948615",
-    "branchName": "226762111_tumbledriers_107.csv"
+    "branchName": "tumbledriers_b70de71f7c797fd81d8536b4"
   },
   {
     "id": 107,
@@ -817,7 +817,7 @@
     "energyClass": "G",
     "eprelCode": "3840806605",
     "gtinCode": "3490474075117",
-    "branchName": "853623247_washingmachines_109.csv"
+    "branchName": "washingmachines_5c0b1cc32520ed9a0a762b1c"
   },
   {
     "id": 109,
@@ -825,14 +825,14 @@
     "energyClass": "F",
     "eprelCode": "7274708339",
     "gtinCode": "3926076717887",
-    "branchName": "461214448_rangehoods_110.csv"
+    "branchName": "rangehoods_031125fc40862b8dccc364f4"
   },
   {
     "id": 110,
     "category": "WASHERDRIERS",
     "energyClass": "G",
     "eprelCode": "2989356855",
-    "branchName": "611124384_washerdriers_111.csv"
+    "branchName": "washerdriers_651983a688bed6afa2616573"
   },
   {
     "id": 111,
@@ -840,7 +840,7 @@
     "energyClass": "E",
     "eprelCode": "8540768455",
     "gtinCode": "3735981222709",
-    "branchName": "138821677_refrigeratingappl_112.csv"
+    "branchName": "refrigeratingappl_b2f8fdbe427658e3c2b34a19"
   },
   {
     "id": 112,
@@ -848,7 +848,7 @@
     "energyClass": "C",
     "eprelCode": "3536847283",
     "gtinCode": "3477973392666",
-    "branchName": "732172184_washingmachines_113.csv"
+    "branchName": "washingmachines_6668018219373c60269a17f8"
   },
   {
     "id": 113,
@@ -869,7 +869,7 @@
     "category": "OVENS",
     "eprelCode": "6007291809",
     "gtinCode": "3380255950662",
-    "branchName": "867253513_ovens_116.csv"
+    "branchName": "ovens_772ed90eb6ead9f577893190"
   },
   {
     "id": 116,
@@ -877,7 +877,7 @@
     "energyClass": "C",
     "eprelCode": "5290407105",
     "gtinCode": "3538672876577",
-    "branchName": "424372171_ovens_117.csv"
+    "branchName": "ovens_fce735216e5af3c5564135a5"
   },
   {
     "id": 117,
@@ -885,7 +885,7 @@
     "energyClass": "B",
     "eprelCode": "9423948694",
     "gtinCode": "3494750231153",
-    "branchName": "815562351_dishwashers_118.csv"
+    "branchName": "dishwashers_435cd750cf6360b144005f4e"
   },
   {
     "id": 118,
@@ -893,7 +893,7 @@
     "energyClass": "D",
     "eprelCode": "2596022827",
     "gtinCode": "3711071502102",
-    "branchName": "345372615_tumbledriers_119.csv"
+    "branchName": "tumbledriers_34cd40a43405df6e8e05a116"
   },
   {
     "id": 119,
@@ -901,7 +901,7 @@
     "energyClass": "D",
     "eprelCode": "2752968521",
     "gtinCode": "3898729918663",
-    "branchName": "174441582_refrigeratingappl_120.csv"
+    "branchName": "refrigeratingappl_32899aa53f6f38f503edd515"
   },
   {
     "id": 120,
@@ -909,13 +909,13 @@
     "energyClass": "C",
     "eprelCode": "3912986977",
     "gtinCode": "3824989423221",
-    "branchName": "472626218_dishwashers_121.csv"
+    "branchName": "dishwashers_71ff42b1252cb406037aff38"
   },
   {
     "id": 121,
     "category": "WASHERDRIERS",
     "gtinCode": "3996178953950",
-    "branchName": "387584362_washerdriers_122.csv"
+    "branchName": "washerdriers_9287ee3a8091bdf212bcd93d"
   },
   {
     "id": 122,
@@ -923,7 +923,7 @@
     "energyClass": "G",
     "eprelCode": "7108373546",
     "gtinCode": "3101669943974",
-    "branchName": "521645682_dishwashers_123.csv"
+    "branchName": "dishwashers_2de946d864dcf084b75367cf"
   },
   {
     "id": 123,
@@ -931,7 +931,7 @@
     "energyClass": "B",
     "eprelCode": "1626175804",
     "gtinCode": "3159770376231",
-    "branchName": "432482285_washingmachines_124.csv"
+    "branchName": "washingmachines_31001a07587ccc2cae2a7f2d"
   },
   {
     "id": 124,
@@ -939,7 +939,7 @@
     "energyClass": "G",
     "eprelCode": "2870643257",
     "gtinCode": "3483304339104",
-    "branchName": "133147881_cookinghobs_125.csv"
+    "branchName": "cookinghobs_ce63ba0f6e450e68aa0da9bc"
   },
   {
     "id": 125,
@@ -947,7 +947,7 @@
     "energyClass": "F",
     "eprelCode": "4294581727",
     "gtinCode": "3331568206783",
-    "branchName": "618548423_ovens_126.csv"
+    "branchName": "ovens_3d833bd3582e6cff3212852e"
   },
   {
     "id": 126,
@@ -955,7 +955,7 @@
     "energyClass": "C",
     "eprelCode": "5538068961",
     "gtinCode": "3555299204468",
-    "branchName": "485565134_washingmachines_127.csv"
+    "branchName": "washingmachines_b924d2fd5b4a2ce21c289c49"
   },
   {
     "id": 127,
@@ -963,7 +963,7 @@
     "energyClass": "D",
     "eprelCode": "7349610504",
     "gtinCode": "3725047052278",
-    "branchName": "238837676_refrigeratingappl_128.csv"
+    "branchName": "refrigeratingappl_f6f64c77f4be393ac69c9062"
   },
   {
     "id": 128,
@@ -971,7 +971,7 @@
     "energyClass": "G",
     "eprelCode": "6482531200",
     "gtinCode": "3244067708338",
-    "branchName": "317488412_washingmachines_129.csv"
+    "branchName": "washingmachines_44e32b7e22c536eca0d0adc0"
   },
   {
     "id": 129,
@@ -986,7 +986,7 @@
     "energyClass": "B",
     "eprelCode": "3307322237",
     "gtinCode": "3648372741323",
-    "branchName": "351124448_ovens_131.csv"
+    "branchName": "ovens_367f9fab204ffb1c9529ad13"
   },
   {
     "id": 131,
@@ -994,7 +994,7 @@
     "energyClass": "A",
     "eprelCode": "5665224718",
     "gtinCode": "3325700993671",
-    "branchName": "448553441_washerdriers_132.csv"
+    "branchName": "washerdriers_6973dd6d368d60294e3b41d2"
   },
   {
     "id": 132,
@@ -1002,14 +1002,14 @@
     "energyClass": "E",
     "eprelCode": "1863781206",
     "gtinCode": "3298308597974",
-    "branchName": "148446572_refrigeratingappl_133.csv"
+    "branchName": "refrigeratingappl_f20a26b3bd4ca8584ad5dcd0"
   },
   {
     "id": 133,
     "category": "RANGEHOODS",
     "energyClass": "F",
     "gtinCode": "3043680466009",
-    "branchName": "872821726_rangehoods_134.csv"
+    "branchName": "rangehoods_3fa8bfdd9de13c441452959f"
   },
   {
     "id": 134,
@@ -1017,7 +1017,7 @@
     "energyClass": "C",
     "eprelCode": "1324852008",
     "gtinCode": "3442558664288",
-    "branchName": "764158334_ovens_135.csv"
+    "branchName": "ovens_02e8bde0796202c178b14038"
   },
   {
     "id": 135,
@@ -1025,7 +1025,7 @@
     "energyClass": "E",
     "eprelCode": "1056061716",
     "gtinCode": "3466492751495",
-    "branchName": "117582574_cookinghobs_136.csv"
+    "branchName": "cookinghobs_a7a1dc67391c22c62804454e"
   },
   {
     "id": 136,
@@ -1040,7 +1040,7 @@
     "energyClass": "B",
     "eprelCode": "7922780841",
     "gtinCode": "3604426798985",
-    "branchName": "877243254_dishwashers_138.csv"
+    "branchName": "dishwashers_c9d2c593b4ce2aef162af75c"
   },
   {
     "id": 138,
@@ -1048,7 +1048,7 @@
     "energyClass": "B",
     "eprelCode": "5716238917",
     "gtinCode": "3821073342071",
-    "branchName": "228648143_cookinghobs_139.csv"
+    "branchName": "cookinghobs_630ecbc1297137b13cf512a4"
   },
   {
     "id": 139,
@@ -1056,7 +1056,7 @@
     "energyClass": "B",
     "eprelCode": "8854765568",
     "gtinCode": "3758491656296",
-    "branchName": "837852256_refrigeratingappl_140.csv"
+    "branchName": "refrigeratingappl_06d87b5cc9bd91d4b68300f1"
   },
   {
     "id": 140,
@@ -1064,7 +1064,7 @@
     "energyClass": "C",
     "eprelCode": "8821027509",
     "gtinCode": "3312370284911",
-    "branchName": "686518452_rangehoods_141.csv"
+    "branchName": "rangehoods_fdcc272b58b348b0d5559a6d"
   },
   {
     "id": 141,
@@ -1072,7 +1072,7 @@
     "energyClass": "G",
     "eprelCode": "7583825871",
     "gtinCode": "3193933657969",
-    "branchName": "782752381_washerdriers_142.csv"
+    "branchName": "washerdriers_19b01df3c6a371479968aef1"
   },
   {
     "id": 142,
@@ -1080,7 +1080,7 @@
     "energyClass": "F",
     "eprelCode": "8748302418",
     "gtinCode": "3996809831627",
-    "branchName": "383655138_ovens_143.csv"
+    "branchName": "ovens_8e6e39da516ce2ce4b433246"
   },
   {
     "id": 143,
@@ -1088,7 +1088,7 @@
     "energyClass": "B",
     "eprelCode": "3648699143",
     "gtinCode": "3805399507725",
-    "branchName": "334247843_dishwashers_144.csv"
+    "branchName": "dishwashers_3f27f01a5474d438b09ff17f"
   },
   {
     "id": 144,
@@ -1096,7 +1096,7 @@
     "energyClass": "B",
     "eprelCode": "5018731414",
     "gtinCode": "3898299769314",
-    "branchName": "772243741_rangehoods_145.csv"
+    "branchName": "rangehoods_9da1d48a625e76e9b00b794a"
   },
   {
     "id": 145,
@@ -1104,7 +1104,7 @@
     "energyClass": "E",
     "eprelCode": "2226530597",
     "gtinCode": "3383191329937",
-    "branchName": "116634757_refrigeratingappl_146.csv"
+    "branchName": "refrigeratingappl_556e4f0c61d6d37e0790a040"
   },
   {
     "id": 146,
@@ -1112,7 +1112,7 @@
     "energyClass": "A",
     "eprelCode": "2066860098",
     "gtinCode": "3806102008970",
-    "branchName": "547171634_tumbledriers_147.csv"
+    "branchName": "tumbledriers_935f7de795b55395ba4bbbec"
   },
   {
     "id": 147,
@@ -1127,7 +1127,7 @@
     "energyClass": "A",
     "eprelCode": "3158719406",
     "gtinCode": "3505665851873",
-    "branchName": "821765177_ovens_149.csv"
+    "branchName": "ovens_d0a59e73bcb7db85e49d60fc"
   },
   {
     "id": 149,
@@ -1135,7 +1135,7 @@
     "energyClass": "D",
     "eprelCode": "9398362294",
     "gtinCode": "3997183991639",
-    "branchName": "846424143_rangehoods_150.csv"
+    "branchName": "rangehoods_05f872a19e07669963626f4b"
   },
   {
     "id": 150,
@@ -1143,14 +1143,14 @@
     "energyClass": "F",
     "eprelCode": "4361388972",
     "gtinCode": "3431980486143",
-    "branchName": "156218656_washingmachines_151.csv"
+    "branchName": "washingmachines_6aa8cbd1fc10b24b18f19a1b"
   },
   {
     "id": 151,
     "category": "COOKINGHOBS",
     "energyClass": "G",
     "gtinCode": "3348383569698",
-    "branchName": "242532475_cookinghobs_152.csv"
+    "branchName": "cookinghobs_c7f9a2a089c70fbfd4d3c756"
   },
   {
     "id": 152,
@@ -1158,7 +1158,7 @@
     "energyClass": "E",
     "eprelCode": "6473976361",
     "gtinCode": "3445692713712",
-    "branchName": "376736846_refrigeratingappl_153.csv"
+    "branchName": "refrigeratingappl_fb082ead76893444c5fcc531"
   },
   {
     "id": 153,
@@ -1173,14 +1173,14 @@
     "energyClass": "D",
     "eprelCode": "2062436767",
     "gtinCode": "3102642233261",
-    "branchName": "632563472_tumbledriers_155.csv"
+    "branchName": "tumbledriers_5467f89c3425254e700085e6"
   },
   {
     "id": 155,
     "category": "RANGEHOODS",
     "energyClass": "G",
     "eprelCode": "7238996509",
-    "branchName": "155338367_rangehoods_156.csv"
+    "branchName": "rangehoods_d16314eb8bac0f013807234f"
   },
   {
     "id": 156,
@@ -1188,7 +1188,7 @@
     "energyClass": "F",
     "eprelCode": "6343527263",
     "gtinCode": "3507568816348",
-    "branchName": "628336815_washerdriers_157.csv"
+    "branchName": "washerdriers_6c32b5246b8d90c032d2a830"
   },
   {
     "id": 157,
@@ -1196,7 +1196,7 @@
     "energyClass": "D",
     "eprelCode": "7725592513",
     "gtinCode": "3616215866704",
-    "branchName": "326465644_ovens_158.csv"
+    "branchName": "ovens_ab67021f0c73936f7e77e1d7"
   },
   {
     "id": 158,
@@ -1204,7 +1204,7 @@
     "energyClass": "A",
     "eprelCode": "8469896930",
     "gtinCode": "3409938650950",
-    "branchName": "324238837_ovens_159.csv"
+    "branchName": "ovens_e35053dc80a53e5831e95f51"
   },
   {
     "id": 159,
@@ -1212,14 +1212,14 @@
     "energyClass": "A",
     "eprelCode": "4331861803",
     "gtinCode": "3834548060971",
-    "branchName": "863167487_washingmachines_160.csv"
+    "branchName": "washingmachines_60ba51fd94176ae40a82bd53"
   },
   {
     "id": 160,
     "category": "WASHERDRIERS",
     "eprelCode": "6626293713",
     "gtinCode": "3240197276530",
-    "branchName": "821725774_washerdriers_161.csv"
+    "branchName": "washerdriers_9648681d45b3807dc8b5551a"
   },
   {
     "id": 161,
@@ -1227,7 +1227,7 @@
     "energyClass": "E",
     "eprelCode": "3057907758",
     "gtinCode": "3532455695288",
-    "branchName": "832148216_dishwashers_162.csv"
+    "branchName": "dishwashers_dab81be2060297240b20a6b7"
   },
   {
     "id": 162,
@@ -1235,13 +1235,13 @@
     "energyClass": "G",
     "eprelCode": "4016610071",
     "gtinCode": "3889514002863",
-    "branchName": "265683783_refrigeratingappl_163.csv"
+    "branchName": "refrigeratingappl_25ecf9ca58923606aa44fdcd"
   },
   {
     "id": 163,
     "category": "TUMBLEDRIERS",
     "gtinCode": "3816604778671",
-    "branchName": "356158533_tumbledriers_164.csv"
+    "branchName": "tumbledriers_4b87a9e295ad71873f8d233c"
   },
   {
     "id": 164,
@@ -1249,7 +1249,7 @@
     "energyClass": "G",
     "eprelCode": "2721457059",
     "gtinCode": "3901780014327",
-    "branchName": "253573152_tumbledriers_165.csv"
+    "branchName": "tumbledriers_94eaf25c54d601dc35a8fd88"
   },
   {
     "id": 165,
@@ -1257,7 +1257,7 @@
     "energyClass": "A",
     "eprelCode": "7134102940",
     "gtinCode": "3342270598392",
-    "branchName": "666783235_cookinghobs_166.csv"
+    "branchName": "cookinghobs_74eab4bc5afa7224af778d56"
   },
   {
     "id": 166,
@@ -1265,7 +1265,7 @@
     "energyClass": "E",
     "eprelCode": "4963377219",
     "gtinCode": "3001366242341",
-    "branchName": "657884446_dishwashers_167.csv"
+    "branchName": "dishwashers_6ad41b1f2d518a281b9928e5"
   },
   {
     "id": 167,
@@ -1273,7 +1273,7 @@
     "energyClass": "F",
     "eprelCode": "8279199254",
     "gtinCode": "3989664077488",
-    "branchName": "561113143_rangehoods_168.csv"
+    "branchName": "rangehoods_4499bd80d6ae055cda10c891"
   },
   {
     "id": 168,
@@ -1281,7 +1281,7 @@
     "energyClass": "G",
     "eprelCode": "8486636752",
     "gtinCode": "3961243611231",
-    "branchName": "488842368_washingmachines_169.csv"
+    "branchName": "washingmachines_906455c3610b846ebe7ec15f"
   },
   {
     "id": 169,
@@ -1289,14 +1289,14 @@
     "energyClass": "B",
     "eprelCode": "6737413250",
     "gtinCode": "3336798633008",
-    "branchName": "634415238_ovens_170.csv"
+    "branchName": "ovens_80b8396b1a2cce0755a99a53"
   },
   {
     "id": 170,
     "category": "TUMBLEDRIERS",
     "eprelCode": "9800215260",
     "gtinCode": "3401567214929",
-    "branchName": "816763655_tumbledriers_171.csv"
+    "branchName": "tumbledriers_2f40f4e50f10e3598a69e3a2"
   },
   {
     "id": 171,
@@ -1304,13 +1304,13 @@
     "energyClass": "C",
     "eprelCode": "9414531304",
     "gtinCode": "3880983396434",
-    "branchName": "673762611_washerdriers_172.csv"
+    "branchName": "washerdriers_8b5241e7ca16def1dce2cf6a"
   },
   {
     "id": 172,
     "category": "WASHINGMACHINES",
     "eprelCode": "8794481426",
-    "branchName": "347322683_washingmachines_173.csv"
+    "branchName": "washingmachines_5392170afffa738861284fcb"
   },
   {
     "id": 173,
@@ -1318,14 +1318,14 @@
     "energyClass": "E",
     "eprelCode": "3315065255",
     "gtinCode": "3792798768489",
-    "branchName": "355378158_cookinghobs_174.csv"
+    "branchName": "cookinghobs_90a415b916b889888a0e5377"
   },
   {
     "id": 174,
     "category": "WASHINGMACHINES",
     "eprelCode": "7840445420",
     "gtinCode": "3633599112172",
-    "branchName": "825286565_washingmachines_175.csv"
+    "branchName": "washingmachines_e4e1a9ba681082f168ffd397"
   },
   {
     "id": 175,
@@ -1333,7 +1333,7 @@
     "energyClass": "G",
     "eprelCode": "5741184912",
     "gtinCode": "3073027665386",
-    "branchName": "521752265_refrigeratingappl_176.csv"
+    "branchName": "refrigeratingappl_a7f380ba39237a837629c02f"
   },
   {
     "id": 176,
@@ -1341,7 +1341,7 @@
     "energyClass": "G",
     "eprelCode": "8838286146",
     "gtinCode": "3876397588884",
-    "branchName": "618612648_washingmachines_177.csv"
+    "branchName": "washingmachines_9360b4261da0732806d08c0a"
   },
   {
     "id": 177,
@@ -1349,14 +1349,14 @@
     "energyClass": "G",
     "eprelCode": "2643374404",
     "gtinCode": "3029081673049",
-    "branchName": "837858141_washerdriers_178.csv"
+    "branchName": "washerdriers_21a43fef088bed4054bc511e"
   },
   {
     "id": 178,
     "category": "WASHINGMACHINES",
     "energyClass": "C",
     "gtinCode": "3016424731560",
-    "branchName": "637228453_washingmachines_179.csv"
+    "branchName": "washingmachines_f6aeb76a2b22c0cb9d16464d"
   },
   {
     "id": 179,
@@ -1364,7 +1364,7 @@
     "energyClass": "C",
     "eprelCode": "9308676290",
     "gtinCode": "3531490344578",
-    "branchName": "862872875_washerdriers_180.csv"
+    "branchName": "washerdriers_fb051ed9a7b250f04f3e532a"
   },
   {
     "id": 180,
@@ -1372,7 +1372,7 @@
     "energyClass": "A",
     "eprelCode": "4185312867",
     "gtinCode": "3634663340367",
-    "branchName": "441635243_dishwashers_181.csv"
+    "branchName": "dishwashers_85436b6aa61a20d2a13759b6"
   },
   {
     "id": 181,
@@ -1380,7 +1380,7 @@
     "energyClass": "A",
     "eprelCode": "1521162521",
     "gtinCode": "3217011233226",
-    "branchName": "651752738_tumbledriers_182.csv"
+    "branchName": "tumbledriers_1f83788f2946b57be4e7b467"
   },
   {
     "id": 182,
@@ -1394,7 +1394,7 @@
     "energyClass": "F",
     "eprelCode": "6596754075",
     "gtinCode": "3063594171425",
-    "branchName": "277464223_cookinghobs_184.csv"
+    "branchName": "cookinghobs_33569fca6d471c45ba7109b6"
   },
   {
     "id": 184,
@@ -1402,7 +1402,7 @@
     "energyClass": "B",
     "eprelCode": "8226022536",
     "gtinCode": "3800221582430",
-    "branchName": "778244137_refrigeratingappl_185.csv"
+    "branchName": "refrigeratingappl_393596a77c21efd4d6fcfdfe"
   },
   {
     "id": 185,
@@ -1410,7 +1410,7 @@
     "energyClass": "A",
     "eprelCode": "2751109089",
     "gtinCode": "3660647466675",
-    "branchName": "583183287_refrigeratingappl_186.csv"
+    "branchName": "refrigeratingappl_cf1556780fce6cb5dc03b7dc"
   },
   {
     "id": 186,
@@ -1418,7 +1418,7 @@
     "energyClass": "A",
     "eprelCode": "1729966273",
     "gtinCode": "3476346768350",
-    "branchName": "366884885_refrigeratingappl_187.csv"
+    "branchName": "refrigeratingappl_8d0ff63305fd312280a45b46"
   },
   {
     "id": 187,
@@ -1426,14 +1426,14 @@
     "energyClass": "C",
     "eprelCode": "6391218973",
     "gtinCode": "3942883019031",
-    "branchName": "461238125_tumbledriers_188.csv"
+    "branchName": "tumbledriers_7d47e41115727ce906aae6fa"
   },
   {
     "id": 188,
     "category": "WASHERDRIERS",
     "energyClass": "D",
     "gtinCode": "3632732710293",
-    "branchName": "572478831_washerdriers_189.csv"
+    "branchName": "washerdriers_770c810b1172b0bb74f1ee20"
   },
   {
     "id": 189,
@@ -1441,6 +1441,6 @@
     "energyClass": "D",
     "eprelCode": "1290657506",
     "gtinCode": "3652501567354",
-    "branchName": "238661443_washingmachines_190.csv"
+    "branchName": "washingmachines_0ae87fa45ed72a25b2ff937d"
   }
 ]
