@@ -239,8 +239,10 @@ UNKNOWN: ${row.temporaryField}`);
                 {visibleRows.map((row) => (
                   <TableRow tabIndex={-1} key={row.id} sx={{}}>
                     <TableCell>
-                      <Link href="#">
-                        <Typography variant="body2">{row.manufacturerName}</Typography>
+                      <Link underline="hover" href="#">
+                        <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'blue' }}>
+                          {row.manufacturerName}
+                        </Typography>
                       </Link>
                     </TableCell>
                     <TableCell>
