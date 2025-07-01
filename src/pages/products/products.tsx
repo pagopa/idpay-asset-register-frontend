@@ -354,9 +354,11 @@ const Products = () => {
                       <Typography variant="body2">{row.energyClass}</Typography>
                     </TableCell>
                     <TableCell sx={{ width: '145px', textAlign: 'center' }}>
-                      <Typography variant="body2">
-                        <Link href="#">{row.eprelCode}</Link>
-                      </Typography>
+                      <Link underline="hover" href="#">
+                        <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'blue' }}>
+                          {row.eprelCode}
+                        </Typography>
+                      </Link>
                     </TableCell>
                     <TableCell sx={{ width: '186px', textAlign: 'center' }}>
                       <Typography variant="body2">{row.gtinCode}</Typography>
