@@ -123,6 +123,7 @@ const InvitPanoramica = () => {
             )
           : mockdata;
       setMockedData(filteredData);
+      setPage(0);
     }
   };
 
@@ -153,16 +154,17 @@ UNKNOWN: ${row.temporaryField}`);
 
   const handleBackToTableButtonClick = () => {
     setMockedData(mockdata);
+    setSearchKey('');
   };
-
-  const visibleRows = [...mockedData]
-    .sort(getComparator(order, orderBy))
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleTextFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const key = event.target.value as string;
     setSearchKey(key);
   };
+
+  const visibleRows = [...mockedData]
+    .sort(getComparator(order, orderBy))
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Box width="100%" px={2}>
