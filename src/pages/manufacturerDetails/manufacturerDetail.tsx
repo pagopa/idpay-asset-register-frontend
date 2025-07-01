@@ -1,42 +1,27 @@
-import React, { useMemo } from 'react';
-import { Box, Paper, Typography, Button, Tooltip } from '@mui/material';
+import React from 'react';
+import { Box, Paper, Typography, Button } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
-import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
-import { useNavigate } from 'react-router-dom';
-import ROUTES from '../../routes';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import mockdata from './mockdata.json';
 
-const maxLengthEmail: number = 40;
-
-const fetchUserFromLocalStorage = (): { [key: string]: string } | null => {
-  try {
-    const userString = localStorage.getItem('user');
-    return userString ? JSON.parse(userString) : null;
-  } catch (error) {
-    return null;
-  }
-};
-
-const truncateString = (str?: string, maxLength: number = maxLengthEmail): string => {
-  if (!str) {
-    return '-';
-  } else {
-    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
-  }
-};
+const mockedData = mockdata;
 
 const ManufacturerDetail: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const onExit = useUnloadEventOnExit();
-  const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   return (
     <Box width="100%" px={2}>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Button variant="text" startIcon={<ArrowBackIcon />}>
+          {t('pages.manufacturerDetail.backButton')}
+        </Button>
+        Panoramica &nbsp;/&nbsp;&nbsp;
+        <Box sx={{ display: 'inline', fontWeight: 'bold' }}>Test Manufacturer</Box>
+      </Box>
       <TitleBox
-        title={t('pages.overview.overviewTitle')}
-        subTitle={t('pages.overview.overviewTitleDescription')}
+        title="Test Manufacturer"
         mbTitle={2}
         mtTitle={2}
         mbSubTitle={5}
@@ -48,13 +33,13 @@ const ManufacturerDetail: React.FC = () => {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(12, 1fr)',
+          gridTemplateColumns: '50% 50%',
           columnGap: 3,
           mb: 5,
         }}
       >
         {/* Sezione Informazioni */}
-        <Box sx={{ gridColumn: 'span 6' }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
           <Paper
             sx={{
               display: 'grid',
@@ -66,9 +51,9 @@ const ManufacturerDetail: React.FC = () => {
             }}
           >
             <TitleBox
-              title={t('pages.overview.overviewTitleBoxInfo')}
+              title={String(t('pages.manufacturerDetail.dataPanel.title')).replace(' ', '\xa0')}
               mbTitle={2}
-              variantTitle="h5"
+              variantTitle="overline"
               variantSubTitle="body1"
               data-testid="title-box-info"
             />
@@ -81,42 +66,30 @@ const ManufacturerDetail: React.FC = () => {
               }}
             >
               {[
-                { label: 'overviewTitleBoxInfoTitleLblRs', value: user?.org_name },
-                { label: 'overviewTitleBoxInfoTitleLblCf', value: user?.org_taxcode },
-                { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat },
-                { label: 'overviewTitleBoxInfoTitleLblSl', value: user?.org_address },
-                { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec, truncate: true },
+                { label: 'businessName', value: mockedData?.manufacturerData?.businessName },
+                { label: 'fiscalCode', value: mockedData?.manufacturerData?.fiscalCode },
+                { label: 'vatNumber', value: mockedData?.manufacturerData?.vatNumber },
                 {
-                  label: 'overviewTitleBoxInfoTitleLblEmailOp',
-                  value: user?.org_email,
-                  truncate: true,
+                  label: 'registeredOffice',
+                  value: mockedData?.manufacturerData?.registeredOffice,
                 },
-              ].map(({ label, value, truncate }) => (
+                { label: 'PEC', value: mockedData?.manufacturerData?.PEC },
+              ].map(({ label, value }) => (
                 <React.Fragment key={label}>
                   <Box sx={{ gridColumn: 'span 3', alignContent: 'center' }}>
-                    <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
+                    <Typography variant="body2">
+                      {t(`pages.manufacturerDetail.dataPanel.${label}`)}
+                    </Typography>
                   </Box>
                   <Box sx={{ gridColumn: 'span 9' }}>
-                    {truncate && value ? (
-                      <Tooltip title={value}>
-                        <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }}>
-                          {truncateString(value)}
-                        </Typography>
-                      </Tooltip>
-                    ) : (
-                      <Typography variant="body2" sx={{ fontWeight: '600' }}>
-                        {value || '-'}
-                      </Typography>
-                    )}
+                    <Typography variant="body2" sx={{ fontWeight: '600' }}>
+                      {value || '-'}
+                    </Typography>
                   </Box>
                 </React.Fragment>
               ))}
             </Box>
           </Paper>
-        </Box>
-
-        {/* Sezione Prodotti */}
-        <Box sx={{ gridColumn: 'span 6' }}>
           <Paper
             sx={{
               display: 'grid',
@@ -128,11 +101,13 @@ const ManufacturerDetail: React.FC = () => {
             }}
           >
             <TitleBox
-              title={t('pages.overview.overviewTitleBoxProdTitle')}
+              title={String(t('pages.manufacturerDetail.legalRepresentativePanel.title')).replace(
+                ' ',
+                '\xa0'
+              )}
               mbTitle={2}
-              variantTitle="h5"
-              variantSubTitle="body1"
-              data-testid="title-box-prod"
+              variantTitle="overline"
+              data-testid="title-box-info"
             />
             <Box
               sx={{
@@ -142,20 +117,24 @@ const ManufacturerDetail: React.FC = () => {
                 rowGap: 2,
               }}
             >
-              <Box sx={{ gridColumn: 'span 12' }}>
-                <Typography variant="body2">
-                  {t('pages.overview.overviewTitleBoxProdDescription')}
-                </Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 12', mt: 2 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
-                >
-                  {t('pages.overview.overviewTitleBoxProdBtn')}
-                </Button>
-              </Box>
+              {[
+                { label: 'fullName', value: mockedData?.legalRepresentative?.fullName },
+                { label: 'fiscalCode', value: mockedData?.legalRepresentative?.fiscalCode },
+                { label: 'businessEmail', value: mockedData?.legalRepresentative?.businessEmail },
+              ].map(({ label, value }) => (
+                <React.Fragment key={label}>
+                  <Box sx={{ gridColumn: 'span 3', alignContent: 'center' }}>
+                    <Typography variant="body2">
+                      {t(`pages.manufacturerDetail.legalRepresentativePanel.${label}`)}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ gridColumn: 'span 9' }}>
+                    <Typography variant="body2" sx={{ fontWeight: '600' }}>
+                      {value || '-'}
+                    </Typography>
+                  </Box>
+                </React.Fragment>
+              ))}
             </Box>
           </Paper>
         </Box>

@@ -152,7 +152,23 @@
         "temporaryField": "<?>"
       }
     },
-    "manufacturerDetail": {}
+    "manufacturerDetail": {
+      "backButton": "Indietro",
+      "dataPanel": {
+        "title": "DATI PRODUTTORE",
+        "businessName": "Ragione sociale",
+        "fiscalCode": "Codice Fiscale",
+        "vatNumber": "Partita IVA",
+        "registeredOffice": "Sede legale",
+        "PEC": "PEC"
+      },
+      "legalRepresentativePanel": {
+        "title": "LEGALE RAPPRESENTANTE",
+        "fullName": "Nome Cognome",
+        "fiscalCode": "Codice Fiscale",
+        "businessEmail": "Email aziendale"
+      }
+    }
   },
   "roles": {
     "admin": "Amministratore",
