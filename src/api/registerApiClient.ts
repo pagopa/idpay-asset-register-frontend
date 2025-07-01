@@ -4,9 +4,10 @@ import {appStateActions} from "@pagopa/selfcare-common-frontend/lib/redux/slices
 import {storageTokenOps} from "@pagopa/selfcare-common-frontend/lib/utils/storage";
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
-import { createClient, WithDefaultsT } from './generated/role-permission/client';
-import { UserPermissionDTO } from './generated/role-permission/UserPermissionDTO';
-import { PortalConsentDTO } from './generated/role-permission/PortalConsentDTO';
+import { createClient, WithDefaultsT } from './generated/register/client';
+import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
+import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
+import {RegisterUploadResponseDTO} from "./generated/register/RegisterUploadResponseDTO";
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -21,6 +22,13 @@ const rolePermissionClient = createClient({
   basePath: '',
   fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.ROLE_PERMISSION),
   withDefaults: withBearerAndPartyId,
+});
+
+const productUploadClient = createClient({
+    baseUrl: ENV.URL_API.OPERATION,
+    basePath: '',
+    fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION),
+    withDefaults: withBearerAndPartyId,
 });
 
 const onRedirectToLogin = () =>
@@ -51,4 +59,24 @@ export const RolePermissionApi = {
     const result = await rolePermissionClient.savePortalConsent({ body: { versionId } });
     return extractResponse(result, 200, onRedirectToLogin);
   },
+};
+
+
+export const RegisterApi = {
+    uploadProductList: async (
+        file: File,
+        category: string
+    ): Promise<RegisterUploadResponseDTO> => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("category", category);
+
+        const result = await productUploadClient.uploadProductList({
+            file,
+            category
+        });
+
+
+        return extractResponse(result, 200, onRedirectToLogin);
+    }
 };

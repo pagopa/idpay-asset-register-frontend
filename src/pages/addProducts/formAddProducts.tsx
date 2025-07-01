@@ -10,6 +10,7 @@ import AcceptedFile from "../../components/AcceptedFile/AcceptedFile";
 import {PRODUCTS_CATEGORY} from "../../utils/constants";
 import {initUploadBoxStyle, initUploadHelperBoxStyle} from "../../helpers";
 import InitUploadBox from "../../components/InitUploadBox/InitUploadBox";
+import {uploadProductList} from "../../services/registerService";
 import {categoryList} from "./helpers";
 
 type Props = {
@@ -68,18 +69,87 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
             setFileRejected(false);
         },
         onDropAccepted: (files) => {
-            console.log(`onDropAccepted: ${files}`);
-            const dateField =
-                Object.prototype.toString.call(files[0].lastModified) === '[object Date]'
-                    ? files[0].lastModified
-                    : new Date();
-            const fileDate = dateField && dateField.toLocaleString('fr-BE');
-
-            setFileName(files[0].name);
-            setFileDate(fileDate || '');
+            setFileIsLoading(true);
+            uploadProductList( files[0], "")
+                .then((res : any) => {
+                    if (res.status === 'VALIDATED') {
+                        setFileName(files[0].name);
+                        const dateField =
+                            Object.prototype.toString.call(files[0].lastModified) === '[object Date]'
+                                ? files[0].lastModified
+                                : new Date();
+                        const fileDate = dateField && dateField.toLocaleString('fr-BE');
+                        setFileDate(fileDate || '');
+                        setFileIsLoading(false);
+                        setFileRejected(false);
+                        setFileAccepted(true);
+                    } else {
+                        setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.errorGenericTitle'));
+                        switch (res.errorKey) {
+                            case 'merchant.invalid.file.empty':
+                                setAlertDescription(t('pages.initiativeMerchantUpload.uploadPaper.emptyFile'));
+                                break;
+                            case 'merchant.invalid.file.format':
+                                setAlertDescription(
+                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongFileType')
+                                );
+                                break;
+                            case 'merchant.invalid.file.name':
+                                setAlertDescription(
+                                    t('pages.initiativeMerchantUpload.uploadPaper.fileNameError')
+                                );
+                                break;
+                            case 'merchant.invalid.file.size':
+                                setAlertDescription(
+                                    t('pages.initiativeMerchantUpload.uploadPaper.fileTooLarge', { x: 2 })
+                                );
+                                break;
+                            case 'merchant.missing.required.fields':
+                                setAlertDescription(
+                                    t('pages.initiativeMerchantUpload.uploadPaper.missingRow', { x: res.errorRow })
+                                );
+                                break;
+                            case 'merchant.invalid.file.cf.wrong':
+                                setAlertDescription(
+                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongCf', { x: res.errorRow })
+                                );
+                                break;
+                            case 'merchant.invalid.file.iban.wrong':
+                                setAlertDescription(
+                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongIban', { x: res.errorRow })
+                                );
+                                break;
+                            case 'merchant.invalid.file.email.wrong':
+                                setAlertDescription(
+                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongEmail', { x: res.errorRow })
+                                );
+                                break;
+                            case 'merchant.invalid.file.acquirer.wrong':
+                                setAlertDescription(
+                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongAcquirer', {
+                                        x: res.errorRow,
+                                    })
+                                );
+                                break;
+                            default:
+                                setAlertDescription(
+                                    t('pages.initiativeMerchantUpload.uploadPaper.errorDescription')
+                                );
+                                break;
+                        }
+                        setFileIsLoading(false);
+                        setFileAccepted(false);
+                        setFileRejected(true);
+                    }
+                })
+                .catch((_error: any) => {
+                    setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.errorGenericTitle'));
+                    setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.errorDescription'));
+                    setFileIsLoading(false);
+                    setFileAccepted(false);
+                    setFileRejected(true);
+                });
             setFileIsLoading(false);
-            setFileRejected(false);
-            setFileAccepted(true);
         },
         onDropRejected: (files) => {
             const errorKey = files[0].errors[0].code;
@@ -177,11 +247,13 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
 
             {/* File Input */}
             {fileRejected && (
-                <RejectedFile
-                    title={t(alertTitle)}
-                    description={t(alertDescription)}
-                    dismissFn={() => setFileRejected(false)}
-                />
+                <Box pb={3}>
+                    <RejectedFile
+                        title={t(alertTitle)}
+                        description={t(alertDescription)}
+                        dismissFn={() => setFileRejected(false)}
+                    />
+                </Box>
             )}
 
             {fileIsLoading ? (

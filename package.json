@@ -44,8 +44,8 @@
     "lint": "eslint -f json -o eslint-report.json . -c .eslintrc.js --ext .ts,.tsx --cache",
     "prettify": "prettier --write \"./**/*.{ts,tsx}\"",
     "generate": "npm-run-all generate:*",
-    "clean:api-role-permission": "rimraf src/api/generated/role-permission && rimraf openApi/generated",
-    "generate:api-role-permission": "yarn run clean:api-role-permission && mkdirp openApi/generated && api-spec-converter --from=openapi_3 --to=swagger_2 openApi/openapi.role-permission.yml > openApi/generated/role-permission-swagger20.json && node ./node_modules/@pagopa/selfcare-common-frontend/utils/fixSwagger20ArraySchemaDef.js openApi/generated/role-permission-swagger20.json && node ./openApi/scripts/api-role-permission_fixPreGen.js && gen-api-models --api-spec openApi/generated/role-permission-swagger20.json --out-dir src/api/generated/role-permission --no-strict --request-types --response-decoders --client && node openApi/scripts/api-role-permission_fixPostGen.js"
+    "clean:api-register": "rimraf src/api/generated/register && rimraf openApi/generated",
+    "generate:api-register": "yarn run clean:api-register && mkdirp openApi/generated && api-spec-converter --from=openapi_3 --to=swagger_2 openApi/openapi.register.yml > openApi/generated/register-swagger20.json && node ./node_modules/@pagopa/selfcare-common-frontend/utils/fixSwagger20ArraySchemaDef.js openApi/generated/register-swagger20.json && node ./openApi/scripts/api-register_fixPreGen.js && gen-api-models --api-spec openApi/generated/register-swagger20.json --out-dir src/api/generated/register --no-strict --request-types --response-decoders --client && node openApi/scripts/api-register_fixPostGen.js"
   },
   "eslintConfig": {
     "extends": [

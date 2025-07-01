@@ -18,7 +18,7 @@ export const categoryList = [
         value: PRODUCTS_CATEGORY.RANGEHOODS
     },
     {
-        label: "commons.categories.dishwasher",
+        label: "commons.categories.dishwashers",
         value: PRODUCTS_CATEGORY.DISHWASHERS
     },
     {

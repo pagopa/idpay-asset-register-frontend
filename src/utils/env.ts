@@ -20,10 +20,12 @@ export const ENV = {
 
   URL_API: {
     ROLE_PERMISSION: env.get('REACT_APP_URL_API_ROLE_PERMISSION').required().asString(),
+    OPERATION: env.get('REACT_APP_URL_API_OPERATION').required().asString(),
   },
 
   API_TIMEOUT_MS: {
     ROLE_PERMISSION: env.get('REACT_APP_API_ROLE_PERMISSION_TIMEOUT_MS').required().asInt(),
+    OPERATION: env.get('REACT_APP_API_OPERATION_TIMEOUT_MS').required().asInt()
   },
 
   URL_INSTITUTION_LOGO: {

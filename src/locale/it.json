@@ -96,6 +96,7 @@
           "validFile": "File valido",
           "changeFile": "Sostituisci",
           "fileUploadError": {
+            "errorGenericTitle": "II file contiene uno o più errori",
             "errorDescription": "Si è verificato un errore. Riprova",
             "errorTitle": "II file contiene degli errori",
             "invalidTypeTitle": "Il formato del file non è valido",
