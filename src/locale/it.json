@@ -151,7 +151,8 @@
         "lastUpdate": "Ultima modifica",
         "temporaryField": "<?>"
       }
-    }
+    },
+    "manufacturerDetail": {}
   },
   "roles": {
     "admin": "Amministratore",
