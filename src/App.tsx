@@ -15,6 +15,7 @@ import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
 import Prodotti from './pages/prodotti/prodotti';
 import InvitPanoramica from './pages/invitPanoramica/invitPanoramica';
+import ManufacturerDetail from './pages/manufacturerDetails/manufacturerDetail';
 import Caricamenti from './pages/caricamenti/caricamenti';
 import Panoramica from './pages/panoramica/panoramica';
 import TOS from './pages/tos/TOS';
@@ -54,7 +55,7 @@ const SecuredRoutes = withLogin(
         <Routes>
           <Route path={routes.HOME} element={<Panoramica />} />
           <Route path={routes.INVITALIA} element={<InvitPanoramica />} />
-          <Route path={routes.MANUFACTURER_DETAIL} element={<InvitPanoramica />} />
+          <Route path={routes.MANUFACTURER_DETAIL} element={<ManufacturerDetail />} />
           <Route path={routes.ADD_PRODUCTS} element={<AddProducts />} />
           <Route path={routes.PRODUCTS} element={<Prodotti />} />
           <Route path={routes.UPLOADS} element={<Caricamenti />} />
