@@ -4,9 +4,9 @@ import {appStateActions} from "@pagopa/selfcare-common-frontend/lib/redux/slices
 import {storageTokenOps} from "@pagopa/selfcare-common-frontend/lib/utils/storage";
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
-import { createClient, WithDefaultsT } from './generated/role-permission/client';
-import { UserPermissionDTO } from './generated/role-permission/UserPermissionDTO';
-import { PortalConsentDTO } from './generated/role-permission/PortalConsentDTO';
+import { createClient, WithDefaultsT } from './generated/register/client';
+import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
+import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();

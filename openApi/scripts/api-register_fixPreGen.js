@@ -1,9 +1,10 @@
+// eslint-disable-next-line
 const regexReplace = require('regex-replace');
 
 regexReplace(
   '"items": \\{\\},',
   '"items":{"type": "object"},',
-  'openApi/generated/role-permission-swagger20.json',
+  'openApi/generated/register-swagger20.json',
   {
     fileContentsOnly: true,
   }
@@ -12,7 +13,7 @@ regexReplace(
 regexReplace(
   '"rewardRule": \\{\\},',
   '"rewardRule":{"type": "object"},',
-  'openApi/generated/role-permission-swagger20.json',
+  'openApi/generated/register-swagger20.json',
   {
     fileContentsOnly: true,
   }
@@ -21,7 +22,7 @@ regexReplace(
 regexReplace(
   '"operationId": "returns-fixed-automated-criteria",',
   '"operationId":"returnsFixedAutomatedCriteria",',
-  'openApi/generated/role-permission-swagger20.json',
+  'openApi/generated/register-swagger20.json',
   {
     fileContentsOnly: true,
   }
