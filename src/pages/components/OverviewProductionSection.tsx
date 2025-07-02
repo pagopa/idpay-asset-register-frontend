@@ -34,8 +34,7 @@ const getHistoryUploads = (
   const params = {
     page: 1,
     size: 4,
-    totalElements: 4,
-    totalPages: 1,
+    sort: 'dateUpload,desc',
   };
 
   RegisterApi.getProductFiles(params)
