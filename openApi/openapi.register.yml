@@ -218,7 +218,7 @@ paths:
         - products-upload
       summary: Returns the uploads history list
       description: 'ENG: Returns the history uploads list <br> IT: Lista storico caricamenti'
-      operationId: getUploadsList
+      operationId: getProductFilesList
       parameters:
         - name: page
           in: query
@@ -380,6 +380,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductListDTO'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+        '401':
+          description: Authentication failed
+        '429':
+          description: Too many Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+  /institutions/{institutionId}:
+    get:
+      tags:
+        - institutions
+      summary: Gets the corresponding institution using institution id
+      description: 'ENG: Institution producer details <br> IT: Dettagli ente produttore'
+      operationId: retrieveInstitutionById
+      parameters:
+        - name: institutionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "ENG: ID of the producer IT: ID del produttore"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstitutionResponse'
         '400':
           description: Bad request
           content:
@@ -616,6 +657,28 @@ components:
         countryOfProduction:
           type: string
           description: "ENG: The production country of the product <br> IT: il paese di produzione del prodotto"
+    InstitutionResponse:
+      title: InstitutionResponse
+      type: object
+      properties:
+        address:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        county:
+          type: string
+        description:
+          type: string
+        digitalAddress:
+          type: string
+        externalId:
+          type: string
+        taxCode:
+          type: string
+        zipCode:
+          type: string
     ErrorDTO:
       type: object
       required:

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Dispatch } from 'react';
 import {
   Box,
   Paper,
@@ -23,15 +23,42 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ROUTES from '../../routes';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { UploadDTO } from '../../api/generated/register/UploadDTO';
-import mockDataUploads from '../../mocks/StoricoProdEprel_01072025.json';
+import { RegisterApi } from '../../api/registerApiClient';
+// import mockDataUploads from '../../mocks/StoricoProdEprel_01072025.json';
+
+const getHistoryUploads = (
+  dispatch: Dispatch<any>,
+  addError: (error: { title: string; description: string; error: unknown }) => void,
+  t: (key: string) => string
+) => {
+  const params = {
+    page: 1,
+    size: 4,
+    totalElements: 4,
+    totalPages: 1,
+  };
+
+  RegisterApi.getProductFiles(params)
+    .then((res: UploadsListDTO) => {
+      dispatch({ type: 'SET_UPLOADS_LIST', payload: res });
+    })
+    .catch((error: unknown) => {
+      addError({
+        title: t('errors.uploadsList.errorTitle'),
+        description: t('errors.uploadsList.errorDescription'),
+        error,
+      });
+    });
+};
 
 function renderUploadStatusChip(status: string) {
   switch (status) {
-    case 'In carico':
+    case 'IN_PROGRESS':
+    case 'UPLOADED':
       return <Chip color="default" label="In carico" />;
-    case 'Parziale':
+    case 'EPREL_ERROR':
       return <Chip color="warning" label="Parziale" />;
-    case 'Caricato':
+    case 'LOADED':
       return <Chip color="success" label="Caricato" />;
     default:
       return <Chip color="default" label={status} />;
@@ -153,7 +180,7 @@ const UploadsTable: React.FC<{
                 {data?.content &&
                   data.content.map((row: UploadDTO) => (
                     <TableRow key={row.productFileId}>
-                      <TableCell>{row.fileName}</TableCell>
+                      <TableCell>{row.batchName}</TableCell>
                       <TableCell>{renderUploadStatusChip(row.uploadStatus ?? '')}</TableCell>
                       <TableCell>{row.dateUpload ? formatDate(row.dateUpload) : '-'}</TableCell>
                     </TableRow>
@@ -185,7 +212,9 @@ const OverviewProductionSection: React.FC = () => {
   const [error] = useState<string | null>(null);
 
   useEffect(() => {
-    setData(mockDataUploads as UploadsListDTO);
+    // Simulating data fetch with mock data
+    // setData(mockDataUploads as UploadsListDTO);
+    setData(getHistoryUploads);
     setLoading(false);
   }, []);
 
