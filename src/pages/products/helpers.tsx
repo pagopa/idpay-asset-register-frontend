@@ -59,17 +59,20 @@ export interface EnhancedTableProps {
 }
 
 export interface DataProp {
-  id?: number;
+  productFileId?: string;
+  organizationId?: string;
+  registrationDate?: string;
+  status?: string;
+  model?: string;
+  productGroup?: string;
+  branchName?: string;
   category?: string;
-  energyClass?: string;
+  brand?: string;
   eprelCode?: string;
   gtinCode?: string;
-  branchName?: string;
-  codice_prodotto?: string;
-  codice_produttore?: string;
-  marca?: string;
-  modello?: string;
-  origine?: string;
+  productCode?: string;
+  energyClass?: string;
+  countryOfProduction?: string;
 }
 
 export interface ProductsDrawerProps {

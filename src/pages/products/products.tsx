@@ -112,10 +112,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 const Products = () => {
+  const { content, pageNo, pageSize, totalElements, totalPages } = mockdata;
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Data>('category');
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(pageNo);
+  const [rowsPerPage, setRowsPerPage] = useState(pageSize);
+  // const [pages, setPages] = useState(totalPages);
+  // const [itemsQty, setItemsQty] = useState(totalElements);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [branchFilter, setBranchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
@@ -123,7 +126,7 @@ const Products = () => {
   const [manufacturerFilter, setManufacturerFilter] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<DataProp>({});
-  const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(mockdata));
+  const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(content));
 
   const { t } = useTranslation();
 
@@ -200,7 +203,7 @@ const Products = () => {
     setEprelCodeFilter('');
     setGtinCodeFilter('');
     setManufacturerFilter('');
-    setMockedData(sanitizedData(mockdata));
+    setMockedData(sanitizedData(content));
   };
 
   const handleListButtonClick = (row: any) => {
