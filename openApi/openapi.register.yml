@@ -561,6 +561,7 @@ components:
           format: int32
           description: 'ENG: The total number of the pages <br> IT: Il numero totale delle pagine'
     UploadDTO:
+      required: []
       type: object
       properties:
         productFileId:
@@ -568,24 +569,31 @@ components:
           description: 'ENG: The name of batch <br> IT: Nome del lotto'
         category:
           type: string
+          nullable: true
           description: 'ENG: The category of product in file <br> IT: Categoria dei prodotti contenuti nel file'
         fileName:
           type: string
+          nullable: true
           description: 'ENG: The original name of file <br> IT: Nome originale del file csv'
         batchName:
           type: string
+          nullable: true
           description: 'ENG: The computed name of file <br> IT: Nome ricalcolato del file csv'
         uploadStatus:
           type: string
+          nullable: true
           description: 'ENG: The state of batch uploaded <br> IT: Lo stato del lotto caricato'
         dateUpload:
           type: string
+          nullable: true
           description: 'ENG: The date of upload <br> IT: La data di caricamento'
         findedProductsNumber:
           type: number
+          nullable: true
           description: 'ENG: The number of products found in the batch <br> IT: Il numero di prodotti trovati nel lotto'
         addedProductNumber:
           type: number
+          nullable: true
           description: 'ENG: The number of products added to the register <br> IT: Il numero di prodotti aggiunti al registro'
     UploadsErrorDTO:
       type: object

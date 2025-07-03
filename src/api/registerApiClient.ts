@@ -63,6 +63,7 @@ export const RolePermissionApi = {
   },
 };
 
+{/*
 export const RegisterApi = {  
   getProductFiles: async (
     params: Parameters<typeof registerClient.getProductFilesList>[0] = {}
@@ -70,4 +71,45 @@ export const RegisterApi = {
     const result = await registerClient.getProductFilesList(params);
     return extractResponse(result, 200, onRedirectToLogin);
   }
+};
+*/}
+{/*
+export const RegisterApi = {  
+  getProductFiles: async (
+    page?: number,
+    size?: number,
+    sort?: string
+  ): Promise<UploadsListDTO> => {
+    const result = await registerClient.getProductFilesList({
+      page,size,sort
+    });
+    return extractResponse(result, 200, onRedirectToLogin);
+  }
+};
+
+*/}
+
+export const RegisterApi = {  
+getProductFiles: async (
+  page?: number,
+  size?: number,
+  sort?: string
+): Promise<UploadsListDTO> => {
+  try {
+    // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
+    const params = {
+      ...(page !== undefined ? { page } : {}),
+      ...(size !== undefined ? { size } : {}),
+      ...(sort !== undefined ? { sort } : {}),
+    };
+
+    const result = await registerClient.getProductFilesList(params);
+    console.log('*********RegisterApi  Risultato della chiamata API:         ***************************',  JSON.stringify(result));
+    return extractResponse(result, 200, onRedirectToLogin);
+  } catch (error) {
+    // Puoi loggare o gestire l’errore come preferisci
+    console.error('Errore durante il recupero dei file prodotto:', error);
+    throw error;
+  }
+}
 };
