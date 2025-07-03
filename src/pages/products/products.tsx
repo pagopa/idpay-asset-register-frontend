@@ -32,7 +32,7 @@ import mockdata from './mockCsvProducts.json';
 const sanitizedData = (arr: Array<DataProp>) =>
   arr.map((item) => ({
     ...item,
-    category: item.category?.toLowerCase() || '-',
+    category: item.category || '-',
     energyClass: item.energyClass || '-',
     eprelCode: item.eprelCode || '-',
     gtinCode: item.gtinCode || '-',
@@ -112,7 +112,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 const Products = () => {
-  const { content, pageNo, pageSize, totalElements, totalPages } = mockdata;
+  const { content, pageNo, pageSize /* , totalElements, totalPages */ } = mockdata;
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Data>('category');
   const [page, setPage] = useState(pageNo);
@@ -127,6 +127,8 @@ const Products = () => {
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<DataProp>({});
   const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(content));
+
+  console.log('§1>', { mockedData });
 
   const { t } = useTranslation();
 
@@ -145,6 +147,13 @@ const Products = () => {
   ];
 
   const handleFilterButtonClick = () => {
+    console.log('§0', {
+      categoryFilter,
+      branchFilter,
+      eprelCodeFilter,
+      gtinCodeFilter,
+      manufacturerFilter,
+    });
     setMockedData(
       mockedData
         .filter(
@@ -221,6 +230,8 @@ const Products = () => {
   const visibleRows = [...mockedData]
     .sort(getComparator(order, orderBy))
     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  console.log('§===>', { visibleRows });
 
   const selectMenuProps = {
     PaperProps: {
@@ -346,11 +357,11 @@ const Products = () => {
                 onRequestSort={handleRequestSort}
               />
               <TableBody sx={{ backgroundColor: 'white' }}>
-                {visibleRows.map((row) => (
-                  <TableRow tabIndex={-1} key={row.id} sx={{ height: '25px' }}>
+                {visibleRows.map((row, index) => (
+                  <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
                     <TableCell sx={{ width: '132px' }}>
                       <Typography variant="body2">
-                        {t(`commons.categories.${row.category}`)}
+                        {t(`commons.categories.${row.category.toLowerCase()}`)}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ width: '186px', textAlign: 'center' }}>

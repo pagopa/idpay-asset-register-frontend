@@ -9,6 +9,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ProductsDrawerProps } from './helpers';
 
 export default function ProductsDrawer(props: ProductsDrawerProps) {
+  console.log('§======>', { props });
+
   const { t } = useTranslation();
 
   const DrawerList = (
@@ -59,7 +61,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.codice_prodotto || 'Codice prodotto esempio'}
+            {props.data.productCode || 'Codice prodotto esempio'}
           </Box>
         </ListItem>
 
@@ -81,7 +83,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.marca || 'Marca esempio'}
+            {props.data.brand || 'Marca esempio'}
           </Box>
         </ListItem>
 
@@ -92,7 +94,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.modello || 'Modello esempio'}
+            {props.data.model || 'Modello esempio'}
           </Box>
         </ListItem>
 
@@ -103,7 +105,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.origine || 'Paese di produzione esempio'}
+            {props.data.countryOfProduction || 'Paese di produzione esempio'}
           </Box>
         </ListItem>
       </List>
