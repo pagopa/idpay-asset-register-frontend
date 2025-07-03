@@ -28,6 +28,7 @@ import EmptyList from '../components/EmptyList';
 import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
+import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import ProductsDrawer from './productdrawer';
 import {
   Data,
@@ -36,27 +37,29 @@ import {
   getComparator,
   Order,
   DataProp,
-  GetProductFilesListParams,
+  // GetProductListParams,
 } from './helpers';
 // import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 // import { ProductDTO } from '../../api/generated/register/ProductDTO';
 // import mockdata from './mockCsvProducts.json';
 
-const sanitizedData = (obj: ProductListDTO) =>
-  (obj.content || []).map((item) => ({
-    ...item,
-    category: item.category || '-',
-    energyClass: item.energyClass || '-',
-    eprelCode: item.eprelCode || '-',
-    gtinCode: item.gtinCode || '-',
-    branchName: item.batchName || '-',
-  }));
+// const sanitizedData = (obj: ProductListDTO) =>
+//   (obj.content || []).map((item) => ({
+//     ...item,
+//     category: item.category || '-',
+//     energyClass: item.energyClass || '-',
+//     eprelCode: item.eprelCode || '-',
+//     gtinCode: item.gtinCode || '-',
+//     branchName: item.batchName || '-',
+//   }));
 
-const getProductFilesList = async (
-  params: GetProductFilesListParams = {}
+const getProductList = async (
+  page?: number,
+  size?: number,
+  sort?: string
 ): Promise<ProductListDTO> => {
   try {
-    return await RegisterApi.getProductFiles(params);
+    return await RegisterApi.getProducts(page, size, sort);
   } catch (error: any) {
     if (error.response && error.response.data) {
       const apiError: UploadsErrorDTO = error.response.data;
@@ -152,7 +155,9 @@ const Products = () => {
   const [manufacturerFilter /* , setManufacturerFilter */] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<DataProp>({});
-  const [tableData, setTableData] = useState<Array<any>>([]);
+  const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
+
+  console.log('++++', { tableData });
 
   const { t } = useTranslation();
   const rowsPerPage = 8;
@@ -160,9 +165,12 @@ const Products = () => {
   const paginatorTo = page * rowsPerPage + rowsPerPage;
 
   useEffect(() => {
-    void getProductFilesList().then((res) => {
+    void getProductList(page, rowsPerPage, 'asc').then((res) => {
+      console.log('*****', { res });
+
       const { content, pageNo, totalElements } = res;
-      setTableData(sanitizedData(content || []));
+      console.log('*****', { content });
+      setTableData(content || []);
       setPage(pageNo || 1);
       setItemsQty(totalElements);
       // setPages(totalPages);

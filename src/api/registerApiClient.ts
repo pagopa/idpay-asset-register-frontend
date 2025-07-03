@@ -1,14 +1,16 @@
-import i18n from "@pagopa/selfcare-common-frontend/lib/locale/locale-utils";
-import {buildFetchApi, extractResponse} from "@pagopa/selfcare-common-frontend/lib/utils/api-utils";
-import {appStateActions} from "@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice";
-import {storageTokenOps} from "@pagopa/selfcare-common-frontend/lib/utils/storage";
+import i18n from '@pagopa/selfcare-common-frontend/lib/locale/locale-utils';
+import {
+  buildFetchApi,
+  extractResponse,
+} from '@pagopa/selfcare-common-frontend/lib/utils/api-utils';
+import { appStateActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice';
+import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
 import { createClient, WithDefaultsT } from './generated/register/client';
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
 import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
-import { UploadsListDTO } from "./generated/register/UploadsListDTO";
-
+import { UploadsListDTO } from './generated/register/UploadsListDTO';
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -47,10 +49,9 @@ const onRedirectToLogin = () =>
 
 export const RolePermissionApi = {
   userPermission: async (): Promise<UserPermissionDTO> => {
-    const result = await rolePermissionClient.userPermission({});  // TODO modify
+    const result = await rolePermissionClient.userPermission({}); // TODO modify
     return extractResponse(result, 200, onRedirectToLogin);
   },
-  
 
   getPortalConsent: async (): Promise<PortalConsentDTO> => {
     const result = await rolePermissionClient.getPortalConsent({});
@@ -63,7 +64,8 @@ export const RolePermissionApi = {
   },
 };
 
-{/*
+{
+  /*
 export const RegisterApi = {  
   getProductFiles: async (
     params: Parameters<typeof registerClient.getProductFilesList>[0] = {}
@@ -72,8 +74,10 @@ export const RegisterApi = {
     return extractResponse(result, 200, onRedirectToLogin);
   }
 };
-*/}
-{/*
+*/
+}
+{
+  /*
 export const RegisterApi = {  
   getProductFiles: async (
     page?: number,
@@ -87,29 +91,50 @@ export const RegisterApi = {
   }
 };
 
-*/}
-
-export const RegisterApi = {  
-getProductFiles: async (
-  page?: number,
-  size?: number,
-  sort?: string
-): Promise<UploadsListDTO> => {
-  try {
-    // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
-    const params = {
-      ...(page !== undefined ? { page } : {}),
-      ...(size !== undefined ? { size } : {}),
-      ...(sort !== undefined ? { sort } : {}),
-    };
-
-    const result = await registerClient.getProductFilesList(params);
-    console.log('*********RegisterApi  Risultato della chiamata API:         ***************************',  JSON.stringify(result));
-    return extractResponse(result, 200, onRedirectToLogin);
-  } catch (error) {
-    // Puoi loggare o gestire l’errore come preferisci
-    console.error('Errore durante il recupero dei file prodotto:', error);
-    throw error;
-  }
+*/
 }
+
+export const RegisterApi = {
+  getProductFiles: async (page?: number, size?: number, sort?: string): Promise<UploadsListDTO> => {
+    try {
+      // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
+      const params = {
+        ...(page !== undefined ? { page } : {}),
+        ...(size !== undefined ? { size } : {}),
+        ...(sort !== undefined ? { sort } : {}),
+      };
+
+      const result = await registerClient.getProductFilesList(params);
+      console.log(
+        '*********RegisterApi  Risultato della chiamata API:         ***************************',
+        JSON.stringify(result)
+      );
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      // Puoi loggare o gestire l’errore come preferisci
+      console.error('Errore durante il recupero dei file prodotto:', error);
+      throw error;
+    }
+  },
+  getProducts: async (page?: number, size?: number, sort?: string): Promise<UploadsListDTO> => {
+    try {
+      // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
+      const params = {
+        ...(page !== undefined ? { page } : {}),
+        ...(size !== undefined ? { size } : {}),
+        ...(sort !== undefined ? { sort } : {}),
+      };
+
+      const result = await registerClient.getProducts(params);
+      console.log(
+        '*********RegisterApi  Risultato della chiamata API:         ***************************',
+        JSON.stringify(result)
+      );
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      // Puoi loggare o gestire l’errore come preferisci
+      console.error('Errore durante il recupero dei file prodotto:', error);
+      throw error;
+    }
+  },
 };

@@ -81,7 +81,7 @@ export interface ProductsDrawerProps {
   data: DataProp;
 }
 
-export interface GetProductFilesListParams {
+export interface GetProductListParams {
   page?: number;
   size?: number;
   sort?: string;
