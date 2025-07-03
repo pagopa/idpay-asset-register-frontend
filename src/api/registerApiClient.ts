@@ -4,9 +4,11 @@ import {appStateActions} from "@pagopa/selfcare-common-frontend/lib/redux/slices
 import {storageTokenOps} from "@pagopa/selfcare-common-frontend/lib/utils/storage";
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
-import { createClient, WithDefaultsT } from './generated/role-permission/client';
-import { UserPermissionDTO } from './generated/role-permission/UserPermissionDTO';
-import { PortalConsentDTO } from './generated/role-permission/PortalConsentDTO';
+import { createClient, WithDefaultsT } from './generated/register/client';
+import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
+import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
+import { UploadsListDTO } from "./generated/register/UploadsListDTO";
+
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -20,6 +22,13 @@ const rolePermissionClient = createClient({
   baseUrl: ENV.URL_API.ROLE_PERMISSION,
   basePath: '',
   fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.ROLE_PERMISSION),
+  withDefaults: withBearerAndPartyId,
+});
+
+const registerClient = createClient({
+  baseUrl: ENV.URL_API.REGISTER,
+  basePath: '',
+  fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.REGISTER),
   withDefaults: withBearerAndPartyId,
 });
 
@@ -38,9 +47,10 @@ const onRedirectToLogin = () =>
 
 export const RolePermissionApi = {
   userPermission: async (): Promise<UserPermissionDTO> => {
-    const result = await rolePermissionClient.userPermission({});
+    const result = await rolePermissionClient.userPermission({});  // TODO modify
     return extractResponse(result, 200, onRedirectToLogin);
   },
+  
 
   getPortalConsent: async (): Promise<PortalConsentDTO> => {
     const result = await rolePermissionClient.getPortalConsent({});
@@ -51,4 +61,13 @@ export const RolePermissionApi = {
     const result = await rolePermissionClient.savePortalConsent({ body: { versionId } });
     return extractResponse(result, 200, onRedirectToLogin);
   },
+};
+
+export const RegisterApi = {  
+  getProductFiles: async (
+    params: Parameters<typeof registerClient.getProductFilesList>[0] = {}
+  ): Promise<UploadsListDTO> => {
+    const result = await registerClient.getProductFilesList(params);
+    return extractResponse(result, 200, onRedirectToLogin);
+  }
 };

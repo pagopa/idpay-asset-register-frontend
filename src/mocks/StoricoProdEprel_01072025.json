@@ -1,0 +1,48 @@
+{
+	"content": [
+		{
+			"productFileId": "112c7e2710c797487aa6e1cf",
+			"category": "WASHIGMACHINES",
+			"fileName": "lavatrici_4_22042023.csv",
+			"batchName": "lavatrici_682c7e2710c797487aa6e1cf",
+			"uploadStatus": "Caricato",
+			"dateUpload": "2025-08-30T10:30:00Z",
+			"findedProductsNumber": 4,
+			"addedProductNumber": 4
+		},
+		{
+			"productFileId": "222c7e2710c797487aa6e2cf",
+			"category": "WASHIGMACHINES",
+			"fileName": "lavatrici_3_30062025.csv",
+			"batchName": "lavatrici_222c7e2710c797487aa6e2cf",
+			"uploadStatus": "Parziale",
+			"dateUpload": "2025-07-30T10:00:00Z",
+			"findedProductsNumber": 20,
+			"addedProductNumber": 3
+		},
+		{
+			"productFileId": "332c7e2710c797487aa6e3cf",
+			"category": "WASHIGMACHINES",
+			"fileName": "lavatrici_2_30062025.csv",
+			"batchName": "lavatrici_332c7e2710c797487aa6e3cf",
+			"uploadStatus": "Caricato",
+			"dateUpload": "2025-07-20T10:30:00Z",
+			"findedProductsNumber": 10,
+			"addedProductNumber": 10
+		},
+		{
+			"productFileId": "442c7e2710c797487aa6e4cf",
+			"category": "WASHIGMACHINES",
+			"fileName": "lavatrici_1_30062025.csv",
+			"batchName": "lavatrici_442c7e2710c797487aa6e4cf",
+			"uploadStatus": "Caricato",
+			"dateUpload": "2025-07-10T10:30:00Z",
+			"findedProductsNumber": 14,
+			"addedProductNumber": 14
+		}
+	],
+	"pageNo": 1,
+	"pageSize": 4,
+	"totalElements": 4,
+	"totalPages": 1
+}

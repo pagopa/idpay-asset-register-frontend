@@ -1,6 +1,6 @@
-import { PortalConsentDTO } from '../api/generated/role-permission/PortalConsentDTO';
-import { UserPermissionDTO } from '../api/generated/role-permission/UserPermissionDTO';
-import { RolePermissionApi } from '../api/rolePermissionApiClient';
+import { PortalConsentDTO } from '../api/generated/register/PortalConsentDTO';
+import { UserPermissionDTO } from '../api/generated/register/UserPermissionDTO';
+import { RolePermissionApi } from '../api/registerApiClient';
 
 export const getUserPermission = (): Promise<UserPermissionDTO> => RolePermissionApi.userPermission().then((res) => res);
 
