@@ -1,17 +1,20 @@
 import { Box } from '@mui/material';
-import EmptyList from '../components/EmptyList';
+import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
+import OverviewHistoryUpload from '../components/OverviewHistoryUpload';
 
 const UploadsHistory = () => (
-  <Box
-    sx={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(12, 1fr)',
-      justifyContent: 'center',
-      width: '100%',
-      backgroundColor: 'white',
-      p: 2,
-    }}
-  >
+  <Box width="100%" px={2}>
+    <TitleBox
+      title="Storico caricamenti"
+      subTitle="Visualizza tutti i caricamenti e i dettagli"
+      mbTitle={2}
+      mtTitle={2}
+      mbSubTitle={5}
+      variantTitle="h4"
+      variantSubTitle="body1"
+      data-testid="title-overview"
+      titleFontSize="42px"
+    />
     <Box
       sx={{
         display: 'inline',
@@ -20,7 +23,7 @@ const UploadsHistory = () => (
         textAlign: 'center',
       }}
     >
-      <EmptyList message={'Pagina non implementata'} />
+      <OverviewHistoryUpload />
     </Box>
   </Box>
 );

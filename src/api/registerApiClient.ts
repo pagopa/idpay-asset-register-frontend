@@ -96,7 +96,6 @@ getProductFiles: async (
   sort?: string
 ): Promise<UploadsListDTO> => {
   try {
-    // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
     const params = {
       ...(page !== undefined ? { page } : {}),
       ...(size !== undefined ? { size } : {}),
@@ -104,10 +103,8 @@ getProductFiles: async (
     };
 
     const result = await registerClient.getProductFilesList(params);
-    console.log('*********RegisterApi  Risultato della chiamata API:         ***************************',  JSON.stringify(result));
     return extractResponse(result, 200, onRedirectToLogin);
   } catch (error) {
-    // Puoi loggare o gestire l’errore come preferisci
     console.error('Errore durante il recupero dei file prodotto:', error);
     throw error;
   }

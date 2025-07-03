@@ -42,11 +42,11 @@ function renderUploadStatusChip(status: string) {
 
 const formatDateTime = (isoDate: string): string => {
   const date = new Date(isoDate);
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-  const year = date.getUTCFullYear();
-  const hours = String(date.getUTCHours()).padStart(2, '0');
-  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
@@ -191,26 +191,20 @@ const OverviewProductionSection: React.FC = () => {
     setError(null);
     getProductFilesList(0, 4)
       .then((res) => {
-        console.log(
-          '***** Uploads data fetched successfully: PRIMA SET DATA *************',
-          JSON.stringify(res.content)
-        );
         setData(res);
-        console.log('***** Uploads data fetched successfully: *************', res);
         setLoading(false);
       })
       .catch(() => {
-        console.log('***** Uploads data fetched successfully: catch *************');
         setData(null);
         setLoading(false);
         setError(t('errors.uploadsList.errorDescription'));
       });
   }, [t]);
 
-  // Mock data fetch for demonstration purposes
-
   {
     /*
+
+  // Mock data fetch for demonstration purposes
   useEffect(() => {
     try {
       // Simulating data fetch with mock data
