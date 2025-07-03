@@ -29,6 +29,7 @@ import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { displayRows } from '../../utils/constants';
 import ProductsDrawer from './productdrawer';
 import {
   // Data,
@@ -61,7 +62,7 @@ const getProductList = async (
   try {
     return await RegisterApi.getProducts(page, size, sort);
   } catch (error: any) {
-    if (error.response && error.response.data) {
+    if (error?.response && error?.response?.data) {
       const apiError: UploadsErrorDTO = error.response.data;
       throw apiError;
     }
@@ -111,24 +112,24 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   ];
 
   return (
-    <TableHead sx={{ backgroundColor: grey.A100 }}>
+    <TableHead sx={{ backgroundColor: grey?.A100 }}>
       <TableRow>
         {headCells.map((headCell) => (
           <TableCell
-            key={headCell.id}
-            align={headCell.id === 'category' || headCell.id === 'batchName' ? 'left' : 'center'}
+            key={headCell?.id}
+            align={headCell?.id === 'category' || headCell?.id === 'batchName' ? 'left' : 'center'}
             padding="normal"
-            sortDirection={orderBy === headCell.id ? order : false}
+            sortDirection={orderBy === headCell?.id ? order : false}
           >
             <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
+              active={orderBy === headCell?.id}
+              direction={orderBy === headCell?.id ? order : 'asc'}
+              onClick={createSortHandler(headCell?.id)}
               hideSortIcon={false}
               disabled={false}
             >
-              {headCell.label}
-              {orderBy === headCell.id ? (
+              {headCell?.label}
+              {orderBy === headCell?.id ? (
                 <Box component="span" sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
@@ -157,15 +158,12 @@ const Products = () => {
   const [drawerData, setDrawerData] = useState<DataProp>({});
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
 
-  console.log('++++', { tableData });
-
   const { t } = useTranslation();
-  const rowsPerPage = 8;
-  const paginatorFrom = page * rowsPerPage + 1;
-  const paginatorTo = page * rowsPerPage + rowsPerPage;
+  const paginatorFrom = page * displayRows + 1;
+  const paginatorTo = page * displayRows + displayRows;
 
   useEffect(() => {
-    void getProductList(page, rowsPerPage, 'asc').then((res) => {
+    void getProductList(page, displayRows, 'asc').then((res) => {
       console.log('*****', { res });
 
       const { content, pageNo, totalElements } = res;
@@ -327,7 +325,7 @@ const Products = () => {
               MenuProps={selectMenuProps}
               onChange={handleCategoryBranchChange}
             >
-              {branches.map((branch) => (
+              {branches?.map((branch) => (
                 <MenuItem key={branch} value={branch}>
                   {branch}
                 </MenuItem>
@@ -394,24 +392,24 @@ const Products = () => {
                   <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
                     <TableCell sx={{ width: '132px' }}>
                       <Typography variant="body2">
-                        {t(`commons.categories.${row.category?.toLowerCase()}`)}
+                        {t(`commons.categories.${row?.category?.toLowerCase()}`)}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ width: '186px', textAlign: 'center' }}>
-                      <Typography variant="body2">{row.energyClass}</Typography>
+                      <Typography variant="body2">{row?.energyClass}</Typography>
                     </TableCell>
                     <TableCell sx={{ width: '145px', textAlign: 'center' }}>
                       <Link underline="hover" href="#">
                         <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'blue' }}>
-                          {row.eprelCode}
+                          {row?.eprelCode}
                         </Typography>
                       </Link>
                     </TableCell>
                     <TableCell sx={{ width: '186px', textAlign: 'center' }}>
-                      <Typography variant="body2">{row.gtinCode}</Typography>
+                      <Typography variant="body2">{row?.gtinCode}</Typography>
                     </TableCell>
                     <TableCell sx={{ width: '239px' }}>
-                      <Typography variant="body2">{row.batchName}</Typography>
+                      <Typography variant="body2">{row?.batchName}</Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'right' }}>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
@@ -449,12 +447,12 @@ const Products = () => {
             </Box>
           )}
         </TableContainer>
-        {tableData.length > 0 && (
+        {tableData?.length > 0 && (
           <TablePagination
             rowsPerPageOptions={[10]}
             colSpan={3}
-            count={tableData.length}
-            rowsPerPage={rowsPerPage}
+            count={tableData?.length}
+            rowsPerPage={displayRows}
             page={page || 1}
             component="div"
             labelDisplayedRows={() =>

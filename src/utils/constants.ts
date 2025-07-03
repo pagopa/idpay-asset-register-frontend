@@ -20,3 +20,5 @@ export enum PRODUCTS_CATEGORY {
   REFRIGERATINGAPPL = 'REFRIGERATINGAPPL',
   COOKINGHOBS = 'COOKINGHOBS',
 }
+
+export const displayRows=8;
