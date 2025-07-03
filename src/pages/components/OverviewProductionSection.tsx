@@ -189,7 +189,7 @@ const OverviewProductionSection: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getProductFilesList(0, 1)
+    getProductFilesList(0, 4)
       .then((res) => {
         console.log(
           '***** Uploads data fetched successfully: PRIMA SET DATA *************',
