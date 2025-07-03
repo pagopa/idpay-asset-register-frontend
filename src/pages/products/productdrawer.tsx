@@ -9,8 +9,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { ProductsDrawerProps } from './helpers';
 
 export default function ProductsDrawer(props: ProductsDrawerProps) {
-  console.log('§======>', { props });
-
   const { t } = useTranslation();
 
   const DrawerList = (

@@ -80,3 +80,9 @@ export interface ProductsDrawerProps {
   toggleDrawer: (isOpen: boolean) => void;
   data: DataProp;
 }
+
+export interface GetProductFilesListParams {
+  page?: number;
+  size?: number;
+  sort?: string;
+}

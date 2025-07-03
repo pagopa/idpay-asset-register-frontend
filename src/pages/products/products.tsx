@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -25,19 +25,46 @@ import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import EmptyList from '../components/EmptyList';
+import { RegisterApi } from '../../api/registerApiClient';
+import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
+import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import ProductsDrawer from './productdrawer';
-import { Data, EnhancedTableProps, HeadCell, getComparator, Order, DataProp } from './helpers';
-import mockdata from './mockCsvProducts.json';
+import {
+  Data,
+  EnhancedTableProps,
+  HeadCell,
+  getComparator,
+  Order,
+  DataProp,
+  GetProductFilesListParams,
+} from './helpers';
+// import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
+// import { ProductDTO } from '../../api/generated/register/ProductDTO';
+// import mockdata from './mockCsvProducts.json';
 
-const sanitizedData = (arr: Array<DataProp>) =>
-  arr.map((item) => ({
+const sanitizedData = (obj: ProductListDTO) =>
+  (obj.content || []).map((item) => ({
     ...item,
     category: item.category || '-',
     energyClass: item.energyClass || '-',
     eprelCode: item.eprelCode || '-',
     gtinCode: item.gtinCode || '-',
-    branchName: item.branchName || '-',
+    branchName: item.batchName || '-',
   }));
+
+const getProductFilesList = async (
+  params: GetProductFilesListParams = {}
+): Promise<ProductListDTO> => {
+  try {
+    return await RegisterApi.getProductFiles(params);
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      const apiError: UploadsErrorDTO = error.response.data;
+      throw apiError;
+    }
+    throw error;
+  }
+};
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
@@ -112,50 +139,53 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 const Products = () => {
-  const { content, pageNo, pageSize /* , totalElements, totalPages */ } = mockdata;
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Data>('category');
-  const [page, setPage] = useState(pageNo);
-  const [rowsPerPage, setRowsPerPage] = useState(pageSize);
-  // const [pages, setPages] = useState(totalPages);
-  // const [itemsQty, setItemsQty] = useState(totalElements);
+  const [page, setPage] = useState<number>(0);
+  // const [rowsPerPage, setRowsPerPage] = useState(8);
+  // const [ pages, setPages] = useState<number | undefined>(0);
+  const [itemsQty, setItemsQty] = useState<number | undefined>(0);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [branchFilter, setBranchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
-  const [manufacturerFilter, setManufacturerFilter] = useState<string>('');
+  const [manufacturerFilter /* , setManufacturerFilter */] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<DataProp>({});
-  const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(content));
-
-  console.log('§1>', { mockedData });
+  const [tableData, setTableData] = useState<Array<any>>([]);
 
   const { t } = useTranslation();
+  const rowsPerPage = 8;
+  const paginatorFrom = page * rowsPerPage + 1;
+  const paginatorTo = page * rowsPerPage + rowsPerPage;
+
+  useEffect(() => {
+    void getProductFilesList().then((res) => {
+      const { content, pageNo, totalElements } = res;
+      setTableData(sanitizedData(content || []));
+      setPage(pageNo || 1);
+      setItemsQty(totalElements);
+      // setPages(totalPages);
+    });
+  }, []);
 
   const categories = [
     ...new Set(
-      mockedData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()
+      tableData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()
     ),
   ];
   const branches = [
     ...new Set(
-      mockedData
+      tableData
         .map((item) => item.branchName)
         .filter((name) => name !== '-')
         .sort()
     ),
   ];
 
-  const handleFilterButtonClick = () => {
-    console.log('§0', {
-      categoryFilter,
-      branchFilter,
-      eprelCodeFilter,
-      gtinCodeFilter,
-      manufacturerFilter,
-    });
-    setMockedData(
-      mockedData
+  const handleFilterButtonClick = () =>
+    setTableData(
+      tableData
         .filter(
           (item) =>
             !categoryFilter ||
@@ -168,7 +198,6 @@ const Products = () => {
           (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
         )
     );
-  };
 
   const handleToggleDrawer = (newOpen: boolean) => {
     setDrawerOpened(newOpen);
@@ -185,10 +214,10 @@ const Products = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  // const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setRowsPerPage(parseInt(event.target.value, 10));
+  //   setPage(0);
+  // };
 
   const handleCategoryFilterChange = (event: SelectChangeEvent) => {
     setCategoryFilter(event.target.value as string);
@@ -207,12 +236,12 @@ const Products = () => {
   };
 
   const handleDeleteFiltersButtonClick = () => {
-    setCategoryFilter('');
-    setBranchFilter('');
-    setEprelCodeFilter('');
-    setGtinCodeFilter('');
-    setManufacturerFilter('');
-    setMockedData(sanitizedData(content));
+    // setCategoryFilter('');
+    // setBranchFilter('');
+    // setEprelCodeFilter('');
+    // setGtinCodeFilter('');
+    // setManufacturerFilter('');
+    // setTableData(sanitizedData(content));
   };
 
   const handleListButtonClick = (row: any) => {
@@ -227,11 +256,7 @@ const Products = () => {
     gtinCodeFilter === '' &&
     manufacturerFilter === '';
 
-  const visibleRows = [...mockedData]
-    .sort(getComparator(order, orderBy))
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-  console.log('§===>', { visibleRows });
+  const visibleRows = [...tableData].sort(getComparator(order, orderBy));
 
   const selectMenuProps = {
     PaperProps: {
@@ -254,7 +279,7 @@ const Products = () => {
         data-testid="title"
       />
 
-      {mockedData.length > 0 && (
+      {tableData.length > 0 && (
         <Box
           sx={{
             display: 'flex',
@@ -349,7 +374,7 @@ const Products = () => {
         }}
       >
         <TableContainer>
-          {mockedData.length > 0 ? (
+          {tableData.length > 0 ? (
             <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
               <EnhancedTableHead
                 order={order}
@@ -416,19 +441,21 @@ const Products = () => {
             </Box>
           )}
         </TableContainer>
-        {mockedData.length > 0 && (
+        {tableData.length > 0 && (
           <TablePagination
             rowsPerPageOptions={[10]}
             colSpan={3}
-            count={mockedData.length}
+            count={tableData.length}
             rowsPerPage={rowsPerPage}
-            page={page}
+            page={page || 1}
             component="div"
-            labelDisplayedRows={(page) =>
-              `${page.from} - ${page.to} ${t('pages.products.tablePaginationFrom')} ${page.count}`
+            labelDisplayedRows={() =>
+              `${paginatorFrom} - ${paginatorTo} ${t(
+                'pages.products.tablePaginationFrom'
+              )} ${itemsQty}`
             }
             onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+            // onRowsPerPageChange={handleChangeRowsPerPage}
             sx={{
               '& .MuiTablePagination-actions button': {
                 backgroundColor: 'transparent',
