@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Dispatch } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Paper,
@@ -12,43 +12,19 @@ import {
   TableHead,
   CircularProgress,
   Alert,
+  Chip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
 import { useNavigate } from 'react-router-dom';
-import { Chip } from '@mui/material';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ROUTES from '../../routes';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { UploadDTO } from '../../api/generated/register/UploadDTO';
-import { RegisterApi } from '../../api/registerApiClient';
-// import mockDataUploads from '../../mocks/StoricoProdEprel_01072025.json';
-
-const getHistoryUploads = (
-  dispatch: Dispatch<any>,
-  addError: (error: { title: string; description: string; error: unknown }) => void,
-  t: (key: string) => string
-) => {
-  const params = {
-    page: 1,
-    size: 4,
-    sort: 'dateUpload,desc',
-  };
-
-  RegisterApi.getProductFiles(params)
-    .then((res: UploadsListDTO) => {
-      dispatch({ type: 'SET_UPLOADS_LIST', payload: res });
-    })
-    .catch((error: unknown) => {
-      addError({
-        title: t('errors.uploadsList.errorTitle'),
-        description: t('errors.uploadsList.errorDescription'),
-        error,
-      });
-    });
-};
+import { getProductFilesList } from '../../services/registerService';
+// import mockDataUploads from '../../mocks/StoricoProdEprel_03072025.json';
 
 function renderUploadStatusChip(status: string) {
   switch (status) {
@@ -129,7 +105,7 @@ const UploadInfoBox: React.FC<{
           variant="contained"
           color="primary"
           sx={{ alignSelf: 'flex-start', mt: 2 }}
-          onClick={() => onExit(() => (ROUTES.ADD_PRODUCTS, { replace: true }))}
+          onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
         >
           {t('pages.overview.overviewTitleBoxProdBtn')}
         </Button>
@@ -208,15 +184,46 @@ const OverviewProductionSection: React.FC = () => {
   const [data, setData] = useState<UploadsListDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [stopNavigation, setStopNavigation] = useState<boolean>(true);
-  const [error] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulating data fetch with mock data
-    // setData(mockDataUploads as UploadsListDTO);
-    setData(getHistoryUploads);
-    setLoading(false);
-  }, []);
+    setLoading(true);
+    setError(null);
+    getProductFilesList(0, 1)
+      .then((res) => {
+        console.log(
+          '***** Uploads data fetched successfully: PRIMA SET DATA *************',
+          JSON.stringify(res.content)
+        );
+        setData(res);
+        console.log('***** Uploads data fetched successfully: *************', res);
+        setLoading(false);
+      })
+      .catch(() => {
+        console.log('***** Uploads data fetched successfully: catch *************');
+        setData(null);
+        setLoading(false);
+        setError(t('errors.uploadsList.errorDescription'));
+      });
+  }, [t]);
 
+  // Mock data fetch for demonstration purposes
+
+  {
+    /*
+  useEffect(() => {
+    try {
+      // Simulating data fetch with mock data
+      setData(mockDataUploads as UploadsListDTO);
+      setLoading(false);
+    } catch (err) {
+      setData(null);
+      setLoading(false);
+      setError(t('errors.uploadsList.errorDescription'));
+    }
+  }, []);
+*/
+  }
   const firstUploadDate =
     !loading && !error && data?.content && data.content.length > 0
       ? data.content[0].dateUpload
@@ -242,7 +249,6 @@ const OverviewProductionSection: React.FC = () => {
           columnGap: 3,
         }}
       >
-        {/* TitleBox fisso */}
         <Box className="-titlebox" sx={{ gridColumn: 'span 12' }}>
           <TitleBox
             title={t('pages.overview.overviewTitleBoxProdTitle')}
