@@ -31,7 +31,7 @@ import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import ProductsDrawer from './productdrawer';
 import {
-  Data,
+  // Data,
   EnhancedTableProps,
   HeadCell,
   getComparator,
@@ -71,7 +71,7 @@ const getProductList = async (
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof ProductDTO) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
 
@@ -103,7 +103,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       label: `${t('pages.products.listHeader.gtinCode')}`,
     },
     {
-      id: 'branchName',
+      id: 'batchName',
       numeric: false,
       disablePadding: false,
       label: `${t('pages.products.listHeader.branch')}`,
@@ -116,7 +116,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.id === 'category' || headCell.id === 'branchName' ? 'left' : 'center'}
+            align={headCell.id === 'category' || headCell.id === 'batchName' ? 'left' : 'center'}
             padding="normal"
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -143,7 +143,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 const Products = () => {
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Data>('category');
+  const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
   const [page, setPage] = useState<number>(0);
   // const [rowsPerPage, setRowsPerPage] = useState(8);
   // const [ pages, setPages] = useState<number | undefined>(0);
@@ -170,7 +170,7 @@ const Products = () => {
 
       const { content, pageNo, totalElements } = res;
       console.log('*****', { content });
-      setTableData(content || []);
+      setTableData(content ? Array.from(content) : []);
       setPage(pageNo || 1);
       setItemsQty(totalElements);
       // setPages(totalPages);
@@ -179,13 +179,13 @@ const Products = () => {
 
   const categories = [
     ...new Set(
-      tableData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()
+      tableData.map((item) => t(`commons.categories.${item.category?.toLowerCase()}`)).sort()
     ),
   ];
   const branches = [
     ...new Set(
       tableData
-        .map((item) => item.branchName)
+        .map((item) => item.batchName)
         .filter((name) => name !== '-')
         .sort()
     ),
@@ -197,21 +197,21 @@ const Products = () => {
         .filter(
           (item) =>
             !categoryFilter ||
-            t(`commons.categories.${item.category.toLowerCase()}`) === categoryFilter
+            t(`commons.categories.${item.category?.toLowerCase()}`) === categoryFilter
         )
-        .filter((item) => !branchFilter || item.branchName === branchFilter)
+        .filter((item) => !branchFilter || item.batchName === branchFilter)
         .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
         .filter((item) => !gtinCodeFilter || item.gtinCode?.includes(gtinCodeFilter))
-        .filter(
-          (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
-        )
+      // .filter(
+      //   (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
+      // )
     );
 
   const handleToggleDrawer = (newOpen: boolean) => {
     setDrawerOpened(newOpen);
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Data) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof ProductDTO) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
@@ -394,7 +394,7 @@ const Products = () => {
                   <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
                     <TableCell sx={{ width: '132px' }}>
                       <Typography variant="body2">
-                        {t(`commons.categories.${row.category.toLowerCase()}`)}
+                        {t(`commons.categories.${row.category?.toLowerCase()}`)}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ width: '186px', textAlign: 'center' }}>
@@ -411,7 +411,7 @@ const Products = () => {
                       <Typography variant="body2">{row.gtinCode}</Typography>
                     </TableCell>
                     <TableCell sx={{ width: '239px' }}>
-                      <Typography variant="body2">{row.branchName}</Typography>
+                      <Typography variant="body2">{row.batchName}</Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'right' }}>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
