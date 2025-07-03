@@ -10,7 +10,7 @@ import AcceptedFile from "../../components/AcceptedFile/AcceptedFile";
 import {PRODUCTS_CATEGORY} from "../../utils/constants";
 import {initUploadBoxStyle, initUploadHelperBoxStyle} from "../../helpers";
 import InitUploadBox from "../../components/InitUploadBox/InitUploadBox";
-import {uploadProductList} from "../../services/registerService";
+import {downloadErrorReport, uploadProductList} from "../../services/registerService";
 import {categoryList} from "./helpers";
 
 type Props = {
@@ -23,14 +23,31 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
     const [fileIsLoading, setFileIsLoading] = useState(false);
     const [fileRejected, setFileRejected] = useState(false);
     const [alertTitle, setAlertTitle] = useState('');
-    const [alertDescription, setAlertDescription] = useState('');
+    const [alertDescription, setAlertDescription] = useState<string>('');
     const [fileName, setFileName] = useState('');
     const [fileDate, setFileDate] = useState('');
+    const [isReport, setIsReport] = useState(false);
+    const [idReport, setIdReport] = useState('');
 
     const validationSchema = Yup.object().shape({
-        category: Yup.string().required(t('validation.required')),
+        category: Yup.string().required(t('validation.categoryRequired')),
     });
-    
+
+    const handleDownloadReport = async () => {
+        try {
+            const blob = await downloadErrorReport(idReport);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'report.csv');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Errore nel download del report:', error);
+        }
+    };
+
     const formik = useFormik({
         initialValues: {
             category: "",
@@ -43,6 +60,8 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
             console.log(values);
         },
     });
+
+    const isCategoryValid = !formik.errors.category && formik.values.category !== '';
 
     const templateFileName =
         formik.values.category === PRODUCTS_CATEGORY.COOKINGHOBS
@@ -59,20 +78,33 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
         setFileAccepted(false);
     };
 
+
     const { getRootProps, getInputProps } = useDropzone({
         maxFiles: 1,
         maxSize: 2097152,
         accept: {
             'text/csv': ['.csv']
         },
+        onFileDialogOpen: async () => {
+            await formik.setFieldTouched('category', true, true);
+            await formik.validateField('category');
+
+            if (formik.errors.category || !formik.values.category) {
+                return;
+            }
+        },
         onDrop: () => {
             setFileRejected(false);
         },
-        onDropAccepted: (files) => {
+        onDropAccepted: async (files) => {
+            if (!isCategoryValid) {
+                return;
+            }
             setFileIsLoading(true);
-            uploadProductList( files[0], "")
+
+            uploadProductList( files[0], formik.values.category)
                 .then((res : any) => {
-                    if (res.status === 'VALIDATED') {
+                    if (res.status === 'OK') {
                         setFileName(files[0].name);
                         const dateField =
                             Object.prototype.toString.call(files[0].lastModified) === '[object Date]'
@@ -84,56 +116,31 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                         setFileRejected(false);
                         setFileAccepted(true);
                     } else {
-                        setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.errorGenericTitle'));
                         switch (res.errorKey) {
-                            case 'merchant.invalid.file.empty':
-                                setAlertDescription(t('pages.initiativeMerchantUpload.uploadPaper.emptyFile'));
+                            case 'product.invalid.file.extension':
+                                setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.invalidTypeTitle'));
+                                setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.invalidTypeDescription'));
                                 break;
-                            case 'merchant.invalid.file.format':
-                                setAlertDescription(
-                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongFileType')
-                                );
+                            case 'product.invalid.file.maxrow':
+                                setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.tooMuchProductsTitle'));
+                                setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.tooMuchProductsDescription'));
                                 break;
-                            case 'merchant.invalid.file.name':
-                                setAlertDescription(
-                                    t('pages.initiativeMerchantUpload.uploadPaper.fileNameError')
-                                );
+                            case 'product.invalid.file.header':
+                                setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.wrongCategoryTitle'));
+                                setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.wrongCategoryDescription'));
                                 break;
-                            case 'merchant.invalid.file.size':
+                            case 'product.invalid.file.report':
+                                setIsReport(true);
+                                setIdReport(res.productFileId.toString());
+                                setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.multipeErrorsTitle'));
                                 setAlertDescription(
-                                    t('pages.initiativeMerchantUpload.uploadPaper.fileTooLarge', { x: 2 })
-                                );
-                                break;
-                            case 'merchant.missing.required.fields':
-                                setAlertDescription(
-                                    t('pages.initiativeMerchantUpload.uploadPaper.missingRow', { x: res.errorRow })
-                                );
-                                break;
-                            case 'merchant.invalid.file.cf.wrong':
-                                setAlertDescription(
-                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongCf', { x: res.errorRow })
-                                );
-                                break;
-                            case 'merchant.invalid.file.iban.wrong':
-                                setAlertDescription(
-                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongIban', { x: res.errorRow })
-                                );
-                                break;
-                            case 'merchant.invalid.file.email.wrong':
-                                setAlertDescription(
-                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongEmail', { x: res.errorRow })
-                                );
-                                break;
-                            case 'merchant.invalid.file.acquirer.wrong':
-                                setAlertDescription(
-                                    t('pages.initiativeMerchantUpload.uploadPaper.wrongAcquirer', {
-                                        x: res.errorRow,
-                                    })
+                                    t('pages.addProducts.form.fileUpload.fileUploadError.multipleErrorDescription')
                                 );
                                 break;
                             default:
+                                setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.errorGenericTitle'));
                                 setAlertDescription(
-                                    t('pages.initiativeMerchantUpload.uploadPaper.errorDescription')
+                                    t('pages.addProducts.form.fileUpload.fileUploadError.multipleErrorDescription')
                                 );
                                 break;
                         }
@@ -183,7 +190,13 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
             }}
         >
             <Box sx={initUploadBoxStyle} {...getRootProps({ className: 'dropzone' })}>
-                <input {...getInputProps()} data-testid="drop-input" />
+                <input {...getInputProps()} data-testid="drop-input" onClick={async (e) => {
+                    if (!isCategoryValid) {
+                        e.preventDefault();
+                        await formik.setFieldTouched('category', true, true);
+                        await formik.validateField('category');
+                    }
+                }}/>
                 <InitUploadBox
                     text={t('pages.addProducts.form.fileUpload.dragAreaText')}
                     link={t('pages.addProducts.form.fileUpload.dragAreaLink')}
@@ -243,6 +256,15 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                     ))
                     }
                 </Select>
+                <FormHelperText
+                    error={
+                        formik.touched.category &&
+                        Boolean(formik.errors.category)
+                    }
+                    sx={{ gridColumn: 'span 12' }}
+                >
+                    {formik.touched.category && formik.errors.category}
+                </FormHelperText>
             </FormControl>
 
             {/* File Input */}
@@ -250,7 +272,9 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                 <Box pb={3}>
                     <RejectedFile
                         title={t(alertTitle)}
-                        description={t(alertDescription)}
+                        description={alertDescription}
+                        isReport={isReport}
+                        onDownloadReport={()=>handleDownloadReport()}
                         dismissFn={() => setFileRejected(false)}
                     />
                 </Box>

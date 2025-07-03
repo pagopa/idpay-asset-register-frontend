@@ -2,8 +2,13 @@ import {RegisterUploadResponseDTO} from "../api/generated/register/RegisterUploa
 import {RegisterApi} from "../api/registerApiClient";
 
 export const uploadProductList = (
-    file: File,
+    csv: File,
     category: string
 ): Promise<RegisterUploadResponseDTO> =>
-    RegisterApi.uploadProductList( file, category ).then((res) => res);
+    RegisterApi.uploadProductList( csv, category ).then((res) => res);
+
+export const downloadErrorReport = (
+    productFileId: string
+): Promise<Blob> =>
+    RegisterApi.downloadErrorReport(productFileId).then((res) => res);
 

@@ -6,62 +6,62 @@ servers:
   - url: https://api-io.dev.cstar.pagopa.it/idpay-itn/register
 paths:
   /permissions:
-      get:
-        tags:
-          - user-permission
-        summary: Return User Permissions
-        operationId: userPermission
-        responses:
-          '200':
-            description: Check successful
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/UserPermissionDTO'
-                example:
-                  role: string
-                  permissions:
-                    - id: string
-                      name: string
-                      mode: string
-          '400':
-            description: Bad request
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/PermissionErrorDTO'
-                example:
-                  code: "ROLE_PERMISSION_INVALID_REQUEST"
-                  message: "Something went wrong handling request"
-          '401':
-            description: Authentication failed
-          '404':
-            description: The requested ID was not found
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/PermissionErrorDTO'
-                example:
-                  code: "ROLE_PERMISSION_NOT_FOUND"
-                  message: "Permissions not found"
-          '429':
-            description: Too many Request
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/PermissionErrorDTO'
-                example:
-                  code: "ROLE_PERMISSION_TOO_MANY_REQUESTS"
-                  message: "Too many requests"
-          '500':
-            description: Server ERROR
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/PermissionErrorDTO'
-                example:
-                  code: "ROLE_PERMISSION_GENERIC_ERROR"
-                  message: "Application error"
+    get:
+      tags:
+        - user-permission
+      summary: Return User Permissions
+      operationId: userPermission
+      responses:
+        '200':
+          description: Check successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPermissionDTO'
+              example:
+                role: string
+                permissions:
+                  - id: string
+                    name: string
+                    mode: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
+              example:
+                code: "ROLE_PERMISSION_INVALID_REQUEST"
+                message: "Something went wrong handling request"
+        '401':
+          description: Authentication failed
+        '404':
+          description: The requested ID was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
+              example:
+                code: "ROLE_PERMISSION_NOT_FOUND"
+                message: "Permissions not found"
+        '429':
+          description: Too many Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
+              example:
+                code: "ROLE_PERMISSION_TOO_MANY_REQUESTS"
+                message: "Too many requests"
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
+              example:
+                code: "ROLE_PERMISSION_GENERIC_ERROR"
+                message: "Application error"
   "/consent":
     get:
       tags:
@@ -156,28 +156,30 @@ paths:
               example:
                 code: "ROLE_PERMISSION_GENERIC_ERROR"
                 message: "Application error"
-  /upload:
+  /product-files:
     post:
       tags:
         - products-upload
       summary: Upload CSV file containing a list of products
       description: 'ENG: Upload CSV file containing a list of products <br> IT: Caricamento del file CSV conentente una lista di prodotti'
       operationId: uploadProductList
+      parameters:
+        - name: category
+          in: query
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           multipart/form-data:
             schema:
               required:
-                - file
-                - category
+                - csv
               type: object
               properties:
-                file:
+                csv:
                   type: string
                   format: binary
-                category:
-                  type: string
-                  description: 'Simple string category name, not an object'
       responses:
         '200':
           description: Ok
@@ -219,7 +221,7 @@ paths:
         - products-upload
       summary: Returns the uploads history list
       description: 'ENG: Returns the history uploads list <br> IT: Lista storico caricamenti'
-      operationId: getUploadsList
+      operationId: getProductFilesList
       parameters:
         - name: page
           in: query
@@ -368,12 +370,12 @@ paths:
           in: query
           required: false
           schema:
-            type: string   
+            type: string
         - name: productFileId
           in: query
           required: false
           schema:
-            type: string        
+            type: string
       responses:
         '200':
           description: Ok
@@ -381,6 +383,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductListDTO'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+        '401':
+          description: Authentication failed
+        '429':
+          description: Too many Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+  /institutions/{institutionId}:
+    get:
+      tags:
+        - institutions
+      summary: Gets the corresponding institution using institution id
+      description: 'ENG: Institution producer details <br> IT: Dettagli ente produttore'
+      operationId: retrieveInstitutionById
+      parameters:
+        - name: institutionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "ENG: ID of the producer IT: ID del produttore"
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstitutionResponse'
         '400':
           description: Bad request
           content:
@@ -465,8 +508,11 @@ components:
           type: string
           description: "ENG: Status of the upload <br> IT: Stato del caricamento"
         errorKey:
-            type: string
-            description: "ENG: Error Key: <ul><li>merchant.invalid.file.format: file format not valid</li><li>merchant.invalid.file.empty: empty file</li><li>merchant.invalid.file.size: file size exceeds limit</li><li>merchant.invalid.file.acquirer.wrong: inserted acquirer Id doesn't correspond to the one expected</li><li>merchant.invalid.file.vat.wrong: VAT Number or fiscal code not valid</li><li>merchant.invalid.file.iban.wrong: IBAN not valid</li></ul><br>IT: Chiave di errore: <ul><li>merchant.invalid.file.format: formato del file non valido</li><li>merchant.invalid.file.empty: file vuoto</li><li>merchant.invalid.file.size: la dimensione del file supera il limite consentito<li>merchant.invalid.file.acquirer.wrong: l'acquirer Id inserito non corrisponde a quello atteso</li></li><li>merchant.invalid.file.vat.wrong: partita IVA o CF non valido</li><li>merchant.invalid.file.iban.wrong: IBAN non valido</li></ul>"
+          type: string
+          description: "ENG: Error Key: <ul><li>product.invalid.file.maxrow: too many records</li><li>product.invalid.file.header: wrong headers</li><li>product.invalid.file.size: file size exceeds limit</li><li>product.invalid.file.report: error report generated</li><li>product.invalid.file.extension: file extension not valid (must be csv)</li></ul><br>IT: Chiave di errore: <ul><li>product.invalid.file.maxrow: numero di record non consentito</li><li>merchant.invalid.file.header: headers non validi</li><li>merchant.invalid.file.size: la dimensione del file supera il limite consentito<li>merchant.invalid.file.report: il file caricato ha generato un report file di errori</li></li><li>product.invalid.file.vat.wrong: partita IVA o CF non valido</li><li>product.invalid.file.extension: estensione file non valita (deve essere un csv)</li></ul>"
+        productFileId:
+          type: string
+          description: "ENG: Id of the partlial upload <br> IT: Id del caricamento parziale"
     RegisterErrorDTO:
       type: object
       required:
@@ -525,7 +571,10 @@ components:
           description: "ENG: The category of product in file <br> IT: Categoria dei prodotti contenuti nel file"
         fileName:
           type: string
-          description: "ENG: The name of file <br> IT: Nome del file csv"
+          description: "ENG: The original name of file <br> IT: Nome originale del file csv"
+        batchName:
+          type: string
+          description: "ENG: The computed name of file <br> IT: Nome ricalcolato del file csv"
         uploadStatus:
           type: string
           description: "ENG: The state of batch uploaded <br> IT: Lo stato del lotto caricato"
@@ -538,9 +587,6 @@ components:
         addedProductNumber:
           type: number
           description: "ENG: The number of products added to the register <br> IT: Il numero di prodotti aggiunti al registro"
-        reportProducts:
-          type: string
-          description: "ENG: The report of products <br> IT: Il report dei prodotti"
     UploadsErrorDTO:
       type: object
       required:
@@ -617,6 +663,34 @@ components:
         countryOfProduction:
           type: string
           description: "ENG: The production country of the product <br> IT: il paese di produzione del prodotto"
+        batchName:
+          type: string
+          description: "ENG: The batch name the product <br> IT: il nomelotto del prodotto"
+        linkEprel:
+          type: string
+          description: "ENG: The EPREL product link <br> IT: Il link EPREL del prodotto"
+    InstitutionResponse:
+      title: InstitutionResponse
+      type: object
+      properties:
+        address:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        county:
+          type: string
+        description:
+          type: string
+        digitalAddress:
+          type: string
+        externalId:
+          type: string
+        taxCode:
+          type: string
+        zipCode:
+          type: string
     ErrorDTO:
       type: object
       required:

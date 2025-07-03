@@ -108,7 +108,7 @@
             "wrongCategoryTitle": "Il file contiene una categoria errata",
             "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
             "multipeErrorsTitle": "Il file contiene uno o più errori",
-            "multipleErrorDescription": "Scarica il report per verificare le informazioni e carica di nuovo il file.",
+            "multipleErrorDescription": " per verificare le informazioni e carica di nuovo il file.",
             "eprelNotWorksTitle": "EPREL è giu ora non funziona",
             "eprelNotWorksDescription": "Riprova più tardi"
           }
@@ -154,6 +154,7 @@
     }
   },
   "validation": {
+    "categoryRequired": "Seleziona una categoria",
     "assistanceSubject": "Inserisci l’argomento della tua richiesta",
     "exactChars": "Deve essere esattamente di {{x}} caratteri",
     "maxChars": "Scrivi massimo {{x}} caratteri",

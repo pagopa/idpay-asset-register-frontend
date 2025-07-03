@@ -63,20 +63,12 @@ export const RolePermissionApi = {
 
 
 export const RegisterApi = {
-    uploadProductList: async (
-        file: File,
-        category: string
-    ): Promise<RegisterUploadResponseDTO> => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("category", category);
-
-        const result = await productUploadClient.uploadProductList({
-            file,
-            category
-        });
-
-
+    uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
+        const result = await productUploadClient.uploadProductList({ csv, category});
         return extractResponse(result, 200, onRedirectToLogin);
-    }
+    },
+    downloadErrorReport: async (productFileId: string): Promise<Blob> => {
+        const result = await productUploadClient.downloadErrorReport({ productFileId });
+        return extractResponse(result, 200, onRedirectToLogin);
+    },
 };
