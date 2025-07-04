@@ -66,10 +66,14 @@ export const RegisterApi = {
     ): Promise<{data: CsvDTO; filename: string}> => {
         const response = await registerClient.downloadErrorReport({productFileId});
 
-        const headers = (response as any).headers as Record<string, string> | undefined;
+        const rawResponse = (response as any).response || (response as any).data || (response as any).right;
 
-        const contentDisposition =
-            headers?.["content-disposition"] || headers?.["Content-Disposition"];
+        const headers = rawResponse?.headers || (response as any).headers;
+
+        const contentDisposition = headers?.get?.('content-disposition') ||
+            headers?.get?.('Content-Disposition') ||
+            headers?.['content-disposition'] ||
+            headers?.['Content-Disposition'];
 
         // eslint-disable-next-line functional/no-let
         let fileName: string = '';
