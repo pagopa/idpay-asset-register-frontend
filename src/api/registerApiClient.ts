@@ -20,13 +20,6 @@ const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (par
   });
 };
 
-const rolePermissionClient = createClient({
-  baseUrl: ENV.URL_API.ROLE_PERMISSION,
-  basePath: '',
-  fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.ROLE_PERMISSION),
-  withDefaults: withBearerAndPartyId,
-});
-
 const registerClient = createClient({
   baseUrl: ENV.URL_API.REGISTER,
   basePath: '',
@@ -49,17 +42,17 @@ const onRedirectToLogin = () =>
 
 export const RolePermissionApi = {
   userPermission: async (): Promise<UserPermissionDTO> => {
-    const result = await rolePermissionClient.userPermission({}); // TODO modify
+    const result = await registerClient.userPermission({}); // TODO modify
     return extractResponse(result, 200, onRedirectToLogin);
   },
 
   getPortalConsent: async (): Promise<PortalConsentDTO> => {
-    const result = await rolePermissionClient.getPortalConsent({});
+    const result = await registerClient.getPortalConsent({});
     return extractResponse(result, 200, onRedirectToLogin);
   },
 
   savePortalConsent: async (versionId: string | undefined): Promise<void> => {
-    const result = await rolePermissionClient.savePortalConsent({ body: { versionId } });
+    const result = await registerClient.savePortalConsent({ body: { versionId } });
     return extractResponse(result, 200, onRedirectToLogin);
   },
 };
@@ -116,14 +109,30 @@ export const RegisterApi = {
       throw error;
     }
   },
-  getProducts: async (page?: number, size?: number, sort?: string): Promise<UploadsListDTO> => {
+  getProducts: async (
+    page?: number,
+    size?: number,
+    sort?: string,
+    category?: string,
+    eprelCode?: string,
+    gtinCode?: string,
+    productCode?: string,
+    productFileId?: string
+  ): Promise<UploadsListDTO> => {
     try {
       // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
       const params = {
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
         ...(sort !== undefined ? { sort } : {}),
+        ...(category ? { category } : {}),
+        ...(eprelCode ? { eprelCode } : {}),
+        ...(gtinCode ? { gtinCode } : {}),
+        ...(productCode ? { productCode } : {}),
+        ...(productFileId ? { productFileId } : {}),
       };
+
+      console.log('§>>>', { params });
 
       const result = await registerClient.getProducts(params);
       console.log(

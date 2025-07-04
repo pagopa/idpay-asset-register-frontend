@@ -34,11 +34,11 @@
     "title": "Registro dei beni",
     "categories": {
       "washingmachines": "Lavatrici",
-      "washerdriers": "Asciugatrici",
+      "washerdriers": "Lavasciuga",
       "ovens": "Forni",
       "rangehoods": "Cappe da cucina",
       "dishwashers": "Lavastoviglie",
-      "tumbledriers": "Lavasciuga",
+      "tumbledriers": "Asciugatrici",
       "refrigeratingappl": "Frigoriferi",
       "cookinghobs": "Piani cottura"
     }
@@ -142,7 +142,15 @@
         "DISHWASHERS": "Lavastoviglie",
         "TUMBLEDRIERS": "Asciugatrici",
         "REFRIGERATINGAPPL": "Frigoriferi",
-        "COOKINGHOBS": "Piani cottura"
+        "COOKINGHOBS": "Piani cottura",
+        "lavatrici": "WASHINGMACHINES",
+        "asciugatrici": "TUMBLEDRIERS",
+        "forni": "OVENS",
+        "cappe da cucina": "RANGEHOODS",
+        "lavastoviglie": "DISHWASHERS",
+        "lavasciuga": "WASHERDRIERS",
+        "frigoriferi": "REFRIGERATINGAPPL",
+        "piani cottura": "COOKINGHOBS"
       },
       "tablePaginationFrom": "di",
       "emptyList": "Nessun record corrisponde alla ricerca.",

@@ -36,10 +36,24 @@ import { EnhancedTableProps, HeadCell, getComparator, Order } from './helpers';
 const getProductList = async (
   page?: number,
   size?: number,
-  sort?: string
+  sort?: string,
+  category?: string,
+  eprelCode?: string,
+  gtinCode?: string,
+  productCode?: string,
+  productFileId?: string
 ): Promise<ProductListDTO> => {
   try {
-    return await RegisterApi.getProducts(page, size, sort);
+    return await RegisterApi.getProducts(
+      page,
+      size,
+      sort,
+      category,
+      eprelCode,
+      gtinCode,
+      productCode,
+      productFileId
+    );
   } catch (error: any) {
     if (error?.response && error?.response?.data) {
       const apiError: UploadsErrorDTO = error.response.data;
@@ -132,6 +146,7 @@ const Products = () => {
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<ProductDTO>({});
+  const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
 
   const { t } = useTranslation();
@@ -139,13 +154,22 @@ const Products = () => {
   const paginatorTo = (page <= 0 ? page : page - 1) * displayRows + displayRows;
 
   useEffect(() => {
-    void getProductList(page, displayRows, 'asc').then((res) => {
-      const { content, pageNo, totalElements } = res;
-      setTableData(content ? Array.from(content) : []);
-      setPage(pageNo || 0);
-      setItemsQty(totalElements);
-    });
-  }, [page]);
+    void getProductList(
+      page,
+      displayRows,
+      'asc',
+      categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
+      eprelCodeFilter,
+      gtinCodeFilter
+    )
+      .then((res) => {
+        const { content, pageNo, totalElements } = res;
+        setTableData(content ? Array.from(content) : []);
+        setPage(pageNo || 0);
+        setItemsQty(totalElements);
+      })
+      .finally(() => setFiltering(false));
+  }, [page, filtering]);
 
   const categories = [
     ...new Set(
@@ -161,18 +185,17 @@ const Products = () => {
     ),
   ];
 
-  const handleFilterButtonClick = () =>
-    setTableData(
-      tableData
-        .filter(
-          (item) =>
-            !categoryFilter ||
-            t(`commons.categories.${item.category?.toLowerCase()}`) === categoryFilter
-        )
-        .filter((item) => !branchFilter || item.batchName === branchFilter)
-        .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
-        .filter((item) => !gtinCodeFilter || item.gtinCode?.includes(gtinCodeFilter))
-    );
+  const handleFilterButtonClick = () => {
+    setFiltering(true);
+  };
+
+  const handleDeleteFiltersButtonClick = () => {
+    setCategoryFilter('');
+    setBranchFilter('');
+    setEprelCodeFilter('');
+    setGtinCodeFilter('');
+    setFiltering(true);
+  };
 
   const handleToggleDrawer = (newOpen: boolean) => {
     setDrawerOpened(newOpen);
@@ -205,15 +228,6 @@ const Products = () => {
 
   const handleGtinCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGtinCodeFilter(event.target.value);
-  };
-
-  const handleDeleteFiltersButtonClick = () => {
-    // setCategoryFilter('');
-    // setBranchFilter('');
-    // setEprelCodeFilter('');
-    // setGtinCodeFilter('');
-    // setManufacturerFilter('');
-    // setTableData(sanitizedData(content));
   };
 
   const handleListButtonClick = (row: any) => {
