@@ -4,9 +4,9 @@ import { Box } from '@mui/system';
 import Paper from '@mui/material/Paper';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
-import UploadsTable from '../components/OverviewHistoryUpload';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { getProductFilesList } from '../../services/registerService';
+import UploadsTable from '../components/HistoryUploadSection';
 
 const OverviewHistoryUpload: React.FC = () => {
   const { t } = useTranslation();
