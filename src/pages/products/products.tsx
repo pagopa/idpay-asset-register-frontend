@@ -142,11 +142,10 @@ const Products = () => {
     void getProductList(page, displayRows, 'asc').then((res) => {
       const { content, pageNo, totalElements } = res;
       setTableData(content ? Array.from(content) : []);
-      setPage(pageNo || 1);
+      setPage(pageNo || 0);
       setItemsQty(totalElements);
-      // setPages(totalPages);
     });
-  }, []);
+  }, [page]);
 
   const categories = [
     ...new Set(
@@ -187,7 +186,9 @@ const Products = () => {
 
   const handleChangePage = (event: unknown, newPage: number) => {
     console.log(event);
-    setPage(newPage);
+    if (newPage > 0) {
+      setPage(newPage);
+    }
   };
 
   const handleCategoryFilterChange = (event: SelectChangeEvent) => {
@@ -418,9 +419,9 @@ const Products = () => {
           <TablePagination
             rowsPerPageOptions={[10]}
             colSpan={3}
-            count={tableData?.length}
+            count={itemsQty || 1}
             rowsPerPage={displayRows}
-            page={page || 1}
+            page={page}
             component="div"
             labelDisplayedRows={() =>
               `${paginatorFrom} - ${paginatorTo} ${t(
@@ -428,7 +429,6 @@ const Products = () => {
               )} ${itemsQty}`
             }
             onPageChange={handleChangePage}
-            // onRowsPerPageChange={handleChangeRowsPerPage}
             sx={{
               '& .MuiTablePagination-actions button': {
                 backgroundColor: 'transparent',
