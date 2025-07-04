@@ -31,28 +31,7 @@ import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { displayRows } from '../../utils/constants';
 import ProductsDrawer from './productdrawer';
-import {
-  // Data,
-  EnhancedTableProps,
-  HeadCell,
-  getComparator,
-  Order,
-  DataProp,
-  // GetProductListParams,
-} from './helpers';
-// import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
-// import { ProductDTO } from '../../api/generated/register/ProductDTO';
-// import mockdata from './mockCsvProducts.json';
-
-// const sanitizedData = (obj: ProductListDTO) =>
-//   (obj.content || []).map((item) => ({
-//     ...item,
-//     category: item.category || '-',
-//     energyClass: item.energyClass || '-',
-//     eprelCode: item.eprelCode || '-',
-//     gtinCode: item.gtinCode || '-',
-//     branchName: item.batchName || '-',
-//   }));
+import { EnhancedTableProps, HeadCell, getComparator, Order } from './helpers';
 
 const getProductList = async (
   page?: number,
@@ -146,28 +125,22 @@ const Products = () => {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
   const [page, setPage] = useState<number>(0);
-  // const [rowsPerPage, setRowsPerPage] = useState(8);
-  // const [ pages, setPages] = useState<number | undefined>(0);
   const [itemsQty, setItemsQty] = useState<number | undefined>(0);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [branchFilter, setBranchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
-  const [manufacturerFilter /* , setManufacturerFilter */] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
-  const [drawerData, setDrawerData] = useState<DataProp>({});
+  const [drawerData, setDrawerData] = useState<ProductDTO>({});
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
 
   const { t } = useTranslation();
-  const paginatorFrom = page * displayRows + 1;
-  const paginatorTo = page * displayRows + displayRows;
+  const paginatorFrom = (page <= 0 ? page : page - 1) * displayRows + 1;
+  const paginatorTo = (page <= 0 ? page : page - 1) * displayRows + displayRows;
 
   useEffect(() => {
     void getProductList(page, displayRows, 'asc').then((res) => {
-      console.log('*****', { res });
-
       const { content, pageNo, totalElements } = res;
-      console.log('*****', { content });
       setTableData(content ? Array.from(content) : []);
       setPage(pageNo || 1);
       setItemsQty(totalElements);
@@ -200,9 +173,6 @@ const Products = () => {
         .filter((item) => !branchFilter || item.batchName === branchFilter)
         .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
         .filter((item) => !gtinCodeFilter || item.gtinCode?.includes(gtinCodeFilter))
-      // .filter(
-      //   (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
-      // )
     );
 
   const handleToggleDrawer = (newOpen: boolean) => {
@@ -219,11 +189,6 @@ const Products = () => {
     console.log(event);
     setPage(newPage);
   };
-
-  // const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setRowsPerPage(parseInt(event.target.value, 10));
-  //   setPage(0);
-  // };
 
   const handleCategoryFilterChange = (event: SelectChangeEvent) => {
     setCategoryFilter(event.target.value as string);
@@ -256,11 +221,7 @@ const Products = () => {
   };
 
   const noFilterSetted = (): boolean =>
-    categoryFilter === '' &&
-    branchFilter === '' &&
-    eprelCodeFilter === '' &&
-    gtinCodeFilter === '' &&
-    manufacturerFilter === '';
+    categoryFilter === '' && branchFilter === '' && eprelCodeFilter === '' && gtinCodeFilter === '';
 
   const visibleRows = [...tableData].sort(getComparator(order, orderBy));
 
@@ -392,24 +353,30 @@ const Products = () => {
                   <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
                     <TableCell sx={{ width: '132px' }}>
                       <Typography variant="body2">
-                        {t(`commons.categories.${row?.category?.toLowerCase()}`)}
+                        {row.category
+                          ? t(`commons.categories.${row?.category?.toLowerCase()}`)
+                          : '-'}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ width: '186px', textAlign: 'center' }}>
-                      <Typography variant="body2">{row?.energyClass}</Typography>
+                      <Typography variant="body2">
+                        {row.energyClass ? row?.energyClass : '-'}
+                      </Typography>
                     </TableCell>
                     <TableCell sx={{ width: '145px', textAlign: 'center' }}>
                       <Link underline="hover" href="#">
                         <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'blue' }}>
-                          {row?.eprelCode}
+                          {row.eprelCode ? row?.eprelCode : '-'}
                         </Typography>
                       </Link>
                     </TableCell>
                     <TableCell sx={{ width: '186px', textAlign: 'center' }}>
-                      <Typography variant="body2">{row?.gtinCode}</Typography>
+                      <Typography variant="body2">{row.gtinCode ? row?.gtinCode : '-'}</Typography>
                     </TableCell>
                     <TableCell sx={{ width: '239px' }}>
-                      <Typography variant="body2">{row?.batchName}</Typography>
+                      <Typography variant="body2">
+                        {row.batchName ? row?.batchName : '-'}
+                      </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'right' }}>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>

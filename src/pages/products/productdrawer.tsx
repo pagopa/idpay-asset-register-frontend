@@ -20,7 +20,9 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           </Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ fontWeight: '600', fontSize: '18px', mb: 1 }}>{props.data.branchName}</Box>
+          <Box sx={{ fontWeight: '600', fontSize: '18px', mb: 1 }}>
+            {props.data.batchName || '-'}
+          </Box>
         </ListItem>
         <Divider sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
 
@@ -37,7 +39,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.eprelCode || 'Codice EPREL esempio'}
+            {props.data.eprelCode || '-'}
           </Box>
         </ListItem>
 
@@ -48,7 +50,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.gtinCode || 'Codice GTIN/EAN esempio'}
+            {props.data.gtinCode || '-'}
           </Box>
         </ListItem>
 
@@ -59,7 +61,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.productCode || 'Codice prodotto esempio'}
+            {props.data.productCode || '-'}
           </Box>
         </ListItem>
 
@@ -70,7 +72,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {t(`pages.products.categories.${props.data.category}`) || 'Categoria esempio'}
+            {t(`pages.products.categories.${props.data.category}`) || '-'}
           </Box>
         </ListItem>
 
@@ -80,9 +82,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           </Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.brand || 'Marca esempio'}
-          </Box>
+          <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>{props.data.brand || '-'}</Box>
         </ListItem>
 
         <ListItem disablePadding>
@@ -91,9 +91,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
           </Box>
         </ListItem>
         <ListItem>
-          <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.model || 'Modello esempio'}
-          </Box>
+          <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>{props.data.model || '-'}</Box>
         </ListItem>
 
         <ListItem disablePadding>
@@ -103,7 +101,7 @@ export default function ProductsDrawer(props: ProductsDrawerProps) {
         </ListItem>
         <ListItem>
           <Box sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }}>
-            {props.data.countryOfProduction || 'Paese di produzione esempio'}
+            {props.data.countryOfProduction || '-'}
           </Box>
         </ListItem>
       </List>

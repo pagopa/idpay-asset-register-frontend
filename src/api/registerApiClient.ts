@@ -91,8 +91,8 @@ export const RegisterApi = {
   }
 };
 
-*/}
-
+*/
+}
 
 export const RegisterApi = {
   getProductFiles: async (page?: number, size?: number, sort?: string): Promise<UploadsListDTO> => {
@@ -127,7 +127,7 @@ export const RegisterApi = {
 
       const result = await registerClient.getProducts(params);
       console.log(
-        '*********RegisterApi  Risultato della chiamata API:         ***************************',
+        '*********RegisterApi  Risultato della chiamata API: Products ***************************',
         JSON.stringify(result)
       );
       return extractResponse(result, 200, onRedirectToLogin);
