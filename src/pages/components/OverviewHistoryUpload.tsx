@@ -159,7 +159,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
           ) : (
             <TableRow>
               <TableCell colSpan={6} align="center">
-                {t('Nessun caricamento trovato')}
+                {t('Non ci sono file caricati')}
               </TableCell>
             </TableRow>
           )}
