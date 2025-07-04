@@ -123,6 +123,8 @@ const UploadsTable: React.FC<{
   const navigate = useNavigate();
   const onExit = useUnloadEventOnExit();
 
+  const { t } = useTranslation();
+
   return (
     <Box sx={{ gridColumn: 'span 12', mt: 2 }}>
       {loading && <CircularProgress />}
@@ -172,6 +174,22 @@ const UploadsTable: React.FC<{
             <b>Vedi i caricamenti</b>
           </ButtonNaked>
         </>
+      )}
+
+      {!loading && error && (
+        <Box sx={{ gridColumn: 'span 12' }}>
+          <Typography variant="body2">
+            {t('pages.overview.overviewTitleBoxProdDescription')}
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ alignSelf: 'flex-start', mt: 2 }}
+            disabled
+          >
+            {t('pages.overview.overviewTitleBoxProdBtn')}
+          </Button>
+        </Box>
       )}
     </Box>
   );
@@ -226,7 +244,7 @@ const OverviewProductionSection: React.FC = () => {
   useEffect(() => {
     setStopNavigation(
       !loading && !error && data?.content && data.content.length > 0
-        ? data.content[0].uploadStatus !== 'In corso'
+        ? data.content[0].uploadStatus !== 'UPLOADED'
         : false
     );
   }, [loading, error, data]);

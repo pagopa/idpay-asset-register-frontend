@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Paper,
@@ -26,6 +25,7 @@ function renderUploadStatusIcon(status: string) {
   switch (status) {
     case 'IN_PROGRESS':
     case 'UPLOADED':
+      return <WarningIcon color="primary" />;
     case 'EPREL_ERROR':
       return <WarningIcon color="warning" />;
     case 'LOADED':
@@ -84,7 +84,6 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
       </Box>
     );
   }
-
   return (
     <TableContainer
       component={Paper}
@@ -148,9 +147,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                   align="right"
                   sx={{ borderBottom: `1px solid ${grey[300]}`, width: '15%' }}
                 >
-                  {(row.uploadStatus === 'IN_PROGRESS' ||
-                    row.uploadStatus === 'UPLOADED' ||
-                    row.uploadStatus === 'EPREL_ERROR') && (
+                  {row.uploadStatus === 'EPREL_ERROR' && (
                     <DownloadIcon color="primary" sx={{ verticalAlign: 'middle' }} />
                   )}
                 </TableCell>
