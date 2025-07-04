@@ -91,8 +91,8 @@ export const RegisterApi = {
   }
 };
 
-*/
-}
+*/}
+
 
 export const RegisterApi = {
   getProductFiles: async (page?: number, size?: number, sort?: string): Promise<UploadsListDTO> => {
