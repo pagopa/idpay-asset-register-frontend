@@ -1,8 +1,20 @@
+import {RegisterApi} from "../api/registerApiClient";
+import {RegisterUploadResponseDTO} from "../api/generated/register/RegisterUploadResponseDTO";
+import {CsvDTO} from "../api/generated/register/CsvDTO";
 import { UploadsListDTO } from "../api/generated/register/UploadsListDTO";
 import { UploadsErrorDTO } from "../api/generated/register/UploadsErrorDTO";
-import { RegisterApi } from "../api/registerApiClient";
 
 
+export const uploadProductList = (
+    csv: File,
+    category: string
+): Promise<RegisterUploadResponseDTO> =>
+    RegisterApi.uploadProductList( csv, category ).then((res) => res);
+
+export const downloadErrorReport = (
+    productFileId: string
+): Promise<{data: CsvDTO; filename: string}> =>
+    RegisterApi.downloadErrorReport(productFileId).then((res) => res);
 
 export const getProductFilesList = async (
     page?: number,
@@ -19,4 +31,3 @@ export const getProductFilesList = async (
       throw error;
     }
   };
-  

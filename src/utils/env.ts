@@ -19,11 +19,12 @@ export const ENV = {
   },
 
   URL_API: {
-    REGISTER: env.get('REACT_APP_URL_API_REGISTER').required().asString(),
+    OPERATION: env.get('REACT_APP_URL_API_REGISTER').required().asString(),
   },
 
   API_TIMEOUT_MS: {
-    REGISTER: env.get('REACT_APP_API_REGISTER_TIMEOUT_MS').required().asInt(),
+    ROLE_PERMISSION: env.get('REACT_APP_API_ROLE_PERMISSION_TIMEOUT_MS').required().asInt(),
+    OPERATION: env.get('REACT_APP_API_OPERATION_TIMEOUT_MS').required().asInt()
   },
 
   URL_INSTITUTION_LOGO: {

@@ -1,4 +1,5 @@
 import {PRODUCTS_CATEGORY} from "../../utils/constants";
+import {CsvDTO} from "../../api/generated/register/CsvDTO";
 
 export const categoryList = [
     {
@@ -18,7 +19,7 @@ export const categoryList = [
         value: PRODUCTS_CATEGORY.RANGEHOODS
     },
     {
-        label: "commons.categories.dishwasher",
+        label: "commons.categories.dishwashers",
         value: PRODUCTS_CATEGORY.DISHWASHERS
     },
     {
@@ -34,3 +35,15 @@ export const categoryList = [
         value: PRODUCTS_CATEGORY.COOKINGHOBS
     },
 ];
+
+export const downloadCsv = (content: CsvDTO, filename: string) => {
+    const blob = new Blob([content.data ?? ""], { type: 'text/csv' });
+
+    const url = window.URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement("a"), {
+        href: url,
+        download: filename
+    });
+    document.body.appendChild(a);
+    a.click();
+};

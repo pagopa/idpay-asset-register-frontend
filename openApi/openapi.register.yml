@@ -6,62 +6,62 @@ servers:
   - url: https://api-io.dev.cstar.pagopa.it/idpay-itn/register
 paths:
   /permissions:
-      get:
-        tags:
-          - user-permission
-        summary: Return User Permissions
-        operationId: userPermission
-        responses:
-          '200':
-            description: Check successful
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/UserPermissionDTO'
-                example:
-                  role: string
-                  permissions:
-                    - id: string
-                      name: string
-                      mode: string
-          '400':
-            description: Bad request
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/PermissionErrorDTO'
-                example:
-                  code: "ROLE_PERMISSION_INVALID_REQUEST"
-                  message: "Something went wrong handling request"
-          '401':
-            description: Authentication failed
-          '404':
-            description: The requested ID was not found
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/PermissionErrorDTO'
-                example:
-                  code: "ROLE_PERMISSION_NOT_FOUND"
-                  message: "Permissions not found"
-          '429':
-            description: Too many Request
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/PermissionErrorDTO'
-                example:
-                  code: "ROLE_PERMISSION_TOO_MANY_REQUESTS"
-                  message: "Too many requests"
-          '500':
-            description: Server ERROR
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/PermissionErrorDTO'
-                example:
-                  code: "ROLE_PERMISSION_GENERIC_ERROR"
-                  message: "Application error"
+    get:
+      tags:
+        - user-permission
+      summary: Return User Permissions
+      operationId: userPermission
+      responses:
+        '200':
+          description: Check successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPermissionDTO'
+              example:
+                role: string
+                permissions:
+                  - id: string
+                    name: string
+                    mode: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
+              example:
+                code: "ROLE_PERMISSION_INVALID_REQUEST"
+                message: "Something went wrong handling request"
+        '401':
+          description: Authentication failed
+        '404':
+          description: The requested ID was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
+              example:
+                code: "ROLE_PERMISSION_NOT_FOUND"
+                message: "Permissions not found"
+        '429':
+          description: Too many Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
+              example:
+                code: "ROLE_PERMISSION_TOO_MANY_REQUESTS"
+                message: "Too many requests"
+        '500':
+          description: Server ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
+              example:
+                code: "ROLE_PERMISSION_GENERIC_ERROR"
+                message: "Application error"
   "/consent":
     get:
       tags:
@@ -174,10 +174,10 @@ paths:
           multipart/form-data:
             schema:
               required:
-                - file
+                - csv
               type: object
               properties:
-                file:
+                csv:
                   type: string
                   format: binary
       responses:
@@ -296,7 +296,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegisterUploadResponseDTO'
+                $ref: '#/components/schemas/CsvDTO'
         '400':
           description: Bad request
           content:
@@ -370,12 +370,12 @@ paths:
           in: query
           required: false
           schema:
-            type: string   
+            type: string
         - name: productFileId
           in: query
           required: false
           schema:
-            type: string        
+            type: string
       responses:
         '200':
           description: Ok
@@ -513,6 +513,12 @@ components:
         productFileId:
           type: string
           description: "ENG: Id of the partlial upload <br> IT: Id del caricamento parziale"
+    CsvDTO:
+      title: CsvDTO
+      type: object
+      properties:
+        data:
+          type: string
     RegisterErrorDTO:
       type: object
       required:
@@ -561,7 +567,6 @@ components:
           format: int32
           description: 'ENG: The total number of the pages <br> IT: Il numero totale delle pagine'
     UploadDTO:
-      required: []
       type: object
       properties:
         productFileId:
@@ -569,31 +574,24 @@ components:
           description: "ENG: The name of batch <br> IT: Nome del lotto"
         category:
           type: string
-          nullable: true
           description: "ENG: The category of product in file <br> IT: Categoria dei prodotti contenuti nel file"
         fileName:
           type: string
-          nullable: true
           description: "ENG: The original name of file <br> IT: Nome originale del file csv"
         batchName:
           type: string
-          nullable: true
           description: "ENG: The computed name of file <br> IT: Nome ricalcolato del file csv"
         uploadStatus:
           type: string
-          nullable: true
           description: "ENG: The state of batch uploaded <br> IT: Lo stato del lotto caricato"
         dateUpload:
           type: string
-          nullable: true
           description: "ENG: The date of upload <br> IT: La data di caricamento"
         findedProductsNumber:
           type: number
-          nullable: true
           description: "ENG: The number of products found in the batch <br> IT: Il numero di prodotti trovati nel lotto"
         addedProductNumber:
           type: number
-          nullable: true
           description: "ENG: The number of products added to the register <br> IT: Il numero di prodotti aggiunti al registro"
     UploadsErrorDTO:
       type: object

@@ -80,7 +80,7 @@
     },
     "addProducts": {
       "title": "Aggiungi prodotti",
-      "boxAddTitle": "Carica i tuoi prodotti",
+      "boxAddTitle": "Aggiungi i tuoi prodotti",
       "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
       "boxAddTextProduct": "Prodotto.",
       "goToManual": "Dubbi? Vai al manuale",
@@ -96,6 +96,7 @@
           "validFile": "File valido",
           "changeFile": "Sostituisci",
           "fileUploadError": {
+            "errorGenericTitle": "II file contiene uno o più errori",
             "errorDescription": "Si è verificato un errore. Riprova",
             "errorTitle": "II file contiene degli errori",
             "invalidTypeTitle": "Il formato del file non è valido",
@@ -104,10 +105,14 @@
             "fileTooLargeDescription": "La dimensione del file non deve superare i {{x}} mb",
             "tooMuchProductsTitle": "Il file contiene troppi prodotti",
             "tooMuchProductsDescription": "È possibile caricare al massimo 100 prodotti per lotto.",
+            "wrongHeaderTitle": "Il file contiene gli header errati",
+            "wrongHeaderDescription": "Gli header del file csv non sono validi",
+            "emptyTitle": "Il file non è valido",
+            "emptyDescription": "Il file carivato è vuoto",
             "wrongCategoryTitle": "Il file contiene una categoria errata",
             "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
             "multipeErrorsTitle": "Il file contiene uno o più errori",
-            "multipleErrorDescription": "Scarica il report per verificare le informazioni e carica di nuovo il file.",
+            "multipleErrorDescription": " per verificare le informazioni e carica di nuovo il file.",
             "eprelNotWorksTitle": "EPREL è giu ora non funziona",
             "eprelNotWorksDescription": "Riprova più tardi"
           }
@@ -153,6 +158,7 @@
     }
   },
   "validation": {
+    "categoryRequired": "Seleziona una categoria",
     "assistanceSubject": "Inserisci l’argomento della tua richiesta",
     "exactChars": "Deve essere esattamente di {{x}} caratteri",
     "maxChars": "Scrivi massimo {{x}} caratteri",

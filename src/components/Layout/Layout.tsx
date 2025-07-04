@@ -75,8 +75,6 @@ const Layout = ({ children }: Props) => {
           <Box
             display="grid"
             justifyContent="center"
-            pb={16}
-            pt={2}
             gridColumn="span 12"
             maxWidth={
               location.pathname !== ROUTES.PRIVACY_POLICY && location.pathname !== ROUTES.TOS
