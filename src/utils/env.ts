@@ -19,7 +19,7 @@ export const ENV = {
   },
 
   URL_API: {
-    OPERATION: env.get('REACT_APP_URL_API_OPERATION').required().asString(),
+    OPERATION: env.get('REACT_APP_URL_API_REGISTER').required().asString(),
   },
 
   API_TIMEOUT_MS: {
