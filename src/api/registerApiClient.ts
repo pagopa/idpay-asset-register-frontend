@@ -7,8 +7,10 @@ import { ENV } from '../utils/env';
 import { createClient, WithDefaultsT } from './generated/register/client';
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
 import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
+import { UploadsListDTO } from "./generated/register/UploadsListDTO";
 import {RegisterUploadResponseDTO} from "./generated/register/RegisterUploadResponseDTO";
 import {CsvDTO} from "./generated/register/CsvDTO";
+
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -57,6 +59,27 @@ export const RolePermissionApi = {
 
 
 export const RegisterApi = {
+  getProductFiles: async (
+  page?: number,
+  size?: number,
+  sort?: string
+): Promise<UploadsListDTO> => {
+  try {
+    const params = {
+      ...(page !== undefined ? { page } : {}),
+      ...(size !== undefined ? { size } : {}),
+      ...(sort !== undefined ? { sort } : {}),
+    };
+
+    const result = await registerClient.getProductFilesList(params);
+    return extractResponse(result, 200, onRedirectToLogin);
+  } catch (error) {
+    console.error('Errore durante il recupero dei file prodotto:', error);
+    throw error;
+  }
+},
+
+
     uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
         const result = await registerClient.uploadProductList({csv, category});
         return extractResponse(result, 200, onRedirectToLogin);
@@ -89,3 +112,4 @@ export const RegisterApi = {
         return {data: responseData, filename: fileName};
     }
 };
+

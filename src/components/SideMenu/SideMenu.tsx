@@ -4,7 +4,7 @@ import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks
 import { useTranslation } from 'react-i18next';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import InventoryIcon from '@mui/icons-material/Inventory';
-// import HistoryIcon from '@mui/icons-material/History';
+import HistoryIcon from '@mui/icons-material/History';
 import ROUTES from '../../routes';
 import SidenavItem from './SidenavItem';
 
@@ -27,14 +27,14 @@ export default function SideMenu() {
             level={0}
             data-testid="initiativeList-click-test"
           />
-          {/* <SidenavItem
+          <SidenavItem
             title={t('pages.uploadHistory.sideMenuTitle')}
             handleClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
             isSelected={location.pathname === ROUTES.UPLOADS}
             icon={HistoryIcon}
             level={0}
             data-testid="initiativeList-click-test"
-          /> */}
+          />
           <SidenavItem
             title={t('pages.products.sideMenuTitle')}
             handleClick={() => onExit(() => navigate(ROUTES.PRODUCTS, { replace: true }))}
