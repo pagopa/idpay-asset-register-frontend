@@ -11,7 +11,7 @@ import {PRODUCTS_CATEGORY} from "../../utils/constants";
 import {initUploadBoxStyle, initUploadHelperBoxStyle} from "../../helpers";
 import InitUploadBox from "../../components/InitUploadBox/InitUploadBox";
 import {downloadErrorReport, uploadProductList} from "../../services/registerService";
-import {categoryList} from "./helpers";
+import {categoryList, downloadCsv} from "./helpers";
 
 type Props = {
     fileAccepted: boolean;
@@ -35,14 +35,9 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
 
     const handleDownloadReport = async () => {
         try {
-            const blob = await downloadErrorReport(idReport);
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.setAttribute('href', url);
-            link.setAttribute('download', 'report.csv');
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+            const res = await downloadErrorReport(idReport);
+
+            downloadCsv(res.data,res.filename);
         } catch (error) {
             console.error('Errore nel download del report:', error);
         }
@@ -126,8 +121,8 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                                 setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.tooMuchProductsDescription'));
                                 break;
                             case 'product.invalid.file.header':
-                                setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.wrongCategoryTitle'));
-                                setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.wrongCategoryDescription'));
+                                setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.wrongHeaderTitle'));
+                                setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.wrongHeaderDescription'));
                                 break;
                             case 'product.invalid.file.report':
                                 setIsReport(true);
@@ -136,6 +131,10 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                                 setAlertDescription(
                                     t('pages.addProducts.form.fileUpload.fileUploadError.multipleErrorDescription')
                                 );
+                                break;
+                            case 'product.invalid.file.empty':
+                                setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.emptyTitle'));
+                                setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.emptyDescription'));
                                 break;
                             default:
                                 setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.errorGenericTitle'));
@@ -156,7 +155,6 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                     setFileAccepted(false);
                     setFileRejected(true);
                 });
-            setFileIsLoading(false);
         },
         onDropRejected: (files) => {
             const errorKey = files[0].errors[0].code;

@@ -296,7 +296,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegisterUploadResponseDTO'
+                $ref: '#/components/schemas/CsvDTO'
         '400':
           description: Bad request
           content:
@@ -512,7 +512,14 @@ components:
           description: "ENG: Error Key: <ul><li>product.invalid.file.maxrow: too many records</li><li>product.invalid.file.header: wrong headers</li><li>product.invalid.file.size: file size exceeds limit</li><li>product.invalid.file.report: error report generated</li><li>product.invalid.file.extension: file extension not valid (must be csv)</li></ul><br>IT: Chiave di errore: <ul><li>product.invalid.file.maxrow: numero di record non consentito</li><li>merchant.invalid.file.header: headers non validi</li><li>merchant.invalid.file.size: la dimensione del file supera il limite consentito<li>merchant.invalid.file.report: il file caricato ha generato un report file di errori</li></li><li>product.invalid.file.vat.wrong: partita IVA o CF non valido</li><li>product.invalid.file.extension: estensione file non valita (deve essere un csv)</li></ul>"
         productFileId:
           type: string
+          nullable: true
           description: "ENG: Id of the partlial upload <br> IT: Id del caricamento parziale"
+    CsvDTO:
+      title: CsvDTO
+      type: object
+      properties:
+        data:
+          type: string
     RegisterErrorDTO:
       type: object
       required:

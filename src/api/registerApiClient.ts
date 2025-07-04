@@ -8,6 +8,7 @@ import { createClient, WithDefaultsT } from './generated/register/client';
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
 import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
 import {RegisterUploadResponseDTO} from "./generated/register/RegisterUploadResponseDTO";
+import {CsvDTO} from "./generated/register/CsvDTO";
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -17,14 +18,7 @@ const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (par
   });
 };
 
-const rolePermissionClient = createClient({
-  baseUrl: ENV.URL_API.ROLE_PERMISSION,
-  basePath: '',
-  fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.ROLE_PERMISSION),
-  withDefaults: withBearerAndPartyId,
-});
-
-const productUploadClient = createClient({
+const registerClient = createClient({
     baseUrl: ENV.URL_API.OPERATION,
     basePath: '',
     fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION),
@@ -46,17 +40,17 @@ const onRedirectToLogin = () =>
 
 export const RolePermissionApi = {
   userPermission: async (): Promise<UserPermissionDTO> => {
-    const result = await rolePermissionClient.userPermission({});
+    const result = await registerClient.userPermission({});
     return extractResponse(result, 200, onRedirectToLogin);
   },
 
   getPortalConsent: async (): Promise<PortalConsentDTO> => {
-    const result = await rolePermissionClient.getPortalConsent({});
+    const result = await registerClient.getPortalConsent({});
     return extractResponse(result, 200, onRedirectToLogin);
   },
 
   savePortalConsent: async (versionId: string | undefined): Promise<void> => {
-    const result = await rolePermissionClient.savePortalConsent({ body: { versionId } });
+    const result = await registerClient.savePortalConsent({ body: { versionId } });
     return extractResponse(result, 200, onRedirectToLogin);
   },
 };
@@ -64,11 +58,30 @@ export const RolePermissionApi = {
 
 export const RegisterApi = {
     uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
-        const result = await productUploadClient.uploadProductList({ csv, category});
+        const result = await registerClient.uploadProductList({csv, category});
         return extractResponse(result, 200, onRedirectToLogin);
     },
-    downloadErrorReport: async (productFileId: string): Promise<Blob> => {
-        const result = await productUploadClient.downloadErrorReport({ productFileId });
-        return extractResponse(result, 200, onRedirectToLogin);
-    },
+    downloadErrorReport: async (
+        productFileId: string
+    ): Promise<{data: CsvDTO; filename: string}> => {
+        const response = await registerClient.downloadErrorReport({productFileId});
+
+        const headers = (response as any).headers as Record<string, string> | undefined;
+
+        const contentDisposition =
+            headers?.["content-disposition"] || headers?.["Content-Disposition"];
+
+        // eslint-disable-next-line functional/no-let
+        let fileName: string = '';
+        if (contentDisposition) {
+            const match = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (match?.[1]) {
+                fileName = match[1];
+            }
+        }
+
+        const responseData = await extractResponse(response, 200, onRedirectToLogin) as CsvDTO;
+
+        return {data: responseData, filename: fileName};
+    }
 };

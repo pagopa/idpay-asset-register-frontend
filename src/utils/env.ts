@@ -19,7 +19,6 @@ export const ENV = {
   },
 
   URL_API: {
-    ROLE_PERMISSION: env.get('REACT_APP_URL_API_ROLE_PERMISSION').required().asString(),
     OPERATION: env.get('REACT_APP_URL_API_OPERATION').required().asString(),
   },
 
