@@ -18,8 +18,8 @@ import TOS from "./pages/tos/TOS";
 import PrivacyPolicy from "./pages/privacyPolicy/PrivacyPolicy";
 import AddProducts from "./pages/addProducts/addProducts";
 import UploadsHistory from "./pages/uploadsHistory/uploadsHistory";
-import ProductDataGrid from './pages/products/ProductDataGrid';
 import Products from './pages/components/Products';
+import ProductDataGrid from './components/Product/ProductDataGrid';
 
 const SecuredRoutes = withLogin(
   withSelectedPartyProducts(() => {

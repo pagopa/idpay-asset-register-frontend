@@ -23,12 +23,12 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
-import EmptyList from '../components/EmptyList';
 import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { displayRows } from '../../utils/constants';
+import EmptyList from '../../pages/components/EmptyList';
 import { EnhancedTableProps, HeadCell, getComparator, Order } from './helpers';
 import ProductsDrawer from './ProductsDrawer';
 
