@@ -49,6 +49,7 @@ export interface HeadCell {
   id: keyof ProductDTO;
   label: string;
   numeric: boolean;
+  textAlign?: any;
 }
 
 export interface EnhancedTableProps {

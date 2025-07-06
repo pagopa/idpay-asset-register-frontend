@@ -27,7 +27,7 @@ import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { displayRows } from '../../utils/constants';
+import { displayRows, emptyData } from '../../utils/constants';
 import EmptyList from '../../pages/components/EmptyList';
 import { EnhancedTableProps, HeadCell, getComparator, Order } from './helpers';
 import ProductsDrawer from './ProductsDrawer';
@@ -77,30 +77,35 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       id: 'category',
       numeric: false,
       disablePadding: false,
+      textAlign: 'center',
       label: `${t('pages.products.listHeader.category')}`,
     },
     {
       id: 'energyClass',
       numeric: false,
       disablePadding: false,
+      textAlign: 'center',
       label: `${t('pages.products.listHeader.energeticClass')}`,
     },
     {
       id: 'eprelCode',
       numeric: false,
       disablePadding: false,
+      textAlign: 'center',
       label: `${t('pages.products.listHeader.eprelCode')}`,
     },
     {
       id: 'gtinCode',
       numeric: false,
       disablePadding: false,
+      textAlign: 'center',
       label: `${t('pages.products.listHeader.gtinCode')}`,
     },
     {
       id: 'batchName',
       numeric: false,
       disablePadding: false,
+      textAlign: 'centlefter',
       label: `${t('pages.products.listHeader.branch')}`,
     },
   ];
@@ -111,7 +116,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell?.id}
-            align={headCell?.id === 'category' || headCell?.id === 'batchName' ? 'left' : 'center'}
+            align={headCell?.textAlign? headCell?.textAlign : 'left' }
             padding="normal"
             sortDirection={orderBy === headCell?.id ? order : false}
           >
@@ -136,7 +141,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-const ProductDataGrid = () => {
+const ProductGrid = () => {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
   const [page, setPage] = useState<number>(0);
@@ -356,31 +361,32 @@ const ProductDataGrid = () => {
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row, index) => (
                   <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
-                    <TableCell sx={{ width: '132px' }}>
+                    <TableCell  sx={{ textAlign: 'left' }}>
                       <Typography variant="body2">
-                        {row.category
+                        {row?.category
                           ? t(`commons.categories.${row?.category?.toLowerCase()}`)
-                          : '-'}
+                          : emptyData
+                          }
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ width: '186px', textAlign: 'center' }}>
+                    <TableCell sx={{ textAlign: 'center' }}>
                       <Typography variant="body2">
-                        {row.energyClass ? row?.energyClass : '-'}
+                        {row?.energyClass ? row?.energyClass : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ width: '145px', textAlign: 'center' }}>
+                    <TableCell sx={{textAlign: 'center' }}>
                       <Link underline="hover" href="#">
-                        <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'blue' }}>
-                          {row.eprelCode ? row?.eprelCode : '-'}
+                        <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
+                          {row?.eprelCode ? row?.eprelCode : emptyData}
                         </Typography>
                       </Link>
                     </TableCell>
-                    <TableCell sx={{ width: '186px', textAlign: 'center' }}>
-                      <Typography variant="body2">{row.gtinCode ? row?.gtinCode : '-'}</Typography>
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Typography variant="body2">{row?.gtinCode ? row?.gtinCode : emptyData}</Typography>
                     </TableCell>
-                    <TableCell sx={{ width: '239px' }}>
+                    <TableCell >
                       <Typography variant="body2">
-                        {row.batchName ? row?.batchName : '-'}
+                        {row?.batchName ? row?.batchName : emptyData}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'right' }}>
@@ -448,4 +454,5 @@ const ProductDataGrid = () => {
  </>
   );
 };
-export default ProductDataGrid;
+export default ProductGrid;
+
