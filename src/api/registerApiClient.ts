@@ -10,7 +10,10 @@ import { ENV } from '../utils/env';
 import { createClient, WithDefaultsT } from './generated/register/client';
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
 import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
-import { UploadsListDTO } from './generated/register/UploadsListDTO';
+import { UploadsListDTO } from "./generated/register/UploadsListDTO";
+import {RegisterUploadResponseDTO} from "./generated/register/RegisterUploadResponseDTO";
+import {CsvDTO} from "./generated/register/CsvDTO";
+
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -21,10 +24,10 @@ const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (par
 };
 
 const registerClient = createClient({
-  baseUrl: ENV.URL_API.REGISTER,
-  basePath: '',
-  fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.REGISTER),
-  withDefaults: withBearerAndPartyId,
+    baseUrl: ENV.URL_API.OPERATION,
+    basePath: '',
+    fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION),
+    withDefaults: withBearerAndPartyId,
 });
 
 const onRedirectToLogin = () =>
@@ -42,7 +45,7 @@ const onRedirectToLogin = () =>
 
 export const RolePermissionApi = {
   userPermission: async (): Promise<UserPermissionDTO> => {
-    const result = await registerClient.userPermission({}); // TODO modify
+    const result = await registerClient.userPermission({});
     return extractResponse(result, 200, onRedirectToLogin);
   },
 
@@ -57,58 +60,27 @@ export const RolePermissionApi = {
   },
 };
 
-{
-  /*
-export const RegisterApi = {  
-  getProductFiles: async (
-    params: Parameters<typeof registerClient.getProductFilesList>[0] = {}
-  ): Promise<UploadsListDTO> => {
-    const result = await registerClient.getProductFilesList(params);
-    return extractResponse(result, 200, onRedirectToLogin);
-  }
-};
-*/
-}
-{
-  /*
-export const RegisterApi = {  
-  getProductFiles: async (
-    page?: number,
-    size?: number,
-    sort?: string
-  ): Promise<UploadsListDTO> => {
-    const result = await registerClient.getProductFilesList({
-      page,size,sort
-    });
-    return extractResponse(result, 200, onRedirectToLogin);
-  }
-};
-
-*/
-}
 
 export const RegisterApi = {
-  getProductFiles: async (page?: number, size?: number, sort?: string): Promise<UploadsListDTO> => {
-    try {
-      // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
-      const params = {
-        ...(page !== undefined ? { page } : {}),
-        ...(size !== undefined ? { size } : {}),
-        ...(sort !== undefined ? { sort } : {}),
-      };
+  getProductFiles: async (
+  page?: number,
+  size?: number,
+  sort?: string
+): Promise<UploadsListDTO> => {
+  try {
+    const params = {
+      ...(page !== undefined ? { page } : {}),
+      ...(size !== undefined ? { size } : {}),
+      ...(sort !== undefined ? { sort } : {}),
+    };
 
-      const result = await registerClient.getProductFilesList(params);
-      console.log(
-        '*********RegisterApi  Risultato della chiamata API:         ***************************',
-        JSON.stringify(result)
-      );
-      return extractResponse(result, 200, onRedirectToLogin);
-    } catch (error) {
-      // Puoi loggare o gestire l’errore come preferisci
-      console.error('Errore durante il recupero dei file prodotto:', error);
-      throw error;
-    }
-  },
+    const result = await registerClient.getProductFilesList(params);
+    return extractResponse(result, 200, onRedirectToLogin);
+  } catch (error) {
+    console.error('Errore durante il recupero dei file prodotto:', error);
+    throw error;
+  }
+},
   getProducts: async (
     page?: number,
     size?: number,
@@ -146,4 +118,37 @@ export const RegisterApi = {
       throw error;
     }
   },
+
+    uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
+        const result = await registerClient.uploadProductList({csv, category});
+        return extractResponse(result, 200, onRedirectToLogin);
+    },
+    downloadErrorReport: async (
+        productFileId: string
+    ): Promise<{data: CsvDTO; filename: string}> => {
+        const response = await registerClient.downloadErrorReport({productFileId});
+
+        const rawResponse = (response as any).response || (response as any).data || (response as any).right;
+
+        const headers = rawResponse?.headers || (response as any).headers;
+
+        const contentDisposition = headers?.get?.('content-disposition') ||
+            headers?.get?.('Content-Disposition') ||
+            headers?.['content-disposition'] ||
+            headers?.['Content-Disposition'];
+
+        // eslint-disable-next-line functional/no-let
+        let fileName: string = '';
+        if (contentDisposition) {
+            const match = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (match?.[1]) {
+                fileName = match[1];
+            }
+        }
+
+        const responseData = await extractResponse(response, 200, onRedirectToLogin) as CsvDTO;
+
+        return {data: responseData, filename: fileName};
+    }
 };
+

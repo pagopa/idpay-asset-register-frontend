@@ -1,6 +1,5 @@
 const regexReplace = require("regex-replace");
 
-
 regexReplace(
   'readonly sort\\?: array;',
   'readonly sort?: Array<string>;',
@@ -20,3 +19,4 @@ content = content.replace(
 );
 
 fs.writeFileSync(clientFile, content);
+
