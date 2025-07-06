@@ -29,9 +29,18 @@ import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { displayRows, emptyData } from '../../utils/constants';
 import EmptyList from '../../pages/components/EmptyList';
-import { EnhancedTableProps, HeadCell, getComparator, Order } from './helpers';
-import ProductsDrawer from './ProductsDrawer';
+import { EnhancedTableProps, getComparator, Order } from './helpers';
+import DetailDrawer from './DetailDrawer';
+import ProductDetail from './ProductDetail';
 
+
+interface HeadCell {
+  disablePadding: boolean;
+  id: keyof ProductDTO;
+  label: string;
+  numeric: boolean;
+  textAlign?: any;
+}
 
 
 const getProductList = async (
@@ -450,7 +459,10 @@ const ProductGrid = () => {
           />
         )}
       </Paper>
-      <ProductsDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer} data={drawerData} />
+      
+      <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer} >
+          <ProductDetail data={drawerData}/>
+      </DetailDrawer>
  </>
   );
 };

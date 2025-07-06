@@ -44,13 +44,7 @@ export function stableSort<T>(array: ReadonlyArray<T>, comparator: (a: T, b: T) 
   return stabilizedThis.map((el) => el[0]);
 }
 
-export interface HeadCell {
-  disablePadding: boolean;
-  id: keyof ProductDTO;
-  label: string;
-  numeric: boolean;
-  textAlign?: any;
-}
+
 
 export interface EnhancedTableProps {
   order: Order;
@@ -75,11 +69,7 @@ export interface DataProp {
   countryOfProduction?: string;
 }
 
-export interface ProductsDrawerProps {
-  open: boolean;
-  toggleDrawer: (isOpen: boolean) => void;
-  data: ProductDTO;
-}
+
 
 export interface GetProductListParams {
   page?: number;
