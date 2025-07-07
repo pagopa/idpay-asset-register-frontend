@@ -15,7 +15,10 @@ export const ENV = {
     LOGIN: env.get('REACT_APP_URL_FE_LOGIN').required().asString(),
     LOGOUT: env.get('REACT_APP_URL_FE_LOGOUT').required().asString(),
     LANDING: env.get('REACT_APP_URL_FE_LANDING').required().asString(),
-    ASSISTANCE_ASSET_REGISTER: env.get('REACT_APP_URL_FE_ASSISTANCE_ASSET_REGISTER').required().asString(),
+    ASSISTANCE_ASSET_REGISTER: env
+      .get('REACT_APP_URL_FE_ASSISTANCE_ASSET_REGISTER')
+      .required()
+      .asString(),
   },
 
   URL_API: {
