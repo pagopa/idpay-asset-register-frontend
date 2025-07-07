@@ -96,6 +96,7 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                 return;
             }
             setFileIsLoading(true);
+            setIsReport(false);
 
             uploadProductList( files[0], formik.values.category)
                 .then((res : any) => {
