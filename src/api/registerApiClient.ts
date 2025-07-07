@@ -1,7 +1,10 @@
-import i18n from "@pagopa/selfcare-common-frontend/lib/locale/locale-utils";
-import {buildFetchApi, extractResponse} from "@pagopa/selfcare-common-frontend/lib/utils/api-utils";
-import {appStateActions} from "@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice";
-import {storageTokenOps} from "@pagopa/selfcare-common-frontend/lib/utils/storage";
+import i18n from '@pagopa/selfcare-common-frontend/lib/locale/locale-utils';
+import {
+  buildFetchApi,
+  extractResponse,
+} from '@pagopa/selfcare-common-frontend/lib/utils/api-utils';
+import { appStateActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice';
+import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
 import { createClient, WithDefaultsT } from './generated/register/client';
@@ -78,6 +81,44 @@ export const RegisterApi = {
     throw error;
   }
 },
+
+  getProducts: async (
+    page?: number,
+    size?: number,
+    sort?: string,
+    category?: string,
+    eprelCode?: string,
+    gtinCode?: string,
+    productCode?: string,
+    productFileId?: string
+  ): Promise<UploadsListDTO> => {
+    try {
+      // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
+      const params = {
+        ...(page !== undefined ? { page } : {}),
+        ...(size !== undefined ? { size } : {}),
+        ...(sort !== undefined ? { sort } : {}),
+        ...(category ? { category } : {}),
+        ...(eprelCode ? { eprelCode } : {}),
+        ...(gtinCode ? { gtinCode } : {}),
+        ...(productCode ? { productCode } : {}),
+        ...(productFileId ? { productFileId } : {}),
+      };
+
+      console.log('§>>>', { params });
+
+      const result = await registerClient.getProducts(params);
+      console.log(
+        '*********RegisterApi  Risultato della chiamata API: Products ***************************',
+        JSON.stringify(result)
+      );
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      // Puoi loggare o gestire l’errore come preferisci
+      console.error('Errore durante il recupero dei file prodotto:', error);
+      throw error;
+    }
+  },
 
 
     uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {

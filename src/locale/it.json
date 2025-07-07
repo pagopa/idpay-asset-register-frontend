@@ -34,11 +34,11 @@
     "title": "Registro dei beni",
     "categories": {
       "washingmachines": "Lavatrici",
-      "washerdriers": "Asciugatrici",
+      "washerdriers": "Lavasciuga",
       "ovens": "Forni",
       "rangehoods": "Cappe da cucina",
       "dishwashers": "Lavastoviglie",
-      "tumbledriers": "Lavasciuga",
+      "tumbledriers": "Asciugatrici",
       "refrigeratingappl": "Frigoriferi",
       "cookinghobs": "Piani cottura"
     }
@@ -96,8 +96,8 @@
           "validFile": "File valido",
           "changeFile": "Sostituisci",
           "fileUploadError": {
-            "errorGenericTitle": "II file contiene uno o più errori",
-            "errorDescription": "Si è verificato un errore. Riprova",
+            "errorGenericTitle": "Errore durante il caricamento del file",
+            "errorDescription": "Si è verificato un errore. Riprova più tardi",
             "errorTitle": "II file contiene degli errori",
             "invalidTypeTitle": "Il formato del file non è valido",
             "invalidTypeDescription": "È possibile caricare solo file in formato .csv",
@@ -139,8 +139,27 @@
         "gtinCode": "Codice GTIN/EAN",
         "branch": "Lotto"
       },
+      "categories": {
+        "WASHINGMACHINES": "Lavatrici",
+        "WASHERDRIERS": "Lavasciuga",
+        "OVENS": "Forni",
+        "RANGEHOODS": "Cappe",
+        "DISHWASHERS": "Lavastoviglie",
+        "TUMBLEDRIERS": "Asciugatrici",
+        "REFRIGERATINGAPPL": "Frigoriferi",
+        "COOKINGHOBS": "Piani cottura",
+        "lavatrici": "WASHINGMACHINES",
+        "asciugatrici": "TUMBLEDRIERS",
+        "forni": "OVENS",
+        "cappe da cucina": "RANGEHOODS",
+        "lavastoviglie": "DISHWASHERS",
+        "lavasciuga": "WASHERDRIERS",
+        "frigoriferi": "REFRIGERATINGAPPL",
+        "piani cottura": "COOKINGHOBS"
+      },
       "tablePaginationFrom": "di",
-      "emptyList": "Nessun record corrisponde alla ricerca."
+      "emptyList": "Nessun record corrisponde alla ricerca.",
+      "backToTable": "Torna alla tabella"
     },
     "uploadHistory": {
       "sideMenuTitle": "Storico caricamenti"
