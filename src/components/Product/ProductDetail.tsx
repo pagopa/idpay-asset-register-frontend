@@ -1,6 +1,7 @@
 import { List, ListItem, Typography, Divider } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
 import { emptyData } from '../../utils/constants';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 
@@ -33,7 +34,7 @@ export default function ProductDetail({ data }: Props) {
               Data verifica EPREL
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              TODO
+              {String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || emptyData}
             </Typography>
           </Box>
         </ListItem>
