@@ -206,7 +206,7 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                     <FormHelperText sx={{ fontSize: '0.875rem' }}>
                         {t('pages.addProducts.form.fileUpload.fileUploadHelpText')}&#160;
                             <Link
-                                href={formik.values.category ? `/${templateFileName}` : undefined}
+                                href={formik.values.category ? `${templateFileName}` : undefined}
                                 download={!!formik.values.category}
                                 type="text/csv"
                                 target="_blank"
