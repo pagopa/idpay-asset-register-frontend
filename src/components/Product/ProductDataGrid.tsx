@@ -131,8 +131,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               active={orderBy === headCell?.id}
               direction={orderBy === headCell?.id ? order : 'asc'}
               onClick={createSortHandler(headCell?.id)}
-              hideSortIcon={false}
-              disabled={false}
+              hideSortIcon={true}
+              disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
             >
               {headCell?.label}
               {orderBy === headCell?.id ? (
