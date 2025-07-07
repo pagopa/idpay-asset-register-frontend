@@ -30,7 +30,7 @@ function renderUploadStatusChip(status: string) {
   switch (status) {
     case 'IN_PROGRESS':
     case 'UPLOADED':
-      return <Chip color="default" label="In carico" />;
+      return <Chip color="default" label="In corso" />;
     case 'EPREL_ERROR':
       return <Chip color="warning" label="Parziale" />;
     case 'LOADED':
@@ -42,12 +42,23 @@ function renderUploadStatusChip(status: string) {
 
 const formatDateTime = (isoDate: string): string => {
   const date = new Date(isoDate);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${day}/${month}/${year} ${hours}:${minutes}`;
+
+  const optionsDate: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  };
+
+  const optionsTime: Intl.DateTimeFormatOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  };
+
+  const formattedDate = new Intl.DateTimeFormat('it-IT', optionsDate).format(date);
+  const formattedTime = new Intl.DateTimeFormat('it-IT', optionsTime).format(date);
+
+  return `${formattedDate}, ${formattedTime}`;
 };
 
 const formatDate = (isoDate: string): string => {
@@ -68,21 +79,19 @@ const UploadInfoBox: React.FC<{
   stopNavigation: boolean;
 }> = ({ loading, error, data, firstUploadDate, onExit, t, stopNavigation }) => {
   const navigate = useNavigate();
-  if (!loading && !error && data?.content && data.content.length > 0 && !stopNavigation) {
+
+  if (
+    !loading &&
+    !error &&
+    data?.content &&
+    data.content.length > 0 &&
+    data.content[0].uploadStatus !== 'IN_PROGRESS' &&
+    data.content[0].uploadStatus !== 'UPLOADED'
+  ) {
     return (
-      <Box sx={{ gridColumn: 'span 12' }}>
-        <Alert severity="warning" variant="standard">
-          Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e
-          potrai consultare i dettagli nelle sezioni dedicate.
-        </Alert>
-      </Box>
-    );
-  }
-  if (!loading && !error && data?.content && data.content.length > 0 && stopNavigation) {
-    return (
-      <Box sx={{ gridColumn: 'span 12' }}>
+      <Box sx={{ gridColumn: 'span 12', mb: 2 }}>
         <Typography variant="body2">
-          Data ultima di caricamento: {firstUploadDate ? formatDateTime(firstUploadDate) : '-'}
+          Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : '-'}</b>
         </Typography>
         <Button
           variant="contained"
@@ -119,11 +128,12 @@ const UploadsTable: React.FC<{
   loading: boolean;
   error: string | null;
   data: UploadsListDTO | null;
-}> = ({ loading, error, data }) => {
+  stopNavigation: boolean;
+}> = ({ loading, error, data, stopNavigation }) => {
   const navigate = useNavigate();
   const onExit = useUnloadEventOnExit();
-
   const { t } = useTranslation();
+  const [rowsPerPage] = useState<number>(4);
 
   return (
     <Box sx={{ gridColumn: 'span 12', mt: 2 }}>
@@ -146,16 +156,32 @@ const UploadsTable: React.FC<{
                         textAlign: 'left',
                         fontWeight: 700,
                         letterSpacing: 1,
+                        mb: 2,
                       }}
                     >
                       STATO CARICAMENTI
                     </Typography>
+                    {!loading &&
+                      data?.content?.[0]?.uploadStatus === 'UPLOADED' &&
+                      !stopNavigation && (
+                        <Box sx={{ mb: 2 }}>
+                          <Paper>
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                              <Typography variant="body2">
+                                Stiamo effettuando i controlli. Quando saranno completati, ti
+                                avviseremo via email e potrai consultare i dettagli nelle sezioni
+                                dedicate.
+                              </Typography>
+                            </Alert>
+                          </Paper>
+                        </Box>
+                      )}
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {data?.content &&
-                  data.content.map((row: UploadDTO) => (
+                  data.content.slice(0, rowsPerPage).map((row: UploadDTO) => (
                     <TableRow key={row.productFileId}>
                       <TableCell>{row.batchName}</TableCell>
                       <TableCell>{renderUploadStatusChip(row.uploadStatus ?? '')}</TableCell>
@@ -203,11 +229,12 @@ const OverviewProductionSection: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [stopNavigation, setStopNavigation] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [rowsPerPage] = useState<number>(4);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getProductFilesList(0, 4)
+    getProductFilesList(0, rowsPerPage)
       .then((res) => {
         setData(res);
         setLoading(false);
@@ -221,20 +248,21 @@ const OverviewProductionSection: React.FC = () => {
 
   {
     /*
+  {
+    // Mock data fetch for demonstration purposes
+    useEffect(() => {
+      try {
+        setData(mockDataUploads as UploadsListDTO);
+        setLoading(false);
+      } catch (err) {
+        setData(null);
+        setLoading(false);
+        setError(t('errors.uploadsList.errorDescription'));
+      }
+    }, []);
+  }
 
-  // Mock data fetch for demonstration purposes
-  useEffect(() => {
-    try {
-      // Simulating data fetch with mock data
-      setData(mockDataUploads as UploadsListDTO);
-      setLoading(false);
-    } catch (err) {
-      setData(null);
-      setLoading(false);
-      setError(t('errors.uploadsList.errorDescription'));
-    }
-  }, []);
-*/
+  */
   }
   const firstUploadDate =
     !loading && !error && data?.content && data.content.length > 0
@@ -244,7 +272,7 @@ const OverviewProductionSection: React.FC = () => {
   useEffect(() => {
     setStopNavigation(
       !loading && !error && data?.content && data.content.length > 0
-        ? data.content[0].uploadStatus !== 'UPLOADED'
+        ? data.content[0].uploadStatus === 'UPLOADED'
         : false
     );
   }, [loading, error, data]);
@@ -278,7 +306,7 @@ const OverviewProductionSection: React.FC = () => {
             t={t}
             stopNavigation={stopNavigation}
           />
-          <UploadsTable loading={loading} error={error} data={data} />
+          <UploadsTable loading={loading} error={error} data={data} stopNavigation={false} />
         </Box>
       </Paper>
     </Box>

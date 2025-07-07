@@ -14,8 +14,8 @@ import {
 import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DownloadIcon from '@mui/icons-material/Download';
-import Link from '@mui/material/Link';
 import { grey } from '@mui/material/colors';
+import CachedIcon from '@mui/icons-material/Cached';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
@@ -25,7 +25,7 @@ function renderUploadStatusIcon(status: string) {
   switch (status) {
     case 'IN_PROGRESS':
     case 'UPLOADED':
-      return <WarningIcon color="primary" />;
+      return <CachedIcon color="disabled" />;
     case 'EPREL_ERROR':
       return <WarningIcon color="warning" />;
     case 'LOADED':
@@ -43,7 +43,9 @@ const formatDate = (isoDate: string): string => {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+  const hours = String(date.getHours()).padStart(2, '0'); // <-- CORRETTO QUI
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${day}/${month}/${year}, ${hours}:${minutes}`;
 };
 
 type UploadsTableProps = {
@@ -84,7 +86,8 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
       </Box>
     );
   }
-  return (
+
+  return data?.content && data.content.length > 0 ? (
     <TableContainer
       component={Paper}
       elevation={0}
@@ -100,66 +103,71 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
     >
       <Table>
         <TableHead>
-          <TableCell
-            colSpan={3}
-            sx={{ backgroundColor: 'background.paper', borderBottom: 0, p: 0 }}
-          >
-            <TitleBox
-              title="Stato Caricamento"
-              mbTitle={2}
-              mtTitle={2}
-              mbSubTitle={5}
-              variantTitle="h6"
-              variantSubTitle="body1"
-              data-testid="title-overview"
-              titleFontSize="32px"
-            />
-          </TableCell>
+          <TableRow>
+            <TableCell
+              colSpan={3}
+              sx={{ backgroundColor: 'background.paper', borderBottom: 0, p: 0 }}
+            >
+              <TitleBox
+                title="Stato Caricamento"
+                mbTitle={2}
+                mtTitle={2}
+                mbSubTitle={5}
+                variantTitle="h6"
+                variantSubTitle="body1"
+                data-testid="title-overview"
+                titleFontSize="32px"
+              />
+            </TableCell>
+          </TableRow>
         </TableHead>
         <TableBody>
-          {data?.content && data.content.length > 0 ? (
-            data.content.map((row: UploadDTO) => (
-              <TableRow key={row.productFileId}>
-                <TableCell
-                  sx={{
-                    borderBottom: `1px solid ${grey[300]}`,
-                    width: '10px',
-                    paddingRight: '0px',
+          {data.content.map((row: UploadDTO) => (
+            <TableRow key={row.productFileId}>
+              <TableCell
+                sx={{
+                  borderBottom: `1px solid ${grey[300]}`,
+                  width: '10px',
+                  paddingRight: '0px',
+                }}
+              >
+                {renderUploadStatusIcon(row.uploadStatus ?? '')}
+              </TableCell>
+              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>{row.batchName}</TableCell>
+              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
+                {row.dateUpload ? formatDate(row.dateUpload) : '-'}
+              </TableCell>
+              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
+                <b>{row.findedProductsNumber ?? 0} prodotti trovati</b>
+              </TableCell>
+              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
+                <span
+                  style={{
+                    color: grey[400],
+                    fontWeight: 'bold',
+                    textDecoration: 'underline',
+                    cursor: 'not-allowed',
+                    pointerEvents: 'none',
                   }}
                 >
-                  {renderUploadStatusIcon(row.uploadStatus ?? '')}
-                </TableCell>
-                <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
-                  {row.batchName}
-                </TableCell>
-                <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
-                  {row.dateUpload ? formatDate(row.dateUpload) : '-'}
-                </TableCell>
-                <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
-                  <b>{row.findedProductsNumber} prodotti trovati</b>
-                </TableCell>
-                <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
-                  <Link href={``} underline="hover" color="primary" sx={{ fontWeight: 'bold' }}>
-                    <u> {row.addedProductNumber} prodotti aggiunti</u>
-                  </Link>
-                </TableCell>
-                <TableCell
-                  align="right"
-                  sx={{ borderBottom: `1px solid ${grey[300]}`, width: '15%' }}
-                >
-                  {row.uploadStatus === 'EPREL_ERROR' && (
-                    <DownloadIcon color="primary" sx={{ verticalAlign: 'middle' }} />
-                  )}
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={6} align="center">
-                {t('Non ci sono file caricati')}
+                  {row.addedProductNumber ?? 0} prodotti aggiunti
+                </span>
+              </TableCell>
+
+              <TableCell
+                align="right"
+                sx={{ borderBottom: `1px solid ${grey[300]}`, width: '15%' }}
+              >
+                {row.uploadStatus === 'EPREL_ERROR' && (
+                  <DownloadIcon
+                    color="disabled"
+                    aria-disabled="true"
+                    sx={{ verticalAlign: 'middle' }}
+                  />
+                )}
               </TableCell>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
       <TablePagination
@@ -169,9 +177,42 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         onPageChange={onPageChange}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={onRowsPerPageChange}
-        rowsPerPageOptions={[8]}
+        rowsPerPageOptions={[rowsPerPage]}
         labelRowsPerPage={t('Righe per pagina')}
       />
+    </TableContainer>
+  ) : (
+    <TableContainer
+      component={Paper}
+      elevation={0}
+      sx={{
+        height: '70%',
+        gap: '24px',
+        borderRadius: '4px',
+        pt: '24px',
+        pr: '24px',
+        pl: '24px',
+        cursor: 'pointer',
+      }}
+    >
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell
+              colSpan={6}
+              align="center"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+              }}
+            >
+              {t('Non ci sono prodotti caricati')}
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
     </TableContainer>
   );
 };
