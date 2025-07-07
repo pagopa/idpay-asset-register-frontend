@@ -286,7 +286,7 @@ const ProductGrid = () => {
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth size="small">
+          <FormControl fullWidth size="small" disabled>
             <InputLabel id="branch-filter-select-label">
               {t('pages.products.filterLabels.branch')}
             </InputLabel>
