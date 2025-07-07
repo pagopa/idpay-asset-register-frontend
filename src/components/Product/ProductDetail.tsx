@@ -39,7 +39,7 @@ export default function ProductDetail({ data }: Props) {
         </ListItem>
         <ListItem>
           <Box>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
+            <Typography variant="body2" fontWeight="fontWeightMedium" sx={{ mt: 3 }}>
               SCHEDA PRODOTTO
             </Typography>
           </Box>
