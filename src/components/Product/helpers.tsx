@@ -1,4 +1,4 @@
-import { ProductDTO } from '../../api/generated/register/ProductDTO';
+// import { ProductDTO } from '../../api/generated/register/ProductDTO';
 
 export interface Data {
   category: string;
@@ -46,28 +46,24 @@ export function stableSort<T>(array: ReadonlyArray<T>, comparator: (a: T, b: T) 
 
 
 
-export interface EnhancedTableProps {
-  order: Order;
-  orderBy: string;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ProductDTO) => void;
-}
 
-export interface DataProp {
-  productFileId?: string;
-  organizationId?: string;
-  registrationDate?: string;
-  status?: string;
-  model?: string;
-  productGroup?: string;
-  branchName?: string;
-  category?: string;
-  brand?: string;
-  eprelCode?: string;
-  gtinCode?: string;
-  productCode?: string;
-  energyClass?: string;
-  countryOfProduction?: string;
-}
+
+// export interface DataProp {
+//   productFileId?: string;
+//   organizationId?: string;
+//   registrationDate?: string;
+//   status?: string;
+//   model?: string;
+//   productGroup?: string;
+//   branchName?: string;
+//   category?: string;
+//   brand?: string;
+//   eprelCode?: string;
+//   gtinCode?: string;
+//   productCode?: string;
+//   energyClass?: string;
+//   countryOfProduction?: string;
+// }
 
 
 

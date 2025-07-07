@@ -29,9 +29,15 @@ import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { displayRows, emptyData, PRODUCTS_CATEGORY } from '../../utils/constants';
 import EmptyList from '../../pages/components/EmptyList';
-import { EnhancedTableProps, getComparator, Order } from './helpers';
+import { getComparator, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
+
+interface EnhancedTableProps {
+  order: Order;
+  orderBy: string;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ProductDTO) => void;
+}
 
 interface HeadCell {
   disablePadding: boolean;
@@ -161,10 +167,22 @@ const ProductGrid = () => {
   const [drawerData, setDrawerData] = useState<ProductDTO>({});
   const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
+  const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
+  const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
+
 
   const { t } = useTranslation();
-  const paginatorFrom = (page <= 0 ? page : page - 1) * displayRows + 1;
-  const paginatorTo = (page <= 0 ? page : page - 1) * displayRows + displayRows;
+
+  useEffect(() => {
+    void getProductList(page,displayRows)
+      .then((res) => {
+        const { content, pageNo, totalElements } = res;
+        setTableData(content ? Array.from(content) : []);
+        setPage(pageNo || 0);
+        setItemsQty(totalElements);
+        setPaginatorTo(totalElements && totalElements>displayRows ? displayRows : totalElements );
+      });
+  }, []);
 
   useEffect(() => {
     void getProductList(
@@ -175,11 +193,16 @@ const ProductGrid = () => {
       eprelCodeFilter,
       gtinCodeFilter
     )
-      .then((res) => {
+
+    .then((res) => { 
         const { content, pageNo, totalElements } = res;
         setTableData(content ? Array.from(content) : []);
         setPage(pageNo || 0);
         setItemsQty(totalElements);
+        if(pageNo) {
+          setPaginatorFrom((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + 1);
+          setPaginatorTo((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + displayRows);
+        }
       })
       .finally(() => setFiltering(false));
   }, [page, filtering]);
@@ -258,7 +281,7 @@ const ProductGrid = () => {
 
   return (
     <>
-      {tableData.length > 0 && (
+      {tableData?.length > 0 && (
         <Box
           sx={{
             display: 'flex',
