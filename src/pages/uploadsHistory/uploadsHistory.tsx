@@ -5,9 +5,11 @@ import Paper from '@mui/material/Paper';
 import { Table, TableHead, TableBody, TableRow, TableCell, Alert, Typography } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
+import CachedIcon from '@mui/icons-material/Cached';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { getProductFilesList } from '../../services/registerService';
 import UploadsTable from '../components/HistoryUploadSection';
+// import mockDataUploads from '../../mocks/StoricoProdEprel_03072025.json';
 
 const OverviewHistoryUpload: React.FC = () => {
   const { t } = useTranslation();
@@ -16,7 +18,6 @@ const OverviewHistoryUpload: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(8);
-  const [msgInfoUpload, setMsgInfoUpload] = useState<boolean>(false);
 
   interface Props {
     description: string;
@@ -25,8 +26,8 @@ const OverviewHistoryUpload: React.FC = () => {
 
   const InfoUpload = ({ description }: Props) => (
     <Box sx={{ mb: 2 }}>
-      <Paper>
-        <Alert severity="info">
+      <Paper sx={{ backgroundColor: '#fff' }}>
+        <Alert severity="info" icon={<CachedIcon color="info" />} sx={{ backgroundColor: '#fff' }}>
           <Typography variant="body2">{description}</Typography>
         </Alert>
       </Paper>
@@ -38,6 +39,8 @@ const OverviewHistoryUpload: React.FC = () => {
     setError(null);
     getProductFilesList(page, rowsPerPage)
       .then((res: UploadsListDTO) => {
+        // eslint-disable-next-line no-param-reassign
+        // res = mockDataUploads; // Use mock data for testing
         setData({
           ...res,
           totalElements: res.totalElements ?? 0,
@@ -51,16 +54,6 @@ const OverviewHistoryUpload: React.FC = () => {
         setError(t('errors.uploadsList.errorDescription'));
       });
   }, [page, rowsPerPage, t]);
-
-  useEffect(() => {
-    setMsgInfoUpload(
-      !loading &&
-        !error &&
-        !!data?.content &&
-        data.content.length > 0 &&
-        data.content[0].uploadStatus === 'UPLOADED'
-    );
-  }, [loading, error, data]);
 
   const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,10 +78,9 @@ const OverviewHistoryUpload: React.FC = () => {
           />
 
           <Box>
-            {msgInfoUpload && (
+            {!loading && data?.content?.[0]?.uploadStatus === 'UPLOADED' && (
               <InfoUpload
-                description="Stiamo elaborando il file. Ti avviseremo via e-mail quando l&#39;elaborazione sarà completata
-            e potrai consultare i dati direttamente in questa sezione."
+                description="Stiamo elaborando il file. Ti avviseremo via e-mail quando l'elaborazione sarà completata e potrai consultare i dati direttamente in questa sezione."
                 dismissFn={() => {}}
               />
             )}

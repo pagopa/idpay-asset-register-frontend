@@ -81,6 +81,7 @@ export const RegisterApi = {
     throw error;
   }
 },
+
   getProducts: async (
     page?: number,
     size?: number,
@@ -118,6 +119,7 @@ export const RegisterApi = {
       throw error;
     }
   },
+
 
     uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
         const result = await registerClient.uploadProductList({csv, category});
