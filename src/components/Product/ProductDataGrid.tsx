@@ -376,7 +376,7 @@ const ProductGrid = () => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
-                      <Link underline="hover" href="#">
+                      <Link underline="hover" href={row?.linkEprel || '#'}>
                         <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
                           {row?.eprelCode ? row?.eprelCode : emptyData}
                         </Typography>
