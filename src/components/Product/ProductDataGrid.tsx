@@ -27,12 +27,11 @@ import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { displayRows, emptyData } from '../../utils/constants';
+import { displayRows, emptyData, PRODUCTS_CATEGORY } from '../../utils/constants';
 import EmptyList from '../../pages/components/EmptyList';
 import { EnhancedTableProps, getComparator, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
-
 
 interface HeadCell {
   disablePadding: boolean;
@@ -41,7 +40,6 @@ interface HeadCell {
   numeric: boolean;
   textAlign?: any;
 }
-
 
 const getProductList = async (
   page?: number,
@@ -125,7 +123,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell?.id}
-            align={headCell?.textAlign? headCell?.textAlign : 'left' }
+            align={headCell?.textAlign ? headCell?.textAlign : 'left'}
             padding="normal"
             sortDirection={orderBy === headCell?.id ? order : false}
           >
@@ -186,11 +184,6 @@ const ProductGrid = () => {
       .finally(() => setFiltering(false));
   }, [page, filtering]);
 
-  const categories = [
-    ...new Set(
-      tableData.map((item) => t(`commons.categories.${item.category?.toLowerCase()}`)).sort()
-    ),
-  ];
   const branches = [
     ...new Set(
       tableData
@@ -286,9 +279,9 @@ const ProductGrid = () => {
               MenuProps={selectMenuProps}
               onChange={handleCategoryFilterChange}
             >
-              {categories.map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category}
+              {Object.keys(PRODUCTS_CATEGORY).map((category) => (
+                <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
+                  {t(`pages.products.categories.${category}`)}
                 </MenuItem>
               ))}
             </Select>
@@ -370,12 +363,11 @@ const ProductGrid = () => {
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row, index) => (
                   <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
-                    <TableCell  sx={{ textAlign: 'left' }}>
+                    <TableCell sx={{ textAlign: 'left' }}>
                       <Typography variant="body2">
                         {row?.category
                           ? t(`commons.categories.${row?.category?.toLowerCase()}`)
-                          : emptyData
-                          }
+                          : emptyData}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
@@ -383,7 +375,7 @@ const ProductGrid = () => {
                         {row?.energyClass ? row?.energyClass : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{textAlign: 'center' }}>
+                    <TableCell sx={{ textAlign: 'center' }}>
                       <Link underline="hover" href="#">
                         <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
                           {row?.eprelCode ? row?.eprelCode : emptyData}
@@ -391,9 +383,11 @@ const ProductGrid = () => {
                       </Link>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2">{row?.gtinCode ? row?.gtinCode : emptyData}</Typography>
+                      <Typography variant="body2">
+                        {row?.gtinCode ? row?.gtinCode : emptyData}
+                      </Typography>
                     </TableCell>
-                    <TableCell >
+                    <TableCell>
                       <Typography variant="body2">
                         {row?.batchName ? row?.batchName : emptyData}
                       </Typography>
@@ -459,12 +453,11 @@ const ProductGrid = () => {
           />
         )}
       </Paper>
-      
-      <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer} >
-          <ProductDetail data={drawerData}/>
+
+      <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer}>
+        <ProductDetail data={drawerData} />
       </DetailDrawer>
- </>
+    </>
   );
 };
 export default ProductGrid;
-
