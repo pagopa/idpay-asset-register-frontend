@@ -127,7 +127,7 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                                 break;
                             case 'product.invalid.file.report':
                                 setIsReport(true);
-                                setIdReport(res.productFileId.toString());
+                                setIdReport(res?.productFileId.toString());
                                 setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.multipeErrorsTitle'));
                                 setAlertDescription(
                                     t('pages.addProducts.form.fileUpload.fileUploadError.multipleErrorDescription')
@@ -140,7 +140,7 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                             default:
                                 setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.errorGenericTitle'));
                                 setAlertDescription(
-                                    t('pages.addProducts.form.fileUpload.fileUploadError.multipleErrorDescription')
+                                    t('pages.addProducts.form.fileUpload.fileUploadError.errorDescription')
                                 );
                                 break;
                         }
