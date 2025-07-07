@@ -22,4 +22,4 @@ export enum PRODUCTS_CATEGORY {
 }
 
 export const displayRows = 8;
-export const emptyData = "-";
+export const emptyData = '-';

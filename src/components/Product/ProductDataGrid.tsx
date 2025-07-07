@@ -27,12 +27,17 @@ import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { displayRows, emptyData } from '../../utils/constants';
+import { displayRows, emptyData, PRODUCTS_CATEGORY } from '../../utils/constants';
 import EmptyList from '../../pages/components/EmptyList';
-import { EnhancedTableProps, getComparator, Order } from './helpers';
+import { getComparator, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 
+interface EnhancedTableProps {
+  order: Order;
+  orderBy: string;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ProductDTO) => void;
+}
 
 interface HeadCell {
   disablePadding: boolean;
@@ -41,7 +46,6 @@ interface HeadCell {
   numeric: boolean;
   textAlign?: any;
 }
-
 
 const getProductList = async (
   page?: number,
@@ -125,7 +129,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell?.id}
-            align={headCell?.textAlign? headCell?.textAlign : 'left' }
+            align={headCell?.textAlign ? headCell?.textAlign : 'left'}
             padding="normal"
             sortDirection={orderBy === headCell?.id ? order : false}
           >
@@ -133,8 +137,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               active={orderBy === headCell?.id}
               direction={orderBy === headCell?.id ? order : 'asc'}
               onClick={createSortHandler(headCell?.id)}
-              hideSortIcon={false}
-              disabled={false}
+              hideSortIcon={true}
+              disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
             >
               {headCell?.label}
               {orderBy === headCell?.id ? (
@@ -163,10 +167,22 @@ const ProductGrid = () => {
   const [drawerData, setDrawerData] = useState<ProductDTO>({});
   const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
+  const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
+  const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
+
 
   const { t } = useTranslation();
-  const paginatorFrom = (page <= 0 ? page : page - 1) * displayRows + 1;
-  const paginatorTo = (page <= 0 ? page : page - 1) * displayRows + displayRows;
+
+  useEffect(() => {
+    void getProductList(page,displayRows)
+      .then((res) => {
+        const { content, pageNo, totalElements } = res;
+        setTableData(content ? Array.from(content) : []);
+        setPage(pageNo || 0);
+        setItemsQty(totalElements);
+        setPaginatorTo(totalElements && totalElements>displayRows ? displayRows : totalElements );
+      });
+  }, []);
 
   useEffect(() => {
     void getProductList(
@@ -177,20 +193,20 @@ const ProductGrid = () => {
       eprelCodeFilter,
       gtinCodeFilter
     )
-      .then((res) => {
+
+    .then((res) => { 
         const { content, pageNo, totalElements } = res;
         setTableData(content ? Array.from(content) : []);
         setPage(pageNo || 0);
         setItemsQty(totalElements);
+        if(pageNo) {
+          setPaginatorFrom((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + 1);
+          setPaginatorTo((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + displayRows);
+        }
       })
       .finally(() => setFiltering(false));
   }, [page, filtering]);
 
-  const categories = [
-    ...new Set(
-      tableData.map((item) => t(`commons.categories.${item.category?.toLowerCase()}`)).sort()
-    ),
-  ];
   const branches = [
     ...new Set(
       tableData
@@ -265,7 +281,7 @@ const ProductGrid = () => {
 
   return (
     <>
-      {tableData.length > 0 && (
+      {tableData?.length > 0 && (
         <Box
           sx={{
             display: 'flex',
@@ -286,14 +302,14 @@ const ProductGrid = () => {
               MenuProps={selectMenuProps}
               onChange={handleCategoryFilterChange}
             >
-              {categories.map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category}
+              {Object.keys(PRODUCTS_CATEGORY).map((category) => (
+                <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
+                  {t(`pages.products.categories.${category}`)}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth size="small">
+          <FormControl fullWidth size="small" disabled>
             <InputLabel id="branch-filter-select-label">
               {t('pages.products.filterLabels.branch')}
             </InputLabel>
@@ -370,12 +386,11 @@ const ProductGrid = () => {
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row, index) => (
                   <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
-                    <TableCell  sx={{ textAlign: 'left' }}>
+                    <TableCell sx={{ textAlign: 'left' }}>
                       <Typography variant="body2">
                         {row?.category
                           ? t(`commons.categories.${row?.category?.toLowerCase()}`)
-                          : emptyData
-                          }
+                          : emptyData}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
@@ -383,17 +398,19 @@ const ProductGrid = () => {
                         {row?.energyClass ? row?.energyClass : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{textAlign: 'center' }}>
-                      <Link underline="hover" href="#">
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Link underline="hover" href={row?.linkEprel || '#'}>
                         <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
                           {row?.eprelCode ? row?.eprelCode : emptyData}
                         </Typography>
                       </Link>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2">{row?.gtinCode ? row?.gtinCode : emptyData}</Typography>
+                      <Typography variant="body2">
+                        {row?.gtinCode ? row?.gtinCode : emptyData}
+                      </Typography>
                     </TableCell>
-                    <TableCell >
+                    <TableCell>
                       <Typography variant="body2">
                         {row?.batchName ? row?.batchName : emptyData}
                       </Typography>
@@ -459,12 +476,11 @@ const ProductGrid = () => {
           />
         )}
       </Paper>
-      
-      <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer} >
-          <ProductDetail data={drawerData}/>
+
+      <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer}>
+        <ProductDetail data={drawerData} />
       </DetailDrawer>
- </>
+    </>
   );
 };
 export default ProductGrid;
-
