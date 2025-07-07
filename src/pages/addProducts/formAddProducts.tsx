@@ -96,6 +96,7 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                 return;
             }
             setFileIsLoading(true);
+            setIsReport(false);
 
             uploadProductList( files[0], formik.values.category)
                 .then((res : any) => {
@@ -126,7 +127,7 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                                 break;
                             case 'product.invalid.file.report':
                                 setIsReport(true);
-                                setIdReport(res.productFileId.toString());
+                                setIdReport(res?.productFileId.toString());
                                 setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.multipeErrorsTitle'));
                                 setAlertDescription(
                                     t('pages.addProducts.form.fileUpload.fileUploadError.multipleErrorDescription')
@@ -139,7 +140,7 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                             default:
                                 setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.errorGenericTitle'));
                                 setAlertDescription(
-                                    t('pages.addProducts.form.fileUpload.fileUploadError.multipleErrorDescription')
+                                    t('pages.addProducts.form.fileUpload.fileUploadError.errorDescription')
                                 );
                                 break;
                         }
@@ -207,6 +208,7 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                             <Link
                                 href={formik.values.category ? `/${templateFileName}` : undefined}
                                 download={!!formik.values.category}
+                                type="text/csv"
                                 target="_blank"
                                 variant="body2"
                                 sx={{
