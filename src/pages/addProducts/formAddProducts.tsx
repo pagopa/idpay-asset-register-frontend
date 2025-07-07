@@ -207,6 +207,7 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                             <Link
                                 href={formik.values.category ? `/${templateFileName}` : undefined}
                                 download={!!formik.values.category}
+                                type="text/csv"
                                 target="_blank"
                                 variant="body2"
                                 sx={{
