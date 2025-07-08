@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -16,31 +16,70 @@ import {
   TableSortLabel,
   TablePagination,
   TextField,
+  Typography,
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { visuallyHidden } from '@mui/utils';
-import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
-import EmptyList from '../components/EmptyList';
-import ProductsDrawer from './productdrawer';
-import { Data, EnhancedTableProps, HeadCell, getComparator, Order, DataProp } from './helpers';
-import mockdata from './mockCsvProducts.json';
+import { RegisterApi } from '../../api/registerApiClient';
+import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
+import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
+import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { displayRows, emptyData, PRODUCTS_CATEGORY } from '../../utils/constants';
+import EmptyList from '../../pages/components/EmptyList';
+import { getComparator, Order } from './helpers';
+import DetailDrawer from './DetailDrawer';
+import ProductDetail from './ProductDetail';
 
-const sanitizedData = (arr: Array<DataProp>) =>
-  arr.map((item) => ({
-    ...item,
-    category: item.category?.toLowerCase() || '-',
-    energyClass: item.energyClass || '-',
-    eprelCode: item.eprelCode || '-',
-    gtinCode: item.gtinCode || '-',
-    branchName: item.branchName || '-',
-  }));
+interface EnhancedTableProps {
+  order: Order;
+  orderBy: string;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ProductDTO) => void;
+}
+
+interface HeadCell {
+  disablePadding: boolean;
+  id: keyof ProductDTO;
+  label: string;
+  numeric: boolean;
+  textAlign?: any;
+}
+
+const getProductList = async (
+  page?: number,
+  size?: number,
+  sort?: string,
+  category?: string,
+  eprelCode?: string,
+  gtinCode?: string,
+  productCode?: string,
+  productFileId?: string
+): Promise<ProductListDTO> => {
+  try {
+    return await RegisterApi.getProducts(
+      page,
+      size,
+      sort,
+      category,
+      eprelCode,
+      gtinCode,
+      productCode,
+      productFileId
+    );
+  } catch (error: any) {
+    if (error?.response && error?.response?.data) {
+      const apiError: UploadsErrorDTO = error.response.data;
+      throw apiError;
+    }
+    throw error;
+  }
+};
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof ProductDTO) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
 
@@ -51,53 +90,58 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       id: 'category',
       numeric: false,
       disablePadding: false,
+      textAlign: 'center',
       label: `${t('pages.products.listHeader.category')}`,
     },
     {
       id: 'energyClass',
       numeric: false,
       disablePadding: false,
+      textAlign: 'center',
       label: `${t('pages.products.listHeader.energeticClass')}`,
     },
     {
       id: 'eprelCode',
       numeric: false,
       disablePadding: false,
+      textAlign: 'center',
       label: `${t('pages.products.listHeader.eprelCode')}`,
     },
     {
       id: 'gtinCode',
       numeric: false,
       disablePadding: false,
+      textAlign: 'center',
       label: `${t('pages.products.listHeader.gtinCode')}`,
     },
     {
-      id: 'branchName',
+      id: 'batchName',
       numeric: false,
       disablePadding: false,
+      textAlign: 'centlefter',
       label: `${t('pages.products.listHeader.branch')}`,
     },
   ];
 
   return (
-    <TableHead sx={{ backgroundColor: grey.A100 }}>
+    <TableHead sx={{ backgroundColor: grey?.A100 }}>
       <TableRow>
         {headCells.map((headCell) => (
           <TableCell
-            key={headCell.id}
-            align="left"
+            key={headCell?.id}
+            align={headCell?.textAlign ? headCell?.textAlign : 'left'}
             padding="normal"
-            sortDirection={orderBy === headCell.id ? order : false}
+            sortDirection={orderBy === headCell?.id ? order : false}
           >
             <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
-              hideSortIcon={false}
-              disabled={false}
+              active={orderBy === headCell?.id}
+              direction={orderBy === headCell?.id ? order : 'asc'}
+              onClick={createSortHandler(headCell?.id)}
+              hideSortIcon={true}
+              disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
             >
-              {headCell.label}
-              {orderBy === headCell.id ? (
+              {headCell?.label}
+              {orderBy === headCell?.id ? (
                 <Box component="span" sx={visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
@@ -110,48 +154,85 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-const Products = () => {
+const ProductGrid = () => {
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Data>('category');
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
+  const [page, setPage] = useState<number>(0);
+  const [itemsQty, setItemsQty] = useState<number | undefined>(0);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [branchFilter, setBranchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
-  const [manufacturerFilter, setManufacturerFilter] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
-  const [drawerData, setDrawerData] = useState<DataProp>({});
-  const [mockedData, setMockedData] = useState<Array<any>>(sanitizedData(mockdata));
+  const [drawerData, setDrawerData] = useState<ProductDTO>({});
+  const [filtering, setFiltering] = useState<boolean>(false);
+  const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
+  const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
+  const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
+
 
   const { t } = useTranslation();
 
-  const categories = [
-    ...new Set(mockedData.map((item) => t(`commons.categories.${item.category.toLowerCase()}`)).sort()),
+  useEffect(() => {
+    void getProductList(page,displayRows)
+      .then((res) => {
+        const { content, pageNo, totalElements } = res;
+        setTableData(content ? Array.from(content) : []);
+        setPage(pageNo || 0);
+        setItemsQty(totalElements);
+        setPaginatorTo(totalElements && totalElements>displayRows ? displayRows : totalElements );
+      });
+  }, []);
+
+  useEffect(() => {
+    void getProductList(
+      page,
+      displayRows,
+      'asc',
+      categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
+      eprelCodeFilter,
+      gtinCodeFilter
+    )
+
+    .then((res) => { 
+        const { content, pageNo, totalElements } = res;
+        setTableData(content ? Array.from(content) : []);
+        setPage(pageNo || 0);
+        setItemsQty(totalElements);
+        if(pageNo) {
+          setPaginatorFrom((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + 1);
+          setPaginatorTo((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + displayRows);
+        }
+      })
+      .finally(() => setFiltering(false));
+  }, [page, filtering]);
+
+  const branches = [
+    ...new Set(
+      tableData
+        .map((item) => item.batchName)
+        .filter((name) => name !== '-')
+        .sort()
+    ),
   ];
-  const branches = [...new Set(mockedData.map((item) => item.branchName).filter(name => name !== "-").sort())];
 
   const handleFilterButtonClick = () => {
-    setMockedData(
-      mockedData
-        .filter(
-          (item) =>
-            !categoryFilter || t(`commons.categories.${item.category.toLowerCase()}`) === categoryFilter
-        )
-        .filter((item) => !branchFilter || item.branchName === branchFilter)
-        .filter((item) => !eprelCodeFilter || item.eprelCode?.includes(eprelCodeFilter))
-        .filter((item) => !gtinCodeFilter || item.gtinCode?.includes(gtinCodeFilter))
-        .filter(
-          (item) => !manufacturerFilter || item.codice_produttore?.includes(manufacturerFilter)
-        )
-    );
+    setFiltering(true);
+  };
+
+  const handleDeleteFiltersButtonClick = () => {
+    setCategoryFilter('');
+    setBranchFilter('');
+    setEprelCodeFilter('');
+    setGtinCodeFilter('');
+    setFiltering(true);
   };
 
   const handleToggleDrawer = (newOpen: boolean) => {
     setDrawerOpened(newOpen);
   };
 
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Data) => {
+  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof ProductDTO) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
@@ -159,12 +240,9 @@ const Products = () => {
 
   const handleChangePage = (event: unknown, newPage: number) => {
     console.log(event);
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    if (newPage > 0) {
+      setPage(newPage);
+    }
   };
 
   const handleCategoryFilterChange = (event: SelectChangeEvent) => {
@@ -183,30 +261,15 @@ const Products = () => {
     setGtinCodeFilter(event.target.value);
   };
 
-  const handleDeleteFiltersButtonClick = () => {
-    setCategoryFilter('');
-    setBranchFilter('');
-    setEprelCodeFilter('');
-    setGtinCodeFilter('');
-    setManufacturerFilter('');
-    setMockedData(sanitizedData(mockdata));
-  };
-
   const handleListButtonClick = (row: any) => {
     setDrawerData(row);
     setDrawerOpened(true);
   };
 
   const noFilterSetted = (): boolean =>
-    categoryFilter === '' &&
-    branchFilter === '' &&
-    eprelCodeFilter === '' &&
-    gtinCodeFilter === '' &&
-    manufacturerFilter === '';
+    categoryFilter === '' && branchFilter === '' && eprelCodeFilter === '' && gtinCodeFilter === '';
 
-  const visibleRows = [...mockedData]
-    .sort(getComparator(order, orderBy))
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const visibleRows = [...tableData].sort(getComparator(order, orderBy));
 
   const selectMenuProps = {
     PaperProps: {
@@ -217,19 +280,8 @@ const Products = () => {
   };
 
   return (
-    <Box width="100%" px={2}>
-      <TitleBox
-        title={t('pages.products.title')}
-        subTitle={t('pages.products.subtitle')}
-        mbTitle={2}
-        mtTitle={2}
-        mbSubTitle={5}
-        variantTitle="h4"
-        variantSubTitle="body1"
-        data-testid="title"
-      />
-
-      {mockedData.length > 0 && (
+    <>
+      {tableData?.length > 0 && (
         <Box
           sx={{
             display: 'flex',
@@ -250,14 +302,14 @@ const Products = () => {
               MenuProps={selectMenuProps}
               onChange={handleCategoryFilterChange}
             >
-              {categories.map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category}
+              {Object.keys(PRODUCTS_CATEGORY).map((category) => (
+                <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
+                  {t(`pages.products.categories.${category}`)}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth size="small">
+          <FormControl fullWidth size="small" disabled>
             <InputLabel id="branch-filter-select-label">
               {t('pages.products.filterLabels.branch')}
             </InputLabel>
@@ -269,7 +321,7 @@ const Products = () => {
               MenuProps={selectMenuProps}
               onChange={handleCategoryBranchChange}
             >
-              {branches.map((branch) => (
+              {branches?.map((branch) => (
                 <MenuItem key={branch} value={branch}>
                   {branch}
                 </MenuItem>
@@ -324,24 +376,46 @@ const Products = () => {
         }}
       >
         <TableContainer>
-          {mockedData.length > 0 ? (
-            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+          {tableData.length > 0 ? (
+            <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
               <EnhancedTableHead
                 order={order}
                 orderBy={orderBy}
                 onRequestSort={handleRequestSort}
               />
               <TableBody sx={{ backgroundColor: 'white' }}>
-                {visibleRows.map((row) => (
-                  <TableRow tabIndex={-1} key={row.id} sx={{}}>
-                    <TableCell>{t(`commons.categories.${row.category}`)}</TableCell>
-                    <TableCell>{row.energyClass}</TableCell>
-                    <TableCell>
-                      <Link href="#">{row.eprelCode}</Link>
+                {visibleRows.map((row, index) => (
+                  <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
+                    <TableCell sx={{ textAlign: 'left' }}>
+                      <Typography variant="body2">
+                        {row?.category
+                          ? t(`commons.categories.${row?.category?.toLowerCase()}`)
+                          : emptyData}
+                      </Typography>
                     </TableCell>
-                    <TableCell>{row.gtinCode}</TableCell>
-                    <TableCell>{row.branchName}</TableCell>
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Typography variant="body2">
+                        {row?.energyClass ? row?.energyClass : emptyData}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Link underline="hover" href={row?.linkEprel || '#'}>
+                        <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
+                          {row?.eprelCode ? row?.eprelCode : emptyData}
+                        </Typography>
+                      </Link>
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center' }}>
+                      <Typography variant="body2">
+                        {row?.gtinCode ? row?.gtinCode : emptyData}
+                      </Typography>
+                    </TableCell>
                     <TableCell>
+                      <Typography variant="body2">
+                        {row?.batchName ? row?.batchName : emptyData}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'right' }}>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
                         <ArrowForwardIosIcon />
                       </Button>
@@ -370,23 +444,27 @@ const Products = () => {
                 }}
               >
                 <EmptyList message={t('pages.products.emptyList')} />
+                <Button variant="text" onClick={handleDeleteFiltersButtonClick}>
+                  {t('pages.products.backToTable')}
+                </Button>
               </Box>
             </Box>
           )}
         </TableContainer>
-        {mockedData.length > 0 && (
+        {tableData?.length > 0 && (
           <TablePagination
             rowsPerPageOptions={[10]}
             colSpan={3}
-            count={mockedData.length}
-            rowsPerPage={rowsPerPage}
+            count={itemsQty || 1}
+            rowsPerPage={displayRows}
             page={page}
             component="div"
-            labelDisplayedRows={(page) =>
-              `${page.from} - ${page.to} ${t('pages.products.tablePaginationFrom')} ${page.count}`
+            labelDisplayedRows={() =>
+              `${paginatorFrom} - ${paginatorTo} ${t(
+                'pages.products.tablePaginationFrom'
+              )} ${itemsQty}`
             }
             onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
             sx={{
               '& .MuiTablePagination-actions button': {
                 backgroundColor: 'transparent',
@@ -395,12 +473,14 @@ const Products = () => {
                 },
               },
             }}
-
           />
         )}
       </Paper>
-      <ProductsDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer} data={drawerData} />
-    </Box>
+
+      <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer}>
+        <ProductDetail data={drawerData} />
+      </DetailDrawer>
+    </>
   );
 };
-export default Products;
+export default ProductGrid;

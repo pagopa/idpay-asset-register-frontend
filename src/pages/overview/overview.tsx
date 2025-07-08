@@ -1,11 +1,9 @@
 import React, { useMemo } from 'react';
-import { Box, Paper, Typography, Button, Tooltip } from '@mui/material';
+import { Box, Paper, Typography, Tooltip } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
-import {useUnloadEventOnExit} from "@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor";
-import {useNavigate} from "react-router-dom";
-import ROUTES from "../../routes";
+import OverviewProductionSection from '../components/OverviewProductionSection';
 
 const maxLengthEmail: number = 40;
 
@@ -28,8 +26,6 @@ const truncateString = (str?: string, maxLength: number = maxLengthEmail): strin
 
 const Overview: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const onExit = useUnloadEventOnExit();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   return (
@@ -42,7 +38,8 @@ const Overview: React.FC = () => {
         mbSubTitle={5}
         variantTitle="h4"
         variantSubTitle="body1"
-        data-testid="title"
+        data-testid="title-overview"
+        titleFontSize="42px"
       />
 
       <Box
@@ -68,9 +65,10 @@ const Overview: React.FC = () => {
             <TitleBox
               title={t('pages.overview.overviewTitleBoxInfo')}
               mbTitle={2}
-              variantTitle="h5"
+              variantTitle="h6"
               variantSubTitle="body1"
-              data-testid="title-box-info"
+              data-testid="title-box-overview-info"
+              titleFontSize="32px"
             />
             <Box
               sx={{
@@ -81,10 +79,18 @@ const Overview: React.FC = () => {
               }}
             >
               {[
-                { label: 'overviewTitleBoxInfoTitleLblRs', value: user?.org_name },
-                { label: 'overviewTitleBoxInfoTitleLblCf', value: user?.org_taxcode },
-                { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat },
-                { label: 'overviewTitleBoxInfoTitleLblSl', value: user?.org_address },
+                { label: 'overviewTitleBoxInfoTitleLblRs', value: user?.org_name, truncate: true },
+                {
+                  label: 'overviewTitleBoxInfoTitleLblCf',
+                  value: user?.org_taxcode,
+                  truncate: true,
+                },
+                { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat, truncate: true },
+                {
+                  label: 'overviewTitleBoxInfoTitleLblSl',
+                  value: user?.org_address,
+                  truncate: true,
+                },
                 { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec, truncate: true },
                 {
                   label: 'overviewTitleBoxInfoTitleLblEmailOp',
@@ -99,12 +105,14 @@ const Overview: React.FC = () => {
                   <Box sx={{ gridColumn: 'span 9' }}>
                     {truncate && value ? (
                       <Tooltip title={value}>
-                        <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight:'600' }}>
+                        <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }}>
                           {truncateString(value)}
                         </Typography>
                       </Tooltip>
                     ) : (
-                      <Typography variant="body2" sx={{ fontWeight:'600' }}>{value || '-'}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: '600' }}>
+                        {value || '-'}
+                      </Typography>
                     )}
                   </Box>
                 </React.Fragment>
@@ -113,50 +121,7 @@ const Overview: React.FC = () => {
           </Paper>
         </Box>
 
-        {/* Sezione Products */}
-        <Box sx={{ gridColumn: 'span 6' }}>
-          <Paper
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(12, 1fr)',
-              alignItems: 'baseline',
-              background: 'background.paper',
-              p: 3,
-              columnGap: 3,
-            }}
-          >
-            <TitleBox
-              title={t('pages.overview.overviewTitleBoxProdTitle')}
-              mbTitle={2}
-              variantTitle="h5"
-              variantSubTitle="body1"
-              data-testid="title-box-prod"
-            />
-            <Box
-              sx={{
-                gridColumn: 'span 12',
-                display: 'grid',
-                gridTemplateColumns: 'repeat(12, 1fr)',
-                rowGap: 2,
-              }}
-            >
-              <Box sx={{ gridColumn: 'span 12' }}>
-                <Typography variant="body2">
-                  {t('pages.overview.overviewTitleBoxProdDescription')}
-                </Typography>
-              </Box>
-              <Box sx={{ gridColumn: 'span 12', mt: 2 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
-                >
-                  {t('pages.overview.overviewTitleBoxProdBtn')}
-                </Button>
-              </Box>
-            </Box>
-          </Paper>
-        </Box>
+        <OverviewProductionSection />
       </Box>
 
       {/* Sezione Footer */}

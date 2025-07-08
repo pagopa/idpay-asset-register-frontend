@@ -139,8 +139,27 @@
         "gtinCode": "Codice GTIN/EAN",
         "branch": "Lotto"
       },
+      "categories": {
+        "WASHINGMACHINES": "Lavatrici",
+        "WASHERDRIERS": "Lavasciuga",
+        "OVENS": "Forni",
+        "RANGEHOODS": "Cappe",
+        "DISHWASHERS": "Lavastoviglie",
+        "TUMBLEDRIERS": "Asciugatrici",
+        "REFRIGERATINGAPPL": "Frigoriferi",
+        "COOKINGHOBS": "Piani cottura",
+        "lavatrici": "WASHINGMACHINES",
+        "asciugatrici": "TUMBLEDRIERS",
+        "forni": "OVENS",
+        "cappe da cucina": "RANGEHOODS",
+        "lavastoviglie": "DISHWASHERS",
+        "lavasciuga": "WASHERDRIERS",
+        "frigoriferi": "REFRIGERATINGAPPL",
+        "piani cottura": "COOKINGHOBS"
+      },
       "tablePaginationFrom": "di",
-      "emptyList": "Nessun record corrisponde alla ricerca."
+      "emptyList": "Nessun record corrisponde alla ricerca.",
+      "backToTable": "Torna alla tabella"
     },
     "uploadHistory": {
       "sideMenuTitle": "Storico caricamenti"
