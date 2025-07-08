@@ -5,7 +5,7 @@ import {
   Button,
   InputLabel,
   FormControl,
-  Link,
+  // Link,
   MenuItem,
   Table,
   TableContainer,
@@ -32,6 +32,7 @@ import EmptyList from '../../pages/components/EmptyList';
 import { getComparator, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
+import EprelLink from './eprelLink';
 
 interface EnhancedTableProps {
   order: Order;
@@ -396,7 +397,7 @@ const ProductGrid = () => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
-                      <Link
+                      {/* <Link
                         underline="hover"
                         href={row?.linkEprel || '#'}
                         target="_blank"
@@ -405,7 +406,8 @@ const ProductGrid = () => {
                         <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
                           {row?.eprelCode ? row?.eprelCode : emptyData}
                         </Typography>
-                      </Link>
+                      </Link> */}
+                      <EprelLink row={row} />
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
                       <Typography variant="body2">
