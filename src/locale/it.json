@@ -123,6 +123,7 @@
       "sideMenuTitle": "Prodotti",
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
+      "loading": "Caricamento dati ...",
       "filterLabels": {
         "category": "Categoria",
         "branch": "Lotto",

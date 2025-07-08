@@ -28,11 +28,11 @@ import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { displayRows, emptyData, PRODUCTS_CATEGORY } from '../../utils/constants';
-import EmptyList from '../../pages/components/EmptyList';
 import { getComparator, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
-import EprelLink from './eprelLink';
+import EprelLink from './EprelLink';
+import MessagePage from './MessagePage';
 
 interface EnhancedTableProps {
   order: Order;
@@ -159,6 +159,7 @@ const ProductGrid = () => {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
   const [page, setPage] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
   const [itemsQty, setItemsQty] = useState<number | undefined>(0);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [branchFilter, setBranchFilter] = useState<string>('');
@@ -175,16 +176,24 @@ const ProductGrid = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    void getProductList(page, displayRows).then((res) => {
-      const { content, pageNo, totalElements } = res;
-      setTableData(content ? Array.from(content) : []);
-      setPage(pageNo || 0);
-      setItemsQty(totalElements);
-      setPaginatorTo(totalElements && totalElements > displayRows ? displayRows : totalElements);
-    });
+    setLoading(true);
+    void getProductList(page, displayRows)
+      .then((res) => {
+        const { content, pageNo, totalElements } = res;
+        setTableData(content ? Array.from(content) : []);
+        setPage(pageNo || 0);
+        setItemsQty(totalElements);
+        setPaginatorTo(totalElements && totalElements > displayRows ? displayRows : totalElements);
+        setLoading(false);
+      })
+      .catch(() => {
+        setTableData([]);
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     void getProductList(
       page,
       displayRows,
@@ -202,6 +211,11 @@ const ProductGrid = () => {
           setPaginatorFrom((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + 1);
           setPaginatorTo((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + displayRows);
         }
+        setLoading(false);
+      })
+      .catch(() => {
+        setTableData([]);
+        setLoading(false);
       })
       .finally(() => setFiltering(false));
   }, [page, filtering]);
@@ -374,7 +388,7 @@ const ProductGrid = () => {
         }}
       >
         <TableContainer>
-          {tableData.length > 0 ? (
+          {tableData.length > 0 && !loading ? (
             <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
               <EnhancedTableHead
                 order={order}
@@ -397,16 +411,6 @@ const ProductGrid = () => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
-                      {/* <Link
-                        underline="hover"
-                        href={row?.linkEprel || '#'}
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
-                          {row?.eprelCode ? row?.eprelCode : emptyData}
-                        </Typography>
-                      </Link> */}
                       <EprelLink row={row} />
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
@@ -428,34 +432,17 @@ const ProductGrid = () => {
                 ))}
               </TableBody>
             </Table>
+          ) : tableData.length <= 0 && !loading ? (
+            <MessagePage
+              message={t('pages.products.emptyList')}
+              goBack
+              onGoBack={handleDeleteFiltersButtonClick}
+            />
           ) : (
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(12, 1fr)',
-                justifyContent: 'center',
-                width: '100%',
-                backgroundColor: 'white',
-                p: 2,
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'inline',
-                  gridColumn: 'span 12',
-                  justifyContent: 'center',
-                  textAlign: 'center',
-                }}
-              >
-                <EmptyList message={t('pages.products.emptyList')} />
-                <Button variant="text" onClick={handleDeleteFiltersButtonClick}>
-                  {t('pages.products.backToTable')}
-                </Button>
-              </Box>
-            </Box>
+            <MessagePage message={t(`pages.products.loading`)} />
           )}
         </TableContainer>
-        {tableData?.length > 0 && (
+        {tableData?.length > 0 && !loading && (
           <TablePagination
             component="div"
             count={itemsQty || 0}
