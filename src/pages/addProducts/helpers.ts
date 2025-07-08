@@ -23,8 +23,8 @@ export const categoryList = [
         value: PRODUCTS_CATEGORY.DISHWASHERS
     },
     {
-        label: "commons.categories.tumbledriers",
-        value: PRODUCTS_CATEGORY.TUMBLEDRIERS
+        label: "commons.categories.tumbledryers",
+        value: PRODUCTS_CATEGORY.TUMBLEDRYERS
     },
     {
         label: "commons.categories.refrigeratingappl",

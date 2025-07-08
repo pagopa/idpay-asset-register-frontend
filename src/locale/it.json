@@ -34,11 +34,11 @@
     "title": "Registro dei beni",
     "categories": {
       "washingmachines": "Lavatrici",
-      "washerdriers": "Lavasciuga",
+      "washerdriers": "Asciugatrici",
       "ovens": "Forni",
       "rangehoods": "Cappe da cucina",
       "dishwashers": "Lavastoviglie",
-      "tumbledriers": "Asciugatrici",
+      "tumbledryers": "Lavasciuga",
       "refrigeratingappl": "Frigoriferi",
       "cookinghobs": "Piani cottura"
     }
