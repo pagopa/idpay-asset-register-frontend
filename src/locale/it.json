@@ -108,7 +108,7 @@
             "wrongHeaderTitle": "Il file contiene gli header errati",
             "wrongHeaderDescription": "Gli header del file csv non sono validi",
             "emptyTitle": "Il file non è valido",
-            "emptyDescription": "Il file carivato è vuoto",
+            "emptyDescription": "Il file caricato è vuoto",
             "wrongCategoryTitle": "Il file contiene una categoria errata",
             "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
             "multipeErrorsTitle": "Il file contiene uno o più errori",
