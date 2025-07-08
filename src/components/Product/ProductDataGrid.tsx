@@ -167,21 +167,20 @@ const ProductGrid = () => {
   const [drawerData, setDrawerData] = useState<ProductDTO>({});
   const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(displayRows);
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
-
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    void getProductList(page,displayRows)
-      .then((res) => {
-        const { content, pageNo, totalElements } = res;
-        setTableData(content ? Array.from(content) : []);
-        setPage(pageNo || 0);
-        setItemsQty(totalElements);
-        setPaginatorTo(totalElements && totalElements>displayRows ? displayRows : totalElements );
-      });
+    void getProductList(page, displayRows).then((res) => {
+      const { content, pageNo, totalElements } = res;
+      setTableData(content ? Array.from(content) : []);
+      setPage(pageNo || 0);
+      setItemsQty(totalElements);
+      setPaginatorTo(totalElements && totalElements > displayRows ? displayRows : totalElements);
+    });
   }, []);
 
   useEffect(() => {
@@ -193,13 +192,12 @@ const ProductGrid = () => {
       eprelCodeFilter,
       gtinCodeFilter
     )
-
-    .then((res) => { 
+      .then((res) => {
         const { content, pageNo, totalElements } = res;
         setTableData(content ? Array.from(content) : []);
         setPage(pageNo || 0);
         setItemsQty(totalElements);
-        if(pageNo) {
+        if (pageNo) {
           setPaginatorFrom((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + 1);
           setPaginatorTo((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + displayRows);
         }
@@ -238,11 +236,10 @@ const ProductGrid = () => {
     setOrderBy(property);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    console.log(event);
-    if (newPage > 0) {
-      setPage(newPage);
-    }
+  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, displayRows));
+    setPage(0);
   };
 
   const handleCategoryFilterChange = (event: SelectChangeEvent) => {
@@ -399,7 +396,12 @@ const ProductGrid = () => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
-                      <Link underline="hover" href={row?.linkEprel || '#'}>
+                      <Link
+                        underline="hover"
+                        href={row?.linkEprel || '#'}
+                        target="_blank"
+                        rel="noopener"
+                      >
                         <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
                           {row?.eprelCode ? row?.eprelCode : emptyData}
                         </Typography>
@@ -453,18 +455,18 @@ const ProductGrid = () => {
         </TableContainer>
         {tableData?.length > 0 && (
           <TablePagination
-            rowsPerPageOptions={[10]}
-            colSpan={3}
-            count={itemsQty || 1}
-            rowsPerPage={displayRows}
-            page={page}
             component="div"
+            count={itemsQty || 0}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[rowsPerPage]}
             labelDisplayedRows={() =>
               `${paginatorFrom} - ${paginatorTo} ${t(
                 'pages.products.tablePaginationFrom'
               )} ${itemsQty}`
             }
-            onPageChange={handleChangePage}
             sx={{
               '& .MuiTablePagination-actions button': {
                 backgroundColor: 'transparent',

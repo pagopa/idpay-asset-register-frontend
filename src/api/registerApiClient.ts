@@ -68,13 +68,13 @@ export const RegisterApi = {
         ...(sort !== undefined ? { sort } : {}),
       };
 
-    const result = await registerClient.getProductFilesList(params);
-    return extractResponse(result, 200, onRedirectToLogin);
-  } catch (error) {
-    console.error('Errore durante il recupero dei file prodotto:', error);
-    throw error;
-  }
-},
+      const result = await registerClient.getProductFilesList(params);
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error('Errore durante il recupero dei file prodotto:', error);
+      throw error;
+    }
+  },
 
   getProducts: async (
     page?: number,
@@ -99,13 +99,7 @@ export const RegisterApi = {
         ...(productFileId ? { productFileId } : {}),
       };
 
-      console.log('§>>>', { params });
-
       const result = await registerClient.getProducts(params);
-      console.log(
-        '*********RegisterApi  Risultato della chiamata API: Products ***************************',
-        JSON.stringify(result, null, 2)
-      );
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
       // Puoi loggare o gestire l’errore come preferisci
@@ -114,15 +108,14 @@ export const RegisterApi = {
     }
   },
 
-
-    uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
-        const result = await registerClient.uploadProductList({csv, category});
-        return extractResponse(result, 200, onRedirectToLogin);
-    },
-    downloadErrorReport: async (
-        productFileId: string
-    ): Promise<{data: CsvDTO; filename: string}> => {
-        const response = await registerClient.downloadErrorReport({productFileId});
+  uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
+    const result = await registerClient.uploadProductList({ csv, category });
+    return extractResponse(result, 200, onRedirectToLogin);
+  },
+  downloadErrorReport: async (
+    productFileId: string
+  ): Promise<{ data: CsvDTO; filename: string }> => {
+    const response = await registerClient.downloadErrorReport({ productFileId });
 
     const rawResponse =
       (response as any).response || (response as any).data || (response as any).right;
