@@ -62,11 +62,11 @@
   },
   {
     "id": 8,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "G",
     "eprelCode": "8440276361",
     "gtinCode": "3914358485283",
-    "branchName": "762884524_washerdryers_9.csv"
+    "branchName": "762884524_washerdriers_9.csv"
   },
   {
     "id": 9,
@@ -94,25 +94,25 @@
   },
   {
     "id": 12,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "F",
     "eprelCode": "1735909094",
     "gtinCode": "3318368975015",
-    "branchName": "481272316_washerdryers_13.csv"
+    "branchName": "481272316_washerdriers_13.csv"
   },
   {
     "id": 13,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "eprelCode": "7320659443",
-    "branchName": "736465165_washerdryers_14.csv"
+    "branchName": "736465165_washerdriers_14.csv"
   },
   {
     "id": 14,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "B",
     "eprelCode": "4215154570",
     "gtinCode": "3862137881548",
-    "branchName": "273565828_washerdryers_15.csv"
+    "branchName": "273565828_washerdriers_15.csv"
   },
   {
     "id": 15,
@@ -170,10 +170,10 @@
   },
   {
     "id": 22,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "D",
     "gtinCode": "3307528591711",
-    "branchName": "316747135_washerdryers_23.csv"
+    "branchName": "316747135_washerdriers_23.csv"
   },
   {
     "id": 23,
@@ -185,11 +185,11 @@
   },
   {
     "id": 24,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "E",
     "eprelCode": "5083786508",
     "gtinCode": "3924271126921",
-    "branchName": "113371211_washerdryers_25.csv"
+    "branchName": "113371211_washerdriers_25.csv"
   },
   {
     "id": 25,
@@ -208,11 +208,11 @@
   },
   {
     "id": 27,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "F",
     "eprelCode": "7793752350",
     "gtinCode": "3949193953161",
-    "branchName": "766615211_washerdryers_28.csv"
+    "branchName": "766615211_washerdriers_28.csv"
   },
   {
     "id": 28,
@@ -239,7 +239,7 @@
   },
   {
     "id": 31,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "D",
     "eprelCode": "9133189803",
     "gtinCode": "3470405230695"
@@ -359,8 +359,8 @@
   },
   {
     "id": 47,
-    "category": "WASHERDRYERS",
-    "branchName": "262827717_washerdryers_48.csv"
+    "category": "WASHERDRIERS",
+    "branchName": "262827717_washerdriers_48.csv"
   },
   {
     "id": 48,
@@ -371,7 +371,7 @@
   },
   {
     "id": 49,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "F",
     "gtinCode": "3593235363776"
   },
@@ -444,11 +444,11 @@
   },
   {
     "id": 59,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "C",
     "eprelCode": "3388435390",
     "gtinCode": "3058976770399",
-    "branchName": "854485853_washerdryers_60.csv"
+    "branchName": "854485853_washerdriers_60.csv"
   },
   {
     "id": 60,
@@ -460,18 +460,18 @@
   },
   {
     "id": 61,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "E",
     "eprelCode": "7206359407",
     "gtinCode": "3319632682422",
-    "branchName": "485474585_washerdryers_62.csv"
+    "branchName": "485474585_washerdriers_62.csv"
   },
   {
     "id": 62,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "B",
     "gtinCode": "3177096878060",
-    "branchName": "755732253_washerdryers_63.csv"
+    "branchName": "755732253_washerdriers_63.csv"
   },
   {
     "id": 63,
@@ -490,11 +490,11 @@
   },
   {
     "id": 65,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "D",
     "eprelCode": "8249971812",
     "gtinCode": "3721646194486",
-    "branchName": "172377243_washerdryers_66.csv"
+    "branchName": "172377243_washerdriers_66.csv"
   },
   {
     "id": 66,
@@ -521,10 +521,10 @@
   },
   {
     "id": 69,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "G",
     "eprelCode": "7575967874",
-    "branchName": "145314434_washerdryers_70.csv"
+    "branchName": "145314434_washerdriers_70.csv"
   },
   {
     "id": 70,
@@ -682,10 +682,10 @@
   },
   {
     "id": 90,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "A",
     "eprelCode": "5260822437",
-    "branchName": "336812171_washerdryers_91.csv"
+    "branchName": "336812171_washerdriers_91.csv"
   },
   {
     "id": 91,
@@ -791,11 +791,11 @@
   },
   {
     "id": 105,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "A",
     "eprelCode": "9962011087",
     "gtinCode": "3457362121106",
-    "branchName": "688188552_washerdryers_106.csv"
+    "branchName": "688188552_washerdriers_106.csv"
   },
   {
     "id": 106,
@@ -829,10 +829,10 @@
   },
   {
     "id": 110,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "G",
     "eprelCode": "2989356855",
-    "branchName": "611124384_washerdryers_111.csv"
+    "branchName": "611124384_washerdriers_111.csv"
   },
   {
     "id": 111,
@@ -913,9 +913,9 @@
   },
   {
     "id": 121,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "gtinCode": "3996178953950",
-    "branchName": "387584362_washerdryers_122.csv"
+    "branchName": "387584362_washerdriers_122.csv"
   },
   {
     "id": 122,
@@ -990,11 +990,11 @@
   },
   {
     "id": 131,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "A",
     "eprelCode": "5665224718",
     "gtinCode": "3325700993671",
-    "branchName": "448553441_washerdryers_132.csv"
+    "branchName": "448553441_washerdriers_132.csv"
   },
   {
     "id": 132,
@@ -1068,11 +1068,11 @@
   },
   {
     "id": 141,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "G",
     "eprelCode": "7583825871",
     "gtinCode": "3193933657969",
-    "branchName": "782752381_washerdryers_142.csv"
+    "branchName": "782752381_washerdriers_142.csv"
   },
   {
     "id": 142,
@@ -1184,11 +1184,11 @@
   },
   {
     "id": 156,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "F",
     "eprelCode": "6343527263",
     "gtinCode": "3507568816348",
-    "branchName": "628336815_washerdryers_157.csv"
+    "branchName": "628336815_washerdriers_157.csv"
   },
   {
     "id": 157,
@@ -1216,10 +1216,10 @@
   },
   {
     "id": 160,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "eprelCode": "6626293713",
     "gtinCode": "3240197276530",
-    "branchName": "821725774_washerdryers_161.csv"
+    "branchName": "821725774_washerdriers_161.csv"
   },
   {
     "id": 161,
@@ -1300,11 +1300,11 @@
   },
   {
     "id": 171,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "C",
     "eprelCode": "9414531304",
     "gtinCode": "3880983396434",
-    "branchName": "673762611_washerdryers_172.csv"
+    "branchName": "673762611_washerdriers_172.csv"
   },
   {
     "id": 172,
@@ -1345,11 +1345,11 @@
   },
   {
     "id": 177,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "G",
     "eprelCode": "2643374404",
     "gtinCode": "3029081673049",
-    "branchName": "837858141_washerdryers_178.csv"
+    "branchName": "837858141_washerdriers_178.csv"
   },
   {
     "id": 178,
@@ -1360,11 +1360,11 @@
   },
   {
     "id": 179,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "C",
     "eprelCode": "9308676290",
     "gtinCode": "3531490344578",
-    "branchName": "862872875_washerdryers_180.csv"
+    "branchName": "862872875_washerdriers_180.csv"
   },
   {
     "id": 180,
@@ -1430,10 +1430,10 @@
   },
   {
     "id": 188,
-    "category": "WASHERDRYERS",
+    "category": "WASHERDRIERS",
     "energyClass": "D",
     "gtinCode": "3632732710293",
-    "branchName": "572478831_washerdryers_189.csv"
+    "branchName": "572478831_washerdriers_189.csv"
   },
   {
     "id": 189,

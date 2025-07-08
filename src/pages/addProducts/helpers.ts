@@ -7,8 +7,8 @@ export const categoryList = [
         value: PRODUCTS_CATEGORY.WASHINGMACHINES
     },
     {
-        label: "commons.categories.washerdryers",
-        value: PRODUCTS_CATEGORY.WASHERDRYERS
+        label: "commons.categories.washerdriers",
+        value: PRODUCTS_CATEGORY.WASHERDRIERS
     },
     {
         label: "commons.categories.ovens",
