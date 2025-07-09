@@ -198,6 +198,7 @@ const UploadsTable: React.FC<{
             endIcon={<ArrowForward />}
             size="medium"
             onClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
+            sx={{ paddingTop: 2}}
           >
             <b>Vedi i caricamenti</b>
           </ButtonNaked>

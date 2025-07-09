@@ -205,10 +205,8 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(({fileAccepted, se
         >
             <Box sx={initUploadBoxStyle} {...getRootProps({ className: 'dropzone' })}>
                 <input {...getInputProps()} data-testid="drop-input" onClick={async (e) => {
-                    // Controllo sincrono prima di tutto
                     if (!formik.values.category) {
                         e.preventDefault();
-                        // Validazione asincrona per mostrare l'errore
                         await validateCategory();
                     }
                 }}/>
@@ -251,19 +249,21 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(({fileAccepted, se
                 sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', mt: 2, mb: 3 }}
                 size="small"
             >
-                <InputLabel id="select-time-parameter">
+                <InputLabel id="category-label">
                     {t('pages.addProducts.form.categoryPlaceholder')}
                 </InputLabel>
                 <Select
                     id="category"
                     name="category"
                     value={formik.values.category}
+                    labelId="category-label"
                     label={t('pages.addProducts.form.categoryPlaceholder')}
                     onChange={(e) => formik.setFieldValue('category', e.target.value)}
                     error={formik.touched.category && Boolean(formik.errors.category)}
                     inputProps={{
                         'data-testid': 'selectTimeParam-test',
                     }}
+                    data-testid="category-label"
                 >
                     {categoryList.map((el) => (
                         <MenuItem key={`category-select-${el.value}`} value={el.value} data-testid="category-select-id">
