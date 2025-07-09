@@ -3,10 +3,6 @@ import {
   Box,
   Paper,
   Button,
-  InputLabel,
-  FormControl,
-  // Link,
-  MenuItem,
   Table,
   TableContainer,
   TableBody,
@@ -15,10 +11,8 @@ import {
   TableCell,
   TableSortLabel,
   TablePagination,
-  TextField,
   Typography,
 } from '@mui/material';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
@@ -27,13 +21,13 @@ import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { displayRows, emptyData, PRODUCTS_CATEGORY } from '../../utils/constants';
+import { displayRows, emptyData} from '../../utils/constants';
 import { getComparator, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
-
 import MessagePage from './MessagePage';
 import EprelLinks from './EprelLinks';
+import FilterBar from './FilterBar';
 
 interface EnhancedTableProps {
   order: Order;
@@ -224,18 +218,8 @@ const ProductGrid = () => {
       .finally(() => setFiltering(false));
   }, [page, filtering]);
 
-  const branches = [
-    ...new Set(
-      tableData
-        .map((item) => item.batchName)
-        .filter((name) => name !== '-')
-        .sort()
-    ),
-  ];
 
-  const handleFilterButtonClick = () => {
-    setFiltering(true);
-  };
+
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
@@ -264,127 +248,32 @@ const ProductGrid = () => {
     setPage(0);
   };
 
-  const handleCategoryFilterChange = (event: SelectChangeEvent) => {
-    setCategoryFilter(event.target.value as string);
-  };
-
-  const handleCategoryBranchChange = (event: SelectChangeEvent) => {
-    setBranchFilter(event.target.value as string);
-  };
-
-  const handleEprelCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEprelCodeFilter(event.target.value);
-  };
-
-  const handleGtinCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setGtinCodeFilter(event.target.value);
-  };
-
   const handleListButtonClick = (row: any) => {
     setDrawerData(row);
     setDrawerOpened(true);
   };
 
-  const noFilterSetted = (): boolean =>
-    categoryFilter === '' && branchFilter === '' && eprelCodeFilter === '' && gtinCodeFilter === '';
+  
 
   const visibleRows = [...tableData].sort(getComparator(order, orderBy));
 
-  const selectMenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: 250,
-      },
-    },
-  };
+ 
 
   return (
     <>
-      {tableData?.length > 0 && (
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 1,
-            mb: 5,
-          }}
-        >
-          <FormControl fullWidth size="small">
-            <InputLabel id="category-filter-select-label">
-              {t('pages.products.filterLabels.category')}
-            </InputLabel>
-            <Select
-              labelId="category-filter-select-label"
-              id="category-filter-select"
-              value={categoryFilter}
-              label={t('pages.products.filterLabels.category')}
-              MenuProps={selectMenuProps}
-              onChange={handleCategoryFilterChange}
-            >
-              {Object.keys(PRODUCTS_CATEGORY).map((category) => (
-                <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
-                  {t(`pages.products.categories.${category}`)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth size="small" disabled>
-            <InputLabel id="branch-filter-select-label">
-              {t('pages.products.filterLabels.branch')}
-            </InputLabel>
-            <Select
-              labelId="branch-filter-select-label"
-              id="branch-filter-select"
-              value={branchFilter}
-              label={t('pages.products.filterLabels.branch')}
-              MenuProps={selectMenuProps}
-              onChange={handleCategoryBranchChange}
-            >
-              {branches?.map((branch) => (
-                <MenuItem key={branch} value={branch}>
-                  {branch}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <TextField
-            sx={{ minWidth: 175 }}
-            size="small"
-            id="eprel-code-text"
-            label={t('pages.products.filterLabels.eprelCode')}
-            variant="outlined"
-            value={eprelCodeFilter}
-            onChange={handleEprelCodeFilterChange}
-          />
-
-          <TextField
-            sx={{ minWidth: 175 }}
-            size="small"
-            id="gtin-code-text"
-            label={t('pages.products.filterLabels.gtinCode')}
-            variant="outlined"
-            value={gtinCodeFilter}
-            onChange={handleGtinCodeFilterChange}
-          />
-          <Button
-            disabled={noFilterSetted()}
-            variant="outlined"
-            sx={{ height: 44, minWidth: 100 }}
-            onClick={handleFilterButtonClick}
-          >
-            {t('pages.products.filterLabels.filter')}
-          </Button>
-          <Button
-            disabled={noFilterSetted()}
-            variant="text"
-            sx={{ height: 44, minWidth: 140 }}
-            onClick={handleDeleteFiltersButtonClick}
-          >
-            {t('pages.products.filterLabels.deleteFilters')}
-          </Button>
-        </Box>
-      )}
+      <FilterBar
+        categoryFilter={categoryFilter} 
+        setCategoryFilter={setCategoryFilter}
+        setFiltering={setFiltering}
+        branchFilter={branchFilter} 
+        setBranchFilter={setBranchFilter}
+        eprelCodeFilter={eprelCodeFilter}
+        setEprelCodeFilter={setEprelCodeFilter}
+        gtinCodeFilter={gtinCodeFilter}
+        setGtinCodeFilter={setGtinCodeFilter}
+        tableData={tableData}
+        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+        />
 
       <Paper
         sx={{

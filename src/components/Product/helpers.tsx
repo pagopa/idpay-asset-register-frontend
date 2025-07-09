@@ -1,4 +1,3 @@
-// import { ProductDTO } from '../../api/generated/register/ProductDTO';
 
 export interface Data {
   category: string;
@@ -43,27 +42,6 @@ export function stableSort<T>(array: ReadonlyArray<T>, comparator: (a: T, b: T) 
   });
   return stabilizedThis.map((el) => el[0]);
 }
-
-
-
-
-
-// export interface DataProp {
-//   productFileId?: string;
-//   organizationId?: string;
-//   registrationDate?: string;
-//   status?: string;
-//   model?: string;
-//   productGroup?: string;
-//   branchName?: string;
-//   category?: string;
-//   brand?: string;
-//   eprelCode?: string;
-//   gtinCode?: string;
-//   productCode?: string;
-//   energyClass?: string;
-//   countryOfProduction?: string;
-// }
 
 
 
