@@ -211,7 +211,7 @@ const ProductGrid = () => {
         if (pageNo !== undefined && totalElements) {
           setPaginatorFrom(pageNo * displayRows + 1);
           setPaginatorTo(
-            displayRows * (pageNo + 1) <= totalElements ? displayRows * (pageNo + 1) : totalElements
+            displayRows * (pageNo + 1) < totalElements ? displayRows * (pageNo + 1) : totalElements
           );
         }
         setLoading(false);
