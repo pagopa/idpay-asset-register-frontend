@@ -9,7 +9,6 @@ import CachedIcon from '@mui/icons-material/Cached';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { getProductFilesList } from '../../services/registerService';
 import UploadsTable from '../components/HistoryUploadSection';
-// import mockDataUploads from '../../mocks/StoricoProdEprel_03072025.json';
 
 const OverviewHistoryUpload: React.FC = () => {
   const { t } = useTranslation();
@@ -66,8 +65,8 @@ const OverviewHistoryUpload: React.FC = () => {
       {!loading && !error && (
         <Box width="100%" px={2}>
           <TitleBox
-            title="Storico Caricamenti"
-            subTitle="Visualizza tutti i caricamenti effettuati"
+            title={t('pages.uploadHistory.sideMenuTitle')}
+            subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
             mbTitle={2}
             mtTitle={2}
             mbSubTitle={5}
@@ -80,7 +79,7 @@ const OverviewHistoryUpload: React.FC = () => {
           <Box>
             {!loading && data?.content?.[0]?.uploadStatus === 'UPLOADED' && (
               <InfoUpload
-                description="Stiamo elaborando il file. Ti avviseremo via e-mail quando l'elaborazione sarà completata e potrai consultare i dati direttamente in questa sezione."
+                description={t('pages.uploadHistory.uploadHistoryAlertMessage')}
                 dismissFn={() => {}}
               />
             )}
@@ -110,8 +109,8 @@ const OverviewHistoryUpload: React.FC = () => {
       {error && (
         <Box width="100%" px={2}>
           <TitleBox
-            title="Storico Caricamenti"
-            subTitle="Visualizza tutti i caricamenti effettuati"
+              title={t('pages.uploadHistory.sideMenuTitle')}
+              subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
             mbTitle={2}
             mtTitle={2}
             mbSubTitle={5}
@@ -137,7 +136,7 @@ const OverviewHistoryUpload: React.FC = () => {
                       textAlign: 'center',
                     }}
                   >
-                    {'Non ci sono file caricati.'}
+                    {t('pages.uploadHistory.uploadHistoryNoFilesUploaded')}
                   </TableCell>
                 </TableRow>
               </TableBody>

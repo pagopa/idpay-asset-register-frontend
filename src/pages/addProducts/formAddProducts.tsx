@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction, useState} from "react";
+import {Dispatch, SetStateAction, useState, forwardRef, useImperativeHandle} from "react";
 import { useDropzone } from 'react-dropzone';
 import {useTranslation} from "react-i18next";
 import {Box, FormControl, FormHelperText, InputLabel, Link, MenuItem, Select, Typography} from "@mui/material";
@@ -18,7 +18,12 @@ type Props = {
     setFileAccepted: Dispatch<SetStateAction<boolean>>;
 };
 
-const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
+export type FormAddProductsRef = {
+    validateForm: () => Promise<boolean>;
+};
+
+// eslint-disable-next-line sonarjs/cognitive-complexity
+const FormAddProducts = forwardRef<FormAddProductsRef, Props>(({fileAccepted, setFileAccepted}, ref) => {
     const { t } = useTranslation();
     const [fileIsLoading, setFileIsLoading] = useState(false);
     const [fileRejected, setFileRejected] = useState(false);
@@ -56,8 +61,6 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
         },
     });
 
-    const isCategoryValid = !formik.errors.category && formik.values.category !== '';
-
     const templateFileName =
         formik.values.category === PRODUCTS_CATEGORY.COOKINGHOBS
             ? 'cookinghobs_template.csv'
@@ -73,6 +76,20 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
         setFileAccepted(false);
     };
 
+    const validateCategory = async () => {
+        await formik.setFieldTouched('category', true, true);
+        await formik.validateField('category');
+        return !formik.errors.category && formik.values.category !== '';
+    };
+
+    useImperativeHandle(ref, () => ({
+        validateForm: async () => {
+            await formik.setFieldTouched('category', true, true);
+            await formik.validateField('category');
+            const isCategoryValid = !formik.errors.category && formik.values.category !== '';
+            return isCategoryValid && fileAccepted;
+        }
+    }), [formik, fileAccepted]);
 
     const { getRootProps, getInputProps } = useDropzone({
         maxFiles: 1,
@@ -81,20 +98,18 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
             'text/csv': ['.csv']
         },
         onFileDialogOpen: async () => {
-            await formik.setFieldTouched('category', true, true);
-            await formik.validateField('category');
-
-            if (formik.errors.category || !formik.values.category) {
-                return;
-            }
+            await validateCategory();
         },
-        onDrop: () => {
+        onDrop: async () => {
             setFileRejected(false);
+            await validateCategory();
         },
         onDropAccepted: async (files) => {
-            if (!isCategoryValid) {
+            const isValid = await validateCategory();
+            if (!isValid) {
                 return;
             }
+
             setFileIsLoading(true);
             setIsReport(false);
 
@@ -190,10 +205,11 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
         >
             <Box sx={initUploadBoxStyle} {...getRootProps({ className: 'dropzone' })}>
                 <input {...getInputProps()} data-testid="drop-input" onClick={async (e) => {
-                    if (!isCategoryValid) {
+                    // Controllo sincrono prima di tutto
+                    if (!formik.values.category) {
                         e.preventDefault();
-                        await formik.setFieldTouched('category', true, true);
-                        await formik.validateField('category');
+                        // Validazione asincrona per mostrare l'errore
+                        await validateCategory();
                     }
                 }}/>
                 <InitUploadBox
@@ -205,19 +221,19 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
                 <Box sx={initUploadHelperBoxStyle}>
                     <FormHelperText sx={{ fontSize: '0.875rem' }}>
                         {t('pages.addProducts.form.fileUpload.fileUploadHelpText')}&#160;
-                            <Link
-                                href={formik.values.category ? `${templateFileName}` : undefined}
-                                download={!!formik.values.category}
-                                type="text/csv"
-                                target="_blank"
-                                variant="body2"
-                                sx={{
-                                    fontSize: '0.875rem',
-                                    fontWeight: 600,
-                                }}
-                            >
-                                {t('pages.addProducts.form.fileUpload.fileUploadHelpLinkLabel')}
-                            </Link>
+                        <Link
+                            href={formik.values.category ? `${templateFileName}` : undefined}
+                            download={!!formik.values.category}
+                            type="text/csv"
+                            target="_blank"
+                            variant="body2"
+                            sx={{
+                                fontSize: '0.875rem',
+                                fontWeight: 600,
+                            }}
+                        >
+                            {t('pages.addProducts.form.fileUpload.fileUploadHelpLinkLabel')}
+                        </Link>
                     </FormHelperText>
                 </Box>
             }
@@ -295,6 +311,6 @@ const FormAddProducts = ({fileAccepted, setFileAccepted}: Props) => {
             )}
         </Box>
     );
-};
+});
 
 export default FormAddProducts;
