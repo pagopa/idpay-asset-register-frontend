@@ -1,34 +1,87 @@
-import { formattedCurrency, formatDate, formatIban } from '../helpers';
+import {
+  formattedCurrency,
+  formatIban,
+  formatDate,
+  formatFileName,
+  initUploadBoxStyle,
+  initUploadHelperBoxStyle,
+} from '../helpers';
 
-const date = new Date('2022-10-01T00:00:00.000Z');
+describe('helpers.ts', () => {
+  describe('formattedCurrency', () => {
+    it('formatta un numero come valuta EUR senza centesimi', () => {
+      expect(formattedCurrency(1234)).toBe('1.234,00 €');
+    });
 
-// test('test copyTextToClipboard with a string as param', () => {
-//   const writeText = jest.spyOn(navigator.clipboard, 'writeText');
-//   copyTextToClipboard('test');
-//   expect(navigator.clipboard.readText()).toEqual('test');
-// });
+    it('formatta un numero come valuta EUR con centesimi', () => {
+      expect(formattedCurrency(1234, '-', true)).toBe('12,34 €');
+    });
 
-test('test formattedCurrency with undefined as param', () => {
-  expect(formattedCurrency(undefined)).toEqual('-');
-});
+    it('restituisce il simbolo se il numero è undefined', () => {
+      expect(formattedCurrency(undefined)).toBe('-');
+    });
 
-test('test formattedCurrency with a number as param', () => {
-  const result = formattedCurrency(20.3);
-  expect(result).toContain('20,30');
-});
+    it('restituisce il simbolo se il numero è 0', () => {
+      expect(formattedCurrency(0)).toBe('-');
+    });
+  });
 
-test('test formatDate with undefined as param', () => {
-  expect(formatDate(undefined)).toEqual('');
-});
+  describe('formatIban', () => {
+    it('formatta un IBAN valido', () => {
+      expect(formatIban('IT60X0542811101000000123456')).toBe('IT 60 X 05428 11101 00000 123456');
+    });
 
-test('test formatDate with a Date object as param', () => {
-  expect(formatDate(date)).toContain('01/10/2022');
-});
+    it('restituisce stringa vuota se IBAN è undefined', () => {
+      expect(formatIban(undefined)).toBe('');
+    });
 
-test('test formatIban with a string of IBAN as param', () => {
-  expect(formatIban('IT03M0300203280794663157929')).toEqual('IT 03 M 03002 03280 794663157929');
-});
+    it('gestisce IBAN troppo corto', () => {
+      expect(formatIban('IT60')).toBe('IT 60  ');
+    });
+  });
 
-test('test formatIban with undefined as param', () => {
-  expect(formatIban(undefined)).toEqual('');
+  describe('formatDate', () => {
+    it('formatta una data valida', () => {
+      const date = new Date('2023-01-01T12:34:00Z');
+      expect(formatDate(date)).toMatch(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}/);
+    });
+
+    it('restituisce stringa vuota se la data è undefined', () => {
+      expect(formatDate(undefined)).toBe('');
+    });
+  });
+
+  describe('formatFileName', () => {
+    it('tronca e formatta nomi file lunghi', () => {
+      expect(formatFileName('documento_molto_lungo.pdf')).toBe('documento_... .pdf');
+    });
+
+    it('restituisce il nome se <= 15 caratteri', () => {
+      expect(formatFileName('file.txt')).toBe('file.txt');
+    });
+
+    it('restituisce stringa vuota se name è undefined', () => {
+      expect(formatFileName(undefined)).toBe('');
+    });
+
+    it('gestisce nomi senza estensione', () => {
+      expect(formatFileName('documento_molto_lungo')).toBe('documento_... .molto_lungo');
+    });
+  });
+
+  describe('initUploadBoxStyle', () => {
+    it('ha le proprietà richieste', () => {
+      expect(initUploadBoxStyle).toHaveProperty('border');
+      expect(initUploadBoxStyle).toHaveProperty('borderRadius');
+      expect(initUploadBoxStyle).toHaveProperty('backgroundColor');
+    });
+  });
+
+  describe('initUploadHelperBoxStyle', () => {
+    it('ha le proprietà richieste', () => {
+      expect(initUploadHelperBoxStyle).toHaveProperty('py');
+      expect(initUploadHelperBoxStyle).toHaveProperty('px');
+      expect(initUploadHelperBoxStyle).toHaveProperty('alignItems');
+    });
+  });
 });

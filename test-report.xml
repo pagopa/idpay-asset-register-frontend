@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/TOS/__tests__/TOSWall.test.tsx">
+    <testCase name="tests for TOSWall test render of TOSWall component with not already accepted tos" duration="32">
+      <failure message="TypeError: Cannot read properties of undefined (reading &apos;pathname&apos;)"><![CDATA[TypeError: Cannot read properties of undefined (reading 'pathname')
+    at Router (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-router/lib/components.tsx:456:5)
+    at renderWithHooks (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at beginWork$1 (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+    at performUnitOfWork (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+    at workLoopSync (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+    at renderRootSync (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+    at recoverFromConcurrentError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:25889:20)
+    at performConcurrentWorkOnRoot (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:25789:22)
+    at flushActQueue (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react/cjs/react.development.js:2667:24)
+    at act (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react/cjs/react.development.js:2582:11)
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/act-compat.js:47:25
+    at renderRoot (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/pure.js:180:26)
+    at render (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/pure.js:271:10)
+    at renderWithContext (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/utils/__tests__/test-utils.tsx:17:9)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/TOS/__tests__/TOSWall.test.tsx:16:22)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="tests for TOSWall test render of TOSWall component with tos already accepted" duration="4">
+      <failure message="TypeError: Cannot read properties of undefined (reading &apos;pathname&apos;)"><![CDATA[TypeError: Cannot read properties of undefined (reading 'pathname')
+    at Router (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-router/lib/components.tsx:456:5)
+    at renderWithHooks (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at beginWork$1 (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+    at performUnitOfWork (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+    at workLoopSync (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+    at renderRootSync (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+    at recoverFromConcurrentError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:25889:20)
+    at performConcurrentWorkOnRoot (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:25789:22)
+    at flushActQueue (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react/cjs/react.development.js:2667:24)
+    at act (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react/cjs/react.development.js:2582:11)
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/act-compat.js:47:25
+    at renderRoot (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/pure.js:180:26)
+    at render (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/pure.js:271:10)
+    at renderWithContext (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/utils/__tests__/test-utils.tsx:17:9)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/TOS/__tests__/TOSWall.test.tsx:25:22)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/components/__tests__/EmptyList.test.tsx">
+    <testCase name="test suite for EmptyList render EmptyList" duration="28">
+      <failure message="TypeError: Cannot read properties of undefined (reading &apos;pathname&apos;)"><![CDATA[TypeError: Cannot read properties of undefined (reading 'pathname')
+    at Router (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-router/lib/components.tsx:456:5)
+    at renderWithHooks (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:15486:18)
+    at mountIndeterminateComponent (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:20103:13)
+    at beginWork (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:21626:16)
+    at beginWork$1 (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:27465:14)
+    at performUnitOfWork (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:26599:12)
+    at workLoopSync (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:26505:5)
+    at renderRootSync (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:26473:7)
+    at recoverFromConcurrentError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:25889:20)
+    at performConcurrentWorkOnRoot (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react-dom/cjs/react-dom.development.js:25789:22)
+    at flushActQueue (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react/cjs/react.development.js:2667:24)
+    at act (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react/cjs/react.development.js:2582:11)
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/act-compat.js:47:25
+    at renderRoot (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/pure.js:180:26)
+    at render (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/pure.js:271:10)
+    at renderWithContext (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/utils/__tests__/test-utils.tsx:17:9)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/components/__tests__/EmptyList.test.tsx:11:22)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/IDPayUser.test.ts">
+    <testCase name="Test initiativeGeneral2GeneralInfo" duration="3">
+      <failure message="Error: expect(received).toStrictEqual(expected) // deep equality"><![CDATA[Error: expect(received).toStrictEqual(expected) // deep equality
+
+- Expected  - 0
++ Received  + 5
+
+  Object {
+    "email": "test@token.it",
+    "name": "Mario",
++   "org_address": undefined,
++   "org_email": undefined,
+    "org_party_role": "ADMIN",
++   "org_pec": undefined,
+    "org_role": "admin",
++   "org_taxcode": undefined,
++   "org_vat": undefined,
+    "surname": "Rossi",
+    "taxCode": "2f63a151-da4e-4e1e-acf9-adecc0c4d727",
+    "uid": "9abcbe25-99f4-40f9-a03b-afed9cd9bb8a",
+  }
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/IDPayUser.test.ts:15:21)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/JwtUser.test.ts">
+    <testCase name="test jwt2JWTUser" duration="2">
+      <failure message="Error: expect(received).toStrictEqual(expected) // deep equality"><![CDATA[Error: expect(received).toStrictEqual(expected) // deep equality
+
+- Expected  - 0
++ Received  + 1
+
+@@ -1,9 +1,10 @@
+  Object {
+    "email": "test@token.it",
+    "family_name": "Rossi",
+    "name": "Mario",
++   "org_email": undefined,
+    "org_id": "2f63a151-da4e-4e1e-acf9-adecc0c4d727",
+    "org_name": "Comune di Jesolo",
+    "org_party_role": "OPERATOR",
+    "org_role": "ope_base",
+    "org_vat": "11122233344",
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/JwtUser.test.ts:17:15)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/App.test.tsx">
+    <testCase name="App renderizza la pagina Auth per la route /auth" duration="11"/>
+    <testCase name="App renderizza la pagina Overview per la route /" duration="3"/>
+    <testCase name="App renderizza la pagina Add Products per la route /add-products" duration="2"/>
+    <testCase name="App renderizza la pagina Products e ProductDataGrid per la route /products" duration="2"/>
+    <testCase name="App renderizza la pagina Uploads History per la route /uploads" duration="2"/>
+    <testCase name="App renderizza la pagina TOS per la route /tos" duration="2"/>
+    <testCase name="App renderizza la pagina Privacy Policy per la route /privacy-policy" duration="2"/>
+    <testCase name="App renderizza la pagina Overview per una route non riconosciuta" duration="3"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/SideMenu/__tests__/SideNavItem.test.tsx">
+    <testCase name="Test suite for SideNavItem component renders without crashing" duration="0"/>
+    <testCase name="Test suite for SideNavItem component Testing rendering of SideMenu component" duration="19"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/decorators/__tests__/withParties.test.tsx">
+    <testCase name="Test" duration="62"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/redux/slices/__tests__/permissionsSlice.test.ts">
+    <testCase name="initiative Summary slice  initiative Summary slice actions" duration="1"/>
+    <testCase name="initiative Summary slice  initiative Summary slice slectors" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/services/__tests__/partyService.test.ts">
+    <testCase name="fetchPartyDetails should fetch party details successfully" duration="1"/>
+    <testCase name="fetchPartyDetails should handle party not found" duration="0"/>
+    <testCase name="Test fetchParties" duration="0"/>
+    <testCase name="Test fetchPartyDetails Test no parties as cache" duration="0"/>
+    <testCase name="Test fetchPartyDetails Test parties as cache" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/services/__tests__/productService.test.ts">
+    <testCase name="fetchProducts Service should return an empty array" duration="1"/>
+    <testCase name="Test fetchProducts" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/uploadsHistory/__tests__/helpers.test.tsx">
+    <testCase name="Test suite for helpers.ts of InitiativesList descendingComparator" duration="1"/>
+    <testCase name="Test suite for helpers.ts of InitiativesList stableSort" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/overview/__tests__/helpers.test.tsx">
+    <testCase name="Test suite for helpers.ts of InitiativesList descendingComparator" duration="1"/>
+    <testCase name="Test suite for helpers.ts of InitiativesList stableSort" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Product/__tests__/helpers.test.tsx">
+    <testCase name="Test suite for helpers.ts of InitiativesList descendingComparator" duration="0"/>
+    <testCase name="Test suite for helpers.ts of InitiativesList stableSort" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/Permission.test.ts">
+    <testCase name="Test permission2PermissionModel" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/Product.test.ts">
+    <testCase name="Test institutionInfo2Party" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/Party.test.ts">
+    <testCase name="Test institutionResource2Party" duration="1"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/components/__tests__/OneTrustContentWrapper.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/components/__tests__/BreadcrumbsBox.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/auth/__tests__/Auth.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/hooks/__tests__/useLogin.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/hooks/__tests__/useTCAgreement.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/helpers.test.ts">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/routes.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Header/__tests__/Header.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/SideMenu/__tests__/SideMenu.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/LoadingFile/__tests__/LoadingFile.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/AcceptedFile/__tests__/AcceptedFile.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/TOSLayout/__tests__/TOSLayout.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Layout/__tests__/Layout.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/ExitModal/__tests__/ExitModal.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/InitUploadBox/__tests__/InitUploadBox.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/decorators/__tests__/withSelectedParty.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/decorators/__tests__/withSelectedPartyProducts.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/decorators/__tests__/withLogin.test.tsx">
+  </file>
+</testExecutions>
