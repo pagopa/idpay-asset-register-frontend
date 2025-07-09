@@ -6,24 +6,20 @@ interface EprelLinkProps {
   row: ProductDTO;
 }
 
-const EprelLink: React.FC<EprelLinkProps> = ({ row }) => {
+const EprelLinks: React.FC<EprelLinkProps> = ({ row }) => {
   const { linkEprel, eprelCode } = row;
 
-  if (eprelCode && typeof eprelCode === 'string' && eprelCode.trim() !== '') {
-    return (
+  return  (eprelCode?.trim() !== '' && typeof eprelCode === 'string') ?
       <Link underline="hover" href={linkEprel} target="_blank" rel="noopener">
         <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
           {eprelCode}
         </Typography>
       </Link>
-    );
-  }
-
-  return (
+    :
     <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
       {emptyData}
-    </Typography>
-  );
+    </Typography>;
+
 };
 
-export default EprelLink;
+export default EprelLinks;

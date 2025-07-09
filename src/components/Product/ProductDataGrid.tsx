@@ -31,8 +31,9 @@ import { displayRows, emptyData, PRODUCTS_CATEGORY } from '../../utils/constants
 import { getComparator, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
-import EprelLink from './EprelLink';
+
 import MessagePage from './MessagePage';
+import EprelLinks from './EprelLinks';
 
 interface EnhancedTableProps {
   order: Order;
@@ -417,7 +418,7 @@ const ProductGrid = () => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
-                      <EprelLink row={row} />
+                      <EprelLinks row={row} />
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
                       <Typography variant="body2">
