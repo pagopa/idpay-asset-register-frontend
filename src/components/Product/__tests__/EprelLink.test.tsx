@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import EprelLink from '../eprelLink';
+import EprelLink from '../EprelLink'
 import { emptyData } from '../../../utils/constants';
 import { ProductDTO } from '../../../api/generated/register/ProductDTO';
 

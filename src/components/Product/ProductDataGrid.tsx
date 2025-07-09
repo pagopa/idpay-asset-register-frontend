@@ -183,6 +183,7 @@ const ProductGrid = () => {
         setTableData(content ? Array.from(content) : []);
         setPage(pageNo || 0);
         setItemsQty(totalElements);
+        setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
         setPaginatorTo(totalElements && totalElements > displayRows ? displayRows : totalElements);
         setLoading(false);
       })
@@ -205,11 +206,13 @@ const ProductGrid = () => {
       .then((res) => {
         const { content, pageNo, totalElements } = res;
         setTableData(content ? Array.from(content) : []);
-        setPage(pageNo || 0);
+        // setPage(pageNo || 0);
         setItemsQty(totalElements);
-        if (pageNo) {
-          setPaginatorFrom((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + 1);
-          setPaginatorTo((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + displayRows);
+        if (pageNo !== undefined && totalElements) {
+          setPaginatorFrom(pageNo * displayRows + 1);
+          setPaginatorTo(
+            displayRows * (pageNo + 1) <= totalElements ? displayRows * (pageNo + 1) : totalElements
+          );
         }
         setLoading(false);
       })
@@ -251,7 +254,10 @@ const ProductGrid = () => {
     setOrderBy(property);
   };
 
-  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, displayRows));
     setPage(0);
