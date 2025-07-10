@@ -5,6 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
 import '@testing-library/jest-dom';
 import FormAddProducts, { FormAddProductsRef } from '../formAddProducts';
+import {FileRejection} from "react-dropzone";
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -44,22 +45,34 @@ jest.mock('react-i18next', () => ({
     })
 }));
 
+let dropAcceptedCallback: ((files: File[]) => void) | null = null;
+let dropRejectedCallback: ((files: FileRejection[]) => void) | null = null;
+let onDropCallback: ((event: DragEvent) => void) | null = null;
+let onFileDialogOpenCallback: (() => void) | null = null;
+
 jest.mock('react-dropzone', () => ({
-    useDropzone: ({ onDrop, onDropAccepted, onDropRejected, onFileDialogOpen }: any) => ({
-        getRootProps: jest.fn(() => ({
-            className: 'dropzone',
-            onClick: jest.fn()
-        })),
-        getInputProps: jest.fn(() => ({
-            'data-testid': 'drop-input',
-            onClick: jest.fn()
-        })),
-        _onDrop: onDrop,
-        _onDropAccepted: onDropAccepted,
-        _onDropRejected: onDropRejected,
-        _onFileDialogOpen: onFileDialogOpen
-    })
+    useDropzone: ({ onDrop, onDropAccepted, onDropRejected, onFileDialogOpen }: any) => {
+        dropAcceptedCallback = onDropAccepted;
+        dropRejectedCallback = onDropRejected;
+        onDropCallback = onDrop;
+        onFileDialogOpenCallback = onFileDialogOpen;
+        return {
+            getRootProps: jest.fn(() => ({
+                className: 'dropzone',
+                onClick: jest.fn(),
+            })),
+            getInputProps: jest.fn(() => ({
+                'data-testid': 'drop-input',
+                onClick: jest.fn(),
+            })),
+            _onDrop: onDrop,
+            _onDropAccepted: onDropAccepted,
+            _onDropRejected: onDropRejected,
+            _onFileDialogOpen: onFileDialogOpen,
+        };
+    },
 }));
+
 
 jest.mock('../../../components/RejectedFile/RejectedFile', () => {
     return function RejectedFile({ title, description, isReport, onDownloadReport, dismissFn }: any) {
@@ -317,15 +330,14 @@ describe('FormAddProducts Component', () => {
 
         const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
 
-        const { useDropzone } = require('react-dropzone');
-        const mockDropzone = useDropzone({});
+        expect(typeof dropAcceptedCallback).toBe('function');
 
         await act(async () => {
-            await mockDropzone._onDropAccepted([testFile]);
+            await dropAcceptedCallback?.([testFile]);
         });
 
         await waitFor(() => {
-            expect(mockUploadProductList).toHaveBeenCalledWith(testFile, 'cookinghobs');
+            expect(mockUploadProductList).toHaveBeenCalledWith(testFile, 'COOKINGHOBS');
         });
     });
 
@@ -351,11 +363,10 @@ describe('FormAddProducts Component', () => {
 
         const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
 
-        const { useDropzone } = require('react-dropzone');
-        const mockDropzone = useDropzone({});
+        expect(typeof dropAcceptedCallback).toBe('function');
 
         await act(async () => {
-            await mockDropzone._onDropAccepted([testFile]);
+            await dropAcceptedCallback?.([testFile]);
         });
 
         await waitFor(() => {
@@ -387,11 +398,10 @@ describe('FormAddProducts Component', () => {
 
         const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
 
-        const { useDropzone } = require('react-dropzone');
-        const mockDropzone = useDropzone({});
+        expect(typeof dropAcceptedCallback).toBe('function');
 
         await act(async () => {
-            await mockDropzone._onDropAccepted([testFile]);
+            await dropAcceptedCallback?.([testFile]);
         });
 
         await waitFor(() => {
@@ -428,11 +438,10 @@ describe('FormAddProducts Component', () => {
 
         const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
 
-        const { useDropzone } = require('react-dropzone');
-        const mockDropzone = useDropzone({});
+        expect(typeof dropAcceptedCallback).toBe('function');
 
         await act(async () => {
-            await mockDropzone._onDropAccepted([testFile]);
+            await dropAcceptedCallback?.([testFile]);
         });
 
         await waitFor(() => {
@@ -458,11 +467,10 @@ describe('FormAddProducts Component', () => {
             errors: [{ code: 'file-invalid-type', message: 'Invalid type' }]
         };
 
-        const { useDropzone } = require('react-dropzone');
-        const mockDropzone = useDropzone({});
+        expect(typeof dropRejectedCallback).toBe('function');
 
         await act(async () => {
-            await mockDropzone._onDropRejected([rejectedFile]);
+            await dropRejectedCallback?.([rejectedFile]);
         });
 
         await waitFor(() => {
@@ -483,11 +491,10 @@ describe('FormAddProducts Component', () => {
             errors: [{ code: 'file-too-large', message: 'File too large' }]
         };
 
-        const { useDropzone } = require('react-dropzone');
-        const mockDropzone = useDropzone({});
+        expect(typeof dropRejectedCallback).toBe('function');
 
         await act(async () => {
-            await mockDropzone._onDropRejected([rejectedFile]);
+            await dropRejectedCallback?.([rejectedFile]);
         });
 
         await waitFor(() => {
@@ -517,11 +524,8 @@ describe('FormAddProducts Component', () => {
 
         const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
 
-        const { useDropzone } = require('react-dropzone');
-        const mockDropzone = useDropzone({});
-
-        act(() => {
-            mockDropzone._onDropAccepted([testFile]);
+        await act(async () => {
+            await dropAcceptedCallback?.([testFile]);
         });
 
         expect(screen.getByTestId('loading-file')).toBeInTheDocument();
@@ -574,6 +578,327 @@ describe('FormAddProducts Component', () => {
         expect(preventDefaultSpy).toHaveBeenCalled();
     });
 
+    test('handles file upload error: too many products', async () => {
+        mockUploadProductList.mockResolvedValue({
+            status: 'ERROR',
+            errorKey: 'product.invalid.file.maxrow'
+        });
+
+        const user = userEvent.setup();
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const selectTrigger = screen.getByLabelText('Seleziona categoria');
+        await user.click(selectTrigger);
+        const option = await screen.findByText('Piani cottura');
+        await user.click(option);
+
+        const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
+        await act(async () => {
+            await dropAcceptedCallback?.([testFile]);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('rejected-file')).toBeInTheDocument();
+            expect(screen.getByTestId('rejected-file-title')).toHaveTextContent('Troppi prodotti');
+            expect(screen.getByTestId('rejected-file-description')).toHaveTextContent('Troppi prodotti nel file');
+        });
+        expect(mockSetFileAccepted).toHaveBeenCalledWith(false);
+    });
+
+    test('handles file upload error: wrong header', async () => {
+        mockUploadProductList.mockResolvedValue({
+            status: 'ERROR',
+            errorKey: 'product.invalid.file.header'
+        });
+
+        const user = userEvent.setup();
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const selectTrigger = screen.getByLabelText('Seleziona categoria');
+        await user.click(selectTrigger);
+        const option = await screen.findByText('Piani cottura');
+        await user.click(option);
+
+        const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
+        await act(async () => {
+            await dropAcceptedCallback?.([testFile]);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('rejected-file')).toBeInTheDocument();
+            expect(screen.getByTestId('rejected-file-title')).toHaveTextContent('Header errato');
+            expect(screen.getByTestId('rejected-file-description')).toHaveTextContent('Header non valido');
+        });
+        expect(mockSetFileAccepted).toHaveBeenCalledWith(false);
+    });
+
+    test('handles file upload error: empty file', async () => {
+        mockUploadProductList.mockResolvedValue({
+            status: 'ERROR',
+            errorKey: 'product.invalid.file.empty'
+        });
+
+        const user = userEvent.setup();
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const selectTrigger = screen.getByLabelText('Seleziona categoria');
+        await user.click(selectTrigger);
+        const option = await screen.findByText('Piani cottura');
+        await user.click(option);
+
+        const testFile = new File([''], 'empty.csv', { type: 'text/csv' }); // File vuoto
+        await act(async () => {
+            await dropAcceptedCallback?.([testFile]);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('rejected-file')).toBeInTheDocument();
+            expect(screen.getByTestId('rejected-file-title')).toHaveTextContent('File vuoto');
+            expect(screen.getByTestId('rejected-file-description')).toHaveTextContent('Il file è vuoto');
+        });
+        expect(mockSetFileAccepted).toHaveBeenCalledWith(false);
+    });
+
+    test('handles generic file upload error from API (default case)', async () => {
+        mockUploadProductList.mockResolvedValue({
+            status: 'ERROR',
+            errorKey: 'some.unknown.error.key' // Un errore non gestito specificamente
+        });
+
+        const user = userEvent.setup();
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const selectTrigger = screen.getByLabelText('Seleziona categoria');
+        await user.click(selectTrigger);
+        const option = await screen.findByText('Piani cottura');
+        await user.click(option);
+
+        const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
+        await act(async () => {
+            await dropAcceptedCallback?.([testFile]);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('rejected-file')).toBeInTheDocument();
+            expect(screen.getByTestId('rejected-file-title')).toHaveTextContent('Errore generico');
+            expect(screen.getByTestId('rejected-file-description')).toHaveTextContent('Errore generico');
+        });
+        expect(mockSetFileAccepted).toHaveBeenCalledWith(false);
+    });
+
+    test('handles network/unexpected error during file upload', async () => {
+        mockUploadProductList.mockRejectedValue(new Error('Network error')); // Simula un errore di rete o un'eccezione
+
+        const user = userEvent.setup();
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const selectTrigger = screen.getByLabelText('Seleziona categoria');
+        await user.click(selectTrigger);
+        const option = await screen.findByText('Piani cottura');
+        await user.click(option);
+
+        const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
+        await act(async () => {
+            await dropAcceptedCallback?.([testFile]);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('rejected-file')).toBeInTheDocument();
+            expect(screen.getByTestId('rejected-file-title')).toHaveTextContent('Errore generico');
+            expect(screen.getByTestId('rejected-file-description')).toHaveTextContent('Errore generico');
+        });
+        expect(mockSetFileAccepted).toHaveBeenCalledWith(false);
+    });
+
+    test('handles generic file rejection error (default case)', async () => {
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const rejectedFile: FileRejection = {
+            file: new File([''], 'test.abc', { type: 'application/octet-stream' }),
+            errors: [{ code: 'some-other-error', message: 'Some generic rejection error' }] // Errore non gestito specificamente
+        };
+
+        expect(typeof dropRejectedCallback).toBe('function');
+
+        await act(async () => {
+            await dropRejectedCallback?.([rejectedFile]);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('rejected-file')).toBeInTheDocument();
+            expect(screen.getByTestId('rejected-file-title')).toHaveTextContent('Errore');
+            expect(screen.getByTestId('rejected-file-description')).toHaveTextContent('Errore generico');
+        });
+        expect(mockSetFileAccepted).toHaveBeenCalledWith(false);
+    });
+
+    test('onFileDialogOpen validates category if not selected', async () => {
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        await act(async () => {
+            await onFileDialogOpenCallback?.();
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('Categoria richiesta')).toBeInTheDocument();
+        });
+    });
+
+    test('onFileDialogOpen does not show error if category is already selected', async () => {
+        const user = userEvent.setup();
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const selectTrigger = screen.getByLabelText('Seleziona categoria');
+        await user.click(selectTrigger);
+        const option = await screen.findByText('Piani cottura');
+        await user.click(option); // Categoria selezionata
+
+        await act(async () => {
+            const { _onFileDialogOpen } = require('react-dropzone').useDropzone().mock.results[0].value;
+            await _onFileDialogOpen();
+        });
+
+        // Assicurati che il messaggio di errore di validazione non compaia
+        expect(screen.queryByText('Categoria richiesta')).not.toBeInTheDocument();
+    });
+
+    test('onDrop validates category and resets fileRejected state', async () => {
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        // Simula uno stato di file rejected iniziale per vedere se viene resettato
+        const rejectedFile = {
+            file: new File([''], 'test.txt', { type: 'text/plain' }),
+            errors: [{ code: 'file-invalid-type', message: 'Invalid type' }]
+        };
+        await act(async () => {
+            await dropRejectedCallback?.([rejectedFile]);
+        });
+        expect(screen.getByTestId('rejected-file')).toBeInTheDocument();
+
+
+        await act(async () => {
+            await onDropCallback?.({ type: 'drop' } as any);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('Categoria richiesta')).toBeInTheDocument();
+            expect(screen.queryByTestId('rejected-file')).not.toBeInTheDocument();
+        });
+    });
+
+    test('handles error during download error report', async () => {
+        mockUploadProductList.mockResolvedValue({
+            status: 'ERROR',
+            errorKey: 'product.invalid.file.report',
+            productFileId: 123
+        });
+        mockDownloadErrorReport.mockRejectedValue(new Error('Download failed')); // Simula un errore nel download
+
+        const user = userEvent.setup();
+        const consoleErrorSpy = jest.spyOn(console, 'error'); // Spia console.error
+
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const selectTrigger = screen.getByLabelText('Seleziona categoria');
+        await user.click(selectTrigger);
+        const option = await screen.findByText('Piani cottura');
+        await user.click(option);
+
+        const testFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
+        await act(async () => {
+            await dropAcceptedCallback?.([testFile]);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByTestId('download-report-btn')).toBeInTheDocument();
+        });
+
+        await user.click(screen.getByTestId('download-report-btn'));
+
+        await waitFor(() => {
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Errore nel download del report:', expect.any(Error));
+        });
+        consoleErrorSpy.mockRestore(); // Ripristina la funzione originale dopo il test
+    });
+
+    test('template link shows correct filename for Cooking Hobs', async () => {
+        const user = userEvent.setup();
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const selectTrigger = screen.getByLabelText('Seleziona categoria');
+        await user.click(selectTrigger);
+        const option = await screen.findByText('Piani cottura'); // COOKINGHOBS
+        await user.click(option);
+
+        await waitFor(() => {
+            const downloadLink = screen.getByText('qui').closest('a');
+            expect(downloadLink).toHaveAttribute('href', 'cookinghobs_template.csv');
+        });
+    });
+
+    test('template link shows correct filename for other categories (EPREL)', async () => {
+        const user = userEvent.setup();
+        render(
+            <TestWrapper>
+                <FormAddProducts {...defaultProps} />
+            </TestWrapper>
+        );
+
+        const selectTrigger = screen.getByLabelText('Seleziona categoria');
+        await user.click(selectTrigger);
+        const option = await screen.findByText('commons.categories.washingmachines'); // Qualsiasi altra categoria che non sia COOKINGHOBS
+        await user.click(option);
+
+        await waitFor(() => {
+            const downloadLink = screen.getByText('qui').closest('a');
+            expect(downloadLink).toHaveAttribute('href', 'eprel_template.csv');
+        });
+    });
+
     test('dismisses rejected file alert', async () => {
         const user = userEvent.setup();
 
@@ -588,11 +913,10 @@ describe('FormAddProducts Component', () => {
             errors: [{ code: 'file-invalid-type', message: 'Invalid type' }]
         };
 
-        const { useDropzone } = require('react-dropzone');
-        const mockDropzone = useDropzone({});
+        expect(typeof dropRejectedCallback).toBe('function');
 
         await act(async () => {
-            await mockDropzone._onDropRejected([rejectedFile]);
+            await dropRejectedCallback?.([rejectedFile]);
         });
 
         expect(screen.getByTestId('rejected-file')).toBeInTheDocument();
