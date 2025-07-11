@@ -11,6 +11,7 @@ import { createClient, WithDefaultsT } from './generated/register/client';
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
 import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
 import { UploadsListDTO } from './generated/register/UploadsListDTO';
+import { BatchList } from './generated/register/BatchList';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
 import { CsvDTO } from './generated/register/CsvDTO';
 
@@ -104,6 +105,15 @@ export const RegisterApi = {
     } catch (error) {
       // Puoi loggare o gestire l’errore come preferisci
       console.error('Errore durante il recupero dei file prodotto:', error);
+      throw error;
+    }
+  },
+
+  getBatchFilterItems: async (): Promise<BatchList> => {
+    try {
+      return await registerClient.getBatchNameList({});
+    } catch (error) {
+      console.error('Errore durante il recupero della lista filtri lotti:', error);
       throw error;
     }
   },

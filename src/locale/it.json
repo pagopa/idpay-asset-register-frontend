@@ -123,9 +123,10 @@
       "sideMenuTitle": "Prodotti",
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
+      "loading": "Caricamento dati ...",
       "filterLabels": {
         "category": "Categoria",
-        "branch": "Lotto",
+        "batch": "Lotto",
         "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN",
         "manufacturerCode": "Codice produttore",
@@ -137,7 +138,7 @@
         "energeticClass": "Classe energetica",
         "eprelCode": "Codice Eprel",
         "gtinCode": "Codice GTIN/EAN",
-        "branch": "Lotto"
+        "batch": "Lotto"
       },
       "categories": {
         "WASHINGMACHINES": "Lavatrici",
