@@ -15,7 +15,7 @@ function deleteRandomFields() {
     return indexes.slice(0, count);
   }
 
-  const fields = ['energyClass', 'eprelCode', 'gtinCode', 'branchName'];
+  const fields = ['energyClass', 'eprelCode', 'gtinCode', 'batchName'];
 
   fields.forEach((field) => {
     const indexes = getRandomIndexes(data.length, 0.1);
@@ -28,7 +28,7 @@ function deleteRandomFields() {
   console.log('test.json aggiornato con campi mancanti casuali.');
 }
 
-function updateBranchName() {
+function updateBatchName() {
   const filePath = './src/pages/products/mockCsvProducts.json';
   const rawData = fs.readFileSync(filePath, 'utf-8');
   const data = JSON.parse(rawData);
@@ -43,19 +43,19 @@ function updateBranchName() {
   }
 
   data.forEach((obj) => {
-    if (obj.branchName) {
-      // Cerca la categoria nel branchName (es: "32675198_washingmachines_1.csv")
-      const match = obj.branchName.match(/_(\w+)_/);
+    if (obj.batchName) {
+      // Cerca la categoria nel batchName (es: "32675198_washingmachines_1.csv")
+      const match = obj.batchName.match(/_(\w+)_/);
       if (match && match[1]) {
-        obj.branchName = `${match[1].toLowerCase()}_${randomHex()}`;
+        obj.batchName = `${match[1].toLowerCase()}_${randomHex()}`;
       } else {
-        // fallback: se non trova la categoria, lascia branchName invariato
+        // fallback: se non trova la categoria, lascia batchName invariato
       }
     }
   });
 
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-  console.log('mockCsvProducts.json aggiornato con branchName nel nuovo formato.');
+  console.log('mockCsvProducts.json aggiornato con batchName nel nuovo formato.');
 }
 
-updateBranchName();
+updateBatchName();

@@ -11,6 +11,7 @@ import { createClient, WithDefaultsT } from './generated/register/client';
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
 import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
 import { UploadsListDTO } from './generated/register/UploadsListDTO';
+import { BatchList } from './generated/register/BatchList';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
 import { CsvDTO } from './generated/register/CsvDTO';
 import {BatchList} from "./generated/register/BatchList";
