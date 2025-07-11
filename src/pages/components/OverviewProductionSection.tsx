@@ -250,24 +250,7 @@ const OverviewProductionSection: React.FC = () => {
       });
   }, [t]);
 
-  {
-    /*
-  {
-    // Mock data fetch for demonstration purposes
-    useEffect(() => {
-      try {
-        setData(mockDataUploads as UploadsListDTO);
-        setLoading(false);
-      } catch (err) {
-        setData(null);
-        setLoading(false);
-        setError(t('errors.uploadsList.errorDescription'));
-      }
-    }, []);
-  }
-
-  */
-  }
+ 
   const firstUploadDate =
     !loading && !error && data?.content && data.content.length > 0
       ? data.content[0].dateUpload
