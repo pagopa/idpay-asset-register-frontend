@@ -121,7 +121,7 @@ const OverviewHistoryUpload: React.FC = () => {
           />
 
           <Box>
-            <Table>
+            <Table data-testid="uploads-table">
               <TableHead>
                 <TableRow></TableRow>
               </TableHead>

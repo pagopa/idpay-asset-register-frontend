@@ -18,12 +18,16 @@ import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
+import {useDispatch} from "react-redux";
+import {useNavigate} from "react-router-dom";
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { UploadDTO } from '../../api/generated/register/UploadDTO';
 import {downloadErrorReport} from "../../services/registerService";
 import {downloadCsv} from "../addProducts/helpers";
 import {formatDateWithHours} from "../../helpers";
 import {usePagination} from "../../hooks/usePagination";
+import {setBatchId, setBatchName} from "../../redux/slices/productsSlice";
+import ROUTES from "../../routes";
 
 function renderUploadStatusIcon(status: string) {
   switch (status) {
@@ -61,6 +65,8 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   onRowsPerPageChange,
 }) => {
   const paginationInfo = usePagination(page, rowsPerPage, totalElements);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleDownloadReport = async (idReport: string) => {
@@ -71,6 +77,12 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
     } catch (error) {
       console.error('Errore nel download del report:', error);
     }
+  };
+  
+  const handleLinkProducts = (batchName: string, productFileId: string) => {
+    dispatch(setBatchName(batchName));
+    dispatch(setBatchId(productFileId));
+    navigate(ROUTES.PRODUCTS, { replace: true });
   };
 
   if (loading) {
@@ -102,6 +114,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         pl: '24px',
         cursor: 'pointer',
       }}
+      data-testid="uploads-table"
     >
       <Table>
         <TableHead>
@@ -154,9 +167,8 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                     color: '#0073E6',
                     fontWeight: 'bold',
                     textDecoration: 'underline',
-                    cursor: 'not-allowed',
-                    pointerEvents: 'none',
                   }}
+                  onClick={() => handleLinkProducts(row?.batchName || "", row?.productFileId || "")}
                 >
                   {row.addedProductNumber ?? 0} {t('pages.uploadHistory.uploadHistoryAddedProducts')}
                 </span>
@@ -206,6 +218,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         pl: '24px',
         cursor: 'pointer',
       }}
+      data-testid="uploads-table"
     >
       <Table>
         <TableBody>
