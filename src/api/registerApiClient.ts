@@ -14,7 +14,6 @@ import { UploadsListDTO } from './generated/register/UploadsListDTO';
 import { BatchList } from './generated/register/BatchList';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
 import { CsvDTO } from './generated/register/CsvDTO';
-import {BatchList} from "./generated/register/BatchList";
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
