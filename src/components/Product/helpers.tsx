@@ -27,8 +27,8 @@ export type Value = string;
 
 export function getComparator<T>(order: Order, orderBy: keyof T): (a: T, b: T) => number {
   return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 export function stableSort<T>(array: ReadonlyArray<T>, comparator: (a: T, b: T) => number) {

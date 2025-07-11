@@ -76,7 +76,7 @@
       "overviewTitleBoxInfoTitleLblEmailOp": "E-mail operativa",
       "overviewTitleBoxProdTitle": "Prodotti",
       "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
-      "overviewTitleBoxProdBtn": "Carica.csv"
+      "overviewTitleBoxProdBtn": "Carica .csv"
     },
     "addProducts": {
       "title": "Aggiungi prodotti",
@@ -160,10 +160,19 @@
       },
       "tablePaginationFrom": "di",
       "emptyList": "Nessun record corrisponde alla ricerca.",
+      "noFileLoaded": "Non ci sono prodotti caricati.",
       "backToTable": "Torna alla tabella"
     },
     "uploadHistory": {
-      "sideMenuTitle": "Storico caricamenti"
+      "sideMenuTitle": "Storico caricamenti",
+      "uploadHistorySubTitle": "Visualizza tutti i caricamenti e i dettagli.",
+      "uploadHistoryAlertMessage": "Stiamo elaborando il file. Ti avviseremo via e-mail quando l’elaborazione sarà completata e potrai consultare i dati direttamente in questa sezione.",
+      "uploadHistoryTitle": "Stato Caricamento",
+      "uploadHistoryFoundProducts": "prodotti trovati",
+      "uploadHistoryAddedProducts": "prodotti aggiunti",
+      "uploadHistoryRowsPerPage": "Righe per pagina",
+      "uploadHistoryEmptyState": "Non ci sono prodotti caricati",
+      "uploadHistoryNoFilesUploaded": "Non ci sono file caricati."
     }
   },
   "roles": {

@@ -5,6 +5,7 @@ import { userReducer } from '@pagopa/selfcare-common-frontend/lib/redux/slices/u
 import { LOG_REDUX_ACTIONS } from '../utils/constants';
 import { partiesReducer } from './slices/partiesSlice';
 import { permissionsReducer } from './slices/permissionsSlice';
+import {productsReducer} from "./slices/productsSlice";
 
 const additionalMiddlewares = [LOG_REDUX_ACTIONS ? logger : undefined];
 
@@ -15,6 +16,7 @@ export const createStore = () =>
       appState: appStateReducer,
       parties: partiesReducer,
       permissions: permissionsReducer,
+      products: productsReducer,
     },
     middleware: (getDefaultMiddleware: (arg0: { serializableCheck: boolean }) => any) =>
       additionalMiddlewares.reduce(

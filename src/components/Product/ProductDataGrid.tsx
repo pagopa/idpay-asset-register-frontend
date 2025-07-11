@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {
   Box,
   Paper,
@@ -17,12 +17,14 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
+import {useDispatch, useSelector} from "react-redux";
 import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { BatchList } from '../../api/generated/register/BatchList';
 import { displayRows, emptyData } from '../../utils/constants';
+import {batchIdSelector, batchNameSelector, setBatchId, setBatchName} from "../../redux/slices/productsSlice";
 import {
   getComparator,
   Order,
@@ -38,25 +40,25 @@ import EprelLinks from './EprelLinks';
 import FilterBar from './FilterBar';
 
 const getProductList = async (
-  page?: number,
-  size?: number,
-  sort?: string,
-  category?: string,
-  eprelCode?: string,
-  gtinCode?: string,
-  productCode?: string,
-  productFileId?: string
+    page?: number,
+    size?: number,
+    sort?: string,
+    category?: string,
+    eprelCode?: string,
+    gtinCode?: string,
+    productCode?: string,
+    productFileId?: string
 ): Promise<ProductListDTO> => {
   try {
     return await RegisterApi.getProducts(
-      page,
-      size,
-      sort,
-      category,
-      eprelCode,
-      gtinCode,
-      productCode,
-      productFileId
+        page,
+        size,
+        sort,
+        category,
+        eprelCode,
+        gtinCode,
+        productCode,
+        productFileId
     );
   } catch (error: any) {
     if (error?.response && error?.response?.data) {
@@ -126,37 +128,38 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   ];
 
   return (
-    <TableHead sx={{ backgroundColor: grey?.A100 }}>
-      <TableRow>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell?.id}
-            align={headCell?.textAlign ? headCell?.textAlign : 'left'}
-            padding="normal"
-            sortDirection={orderBy === headCell?.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell?.id}
-              direction={orderBy === headCell?.id ? order : 'asc'}
-              onClick={createSortHandler(headCell?.id)}
-              hideSortIcon={true}
-              disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
-            >
-              {headCell?.label}
-              {orderBy === headCell?.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
+      <TableHead sx={{ backgroundColor: grey?.A100 }}>
+        <TableRow>
+          {headCells.map((headCell) => (
+              <TableCell
+                  key={headCell?.id}
+                  align={headCell?.textAlign ? headCell?.textAlign : 'left'}
+                  padding="normal"
+                  sortDirection={orderBy === headCell?.id ? order : false}
+              >
+                <TableSortLabel
+                    active={orderBy === headCell?.id}
+                    direction={orderBy === headCell?.id ? order : 'asc'}
+                    onClick={createSortHandler(headCell?.id)}
+                    hideSortIcon={true}
+                    disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
+                >
+                  {headCell?.label}
+                  {orderBy === headCell?.id ? (
+                      <Box component="span" sx={visuallyHidden}>
+                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      </Box>
+                  ) : null}
+                </TableSortLabel>
+              </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
   );
 }
 
 const ProductGrid = () => {
+  const dispatch = useDispatch();
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
   const [page, setPage] = useState<number>(0);
@@ -174,68 +177,88 @@ const ProductGrid = () => {
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
+  const batchName = useSelector(batchNameSelector);
+  const batchId = useSelector(batchIdSelector);
+    const isAnyFilterActive = useMemo(() => (
+            categoryFilter !== '' ||
+            batchFilter !== '' ||
+            eprelCodeFilter !== '' ||
+            gtinCodeFilter !== ''
+        ), [categoryFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]);
 
   const { t } = useTranslation();
 
-  useEffect(() => {
+    useEffect(() => {
+        if (batchId) {
+            setBatchFilter(batchId);
+            setFiltering(true);
+        }
+    }, [batchName, batchId, batchFilterItems]);
+
+    useEffect(() => {
     setLoading(true);
-    void getProductList(page, displayRows)
-      .then((res) => {
-        const { content, pageNo, totalElements } = res;
-        setTableData(content ? Array.from(content) : []);
-        setPage(pageNo || 0);
-        setItemsQty(totalElements);
-        setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
-        setPaginatorTo(totalElements && totalElements > displayRows ? displayRows : totalElements);
-        setLoading(false);
-      })
-      .catch(() => {
-        setTableData([]);
-        setLoading(false);
-      });
+    if( batchId === "" ) {
+        void getProductList(page, displayRows)
+            .then((res) => {
+                const {content, pageNo, totalElements} = res;
+                setTableData(content ? Array.from(content) : []);
+                setPage(pageNo || 0);
+                setItemsQty(totalElements);
+                setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
+                setPaginatorTo(totalElements && totalElements > displayRows ? displayRows : totalElements);
+                setLoading(false);
+            })
+            .catch(() => {
+                setTableData([]);
+                setLoading(false);
+            });
+    }
 
     void getBatchFilterList()
-      .then((res) => {
-        const { left } = res as BatchFilterList;
-        const values = left[0].value;
-        console.log('§>>', { values });
+        .then((res) => {
+          const { left } = res as BatchFilterList;
+          const values = left[0].value;
+          console.log('§>>', { values });
 
-        setBatchFilterItems([...values]);
-      })
-      .catch(() => {
-        setBatchFilterItems([]);
-      });
+          setBatchFilterItems([...values]);
+        })
+        .catch(() => {
+          setBatchFilterItems([]);
+        });
   }, []);
 
   useEffect(() => {
     setLoading(true);
     void getProductList(
-      page,
-      displayRows,
-      'asc',
-      categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
-      eprelCodeFilter,
-      gtinCodeFilter,
-      undefined,
-      batchFilter
+        page,
+        displayRows,
+        'asc',
+        categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
+        eprelCodeFilter,
+        gtinCodeFilter,
+        undefined,
+        batchFilter
     )
-      .then((res) => {
-        const { content, pageNo, totalElements } = res;
-        setTableData(content ? Array.from(content) : []);
-        setItemsQty(totalElements);
-        if (pageNo !== undefined && totalElements) {
-          setPaginatorFrom(pageNo * displayRows + 1);
-          setPaginatorTo(
-            displayRows * (pageNo + 1) < totalElements ? displayRows * (pageNo + 1) : totalElements
-          );
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        setTableData([]);
-        setLoading(false);
-      })
-      .finally(() => setFiltering(false));
+        .then((res) => {
+          const { content, pageNo, totalElements } = res;
+          setTableData(content ? Array.from(content) : []);
+          setItemsQty(totalElements);
+          if (pageNo !== undefined && totalElements) {
+            setPaginatorFrom(pageNo * displayRows + 1);
+            setPaginatorTo(
+                displayRows * (pageNo + 1) < totalElements ? displayRows * (pageNo + 1) : totalElements
+            );
+          }
+          setLoading(false);
+        })
+        .catch(() => {
+          setTableData([]);
+          setLoading(false);
+        })
+        .finally(() => setFiltering(false));
+
+    dispatch(setBatchName(""));
+    dispatch(setBatchId(""));
   }, [page, filtering]);
 
   const handleDeleteFiltersButtonClick = () => {
@@ -273,115 +296,115 @@ const ProductGrid = () => {
   const visibleRows = [...tableData].sort(getComparator(order, orderBy));
 
   return (
-    <>
-      <FilterBar
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        setFiltering={setFiltering}
-        batchFilter={batchFilter}
-        setBatchFilter={setBatchFilter}
-        batchFilterItems={batchFilterItems}
-        eprelCodeFilter={eprelCodeFilter}
-        setEprelCodeFilter={setEprelCodeFilter}
-        gtinCodeFilter={gtinCodeFilter}
-        setGtinCodeFilter={setGtinCodeFilter}
-        tableData={tableData}
-        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
-      />
+      <>
+        <FilterBar
+            categoryFilter={categoryFilter}
+            setCategoryFilter={setCategoryFilter}
+            setFiltering={setFiltering}
+            batchFilter={batchFilter}
+            setBatchFilter={setBatchFilter}
+            batchFilterItems={batchFilterItems}
+            eprelCodeFilter={eprelCodeFilter}
+            setEprelCodeFilter={setEprelCodeFilter}
+            gtinCodeFilter={gtinCodeFilter}
+            setGtinCodeFilter={setGtinCodeFilter}
+            tableData={tableData}
+            handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+        />
 
-      <Paper
-        sx={{
-          width: '100%',
-          mb: 2,
-          pb: 3,
-          backgroundColor: grey.A100,
-        }}
-      >
-        <TableContainer>
-          {tableData.length > 0 && !loading ? (
-            <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
-              <EnhancedTableHead
-                order={order}
-                orderBy={orderBy}
-                onRequestSort={handleRequestSort}
-              />
-              <TableBody sx={{ backgroundColor: 'white' }}>
-                {visibleRows.map((row, index) => (
-                  <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
-                    <TableCell sx={{ textAlign: 'left' }}>
-                      <Typography variant="body2">
-                        {row?.category
-                          ? t(`commons.categories.${row?.category?.toLowerCase()}`)
-                          : emptyData}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2">
-                        {row?.energyClass ? row?.energyClass : emptyData}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>
-                      <EprelLinks row={row} />
-                    </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2">
-                        {row?.gtinCode ? row?.gtinCode : emptyData}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {row?.batchName ? row?.batchName : emptyData}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ textAlign: 'right' }}>
-                      <Button variant="text" onClick={() => handleListButtonClick(row)}>
-                        <ArrowForwardIosIcon />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : tableData.length <= 0 && !loading ? (
-            <MessagePage
-              message={t('pages.products.emptyList')}
-              goBack
-              onGoBack={handleDeleteFiltersButtonClick}
-            />
-          ) : (
-            <MessagePage message={t(`pages.products.loading`)} />
-          )}
-        </TableContainer>
-        {tableData?.length > 0 && !loading && (
-          <TablePagination
-            component="div"
-            count={itemsQty || 0}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[rowsPerPage]}
-            labelDisplayedRows={() =>
-              `${paginatorFrom} - ${paginatorTo} ${t(
-                'pages.products.tablePaginationFrom'
-              )} ${itemsQty}`
-            }
+        <Paper
             sx={{
-              '& .MuiTablePagination-actions button': {
-                backgroundColor: 'transparent',
-                '&:hover': {
-                  backgroundColor: 'transparent',
-                },
-              },
+              width: '100%',
+              mb: 2,
+              pb: 3,
+              backgroundColor: grey.A100,
             }}
-          />
-        )}
-      </Paper>
+        >
+          <TableContainer>
+            {tableData.length > 0 && !loading ? (
+                <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
+                  <EnhancedTableHead
+                      order={order}
+                      orderBy={orderBy}
+                      onRequestSort={handleRequestSort}
+                  />
+                  <TableBody sx={{ backgroundColor: 'white' }}>
+                    {visibleRows.map((row, index) => (
+                        <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
+                          <TableCell sx={{ textAlign: 'left' }}>
+                            <Typography variant="body2">
+                              {row?.category
+                                  ? t(`commons.categories.${row?.category?.toLowerCase()}`)
+                                  : emptyData}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'center' }}>
+                            <Typography variant="body2">
+                              {row?.energyClass ? row?.energyClass : emptyData}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'center' }}>
+                            <EprelLinks row={row} />
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'center' }}>
+                            <Typography variant="body2">
+                              {row?.gtinCode ? row?.gtinCode : emptyData}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2">
+                              {row?.batchName ? row?.batchName : emptyData}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'right' }}>
+                            <Button variant="text" onClick={() => handleListButtonClick(row)}>
+                              <ArrowForwardIosIcon />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+            ) : tableData.length <= 0 && !loading ? (
+                <MessagePage
+                    message={isAnyFilterActive ? t('pages.products.emptyList') : t('pages.products.noFileLoaded')}
+                    goBack={isAnyFilterActive}
+                    onGoBack={handleDeleteFiltersButtonClick}
+                />
+            ) : (
+                <MessagePage message={t(`pages.products.loading`)} />
+            )}
+          </TableContainer>
+          {tableData?.length > 0 && !loading && (
+              <TablePagination
+                  component="div"
+                  count={itemsQty || 0}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  rowsPerPageOptions={[rowsPerPage]}
+                  labelDisplayedRows={() =>
+                      `${paginatorFrom} - ${paginatorTo} ${t(
+                          'pages.products.tablePaginationFrom'
+                      )} ${itemsQty}`
+                  }
+                  sx={{
+                    '& .MuiTablePagination-actions button': {
+                      backgroundColor: 'transparent',
+                      '&:hover': {
+                        backgroundColor: 'transparent',
+                      },
+                    },
+                  }}
+              />
+          )}
+        </Paper>
 
-      <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer}>
-        <ProductDetail data={drawerData} />
-      </DetailDrawer>
-    </>
+        <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer}>
+          <ProductDetail data={drawerData} />
+        </DetailDrawer>
+      </>
   );
 };
 export default ProductGrid;

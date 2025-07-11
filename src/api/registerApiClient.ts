@@ -108,16 +108,16 @@ export const RegisterApi = {
       throw error;
     }
   },
-
   getBatchFilterItems: async (): Promise<BatchList> => {
     try {
-      return await registerClient.getBatchNameList({});
+      return await registerClient.getBatchNameList({
+        'x-organization-selected': ''
+      });
     } catch (error) {
       console.error('Errore durante il recupero della lista filtri lotti:', error);
       throw error;
     }
   },
-
   uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
     const result = await registerClient.uploadProductList({ csv, category });
     return extractResponse(result, 200, onRedirectToLogin);

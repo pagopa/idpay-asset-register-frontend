@@ -12,31 +12,31 @@ import {
   TableHead,
   CircularProgress,
   Alert,
-  Chip,
+  Chip, Divider,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
 import { useNavigate } from 'react-router-dom';
 import { ButtonNaked } from '@pagopa/mui-italia';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import {ArrowForward} from "@mui/icons-material";
 import ROUTES from '../../routes';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { UploadDTO } from '../../api/generated/register/UploadDTO';
 import { getProductFilesList } from '../../services/registerService';
-// import mockDataUploads from '../../mocks/StoricoProdEprel_03072025.json';
 
 function renderUploadStatusChip(status: string) {
   switch (status) {
     case 'IN_PROGRESS':
     case 'UPLOADED':
-      return <Chip color="default" label="In corso" />;
-    case 'EPREL_ERROR':
-      return <Chip color="warning" label="Parziale" />;
+      return <Chip color="default" label="In corso" size='small' />;
+    case 'PARTIAL':
+      return <Chip color="warning" label="Parziale" size='small' />;
     case 'LOADED':
-      return <Chip color="success" label="Caricato" />;
+      return <Chip color="success" label="Caricato" size='small' />;
     default:
-      return <Chip color="default" label={status} />;
+      return <Chip color="default" label={status} size='small' />;
   }
 }
 
@@ -89,13 +89,14 @@ const UploadInfoBox: React.FC<{
     data.content[0].uploadStatus !== 'UPLOADED'
   ) {
     return (
-      <Box sx={{ gridColumn: 'span 12', mb: 2 }}>
+      <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
         <Typography variant="body2">
           Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : '-'}</b>
         </Typography>
         <Button
           variant="contained"
           color="primary"
+          startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
           onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
         >
@@ -113,6 +114,7 @@ const UploadInfoBox: React.FC<{
         <Button
           variant="contained"
           color="primary"
+          startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
           onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
         >
@@ -140,7 +142,8 @@ const UploadsTable: React.FC<{
       {loading && <CircularProgress />}
       {!loading && !error && data?.content && data.content.length > 0 && (
         <>
-          <TableContainer component={Paper} elevation={0}>
+          <Divider />
+          <TableContainer component={Paper} elevation={0} sx={{ paddingTop: 3}}>
             <Table size="small">
               <TableHead>
                 <TableRow>
@@ -183,7 +186,7 @@ const UploadsTable: React.FC<{
                 {data?.content &&
                   data.content.slice(0, rowsPerPage).map((row: UploadDTO) => (
                     <TableRow key={row.productFileId}>
-                      <TableCell>{row.batchName}</TableCell>
+                      <TableCell sx={{ padding: 0 }}>{row.batchName}</TableCell>
                       <TableCell>{renderUploadStatusChip(row.uploadStatus ?? '')}</TableCell>
                       <TableCell>{row.dateUpload ? formatDate(row.dateUpload) : '-'}</TableCell>
                     </TableRow>
@@ -193,9 +196,10 @@ const UploadsTable: React.FC<{
           </TableContainer>
           <ButtonNaked
             color="primary"
-            endIcon={<ArrowForwardIosIcon />}
+            endIcon={<ArrowForward />}
             size="medium"
             onClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
+            sx={{ paddingTop: 2}}
           >
             <b>Vedi i caricamenti</b>
           </ButtonNaked>
