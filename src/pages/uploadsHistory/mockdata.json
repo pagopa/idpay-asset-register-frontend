@@ -5,7 +5,7 @@
     "energyClass": "A",
     "eprelCode": "1234567890",
     "gtinCode": "3001234567892",
-    "branchName": "32675198_lavatrici_1.csv"
+    "batchName": "32675198_lavatrici_1.csv"
   },
   {
     "id": 1,
@@ -13,7 +13,7 @@
     "energyClass": "C",
     "eprelCode": "3456789012",
     "gtinCode": "3001234567894",
-    "branchName": "32675198_lavastoviglie_3.csv"
+    "batchName": "32675198_lavastoviglie_3.csv"
   },
   {
     "id": 2,
@@ -21,7 +21,7 @@
     "energyClass": "A++",
     "eprelCode": "4567890123",
     "gtinCode": "3001234567895",
-    "branchName": "32675198_asciugatrici_4.csv"
+    "batchName": "32675198_asciugatrici_4.csv"
   },
   {
     "id": 3,
@@ -29,7 +29,7 @@
     "energyClass": "A+",
     "eprelCode": "5678901234",
     "gtinCode": "3001234567896",
-    "branchName": "32675198_forni_5.csv"
+    "batchName": "32675198_forni_5.csv"
   },
   {
     "id": 4,
@@ -37,7 +37,7 @@
     "energyClass": "B",
     "eprelCode": "6789012345",
     "gtinCode": "3001234567897",
-    "branchName": "32675198_microonde_6.csv"
+    "batchName": "32675198_microonde_6.csv"
   },
   {
     "id": 5,
@@ -45,7 +45,7 @@
     "energyClass": "A+",
     "eprelCode": "7890123456",
     "gtinCode": "3001234567898",
-    "branchName": "32675198_congelatori_7.csv"
+    "batchName": "32675198_congelatori_7.csv"
   },
   {
     "id": 6,
@@ -53,7 +53,7 @@
     "energyClass": "C",
     "eprelCode": "8901234567",
     "gtinCode": "3001234567899",
-    "branchName": "32675198_aspirapolvere_8.csv"
+    "batchName": "32675198_aspirapolvere_8.csv"
   },
   {
     "id": 7,
@@ -61,7 +61,7 @@
     "energyClass": "A",
     "eprelCode": "9012345678",
     "gtinCode": "3001234567800",
-    "branchName": "32675198_tv_9.csv"
+    "batchName": "32675198_tv_9.csv"
   },
   {
     "id": 8,
@@ -69,7 +69,7 @@
     "energyClass": "A++",
     "eprelCode": "1123456789",
     "gtinCode": "3001234567801",
-    "branchName": "32675198_condizionatori_10.csv"
+    "batchName": "32675198_condizionatori_10.csv"
   },
   {
     "id": 9,
@@ -77,7 +77,7 @@
     "energyClass": "B",
     "eprelCode": "2234567890",
     "gtinCode": "3001234567802",
-    "branchName": "32675198_scaldabagno_11.csv"
+    "batchName": "32675198_scaldabagno_11.csv"
   },
   {
     "id": 10,
@@ -85,7 +85,7 @@
     "energyClass": "C",
     "eprelCode": "3345678901",
     "gtinCode": "3001234567803",
-    "branchName": "32675198_ventilatori_12.csv"
+    "batchName": "32675198_ventilatori_12.csv"
   },
   {
     "id": 11,
@@ -93,7 +93,7 @@
     "energyClass": "A+",
     "eprelCode": "4456789012",
     "gtinCode": "3001234567804",
-    "branchName": "32675198_stufe_13.csv"
+    "batchName": "32675198_stufe_13.csv"
   },
   {
     "id": 12,
@@ -101,7 +101,7 @@
     "energyClass": "B",
     "eprelCode": "5567890123",
     "gtinCode": "3001234567805",
-    "branchName": "32675198_ferri_14.csv"
+    "batchName": "32675198_ferri_14.csv"
   },
   {
     "id": 13,
@@ -109,7 +109,7 @@
     "energyClass": "A",
     "eprelCode": "6678901234",
     "gtinCode": "3001234567806",
-    "branchName": "32675198_caffe_15.csv"
+    "batchName": "32675198_caffe_15.csv"
   },
   {
     "id": 14,
@@ -117,7 +117,7 @@
     "energyClass": "C",
     "eprelCode": "7789012345",
     "gtinCode": "3001234567807",
-    "branchName": "32675198_tostapane_16.csv"
+    "batchName": "32675198_tostapane_16.csv"
   },
   {
     "id": 15,
@@ -125,7 +125,7 @@
     "energyClass": "A+",
     "eprelCode": "8890123456",
     "gtinCode": "3001234567808",
-    "branchName": "32675198_frullatori_17.csv"
+    "batchName": "32675198_frullatori_17.csv"
   },
   {
     "id": 16,
@@ -133,7 +133,7 @@
     "energyClass": "B",
     "eprelCode": "9901234567",
     "gtinCode": "3001234567809",
-    "branchName": "32675198_robot_18.csv"
+    "batchName": "32675198_robot_18.csv"
   },
   {
     "id": 17,
@@ -141,7 +141,7 @@
     "energyClass": "A",
     "eprelCode": "1012345678",
     "gtinCode": "3001234567810",
-    "branchName": "32675198_piastre_19.csv"
+    "batchName": "32675198_piastre_19.csv"
   },
   {
     "id": 18,
@@ -149,7 +149,7 @@
     "energyClass": "B",
     "eprelCode": "2345678901",
     "gtinCode": "3001234567893",
-    "branchName": "32675198_frigo_2.csv"
+    "batchName": "32675198_frigo_2.csv"
   },
   {
     "id": 19,
@@ -157,7 +157,7 @@
     "energyClass": "A++",
     "eprelCode": "2123456789",
     "gtinCode": "3001234567811",
-    "branchName": "32675198_purificatori_20.csv"
+    "batchName": "32675198_purificatori_20.csv"
   },
   {
     "id": 20,
@@ -165,7 +165,7 @@
     "energyClass": "A+",
     "eprelCode": "3123456789",
     "gtinCode": "3001234567812",
-    "branchName": "32675198_friggitrici_21.csv"
+    "batchName": "32675198_friggitrici_21.csv"
   },
   {
     "id": 21,
@@ -173,7 +173,7 @@
     "energyClass": "B",
     "eprelCode": "4234567890",
     "gtinCode": "3001234567813",
-    "branchName": "32675198_pane_22.csv"
+    "batchName": "32675198_pane_22.csv"
   },
   {
     "id": 22,
@@ -181,7 +181,7 @@
     "energyClass": "A++",
     "eprelCode": "5345678901",
     "gtinCode": "3001234567814",
-    "branchName": "32675198_impastatrici_23.csv"
+    "batchName": "32675198_impastatrici_23.csv"
   },
   {
     "id": 23,
@@ -189,7 +189,7 @@
     "energyClass": "C",
     "eprelCode": "6456789012",
     "gtinCode": "3001234567815",
-    "branchName": "32675198_centrifughe_24.csv"
+    "batchName": "32675198_centrifughe_24.csv"
   },
   {
     "id": 24,
@@ -197,7 +197,7 @@
     "energyClass": "A",
     "eprelCode": "7567890123",
     "gtinCode": "3001234567816",
-    "branchName": "32675198_estrattori_25.csv"
+    "batchName": "32675198_estrattori_25.csv"
   },
   {
     "id": 25,
@@ -205,7 +205,7 @@
     "energyClass": "B",
     "eprelCode": "8678901234",
     "gtinCode": "3001234567817",
-    "branchName": "32675198_griglie_26.csv"
+    "batchName": "32675198_griglie_26.csv"
   },
   {
     "id": 26,
@@ -213,7 +213,7 @@
     "energyClass": "A+",
     "eprelCode": "9789012345",
     "gtinCode": "3001234567818",
-    "branchName": "32675198_sottovuoto_27.csv"
+    "batchName": "32675198_sottovuoto_27.csv"
   },
   {
     "id": 27,
@@ -221,7 +221,7 @@
     "energyClass": "C",
     "eprelCode": "1090123456",
     "gtinCode": "3001234567819",
-    "branchName": "32675198_affettatrici_28.csv"
+    "batchName": "32675198_affettatrici_28.csv"
   },
   {
     "id": 28,
@@ -229,7 +229,7 @@
     "energyClass": "A",
     "eprelCode": "2101234567",
     "gtinCode": "3001234567820",
-    "branchName": "32675198_spremiagrumi_29.csv"
+    "batchName": "32675198_spremiagrumi_29.csv"
   },
   {
     "id": 29,
@@ -237,7 +237,7 @@
     "energyClass": "B",
     "eprelCode": "3212345678",
     "gtinCode": "3001234567821",
-    "branchName": "32675198_popcorn_30.csv"
+    "batchName": "32675198_popcorn_30.csv"
   },
   {
     "id": 30,
@@ -245,7 +245,7 @@
     "energyClass": "A++",
     "eprelCode": "4323456789",
     "gtinCode": "3001234567822",
-    "branchName": "32675198_gelatiere_31.csv"
+    "batchName": "32675198_gelatiere_31.csv"
   },
   {
     "id": 31,
@@ -253,7 +253,7 @@
     "energyClass": "C",
     "eprelCode": "5434567890",
     "gtinCode": "3001234567823",
-    "branchName": "32675198_cuociriso_32.csv"
+    "batchName": "32675198_cuociriso_32.csv"
   },
   {
     "id": 32,
@@ -261,7 +261,7 @@
     "energyClass": "A+",
     "eprelCode": "6545678901",
     "gtinCode": "3001234567824",
-    "branchName": "32675198_bollitori_33.csv"
+    "batchName": "32675198_bollitori_33.csv"
   },
   {
     "id": 33,
@@ -269,7 +269,7 @@
     "energyClass": "B",
     "eprelCode": "7656789012",
     "gtinCode": "3001234567825",
-    "branchName": "32675198_zuccherofilato_34.csv"
+    "batchName": "32675198_zuccherofilato_34.csv"
   },
   {
     "id": 34,
@@ -277,7 +277,7 @@
     "energyClass": "A",
     "eprelCode": "8767890123",
     "gtinCode": "3001234567826",
-    "branchName": "32675198_waffle_35.csv"
+    "batchName": "32675198_waffle_35.csv"
   },
   {
     "id": 35,
@@ -285,7 +285,7 @@
     "energyClass": "A++",
     "eprelCode": "9878901234",
     "gtinCode": "3001234567827",
-    "branchName": "32675198_tritatutto_36.csv"
+    "batchName": "32675198_tritatutto_36.csv"
   },
   {
     "id": 36,
@@ -293,7 +293,7 @@
     "energyClass": "C",
     "eprelCode": "1989012345",
     "gtinCode": "3001234567828",
-    "branchName": "32675198_sbattitori_37.csv"
+    "batchName": "32675198_sbattitori_37.csv"
   },
   {
     "id": 37,
@@ -301,7 +301,7 @@
     "energyClass": "A+",
     "eprelCode": "2090123456",
     "gtinCode": "3001234567829",
-    "branchName": "32675198_friggitrice_38.csv"
+    "batchName": "32675198_friggitrice_38.csv"
   },
   {
     "id": 38,
@@ -309,7 +309,7 @@
     "energyClass": "B",
     "eprelCode": "3101234567",
     "gtinCode": "3001234567830",
-    "branchName": "32675198_panini_39.csv"
+    "batchName": "32675198_panini_39.csv"
   },
   {
     "id": 39,
@@ -317,7 +317,7 @@
     "energyClass": "A",
     "eprelCode": "4212345678",
     "gtinCode": "3001234567831",
-    "branchName": "32675198_pizza_40.csv"
+    "batchName": "32675198_pizza_40.csv"
   },
   {
     "id": 40,
@@ -325,7 +325,7 @@
     "energyClass": "A+",
     "eprelCode": "5323456789",
     "gtinCode": "3001234567832",
-    "branchName": "32675198_tostiera_41.csv"
+    "batchName": "32675198_tostiera_41.csv"
   },
   {
     "id": 41,
@@ -333,7 +333,7 @@
     "energyClass": "B",
     "eprelCode": "6434567890",
     "gtinCode": "3001234567833",
-    "branchName": "32675198_hotdog_42.csv"
+    "batchName": "32675198_hotdog_42.csv"
   },
   {
     "id": 42,
@@ -341,7 +341,7 @@
     "energyClass": "A++",
     "eprelCode": "7545678901",
     "gtinCode": "3001234567834",
-    "branchName": "32675198_caffettiera_43.csv"
+    "batchName": "32675198_caffettiera_43.csv"
   },
   {
     "id": 43,
@@ -349,7 +349,7 @@
     "energyClass": "C",
     "eprelCode": "8656789012",
     "gtinCode": "3001234567835",
-    "branchName": "32675198_crepes_44.csv"
+    "batchName": "32675198_crepes_44.csv"
   },
   {
     "id": 44,
@@ -357,7 +357,7 @@
     "energyClass": "A",
     "eprelCode": "9767890123",
     "gtinCode": "3001234567836",
-    "branchName": "32675198_cuocipasta_45.csv"
+    "batchName": "32675198_cuocipasta_45.csv"
   },
   {
     "id": 45,
@@ -365,7 +365,7 @@
     "energyClass": "B",
     "eprelCode": "1878901234",
     "gtinCode": "3001234567837",
-    "branchName": "32675198_cuocipappa_46.csv"
+    "batchName": "32675198_cuocipappa_46.csv"
   },
   {
     "id": 46,
@@ -373,7 +373,7 @@
     "energyClass": "A+",
     "eprelCode": "2989012345",
     "gtinCode": "3001234567838",
-    "branchName": "32675198_cuociuova_47.csv"
+    "batchName": "32675198_cuociuova_47.csv"
   },
   {
     "id": 47,
@@ -381,7 +381,7 @@
     "energyClass": "C",
     "eprelCode": "3090123456",
     "gtinCode": "3001234567839",
-    "branchName": "32675198_yogurt_48.csv"
+    "batchName": "32675198_yogurt_48.csv"
   },
   {
     "id": 48,
@@ -389,7 +389,7 @@
     "energyClass": "A",
     "eprelCode": "4101234567",
     "gtinCode": "3001234567840",
-    "branchName": "32675198_pasta_49.csv"
+    "batchName": "32675198_pasta_49.csv"
   },
   {
     "id": 49,
@@ -397,7 +397,7 @@
     "energyClass": "B",
     "eprelCode": "5212345678",
     "gtinCode": "3001234567841",
-    "branchName": "32675198_gnocchi_50.csv"
+    "batchName": "32675198_gnocchi_50.csv"
   },
   {
     "id": 50,
@@ -405,7 +405,7 @@
     "energyClass": "A++",
     "eprelCode": "6323456789",
     "gtinCode": "3001234567842",
-    "branchName": "32675198_ravioli_51.csv"
+    "batchName": "32675198_ravioli_51.csv"
   },
   {
     "id": 51,
@@ -413,7 +413,7 @@
     "energyClass": "C",
     "eprelCode": "7434567890",
     "gtinCode": "3001234567843",
-    "branchName": "32675198_tagliatelle_52.csv"
+    "batchName": "32675198_tagliatelle_52.csv"
   },
   {
     "id": 52,
@@ -421,7 +421,7 @@
     "energyClass": "A+",
     "eprelCode": "8545678901",
     "gtinCode": "3001234567844",
-    "branchName": "32675198_cappuccino_53.csv"
+    "batchName": "32675198_cappuccino_53.csv"
   },
   {
     "id": 53,
@@ -429,7 +429,7 @@
     "energyClass": "B",
     "eprelCode": "9656789012",
     "gtinCode": "3001234567845",
-    "branchName": "32675198_granite_54.csv"
+    "batchName": "32675198_granite_54.csv"
   },
   {
     "id": 54,
@@ -437,7 +437,7 @@
     "energyClass": "A",
     "eprelCode": "1767890123",
     "gtinCode": "3001234567846",
-    "branchName": "32675198_birra_55.csv"
+    "batchName": "32675198_birra_55.csv"
   },
   {
     "id": 55,
@@ -445,7 +445,7 @@
     "energyClass": "A++",
     "eprelCode": "2878901234",
     "gtinCode": "3001234567847",
-    "branchName": "32675198_cocktail_56.csv"
+    "batchName": "32675198_cocktail_56.csv"
   },
   {
     "id": 56,
@@ -453,7 +453,7 @@
     "energyClass": "C",
     "eprelCode": "3989012345",
     "gtinCode": "3001234567848",
-    "branchName": "32675198_ghiaccio_57.csv"
+    "batchName": "32675198_ghiaccio_57.csv"
   },
   {
     "id": 57,
@@ -461,7 +461,7 @@
     "energyClass": "A+",
     "eprelCode": "4090123456",
     "gtinCode": "3001234567849",
-    "branchName": "32675198_zuccherofilato_58.csv"
+    "batchName": "32675198_zuccherofilato_58.csv"
   },
   {
     "id": 58,
@@ -469,7 +469,7 @@
     "energyClass": "B",
     "eprelCode": "5101234567",
     "gtinCode": "3001234567850",
-    "branchName": "32675198_popcorn_59.csv"
+    "batchName": "32675198_popcorn_59.csv"
   },
   {
     "id": 59,
@@ -477,7 +477,7 @@
     "energyClass": "A",
     "eprelCode": "6212345678",
     "gtinCode": "3001234567851",
-    "branchName": "32675198_cioccolata_60.csv"
+    "batchName": "32675198_cioccolata_60.csv"
   },
   {
     "id": 60,
@@ -485,7 +485,7 @@
     "energyClass": "A++",
     "eprelCode": "7323456789",
     "gtinCode": "3001234567852",
-    "branchName": "32675198_pancakes_61.csv"
+    "batchName": "32675198_pancakes_61.csv"
   },
   {
     "id": 61,
@@ -493,7 +493,7 @@
     "energyClass": "C",
     "eprelCode": "8434567890",
     "gtinCode": "3001234567853",
-    "branchName": "32675198_churros_62.csv"
+    "batchName": "32675198_churros_62.csv"
   },
   {
     "id": 62,
@@ -501,7 +501,7 @@
     "energyClass": "A+",
     "eprelCode": "9545678901",
     "gtinCode": "3001234567854",
-    "branchName": "32675198_donuts_63.csv"
+    "batchName": "32675198_donuts_63.csv"
   },
   {
     "id": 63,
@@ -509,7 +509,7 @@
     "energyClass": "B",
     "eprelCode": "1656789012",
     "gtinCode": "3001234567855",
-    "branchName": "32675198_muffin_64.csv"
+    "batchName": "32675198_muffin_64.csv"
   },
   {
     "id": 64,
@@ -517,7 +517,7 @@
     "energyClass": "A",
     "eprelCode": "2767890123",
     "gtinCode": "3001234567856",
-    "branchName": "32675198_cupcake_65.csv"
+    "batchName": "32675198_cupcake_65.csv"
   },
   {
     "id": 65,
@@ -525,7 +525,7 @@
     "energyClass": "A++",
     "eprelCode": "3878901234",
     "gtinCode": "3001234567857",
-    "branchName": "32675198_brownies_66.csv"
+    "batchName": "32675198_brownies_66.csv"
   },
   {
     "id": 66,
@@ -533,7 +533,7 @@
     "energyClass": "C",
     "eprelCode": "4989012345",
     "gtinCode": "3001234567858",
-    "branchName": "32675198_biscotti_67.csv"
+    "batchName": "32675198_biscotti_67.csv"
   },
   {
     "id": 67,
@@ -541,7 +541,7 @@
     "energyClass": "A+",
     "eprelCode": "5090123456",
     "gtinCode": "3001234567859",
-    "branchName": "32675198_pane_68.csv"
+    "batchName": "32675198_pane_68.csv"
   },
   {
     "id": 68,
@@ -549,7 +549,7 @@
     "energyClass": "B",
     "eprelCode": "6101234567",
     "gtinCode": "3001234567860",
-    "branchName": "32675198_pizza_69.csv"
+    "batchName": "32675198_pizza_69.csv"
   },
   {
     "id": 69,
@@ -557,7 +557,7 @@
     "energyClass": "A",
     "eprelCode": "7212345678",
     "gtinCode": "3001234567861",
-    "branchName": "32675198_gnocchi_70.csv"
+    "batchName": "32675198_gnocchi_70.csv"
   },
   {
     "id": 70,
@@ -565,7 +565,7 @@
     "energyClass": "A++",
     "eprelCode": "8323456789",
     "gtinCode": "3001234567862",
-    "branchName": "32675198_ravioli_71.csv"
+    "batchName": "32675198_ravioli_71.csv"
   },
   {
     "id": 71,
@@ -573,7 +573,7 @@
     "energyClass": "C",
     "eprelCode": "9434567890",
     "gtinCode": "3001234567863",
-    "branchName": "32675198_tagliatelle_72.csv"
+    "batchName": "32675198_tagliatelle_72.csv"
   },
   {
     "id": 72,
@@ -581,7 +581,7 @@
     "energyClass": "A+",
     "eprelCode": "1545678901",
     "gtinCode": "3001234567864",
-    "branchName": "32675198_cappuccino_73.csv"
+    "batchName": "32675198_cappuccino_73.csv"
   },
   {
     "id": 73,
@@ -589,7 +589,7 @@
     "energyClass": "B",
     "eprelCode": "2656789012",
     "gtinCode": "3001234567865",
-    "branchName": "32675198_granite_74.csv"
+    "batchName": "32675198_granite_74.csv"
   },
   {
     "id": 74,
@@ -597,7 +597,7 @@
     "energyClass": "A",
     "eprelCode": "3767890123",
     "gtinCode": "3001234567866",
-    "branchName": "32675198_birra_75.csv"
+    "batchName": "32675198_birra_75.csv"
   },
   {
     "id": 75,
@@ -605,7 +605,7 @@
     "energyClass": "A++",
     "eprelCode": "4878901234",
     "gtinCode": "3001234567867",
-    "branchName": "32675198_cocktail_76.csv"
+    "batchName": "32675198_cocktail_76.csv"
   },
   {
     "id": 76,
@@ -613,7 +613,7 @@
     "energyClass": "C",
     "eprelCode": "5989012345",
     "gtinCode": "3001234567868",
-    "branchName": "32675198_ghiaccio_77.csv"
+    "batchName": "32675198_ghiaccio_77.csv"
   },
   {
     "id": 77,
@@ -621,7 +621,7 @@
     "energyClass": "A+",
     "eprelCode": "6090123456",
     "gtinCode": "3001234567869",
-    "branchName": "32675198_zuccherofilato_78.csv"
+    "batchName": "32675198_zuccherofilato_78.csv"
   },
   {
     "id": 78,
@@ -629,7 +629,7 @@
     "energyClass": "B",
     "eprelCode": "7101234567",
     "gtinCode": "3001234567870",
-    "branchName": "32675198_popcorn_79.csv"
+    "batchName": "32675198_popcorn_79.csv"
   },
   {
     "id": 79,
@@ -637,7 +637,7 @@
     "energyClass": "A",
     "eprelCode": "8212345678",
     "gtinCode": "3001234567871",
-    "branchName": "32675198_cioccolata_80.csv"
+    "batchName": "32675198_cioccolata_80.csv"
   },
   {
     "id": 80,
@@ -645,7 +645,7 @@
     "energyClass": "A++",
     "eprelCode": "9323456789",
     "gtinCode": "3001234567872",
-    "branchName": "32675198_pancakes_81.csv"
+    "batchName": "32675198_pancakes_81.csv"
   },
   {
     "id": 81,
@@ -653,7 +653,7 @@
     "energyClass": "C",
     "eprelCode": "1434567890",
     "gtinCode": "3001234567873",
-    "branchName": "32675198_churros_82.csv"
+    "batchName": "32675198_churros_82.csv"
   },
   {
     "id": 82,
@@ -661,7 +661,7 @@
     "energyClass": "A+",
     "eprelCode": "2545678901",
     "gtinCode": "3001234567874",
-    "branchName": "32675198_donuts_83.csv"
+    "batchName": "32675198_donuts_83.csv"
   },
   {
     "id": 83,
@@ -669,7 +669,7 @@
     "energyClass": "B",
     "eprelCode": "3656789012",
     "gtinCode": "3001234567875",
-    "branchName": "32675198_muffin_84.csv"
+    "batchName": "32675198_muffin_84.csv"
   },
   {
     "id": 84,
@@ -677,7 +677,7 @@
     "energyClass": "A",
     "eprelCode": "4767890123",
     "gtinCode": "3001234567876",
-    "branchName": "32675198_cupcake_85.csv"
+    "batchName": "32675198_cupcake_85.csv"
   },
   {
     "id": 85,
@@ -685,7 +685,7 @@
     "energyClass": "A++",
     "eprelCode": "5878901234",
     "gtinCode": "3001234567877",
-    "branchName": "32675198_brownies_86.csv"
+    "batchName": "32675198_brownies_86.csv"
   },
   {
     "id": 86,
@@ -693,7 +693,7 @@
     "energyClass": "C",
     "eprelCode": "6989012345",
     "gtinCode": "3001234567878",
-    "branchName": "32675198_biscotti_87.csv"
+    "batchName": "32675198_biscotti_87.csv"
   },
   {
     "id": 87,
@@ -701,7 +701,7 @@
     "energyClass": "A+",
     "eprelCode": "7090123456",
     "gtinCode": "3001234567879",
-    "branchName": "32675198_pane_88.csv"
+    "batchName": "32675198_pane_88.csv"
   },
   {
     "id": 88,
@@ -709,7 +709,7 @@
     "energyClass": "B",
     "eprelCode": "8101234567",
     "gtinCode": "3001234567880",
-    "branchName": "32675198_pizza_89.csv"
+    "batchName": "32675198_pizza_89.csv"
   },
   {
     "id": 89,
@@ -717,7 +717,7 @@
     "energyClass": "A",
     "eprelCode": "9212345678",
     "gtinCode": "3001234567881",
-    "branchName": "32675198_gnocchi_90.csv"
+    "batchName": "32675198_gnocchi_90.csv"
   },
   {
     "id": 90,
@@ -725,7 +725,7 @@
     "energyClass": "A++",
     "eprelCode": "1323456789",
     "gtinCode": "3001234567882",
-    "branchName": "32675198_ravioli_91.csv"
+    "batchName": "32675198_ravioli_91.csv"
   },
   {
     "id": 91,
@@ -733,7 +733,7 @@
     "energyClass": "C",
     "eprelCode": "2434567890",
     "gtinCode": "3001234567883",
-    "branchName": "32675198_tagliatelle_92.csv"
+    "batchName": "32675198_tagliatelle_92.csv"
   },
   {
     "id": 92,
@@ -741,7 +741,7 @@
     "energyClass": "A+",
     "eprelCode": "3545678901",
     "gtinCode": "3001234567884",
-    "branchName": "32675198_cappuccino_93.csv"
+    "batchName": "32675198_cappuccino_93.csv"
   },
   {
     "id": 93,
@@ -749,7 +749,7 @@
     "energyClass": "B",
     "eprelCode": "4656789012",
     "gtinCode": "3001234567885",
-    "branchName": "32675198_granite_94.csv"
+    "batchName": "32675198_granite_94.csv"
   },
   {
     "id": 94,
@@ -757,7 +757,7 @@
     "energyClass": "A",
     "eprelCode": "5767890123",
     "gtinCode": "3001234567886",
-    "branchName": "32675198_birra_95.csv"
+    "batchName": "32675198_birra_95.csv"
   },
   {
     "id": 95,
@@ -765,7 +765,7 @@
     "energyClass": "A++",
     "eprelCode": "6878901234",
     "gtinCode": "3001234567887",
-    "branchName": "32675198_cocktail_96.csv"
+    "batchName": "32675198_cocktail_96.csv"
   },
   {
     "id": 96,
@@ -773,7 +773,7 @@
     "energyClass": "C",
     "eprelCode": "7989012345",
     "gtinCode": "3001234567888",
-    "branchName": "32675198_ghiaccio_97.csv"
+    "batchName": "32675198_ghiaccio_97.csv"
   },
   {
     "id": 97,
@@ -781,7 +781,7 @@
     "energyClass": "A+",
     "eprelCode": "8090123456",
     "gtinCode": "3001234567889",
-    "branchName": "32675198_zuccherofilato_98.csv"
+    "batchName": "32675198_zuccherofilato_98.csv"
   },
   {
     "id": 98,
@@ -789,7 +789,7 @@
     "energyClass": "B",
     "eprelCode": "9101234567",
     "gtinCode": "3001234567890",
-    "branchName": "32675198_popcorn_99.csv"
+    "batchName": "32675198_popcorn_99.csv"
   },
   {
     "id": 99,
@@ -797,7 +797,7 @@
     "energyClass": "A",
     "eprelCode": "1212345678",
     "gtinCode": "3001234567891",
-    "branchName": "32675198_cioccolata_100.csv"
+    "batchName": "32675198_cioccolata_100.csv"
   },
   {
     "id": 100,
@@ -805,7 +805,7 @@
     "energyClass": "A++",
     "eprelCode": "2323456789",
     "gtinCode": "3001234567892",
-    "branchName": "32675198_pancakes_101.csv"
+    "batchName": "32675198_pancakes_101.csv"
   },
   {
     "id": 101,
@@ -813,7 +813,7 @@
     "energyClass": "C",
     "eprelCode": "3434567890",
     "gtinCode": "3001234567893",
-    "branchName": "32675198_churros_102.csv"
+    "batchName": "32675198_churros_102.csv"
   },
   {
     "id": 102,
@@ -821,7 +821,7 @@
     "energyClass": "A+",
     "eprelCode": "4545678901",
     "gtinCode": "3001234567894",
-    "branchName": "32675198_donuts_103.csv"
+    "batchName": "32675198_donuts_103.csv"
   },
   {
     "id": 103,
@@ -829,7 +829,7 @@
     "energyClass": "B",
     "eprelCode": "5656789012",
     "gtinCode": "3001234567895",
-    "branchName": "32675198_muffin_104.csv"
+    "batchName": "32675198_muffin_104.csv"
   },
   {
     "id": 104,
@@ -837,7 +837,7 @@
     "energyClass": "A",
     "eprelCode": "6767890123",
     "gtinCode": "3001234567896",
-    "branchName": "32675198_cupcake_105.csv"
+    "batchName": "32675198_cupcake_105.csv"
   },
   {
     "id": 105,
@@ -845,7 +845,7 @@
     "energyClass": "A++",
     "eprelCode": "7878901234",
     "gtinCode": "3001234567897",
-    "branchName": "32675198_brownies_106.csv"
+    "batchName": "32675198_brownies_106.csv"
   },
   {
     "id": 106,
@@ -853,7 +853,7 @@
     "energyClass": "C",
     "eprelCode": "8989012345",
     "gtinCode": "3001234567898",
-    "branchName": "32675198_biscotti_107.csv"
+    "batchName": "32675198_biscotti_107.csv"
   },
   {
     "id": 107,
@@ -861,7 +861,7 @@
     "energyClass": "A+",
     "eprelCode": "9090123456",
     "gtinCode": "3001234567899",
-    "branchName": "32675198_pane_108.csv"
+    "batchName": "32675198_pane_108.csv"
   },
   {
     "id": 108,
@@ -869,7 +869,7 @@
     "energyClass": "B",
     "eprelCode": "1101234567",
     "gtinCode": "3001234567900",
-    "branchName": "32675198_pizza_109.csv"
+    "batchName": "32675198_pizza_109.csv"
   },
   {
     "id": 109,
@@ -877,7 +877,7 @@
     "energyClass": "A",
     "eprelCode": "2212345678",
     "gtinCode": "3001234567901",
-    "branchName": "32675198_gnocchi_110.csv"
+    "batchName": "32675198_gnocchi_110.csv"
   },
   {
     "id": 110,
@@ -885,7 +885,7 @@
     "energyClass": "A++",
     "eprelCode": "3323456789",
     "gtinCode": "3001234567902",
-    "branchName": "32675198_ravioli_111.csv"
+    "batchName": "32675198_ravioli_111.csv"
   },
   {
     "id": 111,
@@ -893,7 +893,7 @@
     "energyClass": "C",
     "eprelCode": "4434567890",
     "gtinCode": "3001234567903",
-    "branchName": "32675198_tagliatelle_112.csv"
+    "batchName": "32675198_tagliatelle_112.csv"
   },
   {
     "id": 112,
@@ -901,7 +901,7 @@
     "energyClass": "A+",
     "eprelCode": "5545678901",
     "gtinCode": "3001234567904",
-    "branchName": "32675198_cappuccino_113.csv"
+    "batchName": "32675198_cappuccino_113.csv"
   },
   {
     "id": 113,
@@ -909,7 +909,7 @@
     "energyClass": "B",
     "eprelCode": "6656789012",
     "gtinCode": "3001234567905",
-    "branchName": "32675198_granite_114.csv"
+    "batchName": "32675198_granite_114.csv"
   },
   {
     "id": 114,
@@ -917,7 +917,7 @@
     "energyClass": "A",
     "eprelCode": "7767890123",
     "gtinCode": "3001234567906",
-    "branchName": "32675198_birra_115.csv"
+    "batchName": "32675198_birra_115.csv"
   },
   {
     "id": 115,
@@ -925,7 +925,7 @@
     "energyClass": "A++",
     "eprelCode": "8878901234",
     "gtinCode": "3001234567907",
-    "branchName": "32675198_cocktail_116.csv"
+    "batchName": "32675198_cocktail_116.csv"
   },
   {
     "id": 116,
@@ -933,7 +933,7 @@
     "energyClass": "C",
     "eprelCode": "9989012345",
     "gtinCode": "3001234567908",
-    "branchName": "32675198_ghiaccio_117.csv"
+    "batchName": "32675198_ghiaccio_117.csv"
   },
   {
     "id": 117,
@@ -941,7 +941,7 @@
     "energyClass": "A+",
     "eprelCode": "1090123457",
     "gtinCode": "3001234567909",
-    "branchName": "32675198_zuccherofilato_118.csv"
+    "batchName": "32675198_zuccherofilato_118.csv"
   },
   {
     "id": 118,
@@ -949,6 +949,6 @@
     "energyClass": "B",
     "eprelCode": "2101234568",
     "gtinCode": "3001234567910",
-    "branchName": "32675198_popcorn_119.csv"
+    "batchName": "32675198_popcorn_119.csv"
   }
 ]

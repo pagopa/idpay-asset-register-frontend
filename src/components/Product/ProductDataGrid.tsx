@@ -5,7 +5,6 @@ import {
   Button,
   InputLabel,
   FormControl,
-  // Link,
   MenuItem,
   Table,
   TableContainer,
@@ -27,26 +26,20 @@ import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { BatchList } from '../../api/generated/register/BatchList';
 import { displayRows, emptyData, PRODUCTS_CATEGORY } from '../../utils/constants';
-import { getComparator, Order } from './helpers';
+import {
+  getComparator,
+  Order,
+  EnhancedTableProps,
+  HeadCell,
+  BatchFilterItems,
+  BatchFilterList,
+} from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import EprelLink from './EprelLink';
 import MessagePage from './MessagePage';
-
-interface EnhancedTableProps {
-  order: Order;
-  orderBy: string;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ProductDTO) => void;
-}
-
-interface HeadCell {
-  disablePadding: boolean;
-  id: keyof ProductDTO;
-  label: string;
-  numeric: boolean;
-  textAlign?: any;
-}
 
 const getProductList = async (
   page?: number,
@@ -69,6 +62,18 @@ const getProductList = async (
       productCode,
       productFileId
     );
+  } catch (error: any) {
+    if (error?.response && error?.response?.data) {
+      const apiError: UploadsErrorDTO = error.response.data;
+      throw apiError;
+    }
+    throw error;
+  }
+};
+
+const getBatchFilterList = async (): Promise<BatchList> => {
+  try {
+    return await RegisterApi.getBatchFilterItems();
   } catch (error: any) {
     if (error?.response && error?.response?.data) {
       const apiError: UploadsErrorDTO = error.response.data;
@@ -120,7 +125,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       numeric: false,
       disablePadding: false,
       textAlign: 'centlefter',
-      label: `${t('pages.products.listHeader.branch')}`,
+      label: `${t('pages.products.listHeader.batch')}`,
     },
   ];
 
@@ -162,7 +167,7 @@ const ProductGrid = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [itemsQty, setItemsQty] = useState<number | undefined>(0);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
-  const [branchFilter, setBranchFilter] = useState<string>('');
+  const [batchFilter, setBatchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
@@ -172,6 +177,7 @@ const ProductGrid = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(displayRows);
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
+  const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
 
   const { t } = useTranslation();
 
@@ -191,6 +197,18 @@ const ProductGrid = () => {
         setTableData([]);
         setLoading(false);
       });
+
+    void getBatchFilterList()
+      .then((res) => {
+        const { left } = res as BatchFilterList;
+        const values = left[0].value;
+        console.log('§>>', { values });
+
+        setBatchFilterItems([...values]);
+      })
+      .catch(() => {
+        setBatchFilterItems([]);
+      });
   }, []);
 
   useEffect(() => {
@@ -201,12 +219,13 @@ const ProductGrid = () => {
       'asc',
       categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
       eprelCodeFilter,
-      gtinCodeFilter
+      gtinCodeFilter,
+      undefined,
+      batchFilter
     )
       .then((res) => {
         const { content, pageNo, totalElements } = res;
         setTableData(content ? Array.from(content) : []);
-        // setPage(pageNo || 0);
         setItemsQty(totalElements);
         if (pageNo !== undefined && totalElements) {
           setPaginatorFrom(pageNo * displayRows + 1);
@@ -223,22 +242,13 @@ const ProductGrid = () => {
       .finally(() => setFiltering(false));
   }, [page, filtering]);
 
-  const branches = [
-    ...new Set(
-      tableData
-        .map((item) => item.batchName)
-        .filter((name) => name !== '-')
-        .sort()
-    ),
-  ];
-
   const handleFilterButtonClick = () => {
     setFiltering(true);
   };
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
-    setBranchFilter('');
+    setBatchFilter('');
     setEprelCodeFilter('');
     setGtinCodeFilter('');
     setFiltering(true);
@@ -267,8 +277,8 @@ const ProductGrid = () => {
     setCategoryFilter(event.target.value as string);
   };
 
-  const handleCategoryBranchChange = (event: SelectChangeEvent) => {
-    setBranchFilter(event.target.value as string);
+  const handleCategoryBatchChange = (event: SelectChangeEvent) => {
+    setBatchFilter(event.target.value as string);
   };
 
   const handleEprelCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -285,7 +295,7 @@ const ProductGrid = () => {
   };
 
   const noFilterSetted = (): boolean =>
-    categoryFilter === '' && branchFilter === '' && eprelCodeFilter === '' && gtinCodeFilter === '';
+    categoryFilter === '' && batchFilter === '' && eprelCodeFilter === '' && gtinCodeFilter === '';
 
   const visibleRows = [...tableData].sort(getComparator(order, orderBy));
 
@@ -327,21 +337,21 @@ const ProductGrid = () => {
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth size="small" disabled>
-            <InputLabel id="branch-filter-select-label">
-              {t('pages.products.filterLabels.branch')}
+          <FormControl fullWidth size="small">
+            <InputLabel id="batch-filter-select-label">
+              {t('pages.products.filterLabels.batch')}
             </InputLabel>
             <Select
               labelId="branch-filter-select-label"
               id="branch-filter-select"
-              value={branchFilter}
-              label={t('pages.products.filterLabels.branch')}
+              value={batchFilter}
+              label={t('pages.products.filterLabels.batch')}
               MenuProps={selectMenuProps}
-              onChange={handleCategoryBranchChange}
+              onChange={handleCategoryBatchChange}
             >
-              {branches?.map((branch) => (
-                <MenuItem key={branch} value={branch}>
-                  {branch}
+              {batchFilterItems?.map((item) => (
+                <MenuItem key={item?.productFileId} value={item?.productFileId}>
+                  {item?.batchName}
                 </MenuItem>
               ))}
             </Select>
