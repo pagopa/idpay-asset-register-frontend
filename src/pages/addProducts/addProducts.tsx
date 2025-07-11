@@ -38,7 +38,7 @@ const AddProducts: React.FC = () => {
                 >
                     {t('breadcrumbs.exit')}
                 </ButtonNaked>
-                <Breadcrumbs aria-label="breadcrumb" >
+                <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '3px', marginRight: '8px' }} >
                     <Typography color="text.primary" variant="body2">
                         {t('breadcrumbs.home')}
                     </Typography>

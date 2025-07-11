@@ -66,16 +66,6 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(({fileAccepted, se
             ? 'cookinghobs_template.csv'
             : 'eprel_template.csv';
 
-    const setIntiStatus = () => {
-        setAlertTitle('');
-        setAlertDescription('');
-        setFileName('');
-        setFileDate('');
-        setFileIsLoading(false);
-        setFileRejected(false);
-        setFileAccepted(false);
-    };
-
     const validateCategory = async () => {
         await formik.setFieldTouched('category', true, true);
         await formik.validateField('category');
@@ -303,8 +293,6 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(({fileAccepted, se
                     fileName={fileName}
                     fileDate={fileDate}
                     chipLabel={t('pages.addProducts.form.fileUpload.validFile')}
-                    buttonLabel={t('pages.addProducts.form.fileUpload.changeFile')}
-                    buttonHandler={setIntiStatus}
                 />
             ) : (
                 InitStatusPartial

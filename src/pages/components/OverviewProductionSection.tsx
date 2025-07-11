@@ -31,7 +31,7 @@ function renderUploadStatusChip(status: string) {
     case 'IN_PROGRESS':
     case 'UPLOADED':
       return <Chip color="default" label="In corso" size='small' />;
-    case 'EPREL_ERROR':
+    case 'PARTIAL':
       return <Chip color="warning" label="Parziale" size='small' />;
     case 'LOADED':
       return <Chip color="success" label="Caricato" size='small' />;
@@ -142,7 +142,8 @@ const UploadsTable: React.FC<{
       {loading && <CircularProgress />}
       {!loading && !error && data?.content && data.content.length > 0 && (
         <>
-          <TableContainer component={Paper} elevation={0}>
+          <Divider />
+          <TableContainer component={Paper} elevation={0} sx={{ paddingTop: 3}}>
             <Table size="small">
               <TableHead>
                 <TableRow>
@@ -309,7 +310,6 @@ const OverviewProductionSection: React.FC = () => {
             t={t}
             stopNavigation={stopNavigation}
           />
-          <Divider />
           <UploadsTable loading={loading} error={error} data={data} stopNavigation={false} />
         </Box>
       </Paper>

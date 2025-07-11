@@ -178,7 +178,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                 align="right"
                 sx={{ borderBottom: `1px solid ${grey[300]}`, width: '15%' }}
               >
-                {row.uploadStatus === 'EPREL_ERROR' && (
+                {row.uploadStatus === 'PARTIAL' && (
                   <DownloadIcon
                     color='primary'
                     sx={{ verticalAlign: 'middle' }}
@@ -233,7 +233,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                 height: '100%',
               }}
             >
-              {t('pages.uploadHistory.uploadHistoryEmptyState')}
+              {t('pages.uploadHistory.uploadHistoryNoFilesUploaded')}
             </TableCell>
           </TableRow>
         </TableBody>

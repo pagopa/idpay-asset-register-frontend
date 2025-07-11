@@ -13,6 +13,7 @@ import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
 import { UploadsListDTO } from './generated/register/UploadsListDTO';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
 import { CsvDTO } from './generated/register/CsvDTO';
+import {BatchList} from "./generated/register/BatchList";
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -107,7 +108,16 @@ export const RegisterApi = {
       throw error;
     }
   },
-
+  getBatchFilterItems: async (): Promise<BatchList> => {
+    try {
+      return await registerClient.getBatchNameList({
+        'x-organization-selected': ''
+      });
+    } catch (error) {
+      console.error('Errore durante il recupero della lista filtri lotti:', error);
+      throw error;
+    }
+  },
   uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
     const result = await registerClient.uploadProductList({ csv, category });
     return extractResponse(result, 200, onRedirectToLogin);

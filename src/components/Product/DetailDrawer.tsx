@@ -10,16 +10,16 @@ type Props = {
 };
 
 export default function DetailDrawer({open, toggleDrawer,children }:Props) {
- 
+
 
   return (
-    <Drawer anchor="right" open={open} onClose={() => toggleDrawer(false)}>
-      <Box sx={{ display: 'flex', flexDirection: 'row-reverse', padding: 1 }}>
-        <IconButton onClick={() => toggleDrawer(false)} sx={{color:"text.secondary"}}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      {children}
-    </Drawer>
+      <Drawer anchor="right" open={open} onClose={() => toggleDrawer(false)}>
+        <Box sx={{ display: 'flex', flexDirection: 'row-reverse', padding: 1 }}>
+          <IconButton onClick={() => toggleDrawer(false)} sx={{color:"text.secondary"}}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        {children}
+      </Drawer>
   );
 }
