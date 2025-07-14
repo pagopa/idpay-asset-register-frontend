@@ -27,8 +27,8 @@ export type Value = string;
 
 export function getComparator<T>(order: Order, orderBy: keyof T): (a: T, b: T) => number {
   return order === 'desc'
-      ? (a, b) => descendingComparator(a, b, orderBy)
-      : (a, b) => -descendingComparator(a, b, orderBy);
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 export function stableSort<T>(array: ReadonlyArray<T>, comparator: (a: T, b: T) => number) {
@@ -69,4 +69,22 @@ export type BatchFilterItems = { productFileId: string; batchName: string } | un
 export interface BatchFilterList {
   _tag: string;
   left: Array<{ context: Array<object>; message: string; value: any }>;
+}
+
+export function extractBatchFilterItems(obj: any): Array<BatchFilterItems> | [] {
+  if (typeof obj !== 'object' || obj === null) {
+    return [];
+  }
+  if (Object.prototype.hasOwnProperty.call(obj, 'value') && Array.isArray(obj.value)) {
+    return obj.value;
+  }
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const result = extractBatchFilterItems(obj[key]);
+      if (result.length > 0) {
+        return result;
+      }
+    }
+  }
+  return [];
 }
