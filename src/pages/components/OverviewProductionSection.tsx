@@ -28,7 +28,7 @@ import { getProductFilesList } from '../../services/registerService';
 
 function renderUploadStatusChip(status: string) {
   switch (status) {
-    case 'IN_PROGRESS':
+    case 'IN_PROCESS':
     case 'UPLOADED':
       return <Chip color="default" label="In corso" size='small' />;
     case 'PARTIAL':

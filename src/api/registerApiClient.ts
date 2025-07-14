@@ -14,6 +14,7 @@ import { UploadsListDTO } from './generated/register/UploadsListDTO';
 import { BatchList } from './generated/register/BatchList';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
 import { CsvDTO } from './generated/register/CsvDTO';
+import {InstitutionsResponse} from "./generated/register/InstitutionsResponse";
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -151,4 +152,14 @@ export const RegisterApi = {
 
     return { data: responseData, filename: fileName };
   },
+  getInstitutionsList: async (): Promise<InstitutionsResponse> => {
+    try {
+      const result = await registerClient.getInstitutionsList({});
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error('Errore durante il recupero della lista delle istituzioni:', error);
+      throw error;
+    }
+  },
+
 };

@@ -78,6 +78,18 @@
       "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
       "overviewTitleBoxProdBtn": "Carica .csv"
     },
+    "invitaliaOverview": {
+      "overviewTitle": "Panoramica",
+      "overviewTitleDescription": "Consulta i prodotti caricati dai produttori con i relativi dettagli.",
+      "noInstitutionsFound": "Non ci sono produttori.",
+      "rowsPerPage": "Righe per pagina",
+      "tablePaginationFrom": "di",
+      "listHeader": {
+        "institutionName": "Nome produttore",
+        "createdAt": "Creata il",
+        "updatedAt": "Ultima modifica"
+      }
+    },
     "addProducts": {
       "title": "Aggiungi prodotti",
       "boxAddTitle": "Aggiungi i tuoi prodotti",
