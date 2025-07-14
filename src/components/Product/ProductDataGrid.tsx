@@ -1,20 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Box,
   Paper,
   Button,
   Table,
   TableContainer,
   TableBody,
-  TableHead,
   TableRow,
   TableCell,
-  TableSortLabel,
   TablePagination,
   Typography,
 } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,19 +26,13 @@ import {
   setBatchId,
   setBatchName,
 } from '../../redux/slices/productsSlice';
-import {
-  getComparator,
-  Order,
-  EnhancedTableProps,
-  HeadCell,
-  BatchFilterItems,
-  extractBatchFilterItems,
-} from './helpers';
+import { getComparator, Order, BatchFilterItems, extractBatchFilterItems } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
 import EprelLinks from './EprelLinks';
 import FilterBar from './FilterBar';
+import EnhancedTableHead from './EnhancedTableHead';
 
 const getProductList = async (
   page?: number,
@@ -85,83 +75,6 @@ const getBatchFilterList = async (): Promise<BatchList> => {
     throw error;
   }
 };
-
-function EnhancedTableHead(props: EnhancedTableProps) {
-  const { order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property: keyof ProductDTO) => (event: React.MouseEvent<unknown>) => {
-    onRequestSort(event, property);
-  };
-
-  const { t } = useTranslation();
-
-  const headCells: ReadonlyArray<HeadCell> = [
-    {
-      id: 'category',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.category')}`,
-    },
-    {
-      id: 'energyClass',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.energeticClass')}`,
-    },
-    {
-      id: 'eprelCode',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.eprelCode')}`,
-    },
-    {
-      id: 'gtinCode',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.gtinCode')}`,
-    },
-    {
-      id: 'batchName',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'centlefter',
-      label: `${t('pages.products.listHeader.batch')}`,
-    },
-  ];
-
-  return (
-    <TableHead sx={{ backgroundColor: grey?.A100 }}>
-      <TableRow>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell?.id}
-            align={headCell?.textAlign ? headCell?.textAlign : 'left'}
-            padding="normal"
-            sortDirection={orderBy === headCell?.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell?.id}
-              direction={orderBy === headCell?.id ? order : 'asc'}
-              onClick={createSortHandler(headCell?.id)}
-              hideSortIcon={true}
-              disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
-            >
-              {headCell?.label}
-              {orderBy === headCell?.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
 
 const ProductGrid = () => {
   const dispatch = useDispatch();
