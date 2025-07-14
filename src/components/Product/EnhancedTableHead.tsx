@@ -66,7 +66,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               direction={orderBy === headCell?.id ? order : 'asc'}
               onClick={createSortHandler(headCell?.id)}
               hideSortIcon={true}
-              disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
+              // disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
             >
               {headCell?.label}
               {orderBy === headCell?.id ? (

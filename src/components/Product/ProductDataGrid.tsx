@@ -95,8 +95,13 @@ const ProductGrid = () => {
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
+
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
+
+  const sortKey = orderBy && `${orderBy},${order}`;
+  console.log('<1>', { order, orderBy, sortKey, batchFilterItems });
+
   const isAnyFilterActive = useMemo(
     () =>
       categoryFilter !== '' ||
@@ -151,7 +156,7 @@ const ProductGrid = () => {
     void getProductList(
       page,
       displayRows,
-      'asc',
+      sortKey,
       categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
       eprelCodeFilter,
       gtinCodeFilter,
@@ -178,7 +183,7 @@ const ProductGrid = () => {
 
     dispatch(setBatchName(''));
     dispatch(setBatchId(''));
-  }, [page, filtering]);
+  }, [page, filtering, sortKey]);
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
