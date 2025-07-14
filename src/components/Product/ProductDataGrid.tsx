@@ -156,7 +156,7 @@ const ProductGrid = () => {
     void getProductList(
       page,
       displayRows,
-      sortKey,
+      filtering ? sortKey : undefined,
       categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
       eprelCodeFilter,
       gtinCodeFilter,
