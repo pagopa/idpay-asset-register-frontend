@@ -11,6 +11,7 @@ const ROUTES = {
   PRIVACY_POLICY: `${BASE_ROUTE}/privacy-policy`,
   PRODUCTS: `${BASE_ROUTE}/prodotti`,
   UPLOADS: `${BASE_ROUTE}/storico-caricamenti`,
+  INVITALIA_PRODUCTS_LIST: `${BASE_ROUTE}/lista-prodotti`
 };
 
 export default ROUTES;

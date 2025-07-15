@@ -6,6 +6,7 @@ import { LOG_REDUX_ACTIONS } from '../utils/constants';
 import { partiesReducer } from './slices/partiesSlice';
 import { permissionsReducer } from './slices/permissionsSlice';
 import {productsReducer} from "./slices/productsSlice";
+import {invitaliaReducer} from "./slices/invitaliaSlice";
 
 const additionalMiddlewares = [LOG_REDUX_ACTIONS ? logger : undefined];
 
@@ -17,6 +18,7 @@ export const createStore = () =>
       parties: partiesReducer,
       permissions: permissionsReducer,
       products: productsReducer,
+      invitalia: invitaliaReducer,
     },
     middleware: (getDefaultMiddleware: (arg0: { serializableCheck: boolean }) => any) =>
       additionalMiddlewares.reduce(
