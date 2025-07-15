@@ -2,62 +2,353 @@ import { paginateInstitutions, sortInstitutions } from '../helpers';
 import { Institution } from '../../../model/Institution';
 import { InstitutionsResponse } from '../../../api/generated/register/InstitutionsResponse';
 
+const mockInstitutions: Institution[] = [
+    {
+        institutionId: '1',
+        description: 'Istituzione A',
+        createdAt: '2023-01-15T10:00:00Z',
+        updatedAt: '2023-01-15T10:00:00Z',
+    },
+    {
+        institutionId: '2',
+        description: 'Istituzione B',
+        createdAt: '2023-02-20T15:30:00Z',
+        updatedAt: '2023-02-20T15:30:00Z',
+    },
+    {
+        institutionId: '3',
+        description: 'Istituzione C',
+        createdAt: '2023-03-10T08:45:00Z',
+        updatedAt: '2023-03-10T08:45:00Z',
+    },
+    {
+        institutionId: '4',
+        description: 'Istituzione D',
+        createdAt: '15/01/2023',
+        updatedAt: '15/01/2023',
+    },
+    {
+        institutionId: '5',
+        description: 'Istituzione E',
+        createdAt: '20/02/2023',
+        updatedAt: '20/02/2023',
+    }
+];
+
+const mockInstitutionsResponse: InstitutionsResponse = {
+    institutions: mockInstitutions
+};
+
 describe('paginateInstitutions', () => {
-    const mockInstitutions: Institution[] = Array.from({ length: 10 }, (_, i) => ({
-        institutionId: `id-${i}`,
-        description: `Institution ${i}`,
-        createdAt: new Date(2023, 0, i + 1),
-        updatedAt: new Date(2023, 1, i + 1),
-    }));
+    it('should paginate institutions correctly', () => {
+        const result: InstitutionsResponse= paginateInstitutions(mockInstitutionsResponse, 0, 2);
 
-    const data: InstitutionsResponse = { institutions: mockInstitutions };
-
-    it('should return the correct slice of institutions', () => {
-        const result = paginateInstitutions(data, 1, 3);
-        expect(result.institutions).toHaveLength(3);
-        expect(result.institutions[0].institutionId).toBe('id-3');
+        const institutions = result.institutions as Institution[];
+        expect(institutions).toHaveLength(2);
+        expect(institutions![0].institutionId).toBe('1');
+        expect(institutions![1].institutionId).toBe('2');
     });
 
-    it('should return empty array if data is null', () => {
-        const result = paginateInstitutions(null, 0, 5);
-        expect(result.institutions).toEqual([]);
+    it('should return second page correctly', () => {
+        const result = paginateInstitutions(mockInstitutionsResponse, 1, 2);
+
+        const institutions = result.institutions as Institution[];
+        expect(institutions).toHaveLength(2);
+        expect(institutions![0].institutionId).toBe('3');
+        expect(institutions![1].institutionId).toBe('4');
+    });
+
+    it('should handle last page with fewer items', () => {
+        const result = paginateInstitutions(mockInstitutionsResponse, 2, 2);
+
+        const institutions = result.institutions as Institution[];
+        expect(institutions).toHaveLength(1);
+        expect(institutions![0].institutionId).toBe('5');
+    });
+
+    it('should handle empty page', () => {
+        const result = paginateInstitutions(mockInstitutionsResponse, 10, 2);
+
+        expect(result.institutions).toHaveLength(0);
+    });
+
+    it('should handle null data', () => {
+        const result = paginateInstitutions(null, 0, 2);
+
+        expect(result.institutions).toHaveLength(0);
+    });
+
+    it('should handle undefined institutions', () => {
+        const emptyResponse: InstitutionsResponse = { institutions: undefined as any };
+        const result = paginateInstitutions(emptyResponse, 0, 2);
+
+        expect(result.institutions).toHaveLength(0);
+    });
+
+    it('should handle page 0 with different rowsPerPage', () => {
+        const result = paginateInstitutions(mockInstitutionsResponse, 0, 3);
+
+        const institutions = result.institutions as Institution[];
+        expect(institutions).toHaveLength(3);
+        expect(institutions![0].institutionId).toBe('1');
+        expect(institutions![2].institutionId).toBe('3');
     });
 });
 
 describe('sortInstitutions', () => {
-    const institutions: Institution[] = [
-        {
-            institutionId: '1',
-            description: 'Beta',
-            createdAt: new Date(2023, 0, 1),
-            updatedAt: new Date(2023, 1, 1),
-        },
-        {
-            institutionId: '2',
-            description: 'Alpha',
-            createdAt: new Date(2023, 0, 2),
-            updatedAt: new Date(2023, 1, 2),
-        },
-        {
-            institutionId: '3',
-            description: 'Gamma',
-            createdAt: new Date(2023, 0, 3),
-            updatedAt: new Date(2023, 1, 3),
-        },
-    ];
+    describe('string sorting', () => {
+        it('should sort by name in ascending order', () => {
+            const result = sortInstitutions(mockInstitutions, 'asc', 'description');
 
-    it('should sort by description ascending', () => {
-        const result = sortInstitutions(institutions, 'asc', 'description');
-        expect(result.map(i => i.description)).toEqual(['Alpha', 'Beta', 'Gamma']);
+            expect(result[0].description).toBe('Istituzione A');
+            expect(result[1].description).toBe('Istituzione B');
+            expect(result[2].description).toBe('Istituzione C');
+            expect(result[3].description).toBe('Istituzione D');
+            expect(result[4].description).toBe('Istituzione E');
+        });
+
+        it('should sort by name in descending order', () => {
+            const result = sortInstitutions(mockInstitutions, 'desc', 'description');
+
+            expect(result[0].description).toBe('Istituzione E');
+            expect(result[1].description).toBe('Istituzione D');
+            expect(result[2].description).toBe('Istituzione C');
+            expect(result[3].description).toBe('Istituzione B');
+            expect(result[4].description).toBe('Istituzione A');
+        });
     });
 
-    it('should sort by createdAt descending', () => {
-        const result = sortInstitutions(institutions, 'desc', 'createdAt');
-        expect(result.map(i => i.institutionId)).toEqual(['3', '2', '1']);
+    describe('date sorting with ISO format', () => {
+        it('should sort by createdAt in ascending order (ISO format)', () => {
+            const result = sortInstitutions(mockInstitutions, 'asc', 'createdAt');
+
+            expect(result[0].institutionId).toBe('1'); // 2023-01-15
+            expect(result[1].institutionId).toBe('4'); // 15/01/2023 (same as above)
+            expect(result[2].institutionId).toBe('2'); // 2023-02-20
+            expect(result[3].institutionId).toBe('5'); // 20/02/2023 (same as above)
+            expect(result[4].institutionId).toBe('3'); // 2023-03-10
+        });
+
+        it('should sort by createdAt in descending order (ISO format)', () => {
+            const result = sortInstitutions(mockInstitutions, 'desc', 'createdAt');
+
+            expect(result[0].institutionId).toBe('3'); // 2023-03-10
+            expect(result[4].institutionId).toBe('1'); // 2023-01-15
+        });
     });
 
-    it('should sort by updatedAt ascending', () => {
-        const result = sortInstitutions(institutions, 'asc', 'updatedAt');
-        expect(result.map(i => i.institutionId)).toEqual(['1', '2', '3']);
+    describe('date sorting with DD/MM/YYYY format', () => {
+        const institutionsWithDDMMYYYY: Institution[] = [
+            {
+                institutionId: '1',
+                description: 'Test 1',
+                createdAt: '15/01/2023',
+                updatedAt: '15/01/2023',
+            },
+            {
+                institutionId: '2',
+                description: 'Test 2',
+                createdAt: '20/02/2023',
+                updatedAt: '20/02/2023',
+            },
+            {
+                institutionId: '3',
+                description: 'Test 3',
+                createdAt: '10/03/2023',
+                updatedAt: '10/03/2023',
+            }
+        ];
+
+        it('should sort DD/MM/YYYY dates in ascending order', () => {
+            const result = sortInstitutions(institutionsWithDDMMYYYY, 'asc', 'createdAt');
+
+            expect(result[0].institutionId).toBe('1'); // 15/01/2023
+            expect(result[1].institutionId).toBe('2'); // 20/02/2023
+            expect(result[2].institutionId).toBe('3'); // 10/03/2023
+        });
+
+        it('should sort DD/MM/YYYY dates in descending order', () => {
+            const result = sortInstitutions(institutionsWithDDMMYYYY, 'desc', 'createdAt');
+
+            expect(result[0].institutionId).toBe('3'); // 10/03/2023
+            expect(result[1].institutionId).toBe('2'); // 20/02/2023
+            expect(result[2].institutionId).toBe('1'); // 15/01/2023
+        });
+    });
+
+    describe('handling null and undefined values', () => {
+        const institutionsWithNulls: Institution[] = [
+            {
+                institutionId: '1',
+                description: 'Test 1',
+                createdAt: '2023-01-15T10:00:00Z',
+                updatedAt: '2023-01-15T10:00:00Z',
+            },
+            {
+                institutionId: '2',
+                description: null as any,
+                createdAt: '2023-02-20T15:30:00Z',
+                updatedAt: '2023-02-20T15:30:00Z',
+            },
+            {
+                institutionId: '3',
+                description: 'Test 3',
+                createdAt: null as any,
+                updatedAt: '2023-03-10T08:45:00Z',
+            }
+        ];
+
+        it('should handle null values in sorting (nulls go to end)', () => {
+            const result = sortInstitutions(institutionsWithNulls, 'asc', 'description');
+
+            expect(result[0].description).toBe('Test 1');
+            expect(result[1].description).toBe('Test 3');
+            expect(result[2].description).toBe(null);
+        });
+
+        it('should handle null dates (nulls go to end)', () => {
+            const result = sortInstitutions(institutionsWithNulls, 'asc', 'createdAt');
+
+            expect(result[0].institutionId).toBe('1');
+            expect(result[1].institutionId).toBe('2');
+            expect(result[2].institutionId).toBe('3'); // null createdAt goes to end
+        });
+    });
+
+    describe('handling invalid date formats', () => {
+        const institutionsWithInvalidDates: Institution[] = [
+            {
+                institutionId: '1',
+                description: 'Test 1',
+                createdAt: '2023-01-15T10:00:00Z',
+                updatedAt: '2023-01-15T10:00:00Z',
+            },
+            {
+                institutionId: '2',
+                description: 'Test 2',
+                createdAt: 'invalid-date',
+                updatedAt: 'invalid-date',
+            },
+            {
+                institutionId: '3',
+                description: 'Test 3',
+                createdAt: '32/13/2023', // invalid DD/MM/YYYY
+                updatedAt: '32/13/2023',
+            },
+            {
+                institutionId: '4',
+                description: 'Test 4',
+                createdAt: '15/1/23', // incomplete format
+                updatedAt: '15/1/23',
+            }
+        ];
+
+        it('should handle invalid date formats (treated as 0)', () => {
+            const result = sortInstitutions(institutionsWithInvalidDates, 'asc', 'createdAt');
+
+            expect(result[0].institutionId).toBe('2'); // invalid-date -> 0
+            expect(result[1].institutionId).toBe('3'); // 32/13/2023 -> 0
+            expect(result[2].institutionId).toBe('4'); // 15/1/23 -> 0
+            expect(result[3].institutionId).toBe('1'); // valid date
+        });
+    });
+
+    describe('edge cases', () => {
+        it('should handle empty array', () => {
+            const result = sortInstitutions([], 'asc', 'description');
+
+            expect(result).toEqual([]);
+        });
+
+        it('should handle single item array', () => {
+            const singleItem = [mockInstitutions[0]];
+            const result = sortInstitutions(singleItem, 'asc', 'description');
+
+            expect(result).toHaveLength(1);
+            expect(result[0].institutionId).toBe('1');
+        });
+
+        it('should not mutate original array', () => {
+            const originalArray = [...mockInstitutions];
+            sortInstitutions(mockInstitutions, 'desc', 'description');
+
+            expect(mockInstitutions).toEqual(originalArray);
+        });
+
+        it('should handle numeric-like strings', () => {
+            const numericInstitutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: '100',
+                    createdAt: '2023-01-15T10:00:00Z',
+                    updatedAt: '2023-01-15T10:00:00Z',
+                },
+                {
+                    institutionId: '2',
+                    description: '20',
+                    createdAt: '2023-02-20T15:30:00Z',
+                    updatedAt: '2023-02-20T15:30:00Z',
+                },
+                {
+                    institutionId: '3',
+                    description: '3',
+                    createdAt: '2023-03-10T08:45:00Z',
+                    updatedAt: '2023-03-10T08:45:00Z',
+                }
+            ];
+
+            const result = sortInstitutions(numericInstitutions, 'asc', 'description');
+
+            // Should sort as strings, not numbers
+            expect(result[0].description).toBe('100');
+            expect(result[1].description).toBe('20');
+            expect(result[2].description).toBe('3');
+        });
+    });
+
+    describe('date parsing edge cases', () => {
+        it('should handle empty string dates', () => {
+            const institutionsWithEmptyDates: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Test 1',
+                    createdAt: '',
+                    updatedAt: '',
+                },
+                {
+                    institutionId: '2',
+                    description: 'Test 2',
+                    createdAt: '2023-01-15T10:00:00Z',
+                    updatedAt: '2023-01-15T10:00:00Z',
+                }
+            ];
+
+            const result = sortInstitutions(institutionsWithEmptyDates, 'asc', 'createdAt');
+
+            expect(result[0].institutionId).toBe('1'); // empty string -> 0
+            expect(result[1].institutionId).toBe('2'); // valid date
+        });
+
+        it('should handle boundary dates in DD/MM/YYYY format', () => {
+            const institutionsWithBoundaryDates: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Test 1',
+                    createdAt: '01/01/2023',
+                    updatedAt: '01/01/2023',
+                },
+                {
+                    institutionId: '2',
+                    description: 'Test 2',
+                    createdAt: '31/12/2023',
+                    updatedAt: '31/12/2023',
+                }
+            ];
+
+            const result = sortInstitutions(institutionsWithBoundaryDates, 'asc', 'createdAt');
+
+            expect(result[0].institutionId).toBe('1'); // 01/01/2023
+            expect(result[1].institutionId).toBe('2'); // 31/12/2023
+        });
     });
 });

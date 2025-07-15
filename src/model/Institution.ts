@@ -1,6 +1,6 @@
 export interface Institution {
     institutionId: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
     description: string;
 }
