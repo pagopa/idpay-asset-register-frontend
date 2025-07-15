@@ -20,5 +20,9 @@ export enum PRODUCTS_CATEGORY {
   COOKINGHOBS = 'COOKINGHOBS',
 }
 
+export const INVITALIA = 'invitalia';
+
 export const displayRows = 8;
 export const emptyData = '-';
+
+export const maxLengthEmail: number = 40;

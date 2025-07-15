@@ -111,8 +111,10 @@
     "coveragePathIgnorePatterns": [
       "src/index.js",
       "src/bootstrap.tsx",
+      "src/consentAndAnalyticsConfiguration.ts",
       "src/reportWebVitals.ts",
-      "src/api/generated"
+      "src/api/generated",
+      "src/locale/it.ts"
     ],
     "moduleNameMapper": {
       "next/router": "<rootDir>/__mocks__/next/router.js",

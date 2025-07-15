@@ -1,8 +1,8 @@
 import {RegisterApi} from "../api/registerApiClient";
 import {RegisterUploadResponseDTO} from "../api/generated/register/RegisterUploadResponseDTO";
 import {CsvDTO} from "../api/generated/register/CsvDTO";
-import { UploadsListDTO } from "../api/generated/register/UploadsListDTO";
-import { UploadsErrorDTO } from "../api/generated/register/UploadsErrorDTO";
+import {UploadsListDTO} from "../api/generated/register/UploadsListDTO";
+import {InstitutionsResponse} from "../api/generated/register/InstitutionsResponse";
 
 
 export const uploadProductList = (
@@ -25,9 +25,19 @@ export const getProductFilesList = async (
       return await RegisterApi.getProductFiles(page, size, sort);
     } catch (error: any) {
       if (error.response && error.response.data) {
-        const apiError: UploadsErrorDTO = error.response.data;
-        throw apiError;
+        throw error.response.data;
       }
       throw error;
     }
   };
+
+export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
+  try {
+    return await RegisterApi.getInstitutionsList();
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
