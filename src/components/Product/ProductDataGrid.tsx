@@ -113,6 +113,39 @@ const ProductGrid = () => {
 
   const { t } = useTranslation();
 
+  const callApi = () => {
+    void getProductList(
+      page,
+      displayRows,
+      filtering ? sortKey : undefined,
+      categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
+      eprelCodeFilter,
+      gtinCodeFilter,
+      undefined,
+      batchFilter
+    )
+      .then((res) => {
+        const { content, pageNo, totalElements } = res;
+        setTableData(content ? Array.from(content) : []);
+        setItemsQty(totalElements);
+        if (pageNo !== undefined && totalElements) {
+          setPaginatorFrom(pageNo * displayRows + 1);
+          setPaginatorTo(
+            displayRows * (pageNo + 1) < totalElements ? displayRows * (pageNo + 1) : totalElements
+          );
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setTableData([]);
+        setLoading(false);
+      })
+      .finally(() => setFiltering(false));
+
+    dispatch(setBatchName(''));
+    dispatch(setBatchId(''));
+  };
+
   useEffect(() => {
     if (batchId) {
       setBatchFilter(batchId);
@@ -153,37 +186,17 @@ const ProductGrid = () => {
 
   useEffect(() => {
     setLoading(true);
-    void getProductList(
-      page,
-      displayRows,
-      filtering ? sortKey : undefined,
-      categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
-      eprelCodeFilter,
-      gtinCodeFilter,
-      undefined,
-      batchFilter
-    )
-      .then((res) => {
-        const { content, pageNo, totalElements } = res;
-        setTableData(content ? Array.from(content) : []);
-        setItemsQty(totalElements);
-        if (pageNo !== undefined && totalElements) {
-          setPaginatorFrom(pageNo * displayRows + 1);
-          setPaginatorTo(
-            displayRows * (pageNo + 1) < totalElements ? displayRows * (pageNo + 1) : totalElements
-          );
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        setTableData([]);
-        setLoading(false);
-      })
-      .finally(() => setFiltering(false));
+    callApi();
+  }, [page, orderBy]);
 
-    dispatch(setBatchName(''));
-    dispatch(setBatchId(''));
-  }, [page, filtering, sortKey]);
+  useEffect(() => {
+    setLoading(true);
+    if (!filtering) {
+      setLoading(false);
+      return;
+    }
+    callApi();
+  }, [filtering]);
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
