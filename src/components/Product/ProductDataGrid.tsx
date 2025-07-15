@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {
   Paper,
   Button,
@@ -13,7 +13,7 @@ import {
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from "react-redux";
 import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
@@ -26,7 +26,7 @@ import {
   setBatchId,
   setBatchName,
 } from '../../redux/slices/productsSlice';
-import { Order, BatchFilterItems, extractBatchFilterItems } from './helpers';
+import {getComparator, Order, BatchFilterItems, BatchFilterList} from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
@@ -98,7 +98,17 @@ const ProductGrid = () => {
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
-  
+
+    const sortKey = orderBy && `${orderBy},${order}`;
+    console.log('<1>', { order, orderBy, sortKey, batchFilterItems });
+
+    const isAnyFilterActive = useMemo(() => (
+            categoryFilter !== '' ||
+            batchFilter !== '' ||
+            eprelCodeFilter !== '' ||
+            gtinCodeFilter !== ''
+        ), [categoryFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]);
+
   const { t } = useTranslation();
 
   const callProductsApi = () => {
@@ -141,40 +151,43 @@ const ProductGrid = () => {
   };
 
 
-  useEffect(() => {
-    if (batchId) {
-      setBatchFilter(batchId);
-      setFiltering(true);
-    }
-  }, [batchName, batchId, batchFilterItems]);
+    useEffect(() => {
+        if (batchId) {
+            setBatchFilter(batchId);
+            setFiltering(true);
+        }
+    }, [batchName, batchId, batchFilterItems]);
 
-  useEffect(() => {
+    useEffect(() => {
     setLoading(true);
-    if (batchId === '') {
-      void getProductList(page, displayRows)
-        .then((res) => {
-          const { content, pageNo, totalElements } = res;
-          setTableData(content ? Array.from(content) : []);
-          setPage(pageNo || 0);
-          setItemsQty(totalElements);
-          setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
-          setPaginatorTo(
-            totalElements && totalElements > displayRows ? displayRows : totalElements
-          );
-          setApiErrorOccurred(false);
-          setLoading(false);
-        })
-        .catch(() => handleStateForError());
+    if( batchId === "" ) {
+        void getProductList(page, displayRows)
+            .then((res) => {
+                const {content, pageNo, totalElements} = res;
+                setTableData(content ? Array.from(content) : []);
+                setPage(pageNo || 0);
+                setItemsQty(totalElements);
+                setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
+                setPaginatorTo(totalElements && totalElements > displayRows ? displayRows : totalElements);
+                setLoading(false);
+            })
+            .catch(() => {
+                setTableData([]);
+                setLoading(false);
+            });
     }
 
     void getBatchFilterList()
-      .then((res) => {
-        const values = extractBatchFilterItems(res);
-        setBatchFilterItems([...values]);
-      })
-      .catch(() => {
-        setBatchFilterItems([]);
-      });
+        .then((res) => {
+          const { left } = res as BatchFilterList;
+          const values = left[0].value;
+          console.log('§>>', { values });
+
+          setBatchFilterItems([...values]);
+        })
+        .catch(() => {
+          setBatchFilterItems([]);
+        });
   }, []);
 
   useEffect(() => {
@@ -330,8 +343,8 @@ const ProductGrid = () => {
         )}
       </Paper>
 
-      <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer}>
-        <ProductDetail data={drawerData} />
+      <DetailDrawer data-testid="detail-drawer" open={drawerOpened} toggleDrawer={handleToggleDrawer}>
+        <ProductDetail data-testid="product-detail" data={drawerData} />
       </DetailDrawer>
     </>
   );

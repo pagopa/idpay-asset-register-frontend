@@ -12,7 +12,7 @@ type Props = {
 export default function ProductDetail({ data }: Props) {
   const { t } = useTranslation();
   return (
-    <Box sx={{ minWidth: 400, pl: 2 }} role="presentation">
+    <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
         <ListItem disablePadding>
           <Box sx={{ mb: 1, ml: 2 }}>

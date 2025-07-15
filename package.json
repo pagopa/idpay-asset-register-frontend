@@ -114,6 +114,7 @@
       "src/consentAndAnalyticsConfiguration.ts",
       "src/reportWebVitals.ts",
       "src/api/generated",
+      "src/api/registerApiClient.ts",
       "src/locale/it.ts"
     ],
     "moduleNameMapper": {

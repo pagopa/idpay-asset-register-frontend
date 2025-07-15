@@ -1,12 +1,32 @@
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { createStore, RootState } from '../../redux/store';
+import { createStore } from '../../redux/store';
 import withSelectedParty from '../withSelectedParty';
 import { verifyFetchPartyDetailsMockExecution } from '../../services/__mocks__/partyService';
 import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { testToken } from '../../utils/constants';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { PartiesState } from '../../redux/slices/partiesSlice';
+
+jest.mock('../../utils/env', () => ({
+  default: {
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+    },
+    URL_FE: {
+      LOGOUT: 'https://mock-api/logout',
+    },
+    API_TIMEOUT_MS: 5000,
+  },
+}));
+
+jest.mock('../../routes', () => ({
+  __esModule: true,
+  default: {
+    HOME: '/home'
+  },
+  BASE_ROUTE: '/base'
+}));
 
 jest.mock('../../services/partyService');
 

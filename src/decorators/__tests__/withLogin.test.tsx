@@ -1,88 +1,54 @@
-import { render, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
-// import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
-import { createStore } from '../../redux/store';
+import { render, screen, waitFor } from '@testing-library/react';
 import withLogin from '../withLogin';
-import { testToken } from '../../utils/constants';
-import React from 'react';
+import { useSelector } from 'react-redux';
+import { useLogin } from '../../hooks/useLogin';
+import useLoading from '@pagopa/selfcare-common-frontend/lib/hooks/useLoading';
+import '@testing-library/jest-dom';
 
-export interface IDPayUser {
-  uid: string;
-  taxCode: string;
-  name: string;
-  surname: string;
-  email: string;
-  org_party_role: string;
-  org_role: string;
-}
-
-const oldWindowLocation = global.window.location;
-const mockedLocation = {
-  assign: jest.fn(),
-  pathname: '',
-  origin: 'MOCKED_ORIGIN',
-  search: '',
-  hash: '',
-};
-
-beforeAll(() => {
-  Object.defineProperty(window, 'location', { value: mockedLocation });
-});
-afterAll(() => {
-  Object.defineProperty(window, 'location', { value: oldWindowLocation });
-});
-
-// clean storage after each test
-afterEach(() => {
-  storageUserOps.delete();
-  mockedLocation.assign.mockReset();
-});
-
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: any) => key }),
+jest.mock('react-redux', () => ({
+  useSelector: jest.fn(),
 }));
 
-const renderApp = () => {
-  const store = createStore();
-  const Component = () => <></>;
-  const DecoratedComponent = withLogin(Component);
-  render(
-    <Provider store={store}>
-      <DecoratedComponent />
-    </Provider>
-  );
-  return store;
-};
+jest.mock('../../hooks/useLogin', () => ({
+  useLogin: jest.fn(),
+}));
 
-const mockUser = (): IDPayUser => {
-  const user: IDPayUser = {
-    name: 'NAME',
-    surname: 'SURNAME',
-    uid: 'UID',
-    taxCode: 'AAAAAA00A00A000A',
-    email: 'a@a.aa',
-    org_party_role: 'ADMIN',
-    org_role: 'admin',
-  };
+jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useLoading', () => jest.fn());
 
-  storageUserOps.write(user);
-  storageTokenOps.write(testToken);
+const DummyComponent = () => <div data-testid="dummy">Contenuto protetto</div>;
+const WrappedComponent = withLogin(DummyComponent);
 
-  return user;
-};
+describe('withLogin HOC', () => {
+  const mockSetLoading = jest.fn();
+  const mockAttemptSilentLogin = jest.fn();
 
-test('Test no auth session', async () => {
-  renderApp();
-  await waitFor(() => expect(global.window.location.assign).toBeCalledWith('/auth/login'));
-});
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (useLogin as jest.Mock).mockReturnValue({
+      attemptSilentLogin: mockAttemptSilentLogin,
+    });
+    (useLoading as jest.Mock).mockReturnValue(mockSetLoading);
+  });
 
-test('Test auth session', async () => {
-  const user = mockUser();
-  const store = renderApp();
-  await waitFor(() => {
-    expect(global.window.location.assign).not.toBeCalled();
-    expect(store.getState().user.logged).toMatchObject(user);
+  test('non mostra il componente se user è null e chiama attemptSilentLogin', async () => {
+    (useSelector as jest.Mock).mockReturnValue(null);
+
+    render(<WrappedComponent />);
+
+    expect(screen.queryByTestId('dummy')).not.toBeInTheDocument();
+    expect(mockSetLoading).toHaveBeenCalledWith(true);
+    await waitFor(() => {
+      expect(mockAttemptSilentLogin).toHaveBeenCalled();
+    });
+    expect(mockSetLoading).toHaveBeenCalledWith(false);
+  });
+
+  test('mostra il componente se user è presente', () => {
+    (useSelector as jest.Mock).mockReturnValue({ name: 'Mario Rossi' });
+
+    render(<WrappedComponent />);
+
+    expect(screen.getByTestId('dummy')).toBeInTheDocument();
+    expect(mockAttemptSilentLogin).not.toHaveBeenCalled();
   });
 });

@@ -14,12 +14,15 @@ import {visuallyHidden} from "@mui/utils";
 import React from "react";
 import {useNavigate} from "react-router-dom";
 import {ChevronRight} from "@mui/icons-material";
+import {useDispatch} from "react-redux";
 import {formatDateWithoutHours} from "../../helpers";
 import {usePagination} from "../../hooks/usePagination";
 import {Order} from "../../components/Product/helpers";
 import {Institution} from "../../model/Institution";
 import {InstitutionsResponse} from "../../api/generated/register/InstitutionsResponse";
 import ROUTES from "../../routes";
+import routes from "../../routes";
+import {setInstitution} from "../../redux/slices/invitaliaSlice";
 import {EnhancedTableProps, HeadCell} from "./helpers";
 
 
@@ -116,9 +119,11 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
     const paginationInfo = usePagination(page, rowsPerPage, totalElements);
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const goToInstitutionPage = () => {
-        navigate(ROUTES.HOME, { replace: true });
+    const goToInstitutionPage = (institution: string) => {
+        dispatch(setInstitution(institution));
+        navigate(ROUTES.INVITALIA_PRODUCTS_LIST);
     };
 
     if (loading) {
@@ -174,7 +179,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
                 {(data.institutions as Array<Institution> ?? []).map((row: Institution) => (
                     <TableRow key={row.institutionId}>
                         <TableCell>
-                            <Link underline="hover" href="" rel="noopener">
+                            <Link underline="hover" href={routes.INVITALIA_PRODUCTS_LIST} rel="noopener">
                                 <Typography variant="body2" sx={{ fontWeight: 'fontWeightBold', color: '#0062C3' }}>
                                     {row.description}
                                 </Typography>
@@ -186,7 +191,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
                             <ChevronRight
                                 color='primary'
                                 sx={{ verticalAlign: 'middle' }}
-                                onClick={() => goToInstitutionPage()}
+                                onClick={() => goToInstitutionPage(row.description)}
                             />
                         </TableCell>
                     </TableRow>

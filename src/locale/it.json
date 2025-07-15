@@ -90,6 +90,9 @@
         "updatedAt": "Ultima modifica"
       }
     },
+    "invitaliaProductsList": {
+      "infoCardTitle": "Dati produttore"
+    },
     "addProducts": {
       "title": "Aggiungi prodotti",
       "boxAddTitle": "Aggiungi i tuoi prodotti",

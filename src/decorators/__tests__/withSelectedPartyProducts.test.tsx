@@ -6,7 +6,27 @@ import { verifyFetchPartyProductsMockExecution } from '../../services/__mocks__/
 import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { testToken } from '../../utils/constants';
 import withSelectedPartyProducts from '../withSelectedPartyProducts';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
+
+jest.mock('../../utils/env', () => ({
+  default: {
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+    },
+    URL_FE: {
+      LOGOUT: 'https://mock-api/logout',
+    },
+    API_TIMEOUT_MS: 5000,
+  },
+}));
+
+jest.mock('../../routes', () => ({
+  __esModule: true,
+  default: {
+    HOME: '/home'
+  },
+  BASE_ROUTE: '/base'
+}));
 
 jest.mock('../../services/partyService');
 jest.mock('../../services/productService');

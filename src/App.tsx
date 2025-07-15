@@ -24,6 +24,7 @@ import ProductDataGrid from './components/Product/ProductDataGrid';
 import InvitaliaOverview from "./pages/InvitaliaOverview/invitaliaOverview";
 import {fetchUserFromLocalStorage} from "./helpers";
 import {INVITALIA} from "./utils/constants";
+import InvitaliaProductsList from "./pages/InvitaliaProductsList/invitaliaProductsList";
 
 const StandardRoutes = () => (
     <Routes>
@@ -40,6 +41,7 @@ const StandardRoutes = () => (
 const InvitaliaRoutes = () => (
     <Routes>
         <Route path={routes.HOME} element={<InvitaliaOverview />} />
+        <Route path={routes.INVITALIA_PRODUCTS_LIST} element={<InvitaliaProductsList />}/>
         <Route path={routes.TOS} element={<TOS />} />
         <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
         <Route path="*" element={<Navigate to={routes.HOME} />} />
