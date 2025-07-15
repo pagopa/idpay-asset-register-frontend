@@ -80,7 +80,7 @@ export const RegisterApi = {
   getProducts: async (
     page?: number,
     size?: number,
-    sort?: string,
+    sort?: Array<string>,
     category?: string,
     eprelCode?: string,
     gtinCode?: string,
@@ -111,7 +111,7 @@ export const RegisterApi = {
   getBatchFilterItems: async (): Promise<BatchList> => {
     try {
       return await registerClient.getBatchNameList({
-        'x-organization-selected': ''
+        'x-organization-selected': '',
       });
     } catch (error) {
       console.error('Errore durante il recupero della lista filtri lotti:', error);

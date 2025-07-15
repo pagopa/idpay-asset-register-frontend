@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Paper,
   Button,
@@ -37,7 +37,7 @@ import EnhancedTableHead from './EnhancedTableHead';
 const getProductList = async (
   page?: number,
   size?: number,
-  sort?: string,
+  sort?: Array<string>,
   category?: string,
   eprelCode?: string,
   gtinCode?: string,
@@ -96,28 +96,25 @@ const ProductGrid = () => {
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
 
+  console.log('§>', { orderBy });
+
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
 
-  const sortKey = orderBy && `${orderBy},${order}`;
-  console.log('<1>', { order, orderBy, sortKey, batchFilterItems });
-
-  const isAnyFilterActive = useMemo(
-    () =>
-      categoryFilter !== '' ||
-      batchFilter !== '' ||
-      eprelCodeFilter !== '' ||
-      gtinCodeFilter !== '',
-    [categoryFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
-  );
+  console.log('§>>', { order, orderBy });
 
   const { t } = useTranslation();
 
-  const callApi = () => {
+  const callProductsApi = () => {
+    const sortKey =
+      orderBy === 'batchName'
+        ? [`category,${order}`, `productFileId,${order}`]
+        : [`${orderBy},${order}`];
+
     void getProductList(
       page,
       displayRows,
-      filtering ? sortKey : undefined,
+      sortKey,
       categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
       eprelCodeFilter,
       gtinCodeFilter,
@@ -186,8 +183,8 @@ const ProductGrid = () => {
 
   useEffect(() => {
     setLoading(true);
-    callApi();
-  }, [page, orderBy]);
+    callProductsApi();
+  }, [page, orderBy, order]);
 
   useEffect(() => {
     setLoading(true);
@@ -195,7 +192,7 @@ const ProductGrid = () => {
       setLoading(false);
       return;
     }
-    callApi();
+    callProductsApi();
   }, [filtering]);
 
   const handleDeleteFiltersButtonClick = () => {
@@ -257,14 +254,16 @@ const ProductGrid = () => {
           backgroundColor: grey.A100,
         }}
       >
-        <TableContainer>
-          {tableData.length > 0 && !loading ? (
+        {!loading ? (
+          <TableContainer>
             <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
-              <EnhancedTableHead
-                order={order}
-                orderBy={orderBy}
-                onRequestSort={handleRequestSort}
-              />
+              {tableData.length > 0 && (
+                <EnhancedTableHead
+                  order={order}
+                  orderBy={orderBy}
+                  onRequestSort={handleRequestSort}
+                />
+              )}
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row, index) => (
                   <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
@@ -302,18 +301,10 @@ const ProductGrid = () => {
                 ))}
               </TableBody>
             </Table>
-          ) : tableData.length <= 0 && !loading ? (
-            <MessagePage
-              message={
-                isAnyFilterActive ? t('pages.products.emptyList') : t('pages.products.noFileLoaded')
-              }
-              goBack={isAnyFilterActive}
-              onGoBack={handleDeleteFiltersButtonClick}
-            />
-          ) : (
-            <MessagePage message={t(`pages.products.loading`)} />
-          )}
-        </TableContainer>
+          </TableContainer>
+        ) : (
+          <MessagePage message={t(`pages.products.loading`)} />
+        )}
         {tableData?.length > 0 && !loading && (
           <TablePagination
             component="div"

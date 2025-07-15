@@ -280,8 +280,8 @@ paths:
     post:
       tags:
         - products-upload
-      summary: Upload CSV file containing a list of products
-      description: 'ENG: Upload CSV file containing a list of products <br> IT: Caricamento del file CSV conentente una lista di prodotti'
+      summary: Veerify CSV file containing a list of products
+      description: 'ENG: Verify CSV file containing a list of products <br> IT: Verifica del file CSV conentente una lista di prodotti'
       operationId: verifyProductList
       parameters:
         - name: category
@@ -458,8 +458,12 @@ paths:
         - name: sort
           in: query
           required: false
+          style: form
+          explode: true
           schema:
-            type: string
+            type: array
+            items:
+              type: string
         - name: category
           in: query
           required: false

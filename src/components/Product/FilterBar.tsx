@@ -41,7 +41,7 @@ export default function FilterBar(props: FilterProps) {
     setEprelCodeFilter,
     gtinCodeFilter,
     setGtinCodeFilter,
-    tableData,
+    // tableData,
     handleDeleteFiltersButtonClick,
   } = props;
 
@@ -79,92 +79,88 @@ export default function FilterBar(props: FilterProps) {
     setGtinCodeFilter(event.target.value);
   };
   return (
-    <>
-      {tableData?.length > 0 && (
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 1,
-            mb: 5,
-          }}
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 1,
+        mb: 5,
+      }}
+    >
+      <FormControl fullWidth size="small">
+        <InputLabel id="category-filter-select-label">
+          {t('pages.products.filterLabels.category')}
+        </InputLabel>
+        <Select
+          labelId="category-filter-select-label"
+          id="category-filter-select"
+          value={categoryFilter}
+          label={t('pages.products.filterLabels.category')}
+          MenuProps={selectMenuProps}
+          onChange={handleCategoryFilterChange}
         >
-          <FormControl fullWidth size="small">
-            <InputLabel id="category-filter-select-label">
-              {t('pages.products.filterLabels.category')}
-            </InputLabel>
-            <Select
-              labelId="category-filter-select-label"
-              id="category-filter-select"
-              value={categoryFilter}
-              label={t('pages.products.filterLabels.category')}
-              MenuProps={selectMenuProps}
-              onChange={handleCategoryFilterChange}
-            >
-              {Object.keys(PRODUCTS_CATEGORY).map((category) => (
-                <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
-                  {t(`pages.products.categories.${category}`)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth size="small">
-            <InputLabel id="batch-filter-select-label">
-              {t('pages.products.filterLabels.batch')}
-            </InputLabel>
-            <Select
-              labelId="batch-filter-select-label"
-              id="batch-filter-select"
-              value={batchFilter}
-              label={t('pages.products.filterLabels.batch')}
-              MenuProps={selectMenuProps}
-              onChange={handleCategoryBatchChange}
-            >
-              {batchFilterItems?.map((batch) => (
-                <MenuItem key={batch?.productFileId} value={batch?.productFileId}>
-                  {batch?.batchName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {Object.keys(PRODUCTS_CATEGORY).map((category) => (
+            <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
+              {t(`pages.products.categories.${category}`)}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControl fullWidth size="small">
+        <InputLabel id="batch-filter-select-label">
+          {t('pages.products.filterLabels.batch')}
+        </InputLabel>
+        <Select
+          labelId="batch-filter-select-label"
+          id="batch-filter-select"
+          value={batchFilter}
+          label={t('pages.products.filterLabels.batch')}
+          MenuProps={selectMenuProps}
+          onChange={handleCategoryBatchChange}
+        >
+          {batchFilterItems?.map((batch) => (
+            <MenuItem key={batch?.productFileId} value={batch?.productFileId}>
+              {batch?.batchName}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-          <TextField
-            sx={{ minWidth: 175 }}
-            size="small"
-            id="eprel-code-text"
-            label={t('pages.products.filterLabels.eprelCode')}
-            variant="outlined"
-            value={eprelCodeFilter}
-            onChange={handleEprelCodeFilterChange}
-          />
+      <TextField
+        sx={{ minWidth: 175 }}
+        size="small"
+        id="eprel-code-text"
+        label={t('pages.products.filterLabels.eprelCode')}
+        variant="outlined"
+        value={eprelCodeFilter}
+        onChange={handleEprelCodeFilterChange}
+      />
 
-          <TextField
-            sx={{ minWidth: 175 }}
-            size="small"
-            id="gtin-code-text"
-            label={t('pages.products.filterLabels.gtinCode')}
-            variant="outlined"
-            value={gtinCodeFilter}
-            onChange={handleGtinCodeFilterChange}
-          />
-          <Button
-            disabled={noFilterSetted()}
-            variant="outlined"
-            sx={{ height: 44, minWidth: 100 }}
-            onClick={handleFilterButtonClick}
-          >
-            {t('pages.products.filterLabels.filter')}
-          </Button>
-          <Button
-            disabled={noFilterSetted()}
-            variant="text"
-            sx={{ height: 44, minWidth: 140 }}
-            onClick={handleDeleteFiltersButtonClick}
-          >
-            {t('pages.products.filterLabels.deleteFilters')}
-          </Button>
-        </Box>
-      )}
-    </>
+      <TextField
+        sx={{ minWidth: 175 }}
+        size="small"
+        id="gtin-code-text"
+        label={t('pages.products.filterLabels.gtinCode')}
+        variant="outlined"
+        value={gtinCodeFilter}
+        onChange={handleGtinCodeFilterChange}
+      />
+      <Button
+        disabled={noFilterSetted()}
+        variant="outlined"
+        sx={{ height: 44, minWidth: 100 }}
+        onClick={handleFilterButtonClick}
+      >
+        {t('pages.products.filterLabels.filter')}
+      </Button>
+      <Button
+        disabled={noFilterSetted()}
+        variant="text"
+        sx={{ height: 44, minWidth: 140 }}
+        onClick={handleDeleteFiltersButtonClick}
+      >
+        {t('pages.products.filterLabels.deleteFilters')}
+      </Button>
+    </Box>
   );
 }

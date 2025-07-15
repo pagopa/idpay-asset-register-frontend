@@ -59,7 +59,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             key={headCell?.id}
             align={headCell?.textAlign ? headCell?.textAlign : 'left'}
             padding="normal"
-            sortDirection={orderBy === headCell?.id ? order : false}
+            // sortDirection={orderBy === headCell?.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell?.id}
