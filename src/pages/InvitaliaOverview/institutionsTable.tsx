@@ -21,10 +21,8 @@ import {Order} from "../../components/Product/helpers";
 import {Institution} from "../../model/Institution";
 import {InstitutionsResponse} from "../../api/generated/register/InstitutionsResponse";
 import ROUTES from "../../routes";
-import routes from "../../routes";
 import {setInstitution} from "../../redux/slices/invitaliaSlice";
 import {EnhancedTableProps, HeadCell} from "./helpers";
-
 
 function EnhancedTableHead(props: EnhancedTableProps) {
     const { order, orderBy, onRequestSort } = props;
@@ -121,7 +119,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const goToInstitutionPage = (institution: string) => {
+    const goToInstitutionPage = (institution: Institution) => {
         dispatch(setInstitution(institution));
         navigate(ROUTES.INVITALIA_PRODUCTS_LIST);
     };
@@ -179,8 +177,16 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
                 {(data.institutions as Array<Institution> ?? []).map((row: Institution) => (
                     <TableRow key={row.institutionId}>
                         <TableCell>
-                            <Link underline="hover" href={routes.INVITALIA_PRODUCTS_LIST} rel="noopener">
-                                <Typography variant="body2" sx={{ fontWeight: 'fontWeightBold', color: '#0062C3' }}>
+                            <Link
+                                underline="hover"
+                                component="button"
+                                onClick={() => goToInstitutionPage(row)}
+                                sx={{ textDecoration: 'none' }}
+                            >
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 'fontWeightBold', color: '#0062C3' }}
+                                >
                                     {row.description}
                                 </Typography>
                             </Link>
@@ -191,7 +197,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
                             <ChevronRight
                                 color='primary'
                                 sx={{ verticalAlign: 'middle' }}
-                                onClick={() => goToInstitutionPage(row.description)}
+                                onClick={() => goToInstitutionPage(row)}
                             />
                         </TableCell>
                     </TableRow>

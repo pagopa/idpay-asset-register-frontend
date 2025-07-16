@@ -3,6 +3,7 @@ import {RegisterUploadResponseDTO} from "../api/generated/register/RegisterUploa
 import {CsvDTO} from "../api/generated/register/CsvDTO";
 import {UploadsListDTO} from "../api/generated/register/UploadsListDTO";
 import {InstitutionsResponse} from "../api/generated/register/InstitutionsResponse";
+import {InstitutionResponse} from "../api/generated/register/InstitutionResponse";
 
 
 export const uploadProductList = (
@@ -34,6 +35,20 @@ export const getProductFilesList = async (
 export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
   try {
     return await RegisterApi.getInstitutionsList();
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
+
+export const getInstitutionById = async (
+    institutionId: string
+): Promise<InstitutionResponse> => {
+  try {
+    return await RegisterApi.getInstitutionById(institutionId);
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw error.response.data;

@@ -92,7 +92,7 @@ export const RegisterApi = {
       const params = {
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
-        ...(sort !== undefined ? { sort } : {}),
+        ...(sort !== undefined ? { sort: [sort] } : {}),
         ...(category ? { category } : {}),
         ...(eprelCode ? { eprelCode } : {}),
         ...(gtinCode ? { gtinCode } : {}),
@@ -156,6 +156,15 @@ export const RegisterApi = {
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
       console.error('Errore durante il recupero della lista delle istituzioni:', error);
+      throw error;
+    }
+  },
+  getInstitutionById: async (institutionId: string): Promise<InstitutionsResponse> => {
+    try {
+      const result = await registerClient.retrieveInstitutionById({ institutionId });
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error(`Errore durante il recupero dell'istituzione con ID ${institutionId}:`, error);
       throw error;
     }
   },

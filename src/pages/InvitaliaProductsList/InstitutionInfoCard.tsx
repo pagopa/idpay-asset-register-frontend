@@ -1,12 +1,29 @@
 import {Box, Paper, Tooltip, Typography} from "@mui/material";
-import React, {useMemo} from "react";
+import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {fetchUserFromLocalStorage, truncateString} from "../../helpers";
-
+import {useSelector} from "react-redux";
+import {truncateString} from "../../helpers";
+import {InstitutionResponse} from "../../api/generated/register/InstitutionResponse";
+import {getInstitutionById} from "../../services/registerService";
+import {institutionSelector} from "../../redux/slices/invitaliaSlice";
 
 const InstitutionInfoCard: React.FC = () => {
     const { t } = useTranslation();
-    const user = useMemo(() => fetchUserFromLocalStorage(), []);
+    const institution = useSelector(institutionSelector);
+    const [institutionInfo, setInstitutionInfo] = useState<InstitutionResponse | null>(null);
+
+    const fetchInstitution = async () => {
+        try {
+            const data = await getInstitutionById(institution?.institutionId || '');
+            setInstitutionInfo(data);
+        } catch (error) {
+            console.error("Errore nel recupero dei dati dell'istituzione:", error);
+        }
+    };
+
+    useEffect(() => {
+        void fetchInstitution();
+    }, []);
 
     return(
         <Box sx={{ gridColumn: 'span 12' }}>
@@ -40,24 +57,19 @@ const InstitutionInfoCard: React.FC = () => {
                     }}
                 >
                     {[
-                        { label: 'overviewTitleBoxInfoTitleLblRs', value: user?.org_name, truncate: true },
+                        { label: 'ragioneSociale', value: institutionInfo?.description, truncate: true },
                         {
-                            label: 'overviewTitleBoxInfoTitleLblCf',
-                            value: user?.org_taxcode,
+                            label: 'sedeLegale',
+                            value: institutionInfo?.address,
                             truncate: true,
                         },
-                        { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat, truncate: true },
+                        { label: 'codiceFiscale', value: institutionInfo?.taxCode, truncate: true },
                         {
-                            label: 'overviewTitleBoxInfoTitleLblSl',
-                            value: user?.org_address,
+                            label: 'pec',
+                            value: institutionInfo?.digitalAddress,
                             truncate: true,
                         },
-                        { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec, truncate: true },
-                        {
-                            label: 'overviewTitleBoxInfoTitleLblEmailOp',
-                            value: user?.org_email,
-                            truncate: true,
-                        },
+                        { label: 'piva', value: institutionInfo?.externalId, truncate: true },
                     ].map(({ label, value, truncate }) => (
                         <Box
                             key={label}
@@ -71,7 +83,7 @@ const InstitutionInfoCard: React.FC = () => {
                             }}
                         >
                             <Typography variant="body2" fontWeight={500} noWrap>
-                                {t(`pages.overview.${label}`)}:
+                                {t(`pages.invitaliaProductsList.${label}`)}:
                             </Typography>
                             {truncate && value ? (
                                 <Tooltip title={value}>

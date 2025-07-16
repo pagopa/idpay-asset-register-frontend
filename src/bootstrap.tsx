@@ -7,9 +7,10 @@ import '@pagopa/selfcare-common-frontend/index.css';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { theme } from '@pagopa/mui-italia';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
+import {PersistGate} from "redux-persist/integration/react";
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { store } from './redux/store';
+import {persistor, store} from './redux/store';
 import { MOCK_USER, testToken } from './utils/constants';
 import { ENV } from './utils/env';
 import './consentAndAnalyticsConfiguration.ts';
@@ -34,12 +35,14 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <App />
-        </ThemeProvider>
-      </BrowserRouter>
+        <PersistGate loading={null} persistor={persistor}>
+            <BrowserRouter>
+                <ThemeProvider theme={theme}>
+                  <CssBaseline />
+                  <App />
+                </ThemeProvider>
+            </BrowserRouter>
+        </PersistGate>
     </Provider>
   </React.StrictMode>,
 );
