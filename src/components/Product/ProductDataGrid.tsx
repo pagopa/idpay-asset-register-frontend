@@ -84,6 +84,7 @@ const ProductGrid = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [itemsQty, setItemsQty] = useState<number | undefined>(0);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [stateFilter, setStateFilter] = useState<string>('');
   const [batchFilter, setBatchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
@@ -186,6 +187,7 @@ const ProductGrid = () => {
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
+    setStateFilter('');
     setBatchFilter('');
     setEprelCodeFilter('');
     setGtinCodeFilter('');
@@ -223,6 +225,8 @@ const ProductGrid = () => {
       <FilterBar
         categoryFilter={categoryFilter}
         setCategoryFilter={setCategoryFilter}
+        stateFilter={stateFilter}
+        setStateFilter={setStateFilter}
         setFiltering={setFiltering}
         batchFilter={batchFilter}
         setBatchFilter={setBatchFilter}

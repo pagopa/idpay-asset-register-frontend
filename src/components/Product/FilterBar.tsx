@@ -11,12 +11,14 @@ import {
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { PRODUCTS_CATEGORY } from '../../utils/constants';
+import {PRODUCTS_CATEGORY, PRODUCTS_STATES} from '../../utils/constants';
 import { BatchFilterItems } from './helpers';
 
 interface FilterProps {
   categoryFilter: string;
   setCategoryFilter: Dispatch<SetStateAction<string>>;
+  stateFilter: string;
+  setStateFilter: Dispatch<SetStateAction<string>>;
   setFiltering: Dispatch<SetStateAction<boolean>>;
   batchFilter: string;
   setBatchFilter: Dispatch<SetStateAction<string>>;
@@ -33,6 +35,8 @@ export default function FilterBar(props: FilterProps) {
   const {
     categoryFilter,
     setCategoryFilter,
+    stateFilter,
+    setStateFilter,
     setFiltering,
     batchFilter,
     setBatchFilter,
@@ -64,6 +68,10 @@ export default function FilterBar(props: FilterProps) {
 
   const handleCategoryFilterChange = (event: SelectChangeEvent) => {
     setCategoryFilter(event.target.value as string);
+  };
+
+  const handleStateFilterChange = (event: SelectChangeEvent) => {
+    setStateFilter(event.target.value as string);
   };
 
   const handleCategoryBatchChange = (event: SelectChangeEvent) => {
@@ -105,6 +113,25 @@ export default function FilterBar(props: FilterProps) {
                 <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
                   {t(`pages.products.categories.${category}`)}
                 </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth size="small">
+            <InputLabel id="state-filter-select-label">
+              {t('pages.invitaliaProductsList.state')}
+            </InputLabel>
+            <Select
+                labelId="state-filter-select-label"
+                id="state-filter-select"
+                value={stateFilter}
+                label={t('pages.invitaliaProductsList.state')}
+                MenuProps={selectMenuProps}
+                onChange={handleStateFilterChange}
+            >
+              {Object.keys(PRODUCTS_STATES).map((category) => (
+                  <MenuItem key={category} value={t(`pages.invitaliaProductsList.${category}`)}>
+                    {t(`pages.invitaliaProductsList.${category}`)}
+                  </MenuItem>
               ))}
             </Select>
           </FormControl>

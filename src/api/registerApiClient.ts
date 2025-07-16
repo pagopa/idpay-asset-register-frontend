@@ -77,23 +77,21 @@ export const RegisterApi = {
       throw error;
     }
   },
-
   getProducts: async (
-    page?: number,
-    size?: number,
-    sort?: string,
-    category?: string,
-    eprelCode?: string,
-    gtinCode?: string,
-    productCode?: string,
-    productFileId?: string
+      page?: number,
+      size?: number,
+      sort?: string,
+      category?: string,
+      eprelCode?: string,
+      gtinCode?: string,
+      productCode?: string,
+      productFileId?: string,
   ): Promise<UploadsListDTO> => {
     try {
-      // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
       const params = {
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
-        ...(sort !== undefined ? { sort: [sort] } : {}),
+        ...(sort !== undefined ? { sort } : {}),
         ...(category ? { category } : {}),
         ...(eprelCode ? { eprelCode } : {}),
         ...(gtinCode ? { gtinCode } : {}),
@@ -104,7 +102,6 @@ export const RegisterApi = {
       const result = await registerClient.getProducts(params);
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      // Puoi loggare o gestire l’errore come preferisci
       console.error('Errore durante il recupero dei file prodotto:', error);
       throw error;
     }

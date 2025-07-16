@@ -20,6 +20,12 @@ export enum PRODUCTS_CATEGORY {
   COOKINGHOBS = 'COOKINGHOBS',
 }
 
+export enum PRODUCTS_STATES {
+  APPROVED = 'Approvato',
+  EXCLUDED = 'Escluso',
+  MARKED = 'Contrassegnato',
+}
+
 export const INVITALIA = 'invitalia';
 
 export const displayRows = 8;

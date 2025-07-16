@@ -9,8 +9,8 @@ import {useSelector} from "react-redux";
 import {TitleBox} from "@pagopa/selfcare-common-frontend/lib";
 import {BASE_ROUTE} from "../../routes";
 import {institutionSelector} from "../../redux/slices/invitaliaSlice";
+import ProductDataGrid from "../../components/Product/ProductDataGrid";
 import InstitutionInfoCard from "./InstitutionInfoCard";
-import ProductsSection from "./productsSection";
 
 const InvitaliaProductsList: React.FC = () => {
     const { t } = useTranslation();
@@ -55,7 +55,19 @@ const InvitaliaProductsList: React.FC = () => {
 
             <InstitutionInfoCard />
 
-            <ProductsSection />
+            <Box pt={"16px"} >
+                <Box sx={{ gridColumn: 'span 12' }}>
+                    <TitleBox
+                        title="Prodotti"
+                        mbTitle={5}
+                        mtTitle={2}
+                        mbSubTitle={5}
+                        variantTitle="h6"
+                        data-testid="title"
+                    />
+                </Box>
+                <ProductDataGrid />
+            </Box>
         </Box>
     );
 };
