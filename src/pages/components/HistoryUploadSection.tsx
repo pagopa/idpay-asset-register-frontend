@@ -18,8 +18,16 @@ import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
+import {useDispatch} from "react-redux";
+import {useNavigate} from "react-router-dom";
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { UploadDTO } from '../../api/generated/register/UploadDTO';
+import {downloadErrorReport} from "../../services/registerService";
+import {downloadCsv} from "../addProducts/helpers";
+import {formatDateWithHours} from "../../helpers";
+import {usePagination} from "../../hooks/usePagination";
+import {setBatchId, setBatchName} from "../../redux/slices/productsSlice";
+import ROUTES from "../../routes";
 
 function renderUploadStatusIcon(status: string) {
   switch (status) {
@@ -34,19 +42,6 @@ function renderUploadStatusIcon(status: string) {
       return <WarningIcon color="warning" />;
   }
 }
-
-const formatDate = (isoDate: string): string => {
-  if (!isoDate) {
-    return '-';
-  }
-  const date = new Date(isoDate);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${day}/${month}/${year}, ${hours}:${minutes}`;
-};
 
 type UploadsTableProps = {
   loading: boolean;
@@ -69,7 +64,26 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   onPageChange,
   onRowsPerPageChange,
 }) => {
+  const paginationInfo = usePagination(page, rowsPerPage, totalElements);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const handleDownloadReport = async (idReport: string) => {
+    try {
+      const res = await downloadErrorReport(idReport);
+
+      downloadCsv(res.data,res.filename);
+    } catch (error) {
+      console.error('Errore nel download del report:', error);
+    }
+  };
+  
+  const handleLinkProducts = (batchName: string, productFileId: string) => {
+    dispatch(setBatchName(batchName));
+    dispatch(setBatchId(productFileId));
+    navigate(ROUTES.PRODUCTS, { replace: true });
+  };
 
   if (loading) {
     return (
@@ -100,6 +114,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         pl: '24px',
         cursor: 'pointer',
       }}
+      data-testid="uploads-table"
     >
       <Table>
         <TableHead>
@@ -109,7 +124,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
               sx={{ backgroundColor: 'background.paper', borderBottom: 0, p: 0 }}
             >
               <TitleBox
-                title="Stato Caricamento"
+                title={t('pages.uploadHistory.uploadHistoryTitle')}
                 mbTitle={2}
                 mtTitle={2}
                 mbSubTitle={5}
@@ -128,29 +143,34 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                 sx={{
                   borderBottom: `1px solid ${grey[300]}`,
                   width: '10px',
-                  paddingRight: '0px',
+                  padding: '0px',
                 }}
               >
                 {renderUploadStatusIcon(row.uploadStatus ?? '')}
               </TableCell>
-              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>{row.batchName}</TableCell>
-              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
-                {row.dateUpload ? formatDate(row.dateUpload) : '-'}
+              <TableCell sx={{
+                borderBottom: `1px solid ${grey[300]}`,
+                fontWeight: 600,
+                alignContent: 'center'
+              }}>
+                {row.batchName}
               </TableCell>
               <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
-                <b>{row.findedProductsNumber ?? 0} prodotti trovati</b>
+                {row.dateUpload ? formatDateWithHours(row.dateUpload) : '-'}
+              </TableCell>
+              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
+                <b>{row.findedProductsNumber ?? 0} {t('pages.uploadHistory.uploadHistoryFoundProducts')}</b>
               </TableCell>
               <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
                 <span
                   style={{
-                    color: grey[400],
+                    color: '#0073E6',
                     fontWeight: 'bold',
                     textDecoration: 'underline',
-                    cursor: 'not-allowed',
-                    pointerEvents: 'none',
                   }}
+                  onClick={() => handleLinkProducts(row?.batchName || "", row?.productFileId || "")}
                 >
-                  {row.addedProductNumber ?? 0} prodotti aggiunti
+                  {row.addedProductNumber ?? 0} {t('pages.uploadHistory.uploadHistoryAddedProducts')}
                 </span>
               </TableCell>
 
@@ -158,11 +178,11 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                 align="right"
                 sx={{ borderBottom: `1px solid ${grey[300]}`, width: '15%' }}
               >
-                {row.uploadStatus === 'EPREL_ERROR' && (
+                {row.uploadStatus === 'PARTIAL' && (
                   <DownloadIcon
-                    color="disabled"
-                    aria-disabled="true"
+                    color='primary'
                     sx={{ verticalAlign: 'middle' }}
+                    onClick={() => handleDownloadReport(row?.productFileId?.toString() || "")}
                   />
                 )}
               </TableCell>
@@ -178,8 +198,12 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[rowsPerPage]}
-        labelRowsPerPage={t('Righe per pagina')}
-      />
+        labelRowsPerPage={t('pages.uploadHistory.uploadHistoryRowsPerPage')}
+        labelDisplayedRows={() =>
+            `${paginationInfo.from} - ${paginationInfo.to} ${t(
+                'pages.products.tablePaginationFrom'
+            )} ${paginationInfo.total}`
+        }      />
     </TableContainer>
   ) : (
     <TableContainer
@@ -194,6 +218,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         pl: '24px',
         cursor: 'pointer',
       }}
+      data-testid="uploads-table"
     >
       <Table>
         <TableBody>
@@ -208,7 +233,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                 height: '100%',
               }}
             >
-              {t('Non ci sono prodotti caricati')}
+              {t('pages.uploadHistory.uploadHistoryNoFilesUploaded')}
             </TableCell>
           </TableRow>
         </TableBody>

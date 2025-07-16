@@ -35,6 +35,7 @@ describe('Test suite for helpers.ts of InitiativesList', () => {
   });
 
   test('stableSort', () => {
-    expect(stableSort(arr, getComparator(comp.a, comp.b))).toEqual(['1', '2']);
+    // @ts-ignore
+    return expect(stableSort(arr, getComparator(comp.a, comp.b))).toEqual(['1', '2']);
   });
 });

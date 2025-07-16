@@ -11,8 +11,10 @@ import { createClient, WithDefaultsT } from './generated/register/client';
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
 import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
 import { UploadsListDTO } from './generated/register/UploadsListDTO';
+import { BatchList } from './generated/register/BatchList';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
 import { CsvDTO } from './generated/register/CsvDTO';
+import {InstitutionsResponse} from "./generated/register/InstitutionsResponse";
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -68,13 +70,13 @@ export const RegisterApi = {
         ...(sort !== undefined ? { sort } : {}),
       };
 
-    const result = await registerClient.getProductFilesList(params);
-    return extractResponse(result, 200, onRedirectToLogin);
-  } catch (error) {
-    console.error('Errore durante il recupero dei file prodotto:', error);
-    throw error;
-  }
-},
+      const result = await registerClient.getProductFilesList(params);
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error('Errore durante il recupero dei file prodotto:', error);
+      throw error;
+    }
+  },
 
   getProducts: async (
     page?: number,
@@ -99,13 +101,7 @@ export const RegisterApi = {
         ...(productFileId ? { productFileId } : {}),
       };
 
-      console.log('§>>>', { params });
-
       const result = await registerClient.getProducts(params);
-      console.log(
-        '*********RegisterApi  Risultato della chiamata API: Products ***************************',
-        JSON.stringify(result, null, 2)
-      );
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
       // Puoi loggare o gestire l’errore come preferisci
@@ -113,16 +109,24 @@ export const RegisterApi = {
       throw error;
     }
   },
-
-
-    uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
-        const result = await registerClient.uploadProductList({csv, category});
-        return extractResponse(result, 200, onRedirectToLogin);
-    },
-    downloadErrorReport: async (
-        productFileId: string
-    ): Promise<{data: CsvDTO; filename: string}> => {
-        const response = await registerClient.downloadErrorReport({productFileId});
+  getBatchFilterItems: async (): Promise<BatchList> => {
+    try {
+      return await registerClient.getBatchNameList({
+        'x-organization-selected': ''
+      });
+    } catch (error) {
+      console.error('Errore durante il recupero della lista filtri lotti:', error);
+      throw error;
+    }
+  },
+  uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
+    const result = await registerClient.uploadProductList({ csv, category });
+    return extractResponse(result, 200, onRedirectToLogin);
+  },
+  downloadErrorReport: async (
+    productFileId: string
+  ): Promise<{ data: CsvDTO; filename: string }> => {
+    const response = await registerClient.downloadErrorReport({ productFileId });
 
     const rawResponse =
       (response as any).response || (response as any).data || (response as any).right;
@@ -148,4 +152,14 @@ export const RegisterApi = {
 
     return { data: responseData, filename: fileName };
   },
+  getInstitutionsList: async (): Promise<InstitutionsResponse> => {
+    try {
+      const result = await registerClient.getInstitutionsList({});
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error('Errore durante il recupero della lista delle istituzioni:', error);
+      throw error;
+    }
+  },
+
 };

@@ -4,25 +4,7 @@ import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import OverviewProductionSection from '../components/OverviewProductionSection';
-
-const maxLengthEmail: number = 40;
-
-const fetchUserFromLocalStorage = (): { [key: string]: string } | null => {
-  try {
-    const userString = localStorage.getItem('user');
-    return userString ? JSON.parse(userString) : null;
-  } catch (error) {
-    return null;
-  }
-};
-
-const truncateString = (str?: string, maxLength: number = maxLengthEmail): string => {
-  if (!str) {
-    return '-';
-  } else {
-    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
-  }
-};
+import {fetchUserFromLocalStorage, truncateString} from "../../helpers";
 
 const Overview: React.FC = () => {
   const { t } = useTranslation();

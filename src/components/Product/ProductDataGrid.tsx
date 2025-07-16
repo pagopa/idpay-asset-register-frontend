@@ -1,51 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Box,
   Paper,
   Button,
-  InputLabel,
-  FormControl,
-  Link,
-  MenuItem,
   Table,
   TableContainer,
   TableBody,
-  TableHead,
   TableRow,
   TableCell,
-  TableSortLabel,
   TablePagination,
-  TextField,
   Typography,
 } from '@mui/material';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
+import { useDispatch, useSelector } from 'react-redux';
 import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { displayRows, emptyData, PRODUCTS_CATEGORY } from '../../utils/constants';
-import EmptyList from '../../pages/components/EmptyList';
-import { getComparator, Order } from './helpers';
+import { BatchList } from '../../api/generated/register/BatchList';
+import { displayRows, emptyData } from '../../utils/constants';
+import {
+  batchIdSelector,
+  batchNameSelector,
+  setBatchId,
+  setBatchName,
+} from '../../redux/slices/productsSlice';
+import { getComparator, Order, BatchFilterItems, extractBatchFilterItems } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
-
-interface EnhancedTableProps {
-  order: Order;
-  orderBy: string;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ProductDTO) => void;
-}
-
-interface HeadCell {
-  disablePadding: boolean;
-  id: keyof ProductDTO;
-  label: string;
-  numeric: boolean;
-  textAlign?: any;
-}
+import MessagePage from './MessagePage';
+import EprelLinks from './EprelLinks';
+import FilterBar from './FilterBar';
+import EnhancedTableHead from './EnhancedTableHead';
 
 const getProductList = async (
   page?: number,
@@ -77,152 +64,130 @@ const getProductList = async (
   }
 };
 
-function EnhancedTableHead(props: EnhancedTableProps) {
-  const { order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property: keyof ProductDTO) => (event: React.MouseEvent<unknown>) => {
-    onRequestSort(event, property);
-  };
-
-  const { t } = useTranslation();
-
-  const headCells: ReadonlyArray<HeadCell> = [
-    {
-      id: 'category',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.category')}`,
-    },
-    {
-      id: 'energyClass',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.energeticClass')}`,
-    },
-    {
-      id: 'eprelCode',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.eprelCode')}`,
-    },
-    {
-      id: 'gtinCode',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.gtinCode')}`,
-    },
-    {
-      id: 'batchName',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'centlefter',
-      label: `${t('pages.products.listHeader.branch')}`,
-    },
-  ];
-
-  return (
-    <TableHead sx={{ backgroundColor: grey?.A100 }}>
-      <TableRow>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell?.id}
-            align={headCell?.textAlign ? headCell?.textAlign : 'left'}
-            padding="normal"
-            sortDirection={orderBy === headCell?.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell?.id}
-              direction={orderBy === headCell?.id ? order : 'asc'}
-              onClick={createSortHandler(headCell?.id)}
-              hideSortIcon={true}
-              disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
-            >
-              {headCell?.label}
-              {orderBy === headCell?.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
+const getBatchFilterList = async (): Promise<BatchList> => {
+  try {
+    return await RegisterApi.getBatchFilterItems();
+  } catch (error: any) {
+    if (error?.response && error?.response?.data) {
+      const apiError: UploadsErrorDTO = error.response.data;
+      throw apiError;
+    }
+    throw error;
+  }
+};
 
 const ProductGrid = () => {
+  const dispatch = useDispatch();
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
   const [page, setPage] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
   const [itemsQty, setItemsQty] = useState<number | undefined>(0);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
-  const [branchFilter, setBranchFilter] = useState<string>('');
+  const [batchFilter, setBatchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<ProductDTO>({});
   const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(displayRows);
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
+  const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
 
+  const batchName = useSelector(batchNameSelector);
+  const batchId = useSelector(batchIdSelector);
+
+  const sortKey = orderBy && `${orderBy},${order}`;
+  console.log('<1>', { order, orderBy, sortKey, batchFilterItems });
+
+  const isAnyFilterActive = useMemo(
+    () =>
+      categoryFilter !== '' ||
+      batchFilter !== '' ||
+      eprelCodeFilter !== '' ||
+      gtinCodeFilter !== '',
+    [categoryFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
+  );
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    void getProductList(page,displayRows)
+    if (batchId) {
+      setBatchFilter(batchId);
+      setFiltering(true);
+    }
+  }, [batchName, batchId, batchFilterItems]);
+
+  useEffect(() => {
+    setLoading(true);
+    if (batchId === '') {
+      void getProductList(page, displayRows)
+        .then((res) => {
+          const { content, pageNo, totalElements } = res;
+          setTableData(content ? Array.from(content) : []);
+          setPage(pageNo || 0);
+          setItemsQty(totalElements);
+          setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
+          setPaginatorTo(
+            totalElements && totalElements > displayRows ? displayRows : totalElements
+          );
+          setLoading(false);
+        })
+        .catch(() => {
+          setTableData([]);
+          setLoading(false);
+        });
+    }
+
+    void getBatchFilterList()
       .then((res) => {
-        const { content, pageNo, totalElements } = res;
-        setTableData(content ? Array.from(content) : []);
-        setPage(pageNo || 0);
-        setItemsQty(totalElements);
-        setPaginatorTo(totalElements && totalElements>displayRows ? displayRows : totalElements );
+        const values = extractBatchFilterItems(res);
+        setBatchFilterItems([...values]);
+      })
+      .catch(() => {
+        setBatchFilterItems([]);
       });
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     void getProductList(
       page,
       displayRows,
-      'asc',
+      filtering ? sortKey : undefined,
       categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
       eprelCodeFilter,
-      gtinCodeFilter
+      gtinCodeFilter,
+      undefined,
+      batchFilter
     )
-
-    .then((res) => { 
+      .then((res) => {
         const { content, pageNo, totalElements } = res;
         setTableData(content ? Array.from(content) : []);
-        setPage(pageNo || 0);
         setItemsQty(totalElements);
-        if(pageNo) {
-          setPaginatorFrom((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + 1);
-          setPaginatorTo((pageNo === 0 ? pageNo : pageNo - 1) * displayRows + displayRows);
+        if (pageNo !== undefined && totalElements) {
+          setPaginatorFrom(pageNo * displayRows + 1);
+          setPaginatorTo(
+            displayRows * (pageNo + 1) < totalElements ? displayRows * (pageNo + 1) : totalElements
+          );
         }
+        setLoading(false);
+      })
+      .catch(() => {
+        setTableData([]);
+        setLoading(false);
       })
       .finally(() => setFiltering(false));
-  }, [page, filtering]);
 
-  const branches = [
-    ...new Set(
-      tableData
-        .map((item) => item.batchName)
-        .filter((name) => name !== '-')
-        .sort()
-    ),
-  ];
-
-  const handleFilterButtonClick = () => {
-    setFiltering(true);
-  };
+    dispatch(setBatchName(''));
+    dispatch(setBatchId(''));
+  }, [page, filtering, sortKey]);
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
-    setBranchFilter('');
+    setBatchFilter('');
     setEprelCodeFilter('');
     setGtinCodeFilter('');
     setFiltering(true);
@@ -238,27 +203,13 @@ const ProductGrid = () => {
     setOrderBy(property);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    console.log(event);
-    if (newPage > 0) {
-      setPage(newPage);
-    }
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
   };
 
-  const handleCategoryFilterChange = (event: SelectChangeEvent) => {
-    setCategoryFilter(event.target.value as string);
-  };
-
-  const handleCategoryBranchChange = (event: SelectChangeEvent) => {
-    setBranchFilter(event.target.value as string);
-  };
-
-  const handleEprelCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEprelCodeFilter(event.target.value);
-  };
-
-  const handleGtinCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setGtinCodeFilter(event.target.value);
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, displayRows));
+    setPage(0);
   };
 
   const handleListButtonClick = (row: any) => {
@@ -266,106 +217,24 @@ const ProductGrid = () => {
     setDrawerOpened(true);
   };
 
-  const noFilterSetted = (): boolean =>
-    categoryFilter === '' && branchFilter === '' && eprelCodeFilter === '' && gtinCodeFilter === '';
-
   const visibleRows = [...tableData].sort(getComparator(order, orderBy));
-
-  const selectMenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: 250,
-      },
-    },
-  };
 
   return (
     <>
-      {tableData?.length > 0 && (
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 1,
-            mb: 5,
-          }}
-        >
-          <FormControl fullWidth size="small">
-            <InputLabel id="category-filter-select-label">
-              {t('pages.products.filterLabels.category')}
-            </InputLabel>
-            <Select
-              labelId="category-filter-select-label"
-              id="category-filter-select"
-              value={categoryFilter}
-              label={t('pages.products.filterLabels.category')}
-              MenuProps={selectMenuProps}
-              onChange={handleCategoryFilterChange}
-            >
-              {Object.keys(PRODUCTS_CATEGORY).map((category) => (
-                <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
-                  {t(`pages.products.categories.${category}`)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth size="small" disabled>
-            <InputLabel id="branch-filter-select-label">
-              {t('pages.products.filterLabels.branch')}
-            </InputLabel>
-            <Select
-              labelId="branch-filter-select-label"
-              id="branch-filter-select"
-              value={branchFilter}
-              label={t('pages.products.filterLabels.branch')}
-              MenuProps={selectMenuProps}
-              onChange={handleCategoryBranchChange}
-            >
-              {branches?.map((branch) => (
-                <MenuItem key={branch} value={branch}>
-                  {branch}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <TextField
-            sx={{ minWidth: 175 }}
-            size="small"
-            id="eprel-code-text"
-            label={t('pages.products.filterLabels.eprelCode')}
-            variant="outlined"
-            value={eprelCodeFilter}
-            onChange={handleEprelCodeFilterChange}
-          />
-
-          <TextField
-            sx={{ minWidth: 175 }}
-            size="small"
-            id="gtin-code-text"
-            label={t('pages.products.filterLabels.gtinCode')}
-            variant="outlined"
-            value={gtinCodeFilter}
-            onChange={handleGtinCodeFilterChange}
-          />
-          <Button
-            disabled={noFilterSetted()}
-            variant="outlined"
-            sx={{ height: 44, minWidth: 100 }}
-            onClick={handleFilterButtonClick}
-          >
-            {t('pages.products.filterLabels.filter')}
-          </Button>
-          <Button
-            disabled={noFilterSetted()}
-            variant="text"
-            sx={{ height: 44, minWidth: 140 }}
-            onClick={handleDeleteFiltersButtonClick}
-          >
-            {t('pages.products.filterLabels.deleteFilters')}
-          </Button>
-        </Box>
-      )}
+      <FilterBar
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        setFiltering={setFiltering}
+        batchFilter={batchFilter}
+        setBatchFilter={setBatchFilter}
+        batchFilterItems={batchFilterItems}
+        eprelCodeFilter={eprelCodeFilter}
+        setEprelCodeFilter={setEprelCodeFilter}
+        gtinCodeFilter={gtinCodeFilter}
+        setGtinCodeFilter={setGtinCodeFilter}
+        tableData={tableData}
+        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+      />
 
       <Paper
         sx={{
@@ -376,7 +245,7 @@ const ProductGrid = () => {
         }}
       >
         <TableContainer>
-          {tableData.length > 0 ? (
+          {tableData.length > 0 && !loading ? (
             <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
               <EnhancedTableHead
                 order={order}
@@ -399,11 +268,7 @@ const ProductGrid = () => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
-                      <Link underline="hover" href={row?.linkEprel || '#'}>
-                        <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#0062C3' }}>
-                          {row?.eprelCode ? row?.eprelCode : emptyData}
-                        </Typography>
-                      </Link>
+                      <EprelLinks row={row} />
                     </TableCell>
                     <TableCell sx={{ textAlign: 'center' }}>
                       <Typography variant="body2">
@@ -424,47 +289,32 @@ const ProductGrid = () => {
                 ))}
               </TableBody>
             </Table>
+          ) : tableData.length <= 0 && !loading ? (
+            <MessagePage
+              message={
+                isAnyFilterActive ? t('pages.products.emptyList') : t('pages.products.noFileLoaded')
+              }
+              goBack={isAnyFilterActive}
+              onGoBack={handleDeleteFiltersButtonClick}
+            />
           ) : (
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(12, 1fr)',
-                justifyContent: 'center',
-                width: '100%',
-                backgroundColor: 'white',
-                p: 2,
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'inline',
-                  gridColumn: 'span 12',
-                  justifyContent: 'center',
-                  textAlign: 'center',
-                }}
-              >
-                <EmptyList message={t('pages.products.emptyList')} />
-                <Button variant="text" onClick={handleDeleteFiltersButtonClick}>
-                  {t('pages.products.backToTable')}
-                </Button>
-              </Box>
-            </Box>
+            <MessagePage message={t(`pages.products.loading`)} />
           )}
         </TableContainer>
-        {tableData?.length > 0 && (
+        {tableData?.length > 0 && !loading && (
           <TablePagination
-            rowsPerPageOptions={[10]}
-            colSpan={3}
-            count={itemsQty || 1}
-            rowsPerPage={displayRows}
-            page={page}
             component="div"
+            count={itemsQty || 0}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[rowsPerPage]}
             labelDisplayedRows={() =>
               `${paginatorFrom} - ${paginatorTo} ${t(
                 'pages.products.tablePaginationFrom'
               )} ${itemsQty}`
             }
-            onPageChange={handleChangePage}
             sx={{
               '& .MuiTablePagination-actions button': {
                 backgroundColor: 'transparent',

@@ -1,3 +1,5 @@
+import {maxLengthEmail} from "./utils/constants";
+
 export const formattedCurrency = (
   number: number | undefined,
   symbol: string = '-',
@@ -39,6 +41,30 @@ export const formatDate = (date: Date | undefined) => {
   return '';
 };
 
+export const formatDateWithHours = (isoDate: string): string => {
+    if (!isoDate) {
+        return '-';
+    }
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year}, ${hours}:${minutes}`;
+};
+
+export const formatDateWithoutHours = (isoDate: string): string => {
+    if (!isoDate) {
+        return '-';
+    }
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+};
+
 export const formatFileName = (name: string | undefined): string => {
     if (typeof name === 'string' && name.length > 15) {
         const nameArr = name.split('.');
@@ -69,4 +95,21 @@ export const initUploadHelperBoxStyle = {
     width: '100%',
     py: 1,
     px: 3,
+};
+
+export const fetchUserFromLocalStorage = (): { [key: string]: string } | null => {
+    try {
+        const userString = localStorage.getItem('user');
+        return userString ? JSON.parse(userString) : null;
+    } catch (error) {
+        return null;
+    }
+};
+
+export const truncateString = (str?: string, maxLength: number = maxLengthEmail): string => {
+    if (!str) {
+        return '-';
+    } else {
+        return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+    }
 };

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {Box, Breadcrumbs, Button, Link, Paper, Typography} from "@mui/material";
 import {useTranslation} from "react-i18next";
 import {TitleBox} from "@pagopa/selfcare-common-frontend/lib";
@@ -7,13 +7,23 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {useUnloadEventOnExit} from "@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor";
 import {useNavigate} from "react-router-dom";
 import ROUTES, {BASE_ROUTE} from "../../routes";
-import FormAddProducts from "./formAddProducts";
+import FormAddProducts, {FormAddProductsRef} from "./formAddProducts";
 
 const AddProducts: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();
     const [fileAccepted, setFileAccepted] = useState(false);
+    const formRef = useRef<FormAddProductsRef>(null);
+
+    const handleContinue = async () => {
+        if (formRef.current) {
+            const isValid = await formRef.current.validateForm();
+            if (isValid) {
+                onExit(() => navigate(ROUTES.HOME, { replace: true }));
+            }
+        }
+    };
 
     return(
         <Box pb={0}>
@@ -28,7 +38,7 @@ const AddProducts: React.FC = () => {
                 >
                     {t('breadcrumbs.exit')}
                 </ButtonNaked>
-                <Breadcrumbs aria-label="breadcrumb" >
+                <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '3px', marginRight: '8px' }} >
                     <Typography color="text.primary" variant="body2">
                         {t('breadcrumbs.home')}
                     </Typography>
@@ -78,7 +88,11 @@ const AddProducts: React.FC = () => {
                         </Typography>
                     </Box>
 
-                    <FormAddProducts fileAccepted={fileAccepted} setFileAccepted={setFileAccepted} />
+                    <FormAddProducts
+                        ref={formRef}
+                        fileAccepted={fileAccepted}
+                        setFileAccepted={setFileAccepted}
+                    />
                 </Paper>
             </Box>
 
@@ -102,9 +116,8 @@ const AddProducts: React.FC = () => {
                 <Button
                     variant="contained"
                     sx={{ gridArea: 'exitBtn', justifySelf: 'end' }}
-                    onClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
+                    onClick={handleContinue}
                     data-testid="exit-button-test"
-                    disabled={!fileAccepted}
                 >
                     {t('commons.continueBtn')}
                 </Button>

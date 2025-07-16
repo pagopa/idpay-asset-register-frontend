@@ -34,11 +34,11 @@
     "title": "Registro dei beni",
     "categories": {
       "washingmachines": "Lavatrici",
-      "washerdriers": "Asciugatrici",
+      "tumbledryers": "Asciugatrici",
       "ovens": "Forni",
       "rangehoods": "Cappe da cucina",
       "dishwashers": "Lavastoviglie",
-      "tumbledryers": "Lavasciuga",
+      "washerdriers": "Lavasciuga",
       "refrigeratingappl": "Frigoriferi",
       "cookinghobs": "Piani cottura"
     }
@@ -76,7 +76,19 @@
       "overviewTitleBoxInfoTitleLblEmailOp": "E-mail operativa",
       "overviewTitleBoxProdTitle": "Prodotti",
       "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
-      "overviewTitleBoxProdBtn": "Carica.csv"
+      "overviewTitleBoxProdBtn": "Carica .csv"
+    },
+    "invitaliaOverview": {
+      "overviewTitle": "Panoramica",
+      "overviewTitleDescription": "Consulta i prodotti caricati dai produttori con i relativi dettagli.",
+      "noInstitutionsFound": "Non ci sono produttori.",
+      "rowsPerPage": "Righe per pagina",
+      "tablePaginationFrom": "di",
+      "listHeader": {
+        "institutionName": "Nome produttore",
+        "createdAt": "Creata il",
+        "updatedAt": "Ultima modifica"
+      }
     },
     "addProducts": {
       "title": "Aggiungi prodotti",
@@ -108,7 +120,7 @@
             "wrongHeaderTitle": "Il file contiene gli header errati",
             "wrongHeaderDescription": "Gli header del file csv non sono validi",
             "emptyTitle": "Il file non è valido",
-            "emptyDescription": "Il file carivato è vuoto",
+            "emptyDescription": "Il file caricato è vuoto",
             "wrongCategoryTitle": "Il file contiene una categoria errata",
             "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
             "multipeErrorsTitle": "Il file contiene uno o più errori",
@@ -123,9 +135,10 @@
       "sideMenuTitle": "Prodotti",
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
+      "loading": "Caricamento dati ...",
       "filterLabels": {
         "category": "Categoria",
-        "branch": "Lotto",
+        "batch": "Lotto",
         "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN",
         "manufacturerCode": "Codice produttore",
@@ -137,7 +150,7 @@
         "energeticClass": "Classe energetica",
         "eprelCode": "Codice Eprel",
         "gtinCode": "Codice GTIN/EAN",
-        "branch": "Lotto"
+        "batch": "Lotto"
       },
       "categories": {
         "WASHINGMACHINES": "Lavatrici",
@@ -145,11 +158,11 @@
         "OVENS": "Forni",
         "RANGEHOODS": "Cappe",
         "DISHWASHERS": "Lavastoviglie",
-        "TUMBLEDRIERS": "Asciugatrici",
+        "TUMBLEDRYERS": "Asciugatrici",
         "REFRIGERATINGAPPL": "Frigoriferi",
         "COOKINGHOBS": "Piani cottura",
         "lavatrici": "WASHINGMACHINES",
-        "asciugatrici": "TUMBLEDRIERS",
+        "asciugatrici": "TUMBLEDRYERS",
         "forni": "OVENS",
         "cappe da cucina": "RANGEHOODS",
         "lavastoviglie": "DISHWASHERS",
@@ -159,10 +172,19 @@
       },
       "tablePaginationFrom": "di",
       "emptyList": "Nessun record corrisponde alla ricerca.",
+      "noFileLoaded": "Non ci sono prodotti caricati.",
       "backToTable": "Torna alla tabella"
     },
     "uploadHistory": {
-      "sideMenuTitle": "Storico caricamenti"
+      "sideMenuTitle": "Storico caricamenti",
+      "uploadHistorySubTitle": "Visualizza tutti i caricamenti e i dettagli.",
+      "uploadHistoryAlertMessage": "Stiamo elaborando il file. Ti avviseremo via e-mail quando l’elaborazione sarà completata e potrai consultare i dati direttamente in questa sezione.",
+      "uploadHistoryTitle": "Stato Caricamento",
+      "uploadHistoryFoundProducts": "prodotti trovati",
+      "uploadHistoryAddedProducts": "prodotti aggiunti",
+      "uploadHistoryRowsPerPage": "Righe per pagina",
+      "uploadHistoryEmptyState": "Non ci sono prodotti caricati",
+      "uploadHistoryNoFilesUploaded": "Non ci sono file caricati."
     }
   },
   "roles": {
