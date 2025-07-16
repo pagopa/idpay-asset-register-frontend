@@ -91,7 +91,12 @@
       }
     },
     "invitaliaProductsList": {
-      "infoCardTitle": "Dati produttore"
+      "infoCardTitle": "Dati produttore",
+      "ragioneSociale": "Ragione sociale",
+      "sedeLegale": "Sede legale",
+      "codiceFiscale": "Codice Fiscale",
+      "pec": "PEC",
+      "piva": "Partita IVA"
     },
     "addProducts": {
       "title": "Aggiungi prodotti",

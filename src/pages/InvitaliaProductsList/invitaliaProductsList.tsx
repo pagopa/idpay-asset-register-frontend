@@ -10,12 +10,13 @@ import {TitleBox} from "@pagopa/selfcare-common-frontend/lib";
 import {BASE_ROUTE} from "../../routes";
 import {institutionSelector} from "../../redux/slices/invitaliaSlice";
 import InstitutionInfoCard from "./InstitutionInfoCard";
+import ProductsSection from "./productsSection";
 
 const InvitaliaProductsList: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();
-    const institutionName = useSelector(institutionSelector);
+    const institution = useSelector(institutionSelector);
     
     return(
         <Box pt={"16px"} pl={"8px"}>
@@ -30,19 +31,19 @@ const InvitaliaProductsList: React.FC = () => {
                 >
                     {t('breadcrumbs.back')}
                 </ButtonNaked>
-                <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '3px', marginRight: '8px' }} >
+                <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '3px', marginRight: '8px', alignItems: 'center' }} >
                     <Typography color="text.primary" variant="body2">
                         {t('breadcrumbs.home')}
                     </Typography>
                     <Typography color="text.primary" variant="body2" sx={{ fontWeight: 600}}>
-                        {institutionName}
+                        {institution?.description}
                     </Typography>
                 </Breadcrumbs>
             </Box>
 
             <Box sx={{ gridColumn: 'span 12' }}>
                 <TitleBox
-                    title={institutionName}
+                    title={institution?.description}
                     mbTitle={5}
                     mtTitle={4}
                     mbSubTitle={5}
@@ -53,6 +54,8 @@ const InvitaliaProductsList: React.FC = () => {
             </Box>
 
             <InstitutionInfoCard />
+
+            <ProductsSection />
         </Box>
     );
 };
