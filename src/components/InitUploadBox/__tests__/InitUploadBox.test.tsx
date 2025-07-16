@@ -1,6 +1,5 @@
-import React from 'react';
-import { renderWithContext } from '../../../utils/test-utils';
 import InitUploadBox from '../InitUploadBox';
+import {renderWithContext} from "../../../utils/__tests__/test-utils";
 
 beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});

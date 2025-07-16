@@ -77,22 +77,21 @@ export const RegisterApi = {
       throw error;
     }
   },
-
   getProducts: async (
-    page?: number,
-    size?: number,
-    sort?: string,
-    category?: string,
-    eprelCode?: string,
-    gtinCode?: string,
-    productCode?: string,
-    productFileId?: string
+      page?: number,
+      size?: number,
+      sort?: string,
+      category?: string,
+      eprelCode?: string,
+      gtinCode?: string,
+      productCode?: string,
+      productFileId?: string,
   ): Promise<UploadsListDTO> => {
     try {
       const params = {
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
-        ...(sort !== undefined ? { sort: [sort] } : {}),
+        ...(sort !== undefined ? { sort } : {}),
         ...(category ? { category } : {}),
         ...(eprelCode ? { eprelCode } : {}),
         ...(gtinCode ? { gtinCode } : {}),

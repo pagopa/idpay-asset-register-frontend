@@ -92,11 +92,16 @@
     },
     "invitaliaProductsList": {
       "infoCardTitle": "Dati produttore",
+      "productsTitle": "Prodotti",
       "ragioneSociale": "Ragione sociale",
       "sedeLegale": "Sede legale",
       "codiceFiscale": "Codice Fiscale",
       "pec": "PEC",
-      "piva": "Partita IVA"
+      "piva": "Partita IVA",
+      "state": "Stato",
+      "APPROVED": "Approvato",
+      "EXCLUDED": "Escluso",
+      "MARKED": "Contrassegnato"
     },
     "addProducts": {
       "title": "Aggiungi prodotti",

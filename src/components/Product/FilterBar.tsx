@@ -11,12 +11,14 @@ import {
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { PRODUCTS_CATEGORY } from '../../utils/constants';
+import {PRODUCTS_CATEGORY, PRODUCTS_STATES} from '../../utils/constants';
 import { BatchFilterItems } from './helpers';
 
 interface FilterProps {
   categoryFilter: string;
   setCategoryFilter: Dispatch<SetStateAction<string>>;
+  stateFilter: string;
+  setStateFilter: Dispatch<SetStateAction<string>>;
   setFiltering: Dispatch<SetStateAction<boolean>>;
   batchFilter: string;
   setBatchFilter: Dispatch<SetStateAction<string>>;
@@ -34,6 +36,8 @@ export default function FilterBar(props: FilterProps) {
   const {
     categoryFilter,
     setCategoryFilter,
+    stateFilter,
+    setStateFilter,
     setFiltering,
     batchFilter,
     setBatchFilter,
@@ -67,6 +71,10 @@ export default function FilterBar(props: FilterProps) {
     setCategoryFilter(event.target.value as string);
   };
 
+  const handleStateFilterChange = (event: SelectChangeEvent) => {
+    setStateFilter(event.target.value as string);
+  };
+
   const handleCategoryBatchChange = (event: SelectChangeEvent) => {
     setBatchFilter(event.target.value as string);
   };
@@ -79,52 +87,73 @@ export default function FilterBar(props: FilterProps) {
     setGtinCodeFilter(event.target.value);
   };
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        gap: 1,
-        mb: 5,
-      }}
-    >
-      <FormControl fullWidth size="small">
-        <InputLabel id="category-filter-select-label">
-          {t('pages.products.filterLabels.category')}
-        </InputLabel>
-        <Select
-          labelId="category-filter-select-label"
-          id="category-filter-select"
-          value={categoryFilter}
-          label={t('pages.products.filterLabels.category')}
-          MenuProps={selectMenuProps}
-          onChange={handleCategoryFilterChange}
+    <>
+      {tableData?.length > 0 && (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 1,
+            mb: 5,
+          }}
         >
-          {Object.keys(PRODUCTS_CATEGORY).map((category) => (
-            <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
-              {t(`pages.products.categories.${category}`)}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <FormControl fullWidth size="small">
-        <InputLabel id="batch-filter-select-label">
-          {t('pages.products.filterLabels.batch')}
-        </InputLabel>
-        <Select
-          labelId="batch-filter-select-label"
-          id="batch-filter-select"
-          value={batchFilter}
-          label={t('pages.products.filterLabels.batch')}
-          MenuProps={selectMenuProps}
-          onChange={handleCategoryBatchChange}
-        >
-          {batchFilterItems?.map((batch) => (
-            <MenuItem key={batch?.productFileId} value={batch?.productFileId}>
-              {batch?.batchName}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+          <FormControl fullWidth size="small">
+            <InputLabel id="category-filter-select-label">
+              {t('pages.products.filterLabels.category')}
+            </InputLabel>
+            <Select
+              labelId="category-filter-select-label"
+              id="category-filter-select"
+              value={categoryFilter}
+              label={t('pages.products.filterLabels.category')}
+              MenuProps={selectMenuProps}
+              onChange={handleCategoryFilterChange}
+            >
+              {Object.keys(PRODUCTS_CATEGORY).map((category) => (
+                <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
+                  {t(`pages.products.categories.${category}`)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth size="small">
+            <InputLabel id="state-filter-select-label">
+              {t('pages.invitaliaProductsList.state')}
+            </InputLabel>
+            <Select
+                labelId="state-filter-select-label"
+                id="state-filter-select"
+                value={stateFilter}
+                label={t('pages.invitaliaProductsList.state')}
+                MenuProps={selectMenuProps}
+                onChange={handleStateFilterChange}
+            >
+              {Object.keys(PRODUCTS_STATES).map((category) => (
+                  <MenuItem key={category} value={t(`pages.invitaliaProductsList.${category}`)}>
+                    {t(`pages.invitaliaProductsList.${category}`)}
+                  </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth size="small">
+            <InputLabel id="batch-filter-select-label">
+              {t('pages.products.filterLabels.batch')}
+            </InputLabel>
+            <Select
+              labelId="batch-filter-select-label"
+              id="batch-filter-select"
+              value={batchFilter}
+              label={t('pages.products.filterLabels.batch')}
+              MenuProps={selectMenuProps}
+              onChange={handleCategoryBatchChange}
+            >
+              {batchFilterItems?.map((batch) => (
+                <MenuItem key={batch?.productFileId} value={batch?.productFileId}>
+                  {batch?.batchName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
       <TextField
         sx={{ minWidth: 175 }}

@@ -63,13 +63,13 @@ const InstitutionInfoCard: React.FC = () => {
                             value: institutionInfo?.address,
                             truncate: true,
                         },
-                        { label: 'codiceFiscale', value: institutionInfo?.taxCode, truncate: true },
+                        { label: 'codiceFiscale', value: institutionInfo?.fiscalCode, truncate: true },
                         {
                             label: 'pec',
                             value: institutionInfo?.digitalAddress,
                             truncate: true,
                         },
-                        { label: 'piva', value: institutionInfo?.externalId, truncate: true },
+                        { label: 'piva', value: institutionInfo?.vatNumber, truncate: true },
                     ].map(({ label, value, truncate }) => (
                         <Box
                             key={label}
@@ -82,21 +82,21 @@ const InstitutionInfoCard: React.FC = () => {
                                 minWidth: 0,
                             }}
                         >
-                            <Typography variant="body2" fontWeight={500} noWrap>
-                                {t(`pages.invitaliaProductsList.${label}`)}:
+                            <Typography variant="body2" fontWeight={500} noWrap sx={{ gridColumn: 'span 3' }}>
+                                {t(`pages.invitaliaProductsList.${label}`)}
                             </Typography>
                             {truncate && value ? (
                                 <Tooltip title={value}>
                                     <Typography
                                         variant="body2"
-                                        sx={{ cursor: 'pointer', fontWeight: '600' }}
+                                        sx={{ cursor: 'pointer', fontWeight: '600', gridColumn: 'span 9' }}
                                         noWrap
                                     >
                                         {truncateString(value)}
                                     </Typography>
                                 </Tooltip>
                             ) : (
-                                <Typography variant="body2" sx={{ fontWeight: '600' }} noWrap>
+                                <Typography variant="body2" sx={{ fontWeight: '600', gridColumn: 'span 9' }} noWrap>
                                     {value || '-'}
                                 </Typography>
                             )}
