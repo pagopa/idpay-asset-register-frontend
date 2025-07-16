@@ -458,12 +458,8 @@ paths:
         - name: sort
           in: query
           required: false
-          style: form
-          explode: true
           schema:
-            type: array
-            items:
-              type: string
+            type: string
         - name: category
           in: query
           required: false
@@ -849,9 +845,9 @@ components:
           type: string
         digitalAddress:
           type: string
-        externalId:
+        fiscalCode:
           type: string
-        taxCode:
+        vatNumber:
           type: string
         zipCode:
           type: string

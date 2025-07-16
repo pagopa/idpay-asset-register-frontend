@@ -67,7 +67,7 @@ export default function FilterBar(props: FilterProps) {
   };
 
   const handleCategoryBatchChange = (event: SelectChangeEvent) => {
-    console.log('§ BATCH', event.target.value as string);
+    // console.log('§ BATCH', event.target.value as string);
     setBatchFilter(event.target.value as string);
   };
 

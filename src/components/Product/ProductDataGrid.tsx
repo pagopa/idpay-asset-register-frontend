@@ -37,7 +37,7 @@ import EnhancedTableHead from './EnhancedTableHead';
 const getProductList = async (
   page?: number,
   size?: number,
-  sort?: Array<string>,
+  sort?: string,
   category?: string,
   eprelCode?: string,
   gtinCode?: string,
@@ -96,8 +96,6 @@ const ProductGrid = () => {
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
 
-  console.log('§>', { orderBy });
-
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
 
@@ -106,16 +104,13 @@ const ProductGrid = () => {
   const { t } = useTranslation();
 
   const callProductsApi = () => {
-    const sortKey =
-      orderBy === 'batchName'
-        ? [`category,${order}`, `productFileId,${order}`]
-        : [`${orderBy},${order}`];
+    const sortKey = `${orderBy},${order}`;
 
     void getProductList(
       page,
       displayRows,
       sortKey,
-      categoryFilter ? t(`pages.products.categories.${categoryFilter.toLowerCase()}`) : '',
+      categoryFilter ? t(`pages.products.categories.${categoryFilter?.toLowerCase()}`) : '',
       eprelCodeFilter,
       gtinCodeFilter,
       undefined,
