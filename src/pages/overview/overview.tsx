@@ -4,7 +4,7 @@ import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import OverviewProductionSection from '../components/OverviewProductionSection';
-import {fetchUserFromLocalStorage, truncateString} from "../../helpers";
+import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 
 const Overview: React.FC = () => {
   const { t } = useTranslation();
