@@ -280,8 +280,8 @@ paths:
     post:
       tags:
         - products-upload
-      summary: Upload CSV file containing a list of products
-      description: 'ENG: Upload CSV file containing a list of products <br> IT: Caricamento del file CSV conentente una lista di prodotti'
+      summary: Verify CSV file containing a list of products
+      description: 'ENG: Verify CSV file containing a list of products <br> IT: Verifica del file CSV conentente una lista di prodotti'
       operationId: verifyProductList
       parameters:
         - name: category
@@ -845,9 +845,9 @@ components:
           type: string
         digitalAddress:
           type: string
-        externalId:
+        fiscalCode:
           type: string
-        taxCode:
+        vatNumber:
           type: string
         zipCode:
           type: string

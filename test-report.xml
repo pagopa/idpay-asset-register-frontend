@@ -1,0 +1,1188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/formAddProducts.test.tsx">
+    <testCase name="FormAddProducts Component renders component correctly" duration="61"/>
+    <testCase name="FormAddProducts Component renders category select with options" duration="80"/>
+    <testCase name="FormAddProducts Component shows validation error when category is not selected" duration="21"/>
+    <testCase name="FormAddProducts Component shows template download link when category is selected" duration="80"/>
+    <testCase name="FormAddProducts Component validates form correctly with category and file" duration="71"/>
+    <testCase name="FormAddProducts Component handles successful file upload" duration="87"/>
+    <testCase name="FormAddProducts Component handles file upload error" duration="64"/>
+    <testCase name="FormAddProducts Component handles file upload with report error" duration="61"/>
+    <testCase name="FormAddProducts Component handles download error report" duration="75"/>
+    <testCase name="FormAddProducts Component handles file rejection" duration="19"/>
+    <testCase name="FormAddProducts Component handles file too large error" duration="18"/>
+    <testCase name="FormAddProducts Component shows loading state during file upload" duration="58"/>
+    <testCase name="FormAddProducts Component shows accepted file component after successful upload" duration="11">
+      <failure message="Error: expect(element).toHaveTextContent()"><![CDATA[Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  Cambia file
+Received:
+
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/formAddProducts.test.tsx:546:55)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="FormAddProducts Component handles change file button click" duration="24">
+      <failure message="Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)"><![CDATA[Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+Expected: false
+
+Number of calls: 0
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/formAddProducts.test.tsx:561:37)]]></failure>
+    </testCase>
+    <testCase name="FormAddProducts Component prevents file dialog when category is not selected" duration="14"/>
+    <testCase name="FormAddProducts Component handles file upload error: too many products" duration="62"/>
+    <testCase name="FormAddProducts Component handles file upload error: wrong header" duration="61"/>
+    <testCase name="FormAddProducts Component handles file upload error: empty file" duration="59"/>
+    <testCase name="FormAddProducts Component handles generic file upload error from API (default case)" duration="60"/>
+    <testCase name="FormAddProducts Component handles network/unexpected error during file upload" duration="58"/>
+    <testCase name="FormAddProducts Component handles generic file rejection error (default case)" duration="17"/>
+    <testCase name="FormAddProducts Component onFileDialogOpen validates category if not selected" duration="14"/>
+    <testCase name="FormAddProducts Component onFileDialogOpen does not show error if category is already selected" duration="54">
+      <failure message="TypeError: Cannot destructure property &apos;onDrop&apos; of &apos;undefined&apos; as it is undefined."><![CDATA[TypeError: Cannot destructure property 'onDrop' of 'undefined' as it is undefined.
+    at Object.useDropzone (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/formAddProducts.test.tsx:54:21)
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/formAddProducts.test.tsx:789:69
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/act-compat.js:48:24
+    at act (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/react/cjs/react.development.js:2512:16)
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/react/dist/act-compat.js:47:25
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/formAddProducts.test.tsx:788:18)]]></failure>
+    </testCase>
+    <testCase name="FormAddProducts Component onDrop validates category and resets fileRejected state" duration="19"/>
+    <testCase name="FormAddProducts Component handles error during download error report" duration="73"/>
+    <testCase name="FormAddProducts Component template link shows correct filename for Cooking Hobs" duration="53"/>
+    <testCase name="FormAddProducts Component template link shows correct filename for other categories (EPREL)" duration="54"/>
+    <testCase name="FormAddProducts Component dismisses rejected file alert" duration="29"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/InvitaliaOverview/__tests__/helpers.test.tsx">
+    <testCase name="paginateInstitutions should paginate institutions correctly" duration="1"/>
+    <testCase name="paginateInstitutions should return second page correctly" duration="0"/>
+    <testCase name="paginateInstitutions should handle last page with fewer items" duration="0"/>
+    <testCase name="paginateInstitutions should handle empty page" duration="1"/>
+    <testCase name="paginateInstitutions should handle null data" duration="0"/>
+    <testCase name="paginateInstitutions should handle undefined institutions" duration="0"/>
+    <testCase name="paginateInstitutions should handle page 0 with different rowsPerPage" duration="0"/>
+    <testCase name="sortInstitutions string sorting should sort by name in ascending order" duration="1"/>
+    <testCase name="sortInstitutions string sorting should sort by name in descending order" duration="0"/>
+    <testCase name="sortInstitutions date sorting with ISO format should sort by createdAt in ascending order (ISO format)" duration="2">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "1"
+Received: "4"
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/InvitaliaOverview/__tests__/helpers.test.tsx:125:45)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="sortInstitutions date sorting with ISO format should sort by createdAt in descending order (ISO format)" duration="1">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "1"
+Received: "4"
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/InvitaliaOverview/__tests__/helpers.test.tsx:136:45)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="sortInstitutions date sorting with DD/MM/YYYY format should sort DD/MM/YYYY dates in ascending order" duration="1"/>
+    <testCase name="sortInstitutions date sorting with DD/MM/YYYY format should sort DD/MM/YYYY dates in descending order" duration="0"/>
+    <testCase name="sortInstitutions handling null and undefined values should handle null values in sorting (nulls go to end)" duration="0"/>
+    <testCase name="sortInstitutions handling null and undefined values should handle null dates (nulls go to end)" duration="0"/>
+    <testCase name="sortInstitutions handling invalid date formats should handle invalid date formats (treated as 0)" duration="0">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "2"
+Received: "4"
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/InvitaliaOverview/__tests__/helpers.test.tsx:249:45)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="sortInstitutions edge cases should handle empty array" duration="0"/>
+    <testCase name="sortInstitutions edge cases should handle single item array" duration="0"/>
+    <testCase name="sortInstitutions edge cases should not mutate original array" duration="0"/>
+    <testCase name="sortInstitutions edge cases should handle numeric-like strings" duration="0"/>
+    <testCase name="sortInstitutions date parsing edge cases should handle empty string dates" duration="0"/>
+    <testCase name="sortInstitutions date parsing edge cases should handle boundary dates in DD/MM/YYYY format" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/addProducts.test.tsx">
+    <testCase name="AddProducts Component renders component correctly" duration="56">
+      <failure message="TestingLibraryElementError: Found multiple elements with the text: Aggiungi Prodotti"><![CDATA[TestingLibraryElementError: Found multiple elements with the text: Aggiungi Prodotti
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+<p
+  class="MuiTypography-root MuiTypography-body2 css-1ae1qi1-MuiTypography-root"
+>
+  Aggiungi Prodotti
+</p>
+
+Ignored nodes: comments, script, style
+<h1>
+  Aggiungi Prodotti
+</h1>
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="MuiBox-root css-1phsixa"
+    >
+      <div
+        class="MuiBox-root css-14j2gaz"
+      >
+        <button
+          component="button"
+          data-testid="exit-button-test"
+          sx="[object Object]"
+          weight="default"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="ArrowBackIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"
+            />
+          </svg>
+          Esci
+        </button>
+        <nav
+          aria-label="breadcrumb"
+          class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-1qhnuqc-MuiTypography-root-MuiBreadcrumbs-root"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol css-1uwp4ue-MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2 css-1yrr6qh-MuiTypography-root"
+              >
+                Home
+              </p>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator css-jhr02i-MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2 css-1ae1qi1-MuiTypography-root"
+              >
+                Aggiungi Prodotti
+              </p>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root css-f9qfdi"
+      >
+        <div
+          data-testid="title"
+          mbsubtitle="5"
+          mbtitle="5"
+          mttitle="5"
+          variantsubtitle="body1"
+          varianttitle="h4"
+        >
+          <h1>
+            Aggiungi Prodotti
+          </h1>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root css-f9qfdi"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-hwlb13-MuiPaper-root"
+          style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+        >
+          <div
+            data-testid="title-box-info"
+            mbtitle="2"
+            titlefontsize="24px"
+            varianttitle="h6"
+          >
+            <h1>
+              Carica i tuoi prodotti
+            </h1>
+          </div>
+          <div
+            class="MuiBox-root css-1ne53x3"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1 css-rizt0-MuiTypography-root"
+            >
+              Carica il file con i tuoi prodotti. 
+              <strong>
+                Formato supportato: CSV
+              </strong>
+            </p>
+            <p
+              class="MuiTypography-root MuiTypography-body1 css-1bsvo57-MuiTypography-root"
+            >
+              <a
+                class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineAlways css-1orsvah-MuiTypography-root-MuiLink-root"
+                href=""
+              >
+                Vai al manuale
+              </a>
+            </p>
+          </div>
+          <div
+            data-testid="form-add-products"
+          >
+            <input
+              data-testid="file-input"
+              type="file"
+            />
+            <div>
+              File accepted: 
+              No
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root css-lf3pwm"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-1bd4a1n-MuiButtonBase-root-MuiButton-root"
+          data-testid="cancel-button-test"
+          tabindex="0"
+          type="button"
+        >
+          Indietro
+        </button>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-1c1wbqq-MuiButtonBase-root-MuiButton-root"
+          data-testid="exit-button-test"
+          tabindex="0"
+          type="button"
+        >
+          Continua
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+    at Object.getElementError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/config.js:37:19)
+    at getElementError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:20:35)
+    at getMultipleElementsFoundError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:23:10)
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+    at getByText (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:95:19)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/addProducts.test.tsx:112:23)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="AddProducts Component renders form section correctly" duration="7"/>
+    <testCase name="AddProducts Component renders action buttons correctly" duration="8"/>
+    <testCase name="AddProducts Component handles file upload interaction" duration="34"/>
+    <testCase name="AddProducts Component handles continue button click" duration="19"/>
+    <testCase name="AddProducts Component handles cancel button click" duration="16"/>
+    <testCase name="AddProducts Component handles exit button click" duration="6">
+      <failure message="TestingLibraryElementError: Found multiple elements by: [data-testid=&quot;exit-button-test&quot;]"><![CDATA[TestingLibraryElementError: Found multiple elements by: [data-testid="exit-button-test"]
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+<button
+  component="button"
+  data-testid="exit-button-test"
+  sx="[object Object]"
+  weight="default"
+>
+  <svg
+    aria-hidden="true"
+    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+    data-testid="ArrowBackIcon"
+    focusable="false"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"
+    />
+  </svg>
+  Esci
+</button>
+
+Ignored nodes: comments, script, style
+<button
+  class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-1c1wbqq-MuiButtonBase-root-MuiButton-root"
+  data-testid="exit-button-test"
+  tabindex="0"
+  type="button"
+>
+  Continua
+</button>
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="MuiBox-root css-1phsixa"
+    >
+      <div
+        class="MuiBox-root css-14j2gaz"
+      >
+        <button
+          component="button"
+          data-testid="exit-button-test"
+          sx="[object Object]"
+          weight="default"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="ArrowBackIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"
+            />
+          </svg>
+          Esci
+        </button>
+        <nav
+          aria-label="breadcrumb"
+          class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-1qhnuqc-MuiTypography-root-MuiBreadcrumbs-root"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol css-1uwp4ue-MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2 css-1yrr6qh-MuiTypography-root"
+              >
+                Home
+              </p>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator css-jhr02i-MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2 css-1ae1qi1-MuiTypography-root"
+              >
+                Aggiungi Prodotti
+              </p>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root css-f9qfdi"
+      >
+        <div
+          data-testid="title"
+          mbsubtitle="5"
+          mbtitle="5"
+          mttitle="5"
+          variantsubtitle="body1"
+          varianttitle="h4"
+        >
+          <h1>
+            Aggiungi Prodotti
+          </h1>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root css-f9qfdi"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-hwlb13-MuiPaper-root"
+          style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+        >
+          <div
+            data-testid="title-box-info"
+            mbtitle="2"
+            titlefontsize="24px"
+            varianttitle="h6"
+          >
+            <h1>
+              Carica i tuoi prodotti
+            </h1>
+          </div>
+          <div
+            class="MuiBox-root css-1ne53x3"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1 css-rizt0-MuiTypography-root"
+            >
+              Carica il file con i tuoi prodotti. 
+              <strong>
+                Formato supportato: CSV
+              </strong>
+            </p>
+            <p
+              class="MuiTypography-root MuiTypography-body1 css-1bsvo57-MuiTypography-root"
+            >
+              <a
+                class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineAlways css-1orsvah-MuiTypography-root-MuiLink-root"
+                href=""
+              >
+                Vai al manuale
+              </a>
+            </p>
+          </div>
+          <div
+            data-testid="form-add-products"
+          >
+            <input
+              data-testid="file-input"
+              type="file"
+            />
+            <div>
+              File accepted: 
+              No
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root css-lf3pwm"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-1bd4a1n-MuiButtonBase-root-MuiButton-root"
+          data-testid="cancel-button-test"
+          tabindex="0"
+          type="button"
+        >
+          Indietro
+        </button>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-1c1wbqq-MuiButtonBase-root-MuiButton-root"
+          data-testid="exit-button-test"
+          tabindex="0"
+          type="button"
+        >
+          Continua
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+    at Object.getElementError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/config.js:37:19)
+    at getElementError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:20:35)
+    at getMultipleElementsFoundError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:23:10)
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+    at getByTestId (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:95:19)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/addProducts.test.tsx:204:35)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="AddProducts Component displays correct breadcrumb structure" duration="11">
+      <failure message="TestingLibraryElementError: Found multiple elements with the text: Aggiungi Prodotti"><![CDATA[TestingLibraryElementError: Found multiple elements with the text: Aggiungi Prodotti
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+<p
+  class="MuiTypography-root MuiTypography-body2 css-1ae1qi1-MuiTypography-root"
+>
+  Aggiungi Prodotti
+</p>
+
+Ignored nodes: comments, script, style
+<h1>
+  Aggiungi Prodotti
+</h1>
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="MuiBox-root css-1phsixa"
+    >
+      <div
+        class="MuiBox-root css-14j2gaz"
+      >
+        <button
+          component="button"
+          data-testid="exit-button-test"
+          sx="[object Object]"
+          weight="default"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="ArrowBackIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"
+            />
+          </svg>
+          Esci
+        </button>
+        <nav
+          aria-label="breadcrumb"
+          class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-1qhnuqc-MuiTypography-root-MuiBreadcrumbs-root"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol css-1uwp4ue-MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2 css-1yrr6qh-MuiTypography-root"
+              >
+                Home
+              </p>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator css-jhr02i-MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2 css-1ae1qi1-MuiTypography-root"
+              >
+                Aggiungi Prodotti
+              </p>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root css-f9qfdi"
+      >
+        <div
+          data-testid="title"
+          mbsubtitle="5"
+          mbtitle="5"
+          mttitle="5"
+          variantsubtitle="body1"
+          varianttitle="h4"
+        >
+          <h1>
+            Aggiungi Prodotti
+          </h1>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root css-f9qfdi"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-hwlb13-MuiPaper-root"
+          style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+        >
+          <div
+            data-testid="title-box-info"
+            mbtitle="2"
+            titlefontsize="24px"
+            varianttitle="h6"
+          >
+            <h1>
+              Carica i tuoi prodotti
+            </h1>
+          </div>
+          <div
+            class="MuiBox-root css-1ne53x3"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1 css-rizt0-MuiTypography-root"
+            >
+              Carica il file con i tuoi prodotti. 
+              <strong>
+                Formato supportato: CSV
+              </strong>
+            </p>
+            <p
+              class="MuiTypography-root MuiTypography-body1 css-1bsvo57-MuiTypography-root"
+            >
+              <a
+                class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineAlways css-1orsvah-MuiTypography-root-MuiLink-root"
+                href=""
+              >
+                Vai al manuale
+              </a>
+            </p>
+          </div>
+          <div
+            data-testid="form-add-products"
+          >
+            <input
+              data-testid="file-input"
+              type="file"
+            />
+            <div>
+              File accepted: 
+              No
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root css-lf3pwm"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-1bd4a1n-MuiButtonBase-root-MuiButton-root"
+          data-testid="cancel-button-test"
+          tabindex="0"
+          type="button"
+        >
+          Indietro
+        </button>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-1c1wbqq-MuiButtonBase-root-MuiButton-root"
+          data-testid="exit-button-test"
+          tabindex="0"
+          type="button"
+        >
+          Continua
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+    at Object.getElementError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/config.js:37:19)
+    at getElementError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:20:35)
+    at getMultipleElementsFoundError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:23:10)
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+    at getByText (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:95:19)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/addProducts.test.tsx:221:23)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="AddProducts Component form validation works correctly" duration="18"/>
+    <testCase name="AddProducts Component component handles theme correctly" duration="6"/>
+    <testCase name="AddProducts Component accessibility attributes are present" duration="24"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/uploadsHistory/__tests__/uploadsHistory.test.tsx">
+    <testCase name="OverviewHistoryUpload renders correctly in loading state" duration="6"/>
+    <testCase name="OverviewHistoryUpload shows data correctly when API succeeds" duration="18">
+      <failure message="TestingLibraryElementError: Unable to find an element with the text: /Storico caricamenti/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible."><![CDATA[TestingLibraryElementError: Unable to find an element with the text: /Storico caricamenti/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div />
+</body>
+    at Object.getElementError (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/config.js:37:19)
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+    at /Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+    at getByText (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/query-helpers.js:95:19)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/uploadsHistory/__tests__/uploadsHistory.test.tsx:73:23)]]></failure>
+    </testCase>
+    <testCase name="OverviewHistoryUpload shows error message when API fails" duration="1003">
+      <failure message="Error: Unable to find an element by: [data-testid=&quot;title-overview&quot;]"><![CDATA[Error: Unable to find an element by: [data-testid="title-overview"]
+
+Ignored nodes: comments, script, style
+<body>
+  <div />
+</body>
+    at waitForWrapper (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/uploadsHistory/__tests__/uploadsHistory.test.tsx:81:22)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="OverviewHistoryUpload shows InfoUpload when uploadStatus is UPLOADED" duration="1002">
+      <failure message="Error: Unable to find an element by: [data-testid=&quot;title-overview&quot;]"><![CDATA[Error: Unable to find an element by: [data-testid="title-overview"]
+
+Ignored nodes: comments, script, style
+<body>
+  <div />
+</body>
+    at waitForWrapper (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/uploadsHistory/__tests__/uploadsHistory.test.tsx:96:22)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at runNextTicks (node:internal/process/task_queues:60:5)
+    at processTimers (node:internal/timers:509:9)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="OverviewHistoryUpload does not show InfoUpload when uploadStatus is not UPLOADED" duration="1003">
+      <failure message="Error: Unable to find an element by: [data-testid=&quot;title-overview&quot;]"><![CDATA[Error: Unable to find an element by: [data-testid="title-overview"]
+
+Ignored nodes: comments, script, style
+<body>
+  <div />
+</body>
+    at waitForWrapper (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/uploadsHistory/__tests__/uploadsHistory.test.tsx:111:22)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at runNextTicks (node:internal/process/task_queues:60:5)
+    at processTimers (node:internal/timers:509:9)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="OverviewHistoryUpload handles empty data correctly" duration="1002">
+      <failure message="Error: Unable to find an element by: [data-testid=&quot;title-overview&quot;]"><![CDATA[Error: Unable to find an element by: [data-testid="title-overview"]
+
+Ignored nodes: comments, script, style
+<body>
+  <div />
+</body>
+    at waitForWrapper (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/uploadsHistory/__tests__/uploadsHistory.test.tsx:126:22)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="OverviewHistoryUpload calls getProductFilesList with correct initial parameters" duration="5"/>
+    <testCase name="OverviewHistoryUpload handles data with missing properties gracefully" duration="1003">
+      <failure message="Error: Unable to find an element by: [data-testid=&quot;title-overview&quot;]"><![CDATA[Error: Unable to find an element by: [data-testid="title-overview"]
+
+Ignored nodes: comments, script, style
+<body>
+  <div />
+</body>
+    at waitForWrapper (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/@testing-library/dom/dist/wait-for.js:163:27)
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/uploadsHistory/__tests__/uploadsHistory.test.tsx:150:22)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Product/__tests__/FilterBar.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/decorators/__tests__/withSelectedParty.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/InvitaliaOverview/__tests__/invitaliaOverview.test.tsx">
+    <testCase name="InvitaliaOverview renders title and subtitle" duration="28"/>
+    <testCase name="InvitaliaOverview displays institutions in table after loading" duration="13"/>
+    <testCase name="InvitaliaOverview filters institutions by search term" duration="16"/>
+    <testCase name="InvitaliaOverview resets page on search change" duration="12"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/services/__tests__/partyService.test.ts">
+    <testCase name="fetchPartyDetails should fetch party details successfully" duration="0"/>
+    <testCase name="fetchPartyDetails should handle party not found" duration="1"/>
+    <testCase name="Test fetchParties" duration="0"/>
+    <testCase name="Test fetchPartyDetails Test no parties as cache" duration="0"/>
+    <testCase name="Test fetchPartyDetails Test parties as cache" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/auth/__tests__/Auth.test.tsx">
+    <testCase name="Auth component should handle successful login and redirect to home" duration="60"/>
+    <testCase name="Auth component should redirect to login if token is missing" duration="2"/>
+    <testCase name="Auth component should redirect to login on fetch error" duration="53"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/InvitaliaOverview/__tests__/institutionsTable.test.tsx">
+    <testCase name="InstitutionsTable renders loading state" duration="16"/>
+    <testCase name="InstitutionsTable renders error state" duration="2"/>
+    <testCase name="InstitutionsTable renders no data message" duration="11"/>
+    <testCase name="InstitutionsTable renders institutions data" duration="14"/>
+    <testCase name="InstitutionsTable calls onRequestSort when header is clicked" duration="27"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/helpers.test.ts">
+    <testCase name="Helper functions formattedCurrency with undefined" duration="1"/>
+    <testCase name="Helper functions formattedCurrency with number (no cents)" duration="5"/>
+    <testCase name="Helper functions formattedCurrency with number and cents = true" duration="1"/>
+    <testCase name="Helper functions formatDate with undefined" duration="0"/>
+    <testCase name="Helper functions formatDate with valid date" duration="0"/>
+    <testCase name="Helper functions formatIban with valid IBAN" duration="0"/>
+    <testCase name="Helper functions formatIban with undefined" duration="0"/>
+    <testCase name="Helper functions formatDateWithHours with valid ISO string" duration="1"/>
+    <testCase name="Helper functions formatDateWithHours with empty string" duration="0"/>
+    <testCase name="Helper functions formatDateWithoutHours with valid ISO string" duration="0"/>
+    <testCase name="Helper functions formatDateWithoutHours with empty string" duration="0"/>
+    <testCase name="Helper functions formatFileName with long name" duration="0"/>
+    <testCase name="Helper functions formatFileName with short name" duration="0"/>
+    <testCase name="Helper functions formatFileName with undefined" duration="1"/>
+    <testCase name="Helper functions truncateString with long string" duration="0"/>
+    <testCase name="Helper functions truncateString with short string" duration="0"/>
+    <testCase name="Helper functions truncateString with undefined" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/decorators/__tests__/withSelectedPartyProducts.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/decorators/__tests__/withLogin.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/addProducts/__tests__/helpers.test.ts">
+    <testCase name="categoryList should contain all expected categories with correct labels and values" duration="2"/>
+    <testCase name="downloadCsv should create a blob and trigger download with correct filename" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Header/__tests__/Header.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/Product.test.ts">
+    <testCase name="Test institutionInfo2Party" duration="1"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Product/__tests__/EnhancedTableHead.test.tsx">
+    <testCase name="EnhancedTableHead renderizza tutte le intestazioni di colonna" duration="27"/>
+    <testCase name="EnhancedTableHead chiama onRequestSort con la proprietà corretta al click su TableSortLabel" duration="20"/>
+    <testCase name="EnhancedTableHead visualizza l’indicatore di ordinamento sulla colonna attiva" duration="3"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/SideMenu/__tests__/SideMenu.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Product/__tests__/EprelLinks.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/styles.test.tsx">
+    <testCase name="Style objects should match the snapshot" duration="2">
+      <failure message="Error: expect([38;2;0;95;95m[48;2;215;255;255mreceived).toMatchSnapshot()"><![CDATA[Error: expect([38;2;0;95;95m[48;2;215;255;255mreceived).toMatchSnapshot()
+
+Snapshot name: `Style objects should match the snapshot 1`
+
+New snapshot was not written. The update flag must be explicitly passed to write a new snapshot.
+
+This is likely because this test is run in a continuous integration (CI) environment in which snapshots are not written by default.
+
+Received:
+[38;2;0;95;95m[48;2;215;255;255mObject {
+[38;2;0;95;95m[48;2;215;255;255m  "display": "grid",
+[38;2;0;95;95m[48;2;215;255;255m  "gridTemplateColumns": "repeat(12, 1fr)",
+[38;2;0;95;95m[48;2;215;255;255m  "width": "100%",
+[38;2;0;95;95m[48;2;215;255;255m}
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/styles.test.tsx:9:39)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+      <failure message="Error: expect([38;2;0;95;95m[48;2;215;255;255mreceived).toMatchSnapshot()"><![CDATA[Error: expect([38;2;0;95;95m[48;2;215;255;255mreceived).toMatchSnapshot()
+
+Snapshot name: `Style objects should match the snapshot 2`
+
+New snapshot was not written. The update flag must be explicitly passed to write a new snapshot.
+
+This is likely because this test is run in a continuous integration (CI) environment in which snapshots are not written by default.
+
+Received:
+[38;2;0;95;95m[48;2;215;255;255mObject {
+[38;2;0;95;95m[48;2;215;255;255m  "alignItems": "center",
+[38;2;0;95;95m[48;2;215;255;255m  "display": "grid",
+[38;2;0;95;95m[48;2;215;255;255m  "gridTemplateColumns": "repeat(12, 1fr)",
+[38;2;0;95;95m[48;2;215;255;255m  "width": "100%",
+[38;2;0;95;95m[48;2;215;255;255m}
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/styles.test.tsx:10:42)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+      <failure message="Error: expect([38;2;0;95;95m[48;2;215;255;255mreceived).toMatchSnapshot()"><![CDATA[Error: expect([38;2;0;95;95m[48;2;215;255;255mreceived).toMatchSnapshot()
+
+Snapshot name: `Style objects should match the snapshot 3`
+
+New snapshot was not written. The update flag must be explicitly passed to write a new snapshot.
+
+This is likely because this test is run in a continuous integration (CI) environment in which snapshots are not written by default.
+
+Received:
+[38;2;0;95;95m[48;2;215;255;255mObject {
+[38;2;0;95;95m[48;2;215;255;255m  "alignItems": "baseline",
+[38;2;0;95;95m[48;2;215;255;255m  "display": "grid",
+[38;2;0;95;95m[48;2;215;255;255m  "gap": 2,
+[38;2;0;95;95m[48;2;215;255;255m  "gridTemplateColumns": "repeat(12, 1fr)",
+[38;2;0;95;95m[48;2;215;255;255m  "mb": 4,
+[38;2;0;95;95m[48;2;215;255;255m  "width": "100%",
+[38;2;0;95;95m[48;2;215;255;255m}
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/styles.test.tsx:11:48)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:60:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+    <testCase name="Style objects genericContainerStyle has correct properties" duration="0"/>
+    <testCase name="Style objects pagesTableContainerStyle has correct properties" duration="1"/>
+    <testCase name="Style objects pagesFiltersFormContainerStyle has correct properties" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Product/__tests__/MessagePage.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Product/__tests__/helpers.test.tsx">
+    <testCase name="Test suite for helpers.ts of InitiativesList descendingComparator" duration="1"/>
+    <testCase name="Test suite for helpers.ts of InitiativesList stableSort" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/uploadsHistory/__tests__/helpers.test.tsx">
+    <testCase name="Test suite for helpers.ts of InitiativesList descendingComparator" duration="1"/>
+    <testCase name="Test suite for helpers.ts of InitiativesList stableSort" duration="1"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/overview/__tests__/helpers.test.tsx">
+    <testCase name="Test suite for helpers.ts of InitiativesList descendingComparator" duration="1"/>
+    <testCase name="Test suite for helpers.ts of InitiativesList stableSort" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/ExitModal/__tests__/ExitModal.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/Party.test.ts">
+    <testCase name="Test institutionResource2Party" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/decorators/__tests__/withParties.test.tsx">
+    <testCase name="Test" duration="63"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/TOS/__tests__/TOSWall.test.tsx">
+    <testCase name="tests for TOSWall test render of TOSWall component with not already accepted tos" duration="23"/>
+    <testCase name="tests for TOSWall test render of TOSWall component with tos already accepted" duration="4"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/SideMenu/__tests__/SideNavItem.test.tsx">
+    <testCase name="Test suite for SideNavItem component renders without crashing" duration="1"/>
+    <testCase name="Test suite for SideNavItem component Testing rendering of SideMenu component" duration="20"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/services/__tests__/productService.test.ts">
+    <testCase name="fetchProducts Service should return an empty array" duration="0"/>
+    <testCase name="Test fetchProducts" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/redux/slices/__tests__/permissionsSlice.test.ts">
+    <testCase name="initiative Summary slice  initiative Summary slice actions" duration="1"/>
+    <testCase name="initiative Summary slice  initiative Summary slice slectors" duration="0"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/routes.test.tsx">
+    <testCase name="ROUTES BASE_ROUTE should match ENV.PUBLIC_URL" duration="1"/>
+    <testCase name="ROUTES should generate correct route paths" duration="1"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/JwtUser.test.ts">
+    <testCase name="test jwt2JWTUser" duration="3">
+      <failure message="Error: expect(received).toStrictEqual(expected) // deep equality"><![CDATA[Error: expect(received).toStrictEqual(expected) // deep equality
+
+- Expected  - 0
++ Received  + 1
+
+@@ -1,9 +1,10 @@
+  Object {
+    "email": "test@token.it",
+    "family_name": "Rossi",
+    "name": "Mario",
++   "org_email": undefined,
+    "org_id": "2f63a151-da4e-4e1e-acf9-adecc0c4d727",
+    "org_name": "Comune di Jesolo",
+    "org_party_role": "OPERATOR",
+    "org_role": "ope_base",
+    "org_vat": "11122233344",
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/JwtUser.test.ts:17:15)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/IDPayUser.test.ts">
+    <testCase name="Test initiativeGeneral2GeneralInfo" duration="3">
+      <failure message="Error: expect(received).toStrictEqual(expected) // deep equality"><![CDATA[Error: expect(received).toStrictEqual(expected) // deep equality
+
+- Expected  - 0
++ Received  + 5
+
+  Object {
+    "email": "test@token.it",
+    "name": "Mario",
++   "org_address": undefined,
++   "org_email": undefined,
+    "org_party_role": "ADMIN",
++   "org_pec": undefined,
+    "org_role": "admin",
++   "org_taxcode": undefined,
++   "org_vat": undefined,
+    "surname": "Rossi",
+    "taxCode": "2f63a151-da4e-4e1e-acf9-adecc0c4d727",
+    "uid": "9abcbe25-99f4-40f9-a03b-afed9cd9bb8a",
+  }
+    at Object.<anonymous> (/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/IDPayUser.test.ts:15:21)
+    at Promise.then.completed (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:391:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/utils.js:316:10)
+    at _callCircusTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:218:40)
+    at _runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:155:3)
+    at _runTestsForDescribeBlock (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:66:9)
+    at run (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/run.js:25:3)
+    at runAndTransformResultsToJestFormat (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:170:21)
+    at jestAdapter (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:82:19)
+    at runTestInternal (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:389:16)
+    at runTest (/Users/nepta/Documents/Repositories/NTT/registro prodotti/node_modules/jest-runner/build/runTest.js:475:34)]]></failure>
+    </testCase>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/hooks/__tests__/useTCAgreement.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/components/__tests__/BreadcrumbsBox.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/AcceptedFile/__tests__/AcceptedFile.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Layout/__tests__/Layout.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/InitUploadBox/__tests__/InitUploadBox.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/Product/__tests__/DetailDrawer.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/hooks/__tests__/useLogin.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/components/__tests__/OneTrustContentWrapper.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/pages/components/__tests__/EmptyList.test.tsx">
+    <testCase name="test suite for EmptyList render EmptyList" duration="17"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/LoadingFile/__tests__/LoadingFile.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/components/TOSLayout/__tests__/TOSLayout.test.tsx">
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/__tests__/App.test.tsx">
+    <testCase name="Test suite for App component Render App with TOS accepted and standard user" duration="85"/>
+    <testCase name="Test suite for App component Render App with TOS accepted and Invitalia user" duration="9"/>
+    <testCase name="Test suite for App component Render App with TOS not accepted" duration="24"/>
+    <testCase name="Test suite for App component Render App with undefined TOS state" duration="3"/>
+  </file>
+  <file path="/Users/nepta/Documents/Repositories/NTT/registro prodotti/src/model/__tests__/Permission.test.ts">
+    <testCase name="Test permission2PermissionModel" duration="1"/>
+  </file>
+</testExecutions>
