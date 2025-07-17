@@ -12,6 +12,12 @@ export const uploadProductList = (
 ): Promise<RegisterUploadResponseDTO> =>
     RegisterApi.uploadProductList( csv, category ).then((res) => res);
 
+export const uploadProductListVerify = (
+    csv: File,
+    category: string
+): Promise<RegisterUploadResponseDTO> =>
+    RegisterApi.uploadProductListVerify( csv, category ).then((res) => res);
+
 export const downloadErrorReport = (
     productFileId: string
 ): Promise<{data: CsvDTO; filename: string}> =>

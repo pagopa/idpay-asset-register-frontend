@@ -120,6 +120,10 @@ export const RegisterApi = {
     const result = await registerClient.uploadProductList({ csv, category });
     return extractResponse(result, 200, onRedirectToLogin);
   },
+  uploadProductListVerify: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
+    const result = await registerClient.verifyProductList({ csv, category });
+    return extractResponse(result, 200, onRedirectToLogin);
+  },
   downloadErrorReport: async (
     productFileId: string
   ): Promise<{ data: CsvDTO; filename: string }> => {
