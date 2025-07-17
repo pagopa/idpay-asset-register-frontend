@@ -280,7 +280,7 @@ paths:
     post:
       tags:
         - products-upload
-      summary: Veerify CSV file containing a list of products
+      summary: Verify CSV file containing a list of products
       description: 'ENG: Verify CSV file containing a list of products <br> IT: Verifica del file CSV conentente una lista di prodotti'
       operationId: verifyProductList
       parameters:

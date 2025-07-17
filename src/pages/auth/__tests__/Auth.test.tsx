@@ -1,49 +1,102 @@
-import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import Auth from '../Auth';
+import * as analyticsService from '@pagopa/selfcare-common-frontend/lib/services/analyticsService';
+import * as storage from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+import * as useLogin from '../../../hooks/useLogin';
 import { ENV } from '../../../utils/env';
-import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
-import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import ROUTES from '../../../routes';
-import { testToken } from '../../../utils/constants';
 
-const token = testToken;
 
-const oldWindowLocation = global.window.location;
-const mockedLocation = { assign: jest.fn(), hash: '#token=' + token, origin: 'MOCKEDORIGIN' };
+jest.mock('../../../utils/env', () => ({
+  ENV: {
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+    },
+    URL_FE: {
+      LOGIN: '/mock-login',
+      PRE_LOGIN: '/mock-pre-login',
+    },
+    API_TIMEOUT_MS: {
+      OPERATION: 5000,
+    },
+  },
+}));
 
-beforeAll(() => {
-  Object.defineProperty(window, 'location', { value: mockedLocation });
-});
-afterAll(() => {
-  Object.defineProperty(window, 'location', { value: oldWindowLocation });
-});
+jest.mock('../../../routes', () => ({
+  __esModule: true,
+  default: {
+    HOME: '/home'
+  },
+  BASE_ROUTE: '/base'
+}));
 
-beforeEach(() => {
-  jest.spyOn(console, 'error').mockImplementation(() => {});
-  jest.spyOn(console, 'warn').mockImplementation(() => {});
-});
+jest.mock('@pagopa/selfcare-common-frontend/lib/services/analyticsService');
+jest.mock('@pagopa/selfcare-common-frontend/lib/utils/storage');
+jest.mock('../../../hooks/useLogin');
 
-test('test login success', () => {
-  render(<Auth />);
+describe('Auth component', () => {
+  const originalLocation = window.location;
 
-  // expect(storageTokenOps.read()).toBe(token);
+  beforeEach(() => {
+    jest.resetAllMocks();
+    delete (window as any).location;
+    window.location = { assign: jest.fn(), hash: '#token=mock-token' } as any;
+  });
 
-  // const user: User = storageUserOps.read();
-  // expect(user).not.toBeNull();
-  // expect(user.uid).toBe('b8986bf2-1f93-4827-ab16-b21eb8aeae2b');
-  // expect(user.taxCode).toBe('');
-  // expect(user.name).toBe('Test');
-  // expect(user.surname).toBe('IDPay');
-  // expect(user.email).toBe('test@test.com');
+  afterAll(() => {
+    window.location = originalLocation;
+  });
 
-  // expect(global.window.location.assign).toBeCalledWith(ROUTES.HOME);
-});
+  it('should handle successful login and redirect to home', async () => {
+    const mockUser = { name: 'Test User' };
+    const mockInnerToken = 'inner-token';
 
-test('test login success no token', () => {
-  mockedLocation.hash = '';
+    (global.fetch as jest.Mock) = jest.fn().mockResolvedValue({
+      text: () => Promise.resolve(mockInnerToken),
+    });
 
-  render(<Auth />);
+    (useLogin.userFromJwtTokenAsJWTUser as jest.Mock).mockReturnValue(mockUser);
 
-  expect(global.window.location.assign).toBeCalledWith(ENV.URL_FE.LOGIN);
+    const writeTokenMock = jest.spyOn(storage.storageTokenOps, 'write');
+    const writeUserMock = jest.spyOn(storage.storageUserOps, 'write');
+    const trackEventMock = jest.spyOn(analyticsService, 'trackEvent');
+
+    render(<Auth />);
+
+    await waitFor(() => {
+      expect(trackEventMock).toHaveBeenCalledWith('AUTH_SUCCESS');
+      expect(writeTokenMock).toHaveBeenCalledWith(mockInnerToken);
+      expect(writeUserMock).toHaveBeenCalledWith(mockUser);
+      expect(window.location.assign).toHaveBeenCalledWith(ROUTES.HOME);
+    });
+  });
+
+  it('should redirect to login if token is missing', async () => {
+    window.location.hash = '';
+
+    const trackAppErrorMock = jest.spyOn(analyticsService, 'trackAppError');
+
+    render(<Auth />);
+
+    await waitFor(() => {
+      expect(trackAppErrorMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: 'INVALIDAUTHREQUEST',
+          })
+      );
+      expect(window.location.assign).toHaveBeenCalledWith(ENV.URL_FE.LOGIN);
+    });
+  });
+
+  it('should redirect to login on fetch error', async () => {
+    window.location.hash = '#token=mock-token';
+
+    (global.fetch as jest.Mock) = jest.fn().mockRejectedValue(new Error('fetch failed'));
+
+    render(<Auth />);
+
+    await waitFor(() => {
+      expect(window.location.assign).toHaveBeenCalledWith(ENV.URL_FE.LOGIN);
+    });
+  });
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+mport React, { useState, useEffect } from 'react';
 import {
   Paper,
   Button,
@@ -96,13 +96,10 @@ const ProductGrid = () => {
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
-
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
-
-  console.log('§>>', { order, orderBy });
-
-  const { t } = useTranslation();
+  const sortKey = orderBy && `${orderBy},${order}`;
+  console.log('<1>', { order, orderBy, sortKey, batchFilterItems });
 
   const callProductsApi = () => {
     const sortKey = `${orderBy},${order}`;
@@ -142,6 +139,7 @@ const ProductGrid = () => {
     setTableData([]);
     setLoading(false);
   };
+
 
   useEffect(() => {
     if (batchId) {
@@ -192,6 +190,7 @@ const ProductGrid = () => {
     }
     callProductsApi();
   }, [filtering]);
+
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
