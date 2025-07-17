@@ -24,6 +24,7 @@ interface FilterProps {
   eprelCodeFilter: string;
   setEprelCodeFilter: Dispatch<SetStateAction<string>>;
   gtinCodeFilter: string;
+  errorStatus: boolean;
   setGtinCodeFilter: Dispatch<SetStateAction<string>>;
   tableData: Array<ProductDTO>;
   handleDeleteFiltersButtonClick: () => void;
@@ -41,6 +42,7 @@ export default function FilterBar(props: FilterProps) {
     setEprelCodeFilter,
     gtinCodeFilter,
     setGtinCodeFilter,
+    errorStatus,
     // tableData,
     handleDeleteFiltersButtonClick,
   } = props;
@@ -153,7 +155,7 @@ export default function FilterBar(props: FilterProps) {
         {t('pages.products.filterLabels.filter')}
       </Button>
       <Button
-        disabled={noFilterSetted()}
+        disabled={noFilterSetted() && !errorStatus}
         variant="text"
         sx={{ height: 44, minWidth: 140 }}
         onClick={handleDeleteFiltersButtonClick}

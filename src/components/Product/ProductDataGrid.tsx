@@ -95,6 +95,7 @@ const ProductGrid = () => {
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
+  const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
 
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
@@ -126,16 +127,20 @@ const ProductGrid = () => {
             displayRows * (pageNo + 1) < totalElements ? displayRows * (pageNo + 1) : totalElements
           );
         }
+        setApiErrorOccurred(false);
         setLoading(false);
       })
-      .catch(() => {
-        setTableData([]);
-        setLoading(false);
-      })
+      .catch(() => handleStateForError())
       .finally(() => setFiltering(false));
 
     dispatch(setBatchName(''));
     dispatch(setBatchId(''));
+  };
+
+  const handleStateForError = () => {
+    setApiErrorOccurred(true);
+    setTableData([]);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -158,12 +163,10 @@ const ProductGrid = () => {
           setPaginatorTo(
             totalElements && totalElements > displayRows ? displayRows : totalElements
           );
+          setApiErrorOccurred(false);
           setLoading(false);
         })
-        .catch(() => {
-          setTableData([]);
-          setLoading(false);
-        });
+        .catch(() => handleStateForError());
     }
 
     void getBatchFilterList()
@@ -195,6 +198,7 @@ const ProductGrid = () => {
     setBatchFilter('');
     setEprelCodeFilter('');
     setGtinCodeFilter('');
+    setApiErrorOccurred(false);
     setFiltering(true);
   };
 
@@ -237,6 +241,7 @@ const ProductGrid = () => {
         setEprelCodeFilter={setEprelCodeFilter}
         gtinCodeFilter={gtinCodeFilter}
         setGtinCodeFilter={setGtinCodeFilter}
+        errorStatus={apiErrorOccurred}
         tableData={tableData}
         handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
       />

@@ -60,6 +60,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={headCell?.textAlign ? headCell?.textAlign : 'left'}
             padding="normal"
             // sortDirection={orderBy === headCell?.id ? order : false}
+            sortDirection={false}
           >
             <TableSortLabel
               active={orderBy === headCell?.id}
