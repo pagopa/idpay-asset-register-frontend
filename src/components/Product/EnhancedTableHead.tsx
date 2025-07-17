@@ -59,15 +59,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             key={headCell?.id}
             align={headCell?.textAlign ? headCell?.textAlign : 'left'}
             padding="normal"
-            // sortDirection={orderBy === headCell?.id ? order : false}
-            sortDirection={false}
+            sortDirection={orderBy === headCell?.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell?.id}
               direction={orderBy === headCell?.id ? order : 'asc'}
               onClick={createSortHandler(headCell?.id)}
               hideSortIcon={true}
-              // disabled={headCell.id === 'energyClass' || headCell.id === 'eprelCode'}
             >
               {headCell?.label}
               {orderBy === headCell?.id ? (

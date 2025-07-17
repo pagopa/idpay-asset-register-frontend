@@ -43,7 +43,6 @@ export default function FilterBar(props: FilterProps) {
     gtinCodeFilter,
     setGtinCodeFilter,
     errorStatus,
-    // tableData,
     handleDeleteFiltersButtonClick,
   } = props;
 

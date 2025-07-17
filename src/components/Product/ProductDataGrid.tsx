@@ -26,7 +26,7 @@ import {
   setBatchId,
   setBatchName,
 } from '../../redux/slices/productsSlice';
-import { getComparator, Order, BatchFilterItems, extractBatchFilterItems } from './helpers';
+import { Order, BatchFilterItems, extractBatchFilterItems } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
@@ -226,7 +226,7 @@ const ProductGrid = () => {
     setDrawerOpened(true);
   };
 
-  const visibleRows = [...tableData].sort(getComparator(order, orderBy));
+  const visibleRows = tableData;
 
   return (
     <>
