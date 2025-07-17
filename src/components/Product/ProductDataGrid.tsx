@@ -1,4 +1,4 @@
-mport React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Paper,
   Button,
@@ -98,8 +98,8 @@ const ProductGrid = () => {
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
-  const sortKey = orderBy && `${orderBy},${order}`;
-  console.log('<1>', { order, orderBy, sortKey, batchFilterItems });
+  
+  const { t } = useTranslation();
 
   const callProductsApi = () => {
     const sortKey = `${orderBy},${order}`;

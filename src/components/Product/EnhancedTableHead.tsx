@@ -18,7 +18,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       id: 'category',
       numeric: false,
       disablePadding: false,
-      textAlign: 'center',
+      textAlign: 'left',
       label: `${t('pages.products.listHeader.category')}`,
     },
     {
