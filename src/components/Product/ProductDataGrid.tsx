@@ -104,9 +104,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
-
-  const sortKey = orderBy && `${orderBy},${order}`;
-
   const { t } = useTranslation();
 
   const callProductsApi = (organizationId: string) => {
@@ -181,6 +178,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
       .then((res) => {
         const { left } = res as BatchFilterList;
         const values = left[0].value;
+
         setBatchFilterItems([...values]);
       })
       .catch(() => {
