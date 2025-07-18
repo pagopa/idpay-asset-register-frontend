@@ -78,6 +78,7 @@ export const RegisterApi = {
     }
   },
   getProducts: async (
+      xOrganizationSelected: string,
       page?: number,
       size?: number,
       sort?: string,
@@ -89,6 +90,7 @@ export const RegisterApi = {
   ): Promise<UploadsListDTO> => {
     try {
       const params = {
+        'x-organization-selected': xOrganizationSelected,
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
         ...(sort !== undefined ? { sort } : {}),
@@ -97,7 +99,7 @@ export const RegisterApi = {
         ...(gtinCode ? { gtinCode } : {}),
         ...(productCode ? { productCode } : {}),
         ...(productFileId ? { productFileId } : {}),
-      };
+      }; 
 
       const result = await registerClient.getProducts(params);
       return extractResponse(result, 200, onRedirectToLogin);
