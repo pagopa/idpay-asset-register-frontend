@@ -1,2 +1,2 @@
-Codice GTIN/EAN;Codice prodotto;Categoria;Marca;Modello;Paese di Produzione
-GTIN123ABC4567;SKU98765;COOKINGHOBS;MarcaEsempio;ModelloX100;IT
+Codice GTIN/EAN;Codice Prodotto;Categoria;Paese di Produzione;Marca;Modello
+GTIN123ABC4567;SKU98765;COOKINGHOBS;IT;MarcaEsempio;ModelloX100
