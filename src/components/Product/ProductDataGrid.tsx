@@ -178,7 +178,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
       .then((res) => {
         const { left } = res as BatchFilterList;
         const values = left[0].value;
-        console.log('§>>', { values });
 
         setBatchFilterItems([...values]);
       })
