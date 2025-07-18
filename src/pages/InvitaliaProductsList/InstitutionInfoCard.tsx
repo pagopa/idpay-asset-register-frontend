@@ -60,7 +60,15 @@ const InstitutionInfoCard: React.FC = () => {
             { label: 'ragioneSociale', value: institutionInfo?.description, truncate: true },
             {
               label: 'sedeLegale',
-              value: institutionInfo?.address,
+              value:
+                (institutionInfo?.address ?? '') +
+                ', ' +
+                (institutionInfo?.zipCode ?? '') +
+                ' ' +
+                (institutionInfo?.city ?? '') +
+                ' (' +
+                (institutionInfo?.county ?? '') +
+                ')',
               truncate: true,
             },
             { label: 'codiceFiscale', value: institutionInfo?.fiscalCode, truncate: true },
@@ -71,36 +79,41 @@ const InstitutionInfoCard: React.FC = () => {
             },
             { label: 'piva', value: institutionInfo?.vatNumber, truncate: true },
           ].map(({ label, value, truncate }) => (
-            <Box
-              key={label}
-              sx={{
-                gridColumn: 'span 6',
-                display: 'flex',
-                gap: 1,
-                alignItems: 'center',
-                flexWrap: 'nowrap',
-                minWidth: 0,
-              }}
-            >
-              <Typography variant="body2" fontWeight={500} noWrap sx={{ gridColumn: 'span 3' }}>
-                {t(`pages.invitaliaProductsList.${label}`)}
-              </Typography>
-              {truncate && value ? (
-                <Tooltip title={value}>
+            <React.Fragment key={label}>
+              <Box
+                sx={{
+                  gridColumn: 'span 6',
+                  display: 'flex',
+                  gap: 1,
+                  alignItems: 'center',
+                  flexWrap: 'nowrap',
+                  minWidth: 0,
+                }}
+              >
+                <Typography variant="body2" fontWeight={500} noWrap sx={{ gridColumn: 'span 3' }}>
+                  {t(`pages.invitaliaProductsList.${label}`)}
+                </Typography>
+                {truncate && value ? (
+                  <Tooltip title={value}>
+                    <Typography
+                      variant="body2"
+                      sx={{ cursor: 'pointer', fontWeight: '600', gridColumn: 'span 9' }}
+                      noWrap
+                    >
+                      {truncateString(value)}
+                    </Typography>
+                  </Tooltip>
+                ) : (
                   <Typography
                     variant="body2"
-                    sx={{ cursor: 'pointer', fontWeight: '600', gridColumn: 'span 9' }}
+                    sx={{ fontWeight: '600', gridColumn: 'span 9' }}
                     noWrap
                   >
-                    {truncateString(value)}
+                    {value || '-'}
                   </Typography>
-                </Tooltip>
-              ) : (
-                <Typography variant="body2" sx={{ fontWeight: '600', gridColumn: 'span 9' }} noWrap>
-                  {value || '-'}
-                </Typography>
-              )}
-            </Box>
+                )}
+              </Box>
+            </React.Fragment>
           ))}
         </Box>
       </Paper>

@@ -66,9 +66,9 @@ const getProductList = async (
   }
 };
 
-const getBatchFilterList = async (): Promise<BatchList> => {
+const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchList> => {
   try {
-    return await RegisterApi.getBatchFilterItems();
+    return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
   } catch (error: any) {
     if (error?.response && error?.response?.data) {
       const apiError: UploadsErrorDTO = error.response.data;
@@ -178,7 +178,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
         });
     }
 
-    void getBatchFilterList()
+    void getBatchFilterList(organizationId)
       .then((res) => {
         const { left } = res as BatchFilterList;
         const values = left[0].value;
@@ -242,22 +242,58 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
 
   return (
     <>
-      <FilterBar
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        setFiltering={setFiltering}
-        batchFilter={batchFilter}
-        setBatchFilter={setBatchFilter}
-        batchFilterItems={batchFilterItems}
-        eprelCodeFilter={eprelCodeFilter}
-        setEprelCodeFilter={setEprelCodeFilter}
-        gtinCodeFilter={gtinCodeFilter}
-        setGtinCodeFilter={setGtinCodeFilter}
-        errorStatus={apiErrorOccurred}
-        tableData={tableData}
-        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
-      />
-
+      {tableData?.length > 0 && (
+        <FilterBar
+          categoryFilter={categoryFilter}
+          setCategoryFilter={setCategoryFilter}
+          setFiltering={setFiltering}
+          batchFilter={batchFilter}
+          setBatchFilter={setBatchFilter}
+          batchFilterItems={batchFilterItems}
+          eprelCodeFilter={eprelCodeFilter}
+          setEprelCodeFilter={setEprelCodeFilter}
+          gtinCodeFilter={gtinCodeFilter}
+          setGtinCodeFilter={setGtinCodeFilter}
+          errorStatus={apiErrorOccurred}
+          tableData={tableData}
+          handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+        />
+      )}
+      {tableData?.length === 0 && (
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{
+            height: '70%',
+            gap: '24px',
+            borderRadius: '4px',
+            pt: '24px',
+            pr: '24px',
+            pl: '24px',
+            cursor: 'pointer',
+          }}
+          data-testid="uploads-table"
+        >
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  align="center"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                  }}
+                >
+                  {t('pages.products.noFileLoaded')}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
       <Paper
         sx={{
           width: '100%',
