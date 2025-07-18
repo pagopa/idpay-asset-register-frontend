@@ -1,9 +1,25 @@
-/* eslint-disable react/jsx-no-bind */
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
 import ExitModal from '../ExitModal';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';
 import ROUTES from '../../../routes';
+import '@testing-library/jest-dom';
+
+jest.mock('../../../utils/env', () => ({
+  default: {
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+    },
+    API_TIMEOUT_MS: 5000,
+  },
+}));
+
+jest.mock('../../../routes', () => ({
+  __esModule: true,
+  default: {
+    HOME: '/home'
+  },
+  BASE_ROUTE: '/base'
+}));
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: any) => key }),

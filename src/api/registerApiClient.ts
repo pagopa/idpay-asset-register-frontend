@@ -77,19 +77,20 @@ export const RegisterApi = {
       throw error;
     }
   },
-
   getProducts: async (
-    page?: number,
-    size?: number,
-    sort?: string,
-    category?: string,
-    eprelCode?: string,
-    gtinCode?: string,
-    productCode?: string,
-    productFileId?: string
+      xOrganizationSelected: string,
+      page?: number,
+      size?: number,
+      sort?: string,
+      category?: string,
+      eprelCode?: string,
+      gtinCode?: string,
+      productCode?: string,
+      productFileId?: string,
   ): Promise<UploadsListDTO> => {
     try {
       const params = {
+        'x-organization-selected': xOrganizationSelected,
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
         ...(sort !== undefined ? { sort } : {}),
@@ -98,7 +99,7 @@ export const RegisterApi = {
         ...(gtinCode ? { gtinCode } : {}),
         ...(productCode ? { productCode } : {}),
         ...(productFileId ? { productFileId } : {}),
-      };
+      }; 
 
       const result = await registerClient.getProducts(params);
       return extractResponse(result, 200, onRedirectToLogin);
@@ -107,10 +108,10 @@ export const RegisterApi = {
       throw error;
     }
   },
-  getBatchFilterItems: async (): Promise<BatchList> => {
+  getBatchFilterItems: async (xOrganizationSelected: string): Promise<BatchList> => {
     try {
       return await registerClient.getBatchNameList({
-        'x-organization-selected': '',
+        'x-organization-selected': xOrganizationSelected,
       });
     } catch (error) {
       console.error('Errore durante il recupero della lista filtri lotti:', error);
@@ -119,6 +120,10 @@ export const RegisterApi = {
   },
   uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
     const result = await registerClient.uploadProductList({ csv, category });
+    return extractResponse(result, 200, onRedirectToLogin);
+  },
+  uploadProductListVerify: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
+    const result = await registerClient.verifyProductList({ csv, category });
     return extractResponse(result, 200, onRedirectToLogin);
   },
   downloadErrorReport: async (
@@ -156,6 +161,15 @@ export const RegisterApi = {
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
       console.error('Errore durante il recupero della lista delle istituzioni:', error);
+      throw error;
+    }
+  },
+  getInstitutionById: async (institutionId: string): Promise<InstitutionsResponse> => {
+    try {
+      const result = await registerClient.retrieveInstitutionById({ institutionId });
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error(`Errore durante il recupero dell'istituzione con ID ${institutionId}:`, error);
       throw error;
     }
   },

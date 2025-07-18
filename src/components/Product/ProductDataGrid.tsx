@@ -26,7 +26,7 @@ import {
   setBatchId,
   setBatchName,
 } from '../../redux/slices/productsSlice';
-import { Order, BatchFilterItems, extractBatchFilterItems } from './helpers';
+import { Order, BatchFilterItems, BatchFilterList } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
@@ -35,6 +35,7 @@ import FilterBar from './FilterBar';
 import EnhancedTableHead from './EnhancedTableHead';
 
 const getProductList = async (
+  xOrganizationSelected: string,
   page?: number,
   size?: number,
   sort?: string,
@@ -46,6 +47,7 @@ const getProductList = async (
 ): Promise<ProductListDTO> => {
   try {
     return await RegisterApi.getProducts(
+      xOrganizationSelected,
       page,
       size,
       sort,
@@ -64,9 +66,9 @@ const getProductList = async (
   }
 };
 
-const getBatchFilterList = async (): Promise<BatchList> => {
+const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchList> => {
   try {
-    return await RegisterApi.getBatchFilterItems();
+    return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
   } catch (error: any) {
     if (error?.response && error?.response?.data) {
       const apiError: UploadsErrorDTO = error.response.data;
@@ -76,7 +78,11 @@ const getBatchFilterList = async (): Promise<BatchList> => {
   }
 };
 
-const ProductGrid = () => {
+type ProductGridProps = {
+  organizationId: string;
+};
+
+const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   const dispatch = useDispatch();
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
@@ -98,13 +104,13 @@ const ProductGrid = () => {
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
-  
   const { t } = useTranslation();
 
-  const callProductsApi = () => {
+  const callProductsApi = (organizationId: string) => {
     const sortKey = `${orderBy},${order}`;
 
     void getProductList(
+      organizationId,
       page,
       displayRows,
       sortKey,
@@ -140,7 +146,6 @@ const ProductGrid = () => {
     setLoading(false);
   };
 
-
   useEffect(() => {
     if (batchId) {
       setBatchFilter(batchId);
@@ -151,7 +156,7 @@ const ProductGrid = () => {
   useEffect(() => {
     setLoading(true);
     if (batchId === '') {
-      void getProductList(page, displayRows)
+      void getProductList(organizationId, page, displayRows)
         .then((res) => {
           const { content, pageNo, totalElements } = res;
           setTableData(content ? Array.from(content) : []);
@@ -161,15 +166,19 @@ const ProductGrid = () => {
           setPaginatorTo(
             totalElements && totalElements > displayRows ? displayRows : totalElements
           );
-          setApiErrorOccurred(false);
           setLoading(false);
         })
-        .catch(() => handleStateForError());
+        .catch(() => {
+          setTableData([]);
+          setLoading(false);
+        });
     }
 
-    void getBatchFilterList()
+    void getBatchFilterList(organizationId)
       .then((res) => {
-        const values = extractBatchFilterItems(res);
+        const { left } = res as BatchFilterList;
+        const values = left[0].value;
+
         setBatchFilterItems([...values]);
       })
       .catch(() => {
@@ -179,7 +188,7 @@ const ProductGrid = () => {
 
   useEffect(() => {
     setLoading(true);
-    callProductsApi();
+    callProductsApi(organizationId);
   }, [page, orderBy, order]);
 
   useEffect(() => {
@@ -188,9 +197,8 @@ const ProductGrid = () => {
       setLoading(false);
       return;
     }
-    callProductsApi();
+    callProductsApi(organizationId);
   }, [filtering]);
-
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
@@ -229,22 +237,58 @@ const ProductGrid = () => {
 
   return (
     <>
-      <FilterBar
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        setFiltering={setFiltering}
-        batchFilter={batchFilter}
-        setBatchFilter={setBatchFilter}
-        batchFilterItems={batchFilterItems}
-        eprelCodeFilter={eprelCodeFilter}
-        setEprelCodeFilter={setEprelCodeFilter}
-        gtinCodeFilter={gtinCodeFilter}
-        setGtinCodeFilter={setGtinCodeFilter}
-        errorStatus={apiErrorOccurred}
-        tableData={tableData}
-        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
-      />
-
+      {tableData?.length > 0 && (
+        <FilterBar
+          categoryFilter={categoryFilter}
+          setCategoryFilter={setCategoryFilter}
+          setFiltering={setFiltering}
+          batchFilter={batchFilter}
+          setBatchFilter={setBatchFilter}
+          batchFilterItems={batchFilterItems}
+          eprelCodeFilter={eprelCodeFilter}
+          setEprelCodeFilter={setEprelCodeFilter}
+          gtinCodeFilter={gtinCodeFilter}
+          setGtinCodeFilter={setGtinCodeFilter}
+          errorStatus={apiErrorOccurred}
+          tableData={tableData}
+          handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+        />
+      )}
+      {tableData?.length === 0 && (
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{
+            height: '70%',
+            gap: '24px',
+            borderRadius: '4px',
+            pt: '24px',
+            pr: '24px',
+            pl: '24px',
+            cursor: 'pointer',
+          }}
+          data-testid="uploads-table"
+        >
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  align="center"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                  }}
+                >
+                  {t('pages.products.noFileLoaded')}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
       <Paper
         sx={{
           width: '100%',
@@ -330,8 +374,12 @@ const ProductGrid = () => {
         )}
       </Paper>
 
-      <DetailDrawer open={drawerOpened} toggleDrawer={handleToggleDrawer}>
-        <ProductDetail data={drawerData} />
+      <DetailDrawer
+        data-testid="detail-drawer"
+        open={drawerOpened}
+        toggleDrawer={handleToggleDrawer}
+      >
+        <ProductDetail data-testid="product-detail" data={drawerData} />
       </DetailDrawer>
     </>
   );

@@ -1,5 +1,4 @@
-export const testToken ='';
-
+export const testToken =  '';
 
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
 export const MOCK_USER = IS_DEVELOP;
@@ -19,6 +18,12 @@ export enum PRODUCTS_CATEGORY {
   TUMBLEDRYERS = 'TUMBLEDRYERS',
   REFRIGERATINGAPPL = 'REFRIGERATINGAPPL',
   COOKINGHOBS = 'COOKINGHOBS',
+}
+
+export enum PRODUCTS_STATES {
+  APPROVED = 'Approvato',
+  EXCLUDED = 'Escluso',
+  MARKED = 'Contrassegnato',
 }
 
 export const INVITALIA = 'invitalia';

@@ -30,7 +30,7 @@ export type JWTUser = {
   // ORG - Ragione Sociale
   org_name: string;
   // ORG - Codice fiscale
-  org_taxcode:string;
+  org_fc:string;
   // ORG - PIVA
   org_vat: string;
   org_party_role: string;

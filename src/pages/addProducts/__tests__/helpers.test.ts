@@ -31,8 +31,8 @@ describe('downloadCsv', () => {
 
         jest.spyOn(document, 'createElement').mockImplementation(() => {
             return {
-                set href(value: string) {},
-                set download(value: string) {},
+                set href(_value: string) {},
+                set download(_value: string) {},
                 click: mockClick,
             } as any;
         });
