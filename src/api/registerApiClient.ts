@@ -89,7 +89,6 @@ export const RegisterApi = {
     productFileId?: string
   ): Promise<UploadsListDTO> => {
     try {
-      // Costruisci l'oggetto dei parametri senza undefined senza modificare oggetti esistenti
       const params = {
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
@@ -104,7 +103,6 @@ export const RegisterApi = {
       const result = await registerClient.getProducts(params);
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      // Puoi loggare o gestire l’errore come preferisci
       console.error('Errore durante il recupero dei file prodotto:', error);
       throw error;
     }
@@ -112,7 +110,7 @@ export const RegisterApi = {
   getBatchFilterItems: async (): Promise<BatchList> => {
     try {
       return await registerClient.getBatchNameList({
-        'x-organization-selected': ''
+        'x-organization-selected': '',
       });
     } catch (error) {
       console.error('Errore durante il recupero della lista filtri lotti:', error);

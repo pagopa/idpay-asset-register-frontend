@@ -13,10 +13,10 @@ export interface Data {
 export function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   const dA = a[orderBy] as unknown as string;
   const dB = b[orderBy] as unknown as string;
-  if (dB.toLowerCase() < dA.toLowerCase()) {
+  if (dB?.toLowerCase() < dA?.toLowerCase()) {
     return -1;
   }
-  if (dB.toLowerCase() > dA.toLowerCase()) {
+  if (dB?.toLowerCase() > dA?.toLowerCase()) {
     return 1;
   }
   return 0;
