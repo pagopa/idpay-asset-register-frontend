@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Paper,
   Button,
@@ -13,7 +13,7 @@ import {
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 import { RegisterApi } from '../../api/registerApiClient';
 import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
@@ -26,7 +26,7 @@ import {
   setBatchId,
   setBatchName,
 } from '../../redux/slices/productsSlice';
-import {getComparator, Order, BatchFilterItems, BatchFilterList} from './helpers';
+import { Order, BatchFilterItems, BatchFilterList } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
@@ -35,6 +35,7 @@ import FilterBar from './FilterBar';
 import EnhancedTableHead from './EnhancedTableHead';
 
 const getProductList = async (
+  xOrganizationSelected: string,
   page?: number,
   size?: number,
   sort?: string,
@@ -46,6 +47,7 @@ const getProductList = async (
 ): Promise<ProductListDTO> => {
   try {
     return await RegisterApi.getProducts(
+      xOrganizationSelected,
       page,
       size,
       sort,
@@ -76,7 +78,11 @@ const getBatchFilterList = async (): Promise<BatchList> => {
   }
 };
 
-const ProductGrid = () => {
+type ProductGridProps = {
+  organizationId: string;
+};
+
+const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   const dispatch = useDispatch();
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
@@ -100,60 +106,66 @@ const ProductGrid = () => {
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
 
-    const sortKey = orderBy && `${orderBy},${order}`;
-    console.log('<1>', { order, orderBy, sortKey, batchFilterItems });
+  const sortKey = orderBy && `${orderBy},${order}`;
+  console.log('<1>', { order, orderBy, sortKey, batchFilterItems });
 
-    const isAnyFilterActive = useMemo(() => (
-            categoryFilter !== '' ||
-            batchFilter !== '' ||
-            eprelCodeFilter !== '' ||
-            gtinCodeFilter !== ''
-        ), [categoryFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]);
+  const isAnyFilterActive = useMemo(
+    () =>
+      categoryFilter !== '' ||
+      batchFilter !== '' ||
+      eprelCodeFilter !== '' ||
+      gtinCodeFilter !== '',
+    [categoryFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
+  );
 
   const { t } = useTranslation();
 
-    useEffect(() => {
-        if (batchId) {
-            setBatchFilter(batchId);
-            setFiltering(true);
-        }
-    }, [batchName, batchId, batchFilterItems]);
-
-    useEffect(() => {
-    setLoading(true);
-    if( batchId === "" ) {
-        void getProductList(page, displayRows)
-            .then((res) => {
-                const {content, pageNo, totalElements} = res;
-                setTableData(content ? Array.from(content) : []);
-                setPage(pageNo || 0);
-                setItemsQty(totalElements);
-                setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
-                setPaginatorTo(totalElements && totalElements > displayRows ? displayRows : totalElements);
-                setLoading(false);
-            })
-            .catch(() => {
-                setTableData([]);
-                setLoading(false);
-            });
+  useEffect(() => {
+    if (batchId) {
+      setBatchFilter(batchId);
+      setFiltering(true);
     }
-
-    void getBatchFilterList()
-        .then((res) => {
-          const { left } = res as BatchFilterList;
-          const values = left[0].value;
-          console.log('§>>', { values });
-
-          setBatchFilterItems([...values]);
-        })
-        .catch(() => {
-          setBatchFilterItems([]);
-        });
-  }, []);
+  }, [batchName, batchId, batchFilterItems]);
 
   useEffect(() => {
     setLoading(true);
+    if (batchId === '') {
+      void getProductList(organizationId, page, displayRows)
+        .then((res) => {
+          const { content, pageNo, totalElements } = res;
+          setTableData(content ? Array.from(content) : []);
+          setPage(pageNo || 0);
+          setItemsQty(totalElements);
+          setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
+          setPaginatorTo(
+            totalElements && totalElements > displayRows ? displayRows : totalElements
+          );
+          setLoading(false);
+        })
+        .catch(() => {
+          setTableData([]);
+          setLoading(false);
+        });
+    }
+
+    void getBatchFilterList()
+      .then((res) => {
+        const { left } = res as BatchFilterList;
+        const values = left[0].value;
+        console.log('§>>', { values });
+
+        setBatchFilterItems([...values]);
+      })
+      .catch(() => {
+        setBatchFilterItems([]);
+      });
+  }, []);
+
+  useEffect(() => {
+    const xOrganizationSelected = organizationId;
+    setLoading(true);
     void getProductList(
+      xOrganizationSelected,
       page,
       displayRows,
       filtering ? sortKey : undefined,
@@ -218,7 +230,7 @@ const ProductGrid = () => {
     setDrawerOpened(true);
   };
 
-  const visibleRows = [...tableData].sort(getComparator(order, orderBy));
+  const visibleRows = tableData;
 
   return (
     <>
@@ -330,7 +342,11 @@ const ProductGrid = () => {
         )}
       </Paper>
 
-      <DetailDrawer data-testid="detail-drawer" open={drawerOpened} toggleDrawer={handleToggleDrawer}>
+      <DetailDrawer
+        data-testid="detail-drawer"
+        open={drawerOpened}
+        toggleDrawer={handleToggleDrawer}
+      >
         <ProductDetail data-testid="product-detail" data={drawerData} />
       </DetailDrawer>
     </>

@@ -38,6 +38,40 @@ export const getProductFilesList = async (
     }
   };
 
+export const getProducts = async (
+  xOrganizationSelected: string,
+  page?: number,
+  size?: number,
+  sort?: string,
+  category?: string,
+  eprelCode?: string,
+  gtinCode?: string,
+  productCode?: string,
+  productFileId?: string
+): Promise<UploadsListDTO> => {
+  try {
+    return await RegisterApi.getProducts(
+      xOrganizationSelected,
+      page,
+      size,
+      sort,
+      category,
+      eprelCode,
+      gtinCode,
+      productCode,
+      productFileId
+    );
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
+
+
+
 export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
   try {
     return await RegisterApi.getInstitutionsList();
