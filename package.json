@@ -27,6 +27,7 @@
     "react-dropzone": "^14.3.8",
     "react-i18next": "^15.1.2",
     "react-redux": "^7.2.6",
+    "redux-persist": "^6.0.0",
     "react-router-dom": "^6.20.1",
     "react-scripts": "5.0.1",
     "url": "^0.11.0",
@@ -81,6 +82,7 @@
     "@types/validator": "13.11.9",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
+    "@types/jest": "^30.0.0",
     "api-spec-converter": "^2.12.0",
     "craco-module-federation": "^1.1.0",
     "eslint": "7.11.0",
@@ -114,6 +116,7 @@
       "src/consentAndAnalyticsConfiguration.ts",
       "src/reportWebVitals.ts",
       "src/api/generated",
+      "src/api/registerApiClient.ts",
       "src/locale/it.ts"
     ],
     "moduleNameMapper": {

@@ -1,5 +1,4 @@
-import React from 'react';
-import { renderWithContext } from '../../../utils/test-utils';
+import { renderWithContext } from '../../../utils/__tests__/test-utils';
 import AcceptedFile from '../AcceptedFile';
 
 beforeEach(() => {

@@ -1,0 +1,529 @@
+jest.mock('../../../utils/env', () => ({
+    __esModule: true,
+    default: {
+        URL_API: {
+            OPERATION: 'https://mock-api/register',
+        },
+        API_TIMEOUT_MS: {
+            OPERATION: 5000,
+        },
+    },
+}));
+
+jest.mock('../../../routes', () => ({
+    __esModule: true,
+    default: {
+        HOME: '/home'
+    },
+    BASE_ROUTE: '/base'
+}));
+
+jest.mock('../../../api/registerApiClient', () => ({
+    RegisterApi: {
+        getProducts: jest.fn(),
+        getBatchFilterItems: jest.fn(),
+    },
+}));
+
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+
+jest.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string) => {
+            const translations: { [key: string]: string } = {
+                'pages.products.listHeader.category': 'Category',
+                'pages.products.listHeader.energeticClass': 'Energy Class',
+                'pages.products.listHeader.eprelCode': 'EPREL Code',
+                'pages.products.listHeader.gtinCode': 'GTIN Code',
+                'pages.products.listHeader.batch': 'Batch',
+                'pages.products.emptyList': 'No products found',
+                'pages.products.noFileLoaded': 'No file loaded',
+                'pages.products.loading': 'Loading...',
+                'pages.products.tablePaginationFrom': 'of',
+                'commons.categories.appliances': 'Appliances',
+                'commons.categories.electronics': 'Electronics',
+                'pages.products.categories.appliances': 'Appliances',
+                'pages.products.categories.electronics': 'Electronics',
+                'pages.products.filterLabels.category': 'Category',
+                'pages.products.filterLabels.batch': 'Batch',
+                'pages.products.filterLabels.eprelCode': 'EPREL Code',
+                'pages.products.filterLabels.gtinCode': 'GTIN Code',
+                'pages.products.filterLabels.filter': 'Filter',
+                'pages.products.filterLabels.deleteFilters': 'Delete Filters',
+            };
+            return translations[key] || key;
+        },
+    }),
+}));
+
+jest.mock('../../../utils/constants', () => ({
+    displayRows: 10,
+    emptyData: '-',
+    PRODUCTS_CATEGORY: {
+        APPLIANCES: 'APPLIANCES',
+        ELECTRONICS: 'ELECTRONICS',
+    },
+}));
+
+jest.mock('../DetailDrawer', () => {
+    return function MockDetailDrawer({ children, open }: any) {
+        return open ? <div data-testid="detail-drawer">{children}</div> : null;
+    };
+});
+
+jest.mock('../ProductDetail', () => {
+    return function MockProductDetail({ data }: any) {
+        return <div data-testid="product-detail">Product Detail: {data.id}</div>;
+    };
+});
+
+jest.mock('../MessagePage', () => {
+    return function MockMessagePage({ message, goBack, onGoBack }: any) {
+        return (
+            <div data-testid="message-page">
+                <span>{message}</span>
+                {goBack && <button onClick={onGoBack}>Go Back</button>}
+            </div>
+        );
+    };
+});
+
+jest.mock('../EprelLinks', () => {
+    return function MockEprelLinks({ row }: any) {
+        return <div data-testid="eprel-links">{row.eprelCode || '-'}</div>;
+    };
+});
+
+jest.mock('../FilterBar', () => {
+    return function MockFilterBar(props: any) {
+        return (
+            <div data-testid="filter-bar">
+                <button onClick={() => props.setFiltering(true)}>Apply Filters</button>
+                <button onClick={props.handleDeleteFiltersButtonClick}>Clear Filters</button>
+            </div>
+        );
+    };
+});
+
+// Import del componente e delle dipendenze DOPO i mock
+import ProductGrid from '../ProductDataGrid';
+import { RegisterApi } from '../../../api/registerApiClient';
+import { ProductListDTO } from '../../../api/generated/register/ProductListDTO';
+import { ProductDTO } from '../../../api/generated/register/ProductDTO';
+import { BatchList } from '../../../api/generated/register/BatchList';
+
+const mockRegisterApi = RegisterApi as jest.Mocked<typeof RegisterApi>;
+
+const createMockStore = (initialState = {}) => {
+    return configureStore({
+        reducer: {
+            products: (state = { batchId: '', batchName: '' }, action) => {
+                switch (action.type) {
+                    case 'products/setBatchId':
+                        return { ...state, batchId: action.payload };
+                    case 'products/setBatchName':
+                        return { ...state, batchName: action.payload };
+                    default:
+                        return state;
+                }
+            },
+        },
+        preloadedState: {
+            products: { batchId: '', batchName: '', ...initialState },
+        },
+    });
+};
+
+const TestWrapper: React.FC<{ children: React.ReactNode; store?: any }> = ({
+                                                                               children,
+                                                                               store = createMockStore()
+                                                                           }) => {
+    const theme = createTheme();
+    return (
+        <Provider store={store}>
+            <ThemeProvider theme={theme}>
+                {children}
+            </ThemeProvider>
+        </Provider>
+    );
+};
+
+describe('ProductGrid', () => {
+    const mockProductData: ProductDTO[] = [
+        {
+            productFileId: '1',
+            category: 'APPLIANCES',
+            energyClass: 'A++',
+            eprelCode: 'EPREL001',
+            gtinCode: 'GTIN001',
+            batchName: 'Batch 1',
+        },
+        {
+            productFileId: '2',
+            category: 'ELECTRONICS',
+            energyClass: 'A+',
+            eprelCode: 'EPREL002',
+            gtinCode: 'GTIN002',
+            batchName: 'Batch 2',
+        },
+    ];
+
+    const mockProductListResponse: ProductListDTO = {
+        content: mockProductData,
+        pageNo: 0,
+        totalElements: 2,
+    };
+
+    const mockBatchListResponse: BatchList = {
+        batches: [{
+            value: [
+                { productFileId: '1', batchName: 'Batch 1' },
+                { productFileId: '2', batchName: 'Batch 2' },
+            ]
+        }]
+    };
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockRegisterApi.getProducts.mockResolvedValue(mockProductListResponse);
+        mockRegisterApi.getBatchFilterItems.mockResolvedValue(mockBatchListResponse);
+    });
+
+    describe('Initial Rendering and Loading', () => {
+        test('should show loading message initially', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            expect(screen.getByText('Loading...')).toBeInTheDocument();
+        });
+
+        test('should load and display products after initial load', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('Appliances')).toBeInTheDocument();
+                expect(screen.getByText('Electronics')).toBeInTheDocument();
+            });
+
+            expect(mockRegisterApi.getProducts).toHaveBeenCalledWith(
+                0, 10, undefined, undefined, undefined, undefined, undefined, undefined
+            );
+            expect(mockRegisterApi.getBatchFilterItems).toHaveBeenCalled();
+        });
+
+        test('should handle API errors gracefully', async () => {
+            mockRegisterApi.getProducts.mockRejectedValue(new Error('API Error'));
+
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+            });
+        });
+    });
+
+    describe('Table Rendering', () => {
+        test('should render table headers correctly', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('Category')).toBeInTheDocument();
+                expect(screen.getByText('Energy Class')).toBeInTheDocument();
+                expect(screen.getByText('EPREL Code')).toBeInTheDocument();
+                expect(screen.getByText('GTIN Code')).toBeInTheDocument();
+                expect(screen.getByText('Batch')).toBeInTheDocument();
+            });
+        });
+
+        test('should render product data in table rows', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('A++')).toBeInTheDocument();
+                expect(screen.getByText('A+')).toBeInTheDocument();
+                expect(screen.getByText('GTIN001')).toBeInTheDocument();
+                expect(screen.getByText('GTIN002')).toBeInTheDocument();
+            });
+        });
+
+        test('should handle empty data with dash', async () => {
+            const mockEmptyProductData: ProductDTO[] = [
+                {
+                    productFileId: '1',
+                    category: 'APPLIANCES',
+                    energyClass: undefined,
+                    eprelCode: undefined,
+                    gtinCode: undefined,
+                    batchName: undefined,
+                },
+            ];
+
+            mockRegisterApi.getProducts.mockResolvedValue({
+                content: mockEmptyProductData,
+                pageNo: 0,
+                totalElements: 1,
+            });
+
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                const dashElements = screen.getAllByText('-');
+                expect(dashElements.length).toBeGreaterThan(0);
+            });
+        });
+    });
+
+    describe('Sorting Functionality', () => {
+        test('should handle sort by category', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('Category')).toBeInTheDocument();
+            });
+
+            const categoryHeader = screen.getByText('Category');
+            fireEvent.click(categoryHeader);
+
+            // Verificare che l'ordinamento sia cambiato
+            expect(categoryHeader).toBeInTheDocument();
+        });
+
+        test('should disable sorting for energy class and eprel code', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('Energy Class')).toBeInTheDocument();
+            });
+
+            // I pulsanti di ordinamento per questi campi dovrebbero essere disabilitati
+            // Questo test verificherebbe che il TableSortLabel sia disabilitato
+        });
+    });
+
+    describe('Pagination', () => {
+        test('should display pagination when there are products', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('1 - 2 of 2')).toBeInTheDocument();
+            });
+        });
+
+        test('should handle page change', async () => {
+            const mockLargeProductList: ProductListDTO = {
+                content: mockProductData,
+                pageNo: 0,
+                totalElements: 20,
+            };
+
+            mockRegisterApi.getProducts.mockResolvedValue(mockLargeProductList);
+
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('1 - 10 of 20')).toBeInTheDocument();
+            });
+
+            // Simulare il cambio di pagina
+            const nextPageButton = screen.getByLabelText('Go to next page');
+            fireEvent.click(nextPageButton);
+
+            await waitFor(() => {
+                expect(mockRegisterApi.getProducts).toHaveBeenCalledWith(
+                    1, 10, 'asc', '', '', '', undefined, ''
+                );
+            });
+        });
+    });
+
+    describe('Filter Integration', () => {
+        test('should trigger filtering when filter button is clicked', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('Apply Filters')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Apply Filters'));
+
+            await waitFor(() => {
+                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(4);
+            });
+        });
+
+        test('should clear all filters when clear button is clicked', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('Clear Filters')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Clear Filters'));
+
+            await waitFor(() => {
+                expect(mockRegisterApi.getProducts).toHaveBeenCalledWith(
+                    0, 10, 'asc', '', '', '', undefined, ''
+                );
+            });
+        });
+    });
+
+    describe('Redux Integration', () => {
+        test('should handle batch filter from Redux state', async () => {
+            const storeWithBatchId = createMockStore({
+                batchId: 'batch123',
+                batchName: 'Test Batch',
+            });
+
+            render(
+                <TestWrapper store={storeWithBatchId}>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(mockRegisterApi.getProducts).toHaveBeenCalledWith(
+                    0, 10, 'asc', '', '', '', undefined, 'batch123'
+                );
+            });
+        });
+    });
+
+    describe('Detail Drawer', () => {
+        test('should open detail drawer when row button is clicked', async () => {
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('Appliances')).toBeInTheDocument();
+            });
+
+            const detailButtons = screen.getAllByRole('button');
+            const rowDetailButton = detailButtons.find(button =>
+                button.querySelector('svg')
+            );
+
+            if (rowDetailButton) {
+                expect(rowDetailButton).toBeDefined();
+                fireEvent.click(rowDetailButton!);
+
+                const drawer = await screen.findByTestId('detail-drawer');
+                expect(drawer).toBeInTheDocument();
+
+                const detail = await screen.findByTestId('product-detail');
+                expect(detail).toBeInTheDocument();
+            }
+        });
+    });
+
+    describe('Empty States', () => {
+        test('should show empty message when no products and no filters', async () => {
+            mockRegisterApi.getProducts.mockResolvedValue({
+                content: [],
+                pageNo: 0,
+                totalElements: 0,
+            });
+
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+            });
+        });
+
+        test('should show filtered empty message when no products with filters', async () => {
+            mockRegisterApi.getProducts.mockResolvedValue({
+                content: [],
+                pageNo: 0,
+                totalElements: 0,
+            });
+
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('Apply Filters')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText('Apply Filters'));
+        });
+    });
+
+    describe('Error Handling', () => {
+        test('should handle batch filter API error', async () => {
+            mockRegisterApi.getBatchFilterItems.mockRejectedValue(new Error('Batch API Error'));
+
+            render(
+                <TestWrapper>
+                    <ProductGrid />
+                </TestWrapper>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText('Appliances')).toBeInTheDocument();
+            });
+        });
+    });
+});

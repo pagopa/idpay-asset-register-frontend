@@ -35,7 +35,7 @@ export const userFromJwtToken: (token: string) => User = function (token: string
   const jwtUser: JWTUser = parseJwt(token);
   return {
     uid: jwtUser.uid,
-    taxCode: '',
+    taxCode: jwtUser.org_fc,
     name: jwtUser.name,
     surname: jwtUser.family_name,
     email: jwtUser.email,
@@ -44,7 +44,7 @@ export const userFromJwtToken: (token: string) => User = function (token: string
     org_role: jwtUser.org_role,
     org_address: jwtUser.org_address,
     org_pec: jwtUser.org_pec,
-    org_taxcode: jwtUser.org_taxcode,
+    org_taxcode: jwtUser.org_fc,
     org_vat: jwtUser.org_vat,
     org_email: jwtUser.org_email
   };
@@ -55,7 +55,7 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
   const jwtUser: JWTUser = parseJwt(token);
   return {
     uid: jwtUser.uid,
-    taxCode: '',
+    taxCode: jwtUser.org_fc,
     name: jwtUser.name,
     surname: jwtUser.family_name,
     email: jwtUser.email,
@@ -64,7 +64,7 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
     org_role: jwtUser.org_role,
     org_address: jwtUser.org_address,
     org_pec: jwtUser.org_pec,
-    org_taxcode: jwtUser.org_taxcode,
+    org_taxcode: jwtUser.org_fc,
     org_vat: jwtUser.org_vat,
     org_email: jwtUser.org_email
   };
