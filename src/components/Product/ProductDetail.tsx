@@ -16,7 +16,9 @@ export default function ProductDetail({ data }: Props) {
       <List>
         <ListItem disablePadding>
           <Box sx={{ mb: 1, ml: 2 }}>
-            <Typography variant="h6">Dettaglio prodotto - TODO</Typography>
+            <Typography variant="h6" sx={{ maxWidth: 350, wordWrap: 'break-word' }}>
+              {data?.productName}
+            </Typography>
           </Box>
         </ListItem>
         <ListItem>
@@ -40,7 +42,7 @@ export default function ProductDetail({ data }: Props) {
         </ListItem>
         <ListItem>
           <Box>
-            <Typography variant="body2" fontWeight="fontWeightMedium" sx={{ mt: 3 }}>
+            <Typography variant="body2" fontWeight="fontWeightMedium" sx={{ mt: 4 }}>
               SCHEDA PRODOTTO
             </Typography>
           </Box>
@@ -131,6 +133,17 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
               {data?.countryOfProduction || emptyData}
+            </Typography>
+          </Box>
+        </ListItem>
+
+        <ListItem>
+          <Box>
+            <Typography variant="body1" color="text.secondary">
+              Capacità
+            </Typography>
+            <Typography variant="body2" fontWeight="fontWeightMedium">
+              {data?.capacity || emptyData}
             </Typography>
           </Box>
         </ListItem>
