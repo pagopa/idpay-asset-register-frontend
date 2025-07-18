@@ -106,7 +106,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   const batchId = useSelector(batchIdSelector);
 
   const sortKey = orderBy && `${orderBy},${order}`;
-  console.log('<1>', { order, orderBy, sortKey, batchFilterItems });
 
   const { t } = useTranslation();
 
@@ -182,8 +181,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
       .then((res) => {
         const { left } = res as BatchFilterList;
         const values = left[0].value;
-        console.log('§>>', { values });
-
         setBatchFilterItems([...values]);
       })
       .catch(() => {
