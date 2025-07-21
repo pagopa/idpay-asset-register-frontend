@@ -237,23 +237,21 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
 
   return (
     <>
-      {tableData?.length > 0 && (
-        <FilterBar
-          categoryFilter={categoryFilter}
-          setCategoryFilter={setCategoryFilter}
-          setFiltering={setFiltering}
-          batchFilter={batchFilter}
-          setBatchFilter={setBatchFilter}
-          batchFilterItems={batchFilterItems}
-          eprelCodeFilter={eprelCodeFilter}
-          setEprelCodeFilter={setEprelCodeFilter}
-          gtinCodeFilter={gtinCodeFilter}
-          setGtinCodeFilter={setGtinCodeFilter}
-          errorStatus={apiErrorOccurred}
-          tableData={tableData}
-          handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
-        />
-      )}
+      <FilterBar
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        setFiltering={setFiltering}
+        batchFilter={batchFilter}
+        setBatchFilter={setBatchFilter}
+        batchFilterItems={batchFilterItems}
+        eprelCodeFilter={eprelCodeFilter}
+        setEprelCodeFilter={setEprelCodeFilter}
+        gtinCodeFilter={gtinCodeFilter}
+        setGtinCodeFilter={setGtinCodeFilter}
+        errorStatus={apiErrorOccurred}
+        tableData={tableData}
+        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+      />
       {tableData?.length === 0 && (
         <TableContainer
           component={Paper}
