@@ -183,6 +183,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                     color='primary'
                     sx={{ verticalAlign: 'middle' }}
                     onClick={() => handleDownloadReport(row?.productFileId?.toString() || "")}
+                    data-testid="download-icon"
                   />
                 )}
               </TableCell>

@@ -9,8 +9,8 @@
 // let portalApiGetInstitutionSpy;
 // let portalApiGetInstitutionsSpy;
 
-import { fetchPartyDetails } from '../../services/partyService';
-import { verifyFetchPartyDetailsMockExecution } from '../../services/__mocks__/partyService';
+import { fetchPartyDetails } from '../partyService';
+import { verifyFetchPartyDetailsMockExecution } from '../__mocks__/partyService';
 
 beforeEach(() => {
   // portalApiGetInstitutionSpy = jest.spyOn(PortalApi, 'getInstitution');

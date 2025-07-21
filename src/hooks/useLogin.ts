@@ -14,23 +14,6 @@ import {getUserPermission} from "../services/rolePermissionService";
 import {setPermissionsList, setUserRole} from "../redux/slices/permissionsSlice";
 import {Permission} from "../model/Permission";
 
-/*
- const mockedUser = {
-   uid: '0',
-   taxCode: '',
-   name: 'lorenzo',
-   surname: 'lollo',
-   email: 'l.lollo@elecrolux.aa',
-   org_party_role: 'PRODUTTORE',
-   org_role: 'Operatore',
-   org_name:'Electrolux',
-   org_address: 'Corso Lino Zanussi 24, 33080 Porcia(PN)',
-   org_pec: 'amministrazione.appliance@electrolxxxxx.aa',
-   org_taxcode: '01724290935',
-   org_vat: '01724290935'
- };
-*/
-
 export const userFromJwtToken: (token: string) => User = function (token: string) {
   const jwtUser: JWTUser = parseJwt(token);
   return {
