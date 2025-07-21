@@ -1,3 +1,4 @@
+import { useTheme, useMediaQuery } from '@mui/material';
 import {maxLengthEmail} from "./utils/constants";
 
 export const formattedCurrency = (
@@ -112,4 +113,27 @@ export const truncateString = (str?: string, maxLength: number = maxLengthEmail)
     } else {
         return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
     }
+};
+
+export const truncateStringResponsive = (str?: string, maxLength?: number): string => {
+  if (!str) {return '-';}
+  if (!maxLength) {return str;}
+  return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+};
+
+
+export const useResponsiveMaxLength = (): number => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.only('xs'));
+  const isSm = useMediaQuery(theme.breakpoints.only('sm'));
+  const isMd = useMediaQuery(theme.breakpoints.only('md'));
+  const isLg = useMediaQuery(theme.breakpoints.only('lg'));
+  const isXl = useMediaQuery(theme.breakpoints.only('xl'));
+
+  if (isXs) {return 15;}
+  if (isSm) {return 25;}
+  if (isMd) {return 35;}
+  if (isLg) {return 50;}
+  if (isXl) {return 70;}
+  return 70; 
 };
