@@ -199,7 +199,8 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
           });
       },
       onDropRejected: (files) => {
-        const errorKey = files[0].errors[0].code;
+          setIsReport(false);
+          const errorKey = files[0].errors[0].code;
         switch (errorKey) {
           case 'file-invalid-type':
             setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.invalidTypeTitle'));
