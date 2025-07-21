@@ -6,6 +6,7 @@ import { truncateString } from '../../helpers';
 import { InstitutionResponse } from '../../api/generated/register/InstitutionResponse';
 import { getInstitutionById } from '../../services/registerService';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
+import { maxLengthOverviewInvit } from '../../utils/constants';
 
 const InstitutionInfoCard: React.FC = () => {
   const { t } = useTranslation();
@@ -24,6 +25,64 @@ const InstitutionInfoCard: React.FC = () => {
   useEffect(() => {
     void fetchInstitution();
   }, []);
+
+  const leftColumn = [
+    { label: 'ragioneSociale', value: institutionInfo?.description, truncate: true },
+    { label: 'codiceFiscale', value: institutionInfo?.fiscalCode, truncate: true },
+    { label: 'piva', value: institutionInfo?.vatNumber, truncate: true },
+  ];
+
+  const rightColumn = [
+    {
+      label: 'sedeLegale',
+      value:
+        (institutionInfo?.address ?? '') +
+        ', ' +
+        (institutionInfo?.zipCode ?? '') +
+        ' ' +
+        (institutionInfo?.city ?? '') +
+        ' (' +
+        (institutionInfo?.county ?? '') +
+        ')',
+      truncate: true,
+    },
+    { label: 'pec', value: institutionInfo?.digitalAddress, truncate: true },
+  ];
+
+  const renderInfoRow = ({
+    label,
+    value,
+    truncate,
+  }: {
+    label: string;
+    value: string | undefined | null;
+    truncate: boolean;
+  }) => (
+    <Box
+      key={label}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        minWidth: 0,
+      }}
+    >
+      <Typography variant="body2" fontWeight={500} noWrap sx={{ minWidth: 120 }}>
+        {t(`pages.invitaliaProductsList.${label}`)}
+      </Typography>
+      {truncate && value ? (
+        <Tooltip title={value}>
+          <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }} noWrap>
+            {truncateString(value, maxLengthOverviewInvit)}
+          </Typography>
+        </Tooltip>
+      ) : (
+        <Typography variant="body2" sx={{ fontWeight: '600' }} noWrap>
+          {value || '-'}
+        </Typography>
+      )}
+    </Box>
+  );
 
   return (
     <Box sx={{ gridColumn: 'span 12' }}>
@@ -52,69 +111,17 @@ const InstitutionInfoCard: React.FC = () => {
             gridColumn: 'span 12',
             display: 'grid',
             gridTemplateColumns: 'repeat(12, 1fr)',
-            rowGap: 2,
             columnGap: 2,
+            rowGap: 2,
           }}
         >
-          {[
-            { label: 'ragioneSociale', value: institutionInfo?.description, truncate: true },
-            {
-              label: 'sedeLegale',
-              value:
-                (institutionInfo?.address ?? '') +
-                ', ' +
-                (institutionInfo?.zipCode ?? '') +
-                ' ' +
-                (institutionInfo?.city ?? '') +
-                ' (' +
-                (institutionInfo?.county ?? '') +
-                ')',
-              truncate: true,
-            },
-            { label: 'codiceFiscale', value: institutionInfo?.fiscalCode, truncate: true },
-            {
-              label: 'pec',
-              value: institutionInfo?.digitalAddress,
-              truncate: true,
-            },
-            { label: 'piva', value: institutionInfo?.vatNumber, truncate: true },
-          ].map(({ label, value, truncate }) => (
-            <React.Fragment key={label}>
-              <Box
-                sx={{
-                  gridColumn: 'span 6',
-                  display: 'flex',
-                  gap: 1,
-                  alignItems: 'center',
-                  flexWrap: 'nowrap',
-                  minWidth: 0,
-                }}
-              >
-                <Typography variant="body2" fontWeight={500} noWrap sx={{ gridColumn: 'span 3' }}>
-                  {t(`pages.invitaliaProductsList.${label}`)}
-                </Typography>
-                {truncate && value ? (
-                  <Tooltip title={value}>
-                    <Typography
-                      variant="body2"
-                      sx={{ cursor: 'pointer', fontWeight: '600', gridColumn: 'span 9' }}
-                      noWrap
-                    >
-                      {truncateString(value)}
-                    </Typography>
-                  </Tooltip>
-                ) : (
-                  <Typography
-                    variant="body2"
-                    sx={{ fontWeight: '600', gridColumn: 'span 9' }}
-                    noWrap
-                  >
-                    {value || '-'}
-                  </Typography>
-                )}
-              </Box>
-            </React.Fragment>
-          ))}
+          <Box sx={{ gridColumn: 'span 6', display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {leftColumn.map(renderInfoRow)}
+          </Box>
+
+          <Box sx={{ gridColumn: 'span 6', display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {rightColumn.map(renderInfoRow)}
+          </Box>
         </Box>
       </Paper>
     </Box>

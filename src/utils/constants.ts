@@ -33,3 +33,7 @@ export const displayRows = 8;
 export const emptyData = '-';
 
 export const maxLengthEmail: number = 40;
+export const maxLengthOverviewProd: number = 75;
+export const maxLengthOverviewInvit: number = 140;
+
+
