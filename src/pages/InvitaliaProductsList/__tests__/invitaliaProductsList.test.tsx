@@ -1,3 +1,5 @@
+import InvitaliaProductsList from "../invitaliaProductsList";
+
 jest.mock('../../../utils/env', () => ({
     __esModule: true,
     default: {
@@ -30,7 +32,6 @@ import { Provider } from 'react-redux';
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MemoryRouter } from 'react-router-dom';
-import InvitaliaProductsList from '../InvitaliaProductsList';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({

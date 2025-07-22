@@ -2,9 +2,9 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
-import Overview from '../Overview';
 import { fetchUserFromLocalStorage, truncateString } from '../../../helpers';
 import '@testing-library/jest-dom';
+import Overview from "../overview";
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
