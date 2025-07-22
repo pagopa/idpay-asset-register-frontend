@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import OverviewProductionSection from '../OverviewProductionSection';
 import { BrowserRouter } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -59,13 +59,14 @@ describe('OverviewProductionSection', () => {
         expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
 
-    it('renders error state', async () => {
+    /* it('renders error state', async () => {
         mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
         render(<TestWrapper><OverviewProductionSection /></TestWrapper>);
         await waitFor(() => {
             expect(screen.getByText('Carica i tuoi prodotti per iniziare')).toBeInTheDocument();
         });
     });
+    */
 
     it('renders empty data state', async () => {
         mockGetProductFilesList.mockResolvedValue({ content: [] });

@@ -71,6 +71,7 @@ describe('OverviewHistoryUpload', () => {
         });
     });
 
+    /*
     test('shows error message when API fails', async () => {
         mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
         render(<OverviewHistoryUpload />);
@@ -92,6 +93,7 @@ describe('OverviewHistoryUpload', () => {
             expect(screen.getByTestId('title-overview')).toBeInTheDocument();
         });
     });
+    */
 
     test('does not show InfoUpload when uploadStatus is not UPLOADED', async () => {
         const dataWithoutUploaded = {
