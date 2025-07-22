@@ -18,16 +18,18 @@ import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
-import {useDispatch} from "react-redux";
-import {useNavigate} from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { UploadDTO } from '../../api/generated/register/UploadDTO';
-import {downloadErrorReport} from "../../services/registerService";
-import {downloadCsv} from "../addProducts/helpers";
-import {formatDateWithHours} from "../../helpers";
-import {usePagination} from "../../hooks/usePagination";
-import {setBatchId, setBatchName} from "../../redux/slices/productsSlice";
-import ROUTES from "../../routes";
+import { downloadErrorReport } from '../../services/registerService';
+import { downloadCsv } from '../addProducts/helpers';
+import { formatDateWithHours } from '../../helpers';
+import { usePagination } from '../../hooks/usePagination';
+import { setBatchId, setBatchName } from '../../redux/slices/productsSlice';
+import ROUTES from '../../routes';
+import { emptyData } from '../../utils/constants';
+import EmptyListTable from './EmptyListTable';
 
 function renderUploadStatusIcon(status: string) {
   switch (status) {
@@ -73,12 +75,12 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
     try {
       const res = await downloadErrorReport(idReport);
 
-      downloadCsv(res.data,res.filename);
+      downloadCsv(res.data, res.filename);
     } catch (error) {
       console.error('Errore nel download del report:', error);
     }
   };
-  
+
   const handleLinkProducts = (batchName: string, productFileId: string) => {
     dispatch(setBatchName(batchName));
     dispatch(setBatchId(productFileId));
@@ -148,18 +150,23 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
               >
                 {renderUploadStatusIcon(row.uploadStatus ?? '')}
               </TableCell>
-              <TableCell sx={{
-                borderBottom: `1px solid ${grey[300]}`,
-                fontWeight: 600,
-                alignContent: 'center'
-              }}>
+              <TableCell
+                sx={{
+                  borderBottom: `1px solid ${grey[300]}`,
+                  fontWeight: 600,
+                  alignContent: 'center',
+                }}
+              >
                 {row.batchName}
               </TableCell>
               <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
-                {row.dateUpload ? formatDateWithHours(row.dateUpload) : '-'}
+                {row.dateUpload ? formatDateWithHours(row.dateUpload) : emptyData}
               </TableCell>
               <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
-                <b>{row.findedProductsNumber ?? 0} {t('pages.uploadHistory.uploadHistoryFoundProducts')}</b>
+                <b>
+                  {row.findedProductsNumber ?? 0}{' '}
+                  {t('pages.uploadHistory.uploadHistoryFoundProducts')}
+                </b>
               </TableCell>
               <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
                 <span
@@ -168,9 +175,10 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                     fontWeight: 'bold',
                     textDecoration: 'underline',
                   }}
-                  onClick={() => handleLinkProducts(row?.batchName || "", row?.productFileId || "")}
+                  onClick={() => handleLinkProducts(row?.batchName || '', row?.productFileId || '')}
                 >
-                  {row.addedProductNumber ?? 0} {t('pages.uploadHistory.uploadHistoryAddedProducts')}
+                  {row.addedProductNumber ?? 0}{' '}
+                  {t('pages.uploadHistory.uploadHistoryAddedProducts')}
                 </span>
               </TableCell>
 
@@ -180,9 +188,9 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
               >
                 {row.uploadStatus === 'PARTIAL' && (
                   <DownloadIcon
-                    color='primary'
+                    color="primary"
                     sx={{ verticalAlign: 'middle' }}
-                    onClick={() => handleDownloadReport(row?.productFileId?.toString() || "")}
+                    onClick={() => handleDownloadReport(row?.productFileId?.toString() || '')}
                     data-testid="download-icon"
                   />
                 )}
@@ -201,45 +209,14 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         rowsPerPageOptions={[rowsPerPage]}
         labelRowsPerPage={t('pages.uploadHistory.uploadHistoryRowsPerPage')}
         labelDisplayedRows={() =>
-            `${paginationInfo.from} - ${paginationInfo.to} ${t(
-                'pages.products.tablePaginationFrom'
-            )} ${paginationInfo.total}`
-        }      />
+          `${paginationInfo.from} - ${paginationInfo.to} ${t(
+            'pages.products.tablePaginationFrom'
+          )} ${paginationInfo.total}`
+        }
+      />
     </TableContainer>
   ) : (
-    <TableContainer
-      component={Paper}
-      elevation={0}
-      sx={{
-        height: '70%',
-        gap: '24px',
-        borderRadius: '4px',
-        pt: '24px',
-        pr: '24px',
-        pl: '24px',
-        cursor: 'pointer',
-      }}
-      data-testid="uploads-table"
-    >
-      <Table>
-        <TableBody>
-          <TableRow>
-            <TableCell
-              colSpan={6}
-              align="center"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-              }}
-            >
-              {t('pages.uploadHistory.uploadHistoryNoFilesUploaded')}
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <EmptyListTable message="pages.uploadHistory.uploadHistoryNoFilesUploaded" />
   );
 };
 

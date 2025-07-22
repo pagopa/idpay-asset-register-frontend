@@ -26,6 +26,7 @@ import {
   setBatchId,
   setBatchName,
 } from '../../redux/slices/productsSlice';
+import EmptyListTable from '../../pages/components/EmptyListTable';
 import { Order, BatchFilterItems, BatchFilterList } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
@@ -252,41 +253,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
         tableData={tableData}
         handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
       />
-      {tableData?.length === 0 && (
-        <TableContainer
-          component={Paper}
-          elevation={0}
-          sx={{
-            height: '70%',
-            gap: '24px',
-            borderRadius: '4px',
-            pt: '24px',
-            pr: '24px',
-            pl: '24px',
-            cursor: 'pointer',
-          }}
-          data-testid="uploads-table"
-        >
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  align="center"
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100%',
-                  }}
-                >
-                  {t('pages.products.noFileLoaded')}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+      {tableData?.length === 0 && <EmptyListTable message="pages.products.noFileLoaded" />}
       <Paper
         sx={{
           width: '100%',

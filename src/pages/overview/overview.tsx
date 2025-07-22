@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import OverviewProductionSection from '../components/OverviewProductionSection';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
-import { maxLengthOverviewProd } from '../../utils/constants';
+import { emptyData, maxLengthOverviewProd } from '../../utils/constants';
 
 const Overview: React.FC = () => {
   const { t } = useTranslation();
@@ -94,7 +94,7 @@ const Overview: React.FC = () => {
                       </Tooltip>
                     ) : (
                       <Typography variant="body2" sx={{ fontWeight: '600' }}>
-                        {value || '-'}
+                        {value || emptyData}
                       </Typography>
                     )}
                   </Box>
