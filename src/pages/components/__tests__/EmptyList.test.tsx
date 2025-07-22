@@ -1,6 +1,5 @@
-import React from 'react';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';
-import EmptyList from '../EmptyList';
+import EmptyList from '../EmptyListTable';
 
 beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});

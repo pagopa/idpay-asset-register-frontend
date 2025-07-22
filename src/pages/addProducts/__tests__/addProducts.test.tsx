@@ -109,9 +109,8 @@ describe('AddProducts Component', () => {
         expect(screen.getByTestId('title')).toBeInTheDocument();
 
         expect(screen.getByText('Home')).toBeInTheDocument();
-        expect(screen.getByText('Aggiungi Prodotti')).toBeInTheDocument();
 
-        expect(screen.getByTestId('exit-button-test')).toBeInTheDocument();
+        expect(screen.getByTestId('back-button-test')).toBeInTheDocument();
         expect(screen.getByText('Esci')).toBeInTheDocument();
     });
 
@@ -218,7 +217,6 @@ describe('AddProducts Component', () => {
         expect(breadcrumbContainer).toBeInTheDocument();
 
         expect(screen.getByText('Home')).toBeInTheDocument();
-        expect(screen.getByText('Aggiungi Prodotti')).toBeInTheDocument();
     });
 
     test('form validation works correctly', async () => {

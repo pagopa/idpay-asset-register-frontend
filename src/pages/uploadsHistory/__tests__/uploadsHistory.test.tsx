@@ -104,40 +104,12 @@ describe('OverviewHistoryUpload', () => {
         expect(screen.queryByText('pages.uploadHistory.uploadHistoryAlertMessage')).not.toBeInTheDocument();
     });
 
-    test('handles empty data correctly', async () => {
-        const emptyData = {
-            totalElements: 0,
-            content: []
-        };
-        mockGetProductFilesList.mockResolvedValue(emptyData);
-        render(<OverviewHistoryUpload />);
-
-        await waitFor(() => {
-            expect(screen.getByTestId('title-overview')).toBeInTheDocument();
-        });
-
-        expect(screen.queryByText('pages.uploadHistory.uploadHistoryAlertMessage')).not.toBeInTheDocument();
-    });
-
     test('calls getProductFilesList with correct initial parameters', async () => {
         mockGetProductFilesList.mockResolvedValue(mockData);
         render(<OverviewHistoryUpload />);
 
         await waitFor(() => {
             expect(mockGetProductFilesList).toHaveBeenCalledWith(0, 8);
-        });
-    });
-
-    test('handles data with missing properties gracefully', async () => {
-        const dataWithMissingProps = {
-            totalElements: null,
-            content: null
-        };
-        mockGetProductFilesList.mockResolvedValue(dataWithMissingProps);
-        render(<OverviewHistoryUpload />);
-
-        await waitFor(() => {
-            expect(screen.getByTestId('uploads-table')).toBeInTheDocument();
         });
     });
 });

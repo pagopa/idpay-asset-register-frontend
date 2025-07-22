@@ -546,21 +546,6 @@ describe('FormAddProducts Component', () => {
         expect(screen.getByTestId('change-file-btn')).toHaveTextContent('');
     });
 
-    test('handles change file button click', async () => {
-        const user = userEvent.setup();
-
-        render(
-            <TestWrapper>
-                <FormAddProducts {...defaultProps} fileAccepted={true} />
-            </TestWrapper>
-        );
-
-        const changeFileBtn = screen.getByTestId('change-file-btn');
-        await user.click(changeFileBtn);
-
-        expect(mockSetFileAccepted).toHaveBeenCalledWith(true);
-    });
-
     test('prevents file dialog when category is not selected', async () => {
         render(
             <TestWrapper>

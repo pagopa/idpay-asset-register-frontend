@@ -27,7 +27,7 @@ const AddProducts: React.FC = () => {
   };
 
   return (
-    <Box pb={0}>
+    <Box pb={0}  data-testid="add-products-container">
       <Box sx={{ display: 'flex', gridColumn: 'span 12', alignItems: 'center', marginTop: 5 }}>
         <ButtonNaked
           component="button"
@@ -41,7 +41,7 @@ const AddProducts: React.FC = () => {
             fontWeight: 700,
           }}
           weight="default"
-          data-testid="exit-button-test"
+          data-testid="back-button-test"
         >
           {t('breadcrumbs.exit')}
         </ButtonNaked>

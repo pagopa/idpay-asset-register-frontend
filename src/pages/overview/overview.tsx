@@ -51,6 +51,7 @@ const Overview: React.FC = () => {
               variantTitle="h6"
               variantSubTitle="body1"
               data-testid="title-box-overview-info"
+              aria-label="title-box-overview-info"
               titleFontSize="32px"
             />
             <Box
