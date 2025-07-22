@@ -32,7 +32,7 @@ import { emptyData } from '../../utils/constants';
 import EmptyListTable from './EmptyListTable';
 
 const rowTableStyle = {
-  height: '53px',
+  height: '76px',
   transition: 'background-color 0.2s',
   '&:hover': {
     backgroundColor: grey[200],
@@ -54,6 +54,7 @@ const styleRightRow = {
   ...rowBaseCell,
   textAlign: 'right',
   width: '15%',
+  padding: '24px',
 };
 
 function renderUploadStatusIcon(status: string) {
@@ -150,7 +151,11 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
               sx={{ backgroundColor: 'background.paper', borderBottom: 0, p: 0 }}
             >
               <TitleBox
-                title={t('pages.uploadHistory.uploadHistoryTitle')}
+                title={
+                  <span style={{ fontWeight: 'bold' }}>
+                    {t('pages.uploadHistory.uploadHistoryTitle')}
+                  </span>
+                }
                 mbTitle={2}
                 mtTitle={2}
                 mbSubTitle={5}
