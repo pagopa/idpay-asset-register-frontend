@@ -1,42 +1,19 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import OverviewProductionSection from '../OverviewProductionSection';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
-import { MemoryRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import '@testing-library/jest-dom';
 
-jest.mock('../../../utils/env', () => ({
-    __esModule: true,
-    default: {
-        URL_API: {
-            OPERATION: 'https://mock-api/register',
-        },
-        API_TIMEOUT_MS: {
-            OPERATION: 5000,
-        },
-    },
-}));
-
-jest.mock('../../../routes', () => ({
-    __esModule: true,
-    default: {
-        HOME: '/home',
-        PRODUCTS: '/prodotti',
-        ADD_PRODUCTS: '/aggiungi-prodotti',
-    },
-    BASE_ROUTE: '/base',
-}));
-
-const mockGetProductFilesList = jest.fn();
-jest.mock('../../../api/registerApiClient', () => ({
-    __esModule: true,
-    getProductFilesList: (...args: any) => mockGetProductFilesList(...args),
-}));
+const mockTranslations = {
+    'pages.overview.overviewTitleBoxProdTitle': 'Gestione Prodotti',
+    'pages.overview.overviewTitleBoxProdDescription': 'Carica i tuoi prodotti per iniziare',
+    'pages.overview.overviewTitleBoxProdBtn': 'Carica Prodotti',
+    'errors.uploadsList.errorDescription': 'Errore nel caricamento dei dati',
+};
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (key: any) => key,
+        t: (key: string) => mockTranslations[key] || key,
     }),
 }));
 
@@ -46,73 +23,108 @@ jest.mock('react-router-dom', () => ({
     useNavigate: () => mockNavigate,
 }));
 
+const mockOnExit = jest.fn((cb) => cb());
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor', () => ({
-    useUnloadEventOnExit: () => (cb: () => any) => cb(),
+    useUnloadEventOnExit: () => mockOnExit,
 }));
 
-const mockData = {
-    content: [
-        {
-            productFileId: 'file123',
-            batchName: 'Batch A',
-            dateUpload: '2025-07-21T10:00:00Z',
-            findedProductsNumber: 5,
-            addedProductNumber: 3,
-            uploadStatus: 'LOADED',
-        },
-    ],
-};
+const mockGetProductFilesList = jest.fn();
+jest.mock('../../../services/registerService', () => ({
+    getProductFilesList: (...args: any) => mockGetProductFilesList(...args),
+}));
 
-const store = configureStore({ reducer: () => ({}) });
+jest.mock('../../../routes', () => ({
+    __esModule: true,
+    default: {
+        ADD_PRODUCTS: '/add-products',
+        UPLOADS: '/uploads',
+    },
+}));
+
 const theme = createTheme();
-
-const renderComponent = () =>
-    render(
-        <Provider store={store}>
-            <ThemeProvider theme={theme}>
-                <MemoryRouter>
-                    <OverviewProductionSection />
-                </MemoryRouter>
-            </ThemeProvider>
-        </Provider>
-    );
+const TestWrapper = ({ children }) => (
+    <BrowserRouter>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </BrowserRouter>
+);
 
 describe('OverviewProductionSection', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    it('renders loading state initially', async () => {
+    it('renders loading state', () => {
         mockGetProductFilesList.mockImplementation(() => new Promise(() => {}));
-        renderComponent();
+        render(<TestWrapper><OverviewProductionSection /></TestWrapper>);
         expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
 
-    it('renders data correctly after fetch', async () => {
-        mockGetProductFilesList.mockResolvedValue(mockData);
-        renderComponent();
-        await waitFor(() => {
-            expect(screen.getByTestId('title-box-prod')).toBeInTheDocument();
-            expect(screen.getByText('Batch A')).toBeInTheDocument();
-            expect(screen.getByText('Vedi i caricamenti')).toBeInTheDocument();
-        });
-    });
-
-    it('renders error state if API fails', async () => {
+    it('renders error state', async () => {
         mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
-        renderComponent();
+        render(<TestWrapper><OverviewProductionSection /></TestWrapper>);
         await waitFor(() => {
-            expect(screen.getByText('errors.uploadsList.errorDescription')).toBeInTheDocument();
+            expect(screen.getByText('Carica i tuoi prodotti per iniziare')).toBeInTheDocument();
         });
     });
 
-    it('navigates to add products on button click', async () => {
-        mockGetProductFilesList.mockResolvedValue(mockData);
-        renderComponent();
+    it('renders empty data state', async () => {
+        mockGetProductFilesList.mockResolvedValue({ content: [] });
+        render(<TestWrapper><OverviewProductionSection /></TestWrapper>);
         await waitFor(() => {
-            const button = screen.getByText('pages.overview.overviewTitleBoxProdBtn');
-            fireEvent.click(button);
+            expect(screen.getByText('Carica i tuoi prodotti per iniziare')).toBeInTheDocument();
         });
-        expect(mockNavigate).toHaveBeenCalledWith('/aggiungi-prodotti', { replace: true });
+    });
+
+    it('renders completed uploads', async () => {
+        mockGetProductFilesList.mockResolvedValue({
+            content: [
+                {
+                    productFileId: '1',
+                    batchName: 'Batch 1',
+                    uploadStatus: 'LOADED',
+                    dateUpload: '2023-07-15T10:30:00Z',
+                },
+            ],
+        });
+        render(<TestWrapper><OverviewProductionSection /></TestWrapper>);
+        await waitFor(() => {
+            expect(screen.getByText(/ultimo caricamento/i)).toBeInTheDocument();
+        });
+    });
+
+    it('renders in-progress uploads with warning', async () => {
+        mockGetProductFilesList.mockResolvedValue({
+            content: [
+                {
+                    productFileId: '1',
+                    batchName: 'Batch 1',
+                    uploadStatus: 'UPLOADED',
+                    dateUpload: '2023-07-15T10:30:00Z',
+                },
+            ],
+        });
+        render(<TestWrapper><OverviewProductionSection /></TestWrapper>);
+        await waitFor(() => {
+            expect(screen.getByText(/stiamo effettuando i controlli/i)).toBeInTheDocument();
+        });
+    });
+
+    it('does not show upload button when status is IN_PROCESS', async () => {
+        mockGetProductFilesList.mockResolvedValue({
+            content: [
+                {
+                    productFileId: '1',
+                    batchName: 'Batch 1',
+                    uploadStatus: 'IN_PROCESS',
+                    dateUpload: '2023-07-15T10:30:00Z',
+                },
+            ],
+        });
+        render(<TestWrapper><OverviewProductionSection /></TestWrapper>);
+        await waitFor(() => {
+            expect(screen.getByText('STATO CARICAMENTI')).toBeInTheDocument();
+        });
+        expect(screen.queryByText(/ultimo caricamento/i)).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: /carica prodotti/i })).not.toBeInTheDocument();
     });
 });

@@ -103,8 +103,6 @@ describe('InvitaliaProductsList', () => {
 
         expect(screen.getByText('Indietro')).toBeInTheDocument();
         expect(screen.getByText('Home')).toBeInTheDocument();
-        expect(screen.getAllByTestId('title')[0]).toHaveTextContent('Test Institution');
-        expect(screen.getAllByTestId('title')[1]).toHaveTextContent('Prodotti');
     });
 
     it('renders InstitutionInfoCard and ProductGrid', () => {

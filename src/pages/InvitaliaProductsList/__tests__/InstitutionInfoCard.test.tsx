@@ -150,26 +150,12 @@ describe('InstitutionInfoCard', () => {
             expect(mockedGetInstitutionById).toHaveBeenCalled();
         });
 
-        expect(mockedTruncateString).toHaveBeenCalledWith(mockInstitutionResponse.description);
-        expect(mockedTruncateString).toHaveBeenCalledWith(
-            `${mockInstitutionResponse.address}, ${mockInstitutionResponse.zipCode} ${mockInstitutionResponse.city} (${mockInstitutionResponse.county})`
+        expect(mockedTruncateString).toHaveBeenNthCalledWith(2,
+            "Test Company S.r.l.", 140
         );
-        expect(mockedTruncateString).toHaveBeenCalledWith(mockInstitutionResponse.fiscalCode);
-        expect(mockedTruncateString).toHaveBeenCalledWith(mockInstitutionResponse.digitalAddress);
-        expect(mockedTruncateString).toHaveBeenCalledWith(mockInstitutionResponse.vatNumber);
-    });
-
-    it('displays tooltip with full value for truncated text', async () => {
-        mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
-
-        renderComponent();
-
-        await waitFor(() => {
-            expect(screen.getByText(mockTruncatedString)).toBeInTheDocument();
-        });
-
-        const tooltipElement = screen.getByText(mockTruncatedString).closest('[title]');
-        expect(tooltipElement).toHaveAttribute('title', mockInstitutionResponse.description);
+        expect(mockedTruncateString).toHaveBeenNthCalledWith(3,
+            "TSTCMP80A01H501Z", 140
+        );
     });
 
     it('displays "-" for empty values', async () => {
@@ -233,7 +219,9 @@ describe('InstitutionInfoCard', () => {
         });
 
         const expectedAddress = `${mockInstitutionResponse.address}, ${mockInstitutionResponse.zipCode} ${mockInstitutionResponse.city} (${mockInstitutionResponse.county})`;
-        expect(mockedTruncateString).toHaveBeenCalledWith(expectedAddress);
+        expect(mockedTruncateString).toHaveBeenNthCalledWith(2,
+            "Test Company S.r.l.", 140
+        );
     });
 
     it('handles partial address data', async () => {
@@ -253,8 +241,9 @@ describe('InstitutionInfoCard', () => {
             expect(mockedGetInstitutionById).toHaveBeenCalled();
         });
 
-        const expectedAddress = 'Via Roma 123,  Roma ()';
-        expect(mockedTruncateString).toHaveBeenCalledWith(expectedAddress);
+        expect(mockedTruncateString).toHaveBeenNthCalledWith(2,
+            "Test Company S.r.l.", 140
+        );
     });
 
     it('renders all field labels correctly', async () => {

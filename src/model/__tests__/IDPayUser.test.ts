@@ -8,6 +8,12 @@ const mockedIdPayUser: IDPayUser = {
   taxCode: '2f63a151-da4e-4e1e-acf9-adecc0c4d727',
   org_party_role: 'ADMIN',
   org_role: 'admin',
+  org_name: 'orgName',
+  org_address: 'OrgAddress',
+  org_pec: 'pec',
+  org_taxcode: 'taxcode',
+  org_vat: 'vat',
+  org_email: 'email'
 };
 
 test('Test initiativeGeneral2GeneralInfo', () => {
@@ -20,5 +26,10 @@ test('Test initiativeGeneral2GeneralInfo', () => {
     taxCode: '2f63a151-da4e-4e1e-acf9-adecc0c4d727',
     org_party_role: 'ADMIN',
     org_role: 'admin',
+    org_address: 'OrgAddress',
+    org_pec: 'pec',
+    org_taxcode: 'taxcode',
+    org_vat: 'vat',
+    org_email: 'email'
   });
 });

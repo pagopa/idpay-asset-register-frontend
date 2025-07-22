@@ -63,7 +63,7 @@ const OverviewHistoryUpload: React.FC = () => {
   return (
     <>
       {!loading && !error && (
-        <Box width="100%" px={2}>
+        <Box width="100%" px={2} data-testid="title-overview">
           <TitleBox
             title={t('pages.uploadHistory.sideMenuTitle')}
             subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
@@ -72,7 +72,6 @@ const OverviewHistoryUpload: React.FC = () => {
             mbSubTitle={5}
             variantTitle="h4"
             variantSubTitle="body1"
-            data-testid="title-overview"
             titleFontSize="42px"
           />
 
@@ -107,7 +106,7 @@ const OverviewHistoryUpload: React.FC = () => {
         </Box>
       )}
       {error && (
-        <Box width="100%" px={2}>
+        <Box width="100%" px={2} data-testid="title-overview">
           <TitleBox
               title={t('pages.uploadHistory.sideMenuTitle')}
               subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
@@ -116,12 +115,11 @@ const OverviewHistoryUpload: React.FC = () => {
             mbSubTitle={5}
             variantTitle="h4"
             variantSubTitle="body1"
-            data-testid="title-overview"
             titleFontSize="42px"
           />
 
-          <Box>
-            <Table data-testid="uploads-table">
+          <Box data-testid="uploads-table">
+            <Table>
               <TableHead>
                 <TableRow></TableRow>
               </TableHead>
