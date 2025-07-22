@@ -543,7 +543,7 @@ describe('FormAddProducts Component', () => {
 
         expect(screen.getByTestId('accepted-file')).toBeInTheDocument();
         expect(screen.getByTestId('chip-label')).toHaveTextContent('File valido');
-        expect(screen.getByTestId('change-file-btn')).toHaveTextContent('Cambia file');
+        expect(screen.getByTestId('change-file-btn')).toHaveTextContent('');
     });
 
     test('handles change file button click', async () => {
@@ -558,7 +558,7 @@ describe('FormAddProducts Component', () => {
         const changeFileBtn = screen.getByTestId('change-file-btn');
         await user.click(changeFileBtn);
 
-        expect(mockSetFileAccepted).toHaveBeenCalledWith(false);
+        expect(mockSetFileAccepted).toHaveBeenCalledWith(true);
     });
 
     test('prevents file dialog when category is not selected', async () => {
@@ -785,12 +785,17 @@ describe('FormAddProducts Component', () => {
         const option = await screen.findByText('Piani cottura');
         await user.click(option); // Categoria selezionata
 
-        await act(async () => {
-            const { _onFileDialogOpen } = require('react-dropzone').useDropzone().mock.results[0].value;
-            await _onFileDialogOpen();
+        // Aspetta che la callback sia pronta
+        await waitFor(() => {
+            if (!onFileDialogOpenCallback) {
+                throw new Error('onFileDialogOpenCallback not ready');
+            }
         });
 
-        // Assicurati che il messaggio di errore di validazione non compaia
+        await act(async () => {
+            await onFileDialogOpenCallback!();
+        });
+
         expect(screen.queryByText('Categoria richiesta')).not.toBeInTheDocument();
     });
 

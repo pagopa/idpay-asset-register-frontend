@@ -3,6 +3,12 @@ import InstitutionsTable from '../institutionsTable';
 import { Institution } from '../../../model/Institution';
 import { InstitutionsResponse } from '../../../api/generated/register/InstitutionsResponse';
 import '@testing-library/jest-dom';
+import {createStore} from "../../../redux/store";
+import {Provider} from "react-redux";
+
+
+const reducer = (state = {}, ) => state;
+const store = createStore(reducer);
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -66,28 +72,48 @@ const defaultProps = {
 
 describe('InstitutionsTable', () => {
     it('renders loading state', () => {
-        render(<InstitutionsTable {...defaultProps} loading={true} />);
+        render(
+            <Provider store={store}>
+                <InstitutionsTable {...defaultProps} loading={true}/>
+            </Provider>
+        );
         expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
 
     it('renders error state', () => {
-        render(<InstitutionsTable {...defaultProps} error="Error loading" />);
+        render(
+            <Provider store={store}>
+                <InstitutionsTable {...defaultProps} error="Error loading"/>
+            </Provider>
+        );
         expect(screen.getByText('Error loading')).toBeInTheDocument();
     });
 
     it('renders no data message', () => {
-        render(<InstitutionsTable {...defaultProps} data={{ institutions: [] }} />);
+        render(
+            <Provider store={store}>
+                <InstitutionsTable {...defaultProps} data={{ institutions: [] }} />
+            </Provider>
+        );
         expect(screen.getByText('pages.invitaliaOverview.noInstitutionsFound')).toBeInTheDocument();
     });
 
     it('renders institutions data', () => {
-        render(<InstitutionsTable {...defaultProps} />);
+        render(
+            <Provider store={store}>
+                <InstitutionsTable {...defaultProps} />
+            </Provider>
+        );
         expect(screen.getByText('Alpha Institution')).toBeInTheDocument();
         expect(screen.getByText('Beta Institution')).toBeInTheDocument();
     });
 
     it('calls onRequestSort when header is clicked', () => {
-        render(<InstitutionsTable {...defaultProps} />);
+        render(
+            <Provider store={store}>
+                <InstitutionsTable {...defaultProps} />
+            </Provider>
+        );
         const header = screen.getByRole('button', { name: /pages.invitaliaOverview.listHeader.institutionName/i });
         fireEvent.click(header);
         expect(defaultProps.onRequestSort).toHaveBeenCalled();

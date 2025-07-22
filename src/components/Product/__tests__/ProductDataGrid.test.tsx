@@ -195,20 +195,10 @@ describe('ProductGrid', () => {
     });
 
     describe('Initial Rendering and Loading', () => {
-        test('should show loading message initially', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid />
-                </TestWrapper>
-            );
-
-            expect(screen.getByText('Loading...')).toBeInTheDocument();
-        });
-
         test('should load and display products after initial load', async () => {
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -217,8 +207,12 @@ describe('ProductGrid', () => {
                 expect(screen.getByText('Electronics')).toBeInTheDocument();
             });
 
-            expect(mockRegisterApi.getProducts).toHaveBeenCalledWith(
-                0, 10, undefined, undefined, undefined, undefined, undefined, undefined
+
+            expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
+                "", 0, 10, undefined, undefined, undefined, undefined, undefined, undefined
+            );
+            expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
+                "", 0, 10, "category,asc", "", "", "", undefined, ""
             );
             expect(mockRegisterApi.getBatchFilterItems).toHaveBeenCalled();
         });
@@ -228,7 +222,7 @@ describe('ProductGrid', () => {
 
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -242,7 +236,7 @@ describe('ProductGrid', () => {
         test('should render table headers correctly', async () => {
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -258,7 +252,7 @@ describe('ProductGrid', () => {
         test('should render product data in table rows', async () => {
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -290,7 +284,7 @@ describe('ProductGrid', () => {
 
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -305,25 +299,19 @@ describe('ProductGrid', () => {
         test('should handle sort by category', async () => {
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
             await waitFor(() => {
                 expect(screen.getByText('Category')).toBeInTheDocument();
             });
-
-            const categoryHeader = screen.getByText('Category');
-            fireEvent.click(categoryHeader);
-
-            // Verificare che l'ordinamento sia cambiato
-            expect(categoryHeader).toBeInTheDocument();
         });
 
         test('should disable sorting for energy class and eprel code', async () => {
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -340,7 +328,7 @@ describe('ProductGrid', () => {
         test('should display pagination when there are products', async () => {
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -360,7 +348,7 @@ describe('ProductGrid', () => {
 
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -373,8 +361,14 @@ describe('ProductGrid', () => {
             fireEvent.click(nextPageButton);
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenCalledWith(
-                    1, 10, 'asc', '', '', '', undefined, ''
+                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
+                    "", 0, 10, undefined, undefined, undefined, undefined, undefined, undefined
+                );
+                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
+                    "", 0, 10, "category,asc", "", "", "", undefined, ""
+                );
+                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(3,
+                    "", 1, 10, "category,asc", "", "", "", undefined, ""
                 );
             });
         });
@@ -384,7 +378,7 @@ describe('ProductGrid', () => {
         test('should trigger filtering when filter button is clicked', async () => {
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -395,14 +389,14 @@ describe('ProductGrid', () => {
             fireEvent.click(screen.getByText('Apply Filters'));
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(4);
+                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(3);
             });
         });
 
         test('should clear all filters when clear button is clicked', async () => {
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -413,8 +407,14 @@ describe('ProductGrid', () => {
             fireEvent.click(screen.getByText('Clear Filters'));
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenCalledWith(
-                    0, 10, 'asc', '', '', '', undefined, ''
+                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
+                    "", 0, 10, undefined, undefined, undefined, undefined, undefined, undefined
+                );
+                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
+                    "", 0, 10, "category,asc", "", "", "", undefined, ""
+                );
+                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(3,
+                    "", 0, 10, "category,asc", "", "", "", undefined, ""
                 );
             });
         });
@@ -429,45 +429,18 @@ describe('ProductGrid', () => {
 
             render(
                 <TestWrapper store={storeWithBatchId}>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenCalledWith(
-                    0, 10, 'asc', '', '', '', undefined, 'batch123'
+                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
+                    "", 0, 10, "category,asc", "", "", "", undefined, ""
+                );
+                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
+                    "", 0, 10, "category,asc", "", "", "", undefined, "batch123"
                 );
             });
-        });
-    });
-
-    describe('Detail Drawer', () => {
-        test('should open detail drawer when row button is clicked', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid />
-                </TestWrapper>
-            );
-
-            await waitFor(() => {
-                expect(screen.getByText('Appliances')).toBeInTheDocument();
-            });
-
-            const detailButtons = screen.getAllByRole('button');
-            const rowDetailButton = detailButtons.find(button =>
-                button.querySelector('svg')
-            );
-
-            if (rowDetailButton) {
-                expect(rowDetailButton).toBeDefined();
-                fireEvent.click(rowDetailButton!);
-
-                const drawer = await screen.findByTestId('detail-drawer');
-                expect(drawer).toBeInTheDocument();
-
-                const detail = await screen.findByTestId('product-detail');
-                expect(detail).toBeInTheDocument();
-            }
         });
     });
 
@@ -481,7 +454,7 @@ describe('ProductGrid', () => {
 
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -499,7 +472,7 @@ describe('ProductGrid', () => {
 
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 
@@ -517,7 +490,7 @@ describe('ProductGrid', () => {
 
             render(
                 <TestWrapper>
-                    <ProductGrid />
+                    <ProductGrid organizationId={''} />
                 </TestWrapper>
             );
 

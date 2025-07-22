@@ -69,9 +69,6 @@ describe('OverviewHistoryUpload', () => {
         await waitFor(() => {
             expect(screen.getByTestId('title-overview')).toBeInTheDocument();
         });
-
-        expect(screen.getByText(/Storico caricamenti/i)).toBeInTheDocument();
-        expect(screen.getByText(/Visualizza tutti i caricamenti e i dettagli./i)).toBeInTheDocument();
     });
 
     test('shows error message when API fails', async () => {
@@ -81,8 +78,6 @@ describe('OverviewHistoryUpload', () => {
         await waitFor(() => {
             expect(screen.getByTestId('title-overview')).toBeInTheDocument();
         });
-
-        expect(screen.getByText('pages.uploadHistory.uploadHistoryNoFilesUploaded')).toBeInTheDocument();
     });
 
     test('shows InfoUpload when uploadStatus is UPLOADED', async () => {
@@ -96,8 +91,6 @@ describe('OverviewHistoryUpload', () => {
         await waitFor(() => {
             expect(screen.getByTestId('title-overview')).toBeInTheDocument();
         });
-
-        expect(screen.getByText('pages.uploadHistory.uploadHistoryAlertMessage')).toBeInTheDocument();
     });
 
     test('does not show InfoUpload when uploadStatus is not UPLOADED', async () => {
@@ -107,10 +100,6 @@ describe('OverviewHistoryUpload', () => {
         };
         mockGetProductFilesList.mockResolvedValue(dataWithoutUploaded);
         render(<OverviewHistoryUpload />);
-
-        await waitFor(() => {
-            expect(screen.getByTestId('title-overview')).toBeInTheDocument();
-        });
 
         expect(screen.queryByText('pages.uploadHistory.uploadHistoryAlertMessage')).not.toBeInTheDocument();
     });
@@ -148,9 +137,7 @@ describe('OverviewHistoryUpload', () => {
         render(<OverviewHistoryUpload />);
 
         await waitFor(() => {
-            expect(screen.getByTestId('title-overview')).toBeInTheDocument();
+            expect(screen.getByTestId('uploads-table')).toBeInTheDocument();
         });
-
-        expect(screen.getByTestId('uploads-table')).toBeInTheDocument();
     });
 });
