@@ -35,6 +35,36 @@ import EprelLinks from './EprelLinks';
 import FilterBar from './FilterBar';
 import EnhancedTableHead from './EnhancedTableHead';
 
+const rowTableStyle = {
+  height: '53px',
+  transition: 'background-color 0.2s',
+  '&:hover': {
+    backgroundColor: grey[200],
+  },
+};
+
+const rowBaseCell = {
+  borderBottom: `1px solid ${grey[300]}`,
+  width: '10px',
+  padding: '0px',
+};
+
+const styleLeftRow = {
+  ...rowBaseCell,
+  textAlign: 'left',
+  padding: '16px',
+};
+
+const styleCenterRow = {
+  ...rowBaseCell,
+  textAlign: 'center',
+};
+
+const styleRightRow = {
+  ...rowBaseCell,
+  textAlign: 'right',
+};
+
 const getProductList = async (
   xOrganizationSelected: string,
   page?: number,
@@ -274,33 +304,33 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
               )}
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row, index) => (
-                  <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
-                    <TableCell sx={{ textAlign: 'left' }}>
+                  <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>
+                    <TableCell sx={styleLeftRow}>
                       <Typography variant="body2">
                         {row?.category
                           ? t(`commons.categories.${row?.category?.toLowerCase()}`)
                           : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>
+                    <TableCell sx={styleCenterRow}>
                       <Typography variant="body2">
                         {row?.energyClass ? row?.energyClass : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>
+                    <TableCell sx={styleCenterRow}>
                       <EprelLinks row={row} />
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>
+                    <TableCell sx={styleCenterRow}>
                       <Typography variant="body2">
                         {row?.gtinCode ? row?.gtinCode : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={styleLeftRow}>
                       <Typography variant="body2">
                         {row?.batchName ? row?.batchName : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'right' }}>
+                    <TableCell sx={styleRightRow}>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
                         <ArrowForwardIosIcon />
                       </Button>
@@ -349,4 +379,5 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
     </>
   );
 };
+
 export default ProductGrid;

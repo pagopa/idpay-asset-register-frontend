@@ -31,6 +31,31 @@ import ROUTES from '../../routes';
 import { emptyData } from '../../utils/constants';
 import EmptyListTable from './EmptyListTable';
 
+const rowTableStyle = {
+  height: '53px',
+  transition: 'background-color 0.2s',
+  '&:hover': {
+    backgroundColor: grey[200],
+  },
+};
+
+const rowBaseCell = {
+  borderBottom: `1px solid ${grey[300]}`,
+  padding: '0px',
+};
+
+const styleLeftRow = {
+  ...rowBaseCell,
+  textAlign: 'left',
+  width: '10px',
+};
+
+const styleRightRow = {
+  ...rowBaseCell,
+  textAlign: 'right',
+  width: '15%',
+};
+
 function renderUploadStatusIcon(status: string) {
   switch (status) {
     case 'IN_PROGRESS':
@@ -74,7 +99,6 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   const handleDownloadReport = async (idReport: string) => {
     try {
       const res = await downloadErrorReport(idReport);
-
       downloadCsv(res.data, res.filename);
     } catch (error) {
       console.error('Errore nel download del report:', error);
@@ -140,35 +164,29 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         </TableHead>
         <TableBody>
           {data.content.map((row: UploadDTO) => (
-            <TableRow key={row.productFileId}>
-              <TableCell
-                sx={{
-                  borderBottom: `1px solid ${grey[300]}`,
-                  width: '10px',
-                  padding: '0px',
-                }}
-              >
+            <TableRow key={row.productFileId} sx={rowTableStyle} hover>
+              <TableCell sx={styleLeftRow}>
                 {renderUploadStatusIcon(row.uploadStatus ?? '')}
               </TableCell>
               <TableCell
                 sx={{
-                  borderBottom: `1px solid ${grey[300]}`,
+                  ...rowBaseCell,
                   fontWeight: 600,
                   alignContent: 'center',
                 }}
               >
                 {row.batchName}
               </TableCell>
-              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
+              <TableCell sx={rowBaseCell}>
                 {row.dateUpload ? formatDateWithHours(row.dateUpload) : emptyData}
               </TableCell>
-              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
+              <TableCell sx={rowBaseCell}>
                 <b>
                   {row.findedProductsNumber ?? 0}{' '}
                   {t('pages.uploadHistory.uploadHistoryFoundProducts')}
                 </b>
               </TableCell>
-              <TableCell sx={{ borderBottom: `1px solid ${grey[300]}` }}>
+              <TableCell sx={rowBaseCell}>
                 <span
                   style={{
                     color: '#0073E6',
@@ -181,11 +199,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                   {t('pages.uploadHistory.uploadHistoryAddedProducts')}
                 </span>
               </TableCell>
-
-              <TableCell
-                align="right"
-                sx={{ borderBottom: `1px solid ${grey[300]}`, width: '15%' }}
-              >
+              <TableCell align="right" sx={styleRightRow}>
                 {row.uploadStatus === 'PARTIAL' && (
                   <DownloadIcon
                     color="primary"
