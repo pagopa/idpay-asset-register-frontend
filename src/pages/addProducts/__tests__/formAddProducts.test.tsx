@@ -10,7 +10,6 @@ import {FileRejection} from "react-dropzone";
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, options?: any) => {
-            console.log('Translation key requested:', key);
             const translations: { [key: string]: string } = {
                 'validation.categoryRequired': 'Categoria richiesta',
                 'pages.addProducts.form.categoryLabel': 'Categoria Prodotto',

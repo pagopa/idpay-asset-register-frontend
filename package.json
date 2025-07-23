@@ -111,6 +111,8 @@
     "restoreMocks": true,
     "clearMocks": true,
     "resetMocks": true,
+    "coverageReporters": ["json", "lcov", "text", "clover"],
+    "coverageDirectory": "coverage",
     "coveragePathIgnorePatterns": [
       "src/index.js",
       "src/bootstrap.tsx",
