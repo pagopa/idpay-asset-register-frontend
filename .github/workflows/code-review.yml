@@ -22,17 +22,8 @@ jobs:
           corepack enable
           yarn install --immutable --check-cache || yarn install --force
 
-      # Install craco globally
-      - name: Install craco globally
-        run: yarn global add @craco/craco
-
       - name: Generate api client
         run: yarn generate
-
-      # Run Jest with coverage
-      - name: Run Jest Coverage
-        run: |
-          yarn test:coverage --ci --coverage --coverageReporters="json" --testLocationInResults --outputFile=report.json
 
       # Upload Jest Coverage Report
       - name: Jest Coverage Report
@@ -42,6 +33,7 @@ jobs:
           test-script: yarn test:coverage
           threshold: 90
           annotations: none
+          package-manager: yarn
 
       # SonarCloud scan
       - name: SonarCloud Scan
