@@ -33,7 +33,7 @@ jobs:
         uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          test-script: yarn test:coverage
+          test-script: echo "Tests already executed"
           threshold: 90
           annotations: none
           package-manager: yarn
