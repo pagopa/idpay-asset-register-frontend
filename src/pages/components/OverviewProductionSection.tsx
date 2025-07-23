@@ -92,7 +92,7 @@ const UploadInfoBox: React.FC<{
   ) {
     return (
       <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
-        <Typography variant="body2">
+        <Typography variant="body2" sx={{ mb: 1.5, mt: 1.5 }}>
           Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : emptyData}</b>
         </Typography>
         <Button
