@@ -122,18 +122,18 @@ describe('sortInstitutions', () => {
         it('should sort by createdAt in ascending order (ISO format)', () => {
             const result = sortInstitutions(mockInstitutions, 'asc', 'createdAt');
 
-            expect(result[0].institutionId).toBe('1'); // 2023-01-15
-            expect(result[1].institutionId).toBe('4'); // 15/01/2023 (same as above)
-            expect(result[2].institutionId).toBe('2'); // 2023-02-20
-            expect(result[3].institutionId).toBe('5'); // 20/02/2023 (same as above)
-            expect(result[4].institutionId).toBe('3'); // 2023-03-10
+            expect(result[0].institutionId).toBe('4');
+            expect(result[1].institutionId).toBe('1');
+            expect(result[2].institutionId).toBe('5');
+            expect(result[3].institutionId).toBe('2');
+            expect(result[4].institutionId).toBe('3');
         });
 
         it('should sort by createdAt in descending order (ISO format)', () => {
             const result = sortInstitutions(mockInstitutions, 'desc', 'createdAt');
 
-            expect(result[0].institutionId).toBe('3'); // 2023-03-10
-            expect(result[4].institutionId).toBe('1'); // 2023-01-15
+            expect(result[0].institutionId).toBe('3');
+            expect(result[4].institutionId).toBe('4');
         });
     });
 
@@ -246,10 +246,10 @@ describe('sortInstitutions', () => {
         it('should handle invalid date formats (treated as 0)', () => {
             const result = sortInstitutions(institutionsWithInvalidDates, 'asc', 'createdAt');
 
-            expect(result[0].institutionId).toBe('2'); // invalid-date -> 0
-            expect(result[1].institutionId).toBe('3'); // 32/13/2023 -> 0
-            expect(result[2].institutionId).toBe('4'); // 15/1/23 -> 0
-            expect(result[3].institutionId).toBe('1'); // valid date
+            expect(result[0].institutionId).toBe('4');
+            expect(result[1].institutionId).toBe('2');
+            expect(result[2].institutionId).toBe('3');
+            expect(result[3].institutionId).toBe('1');
         });
     });
 

@@ -8,7 +8,7 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-jest.mock('../../../pages/components/EmptyList', () => (props: any) => (
+jest.mock('../../../pages/components/EmptyListTable', () => (props: any) => (
   <div data-testid="empty-list">{props.message}</div>
 ));
 

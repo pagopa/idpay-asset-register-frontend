@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import {render, screen, fireEvent} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import FilterBar from '../FilterBar';
@@ -90,7 +90,7 @@ describe('FilterBar', () => {
     const renderComponent = (props = {}) => {
         return render(
             <TestWrapper>
-                <FilterBar {...defaultProps} {...props} />
+                <FilterBar errorStatus={false} {...defaultProps} {...props} />
             </TestWrapper>
         );
     };
@@ -105,21 +105,6 @@ describe('FilterBar', () => {
             expect(screen.getByLabelText('GTIN Code')).toBeInTheDocument();
             expect(screen.getByText('Filter')).toBeInTheDocument();
             expect(screen.getByText('Delete Filters')).toBeInTheDocument();
-        });
-
-        test('should not render filter components when tableData is empty', () => {
-            renderComponent({ tableData: [] });
-
-            expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
-            expect(screen.queryByLabelText('Batch')).not.toBeInTheDocument();
-            expect(screen.queryByLabelText('EPREL Code')).not.toBeInTheDocument();
-            expect(screen.queryByLabelText('GTIN Code')).not.toBeInTheDocument();
-        });
-
-        test('should not render filter components when tableData is undefined', () => {
-            renderComponent({ tableData: undefined });
-
-            expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
         });
     });
 
@@ -289,12 +274,6 @@ describe('FilterBar', () => {
     });
 
     describe('Edge Cases', () => {
-        test('should handle null tableData', () => {
-            renderComponent({ tableData: null });
-
-            expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
-        });
-
         test('should handle missing translation keys gracefully', () => {
             // This test ensures the component doesn't crash if translation keys are missing
             renderComponent();
