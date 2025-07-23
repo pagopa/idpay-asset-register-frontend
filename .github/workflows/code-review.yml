@@ -25,6 +25,9 @@ jobs:
       - name: Generate api client
         run: yarn generate
 
+      - name: Run tests with coverage
+        run: yarn test:coverage
+
       # Upload Jest Coverage Report
       - name: Jest Coverage Report
         uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
