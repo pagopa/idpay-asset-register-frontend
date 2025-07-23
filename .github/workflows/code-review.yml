@@ -26,6 +26,9 @@ jobs:
       - name: Install craco globally
         run: yarn global add @craco/craco
 
+      - name: Generate api client
+        run: yarn generate
+
       # Run Jest with coverage
       - name: Run Jest Coverage
         run: |

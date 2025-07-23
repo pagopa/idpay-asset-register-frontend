@@ -41,7 +41,7 @@
     "start": "craco start",
     "build": "npm run clean:build && craco build",
     "test": "craco test --testPathIgnorePatterns=src/utils/__tests__/test-utils.tsx -i",
-    "test:coverage": "craco test --testPathIgnorePatterns=src/utils/__tests__/test-utils.tsx -i --coverage --ci --testResultsProcessor jest-sonar-reporter --outputFile=report.json",
+    "test:coverage": "craco test --testPathIgnorePatterns=src/utils/__tests__/test-utils.tsx -i --coverage --ci --testResultsProcessor --outputFile=report.json",
     "eject": "react-scripts eject",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "lint": "eslint -f json -o eslint-report.json . -c .eslintrc.js --ext .ts,.tsx --cache",
