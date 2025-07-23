@@ -27,13 +27,6 @@ jobs:
       - name: Run tests with coverage
         run: yarn test:coverage
 
-      - name: Coverage Report
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          lcov-file: ./coverage/lcov.info
-          delete-old-comments: true
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v5.0
         env:
@@ -52,5 +45,4 @@ jobs:
             -Dsonar.testExecutionReportPaths=test-report.xml
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.verbose=true
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.typescript.tsconfigPath=tsconfig.json
