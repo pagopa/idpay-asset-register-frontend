@@ -28,17 +28,12 @@ jobs:
       - name: Run tests with coverage
         run: yarn test:coverage
 
-      # Upload Jest Coverage Report
-      - name: Jest Coverage Report
-        uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
+      - name: Coverage Report
+        uses: romeovs/lcov-reporter-action@v0.3.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          test-script: echo "Tests already executed"
-          threshold: 90
-          annotations: none
-          package-manager: yarn
-          coverage-file: ./coverage/lcov.info
-          base-coverage-file: ./coverage/lcov.info
+          lcov-file: ./coverage/lcov.info
+          delete-old-comments: true
 
       # SonarCloud scan
       - name: SonarCloud Scan
