@@ -55,7 +55,6 @@ jobs:
             -Dsonar.typescript.file.suffixes=.ts,.tsx
             -Dsonar.sources=.
             -Dsonar.tests=**/__tests__
-            -Dsonar.test.inclusions=**/__tests__/**/*.test.tsx
             -Dsonar.testExecutionReportPaths=test-report.xml
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.verbose=true
