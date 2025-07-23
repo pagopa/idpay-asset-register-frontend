@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout repository
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -22,14 +21,17 @@ jobs:
         run: |
           corepack enable
           yarn install --immutable --check-cache || yarn install --force
-          yarn global add @craco/craco
 
-      # Optional: fix peer dependency issue
-      - name: Force install dependencies (ignore peer conflicts)
-        run: |
-          npm install --legacy-peer-deps
+      # Install craco globally
+      - name: Install craco globally
+        run: yarn global add @craco/craco
 
       # Run Jest with coverage
+      - name: Run Jest Coverage
+        run: |
+          yarn test:coverage --ci --coverage --coverageReporters="json" --testLocationInResults --outputFile=report.json
+
+      # Upload Jest Coverage Report
       - name: Jest Coverage Report
         uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
         with:
