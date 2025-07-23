@@ -16,7 +16,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Install dependencies
       - name: Install dependencies
         run: |
           corepack enable
@@ -28,6 +27,11 @@ jobs:
       - name: Run tests with coverage
         run: yarn test:coverage
 
+      - name: Debug coverage file
+        run: |
+          echo "Contenuto iniziale del file lcov:"
+          head -n 20 ./coverage/lcov.info || echo "File non trovato"
+
       - name: Coverage Report
         uses: romeovs/lcov-reporter-action@v0.3.1
         with:
@@ -35,7 +39,6 @@ jobs:
           lcov-file: ./coverage/lcov.info
           delete-old-comments: true
 
-      # SonarCloud scan
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v5.0
         env:
@@ -46,4 +49,5 @@ jobs:
             -Dsonar.organization=${{ vars.SONARCLOUD_ORG }}
             -Dsonar.projectKey=${{ vars.SONARCLOUD_PROJECT_KEY }}
             -Dsonar.projectName="${{ vars.SONARCLOUD_PROJECT_NAME }}"
+            -Dsonar.sources=src
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
