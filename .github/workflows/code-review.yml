@@ -46,3 +46,4 @@ jobs:
             -Dsonar.organization=${{ vars.SONARCLOUD_ORG }}
             -Dsonar.projectKey=${{ vars.SONARCLOUD_PROJECT_KEY }}
             -Dsonar.projectName="${{ vars.SONARCLOUD_PROJECT_NAME }}"
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
