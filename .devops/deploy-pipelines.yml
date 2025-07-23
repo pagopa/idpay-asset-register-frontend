@@ -184,6 +184,7 @@ stages:
               yarn build
             displayName: 'Build files'
             env:
+              NODE_OPTIONS: --max-old-space-size=4096
               INLINE_RUNTIME_CHUNK: 'false'
               REACT_APP_ENV: '$(environment)'
               REACT_APP_URL_FE_PRE_LOGIN: '$(react_app_url_fe_pre_login)'
