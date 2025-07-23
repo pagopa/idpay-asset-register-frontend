@@ -16,12 +16,15 @@ jobs:
         run: yarn
       - name: Generate api client
         run: yarn generate
-      - name: Test and coverage
-        run: yarn test:coverage
+        # - name: Test and coverage
+        #  run: yarn test:coverage
       - name: Jest Coverage Report
-        uses: ArtiomTr/jest-coverage-report-action@v2
+        uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          test-script: 'yarn test:coverage'
+          threshold: 90
+          annotations: none
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@ffc3010689be73b8e5ae0c57ce35968afd7909e8 # v5.0.0
         env:
