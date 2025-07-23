@@ -49,6 +49,15 @@ jobs:
             -Dsonar.organization=${{ vars.SONARCLOUD_ORG }}
             -Dsonar.projectKey=${{ vars.SONARCLOUD_PROJECT_KEY }}
             -Dsonar.projectName="${{ vars.SONARCLOUD_PROJECT_NAME }}"
-            -Dsonar.sources=src
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.projectBaseDir=.
+            -Dsonar.javascript.file.suffixes=.js,.jsx
+            -Dsonar.typescript.file.suffixes=.ts,.tsx
+            -Dsonar.sources=.
+            -Dsonar.tests=**/__tests__
+            -Dsonar.test.inclusions=**/__tests__/**/*.test.tsx
+            -Dsonar.testExecutionReportPaths=test-report.xml
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.verbose=true
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.typescript.tsconfigPath=tsconfig.json
