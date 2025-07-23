@@ -27,11 +27,6 @@ jobs:
       - name: Run tests with coverage
         run: yarn test:coverage
 
-      - name: Debug coverage file
-        run: |
-          echo "Contenuto iniziale del file lcov:"
-          head -n 20 ./coverage/lcov.info || echo "File non trovato"
-
       - name: Coverage Report
         uses: romeovs/lcov-reporter-action@v0.3.1
         with:

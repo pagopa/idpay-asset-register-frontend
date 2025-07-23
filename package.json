@@ -120,7 +120,10 @@
       "src/api/generated",
       "src/api/registerApiClient.ts",
       "src/locale/it.ts",
-      "src/hooks/*"
+      "src/hooks/*",
+      "/__tests__/",
+      "\\.test\\.ts$",
+      "\\.test\\.tsx$"
     ],
     "moduleNameMapper": {
       "next/router": "<rootDir>/__mocks__/next/router.js",
