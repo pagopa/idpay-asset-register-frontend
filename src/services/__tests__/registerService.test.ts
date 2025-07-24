@@ -55,8 +55,8 @@ describe('Register Service', () => {
         const mockData = { content: [] };
         (RegisterApi.getProductFiles as jest.Mock).mockResolvedValue(mockData);
 
-        const result = await getProductFilesList(1, 10, 'asc');
-        expect(RegisterApi.getProductFiles).toHaveBeenCalledWith(1, 10, 'asc');
+        const result = await getProductFilesList(1, 10);
+        expect(RegisterApi.getProductFiles).toHaveBeenCalledWith(1, 10);
         expect(result).toEqual(mockData);
     });
 

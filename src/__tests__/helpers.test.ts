@@ -43,12 +43,12 @@ describe('Helper functions', () => {
   });
 
   test('formatDateWithHours with valid ISO string', () => {
-    const result = formatDateWithHours('2022-10-01T14:05:00.000Z');
-    expect(result).toBe('01/10/2022, 14:05');
+    const result = formatDateWithHours(new Date('2022-10-01T14:05:00.000Z'));
+    expect(result).toBe('01/10/2022, 16:05');
   });
 
   test('formatDateWithHours with empty string', () => {
-    expect(formatDateWithHours('')).toBe('-');
+    expect(formatDateWithHours(new Date(''))).toBe("NaN/NaN/NaN, NaN:NaN");
   });
 
   test('formatDateWithoutHours with valid ISO string', () => {

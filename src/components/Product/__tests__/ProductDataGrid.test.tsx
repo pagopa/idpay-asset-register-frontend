@@ -1,3 +1,5 @@
+import {CategoryEnum} from "../../../api/generated/register/UploadDTO";
+
 jest.mock('../../../utils/env', () => ({
     __esModule: true,
     default: {
@@ -156,16 +158,14 @@ const TestWrapper: React.FC<{ children: React.ReactNode; store?: any }> = ({
 describe('ProductGrid', () => {
     const mockProductData: ProductDTO[] = [
         {
-            productFileId: '1',
-            category: 'APPLIANCES',
+            category: 'Lavatrice' as CategoryEnum,
             energyClass: 'A++',
             eprelCode: 'EPREL001',
             gtinCode: 'GTIN001',
             batchName: 'Batch 1',
         },
         {
-            productFileId: '2',
-            category: 'ELECTRONICS',
+            category: 'Lavasciuga' as CategoryEnum,
             energyClass: 'A+',
             eprelCode: 'EPREL002',
             gtinCode: 'GTIN002',
@@ -203,8 +203,8 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Appliances')).toBeInTheDocument();
-                expect(screen.getByText('Electronics')).toBeInTheDocument();
+                expect(screen.getByText('Lavatrice')).toBeInTheDocument();
+                expect(screen.getByText('Lavasciuga')).toBeInTheDocument();
             });
 
 
@@ -267,8 +267,7 @@ describe('ProductGrid', () => {
         test('should handle empty data with dash', async () => {
             const mockEmptyProductData: ProductDTO[] = [
                 {
-                    productFileId: '1',
-                    category: 'APPLIANCES',
+                    category: 'Lavatrice' as CategoryEnum,
                     energyClass: undefined,
                     eprelCode: undefined,
                     gtinCode: undefined,
@@ -495,7 +494,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Appliances')).toBeInTheDocument();
+                expect(screen.getByText('Lavatrice')).toBeInTheDocument();
             });
         });
     });

@@ -25,8 +25,7 @@ export const downloadErrorReport = (
     RegisterApi.downloadErrorReport(productFileId).then((res) => res);
 
 export const getProductFilesList = async (
-    page?: number,
-    size?: number,
+    page?: number, size?: number, p0?: string,
   ): Promise<UploadsListDTO> => {
     try {
       return await RegisterApi.getProductFiles(page, size);
