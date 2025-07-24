@@ -29,7 +29,7 @@ const InstitutionInfoCard: React.FC = () => {
   const leftColumn = [
     { label: 'ragioneSociale', value: institutionInfo?.description, truncate: true },
     { label: 'codiceFiscale', value: institutionInfo?.fiscalCode, truncate: true },
-    { label: 'piva', value: institutionInfo?.vatNumber, truncate: true },
+    // { label: 'piva', value: institutionInfo?.vatNumber, truncate: true },
   ];
 
   const rightColumn = [
