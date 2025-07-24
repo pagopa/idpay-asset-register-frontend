@@ -38,11 +38,9 @@ const OverviewHistoryUpload: React.FC = () => {
     setError(null);
     getProductFilesList(page, rowsPerPage)
       .then((res: UploadsListDTO) => {
-        // eslint-disable-next-line no-param-reassign
-        // res = mockDataUploads; // Use mock data for testing
         setData({
           ...res,
-          totalElements: res.totalElements ?? 0,
+          totalElements: res.totalElements,
           content: res.content ?? [],
         });
         setLoading(false);

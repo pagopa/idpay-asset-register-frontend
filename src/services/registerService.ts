@@ -4,6 +4,7 @@ import {CsvDTO} from "../api/generated/register/CsvDTO";
 import {UploadsListDTO} from "../api/generated/register/UploadsListDTO";
 import {InstitutionsResponse} from "../api/generated/register/InstitutionsResponse";
 import {InstitutionResponse} from "../api/generated/register/InstitutionResponse";
+import {ProductDTO} from "../api/generated/register/ProductDTO";
 
 
 export const uploadProductList = (
@@ -26,10 +27,9 @@ export const downloadErrorReport = (
 export const getProductFilesList = async (
     page?: number,
     size?: number,
-    sort?: string
   ): Promise<UploadsListDTO> => {
     try {
-      return await RegisterApi.getProductFiles(page, size, sort);
+      return await RegisterApi.getProductFiles(page, size);
     } catch (error: any) {
       if (error.response && error.response.data) {
         throw error.response.data;
@@ -48,7 +48,7 @@ export const getProducts = async (
   gtinCode?: string,
   productCode?: string,
   productFileId?: string
-): Promise<UploadsListDTO> => {
+): Promise<ProductDTO> => {
   try {
     return await RegisterApi.getProducts(
       xOrganizationSelected,

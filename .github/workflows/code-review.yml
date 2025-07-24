@@ -1,6 +1,10 @@
 name: 'coverage'
 
 on:
+  push:
+    branches:
+      - release-dev
+      - release-uat
   pull_request:
     branches:
       - release-dev

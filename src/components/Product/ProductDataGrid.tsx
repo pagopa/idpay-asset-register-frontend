@@ -1,33 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  Paper,
   Button,
+  Paper,
   Table,
-  TableContainer,
   TableBody,
-  TableRow,
   TableCell,
+  TableContainer,
   TablePagination,
+  TableRow,
   Typography,
 } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { useTranslation } from 'react-i18next';
-import { grey } from '@mui/material/colors';
-import { useDispatch, useSelector } from 'react-redux';
-import { RegisterApi } from '../../api/registerApiClient';
-import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
-import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
-import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { BatchList } from '../../api/generated/register/BatchList';
-import { displayRows, emptyData } from '../../utils/constants';
-import {
-  batchIdSelector,
-  batchNameSelector,
-  setBatchId,
-  setBatchName,
-} from '../../redux/slices/productsSlice';
+import {useTranslation} from 'react-i18next';
+import {grey} from '@mui/material/colors';
+import {useDispatch, useSelector} from 'react-redux';
+import {RegisterApi} from '../../api/registerApiClient';
+import {displayRows, emptyData} from '../../utils/constants';
+import {batchIdSelector, batchNameSelector, setBatchId, setBatchName,} from '../../redux/slices/productsSlice';
 import EmptyListTable from '../../pages/components/EmptyListTable';
-import { Order, BatchFilterItems, BatchFilterList } from './helpers';
+import {ProductListDTO} from "../../api/generated/register/ProductListDTO";
+import {BatchList} from "../../api/generated/register/BatchList";
+import {ProductDTO} from "../../api/generated/register/ProductDTO";
+import {BatchFilterItems, BatchFilterList, Order} from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
@@ -90,8 +84,7 @@ const getProductList = async (
     );
   } catch (error: any) {
     if (error?.response && error?.response?.data) {
-      const apiError: UploadsErrorDTO = error.response.data;
-      throw apiError;
+      throw error.response.data;
     }
     throw error;
   }
@@ -102,8 +95,7 @@ const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchL
     return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
   } catch (error: any) {
     if (error?.response && error?.response?.data) {
-      const apiError: UploadsErrorDTO = error.response.data;
-      throw apiError;
+      throw error.response.data;
     }
     throw error;
   }
@@ -158,7 +150,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
         if (pageNo !== undefined && totalElements) {
           setPaginatorFrom(pageNo * displayRows + 1);
           setPaginatorTo(
-            displayRows * (pageNo + 1) < totalElements ? displayRows * (pageNo + 1) : totalElements
+            displayRows * (Number(pageNo) + 1) < totalElements ? displayRows * (Number(pageNo) + 1) : totalElements
           );
         }
         setApiErrorOccurred(false);
@@ -264,8 +256,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
     setDrawerOpened(true);
   };
 
-  const visibleRows = tableData;
-
   return (
     <>
       <FilterBar
@@ -303,13 +293,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
                 />
               )}
               <TableBody sx={{ backgroundColor: 'white' }}>
-                {visibleRows.map((row, index) => (
+                {tableData.map((row, index) => (
                   <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>
                     <TableCell sx={styleLeftRow}>
                       <Typography variant="body2">
-                        {row?.category
-                          ? t(`commons.categories.${row?.category?.toLowerCase()}`)
-                          : emptyData}
+                        {row?.category ?? emptyData}
                       </Typography>
                     </TableCell>
                     <TableCell sx={styleCenterRow}>
