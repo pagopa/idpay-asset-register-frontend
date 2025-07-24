@@ -19,9 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
 import { useNavigate } from 'react-router-dom';
-import { ButtonNaked } from '@pagopa/mui-italia';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { ArrowForward } from '@mui/icons-material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ROUTES from '../../routes';
 import { getProductFilesList } from '../../services/registerService';
 import { EMPTY_DATA } from '../../utils/constants';
@@ -197,15 +196,14 @@ const UploadsTable: React.FC<{
               </TableBody>
             </Table>
           </TableContainer>
-          <ButtonNaked
-            color="primary"
-            endIcon={<ArrowForward />}
-            size="medium"
+          <Button
+            variant="text"
+            sx={{ pt: 2, pl: 0 }}
+            endIcon={<ArrowForwardIcon />}
             onClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
-            sx={{ paddingTop: 2 }}
           >
-            <b>Vedi i caricamenti</b>
-          </ButtonNaked>
+            {t('pages.overview.checkUploadsBtn')}
+          </Button>
         </>
       )}
 
