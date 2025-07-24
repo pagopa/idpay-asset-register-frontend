@@ -10,11 +10,8 @@ export interface Data {
   id: number;
 }
 
-
 export type Order = 'asc' | 'desc';
 export type Value = string;
-
-
 
 export interface GetProductListParams {
   page?: number;

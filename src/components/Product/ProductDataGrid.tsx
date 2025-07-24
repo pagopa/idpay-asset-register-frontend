@@ -15,7 +15,10 @@ import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { RegisterApi } from '../../api/registerApiClient';
-import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA } from '../../utils/constants';
+import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
+import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { BatchList } from '../../api/generated/register/BatchList';
+import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA, MAX_TABLE_HEIGHT } from '../../utils/constants';
 import {
   batchIdSelector,
   batchNameSelector,
@@ -23,10 +26,7 @@ import {
   setBatchName,
 } from '../../redux/slices/productsSlice';
 import EmptyListTable from '../../pages/components/EmptyListTable';
-import {ProductListDTO} from "../../api/generated/register/ProductListDTO";
-import {BatchList} from "../../api/generated/register/BatchList";
-import {ProductDTO} from "../../api/generated/register/ProductDTO";
-import {BatchFilterItems, BatchFilterList, Order} from './helpers';
+import { Order, BatchFilterItems, BatchFilterList } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
@@ -294,8 +294,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
         }}
       >
         {!loading ? (
-          <TableContainer>
-            <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
+          <TableContainer sx={{ maxHeight: MAX_TABLE_HEIGHT }}>
+            <Table stickyHeader sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
               {tableData.length > 0 && (
                 <EnhancedTableHead
                   order={order}
