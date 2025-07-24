@@ -30,7 +30,7 @@ export default function SideMenu() {
             isSelected={location.pathname === ROUTES.HOME}
             icon={ListAltIcon}
             level={0}
-            data-testid="initiativeList-click-test"
+            data-testid="go-to-home"
           />
           {!isInvitaliaUser && (
             <>

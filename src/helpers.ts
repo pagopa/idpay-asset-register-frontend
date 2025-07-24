@@ -1,8 +1,9 @@
-import {maxLengthEmail} from "./utils/constants";
+import { useTheme, useMediaQuery } from '@mui/material';
+import {emptyData, maxLengthEmail} from "./utils/constants";
 
 export const formattedCurrency = (
   number: number | undefined,
-  symbol: string = '-',
+  symbol: string = emptyData,
   cents: boolean = false
 ) => {
   if (number && cents === false) {
@@ -43,7 +44,7 @@ export const formatDate = (date: Date | undefined) => {
 
 export const formatDateWithHours = (isoDate: string): string => {
     if (!isoDate) {
-        return '-';
+        return emptyData;
     }
     const date = new Date(isoDate);
     const day = String(date.getDate()).padStart(2, '0');
@@ -56,7 +57,7 @@ export const formatDateWithHours = (isoDate: string): string => {
 
 export const formatDateWithoutHours = (isoDate: string): string => {
     if (!isoDate) {
-        return '-';
+        return emptyData;
     }
     const date = new Date(isoDate);
     const day = String(date.getDate()).padStart(2, '0');
@@ -108,8 +109,31 @@ export const fetchUserFromLocalStorage = (): { [key: string]: string } | null =>
 
 export const truncateString = (str?: string, maxLength: number = maxLengthEmail): string => {
     if (!str) {
-        return '-';
+        return emptyData;
     } else {
         return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
     }
+};
+
+export const truncateStringResponsive = (str?: string, maxLength?: number): string => {
+  if (!str) {return emptyData;}
+  if (!maxLength) {return str;}
+  return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+};
+
+
+export const useResponsiveMaxLength = (): number => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.only('xs'));
+  const isSm = useMediaQuery(theme.breakpoints.only('sm'));
+  const isMd = useMediaQuery(theme.breakpoints.only('md'));
+  const isLg = useMediaQuery(theme.breakpoints.only('lg'));
+  const isXl = useMediaQuery(theme.breakpoints.only('xl'));
+
+  if (isXs) {return 15;}
+  if (isSm) {return 25;}
+  if (isMd) {return 35;}
+  if (isLg) {return 50;}
+  if (isXl) {return 70;}
+  return 70; 
 };

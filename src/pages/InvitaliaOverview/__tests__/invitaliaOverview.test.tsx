@@ -1,8 +1,8 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import InvitaliaOverview from '../InvitaliaOverview';
 import { getInstitutionsList } from '../../../services/registerService';
 import { Institution } from '../../../model/Institution';
 import '@testing-library/jest-dom';
+import InvitaliaOverview from "../invitaliaOverview";
 
 jest.mock('../../../services/registerService', () => ({
     getInstitutionsList: jest.fn(),

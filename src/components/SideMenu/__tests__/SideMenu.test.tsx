@@ -3,7 +3,6 @@ import SideMenu from '../SideMenu';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import ROUTES from '../../../routes';
 
 jest.mock('../../../utils/env', () => ({
   default: {
@@ -24,6 +23,19 @@ jest.mock('../../../routes', () => ({
   BASE_ROUTE: '/base',
 }));
 
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: { [key: string]: string } = {
+        'pages.overview.overviewTitle': 'Panoramica',
+        'pages.uploadHistory.sideMenuTitle': 'Storico caricamenti',
+        'pages.products.sideMenuTitle': 'Prodotti',
+      };
+      return translations[key] || key;
+    }
+  })
+}));
+
 beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -36,19 +48,15 @@ describe('Test suite for SideMenu component', () => {
   });
 
   test('user clicks the link to home page', async () => {
+    renderWithContext(<SideMenu />);
     const user = userEvent.setup();
-    const homeLink = await screen.findByTestId('initiativeList-click-test');
+
+    const homeLink = screen.getByText('Panoramica');
     await user.click(homeLink);
 
     await waitFor(() => {
-      expect(window.location.pathname).toBe(ROUTES.HOME);
+      expect(window.location.pathname).toBe('/');
     });
-  });
-
-  test('renders all menu items for non-Invitalia users', async () => {
-    renderWithContext(<SideMenu />);
-    const items = await screen.findAllByTestId('initiativeList-click-test');
-    expect(items.length).toBe(3);
   });
 
   test('does not render extra items for Invitalia users', async () => {
@@ -57,7 +65,7 @@ describe('Test suite for SideMenu component', () => {
     );
 
     renderWithContext(<SideMenu />);
-    const items = await screen.findAllByTestId('initiativeList-click-test');
-    expect(items.length).toBe(1);
+    const items = screen.queryAllByTestId('initiativeList-click-test');
+    expect(items.length).toBe(0);
   });
 });

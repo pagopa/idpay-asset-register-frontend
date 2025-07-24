@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -31,6 +32,8 @@ interface FilterProps {
 }
 
 export default function FilterBar(props: FilterProps) {
+  const [filtered, setFiltered] = useState<boolean>(false);
+
   const {
     categoryFilter,
     setCategoryFilter,
@@ -49,7 +52,13 @@ export default function FilterBar(props: FilterProps) {
   const { t } = useTranslation();
 
   const handleFilterButtonClick = () => {
+    setFiltered(true);
     setFiltering(true);
+  };
+
+  const handleDeleteFiltersClick = () => {
+    setFiltered(false);
+    handleDeleteFiltersButtonClick();
   };
 
   const selectMenuProps = {
@@ -154,10 +163,10 @@ export default function FilterBar(props: FilterProps) {
         {t('pages.products.filterLabels.filter')}
       </Button>
       <Button
-        disabled={noFilterSetted() && !errorStatus}
+        disabled={noFilterSetted() && !errorStatus && !filtered}
         variant="text"
         sx={{ height: 44, minWidth: 140 }}
-        onClick={handleDeleteFiltersButtonClick}
+        onClick={handleDeleteFiltersClick}
       >
         {t('pages.products.filterLabels.deleteFilters')}
       </Button>

@@ -26,6 +26,7 @@ import {
   setBatchId,
   setBatchName,
 } from '../../redux/slices/productsSlice';
+import EmptyListTable from '../../pages/components/EmptyListTable';
 import { Order, BatchFilterItems, BatchFilterList } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
@@ -33,6 +34,36 @@ import MessagePage from './MessagePage';
 import EprelLinks from './EprelLinks';
 import FilterBar from './FilterBar';
 import EnhancedTableHead from './EnhancedTableHead';
+
+const rowTableStyle = {
+  height: '53px',
+  transition: 'background-color 0.2s',
+  '&:hover': {
+    backgroundColor: grey[200],
+  },
+};
+
+const rowBaseCell = {
+  borderBottom: `1px solid ${grey[300]}`,
+  width: '10px',
+  padding: '0px',
+};
+
+const styleLeftRow = {
+  ...rowBaseCell,
+  textAlign: 'left',
+  padding: '16px',
+};
+
+const styleCenterRow = {
+  ...rowBaseCell,
+  textAlign: 'center',
+};
+
+const styleRightRow = {
+  ...rowBaseCell,
+  textAlign: 'right',
+};
 
 const getProductList = async (
   xOrganizationSelected: string,
@@ -237,58 +268,22 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
 
   return (
     <>
-      {tableData?.length > 0 && (
-        <FilterBar
-          categoryFilter={categoryFilter}
-          setCategoryFilter={setCategoryFilter}
-          setFiltering={setFiltering}
-          batchFilter={batchFilter}
-          setBatchFilter={setBatchFilter}
-          batchFilterItems={batchFilterItems}
-          eprelCodeFilter={eprelCodeFilter}
-          setEprelCodeFilter={setEprelCodeFilter}
-          gtinCodeFilter={gtinCodeFilter}
-          setGtinCodeFilter={setGtinCodeFilter}
-          errorStatus={apiErrorOccurred}
-          tableData={tableData}
-          handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
-        />
-      )}
-      {tableData?.length === 0 && (
-        <TableContainer
-          component={Paper}
-          elevation={0}
-          sx={{
-            height: '70%',
-            gap: '24px',
-            borderRadius: '4px',
-            pt: '24px',
-            pr: '24px',
-            pl: '24px',
-            cursor: 'pointer',
-          }}
-          data-testid="uploads-table"
-        >
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  align="center"
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100%',
-                  }}
-                >
-                  {t('pages.products.noFileLoaded')}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+      <FilterBar
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        setFiltering={setFiltering}
+        batchFilter={batchFilter}
+        setBatchFilter={setBatchFilter}
+        batchFilterItems={batchFilterItems}
+        eprelCodeFilter={eprelCodeFilter}
+        setEprelCodeFilter={setEprelCodeFilter}
+        gtinCodeFilter={gtinCodeFilter}
+        setGtinCodeFilter={setGtinCodeFilter}
+        errorStatus={apiErrorOccurred}
+        tableData={tableData}
+        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+      />
+      {tableData?.length === 0 && <EmptyListTable message="pages.products.noFileLoaded" />}
       <Paper
         sx={{
           width: '100%',
@@ -309,33 +304,33 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
               )}
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row, index) => (
-                  <TableRow tabIndex={-1} key={index} sx={{ height: '25px' }}>
-                    <TableCell sx={{ textAlign: 'left' }}>
+                  <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>
+                    <TableCell sx={styleLeftRow}>
                       <Typography variant="body2">
                         {row?.category
                           ? t(`commons.categories.${row?.category?.toLowerCase()}`)
                           : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>
+                    <TableCell sx={styleCenterRow}>
                       <Typography variant="body2">
                         {row?.energyClass ? row?.energyClass : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>
+                    <TableCell sx={styleCenterRow}>
                       <EprelLinks row={row} />
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'center' }}>
+                    <TableCell sx={styleCenterRow}>
                       <Typography variant="body2">
                         {row?.gtinCode ? row?.gtinCode : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={styleLeftRow}>
                       <Typography variant="body2">
                         {row?.batchName ? row?.batchName : emptyData}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ textAlign: 'right' }}>
+                    <TableCell sx={styleRightRow}>
                       <Button variant="text" onClick={() => handleListButtonClick(row)}>
                         <ArrowForwardIosIcon />
                       </Button>
@@ -384,4 +379,5 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
     </>
   );
 };
+
 export default ProductGrid;

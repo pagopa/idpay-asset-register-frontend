@@ -1,5 +1,6 @@
 export const testToken =  '';
 
+
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
 export const MOCK_USER = IS_DEVELOP;
 export const LOG_REDUX_ACTIONS = IS_DEVELOP;
@@ -32,3 +33,7 @@ export const displayRows = 8;
 export const emptyData = '-';
 
 export const maxLengthEmail: number = 40;
+export const maxLengthOverviewProd: number = 75;
+export const maxLengthOverviewInvit: number = 140;
+
+

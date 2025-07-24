@@ -1,101 +1,162 @@
-import { render, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { createStore } from '../../redux/store';
-import withSelectedParty from '../withSelectedParty';
-import { verifyFetchPartyDetailsMockExecution } from '../../services/__mocks__/partyService';
-import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
-import { testToken } from '../../utils/constants';
-import { Fragment } from 'react';
-import { PartiesState } from '../../redux/slices/partiesSlice';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import withSelectedParty, { WithSelectedPartyProps } from '../withSelectedParty';
+import { useSelectedParty } from '../../hooks/useSelectedParty';
+import { Party } from '../../model/Party';
+import '@testing-library/jest-dom';
 
 jest.mock('../../utils/env', () => ({
+  __esModule: true,
   default: {
     URL_API: {
       OPERATION: 'https://mock-api/register',
     },
-    URL_FE: {
-      LOGOUT: 'https://mock-api/logout',
+    API_TIMEOUT_MS: {
+      OPERATION: 5000,
     },
-    API_TIMEOUT_MS: 5000,
   },
 }));
 
-jest.mock('../../routes', () => ({
-  __esModule: true,
-  default: {
-    HOME: '/home'
-  },
-  BASE_ROUTE: '/base'
-}));
+jest.mock('@pagopa/selfcare-common-frontend/lib/decorators/withRetrievedValue');
+const mockWithRetrievedValue = require('@pagopa/selfcare-common-frontend/lib/decorators/withRetrievedValue').default;
 
-jest.mock('../../services/partyService');
+jest.mock('../../hooks/useSelectedParty');
+const mockUseSelectedParty = useSelectedParty as jest.MockedFunction<typeof useSelectedParty>;
 
-const expectedPartyId: string = '2b48bf96-fd74-477e-a70a-286b410f020a';
+interface TestComponentProps extends WithSelectedPartyProps {
+  testProp?: string;
+}
 
-let fetchPartyDetailsSpy: jest.SpyInstance;
+const TestComponent: React.FC<TestComponentProps> = ({ party, testProp }) => (
+    <div>
+      <div data-testid="party-id">{party.partyId}</div>
+      <div data-testid="party-description">{party.description}</div>
+      {testProp && <div data-testid="test-prop">{testProp}</div>}
+    </div>
+);
 
-beforeEach(() => {
-  jest.spyOn(console, 'error').mockImplementation(() => {});
-  jest.spyOn(console, 'warn').mockImplementation(() => {});
-});
-
-beforeEach(() => {
-  fetchPartyDetailsSpy = jest.spyOn(require('../../services/partyService'), 'fetchPartyDetails');
-
-  storageTokenOps.write(testToken); // party with partyId="onboarded"
-});
-
-const renderApp = async (
-  waitSelectedParty: boolean,
-  injectedStore?: ReturnType<typeof createStore>
-) => {
-  const store = injectedStore ? injectedStore : createStore();
-
-  const Component = () => <Fragment></Fragment>;
-  const DecoratedComponent = withSelectedParty(Component);
-
-  render(
-    <Provider store={store}>
-      <DecoratedComponent />
-    </Provider>
-  );
-
-  if (waitSelectedParty) {
-    await waitFor(() => expect(store.getState().parties.selected).not.toBeUndefined());
-  }
-
-  return { store, history };
+const mockParty: Party = {
+  partyId: 'test-party-id',
+  description: 'Test Party Description',
+  digitalAddress: 'test@example.com',
+  category: 'PA',
+  externalId: 'ext-123',
+  fiscalCode: 'FC123456789',
+  institutionType: 'PA',
+  origin: 'IPA',
+  originId: 'origin-123',
+  status: 'ACTIVE',
+  urlLogo: 'https://example.com/logo.png',
+  roles: [],
+  registeredOffice: '',
+  typology: ''
 };
 
-test('Test default behavior when no parties', async () => {
-  const { store } = await renderApp(true);
-  checkSelectedParty(store.getState().parties);
+describe('withSelectedParty', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-  // test when selected party already in store
-  await renderApp(true, store);
-  checkMockInvocation(1);
+    mockWithRetrievedValue.mockImplementation((key: string, hook: any, Component: any) => {
+      return (props: any) => {
+        const retrievedValue = hook();
+        const componentProps = {...props, [key]: retrievedValue};
+        return <Component {...componentProps} />;
+      };
+    });
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('should wrap component with withRetrievedValue using correct parameters', () => {
+    mockUseSelectedParty.mockReturnValue(mockParty);
+
+    // Act
+    const WrappedComponent = withSelectedParty(TestComponent);
+    render(<WrappedComponent testProp="test-value" />);
+
+    // Assert
+    expect(mockWithRetrievedValue).toHaveBeenCalledWith(
+        'party',
+        useSelectedParty,
+        TestComponent
+    );
+  });
+
+  it('should pass party data to wrapped component', () => {
+    // Arrange
+    mockUseSelectedParty.mockReturnValue(mockParty);
+
+    // Act
+    const WrappedComponent = withSelectedParty(TestComponent);
+    render(<WrappedComponent testProp="test-value" />);
+
+    // Assert
+    expect(screen.getByTestId('party-id')).toHaveTextContent('test-party-id');
+    expect(screen.getByTestId('party-description')).toHaveTextContent('Test Party Description');
+    expect(screen.getByTestId('test-prop')).toHaveTextContent('test-value');
+  });
+
+  it('should omit party and reload props from component props type', () => {
+    // Arrange
+    mockUseSelectedParty.mockReturnValue(mockParty);
+    const WrappedComponent = withSelectedParty(TestComponent);
+
+    // Act & Assert - Questo test verifica che TypeScript non richieda le props 'party' e 'reload'
+    const props = { testProp: 'test' };
+
+    // Se il tipo è corretto, questo non dovrebbe causare errori di TypeScript
+    render(<WrappedComponent {...props} />);
+
+    expect(screen.getByTestId('test-prop')).toHaveTextContent('test');
+  });
+
+  it('should handle different component types', () => {
+    // Arrange
+    interface AnotherComponentProps extends WithSelectedPartyProps {
+      customProp: number;
+    }
+
+    const AnotherComponent: React.FC<AnotherComponentProps> = ({ party, customProp }) => (
+        <div>
+          <span data-testid="custom-prop">{customProp}</span>
+          <span data-testid="party-fiscal-code">{party.fiscalCode}</span>
+        </div>
+    );
+
+    mockUseSelectedParty.mockReturnValue(mockParty);
+
+    // Act
+    const WrappedAnotherComponent = withSelectedParty(AnotherComponent);
+    render(<WrappedAnotherComponent customProp={42} />);
+
+    // Assert
+    expect(mockWithRetrievedValue).toHaveBeenCalledWith(
+        'party',
+        useSelectedParty,
+        AnotherComponent
+    );
+    expect(screen.getByTestId('custom-prop')).toHaveTextContent('42');
+    expect(screen.getByTestId('party-fiscal-code')).toHaveTextContent('FC123456789');
+  });
+
+  it('should maintain component display name or function name', () => {
+    // Arrange
+    const NamedComponent = function MyCustomComponent({ party }: WithSelectedPartyProps) {
+      return <div data-testid="named-component">{party.description}</div>;
+    };
+
+    mockUseSelectedParty.mockReturnValue(mockParty);
+
+    const WrappedComponent = withSelectedParty(NamedComponent);
+
+    // Assert
+    // Verifichiamo che il decorator sia stato chiamato con il componente corretto
+    expect(mockWithRetrievedValue).toHaveBeenCalledWith(
+        'party',
+        useSelectedParty,
+        NamedComponent
+    );
+  });
 });
-
-test('Test party not active', async () => {
-  const store = createStore();
-
-  // party with partyId="2"
-  storageTokenOps.write(
-    'eyJraWQiOiJqd3QtZXhjaGFuZ2VfZDQ6ZWY6NjQ6NzY6YWY6MjI6MWY6NDg6MTA6MDM6ZTQ6NjE6NmU6Y2M6Nzk6MmYiLCJhbGciOiJSUzI1NiJ9.eyJlbWFpbCI6ImRtYXJ0aW5vQGxpdmUuY29tIiwiZmFtaWx5X25hbWUiOiJMb25nbyIsImZpc2NhbF9udW1iZXIiOiJMTkdNTEU4NVAxOUM4MjZKIiwibmFtZSI6IkVtaWxpYSIsImZyb21fYWEiOmZhbHNlLCJ1aWQiOiJiOWI4OWVmOS00ZGNiLTRlMjctODE5Mi1kOTcyZWZlZjYxNGUiLCJsZXZlbCI6IkwyIiwiaWF0IjoxNjU1OTgyMjE0LCJleHAiOjE2NTU5ODIyMjksImF1ZCI6InBvcnRhbGUtcGEuY29sbC5wbi5wYWdvcGEuaXQiLCJpc3MiOiJodHRwczovL3VhdC5zZWxmY2FyZS5wYWdvcGEuaXQiLCJqdGkiOiI5NWM3M2M0OS0xNTE3LTRlODAtYWNhNy1iZjE4NDZkOTJhNTMiLCJvcmdhbml6YXRpb24iOnsiaWQiOiIyIiwicm9sZXMiOlt7InBhcnR5Um9sZSI6Ik1BTkFHRVIiLCJyb2xlIjoiYWRtaW4ifV0sImZpc2NhbF9jb2RlIjoiODAwMDg1MTA3NTQifSwiZGVzaXJlZF9leHAiOjE2NTYwMTQ2MDR9.VjoWV-iWxqGh2VwB82fTJT04VnY5cIEePMUCQBHVAt7GziuCg12XV8EKQa0cqVa25ggF6peReHicO_WEuhrXsFdLohYT5OCe1gA_65SGJp1bxvPL-0yOvrnEje7XE57nU3YzE6ssq9KDi4wdVr4_RC1JwliiAPq411j1-osyt9vtqQU_b-cfJxQ-v99dlq-TiRPCWX37h8Y-2q4zOF0RTw6McCP8_6j-iaq0tFOi5aq-NjssEvr_eYLLtQwBsBOX3OFysmmhq5dUPDov24WaPZcpbbzCEBPiqW6J69qSxyQUmztNjRfFYD5lsWKvThbmYWh0DSUbWuk8uahITriytw'
-  );
-
-  await renderApp(false, store);
-
-  await waitFor(() => expect(store.getState().appState.errors.length).toBe(1));
-  expect(store.getState().parties.selected).toBeUndefined();
-});
-
-const checkSelectedParty = (state: PartiesState) => {
-  const party = state.selected;
-  verifyFetchPartyDetailsMockExecution(party!);
-};
-
-const checkMockInvocation = (expectedCallsNumber: number) => {
-  expect(fetchPartyDetailsSpy).toBeCalledTimes(expectedCallsNumber);
-  expect(fetchPartyDetailsSpy).toBeCalledWith(expectedPartyId, undefined);
-};

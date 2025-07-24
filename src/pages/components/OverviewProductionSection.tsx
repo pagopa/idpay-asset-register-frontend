@@ -12,31 +12,33 @@ import {
   TableHead,
   CircularProgress,
   Alert,
-  Chip, Divider,
+  Chip,
+  Divider,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
 import { useNavigate } from 'react-router-dom';
 import { ButtonNaked } from '@pagopa/mui-italia';
-import FileUploadIcon from "@mui/icons-material/FileUpload";
-import {ArrowForward} from "@mui/icons-material";
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import { ArrowForward } from '@mui/icons-material';
 import ROUTES from '../../routes';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { UploadDTO } from '../../api/generated/register/UploadDTO';
 import { getProductFilesList } from '../../services/registerService';
+import { emptyData } from '../../utils/constants';
 
 function renderUploadStatusChip(status: string) {
   switch (status) {
     case 'IN_PROCESS':
     case 'UPLOADED':
-      return <Chip color="default" label="In corso" size='small' />;
+      return <Chip color="default" label="In corso" size="small" />;
     case 'PARTIAL':
-      return <Chip color="warning" label="Parziale" size='small' />;
+      return <Chip color="warning" label="Parziale" size="small" />;
     case 'LOADED':
-      return <Chip color="success" label="Caricato" size='small' />;
+      return <Chip color="success" label="Caricato" size="small" />;
     default:
-      return <Chip color="default" label={status} size='small' />;
+      return <Chip color="default" label={status} size="small" />;
   }
 }
 
@@ -91,7 +93,7 @@ const UploadInfoBox: React.FC<{
     return (
       <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
         <Typography variant="body2">
-          Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : '-'}</b>
+          Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : emptyData}</b>
         </Typography>
         <Button
           variant="contained"
@@ -143,7 +145,7 @@ const UploadsTable: React.FC<{
       {!loading && !error && data?.content && data.content.length > 0 && (
         <>
           <Divider />
-          <TableContainer component={Paper} elevation={0} sx={{ paddingTop: 3}}>
+          <TableContainer component={Paper} elevation={0} sx={{ paddingTop: 3 }}>
             <Table size="small">
               <TableHead>
                 <TableRow>
@@ -187,8 +189,10 @@ const UploadsTable: React.FC<{
                   data.content.slice(0, rowsPerPage).map((row: UploadDTO) => (
                     <TableRow key={row.productFileId}>
                       <TableCell sx={{ padding: 0 }}>{row.batchName}</TableCell>
-                      <TableCell>{renderUploadStatusChip(row.uploadStatus ?? '')}</TableCell>
-                      <TableCell>{row.dateUpload ? formatDate(row.dateUpload) : '-'}</TableCell>
+                      <TableCell>{renderUploadStatusChip(row.uploadStatus ?? emptyData)}</TableCell>
+                      <TableCell>
+                        {row.dateUpload ? formatDate(row.dateUpload) : emptyData}
+                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>
@@ -199,7 +203,7 @@ const UploadsTable: React.FC<{
             endIcon={<ArrowForward />}
             size="medium"
             onClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
-            sx={{ paddingTop: 2}}
+            sx={{ paddingTop: 2 }}
           >
             <b>Vedi i caricamenti</b>
           </ButtonNaked>
@@ -250,7 +254,6 @@ const OverviewProductionSection: React.FC = () => {
       });
   }, [t]);
 
- 
   const firstUploadDate =
     !loading && !error && data?.content && data.content.length > 0
       ? data.content[0].dateUpload

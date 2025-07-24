@@ -1,8 +1,37 @@
-import React from 'react';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';
 import Header from '../Header';
 import { mockedUser } from '../../../decorators/__mocks__/withLogin';
 import { Party } from '../../../model/Party';
+
+jest.mock('../../../utils/env', () => ({
+  __esModule: true,
+  ENV: {
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+    },
+    ASSISTANCE: {
+      EMAIL: 'email@example.com',
+    },
+    API_TIMEOUT_MS: {
+      OPERATION: 5000,
+    },
+  },
+}));
+
+jest.mock('../../../routes', () => ({
+  __esModule: true,
+  default: {
+    HOME: '/home'
+  },
+  BASE_ROUTE: '/base'
+}));
+
+jest.mock('../../../api/registerApiClient', () => ({
+  RolePermissionApi: {
+    getPortalConsent: jest.fn(),
+    savePortalConsent: jest.fn(),
+  },
+}));
 
 beforeEach(() => {
   jest.spyOn(console, 'error').mockImplementation(() => {});
