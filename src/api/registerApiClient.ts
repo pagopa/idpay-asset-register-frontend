@@ -15,6 +15,7 @@ import { BatchList } from './generated/register/BatchList';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
 import { CsvDTO } from './generated/register/CsvDTO';
 import {InstitutionsResponse} from "./generated/register/InstitutionsResponse";
+import {ProductDTO} from "./generated/register/ProductDTO";
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -62,12 +63,11 @@ export const RolePermissionApi = {
 };
 
 export const RegisterApi = {
-  getProductFiles: async (page?: number, size?: number, sort?: string): Promise<UploadsListDTO> => {
+  getProductFiles: async (page?: number, size?: number): Promise<UploadsListDTO> => {
     try {
       const params = {
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
-        ...(sort !== undefined ? { sort } : {}),
       };
 
       const result = await registerClient.getProductFilesList(params);
@@ -87,14 +87,14 @@ export const RegisterApi = {
       gtinCode?: string,
       productCode?: string,
       productFileId?: string,
-  ): Promise<UploadsListDTO> => {
+  ): Promise<ProductDTO> => {
     try {
       const params = {
         'x-organization-selected': xOrganizationSelected,
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
         ...(sort !== undefined ? { sort } : {}),
-        ...(category ? { category } : {}),
+        ...(category ? {category} : {}),
         ...(eprelCode ? { eprelCode } : {}),
         ...(gtinCode ? { gtinCode } : {}),
         ...(productCode ? { productCode } : {}),

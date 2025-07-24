@@ -20,8 +20,6 @@ import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
-import { UploadDTO } from '../../api/generated/register/UploadDTO';
 import { downloadErrorReport } from '../../services/registerService';
 import { downloadCsv } from '../addProducts/helpers';
 import { formatDateWithHours } from '../../helpers';
@@ -29,6 +27,8 @@ import { usePagination } from '../../hooks/usePagination';
 import { setBatchId, setBatchName } from '../../redux/slices/productsSlice';
 import ROUTES from '../../routes';
 import { emptyData } from '../../utils/constants';
+import {UploadsListDTO} from "../../api/generated/register/UploadsListDTO";
+import {UploadDTO} from "../../api/generated/register/UploadDTO";
 import EmptyListTable from './EmptyListTable';
 
 const rowTableStyle = {

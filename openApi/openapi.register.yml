@@ -1,9 +1,29 @@
 openapi: 3.0.1
 info:
   title: IDPAY ITN Register Portal Operation API
-  version: '1.0'
+  description: IDPAY ITN Register Portal Operation API
+  version: "1.0"
+  contact:
+    name: PagoPA S.p.A.
+    email: cstar@pagopa.it
 servers:
-  - url: https://api-io.dev.cstar.pagopa.it/idpay-itn/register
+  - description: Development Test
+    url: https://api-io.dev.cstar.pagopa.it/idpay-itn/onboarding
+    x-internal: true
+  - description: User Acceptance Test
+    url: https://api-io.uat.cstar.pagopa.it/idpay-itn/onboarding
+    x-internal: true
+tags:
+  - name: products
+    description: Operations related to product listing and filtering
+  - name: user-permission
+    description: Operations for retrieving user permissions
+  - name: portal-consent
+    description: Operations for managing portal consent (ToS)
+  - name: products-upload
+    description: Operations for uploading and verifying product files
+  - name: institutions
+    description: Operations related to institutions and producers
 paths:
   /permissions:
     get:
@@ -11,48 +31,100 @@ paths:
         - user-permission
       summary: Return User Permissions
       operationId: userPermission
+      description: Retrieve the list of permissions associated with the current user.
       responses:
         '200':
           description: Check successful
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserPermissionDTO'
               example:
-                role: string
+                role: operatore
                 permissions:
                   - id: string
                     name: string
-                    mode: string
+                    mode: enabled
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_INVALID_REQUEST"
-                message: "Something went wrong handling request"
+                code: ROLE_PERMISSION_INVALID_REQUEST
+                message: Something went wrong handling request
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
         '404':
           description: The requested ID was not found
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_NOT_FOUND"
-                message: "Permissions not found"
+                code: ROLE_PERMISSION_NOT_FOUND
+                message: Permissions not found
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_TOO_MANY_REQUESTS"
-                message: "Too many requests"
+                code: ROLE_PERMISSION_TOO_MANY_REQUESTS
+                message: Too many requests
         '500':
           description: Server ERROR
           content:
@@ -60,41 +132,88 @@ paths:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_GENERIC_ERROR"
-                message: "Application error"
-  "/consent":
+                code: ROLE_PERMISSION_GENERIC_ERROR
+                message: Application error
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+  /consent:
     get:
       tags:
         - portal-consent
       summary: Retrieve portal consent (ToS)
       operationId: getPortalConsent
+      description: Returns the current version of the Terms of Service (ToS) for the
+        portal.
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/PortalConsentDTO"
+                $ref: '#/components/schemas/PortalConsentDTO'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_INVALID_REQUEST"
-                message: "Something went wrong handling request"
+                code: ROLE_PERMISSION_INVALID_REQUEST
+                message: Something went wrong handling request
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_TOO_MANY_REQUESTS"
-                message: "Too many requests"
+                code: ROLE_PERMISSION_TOO_MANY_REQUESTS
+                message: Too many requests
         '500':
           description: Server ERROR
           content:
@@ -102,51 +221,106 @@ paths:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_GENERIC_ERROR"
-                message: "Application error"
+                code: ROLE_PERMISSION_GENERIC_ERROR
+                message: Application error
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
     post:
       tags:
         - portal-consent
       summary: Save portal consent
+      description: Saves the user's acceptance of the Terms of Service (ToS).
       operationId: savePortalConsent
       requestBody:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/PortalConsentDTO"
+              $ref: '#/components/schemas/PortalConsentDTO'
         required: true
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_VERSION_NOT_MATCHED"
-                message: "The version id does not match"
+                code: ROLE_PERMISSION_VERSION_NOT_MATCHED
+                message: The version id does not match
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionErrorDTO'
         '404':
           description: The requested ID was not found
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_NOT_FOUND"
-                message: "Permissions not found"
+                code: ROLE_PERMISSION_NOT_FOUND
+                message: Permissions not found
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_TOO_MANY_REQUESTS"
-                message: "Too many requests"
+                code: ROLE_PERMISSION_TOO_MANY_REQUESTS
+                message: Too many requests
         '500':
           description: Server ERROR
           content:
@@ -154,14 +328,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/PermissionErrorDTO'
               example:
-                code: "ROLE_PERMISSION_GENERIC_ERROR"
-                message: "Application error"
+                code: ROLE_PERMISSION_GENERIC_ERROR
+                message: Application error
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
   /product-files:
     post:
       tags:
         - products-upload
       summary: Upload CSV file containing a list of products
-      description: 'ENG: Upload CSV file containing a list of products <br> IT: Caricamento del file CSV conentente una lista di prodotti'
+      description: 'ENG: Upload CSV file containing a list of products <br> IT: Caricamento
+        del file CSV conentente una lista di prodotti'
       operationId: uploadProductList
       parameters:
         - name: category
@@ -169,6 +347,15 @@ paths:
           required: true
           schema:
             type: string
+            enum:
+              - WASHINGMACHINES
+              - WASHERDRIERS
+              - OVENS
+              - RANGEHOODS
+              - DISHWASHERS
+              - TUMBLEDRYERS
+              - REFRIGERATINGAPPL
+              - COOKINGHOBS
       requestBody:
         content:
           multipart/form-data:
@@ -179,16 +366,35 @@ paths:
               properties:
                 csv:
                   type: string
+                  maxLength: 2097152  # 2 MB in byte
                   format: binary
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegisterUploadResponseDTO'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
@@ -198,8 +404,32 @@ paths:
                 message: Something went wrong handling request
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
@@ -216,6 +446,9 @@ paths:
               example:
                 code: REGISTER_GENERIC_ERROR
                 message: An error occurred during file reading
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
     get:
       tags:
         - products-upload
@@ -229,26 +462,43 @@ paths:
           schema:
             type: integer
             format: int32
+            minimum: 0
+            maximum: 10000
         - name: size
           in: query
           required: false
           schema:
             type: integer
             format: int32
-        - name: sort
-          in: query
-          required: false
-          schema:
-            type: string
+            minimum: 0
+            maximum: 10000
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UploadsListDTO'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
@@ -258,8 +508,32 @@ paths:
                 message: Something went wrong handling request
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadsErrorDTO'
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
@@ -276,12 +550,16 @@ paths:
               example:
                 code: UPLOADS_GENERIC_ERROR
                 message: An error occurred during file reading
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
   /product-files/verify:
     post:
       tags:
         - products-upload
-      summary: Veerify CSV file containing a list of products
-      description: 'ENG: Verify CSV file containing a list of products <br> IT: Verifica del file CSV conentente una lista di prodotti'
+      summary: Verify CSV file containing a list of products
+      description: 'ENG: Verify CSV file containing a list of products <br> IT: Verifica
+        del file CSV conentente una lista di prodotti'
       operationId: verifyProductList
       parameters:
         - name: category
@@ -289,6 +567,15 @@ paths:
           required: true
           schema:
             type: string
+            enum:
+              - WASHINGMACHINES
+              - WASHERDRIERS
+              - OVENS
+              - RANGEHOODS
+              - DISHWASHERS
+              - TUMBLEDRYERS
+              - REFRIGERATINGAPPL
+              - COOKINGHOBS
       requestBody:
         content:
           multipart/form-data:
@@ -299,16 +586,35 @@ paths:
               properties:
                 csv:
                   type: string
+                  maxLength: 2097152  # 2 MB in byte
                   format: binary
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegisterUploadResponseDTO'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
@@ -318,8 +624,32 @@ paths:
                 message: Something went wrong handling request
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
@@ -336,12 +666,16 @@ paths:
               example:
                 code: REGISTER_GENERIC_ERROR
                 message: An error occurred during file reading
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
   /product-files/{productFileId}/report:
     get:
       tags:
         - products-upload
       summary: Download errors report
-      description: "ENG: Download report containing errors from CSV validation<br> IT: Scarica il report contenente gli errori del controllo CSV"
+      description: 'ENG: Download report containing errors from CSV validation<br>
+        IT: Scarica il report contenente gli errori del controllo CSV'
       operationId: downloadErrorReport
       parameters:
         - name: productFileId
@@ -349,16 +683,37 @@ paths:
           required: true
           schema:
             type: string
-          description: "ENG: ID of the upload<br> IT: ID del caricamento"
+            minLength: 24
+            maxLength: 24
+            pattern: "^[a-fA-F0-9]{24}$" # Mongo ID
+          description: 'ENG: ID of the upload<br> IT: ID del caricamento'
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CsvDTO'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
@@ -368,8 +723,32 @@ paths:
                 message: Something went wrong handling request
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
@@ -386,12 +765,16 @@ paths:
               example:
                 code: REGISTER_GENERIC_ERROR
                 message: An error occurred during file reading
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
   /product-files/batch-list:
     get:
       tags:
         - products-upload
       summary: Get report IDs
-      description: "ENG: Retrieve the list of batch IDs<br> IT: Recupera la lista degli id dei lotti"
+      description: 'ENG: Retrieve the list of batch IDs<br> IT: Recupera la lista
+        degli id dei lotti'
       operationId: getBatchNameList
       parameters:
         - name: x-organization-selected
@@ -399,15 +782,35 @@ paths:
           required: true
           schema:
             type: string
+            maxLength: 36
+            pattern: "^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" # UUID v4
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BatchList'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
@@ -417,8 +820,32 @@ paths:
                 message: Something went wrong handling request
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
@@ -435,6 +862,9 @@ paths:
               example:
                 code: REGISTER_GENERIC_ERROR
                 message: An error occurred during file reading
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
   /products:
     get:
       tags:
@@ -449,64 +879,141 @@ paths:
           schema:
             type: integer
             format: int32
+            minimum: 0
+            maximum: 10000
         - name: size
           in: query
           required: false
           schema:
             type: integer
             format: int32
+            minimum: 1
+            maximum: 1000
         - name: sort
           in: query
           required: false
           schema:
             type: string
+            enum:
+              - category, desc
+              - batchName, desc
+              - energyClass, desc
+              - gtinCode, desc
+              - eprelCode, desc
+              - category, asc
+              - batchName, asc
+              - energyClass, asc
+              - gtinCode, asc
+              - eprelCode, asc
         - name: category
           in: query
           required: false
           schema:
             type: string
+            enum:
+              - WASHINGMACHINES
+              - WASHERDRIERS
+              - OVENS
+              - RANGEHOODS
+              - DISHWASHERS
+              - TUMBLEDRYERS
+              - REFRIGERATINGAPPL
+              - COOKINGHOBS
         - name: eprelCode
           in: query
           required: false
           schema:
             type: string
+            maxLength: 50
+            pattern: "^\\d+$"
         - name: gtinCode
           in: query
           required: false
           schema:
             type: string
+            maxLength: 14
+            pattern: "^[a-zA-Z0-9]{1,14}$"
         - name: productCode
           in: query
           required: false
           schema:
             type: string
+            maxLength: 100
+            pattern: "^[a-zA-Z0-9 ]{0,100}$"
         - name: productFileId
           in: query
           required: false
           schema:
             type: string
-        - name:  x-organization-selected
+            minLength: 24
+            maxLength: 24
+            pattern: "^[a-fA-F0-9]{24}$" # Mongo ID
+        - name: x-organization-selected
           in: header
           required: true
           schema:
             type: string
+            maxLength: 36
+            pattern: "^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" # UUID v4
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductListDTO'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
@@ -517,6 +1024,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
   /institutions/{institutionId}:
     get:
       tags:
@@ -530,24 +1040,68 @@ paths:
           required: true
           schema:
             type: string
-          description: "ENG: ID of the producer IT: ID del produttore"
+            maxLength: 36
+            pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" # UUID v4
+          description: 'ENG: ID of the producer IT: ID del produttore'
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InstitutionResponse'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
@@ -558,30 +1112,76 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
   /institutions:
     get:
       tags:
         - institutions
       summary: Gets the institutions list
-      description: 'ENG:  Gets the institutions list <br> IT: Recupera elenco delle istituzioni'
+      description: 'ENG:  Gets the institutions list <br> IT: Recupera elenco delle
+        istituzioni'
       operationId: getInstitutionsList
       responses:
         '200':
           description: Ok
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InstitutionsResponse'
         '400':
           description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
         '401':
           description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
         '429':
           description: Too many Request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
           content:
             application/json:
               schema:
@@ -592,7 +1192,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDTO'
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
 components:
+  headers:
+    X-RateLimit-Limit:
+      description: The maximum number of requests allowed in the current period
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+        maximum: 1000000
+    X-RateLimit-Remaining:
+      description: The number of requests remaining in the current period
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+        maximum: 1000000
+    X-RateLimit-Reset:
+      description: The time at which the rate limit resets (in UTC epoch seconds)
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+        maximum: 9999999999
+    Access-Control-Allow-Origin:
+      description: CORS header to allow cross-origin requests
+      schema:
+        type: string
+        maxLength: 255
+        pattern: .*
+    Retry-After:
+      description: Indicates how long the user agent should wait before making a
+        follow-up request
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+        maximum: 86400
   schemas:
     UserPermissionDTO:
       title: UserPermissionDTO
@@ -600,25 +1239,39 @@ components:
       properties:
         role:
           type: string
+          enum:
+            - operatore
+            - invitalia
         permissions:
           type: array
           items:
             $ref: '#/components/schemas/PermissionDTO'
           description: List of permissions
+          maxItems: 1000
     PermissionDTO:
       type: object
       properties:
-        id:
+        description:
           type: string
+          maxLength: 255
+          pattern: .*
         name:
           type: string
+          maxLength: 255
+          pattern: .*
         mode:
           type: string
+          maxLength: 255
+          enum:
+            - disabled
+            - enabled
     PortalConsentDTO:
       type: object
       properties:
         versionId:
           type: string
+          maxLength: 255
+          pattern: .*
         firstAcceptance:
           type: boolean
     PermissionErrorDTO:
@@ -635,38 +1288,67 @@ components:
             - ROLE_PERMISSION_INVALID_REQUEST
             - ROLE_PERMISSION_TOO_MANY_REQUESTS
             - ROLE_PERMISSION_GENERIC_ERROR
-          description: >-
-            "ENG: Error code: ROLE_PERMISSION_NOT_FOUND: Permissions not found,
-             ROLE_PERMISSION_VERSION_NOT_MATCHED:  The version id does not match,
-             ROLE_PERMISSION_INVALID_REQUEST: Something went wrong handling request,
-             ROLE_PERMISSION_TOO_MANY_REQUESTS: Too many requests,
-             ROLE_PERMISSION_GENERIC_ERROR: Application Error - IT: Codice di errore:
-             ROLE_PERMISSION_NOT_FOUND: Permessi non trovati,
-             ROLE_PERMISSION_VERSION_NOT_MATCHED: Gli ID delle versioni non corrispondono,
-             ROLE_PERMISSION_INVALID_REQUEST: Qualcosa è andato storto durante l'invio della richiesta,
-             ROLE_PERMISSION_TOO_MANY_REQUESTS: Troppe richieste,
-             ROLE_PERMISSION_GENERIC_ERROR: Errore generico"
+          description: "\"ENG: Error code: ROLE_PERMISSION_NOT_FOUND: Permissions\
+            \ not found,\n ROLE_PERMISSION_VERSION_NOT_MATCHED:  The version id does\
+            \ not match,\n ROLE_PERMISSION_INVALID_REQUEST: Something went wrong handling\
+            \ request,\n ROLE_PERMISSION_TOO_MANY_REQUESTS: Too many requests,\n ROLE_PERMISSION_GENERIC_ERROR:\
+            \ Application Error - IT: Codice di errore:\n ROLE_PERMISSION_NOT_FOUND:\
+            \ Permessi non trovati,\n ROLE_PERMISSION_VERSION_NOT_MATCHED: Gli ID\
+            \ delle versioni non corrispondono,\n ROLE_PERMISSION_INVALID_REQUEST:\
+            \ Qualcosa è andato storto durante l'invio della richiesta,\n ROLE_PERMISSION_TOO_MANY_REQUESTS:\
+            \ Troppe richieste,\n ROLE_PERMISSION_GENERIC_ERROR: Errore generico\""
+          pattern: .*
         message:
           type: string
-          description: "ENG: Error message - IT: Messaggio di errore"
+          description: 'ENG: Error message - IT: Messaggio di errore'
+          maxLength: 255
+          pattern: .*
     RegisterUploadResponseDTO:
       type: object
       properties:
         status:
           type: string
-          description: "ENG: Status of the upload <br> IT: Stato del caricamento"
+          description: 'ENG: Status of the upload <br> IT: Stato del caricamento'
+          enum:
+            - OK
+            - KO
         errorKey:
           type: string
-          description: "ENG: Error Key: <ul><li>product.invalid.file.maxrow: too many records</li><li>product.invalid.file.header: wrong headers</li><li>product.invalid.file.size: file size exceeds limit</li><li>product.invalid.file.report: error report generated</li><li>product.invalid.file.extension: file extension not valid (must be csv)</li></ul><br>IT: Chiave di errore: <ul><li>product.invalid.file.maxrow: numero di record non consentito</li><li>merchant.invalid.file.header: headers non validi</li><li>merchant.invalid.file.size: la dimensione del file supera il limite consentito<li>merchant.invalid.file.report: il file caricato ha generato un report file di errori</li></li><li>product.invalid.file.vat.wrong: partita IVA o CF non valido</li><li>product.invalid.file.extension: estensione file non valita (deve essere un csv)</li></ul>"
+          description: 'ENG: Error Key: <ul><li>product.invalid.file.maxrow: too many
+            records</li><li>product.invalid.file.header: wrong headers</li><li>product.invalid.file.size:
+            file size exceeds limit</li><li>product.invalid.file.report: error report
+            generated</li><li>product.invalid.file.extension: file extension not valid
+            (must be csv)</li></ul><br>IT: Chiave di errore: <ul><li>product.invalid.file.maxrow:
+            numero di record non consentito</li><li>merchant.invalid.file.header:
+            headers non validi</li><li>merchant.invalid.file.size: la dimensione del
+            file supera il limite consentito<li>merchant.invalid.file.report: il file
+            caricato ha generato un report file di errori</li></li><li>product.invalid.file.vat.wrong:
+            partita IVA o CF non valido</li><li>product.invalid.file.extension: estensione
+            file non valita (deve essere un csv)</li></ul>'
+          enum:
+            - product.invalid.file.extension
+            - product.invalid.file.maxrow
+            - product.invalid.file.maxsize
+            - product.invalid.file.header
+            - product.invalid.file.report
+            - product.invalid.file.category
+            - product.invalid.file.empty
+            - product.invalid.file.already_in_progress
         productFileId:
           type: string
-          description: "ENG: Id of the partlial upload <br> IT: Id del caricamento parziale"
+          description: 'ENG: Id of the partlial upload <br> IT: Id del caricamento
+            parziale'
+          minLength: 24
+          maxLength: 24
+          pattern: "^[a-fA-F0-9]{24}$" # Mongo ID
     CsvDTO:
       title: CsvDTO
       type: object
       properties:
         data:
           type: string
+          maxLength: 2097152  # 2 MB in byte
+          pattern: ".*"
     RegisterErrorDTO:
       type: object
       required:
@@ -679,18 +1361,18 @@ components:
             - REGISTER_TOO_MANY_REQUESTS
             - REGISTER_INVALID_REQUEST
             - REGISTER_GENERIC_ERROR
-          description: >-
-            "ENG: Error code:<br>
-            REGISTER_TOO_MANY_REQUESTS: Too many requests,<br>
-            REGISTER_INVALID_REQUEST: Something went wrong handling the request,<br>
-            REGISTER_GENERIC_ERROR: Application error,<br>
-            - IT: Codice di errore:<br>
-            REGISTER_TOO_MANY_REQUESTS: Troppe richieste,<br>
-            REGISTER_INVALID_REQUEST: Qualcosa è andato storto durante l'invio della richiesta,<br>
-            REGISTER_GENERIC_ERROR: Errore applicativo"
+          description: '"ENG: Error code:<br> REGISTER_TOO_MANY_REQUESTS: Too many
+            requests,<br> REGISTER_INVALID_REQUEST: Something went wrong handling
+            the request,<br> REGISTER_GENERIC_ERROR: Application error,<br> - IT:
+            Codice di errore:<br> REGISTER_TOO_MANY_REQUESTS: Troppe richieste,<br>
+            REGISTER_INVALID_REQUEST: Qualcosa è andato storto durante l''invio della
+            richiesta,<br> REGISTER_GENERIC_ERROR: Errore applicativo"'
+          pattern: .*
         message:
           type: string
           description: 'ENG: Error message- IT: Messaggio di errore'
+          maxLength: 255
+          pattern: .*
     UploadsListDTO:
       type: object
       properties:
@@ -698,49 +1380,92 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UploadDTO'
+          maxItems: 1000
         pageNo:
           type: integer
           format: int32
           description: 'ENG: The number of the page <br> IT: Il numero della pagina'
+          minimum: 0
+          maximum: 1000000
         pageSize:
           type: integer
           format: int32
-          description: 'ENG: The element size for page <br> IT: Il numero di elementi per pagina'
+          description: 'ENG: The element size for page <br> IT: Il numero di elementi
+            per pagina'
+          minimum: 0
+          maximum: 1000000
         totalElements:
           type: integer
           format: int32
-          description: 'ENG: The total number of the elements <br> IT: Il numero totale degli elementi'
+          description: 'ENG: The total number of the elements <br> IT: Il numero totale
+            degli elementi'
+          minimum: 0
+          maximum: 1000000
         totalPages:
           type: integer
           format: int32
-          description: 'ENG: The total number of the pages <br> IT: Il numero totale delle pagine'
+          description: 'ENG: The total number of the pages <br> IT: Il numero totale
+            delle pagine'
+          minimum: 0
+          maximum: 1000000
     UploadDTO:
       type: object
       properties:
         productFileId:
           type: string
-          description: "ENG: The name of batch <br> IT: Nome del lotto"
+          description: 'ENG: The name of batch <br> IT: Nome del lotto'
+          minLength: 24
+          maxLength: 24
+          pattern: "^[a-fA-F0-9]{24}$" # Mongo ID
         category:
           type: string
-          description: "ENG: The category of product in file <br> IT: Categoria dei prodotti contenuti nel file"
+          description: 'ENG: The category of product in file <br> IT: Categoria dei
+            prodotti contenuti nel file'
+          enum:
+            - Lavatrice
+            - Lavasciuga
+            - Piano cottura
+            - Frigorifero
+            - Asciugatrice
+            - Lavastoviglie
+            - Cappa da cucina
+            - Forno
         fileName:
           type: string
-          description: "ENG: The original name of file <br> IT: Nome originale del file csv"
+          description: 'ENG: The original name of file <br> IT: Nome originale del
+            file csv'
+          maxLength: 255
+          pattern: "^.*\\.csv$"
         batchName:
           type: string
-          description: "ENG: The computed name of file <br> IT: Nome ricalcolato del file csv"
+          description: 'ENG: The computed name of file <br> IT: Nome ricalcolato del
+            file csv'
+          pattern: "^(Frigoriferi|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\\.csv$"
+          maxLength: 255
         uploadStatus:
           type: string
-          description: "ENG: The state of batch uploaded <br> IT: Lo stato del lotto caricato"
+          description: 'ENG: The state of batch uploaded <br> IT: Lo stato del lotto
+            caricato'
+          maxLength: 255
+          enum:
+            - FORMAL_ERROR
+            - PARTIAL
+            - UPLOADED
+            - IN_PROCESS
+            - LOADED
         dateUpload:
           type: string
-          description: "ENG: The date of upload <br> IT: La data di caricamento"
+          description: 'ENG: The date of upload <br> IT: La data di caricamento'
+          maxLength: 255
+          format: date-time
         findedProductsNumber:
           type: number
-          description: "ENG: The number of products found in the batch <br> IT: Il numero di prodotti trovati nel lotto"
+          description: 'ENG: The number of products found in the batch <br> IT: Il
+            numero di prodotti trovati nel lotto'
         addedProductNumber:
           type: number
-          description: "ENG: The number of products added to the register <br> IT: Il numero di prodotti aggiunti al registro"
+          description: 'ENG: The number of products added to the register <br> IT:
+            Il numero di prodotti aggiunti al registro'
     UploadsErrorDTO:
       type: object
       required:
@@ -749,8 +1474,12 @@ components:
       properties:
         code:
           type: string
+          maxLength: 255
+          pattern: .*
         message:
           type: string
+          maxLength: 255
+          pattern: .*
     ProductListDTO:
       type: object
       properties:
@@ -758,99 +1487,174 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductDTO'
+          maxItems: 1000
         pageNo:
           type: integer
           format: int32
           description: 'ENG: The number of the page <br> IT: Il numero della pagina'
+          minimum: 0
+          maximum: 1000000
         pageSize:
           type: integer
           format: int32
-          description: 'ENG: The element size for page <br> IT: Il numero di elementi per pagina'
+          description: 'ENG: The element size for page <br> IT: Il numero di elementi
+            per pagina'
+          minimum: 0
+          maximum: 1000000
         totalElements:
           type: integer
           format: int32
-          description: 'ENG: The total number of the elements <br> IT: Il numero totale degli elementi'
+          description: 'ENG: The total number of the elements <br> IT: Il numero totale
+            degli elementi'
+          minimum: 0
+          maximum: 1000000
         totalPages:
           type: integer
           format: int32
-          description: 'ENG: The total number of the pages <br> IT: Il numero totale delle pagine'
+          description: 'ENG: The total number of the pages <br> IT: Il numero totale
+            delle pagine'
+          minimum: 0
+          maximum: 1000000
     ProductDTO:
       type: object
       properties:
-        productFileId:
-          type: string
-          description: "ENG: The id of file which insert the product <br> IT: Id del lotto che ha censito il prodotto"
         organizationId:
           type: string
-          description: "ENG: The name of organization <br> IT: Id del produttore"
+          description: 'ENG: The name of organization <br> IT: Id del produttore'
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" # UUID v4
         registrationDate:
           type: string
           format: date-time
-          description: "ENG: Timestamps of insert (after EPREL checks) <br> IT: Data caricamento prodotto (dopo la verifica EPREL)"
+          description: 'ENG: Timestamps of insert (after EPREL checks) <br> IT: Data
+            caricamento prodotto (dopo la verifica EPREL)'
+          maxLength: 255
         status:
           type: string
-          description: "ENG: The status of the product <br> IT: Lo statos del prodotto"
+          description: 'ENG: The status of the product <br> IT: Lo statos del prodotto'
+          enum:
+            - APPROVED
+            - REJECTED
+            - SUPERVISION
         model:
           type: string
-          description: "ENG: The mode of the product <br> IT: il modello del prodotto"
+          description: 'ENG: The mode of the product <br> IT: il modello del prodotto'
+          maxLength: 100
+          pattern: "^.{1,100}$"
         productGroup:
           type: string
-          description: "ENG: The EPREL category <br> IT: categoria EPREL"
+          description: 'ENG: The EPREL category <br> IT: categoria EPREL'
+          maxLength: 255
+          pattern: ".*"
         category:
           type: string
-          description: "ENG: The category of the product <br> IT: categoria del prodotto"
+          description: 'ENG: The category of the product <br> IT: categoria del prodotto'
+          enum:
+            - Lavatrice
+            - Lavasciuga
+            - Piano cottura
+            - Frigorifero
+            - Asciugatrice
+            - Lavastoviglie
+            - Cappa da cucina
+            - Forno
         brand:
           type: string
-          description: "ENG: The brand of the product <br> IT: brand del prodotto"
+          description: 'ENG: The brand of the product <br> IT: brand del prodotto'
+          maxLength: 100
+          pattern: "^.{1,100}$"
         eprelCode:
           type: string
-          description: "ENG: The EPREL code of the product <br> IT: Il code EPREL del prodotto"
+          description: 'ENG: The EPREL code of the product <br> IT: Il code EPREL
+            del prodotto'
+          maxLength: 50
+          pattern: "^\\\\d+$"
         gtinCode:
           type: string
-          description: "ENG: The GTIN code of the product <br> IT: Il code GTIN del prodotto"
+          description: 'ENG: The GTIN code of the product <br> IT: Il code GTIN del
+            prodotto'
+          maxLength: 14
+          pattern: "^[a-zA-Z0-9]{1,14}$"
         productCode:
           type: string
-          description: "ENG: The product code <br> IT: Il codice prodotto"
+          description: 'ENG: The product code <br> IT: Il codice prodotto'
+          maxLength: 100
+          pattern: "^[a-zA-Z0-9 ]{0,100}$"
+          nullable: true
         energyClass:
           type: string
-          description: "ENG: The product energy class <br> IT: La classe energetica del prodotto"
+          description: 'ENG: The product energy class <br> IT: La classe energetica del prodotto'
+          pattern: "^(A\\\\+\\\\+\\\\+|A\\\\+\\\\+|A\\\\+|A|B|C|D|E|F|G)$"
+          nullable: true
         countryOfProduction:
           type: string
-          description: "ENG: The production country of the product <br> IT: il paese di produzione del prodotto"
+          description: 'ENG: The production country of the product <br> IT: il paese
+            di produzione del prodotto'
+          maxLength: 2
+          pattern: "^[A-Z]{2}$"
         batchName:
           type: string
-          description: "ENG: The batch name the product <br> IT: il nomelotto del prodotto"
+          description: 'ENG: The batch name the product <br> IT: il nomelotto del
+            prodotto'
+          pattern: "^(Frigoriferi|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\\\\.csv$"
+          maxLength: 255
         linkEprel:
           type: string
-          description: "ENG: The EPREL product link <br> IT: Il link EPREL del prodotto"
+          description: 'ENG: The EPREL product link <br> IT: Il link EPREL del prodotto'
+          maxLength: 255
+          format: uri
+          nullable: true
         capacity:
           type: string
-          description: "ENG: The capacity of the product <br> IT: Capacità del  prodotto"
+          description: 'ENG: The capacity of the product <br> IT: Capacità del  prodotto'
+          maxLength: 255
+          pattern: ".*"
+          nullable: true
         productName:
           type: string
-          description: "ENG: The name of the product  <br> IT: Nome del prodotto"
+          description: 'ENG: The name of the product  <br> IT: Nome del prodotto'
+          maxLength: 255
+          pattern: ".*"
     InstitutionResponse:
       title: InstitutionResponse
       type: object
       properties:
         address:
           type: string
+          maxLength: 255
+          pattern: ".*"
         city:
           type: string
+          maxLength: 255
+          pattern: ".*"
         country:
           type: string
+          maxLength: 255
+          pattern: ".*"
         county:
           type: string
+          maxLength: 255
+          pattern: ".*"
         description:
           type: string
+          maxLength: 255
+          pattern: ".*"
         digitalAddress:
           type: string
+          maxLength: 255
+          format: email
         fiscalCode:
           type: string
+          maxLength: 255
+          pattern: ".*"
         vatNumber:
           type: string
+          maxLength: 255
+          pattern: ".*"
         zipCode:
           type: string
+          maxLength: 255
+          pattern: ".*"
     InstitutionsResponse:
       title: InstitutionResponse
       type: object
@@ -861,12 +1665,21 @@ components:
             properties:
               instituionId:
                 type: string
+                maxLength: 255
+                pattern: "^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
               description:
                 type: string
+                maxLength: 255
+                pattern: ".*"
               createAt:
                 type: string
+                maxLength: 255
+                format: date
               updatedAt:
                 type: string
+                maxLength: 255
+                format: date
+          maxItems: 1000
     BatchList:
       title: InstitutionResponse
       type: object
@@ -877,8 +1690,14 @@ components:
             properties:
               productFileId:
                 type: string
+                minLength: 24
+                maxLength: 24
+                pattern: "^[a-fA-F0-9]{24}$" # Mongo ID
               batchName:
                 type: string
+                pattern: "^(Frigoriferi|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\\.csv$"
+                maxLength: 255
+          maxItems: 1000
     ErrorDTO:
       type: object
       required:
@@ -887,8 +1706,12 @@ components:
       properties:
         code:
           type: string
+          maxLength: 255
+          pattern: ".*"
         message:
           type: string
+          maxLength: 255
+          pattern: ".*"
   securitySchemes:
     Bearer:
       type: apiKey
