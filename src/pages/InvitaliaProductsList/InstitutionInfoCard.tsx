@@ -36,14 +36,7 @@ const InstitutionInfoCard: React.FC = () => {
     {
       label: 'sedeLegale',
       value:
-        (institutionInfo?.address ?? '') +
-        ', ' +
-        (institutionInfo?.zipCode ?? '') +
-        ' ' +
-        (institutionInfo?.city ?? '') +
-        ' (' +
-        (institutionInfo?.county ?? '') +
-        ')',
+        `${institutionInfo?.address ?? ''}, ${institutionInfo?.zipCode ?? ''} ${institutionInfo?.city ?? ''} (${institutionInfo?.county ?? ''})`,
       truncate: true,
     },
     { label: 'pec', value: institutionInfo?.digitalAddress, truncate: true },
