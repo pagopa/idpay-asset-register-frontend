@@ -54,8 +54,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead sx={{ backgroundColor: grey?.A100 }}>
       <TableRow>
-        {headCells.map((headCell) => (
+        {headCells.map((headCell, index, arr) => (
           <TableCell
+            colSpan={index === arr.length - 1 ? 2 : 1}
             key={headCell?.id}
             align={headCell?.textAlign ? headCell?.textAlign : 'left'}
             padding="normal"

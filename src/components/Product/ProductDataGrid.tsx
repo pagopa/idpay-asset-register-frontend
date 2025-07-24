@@ -19,7 +19,7 @@ import { UploadsErrorDTO } from '../../api/generated/register/UploadsErrorDTO';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { BatchList } from '../../api/generated/register/BatchList';
-import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA } from '../../utils/constants';
+import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA, MAX_TABLE_HEIGHT } from '../../utils/constants';
 import {
   batchIdSelector,
   batchNameSelector,
@@ -299,8 +299,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
         }}
       >
         {!loading ? (
-          <TableContainer>
-            <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
+          <TableContainer sx={{ maxHeight: MAX_TABLE_HEIGHT }}>
+            <Table stickyHeader sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
               {tableData.length > 0 && (
                 <EnhancedTableHead
                   order={order}
@@ -308,6 +308,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
                   onRequestSort={handleRequestSort}
                 />
               )}
+
               <TableBody sx={{ backgroundColor: 'white' }}>
                 {visibleRows.map((row, index) => (
                   <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>

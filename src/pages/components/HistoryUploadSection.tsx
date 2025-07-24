@@ -28,7 +28,7 @@ import { formatDateWithHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { setBatchId, setBatchName } from '../../redux/slices/productsSlice';
 import ROUTES from '../../routes';
-import { EMPTY_DATA } from '../../utils/constants';
+import { EMPTY_DATA, MAX_TABLE_HEIGHT } from '../../utils/constants';
 import EmptyListTable from './EmptyListTable';
 
 const rowTableStyle = {
@@ -129,95 +129,105 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   }
 
   return data?.content && data.content.length > 0 ? (
-    <TableContainer
-      component={Paper}
-      elevation={0}
-      sx={{
-        height: '70%',
-        gap: '24px',
-        borderRadius: '4px',
-        pt: '24px',
-        pr: '24px',
-        pl: '24px',
-        cursor: 'pointer',
-      }}
-      data-testid="uploads-table"
-    >
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell
-              colSpan={3}
-              sx={{ backgroundColor: 'background.paper', borderBottom: 0, p: 0 }}
-            >
-              <TitleBox
-                title={
-                  <span style={{ fontWeight: 'bold' }}>
-                    {t('pages.uploadHistory.uploadHistoryTitle')}
-                  </span>
-                }
-                mbTitle={2}
-                mtTitle={2}
-                mbSubTitle={5}
-                variantTitle="h6"
-                variantSubTitle="body1"
-                data-testid="title-overview"
-                titleFontSize="32px"
-              />
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.content.map((row: UploadDTO) => (
-            <TableRow key={row.productFileId} sx={rowTableStyle} hover>
-              <TableCell sx={styleLeftRow}>
-                {renderUploadStatusIcon(row.uploadStatus ?? '')}
-              </TableCell>
+    <>
+      <TableContainer
+        component={Paper}
+        elevation={0}
+        sx={{
+          height: '70%',
+          maxHeight: MAX_TABLE_HEIGHT,
+          gap: '24px',
+          borderRadius: '4px',
+          pt: 0,
+          pr: '24px',
+          pl: '24px',
+          cursor: 'pointer',
+        }}
+        data-testid="uploads-table"
+      >
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
               <TableCell
+                colSpan={6}
                 sx={{
-                  ...rowBaseCell,
-                  fontWeight: 600,
-                  alignContent: 'center',
+                  backgroundColor: 'background.paper',
+                  borderBottom: 0,
+                  p: 0,
+                  paddingTop: '24px',
                 }}
               >
-                {row.batchName}
-              </TableCell>
-              <TableCell sx={rowBaseCell}>
-                {row.dateUpload ? formatDateWithHours(row.dateUpload) : EMPTY_DATA}
-              </TableCell>
-              <TableCell sx={rowBaseCell}>
-                <b>
-                  {row.findedProductsNumber ?? 0}{' '}
-                  {t('pages.uploadHistory.uploadHistoryFoundProducts')}
-                </b>
-              </TableCell>
-              <TableCell sx={rowBaseCell}>
-                <span
-                  style={{
-                    color: '#0073E6',
-                    fontWeight: 'bold',
-                    textDecoration: 'underline',
-                  }}
-                  onClick={() => handleLinkProducts(row?.batchName || '', row?.productFileId || '')}
-                >
-                  {row.addedProductNumber ?? 0}{' '}
-                  {t('pages.uploadHistory.uploadHistoryAddedProducts')}
-                </span>
-              </TableCell>
-              <TableCell align="right" sx={styleRightRow}>
-                {row.uploadStatus === 'PARTIAL' && (
-                  <DownloadIcon
-                    color="primary"
-                    sx={{ verticalAlign: 'middle' }}
-                    onClick={() => handleDownloadReport(row?.productFileId?.toString() || '')}
-                    data-testid="download-icon"
-                  />
-                )}
+                <TitleBox
+                  title={
+                    <span style={{ fontWeight: 'bold' }}>
+                      {t('pages.uploadHistory.uploadHistoryTitle')}
+                    </span>
+                  }
+                  mbTitle={2}
+                  mtTitle={0}
+                  mbSubTitle={5}
+                  variantTitle="h6"
+                  variantSubTitle="body1"
+                  data-testid="title-overview"
+                  titleFontSize="32px"
+                />
               </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {data.content.map((row: UploadDTO) => (
+              <TableRow key={row.productFileId} sx={rowTableStyle} hover>
+                <TableCell sx={styleLeftRow}>
+                  {renderUploadStatusIcon(row.uploadStatus ?? '')}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    ...rowBaseCell,
+                    fontWeight: 600,
+                    alignContent: 'center',
+                  }}
+                >
+                  {row.batchName}
+                </TableCell>
+                <TableCell sx={rowBaseCell}>
+                  {row.dateUpload ? formatDateWithHours(row.dateUpload) : EMPTY_DATA}
+                </TableCell>
+                <TableCell sx={rowBaseCell}>
+                  <b>
+                    {row.findedProductsNumber ?? 0}{' '}
+                    {t('pages.uploadHistory.uploadHistoryFoundProducts')}
+                  </b>
+                </TableCell>
+                <TableCell sx={rowBaseCell}>
+                  <span
+                    style={{
+                      color: '#0073E6',
+                      fontWeight: 'bold',
+                      textDecoration: 'underline',
+                    }}
+                    onClick={() =>
+                      handleLinkProducts(row?.batchName || '', row?.productFileId || '')
+                    }
+                  >
+                    {row.addedProductNumber ?? 0}{' '}
+                    {t('pages.uploadHistory.uploadHistoryAddedProducts')}
+                  </span>
+                </TableCell>
+                <TableCell align="right" sx={styleRightRow}>
+                  {row.uploadStatus === 'PARTIAL' && (
+                    <DownloadIcon
+                      color="primary"
+                      sx={{ verticalAlign: 'middle' }}
+                      onClick={() => handleDownloadReport(row?.productFileId?.toString() || '')}
+                      data-testid="download-icon"
+                    />
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
       <TablePagination
         component="div"
         count={totalElements}
@@ -233,7 +243,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
           )} ${paginationInfo.total}`
         }
       />
-    </TableContainer>
+    </>
   ) : (
     <EmptyListTable message="pages.uploadHistory.uploadHistoryNoFilesUploaded" />
   );
