@@ -2,7 +2,7 @@ import { List, ListItem, Typography, Divider } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { emptyData } from '../../utils/constants';
+import { EMPTY_DATA } from '../../utils/constants';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 
 type Props = {
@@ -24,7 +24,7 @@ export default function ProductDetail({ data }: Props) {
         <ListItem>
           <Box>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.batchName || emptyData}
+              {data?.batchName || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -36,7 +36,7 @@ export default function ProductDetail({ data }: Props) {
               Data verifica EPREL
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || emptyData}
+              {String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -55,7 +55,7 @@ export default function ProductDetail({ data }: Props) {
               Codice EPREL
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.eprelCode || emptyData}
+              {data?.eprelCode || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -66,7 +66,7 @@ export default function ProductDetail({ data }: Props) {
               Codice GTIN/EAN
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.gtinCode || emptyData}
+              {data?.gtinCode || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -77,7 +77,7 @@ export default function ProductDetail({ data }: Props) {
               Codice prodotto
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.productCode || emptyData}
+              {data?.productCode || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -88,7 +88,7 @@ export default function ProductDetail({ data }: Props) {
               Categoria
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.category ? t(`pages.products.categories.${data?.category}`) : emptyData}
+              {data?.category ? t(`pages.products.categories.${data?.category}`) : EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -99,7 +99,7 @@ export default function ProductDetail({ data }: Props) {
               Marca
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.brand || emptyData}
+              {data?.brand || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -110,7 +110,7 @@ export default function ProductDetail({ data }: Props) {
               Modello
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.model || emptyData}
+              {data?.model || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -121,7 +121,7 @@ export default function ProductDetail({ data }: Props) {
               Classe energetica
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.energyClass || emptyData}
+              {data?.energyClass || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -132,7 +132,7 @@ export default function ProductDetail({ data }: Props) {
               Paese di produzione
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.countryOfProduction || emptyData}
+              {data?.countryOfProduction || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>
@@ -143,7 +143,7 @@ export default function ProductDetail({ data }: Props) {
               Capacità
             </Typography>
             <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.capacity || emptyData}
+              {data?.capacity || EMPTY_DATA}
             </Typography>
           </Box>
         </ListItem>

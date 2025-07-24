@@ -1,14 +1,14 @@
 import { useTheme, useMediaQuery } from '@mui/material';
-import {emptyData, maxLengthEmail} from "./utils/constants";
+import { EMPTY_DATA, maxLengthEmail } from './utils/constants';
 
 export const formattedCurrency = (
   number: number | undefined,
-  symbol: string = emptyData,
+  symbol: string = EMPTY_DATA,
   cents: boolean = false
 ) => {
-  if (number && cents === false) {
+  if (number && !cents) {
     return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number);
-  } else if (number && cents === true) {
+  } else if (number && cents) {
     const roundedNumberStr = number.toFixed(2);
     const roundedNumber = parseFloat(roundedNumberStr) / 100;
     return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(
@@ -44,7 +44,7 @@ export const formatDate = (date: Date | undefined) => {
 
 export const formatDateWithHours = (isoDate: Date): string => {
     if (!isoDate) {
-        return emptyData;
+        return EMPTY_DATA;
     }
     const day = String(isoDate.getDate()).padStart(2, '0');
     const month = String(isoDate.getMonth() + 1).padStart(2, '0');
@@ -55,71 +55,74 @@ export const formatDateWithHours = (isoDate: Date): string => {
 };
 
 export const formatDateWithoutHours = (isoDate: string): string => {
-    if (!isoDate) {
-        return emptyData;
-    }
-    const date = new Date(isoDate);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+  if (!isoDate) {
+    return EMPTY_DATA;
+  }
+  const date = new Date(isoDate);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 };
 
 export const formatFileName = (name: string | undefined): string => {
-    if (typeof name === 'string' && name.length > 15) {
-        const nameArr = name.split('.');
-        const fileExtension = nameArr[nameArr.length - 1];
-        const truncatedName = name.substring(0, 10);
-        return `${truncatedName}... .${fileExtension}`;
-    } else if (typeof name === 'string' && name.length <= 15) {
-        return name;
-    }
-    return '';
+  if (typeof name === 'string' && name.length > 15) {
+    const nameArr = name.split('.');
+    const fileExtension = nameArr[nameArr.length - 1];
+    const truncatedName = name.substring(0, 10);
+    return `${truncatedName}... .${fileExtension}`;
+  } else if (typeof name === 'string' && name.length <= 15) {
+    return name;
+  }
+  return '';
 };
 
 export const initUploadBoxStyle = {
-    gridColumn: 'span 12',
-    alignItems: 'center',
-    justifyItems: 'center',
-    width: '100%',
-    border: '1px dashed #0073E6',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(0, 115, 230, 0.08)',
-    p: 3,
+  gridColumn: 'span 12',
+  alignItems: 'center',
+  justifyItems: 'center',
+  width: '100%',
+  border: '1px dashed #0073E6',
+  borderRadius: '10px',
+  backgroundColor: 'rgba(0, 115, 230, 0.08)',
+  p: 3,
 };
 
 export const initUploadHelperBoxStyle = {
-    gridColumn: 'span 12',
-    alignItems: 'center',
-    justifyItems: 'start',
-    width: '100%',
-    py: 1,
-    px: 3,
+  gridColumn: 'span 12',
+  alignItems: 'center',
+  justifyItems: 'start',
+  width: '100%',
+  py: 1,
+  px: 3,
 };
 
 export const fetchUserFromLocalStorage = (): { [key: string]: string } | null => {
-    try {
-        const userString = localStorage.getItem('user');
-        return userString ? JSON.parse(userString) : null;
-    } catch (error) {
-        return null;
-    }
+  try {
+    const userString = localStorage.getItem('user');
+    return userString ? JSON.parse(userString) : null;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const truncateString = (str?: string, maxLength: number = maxLengthEmail): string => {
-    if (!str) {
-        return emptyData;
-    } else {
-        return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
-    }
+  if (!str) {
+    return EMPTY_DATA;
+  } else {
+    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+  }
 };
 
 export const truncateStringResponsive = (str?: string, maxLength?: number): string => {
-  if (!str) {return emptyData;}
-  if (!maxLength) {return str;}
+  if (!str) {
+    return EMPTY_DATA;
+  }
+  if (!maxLength) {
+    return str;
+  }
   return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
 };
-
 
 export const useResponsiveMaxLength = (): number => {
   const theme = useTheme();

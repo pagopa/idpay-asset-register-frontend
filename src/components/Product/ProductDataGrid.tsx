@@ -11,12 +11,17 @@ import {
   Typography,
 } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import {useTranslation} from 'react-i18next';
-import {grey} from '@mui/material/colors';
-import {useDispatch, useSelector} from 'react-redux';
-import {RegisterApi} from '../../api/registerApiClient';
-import {displayRows, emptyData} from '../../utils/constants';
-import {batchIdSelector, batchNameSelector, setBatchId, setBatchName,} from '../../redux/slices/productsSlice';
+import { useTranslation } from 'react-i18next';
+import { grey } from '@mui/material/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { RegisterApi } from '../../api/registerApiClient';
+import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA } from '../../utils/constants';
+import {
+  batchIdSelector,
+  batchNameSelector,
+  setBatchId,
+  setBatchName,
+} from '../../redux/slices/productsSlice';
 import EmptyListTable from '../../pages/components/EmptyListTable';
 import {ProductListDTO} from "../../api/generated/register/ProductListDTO";
 import {BatchList} from "../../api/generated/register/BatchList";
@@ -120,7 +125,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   const [drawerData, setDrawerData] = useState<ProductDTO>({});
   const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(displayRows);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(PAGINATION_ROWS_PRODUCTS);
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
@@ -135,7 +140,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
     void getProductList(
       organizationId,
       page,
-      displayRows,
+      PAGINATION_ROWS_PRODUCTS,
       sortKey,
       categoryFilter ? t(`pages.products.categories.${categoryFilter?.toLowerCase()}`) : '',
       eprelCodeFilter,
@@ -148,9 +153,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
         setTableData(content ? Array.from(content) : []);
         setItemsQty(totalElements);
         if (pageNo !== undefined && totalElements) {
-          setPaginatorFrom(pageNo * displayRows + 1);
+          setPaginatorFrom(pageNo * PAGINATION_ROWS_PRODUCTS + 1);
           setPaginatorTo(
-            displayRows * (Number(pageNo) + 1) < totalElements ? displayRows * (Number(pageNo) + 1) : totalElements
+            PAGINATION_ROWS_PRODUCTS * (Number(pageNo) + 1) < totalElements
+              ? PAGINATION_ROWS_PRODUCTS * (Number(pageNo) + 1)
+              : totalElements
           );
         }
         setApiErrorOccurred(false);
@@ -179,15 +186,19 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   useEffect(() => {
     setLoading(true);
     if (batchId === '') {
-      void getProductList(organizationId, page, displayRows)
+      void getProductList(organizationId, page, PAGINATION_ROWS_PRODUCTS)
         .then((res) => {
           const { content, pageNo, totalElements } = res;
           setTableData(content ? Array.from(content) : []);
           setPage(pageNo || 0);
           setItemsQty(totalElements);
-          setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
+          setPaginatorFrom(
+            pageNo !== undefined ? pageNo * PAGINATION_ROWS_PRODUCTS + 1 : paginatorFrom
+          );
           setPaginatorTo(
-            totalElements && totalElements > displayRows ? displayRows : totalElements
+            totalElements && totalElements > PAGINATION_ROWS_PRODUCTS
+              ? PAGINATION_ROWS_PRODUCTS
+              : totalElements
           );
           setLoading(false);
         })
@@ -247,7 +258,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, displayRows));
+    setRowsPerPage(parseInt(event.target.value, PAGINATION_ROWS_PRODUCTS));
     setPage(0);
   };
 
@@ -297,12 +308,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
                   <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>
                     <TableCell sx={styleLeftRow}>
                       <Typography variant="body2">
-                        {row?.category ?? emptyData}
+                        {row?.category ?? EMPTY_DATA}
                       </Typography>
                     </TableCell>
                     <TableCell sx={styleCenterRow}>
                       <Typography variant="body2">
-                        {row?.energyClass ? row?.energyClass : emptyData}
+                        {row?.energyClass ? row?.energyClass : EMPTY_DATA}
                       </Typography>
                     </TableCell>
                     <TableCell sx={styleCenterRow}>
@@ -310,12 +321,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
                     </TableCell>
                     <TableCell sx={styleCenterRow}>
                       <Typography variant="body2">
-                        {row?.gtinCode ? row?.gtinCode : emptyData}
+                        {row?.gtinCode ? row?.gtinCode : EMPTY_DATA}
                       </Typography>
                     </TableCell>
                     <TableCell sx={styleLeftRow}>
                       <Typography variant="body2">
-                        {row?.batchName ? row?.batchName : emptyData}
+                        {row?.batchName ? row?.batchName : EMPTY_DATA}
                       </Typography>
                     </TableCell>
                     <TableCell sx={styleRightRow}>

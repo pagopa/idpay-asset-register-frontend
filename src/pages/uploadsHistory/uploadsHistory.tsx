@@ -9,6 +9,7 @@ import CachedIcon from '@mui/icons-material/Cached';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { getProductFilesList } from '../../services/registerService';
 import UploadsTable from '../components/HistoryUploadSection';
+import { PAGINATION_ROWS_UPLOADS } from '../../utils/constants';
 
 const OverviewHistoryUpload: React.FC = () => {
   const { t } = useTranslation();
@@ -16,7 +17,7 @@ const OverviewHistoryUpload: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(8);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(PAGINATION_ROWS_UPLOADS);
 
   interface Props {
     description: string;
@@ -106,8 +107,8 @@ const OverviewHistoryUpload: React.FC = () => {
       {error && (
         <Box width="100%" px={2} data-testid="title-overview">
           <TitleBox
-              title={t('pages.uploadHistory.sideMenuTitle')}
-              subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
+            title={t('pages.uploadHistory.sideMenuTitle')}
+            subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
             mbTitle={2}
             mtTitle={2}
             mbSubTitle={5}
