@@ -28,7 +28,7 @@ import { formatDateWithHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { setBatchId, setBatchName } from '../../redux/slices/productsSlice';
 import ROUTES from '../../routes';
-import { emptyData } from '../../utils/constants';
+import { EMPTY_DATA } from '../../utils/constants';
 import EmptyListTable from './EmptyListTable';
 
 const rowTableStyle = {
@@ -183,7 +183,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                 {row.batchName}
               </TableCell>
               <TableCell sx={rowBaseCell}>
-                {row.dateUpload ? formatDateWithHours(row.dateUpload) : emptyData}
+                {row.dateUpload ? formatDateWithHours(row.dateUpload) : EMPTY_DATA}
               </TableCell>
               <TableCell sx={rowBaseCell}>
                 <b>
