@@ -1584,6 +1584,7 @@ components:
         energyClass:
           type: string
           description: 'ENG: The product energy class <br> IT: La classe energetica del prodotto'
+          maxLength: 4
           pattern: "^(A\\\\+\\\\+\\\\+|A\\\\+\\\\+|A\\\\+|A|B|C|D|E|F|G)$"
           nullable: true
         countryOfProduction:
