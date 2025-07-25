@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import FileUploadSection from '../FileUploadSection';
+import FileUploadSection from '../fileUploadSection';
 import '@testing-library/jest-dom';
 
 jest.mock('../../../components/LoadingFile/LoadingFile', () => () => <div data-testid="loading-file" />);
