@@ -68,9 +68,6 @@ export const getProducts = async (
   }
 };
 
-
-
-
 export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
   try {
     return await RegisterApi.getInstitutionsList();
@@ -81,7 +78,6 @@ export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
     throw error;
   }
 };
-
 
 export const getInstitutionById = async (
     institutionId: string

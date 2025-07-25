@@ -1,19 +1,23 @@
 import { Box, Typography, Chip } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import {ButtonNaked} from "@pagopa/mui-italia";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { formatFileName } from '../../helpers';
 
 interface Props {
-  fileName: string | undefined;
-  fileDate: string | undefined;
-  chipLabel: string;
+    fileName: string | undefined;
+    fileDate: string | undefined;
+    chipLabel: string;
+    buttonLabel: string;
+    buttonHandler: any;
 }
 
-const AcceptedFile = ({ fileName, fileDate, chipLabel }: Props) => (
+const AcceptedFile = ({ fileName, fileDate, chipLabel, buttonLabel, buttonHandler }: Props) => (
   <Box
     sx={{
       display: 'grid',
       gridTemplateColumns: 'repeat(12, 1fr)',
-      py: 2,
+      pt: 2,
       my: 1,
     }}
   >
@@ -44,6 +48,18 @@ const AcceptedFile = ({ fileName, fileDate, chipLabel }: Props) => (
         <Chip label={chipLabel} color="success" />
       </Box>
     </Box>
+      <Box sx={{ gridColumn: 'span 12', pt: 2 }}>
+          <ButtonNaked
+              size="small"
+              component="button"
+              onClick={buttonHandler}
+              startIcon={<FileUploadIcon />}
+              sx={{ color: 'primary.main' }}
+              weight="default"
+          >
+              {buttonLabel}
+          </ButtonNaked>
+      </Box>
   </Box>
 );
 

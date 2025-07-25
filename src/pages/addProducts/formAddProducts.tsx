@@ -19,7 +19,7 @@ import AcceptedFile from '../../components/AcceptedFile/AcceptedFile';
 import { PRODUCTS_CATEGORY } from '../../utils/constants';
 import { initUploadBoxStyle, initUploadHelperBoxStyle } from '../../helpers';
 import InitUploadBox from '../../components/InitUploadBox/InitUploadBox';
-import { downloadErrorReport, uploadProductList } from '../../services/registerService';
+import {downloadErrorReport, uploadProductListVerify} from '../../services/registerService';
 import { categoryList, downloadCsv } from './helpers';
 
 type Props = {
@@ -117,7 +117,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         setFileIsLoading(true);
         setIsReport(false);
 
-        uploadProductList(files[0], formik.values.category)
+        uploadProductListVerify(files[0], formik.values.category)
           .then((res: any) => {
             if (res.status === 'OK') {
               setFileName(files[0].name);
@@ -275,6 +275,16 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       </Box>
     );
 
+    const setIntiStatus = () => {
+      setAlertTitle('');
+      setAlertDescription('');
+      setFileName('');
+      setFileDate('');
+      setFileIsLoading(false);
+      setFileRejected(false);
+      setFileAccepted(false);
+    };
+
     return (
       <Box gridColumn="auto" pt={2}>
         <Typography variant="body1" sx={{ gridColumn: 'span 12', fontWeight: 600 }}>
@@ -340,6 +350,8 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
             fileName={fileName}
             fileDate={fileDate}
             chipLabel={t('pages.addProducts.form.fileUpload.validFile')}
+            buttonLabel={t('pages.addProducts.form.fileUpload.changeFile')}
+            buttonHandler={setIntiStatus}
           />
         ) : (
           InitStatusPartial
