@@ -130,6 +130,35 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
 
   return data?.content && data.content.length > 0 ? (
     <>
+      <TableHead>
+        <TableRow>
+          <TableCell
+            sx={{
+              backgroundColor: 'background.paper',
+              borderBottom: 0,
+              p: 0,
+              paddingTop: '24px',
+              paddingLeft: '24px',
+              width: 3000,
+            }}
+          >
+            <TitleBox
+              title={
+                <span style={{ fontWeight: 'bold' }}>
+                  {t('pages.uploadHistory.uploadHistoryTitle')}
+                </span>
+              }
+              mbTitle={2}
+              mtTitle={0}
+              mbSubTitle={5}
+              variantTitle="h6"
+              variantSubTitle="body1"
+              data-testid="title-overview"
+              titleFontSize="32px"
+            />
+          </TableCell>
+        </TableRow>
+      </TableHead>
       <TableContainer
         component={Paper}
         elevation={0}
@@ -146,34 +175,6 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         data-testid="uploads-table"
       >
         <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell
-                colSpan={6}
-                sx={{
-                  backgroundColor: 'background.paper',
-                  borderBottom: 0,
-                  p: 0,
-                  paddingTop: '24px',
-                }}
-              >
-                <TitleBox
-                  title={
-                    <span style={{ fontWeight: 'bold' }}>
-                      {t('pages.uploadHistory.uploadHistoryTitle')}
-                    </span>
-                  }
-                  mbTitle={2}
-                  mtTitle={0}
-                  mbSubTitle={5}
-                  variantTitle="h6"
-                  variantSubTitle="body1"
-                  data-testid="title-overview"
-                  titleFontSize="32px"
-                />
-              </TableCell>
-            </TableRow>
-          </TableHead>
           <TableBody>
             {data.content.map((row: UploadDTO) => (
               <TableRow key={row.productFileId} sx={rowTableStyle} hover>

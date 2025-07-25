@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Paper,
@@ -294,51 +294,51 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
         }}
       >
         {!loading ? (
-          <TableContainer sx={{ maxHeight: MAX_TABLE_HEIGHT }}>
-            <Table stickyHeader sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
-              {tableData.length > 0 && (
-                <EnhancedTableHead
-                  order={order}
-                  orderBy={orderBy}
-                  onRequestSort={handleRequestSort}
-                />
-              )}
-              <TableBody sx={{ backgroundColor: 'white' }}>
-                {tableData.map((row, index) => (
-                  <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>
-                    <TableCell sx={styleLeftRow}>
-                      <Typography variant="body2">
-                        {row?.category ?? EMPTY_DATA}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={styleCenterRow}>
-                      <Typography variant="body2">
-                        {row?.energyClass ? row?.energyClass : EMPTY_DATA}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={styleCenterRow}>
-                      <EprelLinks row={row} />
-                    </TableCell>
-                    <TableCell sx={styleCenterRow}>
-                      <Typography variant="body2">
-                        {row?.gtinCode ? row?.gtinCode : EMPTY_DATA}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={styleLeftRow}>
-                      <Typography variant="body2">
-                        {row?.batchName ? row?.batchName : EMPTY_DATA}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={styleRightRow}>
-                      <Button variant="text" onClick={() => handleListButtonClick(row)}>
-                        <ArrowForwardIosIcon />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <>
+            {tableData.length > 0 && (
+              <EnhancedTableHead
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+              />
+            )}
+            <TableContainer sx={{ maxHeight: MAX_TABLE_HEIGHT }}>
+              <Table stickyHeader sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
+                <TableBody sx={{ backgroundColor: 'white' }}>
+                  {tableData.map((row, index) => (
+                    <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>
+                      <TableCell sx={styleLeftRow}>
+                        <Typography variant="body2">{row?.category ?? EMPTY_DATA}</Typography>
+                      </TableCell>
+                      <TableCell sx={styleCenterRow}>
+                        <Typography variant="body2">
+                          {row?.energyClass ? row?.energyClass : EMPTY_DATA}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={styleCenterRow}>
+                        <EprelLinks row={row} />
+                      </TableCell>
+                      <TableCell sx={styleCenterRow}>
+                        <Typography variant="body2">
+                          {row?.gtinCode ? row?.gtinCode : EMPTY_DATA}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={styleLeftRow}>
+                        <Typography variant="body2">
+                          {row?.batchName ? row?.batchName : EMPTY_DATA}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={styleRightRow}>
+                        <Button variant="text" onClick={() => handleListButtonClick(row)}>
+                          <ArrowForwardIosIcon />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
         ) : (
           <MessagePage message={t(`pages.products.loading`)} />
         )}

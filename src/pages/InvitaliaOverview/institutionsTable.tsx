@@ -16,7 +16,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { visuallyHidden } from '@mui/utils';
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
@@ -31,7 +31,7 @@ import { MAX_TABLE_HEIGHT } from '../../utils/constants';
 import { EnhancedTableProps, HeadCell } from './helpers';
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { order, orderBy, onRequestSort } = props;
+  const { order, orderBy, onRequestSort, cellWidths } = props;
   const createSortHandler = (property: keyof Institution) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
@@ -59,14 +59,24 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   ];
 
   return (
-    <TableHead sx={{ backgroundColor: grey?.A100, padding: 0, textAlign: 'left' }}>
-      <TableRow>
-        {headCells.map((headCell) => (
+    <TableHead
+      sx={{
+        backgroundColor: grey?.A100,
+        padding: 0,
+        textAlign: 'left',
+        minWidth: 750,
+        border: '1px solid red',
+      }}
+    >
+      <TableRow sx={{ border: '1px solid red' }}>
+        {headCells.map((headCell, index, arr) => (
           <TableCell
+            colSpan={index === arr.length - 1 ? 2 : 1}
             key={headCell?.id}
             align={headCell?.textAlign ? headCell?.textAlign : 'left'}
             padding="normal"
             sortDirection={orderBy === headCell?.id ? order : false}
+            sx={{ width: cellWidths[index] }}
           >
             <TableSortLabel
               active={orderBy === headCell?.id}
@@ -116,6 +126,39 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   onRowsPerPageChange,
   onRequestSort,
 }) => {
+  const [firstCellWidth, setFirstCellWidth] = useState<number | undefined>(0);
+  const [secondCellWidth, setSecondCellWidth] = useState<number | undefined>(0);
+  const [thirdCellWidth, setThirdCellWidth] = useState<number | undefined>(0);
+
+  const firstBodyCellRef = useRef<HTMLTableCellElement>(null);
+  const secondBodyCellRef = useRef<HTMLTableCellElement>(null);
+  const thirdBodyCellRef = useRef<HTMLTableCellElement>(null);
+
+  useEffect(() => {
+    const observers: Array<ResizeObserver> = [];
+
+    const updateWidths = () => {
+      setFirstCellWidth(firstBodyCellRef.current?.offsetWidth);
+      setSecondCellWidth(secondBodyCellRef.current?.offsetWidth);
+      setThirdCellWidth(thirdBodyCellRef.current?.offsetWidth);
+    };
+
+    [firstBodyCellRef, secondBodyCellRef, thirdBodyCellRef].forEach((ref) => {
+      if (ref.current) {
+        const observer = new ResizeObserver(updateWidths);
+        observer.observe(ref.current);
+        // eslint-disable-next-line functional/immutable-data
+        observers.push(observer);
+      }
+    });
+
+    updateWidths();
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, [data]);
+
   const paginationInfo = usePagination(page, rowsPerPage, totalElements);
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -145,7 +188,12 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   const hasData = data?.institutions && data?.institutions?.length > 0;
 
   const renderTableHeader = () => (
-    <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={onRequestSort} />
+    <EnhancedTableHead
+      order={order}
+      orderBy={orderBy}
+      onRequestSort={onRequestSort}
+      cellWidths={[firstCellWidth, secondCellWidth, thirdCellWidth]}
+    />
   );
 
   const renderTableBody = () => {
@@ -174,7 +222,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
       <TableBody>
         {((data.institutions as Array<Institution>) ?? []).map((row: Institution) => (
           <TableRow key={row.institutionId}>
-            <TableCell>
+            <TableCell ref={firstBodyCellRef}>
               <Link
                 underline="hover"
                 component="button"
@@ -186,8 +234,12 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
                 </Typography>
               </Link>
             </TableCell>
-            <TableCell>{formatDateWithoutHours(row.createdAt.toString())}</TableCell>
-            <TableCell>{formatDateWithoutHours(row.updatedAt.toString())}</TableCell>
+            <TableCell ref={secondBodyCellRef}>
+              {formatDateWithoutHours(row.createdAt.toString())}
+            </TableCell>
+            <TableCell ref={thirdBodyCellRef}>
+              {formatDateWithoutHours(row.updatedAt.toString())}
+            </TableCell>
             <TableCell>
               <ChevronRight
                 color="primary"
@@ -227,24 +279,22 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
 
   return (
     <>
-      <TableContainer
-        component={Paper}
-        elevation={0}
+      <Paper
         sx={{
-          height: '70%',
-          maxHeight: MAX_TABLE_HEIGHT,
-          gap: '24px',
-          borderRadius: '4px',
-          cursor: 'pointer',
+          width: '100%',
+          mb: 2,
+          pb: 3,
+          backgroundColor: grey.A100,
         }}
-        data-testid="uploads-table"
       >
-        <Table stickyHeader>
-          {renderTableHeader()}
-          {renderTableBody()}
-        </Table>
-      </TableContainer>
-      {renderPagination()}
+        {renderTableHeader()}
+        <TableContainer sx={{ maxHeight: MAX_TABLE_HEIGHT }}>
+          <Table stickyHeader sx={{ minWidth: 750 }} size="small">
+            {renderTableBody()}
+          </Table>
+        </TableContainer>
+        {renderPagination()}
+      </Paper>
     </>
   );
 };
