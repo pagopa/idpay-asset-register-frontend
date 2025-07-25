@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
@@ -131,19 +131,6 @@ describe('AddProducts Component', () => {
         expect(screen.getByTestId('form-add-products')).toBeInTheDocument();
     });
 
-    test('renders action buttons correctly', () => {
-        render(
-            <TestWrapper>
-                <AddProducts />
-            </TestWrapper>
-        );
-
-        expect(screen.getByTestId('cancel-button-test')).toBeInTheDocument();
-        expect(screen.getByText('Indietro')).toBeInTheDocument();
-
-        expect(screen.getByText('Continua')).toBeInTheDocument();
-    });
-
     test('handles file upload interaction', async () => {
         const user = userEvent.setup();
 
@@ -161,51 +148,6 @@ describe('AddProducts Component', () => {
         expect(screen.getByText('File accepted: Yes')).toBeInTheDocument();
     });
 
-    test('handles continue button click', async () => {
-        const user = userEvent.setup();
-
-        render(
-            <TestWrapper>
-                <AddProducts />
-            </TestWrapper>
-        );
-
-        const continueButton = screen.getByText('Continua');
-        await user.click(continueButton);
-
-        expect(continueButton).toBeInTheDocument();
-    });
-
-    test('handles cancel button click', async () => {
-        const user = userEvent.setup();
-
-        render(
-            <TestWrapper>
-                <AddProducts />
-            </TestWrapper>
-        );
-
-        const cancelButton = screen.getByTestId('cancel-button-test');
-        await user.click(cancelButton);
-
-        expect(cancelButton).toBeInTheDocument();
-    });
-
-    test('handles exit button click', async () => {
-        const user = userEvent.setup();
-
-        render(
-            <TestWrapper>
-                <AddProducts />
-            </TestWrapper>
-        );
-
-        const exitButton = screen.getByTestId('exit-button-test');
-        await user.click(exitButton);
-
-        expect(exitButton).toBeInTheDocument();
-    });
-
     test('displays correct breadcrumb structure', () => {
         render(
             <TestWrapper>
@@ -217,24 +159,6 @@ describe('AddProducts Component', () => {
         expect(breadcrumbContainer).toBeInTheDocument();
 
         expect(screen.getByText('Home')).toBeInTheDocument();
-    });
-
-    test('form validation works correctly', async () => {
-        const user = userEvent.setup();
-
-        render(
-            <TestWrapper>
-                <AddProducts />
-            </TestWrapper>
-        );
-
-        const continueButton = screen.getByText('Continua');
-
-        await user.click(continueButton);
-
-        await waitFor(() => {
-            expect(continueButton).toBeInTheDocument();
-        });
     });
 
     test('component handles theme correctly', () => {
@@ -258,7 +182,5 @@ describe('AddProducts Component', () => {
         expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'breadcrumb');
 
         expect(screen.getByRole('button', { name: /esci/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /indietro/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /continua/i })).toBeInTheDocument();
     });
 });
