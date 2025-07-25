@@ -1,63 +1,26 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
+import { Paper, TablePagination } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { grey } from '@mui/material/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { RegisterApi } from '../../api/registerApiClient';
+import { displayRows, emptyData } from '../../utils/constants';
 import {
-  Button,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@mui/material';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import {useTranslation} from 'react-i18next';
-import {grey} from '@mui/material/colors';
-import {useDispatch, useSelector} from 'react-redux';
-import {RegisterApi} from '../../api/registerApiClient';
-import {displayRows, emptyData} from '../../utils/constants';
-import {batchIdSelector, batchNameSelector, setBatchId, setBatchName,} from '../../redux/slices/productsSlice';
+  batchIdSelector,
+  batchNameSelector,
+  setBatchId,
+  setBatchName,
+} from '../../redux/slices/productsSlice';
 import EmptyListTable from '../../pages/components/EmptyListTable';
-import {ProductListDTO} from "../../api/generated/register/ProductListDTO";
-import {BatchList} from "../../api/generated/register/BatchList";
-import {ProductDTO} from "../../api/generated/register/ProductDTO";
-import {BatchFilterItems, BatchFilterList, Order} from './helpers';
+import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
+import { BatchList } from '../../api/generated/register/BatchList';
+import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import ProductsTable from '../../pages/components/ProductsTable';
+import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
-import EprelLinks from './EprelLinks';
 import FilterBar from './FilterBar';
-import EnhancedTableHead from './EnhancedTableHead';
-
-const rowTableStyle = {
-  height: '53px',
-  transition: 'background-color 0.2s',
-  '&:hover': {
-    backgroundColor: grey[200],
-  },
-};
-
-const rowBaseCell = {
-  borderBottom: `1px solid ${grey[300]}`,
-  width: '10px',
-  padding: '0px',
-};
-
-const styleLeftRow = {
-  ...rowBaseCell,
-  textAlign: 'left',
-  padding: '16px',
-};
-
-const styleCenterRow = {
-  ...rowBaseCell,
-  textAlign: 'center',
-};
-
-const styleRightRow = {
-  ...rowBaseCell,
-  textAlign: 'right',
-};
 
 const getProductList = async (
   xOrganizationSelected: string,
@@ -101,11 +64,14 @@ const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchL
   }
 };
 
-type ProductGridProps = {
+type ProductDataGridProps = {
   organizationId: string;
+  // TODO  org_role: 'invitalia';
+  owner: 'produttore' | 'invitalia';
+  children?: React.ReactNode;
 };
 
-const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
+const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, owner, children }) => {
   const dispatch = useDispatch();
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
@@ -118,6 +84,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<ProductDTO>({});
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
   const [rowsPerPage, setRowsPerPage] = useState<number>(displayRows);
@@ -125,17 +92,17 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
+
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
   const { t } = useTranslation();
 
   const callProductsApi = (organizationId: string) => {
     const sortKey = `${orderBy},${order}`;
-
     void getProductList(
       organizationId,
       page,
-      displayRows,
+      rowsPerPage,
       sortKey,
       categoryFilter ? t(`pages.products.categories.${categoryFilter?.toLowerCase()}`) : '',
       eprelCodeFilter,
@@ -148,9 +115,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
         setTableData(content ? Array.from(content) : []);
         setItemsQty(totalElements);
         if (pageNo !== undefined && totalElements) {
-          setPaginatorFrom(pageNo * displayRows + 1);
+          setPaginatorFrom(pageNo * rowsPerPage + 1);
           setPaginatorTo(
-            displayRows * (Number(pageNo) + 1) < totalElements ? displayRows * (Number(pageNo) + 1) : totalElements
+            rowsPerPage * (Number(pageNo) + 1) < totalElements
+              ? rowsPerPage * (Number(pageNo) + 1)
+              : totalElements
           );
         }
         setApiErrorOccurred(false);
@@ -158,7 +127,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
       })
       .catch(() => handleStateForError())
       .finally(() => setFiltering(false));
-
     dispatch(setBatchName(''));
     dispatch(setBatchId(''));
   };
@@ -179,15 +147,15 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   useEffect(() => {
     setLoading(true);
     if (batchId === '') {
-      void getProductList(organizationId, page, displayRows)
+      void getProductList(organizationId, page, rowsPerPage)
         .then((res) => {
           const { content, pageNo, totalElements } = res;
           setTableData(content ? Array.from(content) : []);
           setPage(pageNo || 0);
           setItemsQty(totalElements);
-          setPaginatorFrom(pageNo !== undefined ? pageNo * displayRows + 1 : paginatorFrom);
+          setPaginatorFrom(pageNo !== undefined ? pageNo * rowsPerPage + 1 : paginatorFrom);
           setPaginatorTo(
-            totalElements && totalElements > displayRows ? displayRows : totalElements
+            totalElements && totalElements > rowsPerPage ? rowsPerPage : totalElements
           );
           setLoading(false);
         })
@@ -196,23 +164,23 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
           setLoading(false);
         });
     }
-
     void getBatchFilterList(organizationId)
       .then((res) => {
         const { left } = res as BatchFilterList;
         const values = left[0].value;
-
         setBatchFilterItems([...values]);
       })
       .catch(() => {
         setBatchFilterItems([]);
       });
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     setLoading(true);
     callProductsApi(organizationId);
-  }, [page, orderBy, order]);
+    // eslint-disable-next-line
+  }, [page, orderBy, order, rowsPerPage]);
 
   useEffect(() => {
     setLoading(true);
@@ -221,6 +189,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
       return;
     }
     callProductsApi(organizationId);
+    // eslint-disable-next-line
   }, [filtering]);
 
   const handleDeleteFiltersButtonClick = () => {
@@ -247,13 +216,33 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, displayRows));
+    setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleListButtonClick = (row: any) => {
+  const handleListButtonClick = (row: ProductDTO) => {
     setDrawerData(row);
     setDrawerOpened(true);
+  };
+
+  const renderTable = () => {
+    const commonProps = {
+      tableData,
+      emptyData,
+      order,
+      orderBy,
+      onRequestSort: handleRequestSort,
+      handleListButtonClick,
+    };
+
+    if (tableData?.length > 0 && !loading) {
+      return <ProductsTable owner={owner} {...commonProps} />;
+    }
+
+    if (children) {
+      return children;
+    }
+    return null;
   };
 
   return (
@@ -261,6 +250,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
       <FilterBar
         categoryFilter={categoryFilter}
         setCategoryFilter={setCategoryFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
         setFiltering={setFiltering}
         batchFilter={batchFilter}
         setBatchFilter={setBatchFilter}
@@ -273,64 +264,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
         tableData={tableData}
         handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
       />
-      {tableData?.length === 0 && <EmptyListTable message="pages.products.noFileLoaded" />}
-      <Paper
-        sx={{
-          width: '100%',
-          mb: 2,
-          pb: 3,
-          backgroundColor: grey.A100,
-        }}
-      >
-        {!loading ? (
-          <TableContainer>
-            <Table sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
-              {tableData.length > 0 && (
-                <EnhancedTableHead
-                  order={order}
-                  orderBy={orderBy}
-                  onRequestSort={handleRequestSort}
-                />
-              )}
-              <TableBody sx={{ backgroundColor: 'white' }}>
-                {tableData.map((row, index) => (
-                  <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>
-                    <TableCell sx={styleLeftRow}>
-                      <Typography variant="body2">
-                        {row?.category ?? emptyData}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={styleCenterRow}>
-                      <Typography variant="body2">
-                        {row?.energyClass ? row?.energyClass : emptyData}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={styleCenterRow}>
-                      <EprelLinks row={row} />
-                    </TableCell>
-                    <TableCell sx={styleCenterRow}>
-                      <Typography variant="body2">
-                        {row?.gtinCode ? row?.gtinCode : emptyData}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={styleLeftRow}>
-                      <Typography variant="body2">
-                        {row?.batchName ? row?.batchName : emptyData}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={styleRightRow}>
-                      <Button variant="text" onClick={() => handleListButtonClick(row)}>
-                        <ArrowForwardIosIcon />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        ) : (
-          <MessagePage message={t(`pages.products.loading`)} />
-        )}
+      {tableData?.length === 0 && !loading && (
+        <EmptyListTable message="pages.products.noFileLoaded" />
+      )}
+      <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
+        {!loading ? renderTable() : <MessagePage message={t(`pages.products.loading`)} />}
         {tableData?.length > 0 && !loading && (
           <TablePagination
             component="div"
@@ -348,15 +286,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
             sx={{
               '& .MuiTablePagination-actions button': {
                 backgroundColor: 'transparent',
-                '&:hover': {
-                  backgroundColor: 'transparent',
-                },
+                '&:hover': { backgroundColor: 'transparent' },
               },
             }}
           />
         )}
       </Paper>
-
       <DetailDrawer
         data-testid="detail-drawer"
         open={drawerOpened}
@@ -368,4 +303,4 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
   );
 };
 
-export default ProductGrid;
+export default ProductDataGrid;

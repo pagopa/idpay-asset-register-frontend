@@ -34,7 +34,7 @@ const StandardRoutes = () => (
       path={routes.PRODUCTS}
       element={
         <Products>
-          <ProductDataGrid organizationId={''} />
+          <ProductDataGrid organizationId="" owner="produttore" />
         </Products>
       }
     />

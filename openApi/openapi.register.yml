@@ -865,6 +865,330 @@ paths:
           headers:
             Access-Control-Allow-Origin:
               $ref: '#/components/headers/Access-Control-Allow-Origin'
+  /products/update-status/approved:
+    patch:
+      tags:
+        - products
+      summary: Approve a list of products
+      description: |
+        ENG: Approve a list of products by updating their status to APPROVED.
+        IT: Approva una lista di prodotti aggiornando il loro stato a APPROVED.
+      operationId: updateProductStatusApproved
+      parameters:
+        - name: x-organization-selected
+          in: header
+          required: true
+          schema:
+            type: string
+            maxLength: 36
+            pattern: "^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" # UUID v4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - gtinCodes
+                - status
+              properties:
+                gtinCodes:
+                  type: array
+                  items:
+                    type: string
+                    maxLength: 14
+                    pattern: "^[a-zA-Z0-9]{1,14}$"
+                  maxItems: 100
+                motivation:
+                  type: string
+                  maxLength: 255
+                  pattern: ".*"
+      responses:
+        '200':
+          description: Products approved successfully
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateResponseDTO'
+        '400':
+          description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+        '401':
+          description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+        '429':
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+          description: Too many requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+  /products/update-status/supervisioned:
+    patch:
+      tags:
+        - products
+      summary: Mark products as in supervision
+      description: |
+        ENG: Set the status of a list of products to IN_VALIDATION.
+        IT: Imposta lo stato di una lista di prodotti su IN_VALIDATION.
+      operationId: updateProductStatusSupervisioned
+      parameters:
+        - name: x-organization-selected
+          in: header
+          required: true
+          schema:
+            type: string
+            maxLength: 36
+            pattern: "^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" # UUID v4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - gtinCodes
+                - status
+              properties:
+                gtinCodes:
+                  type: array
+                  items:
+                    type: string
+                    maxLength: 14
+                    pattern: "^[a-zA-Z0-9]{1,14}$"
+                  maxItems: 100
+                motivation:
+                  type: string
+                  maxLength: 255
+                  pattern: ".*"
+      responses:
+        '200':
+          description: Products marked as in validation successfully
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateResponseDTO'
+        '400':
+          description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+        '401':
+          description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+        '429':
+          description: Too many requests
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+        '500':
+          description: Server error
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+  /products/update-status/rejected:
+    patch:
+      tags:
+        - products
+      summary: Reject a list of products
+      description: |
+        ENG: Reject a list of products by updating their status to REJECTED.
+        IT: Rifiuta una lista di prodotti aggiornando il loro stato a REJECTED.
+      operationId: updateProductStatusRejected
+      parameters:
+        - name: x-organization-selected
+          in: header
+          required: true
+          schema:
+            type: string
+            maxLength: 36
+            pattern: "^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$" # UUID v4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - gtinCodes
+                - status
+              properties:
+                gtinCodes:
+                  type: array
+                  items:
+                    type: string
+                    maxLength: 14
+                    pattern: "^[a-zA-Z0-9]{1,14}$"
+                  maxItems: 100
+                motivation:
+                  type: string
+                  maxLength: 255
+                  pattern: ".*"
+      responses:
+        '200':
+          description: Products rejected successfully
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateResponseDTO'
+        '400':
+          description: Bad request
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+        '401':
+          description: Authentication failed
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+        '429':
+          description: Too many requests
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
+        '500':
+          description: Server error
+          headers:
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/Access-Control-Allow-Origin'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterErrorDTO'
   /products:
     get:
       tags:
@@ -1713,6 +2037,18 @@ components:
           type: string
           maxLength: 255
           pattern: ".*"
+    UpdateResponseDTO:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - OK
+            - KO
+        errorKey:
+          type: string
+          enum:
+            - product.update.error
   securitySchemes:
     Bearer:
       type: apiKey

@@ -18,6 +18,8 @@ import { BatchFilterItems } from './helpers';
 interface FilterProps {
   categoryFilter: string;
   setCategoryFilter: Dispatch<SetStateAction<string>>;
+  statusFilter: string;
+  setStatusFilter: Dispatch<SetStateAction<string>>;
   setFiltering: Dispatch<SetStateAction<boolean>>;
   batchFilter: string;
   setBatchFilter: Dispatch<SetStateAction<string>>;
@@ -37,6 +39,8 @@ export default function FilterBar(props: FilterProps) {
   const {
     categoryFilter,
     setCategoryFilter,
+    statusFilter,
+    setStatusFilter,
     setFiltering,
     batchFilter,
     setBatchFilter,
@@ -69,11 +73,20 @@ export default function FilterBar(props: FilterProps) {
     },
   };
 
+  // AGGIORNATO: aggiungi statusFilter
   const noFilterSetted = (): boolean =>
-    categoryFilter === '' && batchFilter === '' && eprelCodeFilter === '' && gtinCodeFilter === '';
+    categoryFilter === '' &&
+    statusFilter === '' &&
+    batchFilter === '' &&
+    eprelCodeFilter === '' &&
+    gtinCodeFilter === '';
 
   const handleCategoryFilterChange = (event: SelectChangeEvent) => {
     setCategoryFilter(event.target.value as string);
+  };
+
+  const handleStatusFilterChange = (event: SelectChangeEvent) => {
+    setStatusFilter(event.target.value as string);
   };
 
   const handleCategoryBatchChange = (event: SelectChangeEvent) => {
@@ -87,6 +100,7 @@ export default function FilterBar(props: FilterProps) {
   const handleGtinCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGtinCodeFilter(event.target.value);
   };
+
   return (
     <Box
       sx={{
@@ -115,6 +129,28 @@ export default function FilterBar(props: FilterProps) {
           ))}
         </Select>
       </FormControl>
+
+      {/* AGGIUNTO: filtro per stato */}
+      <FormControl fullWidth size="small">
+        <InputLabel id="status-filter-select-label">
+          {t('pages.products.filterLabels.status')}
+        </InputLabel>
+        <Select
+          labelId="status-filter-select-label"
+          id="status-filter-select"
+          value={statusFilter}
+          label={t('pages.products.filterLabels.status')}
+          MenuProps={selectMenuProps}
+          onChange={handleStatusFilterChange}
+        >
+          <MenuItem value="">{t('pages.products.filterLabels.all')}</MenuItem>
+          <MenuItem value="APPROVED">{t('pages.products.status.approved')}</MenuItem>
+          <MenuItem value="REJECTED">{t('pages.products.status.rejected')}</MenuItem>
+          <MenuItem value="PENDING">{t('pages.products.status.pending')}</MenuItem>
+          {/* Aggiungi altri status se necessario */}
+        </Select>
+      </FormControl>
+
       <FormControl fullWidth size="small">
         <InputLabel id="batch-filter-select-label">
           {t('pages.products.filterLabels.batch')}
