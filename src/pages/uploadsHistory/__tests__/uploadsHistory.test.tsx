@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import {act, render, screen, waitFor} from '@testing-library/react';
 import OverviewHistoryUpload from '../uploadsHistory';
 import { getProductFilesList } from '../../../services/registerService';
 import '@testing-library/jest-dom';
@@ -73,7 +73,10 @@ describe('OverviewHistoryUpload', () => {
 
     test('shows error message when API fails', async () => {
         mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
-        render(<OverviewHistoryUpload />);
+        act(() => {
+            render(<OverviewHistoryUpload />);
+
+        });
 
         await waitFor(() => {
             expect(screen.getByTestId('title-overview')).toBeInTheDocument();
@@ -86,7 +89,9 @@ describe('OverviewHistoryUpload', () => {
            content: [{ uploadStatus: 'UPLOADED', id: 1 }]
        };
        mockGetProductFilesList.mockResolvedValue(dataWithUploaded);
-       render(<OverviewHistoryUpload />);
+       act(() => {
+           render(<OverviewHistoryUpload/>);
+       });
 
        await waitFor(() => {
            expect(screen.getByTestId('title-overview')).toBeInTheDocument();
