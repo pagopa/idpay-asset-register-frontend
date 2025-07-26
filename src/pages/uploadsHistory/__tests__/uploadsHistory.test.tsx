@@ -71,7 +71,6 @@ describe('OverviewHistoryUpload', () => {
         });
     });
 
-    /*
     test('shows error message when API fails', async () => {
         mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
         render(<OverviewHistoryUpload />);
@@ -81,19 +80,18 @@ describe('OverviewHistoryUpload', () => {
         });
     });
 
-    test('shows InfoUpload when uploadStatus is UPLOADED', async () => {
-        const dataWithUploaded = {
-            ...mockData,
-            content: [{ uploadStatus: 'UPLOADED', id: 1 }]
-        };
-        mockGetProductFilesList.mockResolvedValue(dataWithUploaded);
-        render(<OverviewHistoryUpload />);
+   test('shows InfoUpload when uploadStatus is UPLOADED', async () => {
+       const dataWithUploaded = {
+           ...mockData,
+           content: [{ uploadStatus: 'UPLOADED', id: 1 }]
+       };
+       mockGetProductFilesList.mockResolvedValue(dataWithUploaded);
+       render(<OverviewHistoryUpload />);
 
-        await waitFor(() => {
-            expect(screen.getByTestId('title-overview')).toBeInTheDocument();
-        });
-    });
-    */
+       await waitFor(() => {
+           expect(screen.getByTestId('title-overview')).toBeInTheDocument();
+       });
+   });
 
     test('does not show InfoUpload when uploadStatus is not UPLOADED', async () => {
         const dataWithoutUploaded = {
