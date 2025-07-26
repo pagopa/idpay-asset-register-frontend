@@ -72,7 +72,7 @@ describe('Auth component', () => {
   });
 
   it('should redirect to login if token is missing', async () => {
-    window.location.hash = '';
+    window.location.hash = '#token=';
 
     const trackAppErrorMock = jest.spyOn(analyticsService, 'trackAppError');
 
