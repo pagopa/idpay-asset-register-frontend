@@ -37,13 +37,7 @@ jobs:
           annotations: none
           package-manager: yarn
 
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch
-
-      - name: SonarCloud Scan (Push)
-        if: github.event_name == 'push'
+      - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -53,20 +47,3 @@ jobs:
             -Dsonar.organization=${{ vars.SONARCLOUD_ORG }}
             -Dsonar.projectKey=${{ vars.SONARCLOUD_PROJECT_KEY }}
             -Dsonar.projectName="${{ vars.SONARCLOUD_PROJECT_NAME }}"
-            -Dsonar.branch.name=${{ steps.extract_branch.outputs.branch }}
-            -Dsonar.branch.target=main
-
-      - name: SonarCloud Scan (PR)
-        if: github.event_name == 'pull_request'
-        uses: SonarSource/sonarcloud-github-action@v5.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.organization=${{ vars.SONARCLOUD_ORG }}
-            -Dsonar.projectKey=${{ vars.SONARCLOUD_PROJECT_KEY }}
-            -Dsonar.projectName="${{ vars.SONARCLOUD_PROJECT_NAME }}"
-            -Dsonar.pullrequest.key=${{ github.event.number }}
-            -Dsonar.pullrequest.branch=${{ github.head_ref }}
-            -Dsonar.pullrequest.base=${{ github.base_ref }}
