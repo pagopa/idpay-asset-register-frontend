@@ -79,7 +79,7 @@ describe('OverviewHistoryUpload', () => {
         });
 
         await waitFor(() => {
-            expect(screen.getByTestId('title-overview')).toBeInTheDocument();
+            expect(screen.getByTestId('title-overview')).not.toBeInTheDocument();
         });
     });
 
@@ -94,7 +94,7 @@ describe('OverviewHistoryUpload', () => {
        });
 
        await waitFor(() => {
-           expect(screen.getByTestId('title-overview')).toBeInTheDocument();
+           expect(screen.getByTestId('title-overview')).not.toBeInTheDocument();
        });
    });
 
