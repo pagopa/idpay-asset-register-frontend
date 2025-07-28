@@ -1,12 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { Box, Breadcrumbs, Button, Link, Paper, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Link, Paper, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useNavigate } from 'react-router-dom';
-import ROUTES, { BASE_ROUTE } from '../../routes';
+import { BASE_ROUTE } from '../../routes';
 import FormAddProducts, { FormAddProductsRef } from './formAddProducts';
 
 const AddProducts: React.FC = () => {
@@ -15,16 +15,6 @@ const AddProducts: React.FC = () => {
   const onExit = useUnloadEventOnExit();
   const [fileAccepted, setFileAccepted] = useState(false);
   const formRef = useRef<FormAddProductsRef>(null);
-
-  const handleContinue = async () => {
-    if (formRef.current) {
-      const isValid = await formRef.current.validateForm();
-      if (isValid) {
-        // TODO: chiamata al BE controlli EPREL
-        onExit(() => navigate(ROUTES.HOME, { replace: true }));
-      }
-    }
-  };
 
   return (
     <Box pb={0}  data-testid="add-products-container">
@@ -75,6 +65,7 @@ const AddProducts: React.FC = () => {
             alignItems: 'baseline',
             background: 'background.paper',
             p: 3,
+            pb: 0,
             columnGap: 3,
           }}
         >
@@ -94,40 +85,13 @@ const AddProducts: React.FC = () => {
               <Link href="">{t('pages.addProducts.goToManual')}</Link>
             </Typography>
           </Box>
+        </Paper>
 
-          <FormAddProducts
+        <FormAddProducts
             ref={formRef}
             fileAccepted={fileAccepted}
             setFileAccepted={setFileAccepted}
-          />
-        </Paper>
-      </Box>
-
-      <Box
-        sx={{
-          display: 'flex',
-          gridColumn: 'span 12',
-          justifyContent: 'space-between',
-          paddingTop: 5,
-          paddingBottom: 5,
-        }}
-      >
-        <Button
-          variant="outlined"
-          sx={{ gridArea: 'cancelBtn', justifySelf: 'end' }}
-          onClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
-          data-testid="cancel-button-test"
-        >
-          {t('commons.backBtn')}
-        </Button>
-        <Button
-          variant="contained"
-          sx={{ gridArea: 'exitBtn', justifySelf: 'end' }}
-          onClick={handleContinue}
-          data-testid="exit-button-test"
-        >
-          {t('commons.continueBtn')}
-        </Button>
+        />
       </Box>
     </Box>
   );

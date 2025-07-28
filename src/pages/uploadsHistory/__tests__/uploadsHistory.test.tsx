@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import {act, render, screen, waitFor} from '@testing-library/react';
 import OverviewHistoryUpload from '../uploadsHistory';
 import { getProductFilesList } from '../../../services/registerService';
 import '@testing-library/jest-dom';
@@ -74,25 +74,30 @@ describe('OverviewHistoryUpload', () => {
     /*
     test('shows error message when API fails', async () => {
         mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
-        render(<OverviewHistoryUpload />);
+        act(() => {
+            render(<OverviewHistoryUpload />);
+
+        });
 
         await waitFor(() => {
             expect(screen.getByTestId('title-overview')).toBeInTheDocument();
         });
     });
 
-    test('shows InfoUpload when uploadStatus is UPLOADED', async () => {
-        const dataWithUploaded = {
-            ...mockData,
-            content: [{ uploadStatus: 'UPLOADED', id: 1 }]
-        };
-        mockGetProductFilesList.mockResolvedValue(dataWithUploaded);
-        render(<OverviewHistoryUpload />);
+   test('shows InfoUpload when uploadStatus is UPLOADED', async () => {
+       const dataWithUploaded = {
+           ...mockData,
+           content: [{ uploadStatus: 'UPLOADED', id: 1 }]
+       };
+       mockGetProductFilesList.mockResolvedValue(dataWithUploaded);
+       act(() => {
+           render(<OverviewHistoryUpload/>);
+       });
 
-        await waitFor(() => {
-            expect(screen.getByTestId('title-overview')).toBeInTheDocument();
-        });
-    });
+       await waitFor(() => {
+           expect(screen.getByTestId('title-overview')).toBeInTheDocument();
+       });
+   });
     */
 
     test('does not show InfoUpload when uploadStatus is not UPLOADED', async () => {

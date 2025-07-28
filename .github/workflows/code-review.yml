@@ -3,13 +3,13 @@ name: 'coverage'
 on:
   push:
     branches:
-      - release-dev
-      - release-uat
-  pull_request:
-    branches:
-      - release-dev
-      - release-uat
       - main
+      - release-*
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
 
 jobs:
   sonarcloud:

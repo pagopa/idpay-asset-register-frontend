@@ -130,16 +130,17 @@
             "fileTooLargeDescription": "La dimensione del file non deve superare i {{x}} mb",
             "tooMuchProductsTitle": "Il file contiene troppi prodotti",
             "tooMuchProductsDescription": "È possibile caricare al massimo 100 prodotti per lotto.",
-            "wrongHeaderTitle": "Il file contiene gli header errati",
-            "wrongHeaderDescription": "Gli header del file csv non sono validi",
-            "emptyTitle": "Il file non è valido",
-            "emptyDescription": "Il file caricato è vuoto",
+            "wrongHeaderTitle": "I titoli del file sono errati",
+            "wrongHeaderDescription": "I titoli presenti nel file devono corrispondere a quelli indicati nel template.",
+            "emptyTitle": "Il file caricato è vuoto",
+            "emptyDescription": "Assicurati che il file contenga almeno una riga di dati prima di caricarlo.",
             "wrongCategoryTitle": "Il file contiene una categoria errata",
             "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
             "multipeErrorsTitle": "Il file contiene uno o più errori",
             "multipleErrorDescription": " per verificare le informazioni e carica di nuovo il file.",
             "eprelNotWorksTitle": "EPREL è giu ora non funziona",
-            "eprelNotWorksDescription": "Riprova più tardi"
+            "eprelNotWorksDescription": "Riprova più tardi",
+            "missingFileDescription": "Carica un file in formato .csv"
           }
         }
       }

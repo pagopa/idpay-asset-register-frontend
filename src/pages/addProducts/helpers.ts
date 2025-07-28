@@ -37,7 +37,7 @@ export const categoryList = [
 ];
 
 export const downloadCsv = (content: CsvDTO, filename: string) => {
-    const blob = new Blob([content.data ?? ""], { type: 'text/csv' });
+    const blob = new Blob([content.data], { type: 'text/csv' });
 
     const url = window.URL.createObjectURL(blob);
     const a = Object.assign(document.createElement("a"), {

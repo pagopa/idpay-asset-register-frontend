@@ -25,8 +25,7 @@ export const downloadErrorReport = (
     RegisterApi.downloadErrorReport(productFileId).then((res) => res);
 
 export const getProductFilesList = async (
-    page?: number,
-    size?: number,
+    page?: number, size?: number,
   ): Promise<UploadsListDTO> => {
     try {
       return await RegisterApi.getProductFiles(page, size);
@@ -69,9 +68,6 @@ export const getProducts = async (
   }
 };
 
-
-
-
 export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
   try {
     return await RegisterApi.getInstitutionsList();
@@ -82,7 +78,6 @@ export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
     throw error;
   }
 };
-
 
 export const getInstitutionById = async (
     institutionId: string

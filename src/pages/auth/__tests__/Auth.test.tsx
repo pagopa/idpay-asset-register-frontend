@@ -72,7 +72,7 @@ describe('Auth component', () => {
   });
 
   it('should redirect to login if token is missing', async () => {
-    window.location.hash = '';
+    window.location.hash = '#token=';
 
     const trackAppErrorMock = jest.spyOn(analyticsService, 'trackAppError');
 
@@ -96,6 +96,23 @@ describe('Auth component', () => {
     render(<Auth />);
 
     await waitFor(() => {
+      expect(window.location.assign).toHaveBeenCalledWith(ENV.URL_FE.LOGIN);
+    });
+  });
+
+  it('should redirect to login if window.location.hash is undefined', async () => {
+    delete window.location.hash;
+
+    const trackAppErrorMock = jest.spyOn(analyticsService, 'trackAppError');
+
+    render(<Auth />);
+
+    await waitFor(() => {
+      expect(trackAppErrorMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            id: 'INVALIDAUTHREQUEST',
+          })
+      );
       expect(window.location.assign).toHaveBeenCalledWith(ENV.URL_FE.LOGIN);
     });
   });

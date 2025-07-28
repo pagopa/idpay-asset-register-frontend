@@ -83,7 +83,7 @@ describe('OverviewProductionSection', () => {
                     productFileId: '1',
                     batchName: 'Batch 1',
                     uploadStatus: 'LOADED',
-                    dateUpload: '2023-07-15T10:30:00Z',
+                    dateUpload: new Date('2023-07-15T10:30:00Z'),
                 },
             ],
         });
@@ -100,7 +100,7 @@ describe('OverviewProductionSection', () => {
                     productFileId: '1',
                     batchName: 'Batch 1',
                     uploadStatus: 'UPLOADED',
-                    dateUpload: '2023-07-15T10:30:00Z',
+                    dateUpload: new Date('2023-07-15T10:30:00Z'),
                 },
             ],
         });
@@ -117,7 +117,7 @@ describe('OverviewProductionSection', () => {
                     productFileId: '1',
                     batchName: 'Batch 1',
                     uploadStatus: 'IN_PROCESS',
-                    dateUpload: '2023-07-15T10:30:00Z',
+                    dateUpload: new Date('2023-07-15T10:30:00Z'),
                 },
             ],
         });

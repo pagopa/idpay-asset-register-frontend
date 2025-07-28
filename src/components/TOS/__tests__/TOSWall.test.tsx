@@ -1,5 +1,4 @@
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';
 import TOSWall from '../TOSWall';
 
@@ -24,6 +23,12 @@ describe('tests for TOSWall', () => {
   test('test render of TOSWall component with tos already accepted', async () => {
     renderWithContext(
       <TOSWall acceptTOS={jest.fn()} tosRoute={''} privacyRoute={''} firstAcceptance={true} />
+    );
+  });
+
+  test('test render of TOSWall component with tos not accepted yet', async () => {
+    renderWithContext(
+        <TOSWall acceptTOS={jest.fn()} tosRoute={''} privacyRoute={''} firstAcceptance={false} />
     );
   });
 });
