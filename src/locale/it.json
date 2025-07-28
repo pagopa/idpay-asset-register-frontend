@@ -151,12 +151,18 @@
       "loading": "Caricamento dati ...",
       "filterLabels": {
         "category": "Categoria",
+        "status": "Stato",
         "batch": "Lotto",
         "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN",
         "manufacturerCode": "Codice produttore",
         "filter": "Filtra",
-        "deleteFilters": "Rimuovi filtri"
+        "deleteFilters": "Rimuovi filtri"      
+      },
+      "status":{
+        "all":"Default",
+        "rejected":"Esclusi",
+        "pending":"Contrassegnati"
       },
       "listHeader": {
         "category": "Categoria",

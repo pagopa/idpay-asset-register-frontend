@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -9,15 +9,29 @@ import {
   TableSortLabel,
   Typography,
   Checkbox,
-  Box,
-  Button,
 } from '@mui/material';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import EprelLinks from '../../components/Product/EprelLinks';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { INVITALIA } from '../../utils/constants';
+import { fetchUserFromLocalStorage } from '../../helpers';
+
+function renderUploadStatusIcon(status: string) {
+  switch (status) {
+    case 'APPROVED':
+      return;
+    case 'SUPERVISION':
+      return <WarningIcon sx={{ color: '#D9AD3C' }} />;
+    case 'REJECTED':
+      return <ErrorIcon sx={{ color: '#D85757' }} />;
+    default:
+      return;
+  }
+}
 
 export interface ProductsTableProps {
-  owner: 'invitalia' | 'produttore';
   tableData: Array<ProductDTO>;
   emptyData?: string;
   order: 'asc' | 'desc';
@@ -40,21 +54,11 @@ const cellLeftSx = { ...cellBaseSx, textAlign: 'left', padding: '16px' };
 const cellCenterSx = { ...cellBaseSx, textAlign: 'center' };
 const cellRightSx = { ...cellBaseSx, textAlign: 'right' };
 
-const buttonStyle = {
-  width: 138,
-  height: 48,
-  borderRadius: 4,
-  fontWeight: 600,
-  fontSize: 16,
-  marginRight: 2,
-};
-
 const headCellsInvitalia: Array<{
   id: keyof ProductDTO | 'selectedStatus';
   label: string;
   align: 'left' | 'center' | 'right';
 }> = [
-  { id: 'selectedStatus', label: '', align: 'left' },
   { id: 'status', label: 'Stato', align: 'left' },
   { id: 'category', label: 'Categoria', align: 'left' },
   { id: 'energyClass', label: 'Classe Energetica', align: 'center' },
@@ -76,7 +80,6 @@ const headCellsProduttore: Array<{
 ];
 
 const ProductsTable: React.FC<ProductsTableProps> = ({
-  owner,
   tableData,
   emptyData,
   order,
@@ -84,8 +87,32 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   onRequestSort,
   handleListButtonClick,
 }) => {
-  // Colonne e rendering dinamico in base all'owner
-  const isInvitalia = owner === 'invitalia';
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
+  const isInvitaliaUser = user?.org_role === INVITALIA;
+
+  const [selected, setSelected] = useState<Array<string>>([]);
+
+  const isAllSelected = tableData.length > 0 && selected.length === tableData.length;
+  const isIndeterminate = selected.length > 0 && selected.length < tableData.length;
+
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelected = tableData
+        .map((row) => row.gtinCode)
+        .filter((code): code is string => code !== undefined);
+      setSelected(newSelected);
+    } else {
+      setSelected([]);
+    }
+  };
+
+  const handleCheckboxClick = (gtinCode: string) => {
+    setSelected((prevSelected) =>
+      prevSelected.includes(gtinCode)
+        ? prevSelected.filter((code) => code !== gtinCode)
+        : [...prevSelected, gtinCode]
+    );
+  };
 
   return (
     <>
@@ -93,7 +120,17 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <Table size="small">
           <TableHead>
             <TableRow>
-              {(isInvitalia ? headCellsInvitalia : headCellsProduttore).map((headCell) => (
+              {isInvitaliaUser && (
+                <TableCell sx={cellLeftSx}>
+                  <Checkbox
+                    color="primary"
+                    indeterminate={isIndeterminate}
+                    checked={isAllSelected}
+                    onChange={handleSelectAllClick}
+                  />
+                </TableCell>
+              )}
+              {(isInvitaliaUser ? headCellsInvitalia : headCellsProduttore).map((headCell) => (
                 <TableCell
                   key={headCell.id}
                   align={headCell.align}
@@ -106,7 +143,6 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                       : cellRightSx
                   }
                 >
-                  {/* Checkbox e EPREL non sono ordinabili */}
                   {headCell.id !== 'eprelCode' && headCell.id !== 'selectedStatus' ? (
                     <TableSortLabel
                       active={orderBy === headCell.id}
@@ -126,18 +162,29 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           <TableBody>
             {tableData.map((row, index) => (
               <TableRow tabIndex={-1} key={index} sx={rowTableSx} hover>
-                {/* INVITALIA: checkbox e status */}
-                {isInvitalia && (
+                {isInvitaliaUser && (
                   <>
                     <TableCell sx={cellLeftSx}>
-                      <Checkbox color="primary" />
+                      {row.gtinCode !== undefined ? (
+                        (() => {
+                          const gtinCode = row.gtinCode;
+                          return (
+                            <Checkbox
+                              color="primary"
+                              checked={selected.includes(gtinCode)}
+                              onChange={() => handleCheckboxClick(gtinCode)}
+                            />
+                          );
+                        })()
+                      ) : (
+                        <Checkbox color="primary" disabled checked={false} />
+                      )}
                     </TableCell>
                     <TableCell sx={cellLeftSx}>
-                      <Typography variant="body2">{row?.status ?? emptyData}</Typography>
+                      {renderUploadStatusIcon(row?.status ?? emptyData ?? '')}
                     </TableCell>
                   </>
                 )}
-                {/* Colonne comuni (ordine diverso per owner) */}
                 <TableCell sx={cellLeftSx}>
                   <Typography variant="body2">{row?.category ?? emptyData}</Typography>
                 </TableCell>
@@ -148,7 +195,6 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                   <EprelLinks row={row} />
                 </TableCell>
                 <TableCell sx={cellCenterSx}>
-                  row
                   <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>
                 </TableCell>
                 <TableCell sx={cellLeftSx}>
@@ -156,7 +202,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                 </TableCell>
                 <TableCell sx={cellRightSx}>
                   <ArrowForwardIosIcon
-                    sx={{ cursor: 'pointer', color: isInvitalia ? '#0073E6' : undefined }}
+                    sx={{ cursor: 'pointer', color: isInvitaliaUser ? '#0073E6' : undefined }}
                     onClick={() => handleListButtonClick(row)}
                   />
                 </TableCell>
@@ -165,37 +211,6 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           </TableBody>
         </Table>
       </TableContainer>
-      {/* Bottoni visibili solo per Invitalia */}
-      {isInvitalia && (
-        <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
-          <Button
-            variant="contained"
-            sx={{
-              ...buttonStyle,
-              backgroundColor: '#0073E6',
-              color: '#fff',
-              '&:hover': { backgroundColor: '#005bb5' },
-            }}
-          >
-            Contrassegna
-          </Button>
-          <Button
-            variant="outlined"
-            sx={{
-              ...buttonStyle,
-              color: '#D85757',
-              border: '2px solid #D85757',
-              backgroundColor: '#fff',
-              '&:hover': {
-                border: '2px solid #b23b3b',
-                backgroundColor: '#fff0f0',
-              },
-            }}
-          >
-            Escludi
-          </Button>
-        </Box>
-      )}
     </>
   );
 };

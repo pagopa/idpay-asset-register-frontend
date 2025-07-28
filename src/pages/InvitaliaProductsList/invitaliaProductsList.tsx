@@ -76,7 +76,7 @@ const InvitaliaProductsList: React.FC = () => {
             data-testid="title"
           />
         </Box>
-        <ProductDataGrid organizationId={institution?.institutionId || ''} owner="invitalia" />
+        <ProductDataGrid organizationId={institution?.institutionId || ''} />
       </Box>
     </Box>
   );

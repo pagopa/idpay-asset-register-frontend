@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Button,
@@ -33,73 +33,55 @@ interface FilterProps {
   handleDeleteFiltersButtonClick: () => void;
 }
 
-export default function FilterBar(props: FilterProps) {
-  const [filtered, setFiltered] = useState<boolean>(false);
+const FILTER_WIDTHS = {
+  categoria: '15.08%',
+  stato: '15.08%',
+  lotto: '25.22%',
+  eprel: '15.83%',
+  gtin: '15.83%',
+  rimuovi: '12.97%',
+};
 
-  const {
-    categoryFilter,
-    setCategoryFilter,
-    statusFilter,
-    setStatusFilter,
-    setFiltering,
-    batchFilter,
-    setBatchFilter,
-    batchFilterItems,
-    eprelCodeFilter,
-    setEprelCodeFilter,
-    gtinCodeFilter,
-    setGtinCodeFilter,
-    errorStatus,
-    handleDeleteFiltersButtonClick,
-  } = props;
+const STATUS_OPTIONS = [
+  { value: '', labelKey: 'pages.products.status.all' },
+  { value: 'REJECTED', labelKey: 'pages.products.status.rejected' },
+  { value: 'SUPERVISION', labelKey: 'pages.products.status.pending' },
+];
 
+export default function FilterBar({
+  categoryFilter,
+  setCategoryFilter,
+  statusFilter,
+  setStatusFilter,
+  setFiltering,
+  batchFilter,
+  setBatchFilter,
+  batchFilterItems,
+  eprelCodeFilter,
+  setEprelCodeFilter,
+  gtinCodeFilter,
+  setGtinCodeFilter,
+  errorStatus,
+  handleDeleteFiltersButtonClick,
+}: FilterProps) {
   const { t } = useTranslation();
 
-  const handleFilterButtonClick = () => {
-    setFiltered(true);
-    setFiltering(true);
-  };
-
-  const handleDeleteFiltersClick = () => {
-    setFiltered(false);
-    handleDeleteFiltersButtonClick();
-  };
-
-  const selectMenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: 250,
-      },
-    },
-  };
-
-  // AGGIORNATO: aggiungi statusFilter
   const noFilterSetted = (): boolean =>
-    categoryFilter === '' &&
-    statusFilter === '' &&
-    batchFilter === '' &&
-    eprelCodeFilter === '' &&
-    gtinCodeFilter === '';
+    !categoryFilter && !statusFilter && !batchFilter && !eprelCodeFilter && !gtinCodeFilter;
 
-  const handleCategoryFilterChange = (event: SelectChangeEvent) => {
+  const handleCategoryChange = (event: SelectChangeEvent) =>
     setCategoryFilter(event.target.value as string);
-  };
-
-  const handleStatusFilterChange = (event: SelectChangeEvent) => {
+  const handleStatusChange = (event: SelectChangeEvent) =>
     setStatusFilter(event.target.value as string);
-  };
-
-  const handleCategoryBatchChange = (event: SelectChangeEvent) => {
+  const handleBatchChange = (event: SelectChangeEvent) =>
     setBatchFilter(event.target.value as string);
-  };
-
-  const handleEprelCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEprelCodeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setEprelCodeFilter(event.target.value);
-  };
-
-  const handleGtinCodeFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGtinCodeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setGtinCodeFilter(event.target.value);
-  };
+
+  const handleFilter = () => setFiltering(true);
+  const handleDeleteFilters = () => handleDeleteFiltersButtonClick();
 
   return (
     <Box
@@ -108,9 +90,11 @@ export default function FilterBar(props: FilterProps) {
         flexDirection: 'row',
         gap: 1,
         mb: 5,
+        width: '100%',
+        overflow: 'hidden',
       }}
     >
-      <FormControl fullWidth size="small">
+      <FormControl size="small" sx={{ flexBasis: FILTER_WIDTHS.categoria }}>
         <InputLabel id="category-filter-select-label">
           {t('pages.products.filterLabels.category')}
         </InputLabel>
@@ -119,8 +103,8 @@ export default function FilterBar(props: FilterProps) {
           id="category-filter-select"
           value={categoryFilter}
           label={t('pages.products.filterLabels.category')}
-          MenuProps={selectMenuProps}
-          onChange={handleCategoryFilterChange}
+          MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
+          onChange={handleCategoryChange}
         >
           {Object.keys(PRODUCTS_CATEGORY).map((category) => (
             <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
@@ -130,8 +114,7 @@ export default function FilterBar(props: FilterProps) {
         </Select>
       </FormControl>
 
-      {/* AGGIUNTO: filtro per stato */}
-      <FormControl fullWidth size="small">
+      <FormControl size="small" sx={{ flexBasis: FILTER_WIDTHS.stato }}>
         <InputLabel id="status-filter-select-label">
           {t('pages.products.filterLabels.status')}
         </InputLabel>
@@ -140,18 +123,18 @@ export default function FilterBar(props: FilterProps) {
           id="status-filter-select"
           value={statusFilter}
           label={t('pages.products.filterLabels.status')}
-          MenuProps={selectMenuProps}
-          onChange={handleStatusFilterChange}
+          MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
+          onChange={handleStatusChange}
         >
-          <MenuItem value="">{t('pages.products.filterLabels.all')}</MenuItem>
-          <MenuItem value="APPROVED">{t('pages.products.status.approved')}</MenuItem>
-          <MenuItem value="REJECTED">{t('pages.products.status.rejected')}</MenuItem>
-          <MenuItem value="PENDING">{t('pages.products.status.pending')}</MenuItem>
-          {/* Aggiungi altri status se necessario */}
+          {STATUS_OPTIONS.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {t(option.labelKey)}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
 
-      <FormControl fullWidth size="small">
+      <FormControl size="small" sx={{ flexBasis: FILTER_WIDTHS.lotto }}>
         <InputLabel id="batch-filter-select-label">
           {t('pages.products.filterLabels.batch')}
         </InputLabel>
@@ -160,8 +143,8 @@ export default function FilterBar(props: FilterProps) {
           id="batch-filter-select"
           value={batchFilter}
           label={t('pages.products.filterLabels.batch')}
-          MenuProps={selectMenuProps}
-          onChange={handleCategoryBatchChange}
+          MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
+          onChange={handleBatchChange}
         >
           {batchFilterItems?.map((batch) => (
             <MenuItem key={batch?.productFileId} value={batch?.productFileId}>
@@ -172,37 +155,42 @@ export default function FilterBar(props: FilterProps) {
       </FormControl>
 
       <TextField
-        sx={{ minWidth: 175 }}
+        sx={{ flexBasis: FILTER_WIDTHS.eprel }}
         size="small"
         id="eprel-code-text"
         label={t('pages.products.filterLabels.eprelCode')}
         variant="outlined"
         value={eprelCodeFilter}
-        onChange={handleEprelCodeFilterChange}
+        onChange={handleEprelCodeChange}
       />
 
       <TextField
-        sx={{ minWidth: 175 }}
+        sx={{ flexBasis: FILTER_WIDTHS.gtin }}
         size="small"
         id="gtin-code-text"
         label={t('pages.products.filterLabels.gtinCode')}
         variant="outlined"
         value={gtinCodeFilter}
-        onChange={handleGtinCodeFilterChange}
+        onChange={handleGtinCodeChange}
       />
+
       <Button
         disabled={noFilterSetted()}
         variant="outlined"
         sx={{ height: 44, minWidth: 100 }}
-        onClick={handleFilterButtonClick}
+        onClick={handleFilter}
       >
         {t('pages.products.filterLabels.filter')}
       </Button>
       <Button
-        disabled={noFilterSetted() && !errorStatus && !filtered}
+        disabled={noFilterSetted() && !errorStatus}
         variant="text"
-        sx={{ height: 44, minWidth: 140 }}
-        onClick={handleDeleteFiltersClick}
+        sx={{
+          height: 44,
+          flexBasis: FILTER_WIDTHS.rimuovi,
+          minWidth: 100,
+        }}
+        onClick={handleDeleteFilters}
       >
         {t('pages.products.filterLabels.deleteFilters')}
       </Button>

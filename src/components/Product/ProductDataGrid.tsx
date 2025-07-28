@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Paper, TablePagination } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Box, Button, Paper, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +15,8 @@ import EmptyListTable from '../../pages/components/EmptyListTable';
 import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
 import { BatchList } from '../../api/generated/register/BatchList';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { INVITALIA } from '../../utils/constants';
+import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
@@ -66,12 +68,18 @@ const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchL
 
 type ProductDataGridProps = {
   organizationId: string;
-  // TODO  org_role: 'invitalia';
-  owner: 'produttore' | 'invitalia';
   children?: React.ReactNode;
 };
 
-const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, owner, children }) => {
+const buttonStyle = {
+  height: 48,
+  borderRadius: 4,
+  fontWeight: 600,
+  fontSize: 16,
+  marginRight: 2,
+};
+
+const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, children }) => {
   const dispatch = useDispatch();
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
@@ -194,6 +202,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, owner
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
+    setStatusFilter('');
     setBatchFilter('');
     setEprelCodeFilter('');
     setGtinCodeFilter('');
@@ -236,7 +245,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, owner
     };
 
     if (tableData?.length > 0 && !loading) {
-      return <ProductsTable owner={owner} {...commonProps} />;
+      return <ProductsTable {...commonProps} />;
     }
 
     if (children) {
@@ -244,6 +253,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, owner
     }
     return null;
   };
+
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
+  const isInvitaliaUser = user?.org_role === INVITALIA;
 
   return (
     <>
@@ -290,6 +302,38 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, owner
               },
             }}
           />
+        )}
+        {tableData?.length > 0 && !loading && isInvitaliaUser && (
+          <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
+            <Button
+              variant="contained"
+              sx={{
+                ...buttonStyle,
+                width: '138px',
+                backgroundColor: '#0073E6',
+                color: '#fff',
+                '&:hover': { backgroundColor: '#005bb5' },
+              }}
+            >
+              Contrassegna
+            </Button>
+            <Button
+              variant="outlined"
+              sx={{
+                ...buttonStyle,
+                width: '92px',
+                color: '#D85757',
+                border: '2px solid #D85757',
+                backgroundColor: '#fff',
+                '&:hover': {
+                  border: '2px solid #b23b3b',
+                  backgroundColor: '#fff0f0',
+                },
+              }}
+            >
+              Escludi
+            </Button>
+          </Box>
         )}
       </Paper>
       <DetailDrawer
