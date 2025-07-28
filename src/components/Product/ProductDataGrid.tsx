@@ -307,7 +307,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
                 <TableBody sx={{ backgroundColor: 'white' }}>
                   {tableData.map((row, index) => (
                     <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>
-                      <TableCell sx={styleLeftRow}>
+                      <TableCell sx={{ ...styleLeftRow, width: '50%' }}>
                         <Typography variant="body2">{row?.category ?? EMPTY_DATA}</Typography>
                       </TableCell>
                       <TableCell sx={styleCenterRow}>

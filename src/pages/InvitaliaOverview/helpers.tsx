@@ -8,7 +8,6 @@ export interface EnhancedTableProps {
   order: Order;
   orderBy: string;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Institution) => void;
-  cellWidths: Array<number | undefined>;
 }
 
 export interface HeadCell {

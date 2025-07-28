@@ -16,7 +16,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { visuallyHidden } from '@mui/utils';
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
@@ -30,8 +30,22 @@ import { setInstitution } from '../../redux/slices/invitaliaSlice';
 import { MAX_TABLE_HEIGHT } from '../../utils/constants';
 import { EnhancedTableProps, HeadCell } from './helpers';
 
+const rowBaseCell = {
+  borderBottom: `1px solid ${grey[300]}`,
+  width: '10px',
+  padding: 0,
+};
+
+const styleLeftRow = {
+  ...rowBaseCell,
+  textAlign: 'left',
+  paddingTop: '16px',
+  paddingBottom: '16px',
+  paddingLeft: 0,
+};
+
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { order, orderBy, onRequestSort, cellWidths } = props;
+  const { order, orderBy, onRequestSort } = props;
   const createSortHandler = (property: keyof Institution) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
@@ -65,18 +79,20 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         padding: 0,
         textAlign: 'left',
         minWidth: 750,
-        border: '1px solid red',
       }}
     >
-      <TableRow sx={{ border: '1px solid red' }}>
-        {headCells.map((headCell, index, arr) => (
+      <TableRow>
+        {headCells.map((headCell) => (
           <TableCell
-            colSpan={index === arr.length - 1 ? 2 : 1}
+            // colSpan={index === arr.length - 1 ? 2 : 1}
             key={headCell?.id}
             align={headCell?.textAlign ? headCell?.textAlign : 'left'}
-            padding="normal"
             sortDirection={orderBy === headCell?.id ? order : false}
-            sx={{ width: cellWidths[index] }}
+            sx={{
+              ...(headCell.id === 'description' && { width: '50%' }),
+              ...(headCell.id === 'createdAt' && { width: '25%', pl: 2.5 }),
+              ...(headCell.id === 'updatedAt' && { width: '25%', pl: 3.3 }),
+            }}
           >
             <TableSortLabel
               active={orderBy === headCell?.id}
@@ -126,39 +142,6 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   onRowsPerPageChange,
   onRequestSort,
 }) => {
-  const [firstCellWidth, setFirstCellWidth] = useState<number | undefined>(0);
-  const [secondCellWidth, setSecondCellWidth] = useState<number | undefined>(0);
-  const [thirdCellWidth, setThirdCellWidth] = useState<number | undefined>(0);
-
-  const firstBodyCellRef = useRef<HTMLTableCellElement>(null);
-  const secondBodyCellRef = useRef<HTMLTableCellElement>(null);
-  const thirdBodyCellRef = useRef<HTMLTableCellElement>(null);
-
-  useEffect(() => {
-    const observers: Array<ResizeObserver> = [];
-
-    const updateWidths = () => {
-      setFirstCellWidth(firstBodyCellRef.current?.offsetWidth);
-      setSecondCellWidth(secondBodyCellRef.current?.offsetWidth);
-      setThirdCellWidth(thirdBodyCellRef.current?.offsetWidth);
-    };
-
-    [firstBodyCellRef, secondBodyCellRef, thirdBodyCellRef].forEach((ref) => {
-      if (ref.current) {
-        const observer = new ResizeObserver(updateWidths);
-        observer.observe(ref.current);
-        // eslint-disable-next-line functional/immutable-data
-        observers.push(observer);
-      }
-    });
-
-    updateWidths();
-
-    return () => {
-      observers.forEach((observer) => observer.disconnect());
-    };
-  }, [data]);
-
   const paginationInfo = usePagination(page, rowsPerPage, totalElements);
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -188,12 +171,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   const hasData = data?.institutions && data?.institutions?.length > 0;
 
   const renderTableHeader = () => (
-    <EnhancedTableHead
-      order={order}
-      orderBy={orderBy}
-      onRequestSort={onRequestSort}
-      cellWidths={[firstCellWidth, secondCellWidth, thirdCellWidth]}
-    />
+    <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={onRequestSort} />
   );
 
   const renderTableBody = () => {
@@ -222,7 +200,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
       <TableBody>
         {((data.institutions as Array<Institution>) ?? []).map((row: Institution) => (
           <TableRow key={row.institutionId}>
-            <TableCell ref={firstBodyCellRef}>
+            <TableCell sx={{ ...styleLeftRow, width: '50%', paddingLeft: '16px' }}>
               <Link
                 underline="hover"
                 component="button"
@@ -234,19 +212,26 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
                 </Typography>
               </Link>
             </TableCell>
-            <TableCell ref={secondBodyCellRef}>
+            <TableCell sx={{ ...styleLeftRow, width: '25%' }}>
               {formatDateWithoutHours(row.createdAt.toString())}
             </TableCell>
-            <TableCell ref={thirdBodyCellRef}>
-              {formatDateWithoutHours(row.updatedAt.toString())}
+            <TableCell sx={{ ...styleLeftRow, width: '25%' }}>
+              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                {formatDateWithoutHours(row.updatedAt.toString())}
+                <ChevronRight
+                  color="primary"
+                  sx={{ verticalAlign: 'middle' }}
+                  onClick={() => goToInstitutionPage(row)}
+                />
+              </Box>
             </TableCell>
-            <TableCell>
+            {/* <TableCell>
               <ChevronRight
                 color="primary"
                 sx={{ verticalAlign: 'middle' }}
                 onClick={() => goToInstitutionPage(row)}
               />
-            </TableCell>
+            </TableCell> */}
           </TableRow>
         ))}
       </TableBody>
