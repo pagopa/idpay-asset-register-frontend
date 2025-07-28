@@ -65,6 +65,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               ...(headCell.id === 'eprelCode' && { width: '10%' }),
               ...(headCell.id === 'gtinCode' && { width: '15%' }),
               ...(headCell.id === 'batchName' && { width: '35%' }),
+              color: '#5c6f82',
             }}
           >
             <TableSortLabel

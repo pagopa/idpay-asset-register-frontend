@@ -75,7 +75,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead
       sx={{
-        backgroundColor: grey?.A100,
+        backgroundColor: 'grey?.A100',
         padding: 0,
         textAlign: 'left',
         minWidth: 750,
@@ -91,6 +91,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               ...(headCell.id === 'description' && { width: '50%' }),
               ...(headCell.id === 'createdAt' && { width: '25%', pl: 2.5 }),
               ...(headCell.id === 'updatedAt' && { width: '25%', pl: 3.3 }),
+              color: '#5c6f82',
             }}
           >
             <TableSortLabel
