@@ -54,13 +54,18 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead sx={{ backgroundColor: grey?.A100 }}>
       <TableRow>
-        {headCells.map((headCell, index, arr) => (
+        {headCells.map((headCell) => (
           <TableCell
-            colSpan={index === arr.length - 1 ? 2 : 1}
             key={headCell?.id}
             align={headCell?.textAlign ? headCell?.textAlign : 'left'}
-            padding="normal"
             sortDirection={orderBy === headCell?.id ? order : false}
+            sx={{
+              ...(headCell.id === 'category' && { width: '20%' }),
+              ...(headCell.id === 'energyClass' && { width: '10%' }),
+              ...(headCell.id === 'eprelCode' && { width: '10%' }),
+              ...(headCell.id === 'gtinCode' && { width: '15%' }),
+              ...(headCell.id === 'batchName' && { width: '35%' }),
+            }}
           >
             <TableSortLabel
               active={orderBy === headCell?.id}

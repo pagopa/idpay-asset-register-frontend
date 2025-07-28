@@ -84,7 +84,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       <TableRow>
         {headCells.map((headCell) => (
           <TableCell
-            // colSpan={index === arr.length - 1 ? 2 : 1}
             key={headCell?.id}
             align={headCell?.textAlign ? headCell?.textAlign : 'left'}
             sortDirection={orderBy === headCell?.id ? order : false}
@@ -225,13 +224,6 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
                 />
               </Box>
             </TableCell>
-            {/* <TableCell>
-              <ChevronRight
-                color="primary"
-                sx={{ verticalAlign: 'middle' }}
-                onClick={() => goToInstitutionPage(row)}
-              />
-            </TableCell> */}
           </TableRow>
         ))}
       </TableBody>
