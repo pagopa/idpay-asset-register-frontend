@@ -4,19 +4,30 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
-  TableSortLabel,
   Typography,
   Checkbox,
+  TableRow,
 } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useTranslation } from 'react-i18next';
 import EprelLinks from '../../components/Product/EprelLinks';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { INVITALIA } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
+import EnhancedTableHead from '../../components/Product/EnhancedTableHead';
+
+const COLUMN_WIDTHS = {
+  checkbox: '5.97%',
+  status: '6.05%',
+  category: '6.54%',
+  energyClass: '10.20%',
+  eprelCode: '13.91%',
+  gtinCode: '14.81%',
+  batchName: '23.77%',
+  actions: '7.78%',
+};
 
 function renderUploadStatusIcon(status: string) {
   switch (status) {
@@ -45,39 +56,22 @@ const rowTableSx = {
   transition: 'background-color 0.2s',
   '&:hover': { backgroundColor: 'rgba(0,0,0,0.04)' },
 };
-const cellBaseSx = {
+
+const cellBaseSx = (width: string | number) => ({
   borderBottom: '1px solid #e0e0e0',
-  width: '10px',
+  width,
+  minWidth: width,
+  maxWidth: width,
   padding: '0px',
-};
-const cellLeftSx = { ...cellBaseSx, textAlign: 'left', padding: '16px' };
-const cellCenterSx = { ...cellBaseSx, textAlign: 'center' };
-const cellRightSx = { ...cellBaseSx, textAlign: 'right' };
-
-const headCellsInvitalia: Array<{
-  id: keyof ProductDTO | 'selectedStatus';
-  label: string;
-  align: 'left' | 'center' | 'right';
-}> = [
-  { id: 'status', label: 'Stato', align: 'left' },
-  { id: 'category', label: 'Categoria', align: 'left' },
-  { id: 'energyClass', label: 'Classe Energetica', align: 'center' },
-  { id: 'eprelCode', label: 'EPREL', align: 'center' },
-  { id: 'gtinCode', label: 'GTIN', align: 'center' },
-  { id: 'batchName', label: 'Batch', align: 'left' },
-];
-
-const headCellsProduttore: Array<{
-  id: keyof ProductDTO;
-  label: string;
-  align: 'left' | 'center' | 'right';
-}> = [
-  { id: 'category', label: 'Categoria', align: 'left' },
-  { id: 'energyClass', label: 'Classe Energetica', align: 'center' },
-  { id: 'eprelCode', label: 'EPREL', align: 'center' },
-  { id: 'gtinCode', label: 'GTIN', align: 'center' },
-  { id: 'batchName', label: 'Batch', align: 'left' },
-];
+  boxSizing: 'border-box',
+});
+const cellLeftSx = (width: string | number) => ({
+  ...cellBaseSx(width),
+  textAlign: 'left',
+  padding: '16px',
+});
+const cellCenterSx = (width: string | number) => ({ ...cellBaseSx(width), textAlign: 'center' });
+const cellRightSx = (width: string | number) => ({ ...cellBaseSx(width), textAlign: 'right' });
 
 const ProductsTable: React.FC<ProductsTableProps> = ({
   tableData,
@@ -87,6 +81,89 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   onRequestSort,
   handleListButtonClick,
 }) => {
+  const { t } = useTranslation();
+  const headCellsInvitalia: Array<{
+    id: keyof ProductDTO;
+    label: string;
+    align: 'left' | 'center' | 'right';
+    width: string;
+  }> = [
+    {
+      id: 'status',
+      label: t('pages.products.listHeader.status'),
+      align: 'left',
+      width: COLUMN_WIDTHS.status,
+    },
+    {
+      id: 'category',
+      label: t('pages.products.listHeader.category'),
+      align: 'left',
+      width: COLUMN_WIDTHS.category,
+    },
+    {
+      id: 'energyClass',
+      label: t('pages.products.listHeader.energeticClass'),
+      align: 'center',
+      width: COLUMN_WIDTHS.energyClass,
+    },
+    {
+      id: 'eprelCode',
+      label: t('pages.products.listHeader.eprelCode'),
+      align: 'center',
+      width: COLUMN_WIDTHS.eprelCode,
+    },
+    {
+      id: 'gtinCode',
+      label: t('pages.products.listHeader.gtinCode'),
+      align: 'center',
+      width: COLUMN_WIDTHS.gtinCode,
+    },
+    {
+      id: 'batchName',
+      label: t('pages.products.listHeader.batch'),
+      align: 'left',
+      width: COLUMN_WIDTHS.batchName,
+    },
+  ];
+
+  const headCellsProduttore: Array<{
+    id: keyof ProductDTO | 'actions';
+    label: string;
+    align: 'left' | 'center' | 'right';
+    width: string;
+  }> = [
+    {
+      id: 'category',
+      label: t('pages.products.listHeader.category'),
+      align: 'left',
+      width: COLUMN_WIDTHS.category,
+    },
+    {
+      id: 'energyClass',
+      label: t('pages.products.listHeader.energeticClass'),
+      align: 'center',
+      width: COLUMN_WIDTHS.energyClass,
+    },
+    {
+      id: 'eprelCode',
+      label: t('pages.products.listHeader.eprelCode'),
+      align: 'center',
+      width: COLUMN_WIDTHS.eprelCode,
+    },
+    {
+      id: 'gtinCode',
+      label: t('pages.products.listHeader.gtinCode'),
+      align: 'center',
+      width: COLUMN_WIDTHS.gtinCode,
+    },
+    {
+      id: 'batchName',
+      label: t('pages.products.listHeader.batch'),
+      align: 'left',
+      width: COLUMN_WIDTHS.batchName,
+    },
+  ];
+
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === INVITALIA;
 
@@ -114,104 +191,111 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     );
   };
 
+  const renderInvitaliaRow = (row: ProductDTO, index: number) => (
+    <TableRow tabIndex={-1} key={index} sx={rowTableSx} hover>
+      <TableCell sx={cellLeftSx(COLUMN_WIDTHS.checkbox)}>
+        {typeof row.gtinCode === 'string' ? (
+          <Checkbox
+            color="primary"
+            checked={selected.includes(row.gtinCode)}
+            onChange={() => handleCheckboxClick(row.gtinCode)}
+          />
+        ) : (
+          <Checkbox color="primary" disabled checked={false} />
+        )}
+      </TableCell>
+      <TableCell sx={cellLeftSx(COLUMN_WIDTHS.status)}>
+        {renderUploadStatusIcon(row?.status ?? emptyData ?? '')}
+      </TableCell>
+      <TableCell sx={cellLeftSx(COLUMN_WIDTHS.category)}>
+        <Typography variant="body2">{row?.category ?? emptyData}</Typography>
+      </TableCell>
+      <TableCell sx={cellCenterSx(COLUMN_WIDTHS.energyClass)}>
+        <Typography variant="body2">{row?.energyClass ?? emptyData}</Typography>
+      </TableCell>
+      <TableCell sx={cellCenterSx(COLUMN_WIDTHS.eprelCode)}>
+        <EprelLinks row={row} />
+      </TableCell>
+      <TableCell sx={cellCenterSx(COLUMN_WIDTHS.gtinCode)}>
+        <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>
+      </TableCell>
+      <TableCell sx={cellLeftSx(COLUMN_WIDTHS.batchName)}>
+        <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>
+      </TableCell>
+      <TableCell sx={cellRightSx(COLUMN_WIDTHS.actions)}>
+        <ArrowForwardIosIcon
+          sx={{ cursor: 'pointer', color: isInvitaliaUser ? '#0073E6' : undefined }}
+          onClick={() => handleListButtonClick(row)}
+        />
+      </TableCell>
+    </TableRow>
+  );
+
+  const renderProduttoreRow = (row: ProductDTO, index: number) => (
+    <TableRow tabIndex={-1} key={index} sx={rowTableSx} hover>
+      {headCellsProduttore.map((headCell) => {
+        const cellContent: React.ReactNode = (() => {
+          switch (headCell.id) {
+            case 'category':
+              return <Typography variant="body2">{row?.category ?? emptyData}</Typography>;
+            case 'energyClass':
+              return <Typography variant="body2">{row?.energyClass ?? emptyData}</Typography>;
+            case 'eprelCode':
+              return <EprelLinks row={row} />;
+            case 'gtinCode':
+              return <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>;
+            case 'batchName':
+              return <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>;
+            case 'actions':
+              return (
+                <ArrowForwardIosIcon
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => handleListButtonClick(row)}
+                />
+              );
+            default:
+              return null;
+          }
+        })();
+        const cellSx =
+          headCell.align === 'left'
+            ? cellLeftSx(headCell.width)
+            : headCell.align === 'center'
+            ? cellCenterSx(headCell.width)
+            : cellRightSx(headCell.width);
+
+        return (
+          <TableCell key={headCell.id as string} sx={cellSx}>
+            {cellContent}
+          </TableCell>
+        );
+      })}
+    </TableRow>
+  );
+
   return (
-    <>
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              {isInvitaliaUser && (
-                <TableCell sx={cellLeftSx}>
-                  <Checkbox
-                    color="primary"
-                    indeterminate={isIndeterminate}
-                    checked={isAllSelected}
-                    onChange={handleSelectAllClick}
-                  />
-                </TableCell>
-              )}
-              {(isInvitaliaUser ? headCellsInvitalia : headCellsProduttore).map((headCell) => (
-                <TableCell
-                  key={headCell.id}
-                  align={headCell.align}
-                  sortDirection={orderBy === headCell.id ? order : false}
-                  sx={
-                    headCell.align === 'left'
-                      ? cellLeftSx
-                      : headCell.align === 'center'
-                      ? cellCenterSx
-                      : cellRightSx
-                  }
-                >
-                  {headCell.id !== 'eprelCode' && headCell.id !== 'selectedStatus' ? (
-                    <TableSortLabel
-                      active={orderBy === headCell.id}
-                      direction={orderBy === headCell.id ? order : 'asc'}
-                      onClick={(event) => onRequestSort(event, headCell.id as keyof ProductDTO)}
-                    >
-                      {headCell.label}
-                    </TableSortLabel>
-                  ) : (
-                    headCell.label
-                  )}
-                </TableCell>
-              ))}
-              <TableCell sx={cellRightSx} />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tableData.map((row, index) => (
-              <TableRow tabIndex={-1} key={index} sx={rowTableSx} hover>
-                {isInvitaliaUser && (
-                  <>
-                    <TableCell sx={cellLeftSx}>
-                      {row.gtinCode !== undefined ? (
-                        (() => {
-                          const gtinCode = row.gtinCode;
-                          return (
-                            <Checkbox
-                              color="primary"
-                              checked={selected.includes(gtinCode)}
-                              onChange={() => handleCheckboxClick(gtinCode)}
-                            />
-                          );
-                        })()
-                      ) : (
-                        <Checkbox color="primary" disabled checked={false} />
-                      )}
-                    </TableCell>
-                    <TableCell sx={cellLeftSx}>
-                      {renderUploadStatusIcon(row?.status ?? emptyData ?? '')}
-                    </TableCell>
-                  </>
-                )}
-                <TableCell sx={cellLeftSx}>
-                  <Typography variant="body2">{row?.category ?? emptyData}</Typography>
-                </TableCell>
-                <TableCell sx={cellCenterSx}>
-                  <Typography variant="body2">{row?.energyClass ?? emptyData}</Typography>
-                </TableCell>
-                <TableCell sx={cellCenterSx}>
-                  <EprelLinks row={row} />
-                </TableCell>
-                <TableCell sx={cellCenterSx}>
-                  <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>
-                </TableCell>
-                <TableCell sx={cellLeftSx}>
-                  <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>
-                </TableCell>
-                <TableCell sx={cellRightSx}>
-                  <ArrowForwardIosIcon
-                    sx={{ cursor: 'pointer', color: isInvitaliaUser ? '#0073E6' : undefined }}
-                    onClick={() => handleListButtonClick(row)}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+    <TableContainer>
+      <Table size="small">
+        <EnhancedTableHead
+          isInvitaliaUser={isInvitaliaUser}
+          headCells={isInvitaliaUser ? headCellsInvitalia : headCellsProduttore}
+          order={order}
+          orderBy={orderBy}
+          onRequestSort={onRequestSort}
+          isAllSelected={isAllSelected}
+          isIndeterminate={isIndeterminate}
+          handleSelectAllClick={handleSelectAllClick}
+          cellLeftSx={undefined}
+          cellCenterSx={undefined}
+          cellRightSx={undefined}
+        />
+        <TableBody>
+          {tableData.map((row, index) =>
+            isInvitaliaUser ? renderInvitaliaRow(row, index) : renderProduttoreRow(row, index)
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

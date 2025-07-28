@@ -159,15 +159,11 @@
         "filter": "Filtra",
         "deleteFilters": "Rimuovi filtri"      
       },
-      "status":{
-        "all":"Default",
-        "rejected":"Esclusi",
-        "pending":"Contrassegnati"
-      },
       "listHeader": {
         "category": "Categoria",
+        "status": "Stato",
         "energeticClass": "Classe energetica",
-        "eprelCode": "Codice Eprel",
+        "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN/EAN",
         "batch": "Lotto"
       },

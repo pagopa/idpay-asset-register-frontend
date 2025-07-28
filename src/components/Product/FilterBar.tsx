@@ -12,7 +12,7 @@ import {
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { PRODUCTS_CATEGORY } from '../../utils/constants';
+import { PRODUCTS_CATEGORY, PRODUCTS_STATES } from '../../utils/constants';
 import { BatchFilterItems } from './helpers';
 
 interface FilterProps {
@@ -41,12 +41,6 @@ const FILTER_WIDTHS = {
   gtin: '15.83%',
   rimuovi: '12.97%',
 };
-
-const STATUS_OPTIONS = [
-  { value: '', labelKey: 'pages.products.status.all' },
-  { value: 'REJECTED', labelKey: 'pages.products.status.rejected' },
-  { value: 'SUPERVISION', labelKey: 'pages.products.status.pending' },
-];
 
 export default function FilterBar({
   categoryFilter,
@@ -114,7 +108,7 @@ export default function FilterBar({
         </Select>
       </FormControl>
 
-      <FormControl size="small" sx={{ flexBasis: FILTER_WIDTHS.stato }}>
+      <FormControl fullWidth size="small" sx={{ flexBasis: FILTER_WIDTHS.stato }}>
         <InputLabel id="status-filter-select-label">
           {t('pages.products.filterLabels.status')}
         </InputLabel>
@@ -126,11 +120,14 @@ export default function FilterBar({
           MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
           onChange={handleStatusChange}
         >
-          {STATUS_OPTIONS.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {t(option.labelKey)}
-            </MenuItem>
-          ))}
+          <MenuItem value="">{t(PRODUCTS_STATES.DEFAULT)}</MenuItem>
+          {Object.keys(PRODUCTS_STATES)
+            .filter((statusKey) => statusKey !== 'DEFAULT')
+            .map((statusKey) => (
+              <MenuItem key={statusKey} value={statusKey}>
+                {t(PRODUCTS_STATES[statusKey as keyof typeof PRODUCTS_STATES])}
+              </MenuItem>
+            ))}
         </Select>
       </FormControl>
 
