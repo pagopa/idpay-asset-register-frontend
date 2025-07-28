@@ -32,4 +32,27 @@ describe('RejectedFile component', () => {
         fireEvent.click(downloadLink);
         expect(onDownloadReport).toHaveBeenCalled();
     });
+
+    it('renders when isReport is false', () => {
+        const onDownloadReport = jest.fn();
+        render(
+            <RejectedFile
+                {...baseProps}
+                isReport={false}
+                onDownloadReport={onDownloadReport}
+            />
+        );
+
+        expect(screen.getByText(baseProps.title)).toBeInTheDocument();
+        expect(screen.getByText(baseProps.description)).toBeInTheDocument();
+
+        expect(screen.queryByText(/Scarica il report/i)).not.toBeInTheDocument();
+    });
+
+    it('renders correctly when isReport is omitted (default false)', () => {
+        render(<RejectedFile {...baseProps} />);
+        expect(screen.getByText(baseProps.title)).toBeInTheDocument();
+        expect(screen.getByText(baseProps.description)).toBeInTheDocument();
+        expect(screen.queryByText(/Scarica il report/i)).not.toBeInTheDocument();
+    });
 });

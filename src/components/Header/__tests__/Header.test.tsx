@@ -3,7 +3,7 @@ import Header from '../Header';
 import { mockedUser } from '../../../decorators/__mocks__/withLogin';
 import { Party } from '../../../model/Party';
 import {trackEvent} from "@pagopa/selfcare-common-frontend/lib/services/analyticsService";
-import { screen } from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
 import userEvent from "@testing-library/user-event";
 
 jest.mock('../../../utils/env', () => ({
@@ -491,4 +491,48 @@ describe('Header Component - Complete Coverage', () => {
         />
     );
   });
+
+  test('activeProducts contiene welfareProduct e prodotti attivi autorizzati', () => {
+    const welfareProduct = {
+      id: 'prod-idpay-merchants',
+      title: 'IDPay Product',
+      status: 'ACTIVE',
+      authorized: true,
+      productUrl: 'https://idpay-product.com',
+    };
+
+    const products = [
+      {
+        id: 'prod-active',
+        title: 'Active Product',
+        status: 'ACTIVE',
+        authorized: true,
+        productUrl: 'https://active-product.com',
+      },
+      {
+        id: 'prod-inactive',
+        title: 'Inactive Product',
+        status: 'INACTIVE',
+        authorized: true,
+        productUrl: 'https://inactive-product.com',
+      },
+      {
+        id: 'prod-unauthorized',
+        title: 'Unauthorized Product',
+        status: 'ACTIVE',
+        authorized: false,
+        productUrl: 'https://unauthorized-product.com',
+      },
+      welfareProduct,
+    ];
+
+    const handleResult = (result: any[]) => {
+      expect(result).toHaveLength(2);
+      expect(result[0].id).toBe(welfareProduct.id);
+      expect(result[1].id).toBe('prod-active');
+    };
+
+    render(<Header products={products} welfareProduct={welfareProduct} onResult={handleResult} />);
+  });
+
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {render, screen, fireEvent, waitFor, act, getByText} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { uploadProductListVerify, uploadProductList, downloadErrorReport } from 
 import { downloadCsv } from '../helpers';
 import { JSX } from 'react/jsx-runtime';
 import '@testing-library/jest-dom';
+import {PRODUCTS_CATEGORY} from "../../../utils/constants";
 
 jest.mock('react-i18next', () => ({
     useTranslation: jest.fn(),
