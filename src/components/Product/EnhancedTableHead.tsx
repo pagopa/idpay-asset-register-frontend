@@ -83,6 +83,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell sx={{ width: '10%' }}> </TableCell>
       </TableRow>
     </TableHead>
   );

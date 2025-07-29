@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box,
   Button,
   Paper,
   Table,
@@ -53,6 +52,11 @@ const styleLeftRow = {
   ...rowBaseCell,
   textAlign: 'left',
   padding: '16px',
+  paddingLeft: 0,
+};
+const styleRightRow = {
+  ...rowBaseCell,
+  textAlign: 'left',
 };
 
 const styleCenterRow = {
@@ -299,14 +303,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
               />
             )}
             <TableContainer sx={{ maxHeight: MAX_TABLE_HEIGHT }}>
-              <Table stickyHeader sx={{ minWidth: 750 }} size="small" aria-labelledby="tableTitle">
+              <Table stickyHeader size="small" aria-labelledby="tableTitle">
                 <TableBody sx={{ backgroundColor: 'white' }}>
                   {tableData.map((row, index) => (
                     <TableRow tabIndex={-1} key={index} sx={rowTableStyle} hover>
-                      <TableCell sx={{ ...styleLeftRow, width: '20%' }}>
+                      <TableCell sx={{ ...styleLeftRow, width: '20%', paddingLeft: '16px' }}>
                         <Typography variant="body2">{row?.category ?? EMPTY_DATA}</Typography>
                       </TableCell>
-                      <TableCell sx={{ ...styleCenterRow, width: '10%' }}>
+                      <TableCell sx={{ ...styleCenterRow, width: '15%' }}>
                         <Typography variant="body2">
                           {row?.energyClass ? row?.energyClass : EMPTY_DATA}
                         </Typography>
@@ -314,32 +318,21 @@ const ProductGrid: React.FC<ProductGridProps> = ({ organizationId }) => {
                       <TableCell sx={{ ...styleCenterRow, width: '10%' }}>
                         <EprelLinks row={row} />
                       </TableCell>
-                      <TableCell sx={{ ...styleCenterRow, width: '15%' }}>
+                      <TableCell sx={{ ...styleCenterRow, width: '10%' }}>
                         <Typography variant="body2">
                           {row?.gtinCode ? row?.gtinCode : EMPTY_DATA}
                         </Typography>
                       </TableCell>
                       <TableCell sx={{ ...styleLeftRow, width: '35%' }}>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                          }}
-                        >
-                          <Typography variant="body2">
-                            {row?.batchName ? row?.batchName : EMPTY_DATA}
-                          </Typography>
-                          <Button variant="text" onClick={() => handleListButtonClick(row)}>
-                            <ArrowForwardIosIcon />
-                          </Button>
-                        </Box>
+                        <Typography variant="body2">
+                          {row?.batchName ? row?.batchName : EMPTY_DATA}
+                        </Typography>
                       </TableCell>
-                      {/* <TableCell sx={styleRightRow}>
+                      <TableCell sx={{ ...styleRightRow, width: '10%' }}>
                         <Button variant="text" onClick={() => handleListButtonClick(row)}>
                           <ArrowForwardIosIcon />
                         </Button>
-                      </TableCell> */}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
