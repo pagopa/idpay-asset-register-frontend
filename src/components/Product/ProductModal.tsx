@@ -21,7 +21,6 @@ interface ProductModalProps {
 
 const buttonStyle = {
   height: 48,
-  borderRadius: 4,
   fontWeight: 600,
   fontSize: 16,
   marginRight: 2,
