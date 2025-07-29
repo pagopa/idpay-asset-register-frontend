@@ -38,7 +38,7 @@ jobs:
           package-manager: yarn
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v5.0.0
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -47,3 +47,4 @@ jobs:
             -Dsonar.organization=${{ vars.SONARCLOUD_ORG }}
             -Dsonar.projectKey=${{ vars.SONARCLOUD_PROJECT_KEY }}
             -Dsonar.projectName="${{ vars.SONARCLOUD_PROJECT_NAME }}"
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
