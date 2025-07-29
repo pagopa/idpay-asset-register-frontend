@@ -89,8 +89,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             sortDirection={orderBy === headCell?.id ? order : false}
             sx={{
               ...(headCell.id === 'description' && { width: '50%' }),
-              ...(headCell.id === 'createdAt' && { width: '25%', pl: 2.5 }),
-              ...(headCell.id === 'updatedAt' && { width: '25%', pl: 3.3 }),
+              ...(headCell.id === 'createdAt' && { width: '25%' }),
+              ...(headCell.id === 'updatedAt' && { width: '25%', pl: '23px' }),
               color: '#5c6f82',
             }}
           >
@@ -109,7 +109,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
-        <TableCell key="action" align="right" padding="normal" />
+        <TableCell key="action" align="right" sx={{ paddingLeft: '70px' }} />
       </TableRow>
     </TableHead>
   );
@@ -216,14 +216,22 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
               {formatDateWithoutHours(row.createdAt.toString())}
             </TableCell>
             <TableCell sx={{ ...styleLeftRow, width: '25%' }}>
-              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+              {formatDateWithoutHours(row.updatedAt.toString())}
+              {/* <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                 {formatDateWithoutHours(row.updatedAt.toString())}
                 <ChevronRight
                   color="primary"
                   sx={{ verticalAlign: 'middle' }}
                   onClick={() => goToInstitutionPage(row)}
                 />
-              </Box>
+              </Box> */}
+            </TableCell>
+            <TableCell>
+              <ChevronRight
+                color="primary"
+                sx={{ verticalAlign: 'middle' }}
+                onClick={() => goToInstitutionPage(row)}
+              />
             </TableCell>
           </TableRow>
         ))}
