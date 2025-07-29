@@ -170,7 +170,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
         <TableBody>
           {data.content.map((row: UploadDTO) => (
             <TableRow key={row.productFileId} sx={rowTableStyle} hover>
-              <TableCell sx={styleLeftRow}>
+              <TableCell sx={{ ...styleLeftRow, pr: '10px' }}>
                 {renderUploadStatusIcon(row.uploadStatus ?? '')}
               </TableCell>
               <TableCell
