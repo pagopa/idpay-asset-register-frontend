@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { RegisterApi } from '../../api/registerApiClient';
-import { displayRows, emptyData } from '../../utils/constants';
+import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA } from '../../utils/constants';
 import {
   batchIdSelector,
   batchNameSelector,
@@ -95,7 +95,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(displayRows);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(PAGINATION_ROWS_PRODUCTS);
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
@@ -254,7 +254,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const renderTable = () => {
     const commonProps = {
       tableData,
-      emptyData,
+      emptyData: EMPTY_DATA,
       order,
       orderBy,
       onRequestSort: handleRequestSort,

@@ -32,8 +32,10 @@ export enum PRODUCTS_STATES {
 export const INVITALIA = 'invitalia';
 export const PRODUTTORE = 'operatore';
 
-export const displayRows = 8;
-export const emptyData = '-';
+export const EMPTY_DATA = '-';
+export const MAX_TABLE_HEIGHT = 700;
+export const PAGINATION_ROWS_PRODUCTS = 8;
+export const PAGINATION_ROWS_UPLOADS = 20;
 
 export const maxLengthEmail: number = 40;
 export const maxLengthOverviewProd: number = 75;
