@@ -162,6 +162,12 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       align: 'left',
       width: COLUMN_WIDTHS.batchName,
     },
+    {
+      id: 'status',
+      label: t('pages.products.listHeader.status'),
+      align: 'left',
+      width: COLUMN_WIDTHS.status,
+    },
   ];
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
@@ -246,6 +252,8 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
               return <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>;
             case 'batchName':
               return <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>;
+            case 'status':
+              return renderUploadStatusIcon(row?.status ?? emptyData ?? '');
             case 'actions':
               return (
                 <ArrowForwardIosIcon
