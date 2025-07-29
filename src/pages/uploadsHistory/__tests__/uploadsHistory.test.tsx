@@ -46,7 +46,7 @@ describe('OverviewHistoryUpload', () => {
     totalElements: 2,
     content: [
       { uploadStatus: 'UPLOADED', id: 1 },
-      { uploadStatus: 'SUPERVISION', id: 2 },
+      { uploadStatus: 'SUPERVISIONED', id: 2 },
     ],
   };
 
@@ -98,7 +98,7 @@ describe('OverviewHistoryUpload', () => {
   test('does not show InfoUpload when uploadStatus is not UPLOADED', async () => {
     const dataWithoutUploaded = {
       ...mockData,
-      content: [{ uploadStatus: 'SUPERVISION', id: 1 }],
+      content: [{ uploadStatus: 'SUPERVISIONED', id: 1 }],
     };
     mockGetProductFilesList.mockResolvedValue(dataWithoutUploaded);
     render(<OverviewHistoryUpload />);

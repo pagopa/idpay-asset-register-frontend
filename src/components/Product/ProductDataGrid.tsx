@@ -23,6 +23,7 @@ import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
 import FilterBar from './FilterBar';
+import ProductModal from './ProductModal';
 
 const getProductList = async (
   xOrganizationSelected: string,
@@ -101,10 +102,27 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
 
+  const [selected, setSelected] = useState<Array<string>>([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [modalAction, setModalAction] = useState<string | undefined>(undefined);
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
   const { t } = useTranslation();
 
+  const handleOpenSupervisionedModal = () => {
+    setModalAction('supervisioned');
+    setOpenModal(true);
+  };
+
+  const handleOpenRejectedModal = () => {
+    setModalAction('rejected');
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setModalAction(undefined);
+  };
   const callProductsApi = (organizationId: string) => {
     const sortKey = `${orderBy},${order}`;
     void getProductList(
@@ -242,6 +260,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       orderBy,
       onRequestSort: handleRequestSort,
       handleListButtonClick,
+      selected,
+      setSelected,
     };
 
     if (tableData?.length > 0 && !loading) {
@@ -314,6 +334,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
                 color: '#fff',
                 '&:hover': { backgroundColor: '#005bb5' },
               }}
+              disabled={selected.length === 0}
+              onClick={handleOpenSupervisionedModal}
             >
               Contrassegna
             </Button>
@@ -330,12 +352,20 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
                   backgroundColor: '#fff0f0',
                 },
               }}
+              disabled={selected.length === 0}
+              onClick={handleOpenRejectedModal}
             >
               Escludi
             </Button>
           </Box>
         )}
       </Paper>
+      <ProductModal
+        open={openModal}
+        onClose={handleCloseModal}
+        gtinCodes={selected}
+        actionType={modalAction}
+      />
       <DetailDrawer
         data-testid="detail-drawer"
         open={drawerOpened}

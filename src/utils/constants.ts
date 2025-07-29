@@ -22,8 +22,8 @@ export enum PRODUCTS_CATEGORY {
 
 export enum PRODUCTS_STATES {
   REJECTED = 'Esclusi',
-  SUPERVISION = 'Contrassegnati',
-  DEFAULT = 'Default'
+  SUPERVISIONED = 'Contrassegnati',
+  APPROVED = 'Approvati'
 }
 
 

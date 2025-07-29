@@ -1859,7 +1859,7 @@ components:
           enum:
             - APPROVED
             - REJECTED
-            - SUPERVISION
+            - SUPERVISIONED
         model:
           type: string
           description: 'ENG: The mode of the product <br> IT: il modello del prodotto'

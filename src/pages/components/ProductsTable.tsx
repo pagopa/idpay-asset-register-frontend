@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -33,7 +33,7 @@ function renderUploadStatusIcon(status: string) {
   switch (status) {
     case 'APPROVED':
       return;
-    case 'SUPERVISION':
+    case 'SUPERVISIONED':
       return <WarningIcon sx={{ color: '#D9AD3C' }} />;
     case 'REJECTED':
       return <ErrorIcon sx={{ color: '#D85757' }} />;
@@ -49,6 +49,8 @@ export interface ProductsTableProps {
   orderBy: keyof ProductDTO;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ProductDTO) => void;
   handleListButtonClick: (row: ProductDTO) => void;
+  selected: Array<string>;
+  setSelected: React.Dispatch<React.SetStateAction<Array<string>>>;
 }
 
 const rowTableSx = {
@@ -80,6 +82,8 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   orderBy,
   onRequestSort,
   handleListButtonClick,
+  selected,
+  setSelected,
 }) => {
   const { t } = useTranslation();
   const headCellsInvitalia: Array<{
@@ -168,12 +172,16 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       align: 'left',
       width: COLUMN_WIDTHS.status,
     },
+    {
+      id: 'actions',
+      label: '',
+      align: 'right',
+      width: COLUMN_WIDTHS.actions,
+    },
   ];
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === INVITALIA;
-
-  const [selected, setSelected] = useState<Array<string>>([]);
 
   const isAllSelected = tableData.length > 0 && selected.length === tableData.length;
   const isIndeterminate = selected.length > 0 && selected.length < tableData.length;
@@ -198,7 +206,18 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   };
 
   const renderInvitaliaRow = (row: ProductDTO, index: number) => (
-    <TableRow tabIndex={-1} key={index} sx={rowTableSx} hover>
+    <TableRow
+      tabIndex={-1}
+      key={index}
+      sx={{
+        ...rowTableSx,
+        ...(selected.includes(row.gtinCode ?? '') && {
+          background: '#0073E614',
+          '&:hover': { backgroundColor: '#0073E626' },
+        }),
+      }}
+      hover
+    >
       <TableCell sx={cellLeftSx(COLUMN_WIDTHS.checkbox)}>
         {typeof row.gtinCode === 'string' ? (
           <Checkbox
@@ -230,7 +249,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       </TableCell>
       <TableCell sx={cellRightSx(COLUMN_WIDTHS.actions)}>
         <ArrowForwardIosIcon
-          sx={{ cursor: 'pointer', color: isInvitaliaUser ? '#0073E6' : undefined }}
+          sx={{ cursor: 'pointer', color: '#0073E6' }}
           onClick={() => handleListButtonClick(row)}
         />
       </TableCell>
@@ -257,7 +276,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
             case 'actions':
               return (
                 <ArrowForwardIosIcon
-                  sx={{ cursor: 'pointer' }}
+                  sx={{ cursor: 'pointer', color: '#0073E6' }}
                   onClick={() => handleListButtonClick(row)}
                 />
               );
