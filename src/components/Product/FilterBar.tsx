@@ -139,6 +139,9 @@ export default function FilterBar({
           label={t('pages.products.filterLabels.batch')}
           MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
           onChange={handleBatchChange}
+          sx={{
+            paddingRight: '40px !important',
+          }}
         >
           {batchFilterItems?.map((batch) => (
             <MenuItem key={batch?.productFileId} value={batch?.productFileId}>

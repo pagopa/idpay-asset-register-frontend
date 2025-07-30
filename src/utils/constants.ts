@@ -1,4 +1,5 @@
-export const testToken =  '';
+export const testToken =
+  'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3NTM4ODU0NDAsImV4cCI6MTc1MzkxNDI0MCwiYXVkIjoiaWRwYXkucmVnaXN0ZXIud2VsZmFyZS5wYWdvcGEuaXQiLCJpc3MiOiJodHRwczovL2FwaS1pby5kZXYuY3N0YXIucGFnb3BhLml0IiwidWlkIjoiMTk1ZGE3MGYtZDNmMC00YzU3LWI2MmUtZWY0NzEzNDhlOTIwIiwibmFtZSI6IkxvcmVuem8iLCJmYW1pbHlfbmFtZSI6IkxvbGxvIiwib3JnX2VtYWlsIjoidGVzdC5yZGIuZGV2QGdtYWlsLmNvbSIsIm9yZ19pZCI6IjcyYzJjNWY4LTFjNzEtNDYxNC1hNGIzLTk1ZTNhZWU3MWMzZCIsIm9yZ192YXQiOiJDSEUtMTIzLjQ1Ni43MTIiLCJvcmdfZmMiOiJDSEUtMTIzLjQ1Ni43MTIiLCJvcmdfbmFtZSI6IlByb2R1dHRvcmUgU3ZlblZhdGgiLCJvcmdfcGFydHlfcm9sZSI6Ik9QRVJBVE9SIiwib3JnX3JvbGUiOiJvcGVyYXRvcmUiLCJvcmdfYWRkcmVzcyI6IlZpYSBNdW5pY2lwaW8gTi4gOCwgODEwMzUgUm9jY2Ftb25maW5hIChDRSkiLCJvcmdfcGVjIjoicHJvdG9jb2xsby5yb2NjYW1vbmZpbmFAYXNtZXBlYy5pdCJ9.lePTYMSOn_DVuVXly-tYBRCmfogWqHIQDVL8CF39H8IYjOi8wY7gLK-e79bJjk2k--3HtGS7ck2QJPzJIb3fBOAKe8CU9a7a0viHwE4d9vX0Nl3y8CdsddHa5zBaYzir6xyA2fK6rxweGF3joKv9Je7puyA730uR8p90Dn3K6e9Mm4_fn1X5XUtaNzx5a0oYRMCVFfGzKOte2JdnK4bUZpwbjHptXWyB2F1PNjVyXSAOJix--ITv0KGaxHOtmSU3hDcCRPu5BFieaeuU_TpEiOLgC0siyhN7AX6HAQJcAVDnwAk5gh95XkGIvFF7M4BEkMOlae9OEAPf0QV1ba-4CQ';
 
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
 export const MOCK_USER = IS_DEVELOP;
@@ -23,11 +24,8 @@ export enum PRODUCTS_CATEGORY {
 export enum PRODUCTS_STATES {
   APPROVED = 'APPROVED',
   SUPERVISIONED = 'SUPERVISIONED',
-  REJECTED = 'REJECTED'
+  REJECTED = 'REJECTED',
 }
-
-
-
 
 export const INVITALIA = 'invitalia';
 export const PRODUTTORE = 'operatore';
@@ -40,5 +38,3 @@ export const PAGINATION_ROWS_UPLOADS = 20;
 export const maxLengthEmail: number = 40;
 export const maxLengthOverviewProd: number = 75;
 export const maxLengthOverviewInvit: number = 140;
-
-
