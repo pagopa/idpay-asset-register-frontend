@@ -1,284 +1,297 @@
 import React from 'react';
-import {render, screen, fireEvent} from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import FilterBar from '../FilterBar';
-import { ProductDTO } from '../../../api/generated/register/ProductDTO';
 import { BatchFilterItems } from '../helpers';
+import '@testing-library/jest-dom';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (key: string) => {
-            const translations: { [key: string]: string } = {
-                'pages.products.filterLabels.category': 'Category',
-                'pages.products.filterLabels.batch': 'Batch',
-                'pages.products.filterLabels.eprelCode': 'EPREL Code',
-                'pages.products.filterLabels.gtinCode': 'GTIN Code',
-                'pages.products.filterLabels.filter': 'Filter',
-                'pages.products.filterLabels.deleteFilters': 'Delete Filters',
-                'pages.products.categories.APPLIANCES': 'Appliances',
-                'pages.products.categories.ELECTRONICS': 'Electronics',
-            };
-            return translations[key] || key;
-        },
+        t: (key: string) => key,
     }),
 }));
 
 jest.mock('../../../utils/constants', () => ({
     PRODUCTS_CATEGORY: {
-        APPLIANCES: 'APPLIANCES',
-        ELECTRONICS: 'ELECTRONICS',
+        CATEGORY_1: 'category1',
+        CATEGORY_2: 'category2',
+    },
+    PRODUCTS_STATES: {
+        STATE_1: 'state1',
+        STATE_2: 'state2',
     },
 }));
 
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const renderWithTheme = (component: React.ReactElement) => {
     const theme = createTheme();
-    return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+    return render(
+        <ThemeProvider theme={theme}>
+            {component}
+        </ThemeProvider>
+    );
 };
 
 describe('FilterBar', () => {
-    const mockSetCategoryFilter = jest.fn();
-    const mockSetFiltering = jest.fn();
-    const mockSetBatchFilter = jest.fn();
-    const mockSetEprelCodeFilter = jest.fn();
-    const mockSetGtinCodeFilter = jest.fn();
-    const mockHandleDeleteFiltersButtonClick = jest.fn();
-
-    const mockBatchFilterItems: BatchFilterItems[] = [
-        {
-            productFileId: '1',
-            batchName: 'Batch 1',
-        },
-        {
-            productFileId: '2',
-            batchName: 'Batch 2',
-        },
-    ];
-
-    const mockTableData: ProductDTO[] = [
-        {
-            id: '1',
-            name: 'Product 1',
-            category: 'APPLIANCES',
-        } as ProductDTO,
-        {
-            id: '2',
-            name: 'Product 2',
-            category: 'ELECTRONICS',
-        } as ProductDTO,
+    const mockBatchFilterItems: Array<BatchFilterItems> = [
+        { productFileId: '1', batchName: 'Batch 1' },
+        { productFileId: '2', batchName: 'Batch 2' },
     ];
 
     const defaultProps = {
         categoryFilter: '',
-        setCategoryFilter: mockSetCategoryFilter,
-        setFiltering: mockSetFiltering,
+        setCategoryFilter: jest.fn(),
+        statusFilter: '',
+        setStatusFilter: jest.fn(),
+        setFiltering: jest.fn(),
         batchFilter: '',
-        setBatchFilter: mockSetBatchFilter,
+        setBatchFilter: jest.fn(),
         batchFilterItems: mockBatchFilterItems,
         eprelCodeFilter: '',
-        setEprelCodeFilter: mockSetEprelCodeFilter,
+        setEprelCodeFilter: jest.fn(),
         gtinCodeFilter: '',
-        setGtinCodeFilter: mockSetGtinCodeFilter,
-        tableData: mockTableData,
-        handleDeleteFiltersButtonClick: mockHandleDeleteFiltersButtonClick,
+        setGtinCodeFilter: jest.fn(),
+        errorStatus: false,
+        tableData: [],
+        handleDeleteFiltersButtonClick: jest.fn(),
     };
 
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    const renderComponent = (props = {}) => {
-        return render(
-            <TestWrapper>
-                <FilterBar errorStatus={false} {...defaultProps} {...props} />
-            </TestWrapper>
-        );
-    };
+    it('should render all filter elements', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
 
-    describe('Rendering', () => {
-        test('should render all filter components when tableData has items', () => {
-            renderComponent();
+        expect(screen.getByLabelText('pages.products.filterLabels.category')).toBeInTheDocument();
+        expect(screen.getByLabelText('pages.products.filterLabels.status')).toBeInTheDocument();
+        expect(screen.getByLabelText('pages.products.filterLabels.batch')).toBeInTheDocument();
+        expect(screen.getByLabelText('pages.products.filterLabels.eprelCode')).toBeInTheDocument();
+        expect(screen.getByLabelText('pages.products.filterLabels.gtinCode')).toBeInTheDocument();
+        expect(screen.getByText('pages.products.filterLabels.filter')).toBeInTheDocument();
+        expect(screen.getByText('pages.products.filterLabels.deleteFilters')).toBeInTheDocument();
+    });
 
-            expect(screen.getByLabelText('Category')).toBeInTheDocument();
-            expect(screen.getByLabelText('Batch')).toBeInTheDocument();
-            expect(screen.getByLabelText('EPREL Code')).toBeInTheDocument();
-            expect(screen.getByLabelText('GTIN Code')).toBeInTheDocument();
-            expect(screen.getByText('Filter')).toBeInTheDocument();
-            expect(screen.getByText('Delete Filters')).toBeInTheDocument();
+    it('should have filter and delete buttons disabled when no filters are set', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const filterButton = screen.getByText('pages.products.filterLabels.filter');
+        const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
+
+        expect(filterButton).toBeDisabled();
+        expect(deleteButton).toBeDisabled();
+    });
+
+    it('should enable filter button when category filter is set', () => {
+        const props = { ...defaultProps, categoryFilter: 'pages.products.categories.CATEGORY_1' };
+        renderWithTheme(<FilterBar {...props} />);
+
+        const filterButton = screen.getByText('pages.products.filterLabels.filter');
+        const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
+
+        expect(filterButton).not.toBeDisabled();
+        expect(deleteButton).not.toBeDisabled();
+    });
+
+    it('should enable filter button when status filter is set', () => {
+        const props = { ...defaultProps, statusFilter: 'pages.products.categories.STATE_1' };
+        renderWithTheme(<FilterBar {...props} />);
+
+        const filterButton = screen.getByText('pages.products.filterLabels.filter');
+        expect(filterButton).not.toBeDisabled();
+    });
+
+    it('should enable filter button when batch filter is set', () => {
+        const props = { ...defaultProps, batchFilter: '1' };
+        renderWithTheme(<FilterBar {...props} />);
+
+        const filterButton = screen.getByText('pages.products.filterLabels.filter');
+        expect(filterButton).not.toBeDisabled();
+    });
+
+    it('should enable filter button when eprel code filter is set', () => {
+        const props = { ...defaultProps, eprelCodeFilter: 'EPREL123' };
+        renderWithTheme(<FilterBar {...props} />);
+
+        const filterButton = screen.getByText('pages.products.filterLabels.filter');
+        expect(filterButton).not.toBeDisabled();
+    });
+
+    it('should enable filter button when gtin code filter is set', () => {
+        const props = { ...defaultProps, gtinCodeFilter: 'GTIN123' };
+        renderWithTheme(<FilterBar {...props} />);
+
+        const filterButton = screen.getByText('pages.products.filterLabels.filter');
+        expect(filterButton).not.toBeDisabled();
+    });
+
+    it('should enable delete button when errorStatus is true even with no filters', () => {
+        const props = { ...defaultProps, errorStatus: true };
+        renderWithTheme(<FilterBar {...props} />);
+
+        const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
+        expect(deleteButton).not.toBeDisabled();
+    });
+
+    it('should call setCategoryFilter when category select changes', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const categorySelect = screen.getByLabelText('pages.products.filterLabels.category');
+        fireEvent.mouseDown(categorySelect);
+
+        const categoryOption = screen.getByText('pages.products.categories.CATEGORY_1');
+        fireEvent.click(categoryOption);
+
+        expect(defaultProps.setCategoryFilter).toHaveBeenCalledWith('pages.products.categories.CATEGORY_1');
+    });
+
+    it('should call setStatusFilter when status select changes', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const statusSelect = screen.getByLabelText('pages.products.filterLabels.status');
+        fireEvent.mouseDown(statusSelect);
+
+        const statusOption = screen.getByText('pages.products.categories.STATE_1');
+        fireEvent.click(statusOption);
+
+        expect(defaultProps.setStatusFilter).toHaveBeenCalledWith('pages.products.categories.STATE_1');
+    });
+
+    it('should call setBatchFilter when batch select changes', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const batchSelect = screen.getByLabelText('pages.products.filterLabels.batch');
+        fireEvent.mouseDown(batchSelect);
+
+        const batchOption = screen.getByText('Batch 1');
+        fireEvent.click(batchOption);
+
+        expect(defaultProps.setBatchFilter).toHaveBeenCalledWith('1');
+    });
+
+    it('should call setEprelCodeFilter when eprel code input changes', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
+        fireEvent.change(eprelInput, { target: { value: 'EPREL123' } });
+
+        expect(defaultProps.setEprelCodeFilter).toHaveBeenCalledWith('EPREL123');
+    });
+
+    it('should call setGtinCodeFilter when gtin code input changes', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const gtinInput = screen.getByLabelText('pages.products.filterLabels.gtinCode');
+        fireEvent.change(gtinInput, { target: { value: 'GTIN123' } });
+
+        expect(defaultProps.setGtinCodeFilter).toHaveBeenCalledWith('GTIN123');
+    });
+
+    it('should call setFiltering when filter button is clicked', () => {
+        const props = { ...defaultProps, categoryFilter: 'pages.products.categories.CATEGORY_1' };
+        renderWithTheme(<FilterBar {...props} />);
+
+        const filterButton = screen.getByText('pages.products.filterLabels.filter');
+        fireEvent.click(filterButton);
+
+        expect(defaultProps.setFiltering).toHaveBeenCalledWith(true);
+    });
+
+    it('should call handleDeleteFiltersButtonClick when delete filters button is clicked', () => {
+        const props = { ...defaultProps, categoryFilter: 'pages.products.categories.CATEGORY_1' };
+        renderWithTheme(<FilterBar {...props} />);
+
+        const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
+        fireEvent.click(deleteButton);
+
+        expect(defaultProps.handleDeleteFiltersButtonClick).toHaveBeenCalled();
+    });
+
+    it('should render all category options in select', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const categorySelect = screen.getByLabelText('pages.products.filterLabels.category');
+        fireEvent.mouseDown(categorySelect);
+
+        expect(screen.getByText('pages.products.categories.CATEGORY_1')).toBeInTheDocument();
+        expect(screen.getByText('pages.products.categories.CATEGORY_2')).toBeInTheDocument();
+    });
+
+    it('should render all status options in select', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const statusSelect = screen.getByLabelText('pages.products.filterLabels.status');
+        fireEvent.mouseDown(statusSelect);
+
+        expect(screen.getByText('pages.products.categories.STATE_1')).toBeInTheDocument();
+        expect(screen.getByText('pages.products.categories.STATE_2')).toBeInTheDocument();
+    });
+
+    it('should render all batch options in select', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const batchSelect = screen.getByLabelText('pages.products.filterLabels.batch');
+        fireEvent.mouseDown(batchSelect);
+
+        expect(screen.getByText('Batch 1')).toBeInTheDocument();
+        expect(screen.getByText('Batch 2')).toBeInTheDocument();
+    });
+
+    it('should handle empty batchFilterItems array', () => {
+        const props = { ...defaultProps, batchFilterItems: [] };
+        renderWithTheme(<FilterBar {...props} />);
+
+        const batchSelect = screen.getByLabelText('pages.products.filterLabels.batch');
+        fireEvent.mouseDown(batchSelect);
+
+        // Non dovrebbero esserci opzioni nel menu
+        expect(screen.queryByText('Batch 1')).not.toBeInTheDocument();
+    });
+
+    it('should handle null/undefined batchFilterItems', () => {
+        const props = { ...defaultProps, batchFilterItems: null as any };
+        renderWithTheme(<FilterBar {...props} />);
+
+        // Il componente dovrebbe renderizzarsi senza errori
+        expect(screen.getByLabelText('pages.products.filterLabels.batch')).toBeInTheDocument();
+    });
+
+    it('should display current filter values', () => {
+        const props = {
+            ...defaultProps,
+            categoryFilter: 'pages.products.categories.CATEGORY_1',
+            statusFilter: 'pages.products.categories.STATE_1',
+            batchFilter: '1',
+            eprelCodeFilter: 'EPREL123',
+            gtinCodeFilter: 'GTIN123',
+        };
+
+        renderWithTheme(<FilterBar {...props} />);
+
+        expect(screen.getByDisplayValue('pages.products.categories.CATEGORY_1')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('pages.products.categories.STATE_1')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('1')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('EPREL123')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('GTIN123')).toBeInTheDocument();
+    });
+
+    it('should apply correct styling and layout', () => {
+        renderWithTheme(<FilterBar {...defaultProps} />);
+
+        const container = screen.getByLabelText('pages.products.filterLabels.category').closest('.MuiBox-root');
+        expect(container).toHaveStyle({
+            display: 'flex',
+            'flex-direction': 'row',
         });
     });
 
-    describe('Filter Buttons State', () => {
-        test('should disable filter and delete buttons when no filters are set', () => {
-            renderComponent();
+    it('should have correct button heights and min widths', () => {
+        const props = { ...defaultProps, categoryFilter: 'test' };
+        renderWithTheme(<FilterBar {...props} />);
 
-            const filterButton = screen.getByRole('button', { name: 'Filter' });
-            const deleteButton = screen.getByRole('button', { name: 'Delete Filters' });
+        const filterButton = screen.getByText('pages.products.filterLabels.filter');
+        const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
 
-            expect(filterButton).toBeDisabled();
-            expect(deleteButton).toBeDisabled();
-        });
-
-        test('should enable filter and delete buttons when category filter is set', () => {
-            renderComponent({ categoryFilter: 'APPLIANCES' });
-
-            const filterButton = screen.getByRole('button', { name: 'Filter' });
-            const deleteButton = screen.getByRole('button', { name: 'Delete Filters' });
-
-            expect(filterButton).not.toBeDisabled();
-            expect(deleteButton).not.toBeDisabled();
-        });
-
-        test('should enable filter and delete buttons when batch filter is set', () => {
-            renderComponent({ batchFilter: '1' });
-
-            const filterButton = screen.getByRole('button', { name: 'Filter' });
-            const deleteButton = screen.getByRole('button', { name: 'Delete Filters' });
-
-            expect(filterButton).not.toBeDisabled();
-            expect(deleteButton).not.toBeDisabled();
-        });
-
-        test('should enable filter and delete buttons when EPREL code filter is set', () => {
-            renderComponent({ eprelCodeFilter: 'EPREL123' });
-
-            const filterButton = screen.getByRole('button', { name: 'Filter' });
-            const deleteButton = screen.getByRole('button', { name: 'Delete Filters' });
-
-            expect(filterButton).not.toBeDisabled();
-            expect(deleteButton).not.toBeDisabled();
-        });
-
-        test('should enable filter and delete buttons when GTIN code filter is set', () => {
-            renderComponent({ gtinCodeFilter: 'GTIN456' });
-
-            const filterButton = screen.getByRole('button', { name: 'Filter' });
-            const deleteButton = screen.getByRole('button', { name: 'Delete Filters' });
-
-            expect(filterButton).not.toBeDisabled();
-            expect(deleteButton).not.toBeDisabled();
-        });
-    });
-
-    describe('User Interactions', () => {
-        test('should call setCategoryFilter when category select changes', async () => {
-            renderComponent();
-
-            const categorySelect = screen.getByLabelText('Category');
-            fireEvent.mouseDown(categorySelect);
-
-            const appliancesOption = await screen.findByText('Appliances');
-            fireEvent.click(appliancesOption);
-
-            expect(mockSetCategoryFilter).toHaveBeenCalledWith('Appliances');
-        });
-
-        test('should call setBatchFilter when batch select changes', async () => {
-            renderComponent();
-
-            const batchSelect = screen.getByLabelText('Batch');
-            fireEvent.mouseDown(batchSelect);
-
-            const batch1Option = await screen.findByText('Batch 1');
-            fireEvent.click(batch1Option);
-
-            expect(mockSetBatchFilter).toHaveBeenCalledWith('1');
-        });
-
-        test('should call setEprelCodeFilter when EPREL code input changes', () => {
-            renderComponent();
-
-            const eprelInput = screen.getByLabelText('EPREL Code');
-            fireEvent.change(eprelInput, { target: { value: 'EPREL123' } });
-
-            expect(mockSetEprelCodeFilter).toHaveBeenCalledWith('EPREL123');
-        });
-
-        test('should call setGtinCodeFilter when GTIN code input changes', () => {
-            renderComponent();
-
-            const gtinInput = screen.getByLabelText('GTIN Code');
-            fireEvent.change(gtinInput, { target: { value: 'GTIN456' } });
-
-            expect(mockSetGtinCodeFilter).toHaveBeenCalledWith('GTIN456');
-        });
-
-        test('should call setFiltering when filter button is clicked', () => {
-            renderComponent({ categoryFilter: 'APPLIANCES' });
-
-            const filterButton = screen.getByRole('button', { name: 'Filter' });
-            fireEvent.click(filterButton);
-
-            expect(mockSetFiltering).toHaveBeenCalledWith(true);
-        });
-
-        test('should call handleDeleteFiltersButtonClick when delete filters button is clicked', () => {
-            renderComponent({ categoryFilter: 'APPLIANCES' });
-
-            const deleteButton = screen.getByRole('button', { name: 'Delete Filters' });
-            fireEvent.click(deleteButton);
-
-            expect(mockHandleDeleteFiltersButtonClick).toHaveBeenCalled();
-        });
-    });
-
-    describe('Select Options', () => {
-        test('should render category options from PRODUCTS_CATEGORY', async () => {
-            renderComponent();
-
-            const categorySelect = screen.getByLabelText('Category');
-            fireEvent.mouseDown(categorySelect);
-
-            expect(await screen.findByText('Appliances')).toBeInTheDocument();
-            expect(await screen.findByText('Electronics')).toBeInTheDocument();
-        });
-
-        test('should render batch options from batchFilterItems', async () => {
-            renderComponent();
-
-            const batchSelect = screen.getByLabelText('Batch');
-            fireEvent.mouseDown(batchSelect);
-
-            expect(await screen.findByText('Batch 1')).toBeInTheDocument();
-            expect(await screen.findByText('Batch 2')).toBeInTheDocument();
-        });
-
-        test('should handle empty batchFilterItems array', () => {
-            renderComponent({ batchFilterItems: [] });
-
-            expect(screen.getByLabelText('Batch')).toBeInTheDocument();
-        });
-
-        test('should handle undefined batchFilterItems', () => {
-            renderComponent({ batchFilterItems: undefined });
-
-            expect(screen.getByLabelText('Batch')).toBeInTheDocument();
-        });
-    });
-
-    describe('Input Values', () => {
-        test('should display current filter values', () => {
-            renderComponent({
-                categoryFilter: 'APPLIANCES',
-                batchFilter: '1',
-                eprelCodeFilter: 'EPREL123',
-                gtinCodeFilter: 'GTIN456',
-            });
-
-            const eprelInput = screen.getByDisplayValue('EPREL123');
-            const gtinInput = screen.getByDisplayValue('GTIN456');
-
-            expect(eprelInput).toBeInTheDocument();
-            expect(gtinInput).toBeInTheDocument();
-        });
-    });
-
-    describe('Edge Cases', () => {
-        test('should handle missing translation keys gracefully', () => {
-            // This test ensures the component doesn't crash if translation keys are missing
-            renderComponent();
-
-            expect(screen.getByLabelText('Category')).toBeInTheDocument();
-        });
+        expect(filterButton).toHaveStyle({ height: '44px', 'min-width': '100px' });
+        expect(deleteButton).toHaveStyle({ height: '44px', 'min-width': '100px' });
     });
 });
