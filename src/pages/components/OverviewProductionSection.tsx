@@ -24,9 +24,9 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { ArrowForward } from '@mui/icons-material';
 import ROUTES from '../../routes';
 import { getProductFilesList } from '../../services/registerService';
-import { emptyData } from '../../utils/constants';
-import {UploadDTO} from "../../api/generated/register/UploadDTO";
-import {UploadsListDTO} from "../../api/generated/register/UploadsListDTO";
+import { EMPTY_DATA } from '../../utils/constants';
+import { UploadDTO } from '../../api/generated/register/UploadDTO';
+import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 
 function renderUploadStatusChip(status: string) {
   switch (status) {
@@ -90,7 +90,7 @@ const UploadInfoBox: React.FC<{
     return (
       <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
         <Typography variant="body2">
-          Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : emptyData}</b>
+          Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : EMPTY_DATA}</b>
         </Typography>
         <Button
           variant="contained"
@@ -186,9 +186,11 @@ const UploadsTable: React.FC<{
                   data.content.slice(0, rowsPerPage).map((row: UploadDTO) => (
                     <TableRow key={row.productFileId}>
                       <TableCell sx={{ padding: 0 }}>{row.batchName}</TableCell>
-                      <TableCell>{renderUploadStatusChip(row.uploadStatus ?? emptyData)}</TableCell>
                       <TableCell>
-                        {row.dateUpload ? formatDate(row.dateUpload) : emptyData}
+                        {renderUploadStatusChip(row.uploadStatus ?? EMPTY_DATA)}
+                      </TableCell>
+                      <TableCell>
+                        {row.dateUpload ? formatDate(row.dateUpload) : EMPTY_DATA}
                       </TableCell>
                     </TableRow>
                   ))}

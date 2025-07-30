@@ -2,6 +2,7 @@ import { ProductDTO } from '../../api/generated/register/ProductDTO';
 
 export interface Data {
   category: string;
+  status: string;
   energyClass: string;
   eprelCode: string;
   gtinCode: string;
@@ -10,11 +11,8 @@ export interface Data {
   id: number;
 }
 
-
 export type Order = 'asc' | 'desc';
 export type Value = string;
-
-
 
 export interface GetProductListParams {
   page?: number;

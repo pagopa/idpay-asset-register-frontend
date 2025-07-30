@@ -1,84 +1,104 @@
-import { TableHead, TableRow, TableCell, TableSortLabel, Box } from '@mui/material';
+import React from 'react';
+import { TableHead, TableRow, TableCell, TableSortLabel, Checkbox, Box } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { grey } from '@mui/material/colors';
 import { useTranslation } from 'react-i18next';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { EnhancedTableProps, HeadCell } from './helpers';
 
-function EnhancedTableHead(props: EnhancedTableProps) {
-  const { order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property: keyof ProductDTO) => (event: React.MouseEvent<unknown>) => {
-    onRequestSort(event, property);
-  };
+interface HeadCell {
+  id: keyof ProductDTO | 'selectedStatus' | 'actions';
+  label: string;
+  align: 'left' | 'center' | 'right';
+  width?: number | string;
+}
 
+export interface EnhancedTableHeadProps {
+  isInvitaliaUser: boolean;
+  headCells: Array<HeadCell>;
+  order: 'asc' | 'desc';
+  orderBy: keyof ProductDTO;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ProductDTO) => void;
+  isAllSelected: boolean;
+  isIndeterminate: boolean;
+  handleSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  cellLeftSx?: any;
+  cellCenterSx?: any;
+  cellRightSx?: any;
+}
+
+const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
+  isInvitaliaUser,
+  headCells,
+  order,
+  orderBy,
+  onRequestSort,
+  isAllSelected,
+  isIndeterminate,
+  handleSelectAllClick,
+  cellLeftSx,
+  cellCenterSx,
+  cellRightSx,
+}) => {
   const { t } = useTranslation();
 
-  const headCells: ReadonlyArray<HeadCell> = [
-    {
-      id: 'category',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'left',
-      label: `${t('pages.products.listHeader.category')}`,
-    },
-    {
-      id: 'energyClass',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.energeticClass')}`,
-    },
-    {
-      id: 'eprelCode',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.eprelCode')}`,
-    },
-    {
-      id: 'gtinCode',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'center',
-      label: `${t('pages.products.listHeader.gtinCode')}`,
-    },
-    {
-      id: 'batchName',
-      numeric: false,
-      disablePadding: false,
-      textAlign: 'centlefter',
-      label: `${t('pages.products.listHeader.batch')}`,
-    },
-  ];
-
   return (
-    <TableHead sx={{ backgroundColor: grey?.A100 }}>
+    <TableHead>
       <TableRow>
+        {isInvitaliaUser && (
+          <TableCell
+            sx={{
+              ...cellLeftSx,
+              width: headCells[0]?.width,
+              minWidth: headCells[0]?.width,
+              maxWidth: headCells[0]?.width,
+            }}
+          >
+            <Checkbox
+              color="primary"
+              indeterminate={isIndeterminate}
+              checked={isAllSelected}
+              onChange={handleSelectAllClick}
+            />
+          </TableCell>
+        )}
         {headCells.map((headCell) => (
           <TableCell
-            key={headCell?.id}
-            align={headCell?.textAlign ? headCell?.textAlign : 'left'}
-            padding="normal"
-            sortDirection={orderBy === headCell?.id ? order : false}
+            key={headCell.id}
+            align={headCell.align}
+            sortDirection={orderBy === headCell.id ? order : false}
+            sx={{
+              ...(headCell.align === 'left'
+                ? cellLeftSx
+                : headCell.align === 'center'
+                ? cellCenterSx
+                : cellRightSx),
+              width: headCell.width,
+              minWidth: headCell.width,
+              maxWidth: headCell.width,
+            }}
           >
-            <TableSortLabel
-              active={orderBy === headCell?.id}
-              direction={orderBy === headCell?.id ? order : 'asc'}
-              onClick={createSortHandler(headCell?.id)}
-              hideSortIcon={true}
-            >
-              {headCell?.label}
-              {orderBy === headCell?.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
-            </TableSortLabel>
+            {headCell.id !== 'selectedStatus' ? (
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : 'asc'}
+                onClick={(event) => onRequestSort(event, headCell.id as keyof ProductDTO)}
+                hideSortIcon={true}
+              >
+                {t(headCell.label)}
+                {orderBy === headCell?.id ? (
+                  <Box component="span" sx={visuallyHidden}>
+                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  </Box>
+                ) : null}
+              </TableSortLabel>
+            ) : (
+              t(headCell.label)
+            )}
           </TableCell>
         ))}
+        <TableCell sx={cellRightSx} />
       </TableRow>
     </TableHead>
   );
-}
+};
 
 export default EnhancedTableHead;
