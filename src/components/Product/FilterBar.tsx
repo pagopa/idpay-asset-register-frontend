@@ -120,14 +120,11 @@ export default function FilterBar({
           MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
           onChange={handleStatusChange}
         >
-          <MenuItem value="">{t(PRODUCTS_STATES.APPROVED)}</MenuItem>
-          {Object.keys(PRODUCTS_STATES)
-            .filter((statusKey) => statusKey !== 'APPROVED')
-            .map((statusKey) => (
-              <MenuItem key={statusKey} value={statusKey}>
-                {t(PRODUCTS_STATES[statusKey as keyof typeof PRODUCTS_STATES])}
-              </MenuItem>
-            ))}
+          {Object.keys(PRODUCTS_STATES).map((status) => (
+            <MenuItem key={status} value={t(`pages.products.categories.${status}`)}>
+              {t(`pages.products.categories.${status}`)}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
 
