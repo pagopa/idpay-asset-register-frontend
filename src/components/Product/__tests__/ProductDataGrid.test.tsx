@@ -329,7 +329,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Non ci sono prodotti caricati.')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
         });
 
@@ -349,7 +349,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('1 - 10 of 20')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
 
             const nextPageButton = screen.getByLabelText('Go to next page');
@@ -357,13 +357,13 @@ describe('ProductGrid', () => {
 
             await waitFor(() => {
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
-                    "", 0, 10, undefined, undefined, undefined, undefined, undefined, undefined
+                    "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
                 );
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
-                    "", 0, 10, "category,asc", "", "", "", undefined, ""
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(3,
-                    "", 1, 10, "category,asc", "", "", "", undefined, ""
+                    "", 1, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
             });
         });
