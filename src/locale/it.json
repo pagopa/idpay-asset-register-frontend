@@ -186,7 +186,10 @@
         "lavastoviglie": "DISHWASHERS",
         "lavasciuga": "WASHERDRIERS",
         "frigoriferi": "REFRIGERATINGAPPL",
-        "piani cottura": "COOKINGHOBS"
+        "piani cottura": "COOKINGHOBS",
+        "default": "APPROVED",
+        "contrassegnati": "SUPERVISIONED",
+        "esclusi": "REJECTED"
       },
       "tablePaginationFrom": "di",
       "emptyList": "Nessun record corrisponde alla ricerca.",
