@@ -222,5 +222,24 @@
     "positiveNumber": "Inserisci un valore positivo",
     "requiredField": "Campo obbligatorio",
     "number": "Inserisci un numero"
+  },
+  "invitaliaModal":{
+    "supervisioned": {
+    "title": "Contrassegna un prodotto",
+    "description":
+      "Segnala eventuali anomalie su un prodotto: verrà messo in pausa e potrai successivamente decidere se escluderlo o ripristinarlo.",
+    "listTitle": "I prodotti segnalati sono i seguenti:",
+    "reasonLabel": "Motivo segnalazione",
+    "reasonPlaceholder": "Motivo segnalazione",
+    "buttonText": "Chiudi"
+    },
+    "rejected":{
+    "title": "Escludi un prodotto",
+    "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
+    "listTitle": "I prodotti esclusi sono i seguenti:",
+    "reasonLabel": "Motivo esclusione",
+    "reasonPlaceholder": "Motivo esclusione",
+    "buttonText": "Escludi"
   }
+}
 }

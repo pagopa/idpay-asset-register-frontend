@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogTitle,
@@ -27,29 +28,28 @@ const buttonStyle = {
   width: 85,
 };
 
-const MODAL_CONFIG = {
-  supervisioned: {
-    title: 'Contrassegna un prodotto',
-    description:
-      'Segnala eventuali anomalie su un prodotto: verrà messo in pausa e potrai successivamente decidere se escluderlo o ripristinarlo.',
-    listTitle: 'I prodotti segnalati sono i seguenti:',
-    reasonLabel: 'Motivo segnalazione',
-    reasonPlaceholder: 'Motivo segnalazione',
-    buttonText: 'Chiudi',
-  },
-  rejected: {
-    title: 'Escludi un prodotto',
-    description:
-      "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
-    listTitle: 'I prodotti esclusi sono i seguenti:',
-    reasonLabel: 'Motivo esclusione',
-    reasonPlaceholder: 'Motivo esclusione',
-    buttonText: 'Escludi',
-  },
-};
-
 const ProductModal: React.FC<ProductModalProps> = ({ open, onClose, gtinCodes, actionType }) => {
   const [reason, setReason] = useState('');
+  const { t } = useTranslation();
+
+  const MODAL_CONFIG = {
+    supervisioned: {
+      title: t('invitaliaModal.supervisioned.title'),
+      description: t('invitaliaModal.supervisioned.description'),
+      listTitle: t('invitaliaModal.supervisioned.listTitle'),
+      reasonLabel: t('invitaliaModal.supervisioned.reasonLabel'),
+      reasonPlaceholder: t('invitaliaModal.supervisioned.reasonPlaceholder'),
+      buttonText: t('invitaliaModal.supervisioned.buttonText'),
+    },
+    rejected: {
+      title: t('invitaliaModal.rejected.title'),
+      description: t('invitaliaModal.rejected.description'),
+      listTitle: t('invitaliaModal.rejected.listTitle'),
+      reasonLabel: t('invitaliaModal.rejected.reasonLabel'),
+      reasonPlaceholder: t('invitaliaModal.rejected.reasonPlaceholder'),
+      buttonText: t('invitaliaModal.rejected.buttonText'),
+    },
+  };
 
   const config = MODAL_CONFIG[actionType as keyof typeof MODAL_CONFIG];
 
