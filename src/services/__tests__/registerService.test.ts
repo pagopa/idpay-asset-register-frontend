@@ -137,7 +137,7 @@ describe('Register Service', () => {
 
             const result = await getProducts('org-id', 1, 10, 'asc', 'cat', 'eprel', 'gtin', 'prod', 'file');
             expect(RegisterApi.getProducts).toHaveBeenCalledWith(
-                'org-id', 1, 10, 'asc', 'cat', 'eprel', 'gtin', 'prod', 'file'
+                'org-id', 1, 10, 'asc', 'cat', 'eprel', 'gtin', 'prod', 'file', undefined
             );
             expect(result).toEqual(mockData);
         });
@@ -148,7 +148,7 @@ describe('Register Service', () => {
 
             const result = await getProducts('org-id');
             expect(RegisterApi.getProducts).toHaveBeenCalledWith(
-                'org-id', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+                'org-id', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
             );
             expect(result).toEqual(mockData);
         });
