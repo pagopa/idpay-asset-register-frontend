@@ -22,7 +22,7 @@ jest.mock('../../../routes', () => ({
 
 jest.mock('../../../api/registerApiClient', () => ({
     RegisterApi: {
-        getProducts: jest.fn(),
+        getProductList: jest.fn(),
         getBatchFilterItems: jest.fn(),
     },
 }));
@@ -190,7 +190,7 @@ describe('ProductGrid', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        mockRegisterApi.getProducts.mockResolvedValue(mockProductListResponse);
+        mockRegisterApi.getProductList.mockResolvedValue(mockProductListResponse);
         mockRegisterApi.getBatchFilterItems.mockResolvedValue(mockBatchListResponse);
     });
 
@@ -203,15 +203,22 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+                expect(screen.getByText('Lavatrice')).toBeInTheDocument();
+                expect(screen.getByText('Lavasciuga')).toBeInTheDocument();
             });
 
 
-            expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(0)
+            expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
+                "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+            );
+            expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
+                "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
+            );
+            expect(mockRegisterApi.getBatchFilterItems).toHaveBeenCalled();
         });
 
         test('should handle API errors gracefully', async () => {
-            mockRegisterApi.getProducts.mockRejectedValue(new Error('API Error'));
+            mockRegisterApi.getProductList.mockRejectedValue(new Error('API Error'));
 
             render(
                 <TestWrapper>
@@ -234,7 +241,11 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+                expect(screen.getByText('Category')).toBeInTheDocument();
+                expect(screen.getByText('Energy Class')).toBeInTheDocument();
+                expect(screen.getByText('EPREL Code')).toBeInTheDocument();
+                expect(screen.getByText('GTIN Code')).toBeInTheDocument();
+                expect(screen.getByText('Batch')).toBeInTheDocument();
             });
         });
 
@@ -246,7 +257,10 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+                expect(screen.getByText('A++')).toBeInTheDocument();
+                expect(screen.getByText('A+')).toBeInTheDocument();
+                expect(screen.getByText('GTIN001')).toBeInTheDocument();
+                expect(screen.getByText('GTIN002')).toBeInTheDocument();
             });
         });
 
@@ -261,7 +275,7 @@ describe('ProductGrid', () => {
                 },
             ];
 
-            mockRegisterApi.getProducts.mockResolvedValue({
+            mockRegisterApi.getProductList.mockResolvedValue({
                 content: mockEmptyProductData,
                 pageNo: 0,
                 totalElements: 1,
@@ -274,7 +288,8 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                const dashElements = screen.getAllByText('No file loaded');
+                const dashElements = screen.getAllByText('-');
+                expect(dashElements.length).toBeGreaterThan(0);
             });
         });
     });
@@ -288,7 +303,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+                expect(screen.getByText('Category')).toBeInTheDocument();
             });
         });
 
@@ -300,7 +315,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+                expect(screen.getByText('Energy Class')).toBeInTheDocument();
             });
         });
     });
@@ -325,7 +340,7 @@ describe('ProductGrid', () => {
                 totalElements: 20,
             };
 
-            mockRegisterApi.getProducts.mockResolvedValue(mockLargeProductList);
+            mockRegisterApi.getProductList.mockResolvedValue(mockLargeProductList);
 
             render(
                 <TestWrapper>
@@ -335,6 +350,21 @@ describe('ProductGrid', () => {
 
             await waitFor(() => {
                 expect(screen.getByText('No file loaded')).toBeInTheDocument();
+            });
+
+            const nextPageButton = screen.getByLabelText('Go to next page');
+            fireEvent.click(nextPageButton);
+
+            await waitFor(() => {
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
+                    "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+                );
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
+                );
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(3,
+                    "", 1, undefined, "category,asc", "", "", "", "", undefined, ""
+                );
             });
         });
     });
@@ -354,7 +384,7 @@ describe('ProductGrid', () => {
             fireEvent.click(screen.getByText('Apply Filters'));
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(0);
+                expect(mockRegisterApi.getProductList).toHaveBeenCalledTimes(3);
             });
         });
 
@@ -372,7 +402,15 @@ describe('ProductGrid', () => {
             fireEvent.click(screen.getByText('Clear Filters'));
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(0)
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
+                    "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+                );
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
+                );
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(3,
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
+                );
             });
         });
     });
@@ -391,14 +429,19 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(0)
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
+                );
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, "batch123"
+                );
             });
         });
     });
 
     describe('Empty States', () => {
         test('should show empty message when no products and no filters', async () => {
-            mockRegisterApi.getProducts.mockResolvedValue({
+            mockRegisterApi.getProductList.mockResolvedValue({
                 content: [],
                 pageNo: 0,
                 totalElements: 0,
@@ -416,7 +459,7 @@ describe('ProductGrid', () => {
         });
 
         test('should show filtered empty message when no products with filters', async () => {
-            mockRegisterApi.getProducts.mockResolvedValue({
+            mockRegisterApi.getProductList.mockResolvedValue({
                 content: [],
                 pageNo: 0,
                 totalElements: 0,
@@ -447,7 +490,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+                expect(screen.getByText('Lavatrice')).toBeInTheDocument();
             });
         });
     });

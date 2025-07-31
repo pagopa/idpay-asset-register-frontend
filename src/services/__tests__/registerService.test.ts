@@ -15,7 +15,7 @@ jest.mock('../../api/registerApiClient', () => ({
         uploadProductListVerify: jest.fn(),
         downloadErrorReport: jest.fn(),
         getProductFiles: jest.fn(),
-        getProducts: jest.fn(),
+        getProductList: jest.fn(),
         getInstitutionsList: jest.fn(),
         getInstitutionById: jest.fn(),
     },
@@ -133,10 +133,10 @@ describe('Register Service', () => {
     describe('getProducts', () => {
         it('returns data when API call succeeds with all parameters', async () => {
             const mockData = { content: [] };
-            (RegisterApi.getProducts as jest.Mock).mockResolvedValue(mockData);
+            (RegisterApi.getProductList as jest.Mock).mockResolvedValue(mockData);
 
             const result = await getProducts('org-id', 1, 10, 'asc', 'cat', 'eprel', 'gtin', 'prod', 'file');
-            expect(RegisterApi.getProducts).toHaveBeenCalledWith(
+            expect(RegisterApi.getProductList).toHaveBeenCalledWith(
                 'org-id', 1, 10, 'asc', 'cat', 'eprel', 'gtin', 'prod', 'file', undefined
             );
             expect(result).toEqual(mockData);
@@ -144,10 +144,10 @@ describe('Register Service', () => {
 
         it('returns data when API call succeeds with minimal parameters', async () => {
             const mockData = { content: [] };
-            (RegisterApi.getProducts as jest.Mock).mockResolvedValue(mockData);
+            (RegisterApi.getProductList as jest.Mock).mockResolvedValue(mockData);
 
             const result = await getProducts('org-id');
-            expect(RegisterApi.getProducts).toHaveBeenCalledWith(
+            expect(RegisterApi.getProductList).toHaveBeenCalledWith(
                 'org-id', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
             );
             expect(result).toEqual(mockData);
@@ -160,14 +160,14 @@ describe('Register Service', () => {
                     data: mockErrorData
                 }
             };
-            (RegisterApi.getProducts as jest.Mock).mockRejectedValue(mockError);
+            (RegisterApi.getProductList as jest.Mock).mockRejectedValue(mockError);
 
             await expect(getProducts('org-id')).rejects.toEqual(mockErrorData);
         });
 
         it('throws original error when no error.response.data', async () => {
             const mockError = new Error('Products network error');
-            (RegisterApi.getProducts as jest.Mock).mockRejectedValue(mockError);
+            (RegisterApi.getProductList as jest.Mock).mockRejectedValue(mockError);
 
             await expect(getProducts('org-id')).rejects.toThrow('Products network error');
         });
@@ -176,7 +176,7 @@ describe('Register Service', () => {
             const mockError = {
                 response: {}
             };
-            (RegisterApi.getProducts as jest.Mock).mockRejectedValue(mockError);
+            (RegisterApi.getProductList as jest.Mock).mockRejectedValue(mockError);
 
             await expect(getProducts('org-id')).rejects.toEqual(mockError);
         });
