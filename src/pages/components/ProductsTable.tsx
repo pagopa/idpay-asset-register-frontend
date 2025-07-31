@@ -55,6 +55,7 @@ export interface ProductsTableProps {
 
 const rowTableSx = {
   height: '53px',
+  backgroundColor: '#FFFFFF',
   transition: 'background-color 0.2s',
   '&:hover': { backgroundColor: 'rgba(0,0,0,0.04)' },
 };

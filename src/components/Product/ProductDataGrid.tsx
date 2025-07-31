@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Button, Paper, TablePagination } from '@mui/material';
+import { Box, Button, Paper, TablePagination, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,7 +19,6 @@ import ProductsTable from '../../pages/components/ProductsTable';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
-import MessagePage from './MessagePage';
 import FilterBar from './FilterBar';
 import ProductModal from './ProductModal';
 
@@ -221,7 +220,20 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       setSelected,
     };
 
-    if (tableData?.length > 0 && !loading) {
+    if (tableData?.length > 0) {
+      if (loading) {
+        return (
+          <CircularProgress
+            size={36}
+            sx={{
+              color: '#0055AA',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+            }}
+          />
+        );
+      }
       return <ProductsTable {...commonProps} />;
     }
 
@@ -252,12 +264,13 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         errorStatus={apiErrorOccurred}
         tableData={tableData}
         handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+        loading={loading}
       />
       {tableData?.length === 0 && !loading && (
         <EmptyListTable message="pages.products.noFileLoaded" />
       )}
       <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
-        {!loading ? renderTable() : <MessagePage message={t(`pages.products.loading`)} />}
+        {renderTable()}
         {tableData?.length > 0 && !loading && (
           <TablePagination
             component="div"

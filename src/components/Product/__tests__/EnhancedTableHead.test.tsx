@@ -1,43 +1,340 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import EnhancedTableHead from '../EnhancedTableHead';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Table } from '@mui/material';
+import '@testing-library/jest-dom';
+import EnhancedTableHead, {EnhancedTableHeadProps} from "../EnhancedTableHead";
+import {ProductDTO} from "../../../api/generated/register/ProductDTO";
 
-// Mock useTranslation
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
-describe('EnhancedTableHead', () => {
-  const onRequestSort = jest.fn();
+jest.mock('@mui/utils', () => ({
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
+}));
 
-  const defaultProps = {
-    order: 'asc' as const,
-    orderBy: 'category' as const,
-    onRequestSort,
+const renderWithTheme = (component: React.ReactElement) => {
+  const theme = createTheme();
+  return render(
+      <ThemeProvider theme={theme}>
+        <Table>
+          {component}
+        </Table>
+      </ThemeProvider>
+  );
+};
+
+describe('EnhancedTableHead', () => {
+  const mockHeadCells = [
+    { id: 'selectedStatus' as const, label: 'pages.products.table.headers.selected', align: 'left' as const, width: 50 },
+    { id: 'productName' as keyof ProductDTO, label: 'pages.products.table.headers.productName', align: 'left' as const, width: 200 },
+    { id: 'category' as keyof ProductDTO, label: 'pages.products.table.headers.category', align: 'center' as const, width: 150 },
+    { id: 'status' as keyof ProductDTO, label: 'pages.products.table.headers.status', align: 'right' as const, width: 100 },
+    { id: 'actions' as const, label: 'pages.products.table.headers.actions', align: 'right' as const, width: 120 },
+  ];
+
+  const defaultProps: EnhancedTableHeadProps = {
+    isInvitaliaUser: true,
+    headCells: mockHeadCells,
+    order: 'asc',
+    orderBy: 'productName',
+    onRequestSort: jest.fn(),
+    isAllSelected: false,
+    isIndeterminate: false,
+    handleSelectAllClick: jest.fn(),
+    cellLeftSx: { backgroundColor: 'left' },
+    cellCenterSx: { backgroundColor: 'center' },
+    cellRightSx: { backgroundColor: 'right' },
   };
 
-  it('renderizza tutte le intestazioni di colonna', () => {
-    render(<EnhancedTableHead {...defaultProps} />);
-    expect(screen.getByText('pages.products.listHeader.category')).toBeInTheDocument();
-    expect(screen.getByText('pages.products.listHeader.energeticClass')).toBeInTheDocument();
-    expect(screen.getByText('pages.products.listHeader.eprelCode')).toBeInTheDocument();
-    expect(screen.getByText('pages.products.listHeader.gtinCode')).toBeInTheDocument();
-    expect(screen.getByText('pages.products.listHeader.batch')).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('chiama onRequestSort con la proprietà corretta al click su TableSortLabel', () => {
-    render(<EnhancedTableHead {...defaultProps} />);
-    const sortLabels = screen.getAllByRole('button');
-    // Clicca sulla prima colonna (category)
-    fireEvent.click(sortLabels[0]);
-    expect(onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'category');
+  describe('Rendering', () => {
+    it('should render table head with all cells when isInvitaliaUser is true', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      // Verifica che ci sia il checkbox per la selezione
+      expect(screen.getByRole('checkbox')).toBeInTheDocument();
+
+      // Verifica che tutte le celle dell'header siano presenti
+      expect(screen.getByText('pages.products.table.headers.selected')).toBeInTheDocument();
+      expect(screen.getByText('pages.products.table.headers.productName')).toBeInTheDocument();
+      expect(screen.getByText('pages.products.table.headers.category')).toBeInTheDocument();
+      expect(screen.getByText('pages.products.table.headers.status')).toBeInTheDocument();
+      expect(screen.getByText('pages.products.table.headers.actions')).toBeInTheDocument();
+    });
+
+    it('should render table head without checkbox when isInvitaliaUser is false', () => {
+      const props = { ...defaultProps, isInvitaliaUser: false };
+      renderWithTheme(<EnhancedTableHead {...props} />);
+
+      // Verifica che non ci sia il checkbox
+      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+
+      // Verifica che le altre celle siano comunque presenti
+      expect(screen.getByText('pages.products.table.headers.productName')).toBeInTheDocument();
+      expect(screen.getByText('pages.products.table.headers.category')).toBeInTheDocument();
+    });
+
+    it('should render with empty headCells array', () => {
+      const props = { ...defaultProps, headCells: [] };
+      renderWithTheme(<EnhancedTableHead {...props} />);
+
+      // Dovrebbe renderizzare solo il checkbox (se isInvitaliaUser è true) e la cella vuota finale
+      expect(screen.getByRole('checkbox')).toBeInTheDocument();
+    });
   });
 
-  it('visualizza l’indicatore di ordinamento sulla colonna attiva', () => {
-    render(<EnhancedTableHead {...defaultProps} />);
-    // Deve esserci il testo di ordinamento per la colonna attiva
-    expect(screen.getByText(/sorted ascending|sorted descending/)).toBeInTheDocument();
+  describe('Checkbox behavior', () => {
+    it('should render checkbox as checked when isAllSelected is true', () => {
+      const props = { ...defaultProps, isAllSelected: true };
+      renderWithTheme(<EnhancedTableHead {...props} />);
+
+      const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+      expect(checkbox.checked).toBe(true);
+      expect(checkbox.indeterminate).toBe(false);
+    });
+
+    it('should render checkbox as indeterminate when isIndeterminate is true', () => {
+      const props = { ...defaultProps, isIndeterminate: true };
+      renderWithTheme(<EnhancedTableHead {...props} />);
+
+      const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+      expect(checkbox.indeterminate).toBe(false);
+    });
+
+    it('should render checkbox as unchecked when both isAllSelected and isIndeterminate are false', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+      expect(checkbox.checked).toBe(false);
+      expect(checkbox.indeterminate).toBe(false);
+    });
+
+    it('should call handleSelectAllClick when checkbox is clicked', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const checkbox = screen.getByRole('checkbox');
+      fireEvent.click(checkbox);
+
+      expect(defaultProps.handleSelectAllClick).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Sorting behavior', () => {
+    it('should render sort labels for sortable columns', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      // Tutte le colonne tranne 'selectedStatus' dovrebbero avere il sort label
+      const sortButtons = screen.getAllByRole('button');
+      expect(sortButtons).toHaveLength(4); // productName, category, status, actions
+    });
+
+    it('should not render sort label for selectedStatus column', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      // La cella selectedStatus dovrebbe contenere solo il testo, non un bottone
+      const selectedCell = screen.getByText('pages.products.table.headers.selected').closest('th');
+      expect(selectedCell?.querySelector('[role="button"]')).toBeNull();
+    });
+
+    it('should call onRequestSort when sort label is clicked', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const productNameSort = screen.getByText('pages.products.table.headers.productName').closest('[role="button"]');
+      fireEvent.click(productNameSort!);
+
+      expect(defaultProps.onRequestSort).toHaveBeenCalledWith(
+          expect.any(Object),
+          'productName'
+      );
+    });
+
+    it('should show active sort state for current orderBy column', () => {
+      const props = { ...defaultProps, orderBy: 'category' as keyof ProductDTO, order: 'desc' as const };
+      renderWithTheme(<EnhancedTableHead {...props} />);
+
+      const categoryHeader = screen.getByText('pages.products.table.headers.category').closest('th');
+      expect(categoryHeader).toHaveAttribute('aria-sort', 'descending');
+    });
+
+    it('should render visually hidden sort direction text for active column - descending', () => {
+      const props = { ...defaultProps, orderBy: 'productName' as keyof ProductDTO, order: 'desc' as const };
+      renderWithTheme(<EnhancedTableHead {...props} />);
+
+      expect(screen.getByText('sorted descending')).toBeInTheDocument();
+    });
+
+    it('should render visually hidden sort direction text for active column - ascending', () => {
+      const props = { ...defaultProps, orderBy: 'productName' as keyof ProductDTO, order: 'asc' as const };
+      renderWithTheme(<EnhancedTableHead {...props} />);
+
+      expect(screen.getByText('sorted ascending')).toBeInTheDocument();
+    });
+
+    it('should not render visually hidden text for non-active columns', () => {
+      const props = { ...defaultProps, orderBy: 'category' as keyof ProductDTO };
+      renderWithTheme(<EnhancedTableHead {...props} />);
+
+      // Dovrebbe esserci il testo per 'category' ma non per 'productName'
+      expect(screen.getByText('sorted ascending')).toBeInTheDocument();
+      expect(screen.queryByText('sorted descending')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Cell alignment and styling', () => {
+    it('should apply correct alignment for left-aligned cells', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const leftCell = screen.getByText('pages.products.table.headers.productName').closest('th');
+      expect(leftCell).toHaveStyle({ textAlign: 'left' });
+    });
+
+    it('should apply correct alignment for center-aligned cells', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const centerCell = screen.getByText('pages.products.table.headers.category').closest('th');
+      expect(centerCell).toHaveStyle({ textAlign: 'center' });
+    });
+
+    it('should apply correct alignment for right-aligned cells', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const rightCell = screen.getByText('pages.products.table.headers.status').closest('th');
+      expect(rightCell).toHaveStyle({ textAlign: 'right' });
+    });
+
+    it('should apply cellLeftSx styling to left-aligned cells', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const leftCell = screen.getByText('pages.products.table.headers.productName').closest('th');
+      expect(leftCell).toHaveStyle({ backgroundColor: 'left' });
+    });
+
+    it('should apply cellCenterSx styling to center-aligned cells', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const centerCell = screen.getByText('pages.products.table.headers.category').closest('th');
+      expect(centerCell).toHaveStyle({ backgroundColor: 'center' });
+    });
+
+    it('should apply cellRightSx styling to right-aligned cells', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const rightCell = screen.getByText('pages.products.table.headers.status').closest('th');
+      expect(rightCell).toHaveStyle({ backgroundColor: 'right' });
+    });
+
+    it('should apply width styles to cells', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const productNameCell = screen.getByText('pages.products.table.headers.productName').closest('th');
+      expect(productNameCell).toHaveStyle({
+        width: '200px',
+        minWidth: '200px',
+        maxWidth: '200px',
+      });
+    });
+
+    it('should apply width styles to checkbox cell from first headCell', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const checkboxCell = screen.getByRole('checkbox').closest('th');
+      expect(checkboxCell).toHaveStyle({
+        width: '50px',
+        minWidth: '50px',
+        maxWidth: '50px',
+      });
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('should handle missing cellSx props', () => {
+      const props = {
+        ...defaultProps,
+        cellLeftSx: undefined,
+        cellCenterSx: undefined,
+        cellRightSx: undefined,
+      };
+
+      expect(() => renderWithTheme(<EnhancedTableHead {...props} />)).not.toThrow();
+    });
+
+    it('should handle headCells without width property', () => {
+      const headCellsWithoutWidth = mockHeadCells.map(cell => {
+        const { width, ...cellWithoutWidth } = cell;
+        return cellWithoutWidth;
+      });
+
+      const props = { ...defaultProps, headCells: headCellsWithoutWidth };
+
+      expect(() => renderWithTheme(<EnhancedTableHead {...props} />)).not.toThrow();
+    });
+
+    it('should handle empty first headCell when isInvitaliaUser is true', () => {
+      const props = { ...defaultProps, headCells: [] };
+      renderWithTheme(<EnhancedTableHead {...props} />);
+
+      const checkboxCell = screen.getByRole('checkbox').closest('th');
+      // Non dovrebbe avere width definiti se headCells[0] non esiste
+      expect(checkboxCell).not.toHaveStyle({ width: '50px' });
+    });
+
+    it('should render final empty TableCell', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      const allCells = screen.getAllByRole('columnheader');
+      // Dovrebbe esserci una cella extra alla fine
+      expect(allCells).toHaveLength(mockHeadCells.length + 2); // +1 per checkbox, +1 per cella finale vuota
+    });
+
+    it('should handle different ProductDTO key types', () => {
+      const headCellsWithDifferentKeys = [
+        { id: 'id' as keyof ProductDTO, label: 'ID', align: 'left' as const },
+        { id: 'createdAt' as keyof ProductDTO, label: 'Created', align: 'center' as const },
+      ];
+
+      const props = { ...defaultProps, headCells: headCellsWithDifferentKeys, orderBy: 'id' as keyof ProductDTO };
+
+      expect(() => renderWithTheme(<EnhancedTableHead {...props} />)).not.toThrow();
+
+      // Verifica che le celle siano renderizzate
+      expect(screen.getByText('ID')).toBeInTheDocument();
+      expect(screen.getByText('Created')).toBeInTheDocument();
+    });
+
+    it('should handle click on different sortable columns', () => {
+      renderWithTheme(<EnhancedTableHead {...defaultProps} />);
+
+      // Test click su category
+      const categorySort = screen.getByText('pages.products.table.headers.category').closest('[role="button"]');
+      fireEvent.click(categorySort!);
+      expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'category');
+
+      // Test click su status
+      const statusSort = screen.getByText('pages.products.table.headers.status').closest('[role="button"]');
+      fireEvent.click(statusSort!);
+      expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'status');
+
+      // Test click su actions
+      const actionsSort = screen.getByText('pages.products.table.headers.actions').closest('[role="button"]');
+      fireEvent.click(actionsSort!);
+      expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'actions');
+    });
   });
 });

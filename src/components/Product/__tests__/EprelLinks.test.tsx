@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import EprelLinks from '../EprelLinks'
-import { emptyData } from '../../../utils/constants';
 import { ProductDTO } from '../../../api/generated/register/ProductDTO';
 import '@testing-library/jest-dom';
+import {EMPTY_DATA} from "../../../utils/constants";
 
 describe('EprelLinks', () => {
   const baseRow: ProductDTO = {
@@ -19,19 +19,19 @@ describe('EprelLinks', () => {
 
   it('renderizza solo Typography con emptyData se eprelCode è stringa vuota', () => {
     render(<EprelLinks row={{...baseRow, eprelCode: ''}}/>);
-    expect(screen.getByText(emptyData)).toBeInTheDocument();
+    expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   it('renderizza solo Typography con emptyData se eprelCode è undefined', () => {
     render(<EprelLinks row={{...baseRow, eprelCode: undefined}}/>);
-    expect(screen.getByText(emptyData)).toBeInTheDocument();
+    expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   it('renderizza solo Typography con emptyData se eprelCode è null', () => {
     render(<EprelLinks row={{...baseRow, eprelCode: null as any}}/>);
-    expect(screen.getByText(emptyData)).toBeInTheDocument();
+    expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 })

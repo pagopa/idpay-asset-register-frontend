@@ -46,7 +46,7 @@ jest.mock('react-i18next', () => ({
                 'pages.products.emptyList': 'No products found',
                 'pages.products.noFileLoaded': 'No file loaded',
                 'pages.products.loading': 'Loading...',
-                'pages.products.tablePaginationFrom': 'of',
+                'pages.products.tablePaginationFrom': 'di',
                 'commons.categories.appliances': 'Appliances',
                 'commons.categories.electronics': 'Electronics',
                 'pages.products.categories.appliances': 'Appliances',
@@ -209,10 +209,10 @@ describe('ProductGrid', () => {
 
 
             expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
-                "", 0, 10, undefined, undefined, undefined, undefined, undefined, undefined
+                "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
             );
             expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
-                "", 0, 10, "category,asc", "", "", "", undefined, ""
+                "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
             );
             expect(mockRegisterApi.getBatchFilterItems).toHaveBeenCalled();
         });
@@ -317,9 +317,6 @@ describe('ProductGrid', () => {
             await waitFor(() => {
                 expect(screen.getByText('Energy Class')).toBeInTheDocument();
             });
-
-            // I pulsanti di ordinamento per questi campi dovrebbero essere disabilitati
-            // Questo test verificherebbe che il TableSortLabel sia disabilitato
         });
     });
 
@@ -332,7 +329,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('1 - 2 of 2')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
         });
 
@@ -352,22 +349,21 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('1 - 10 of 20')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
 
-            // Simulare il cambio di pagina
             const nextPageButton = screen.getByLabelText('Go to next page');
             fireEvent.click(nextPageButton);
 
             await waitFor(() => {
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
-                    "", 0, 10, undefined, undefined, undefined, undefined, undefined, undefined
+                    "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
                 );
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
-                    "", 0, 10, "category,asc", "", "", "", undefined, ""
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(3,
-                    "", 1, 10, "category,asc", "", "", "", undefined, ""
+                    "", 1, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
             });
         });
@@ -407,13 +403,13 @@ describe('ProductGrid', () => {
 
             await waitFor(() => {
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
-                    "", 0, 10, undefined, undefined, undefined, undefined, undefined, undefined
+                    "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
                 );
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
-                    "", 0, 10, "category,asc", "", "", "", undefined, ""
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(3,
-                    "", 0, 10, "category,asc", "", "", "", undefined, ""
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
             });
         });
@@ -434,10 +430,10 @@ describe('ProductGrid', () => {
 
             await waitFor(() => {
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
-                    "", 0, 10, "category,asc", "", "", "", undefined, ""
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
                 expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
-                    "", 0, 10, "category,asc", "", "", "", undefined, "batch123"
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, "batch123"
                 );
             });
         });

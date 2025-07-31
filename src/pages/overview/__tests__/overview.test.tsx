@@ -173,9 +173,14 @@ describe('Overview Component', () => {
 
             renderWithTheme(<Overview />);
 
-            // Verifica che vengano mostrati i placeholder per dati vuoti
-            const emptyDataElements = screen.getAllByText('N/A');
-            expect(emptyDataElements).toHaveLength(6); // 6 campi con dati vuoti
+            const valueElements = screen.getAllByText('', {
+                selector: 'p.MuiTypography-body2[class*="css-bvuapi"]'
+            });
+            expect(valueElements).toHaveLength(6);
+
+            valueElements.forEach(element => {
+                expect(element).toBeEmptyDOMElement();
+            });
         });
 
         it('should display empty data placeholder when user object exists but fields are empty', () => {
@@ -192,9 +197,14 @@ describe('Overview Component', () => {
 
             renderWithTheme(<Overview />);
 
-            // Verifica che vengano mostrati i placeholder per dati vuoti
-            const emptyDataElements = screen.getAllByText('N/A');
-            expect(emptyDataElements).toHaveLength(6);
+            const valueElements = screen.getAllByText('', {
+                selector: 'p.MuiTypography-body2[class*="css-bvuapi"]'
+            });
+            expect(valueElements).toHaveLength(6);
+
+            valueElements.forEach(element => {
+                expect(element).toBeEmptyDOMElement();
+            });
         });
 
         it('should handle partially filled user data', () => {
@@ -211,12 +221,15 @@ describe('Overview Component', () => {
 
             renderWithTheme(<Overview />);
 
-            // Verifica che i dati presenti siano mostrati
             expect(screen.getByText('Ragione Sociale')).toBeInTheDocument();
+            const valueElements = screen.getAllByText('', {
+                selector: 'p.MuiTypography-body2[class*="css-bvuapi"]'
+            });
+            expect(valueElements).toHaveLength(3);
 
-            // Verifica che i campi vuoti mostrino il placeholder
-            const emptyDataElements = screen.getAllByText('N/A');
-            expect(emptyDataElements).toHaveLength(3);
+            valueElements.forEach(element => {
+                expect(element).toBeEmptyDOMElement();
+            });
         });
     });
 
@@ -298,9 +311,14 @@ describe('Overview Component', () => {
 
             renderWithTheme(<Overview />);
 
-            // Verifica che vengano mostrati i placeholder per dati vuoti
-            const emptyDataElements = screen.getAllByText('N/A');
-            expect(emptyDataElements).toHaveLength(6);
+            const valueElements = screen.getAllByText('', {
+                selector: 'p.MuiTypography-body2[class*="css-bvuapi"]'
+            });
+            expect(valueElements).toHaveLength(6);
+
+            valueElements.forEach(element => {
+                expect(element).toBeEmptyDOMElement();
+            });
         });
     });
 });
