@@ -34,9 +34,9 @@ function renderUploadStatusIcon(status: string) {
     case 'APPROVED':
       return;
     case 'SUPERVISIONED':
-      return <WarningIcon sx={{ color: '#D9AD3C' }} />;
+      return <WarningIcon color="warning" />;
     case 'REJECTED':
-      return <ErrorIcon sx={{ color: '#D85757' }} />;
+      return <ErrorIcon color="error" />;
     default:
       return;
   }

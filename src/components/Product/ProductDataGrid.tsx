@@ -3,7 +3,7 @@ import { Box, Button, Paper, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { RegisterApi } from '../../api/registerApiClient';
+import { getProducts, getBatchFilterList } from '../../services/registerService';
 import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA } from '../../utils/constants';
 import {
   batchIdSelector,
@@ -12,8 +12,6 @@ import {
   setBatchName,
 } from '../../redux/slices/productsSlice';
 import EmptyListTable from '../../pages/components/EmptyListTable';
-import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
-import { BatchList } from '../../api/generated/register/BatchList';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { INVITALIA } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
@@ -24,50 +22,6 @@ import ProductDetail from './ProductDetail';
 import MessagePage from './MessagePage';
 import FilterBar from './FilterBar';
 import ProductModal from './ProductModal';
-
-const getProductList = async (
-  xOrganizationSelected: string,
-  page?: number,
-  size?: number,
-  sort?: string,
-  category?: string,
-  status?: string,
-  eprelCode?: string,
-  gtinCode?: string,
-  productCode?: string,
-  productFileId?: string
-): Promise<ProductListDTO> => {
-  try {
-    return await RegisterApi.getProducts(
-      xOrganizationSelected,
-      page,
-      size,
-      sort,
-      category,
-      status,
-      eprelCode,
-      gtinCode,
-      productCode,
-      productFileId
-    );
-  } catch (error: any) {
-    if (error?.response && error?.response?.data) {
-      throw error.response.data;
-    }
-    throw error;
-  }
-};
-
-const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchList> => {
-  try {
-    return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
-  } catch (error: any) {
-    if (error?.response && error?.response?.data) {
-      throw error.response.data;
-    }
-    throw error;
-  }
-};
 
 type ProductDataGridProps = {
   organizationId: string;
@@ -104,29 +58,30 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
 
   const [selected, setSelected] = useState<Array<string>>([]);
-  const [openModal, setOpenModal] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>(undefined);
+
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
   const { t } = useTranslation();
 
-  const handleOpenSupervisionedModal = () => {
-    setModalAction('supervisioned');
-    setOpenModal(true);
+  const fetchProductList = () => {
+    setLoading(true);
+    callProductsApi(organizationId);
   };
 
-  const handleOpenRejectedModal = () => {
-    setModalAction('rejected');
-    setOpenModal(true);
+  const updaDataTable = () => {
+    fetchProductList();
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setModalAction(undefined);
+  const handleOpenModal = (action: string) => {
+    setModalAction(action);
+    setModalOpen(true);
   };
+
   const callProductsApi = (organizationId: string) => {
     const sortKey = `${orderBy},${order}`;
-    void getProductList(
+    void getProducts(
       organizationId,
       page,
       rowsPerPage,
@@ -175,7 +130,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   useEffect(() => {
     setLoading(true);
     if (batchId === '') {
-      void getProductList(organizationId, page, rowsPerPage)
+      void getProducts(organizationId, page, rowsPerPage)
         .then((res) => {
           const { content, pageNo, totalElements } = res;
           setTableData(content ? Array.from(content) : []);
@@ -337,7 +292,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
                 '&:hover': { backgroundColor: '#005bb5' },
               }}
               disabled={selected.length === 0}
-              onClick={handleOpenSupervisionedModal}
+              onClick={() => handleOpenModal('supervisioned')}
             >
               Contrassegna
             </Button>
@@ -355,7 +310,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
                 },
               }}
               disabled={selected.length === 0}
-              onClick={handleOpenRejectedModal}
+              onClick={() => handleOpenModal('rejected')}
             >
               Escludi
             </Button>
@@ -363,10 +318,12 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         )}
       </Paper>
       <ProductModal
-        open={openModal}
-        onClose={handleCloseModal}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
         gtinCodes={selected}
         actionType={modalAction}
+        organizationId={organizationId}
+        onUpdateTable={updaDataTable}
       />
       <DetailDrawer
         data-testid="detail-drawer"

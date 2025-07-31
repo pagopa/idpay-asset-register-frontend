@@ -204,7 +204,7 @@ paths:
         '500':
           $ref: '#/components/responses/GET_product-files_batch-list_500_Response'
   /products/update-status/approved:
-    patch:
+    post:
       tags:
         - products
       summary: Approve a list of products
@@ -219,25 +219,21 @@ paths:
               $ref: '#/components/schemas/ProductsUpdateDTO'
       responses:
         '200':
-          $ref: '#/components/responses/PATCH_products_update-status_approved_200_Response'
+          $ref: '#/components/responses/POST_products_update-status_approved_200_Response'
         '400':
-          $ref: '#/components/responses/PATCH_products_update-status_approved_400_Response'
+          $ref: '#/components/responses/POST_products_update-status_approved_400_Response'
         '401':
-          $ref: '#/components/responses/PATCH_products_update-status_approved_401_Response'
+          $ref: '#/components/responses/POST_products_update-status_approved_401_Response'
         '429':
-          $ref: '#/components/responses/PATCH_products_update-status_approved_429_Response'
+          $ref: '#/components/responses/POST_products_update-status_approved_429_Response'
         '500':
-          $ref: '#/components/responses/PATCH_products_update-status_approved_500_Response'
+          $ref: '#/components/responses/POST_products_update-status_approved_500_Response'
   /products/update-status/supervisioned:
-    patch:
+    post:
       tags:
         - products
       summary: Mark products as in supervision
-      description: 'ENG: Set the status of a list of products to IN_VALIDATION.
-
-        IT: Imposta lo stato di una lista di prodotti su IN_VALIDATION.
-
-        '
+      description: 'ENG: Set the status of a list of products to IN_VALIDATION. IT: Imposta lo stato di una lista di prodotti su IN_VALIDATION.        '
       operationId: updateProductStatusSupervisioned
       parameters:
         - $ref: '#/components/parameters/x_organization_selected_header'
@@ -248,17 +244,17 @@ paths:
               $ref: '#/components/schemas/ProductsUpdateDTO'
       responses:
         '200':
-          $ref: '#/components/responses/PATCH_products_update-status_supervisioned_200_Response'
+          $ref: '#/components/responses/POST_products_update-status_supervisioned_200_Response'
         '400':
-          $ref: '#/components/responses/PATCH_products_update-status_supervisioned_400_Response'
+          $ref: '#/components/responses/POST_products_update-status_supervisioned_400_Response'
         '401':
-          $ref: '#/components/responses/PATCH_products_update-status_supervisioned_401_Response'
+          $ref: '#/components/responses/POST_products_update-status_supervisioned_401_Response'
         '429':
-          $ref: '#/components/responses/PATCH_products_update-status_supervisioned_429_Response'
+          $ref: '#/components/responses/POST_products_update-status_supervisioned_429_Response'
         '500':
-          $ref: '#/components/responses/PATCH_products_update-status_supervisioned_500_Response'
+          $ref: '#/components/responses/POST_products_update-status_supervisioned_500_Response'
   /products/update-status/rejected:
-    patch:
+    post:
       tags:
         - products
       summary: Reject a list of products
@@ -277,15 +273,15 @@ paths:
               $ref: '#/components/schemas/ProductsUpdateDTO'
       responses:
         '200':
-          $ref: '#/components/responses/PATCH_products_update-status_rejected_200_Response'
+          $ref: '#/components/responses/POST_products_update-status_rejected_200_Response'
         '400':
-          $ref: '#/components/responses/PATCH_products_update-status_rejected_400_Response'
+          $ref: '#/components/responses/POST_products_update-status_rejected_400_Response'
         '401':
-          $ref: '#/components/responses/PATCH_products_update-status_rejected_401_Response'
+          $ref: '#/components/responses/POST_products_update-status_rejected_401_Response'
         '429':
-          $ref: '#/components/responses/PATCH_products_update-status_rejected_429_Response'
+          $ref: '#/components/responses/POST_products_update-status_rejected_429_Response'
         '500':
-          $ref: '#/components/responses/PATCH_products_update-status_rejected_500_Response'
+          $ref: '#/components/responses/POST_products_update-status_rejected_500_Response'
   /products:
     get:
       tags:
@@ -882,6 +878,7 @@ components:
             - KO
         errorKey:
           type: string
+          nullable: true
           enum:
             - product.update.error
     ProductFileDTO:
@@ -1594,7 +1591,7 @@ components:
       headers:
         Access-Control-Allow-Origin:
           $ref: '#/components/headers/Access-Control-Allow-Origin'
-    PATCH_products_update-status_approved_200_Response:
+    POST_products_update-status_approved_200_Response:
       description: Products approved successfully
       headers:
         Access-Control-Allow-Origin:
@@ -1609,7 +1606,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateResponseDTO'
-    PATCH_products_update-status_approved_400_Response:
+    POST_products_update-status_approved_400_Response:
       description: Bad request
       headers:
         Access-Control-Allow-Origin:
@@ -1624,7 +1621,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_approved_401_Response:
+    POST_products_update-status_approved_401_Response:
       description: Authentication failed
       headers:
         Access-Control-Allow-Origin:
@@ -1639,7 +1636,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_approved_429_Response:
+    POST_products_update-status_approved_429_Response:
       headers:
         Access-Control-Allow-Origin:
           $ref: '#/components/headers/Access-Control-Allow-Origin'
@@ -1656,13 +1653,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_approved_500_Response:
+    POST_products_update-status_approved_500_Response:
       description: Server error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_supervisioned_200_Response:
+    POST_products_update-status_supervisioned_200_Response:
       description: Products marked as in validation successfully
       headers:
         Access-Control-Allow-Origin:
@@ -1677,7 +1674,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateResponseDTO'
-    PATCH_products_update-status_supervisioned_400_Response:
+    POST_products_update-status_supervisioned_400_Response:
       description: Bad request
       headers:
         Access-Control-Allow-Origin:
@@ -1692,7 +1689,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_supervisioned_401_Response:
+    POST_products_update-status_supervisioned_401_Response:
       description: Authentication failed
       headers:
         Access-Control-Allow-Origin:
@@ -1707,7 +1704,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_supervisioned_429_Response:
+    POST_products_update-status_supervisioned_429_Response:
       description: Too many requests
       headers:
         Access-Control-Allow-Origin:
@@ -1724,7 +1721,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_supervisioned_500_Response:
+    POST_products_update-status_supervisioned_500_Response:
       description: Server error
       headers:
         Access-Control-Allow-Origin:
@@ -1733,7 +1730,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_rejected_200_Response:
+    POST_products_update-status_rejected_200_Response:
       description: Products rejected successfully
       headers:
         Access-Control-Allow-Origin:
@@ -1748,7 +1745,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateResponseDTO'
-    PATCH_products_update-status_rejected_400_Response:
+    POST_products_update-status_rejected_400_Response:
       description: Bad request
       headers:
         Access-Control-Allow-Origin:
@@ -1763,7 +1760,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_rejected_401_Response:
+    POST_products_update-status_rejected_401_Response:
       description: Authentication failed
       headers:
         Access-Control-Allow-Origin:
@@ -1778,7 +1775,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_rejected_429_Response:
+    POST_products_update-status_rejected_429_Response:
       description: Too many requests
       headers:
         Access-Control-Allow-Origin:
@@ -1795,7 +1792,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    PATCH_products_update-status_rejected_500_Response:
+    POST_products_update-status_rejected_500_Response:
       description: Server error
       headers:
         Access-Control-Allow-Origin:
