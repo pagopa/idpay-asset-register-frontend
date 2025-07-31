@@ -15,6 +15,8 @@ type Props = {
   open: boolean;
   data: ProductDTO;
   isInvitaliaUser: boolean;
+  onUpdateTable?: () => void;
+  onClose?: () => void;
 };
 
 const buttonStyle = {
@@ -61,13 +63,19 @@ const handleOpenModal = (
   }
 };
 
-export default function ProductDetail({ data, isInvitaliaUser }: Props) {
+export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, onClose }: Props) {
   const { t } = useTranslation();
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
 
   const handleConfirmRestore = () => {
     handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], 'TODO');
     setRestoreDialogOpen(false);
+    if (typeof onUpdateTable === 'function') {
+      onUpdateTable();
+    }
+    if (typeof onClose === 'function') {
+      onClose();
+    }
   };
 
   return (

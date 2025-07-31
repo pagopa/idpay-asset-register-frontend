@@ -340,6 +340,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           data={drawerData}
           isInvitaliaUser={isInvitaliaUser}
           open={true}
+          onUpdateTable={updaDataTable}
+          onClose={() => handleToggleDrawer(false)}
         />
       </DetailDrawer>
     </>
