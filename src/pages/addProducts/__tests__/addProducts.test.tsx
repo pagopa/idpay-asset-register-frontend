@@ -7,6 +7,9 @@ import { createTheme } from '@mui/material/styles';
 import '@testing-library/jest-dom';
 import AddProducts from '../addProducts';
 
+const mockNavigate = jest.fn();
+const mockOnExit = jest.fn();
+
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => {
@@ -45,12 +48,12 @@ jest.mock('@pagopa/mui-italia', () => ({
 }));
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor', () => ({
-    useUnloadEventOnExit: () => jest.fn((callback) => callback())
+    useUnloadEventOnExit: () => mockOnExit
 }));
 
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
-    useNavigate: () => jest.fn()
+    useNavigate: () => mockNavigate
 }));
 
 jest.mock('../formAddProducts', () => {
@@ -97,6 +100,7 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 describe('AddProducts Component', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        mockOnExit.mockImplementation((callback) => callback());
     });
 
     test('renders component correctly', () => {
@@ -107,9 +111,7 @@ describe('AddProducts Component', () => {
         );
 
         expect(screen.getByTestId('title')).toBeInTheDocument();
-
         expect(screen.getByText('Home')).toBeInTheDocument();
-
         expect(screen.getByTestId('back-button-test')).toBeInTheDocument();
         expect(screen.getByText('Esci')).toBeInTheDocument();
     });
@@ -122,12 +124,9 @@ describe('AddProducts Component', () => {
         );
 
         expect(screen.getByTestId('title-box-info')).toBeInTheDocument();
-
         expect(screen.getByText('Carica il file con i tuoi prodotti.')).toBeInTheDocument();
         expect(screen.getByText('Formato supportato: CSV')).toBeInTheDocument();
-
         expect(screen.getByText('Vai al manuale')).toBeInTheDocument();
-
         expect(screen.getByTestId('form-add-products')).toBeInTheDocument();
     });
 
@@ -157,7 +156,6 @@ describe('AddProducts Component', () => {
 
         const breadcrumbContainer = screen.getByRole('navigation');
         expect(breadcrumbContainer).toBeInTheDocument();
-
         expect(screen.getByText('Home')).toBeInTheDocument();
     });
 
@@ -180,7 +178,87 @@ describe('AddProducts Component', () => {
         );
 
         expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'breadcrumb');
-
         expect(screen.getByRole('button', { name: /esci/i })).toBeInTheDocument();
+    });
+
+    // NUOVO TEST PER COPRIRE LA FUNZIONE MANCANTE
+    test('handles back button click and navigation', async () => {
+        const user = userEvent.setup();
+
+        render(
+            <TestWrapper>
+                <AddProducts />
+            </TestWrapper>
+        );
+
+        const backButton = screen.getByTestId('back-button-test');
+
+        // Clicca il pulsante "Esci"
+        await user.click(backButton);
+
+        // Verifica che onExit sia stato chiamato
+        expect(mockOnExit).toHaveBeenCalled();
+
+        // Verifica che navigate sia stato chiamato con i parametri corretti
+        expect(mockNavigate).toHaveBeenCalledWith('/base', { replace: true });
+    });
+
+    // TEST AGGIUNTIVO PER COPRIRE IL CASO IN CUI onExit NON CHIAMA IL CALLBACK
+    test('handles back button click when onExit does not execute callback', async () => {
+        const user = userEvent.setup();
+
+        // Mock onExit per non chiamare il callback
+        mockOnExit.mockImplementation(() => {});
+
+        render(
+            <TestWrapper>
+                <AddProducts />
+            </TestWrapper>
+        );
+
+        const backButton = screen.getByTestId('back-button-test');
+
+        await user.click(backButton);
+
+        // Verifica che onExit sia stato chiamato
+        expect(mockOnExit).toHaveBeenCalled();
+
+        // Verifica che navigate NON sia stato chiamato se onExit non esegue il callback
+        expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    // TEST PER VERIFICARE CHE IL REF SIA COLLEGATO CORRETTAMENTE
+    test('formRef is properly connected to FormAddProducts', () => {
+        render(
+            <TestWrapper>
+                <AddProducts />
+            </TestWrapper>
+        );
+
+        // Verifica che il componente FormAddProducts sia renderizzato
+        expect(screen.getByTestId('form-add-products')).toBeInTheDocument();
+    });
+
+    // TEST PER VERIFICARE CHE I PROPS VENGANO PASSATI CORRETTAMENTE AL FORM
+    test('passes correct props to FormAddProducts', () => {
+        render(
+            <TestWrapper>
+                <AddProducts />
+            </TestWrapper>
+        );
+
+        // Inizialmente fileAccepted dovrebbe essere false
+        expect(screen.getByText('File accepted: No')).toBeInTheDocument();
+    });
+
+    // TEST PER IL CONTAINER PRINCIPALE
+    test('renders main container with correct data-testid', () => {
+        render(
+            <TestWrapper>
+                <AddProducts />
+            </TestWrapper>
+        );
+
+        expect(screen.getByTestId('add-products-container')).toBeInTheDocument();
     });
 });

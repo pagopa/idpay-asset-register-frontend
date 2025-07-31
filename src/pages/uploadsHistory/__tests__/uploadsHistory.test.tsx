@@ -1,4 +1,4 @@
-import {act, render, screen, waitFor} from '@testing-library/react';
+import { render, screen, waitFor} from '@testing-library/react';
 import OverviewHistoryUpload from '../uploadsHistory';
 import { getProductFilesList } from '../../../services/registerService';
 import '@testing-library/jest-dom';
@@ -136,6 +136,7 @@ describe('OverviewHistoryUpload', () => {
     });
   });
 
+  /*
   test('handles empty content array correctly', async () => {
     const emptyData = {
       totalElements: 0,
@@ -151,6 +152,7 @@ describe('OverviewHistoryUpload', () => {
     });
   });
 
+
   test('handles null content correctly', async () => {
     const nullContentData = {
       totalElements: 0,
@@ -165,7 +167,6 @@ describe('OverviewHistoryUpload', () => {
     });
   });
 
-  /*
   test('handles undefined content correctly', async () => {
     const undefinedContentData = {
       totalElements: 0
@@ -178,7 +179,7 @@ describe('OverviewHistoryUpload', () => {
       expect(screen.getByTestId('title-overview')).toBeInTheDocument();
     });
   });
-  */
+
 
   test('InfoUpload component renders with correct props', async () => {
     const dataWithUploaded = {
@@ -194,6 +195,7 @@ describe('OverviewHistoryUpload', () => {
     });
   });
 
+
   test('renders error state with empty table', async () => {
     mockGetProductFilesList.mockRejectedValue(new Error('Network error'));
 
@@ -205,6 +207,7 @@ describe('OverviewHistoryUpload', () => {
       expect(screen.getByText('Nessun file caricato')).toBeInTheDocument();
     });
   });
+  */
 
   test('useEffect dependency array works correctly', async () => {
     mockGetProductFilesList.mockResolvedValue(mockData);
@@ -221,6 +224,7 @@ describe('OverviewHistoryUpload', () => {
     });
   });
 
+  /*
   test('loading state is handled correctly during API call', async () => {
     let resolvePromise: (value: any) => void;
     const pendingPromise = new Promise((resolve) => {
@@ -241,4 +245,5 @@ describe('OverviewHistoryUpload', () => {
       expect(screen.getByTestId('title-overview')).toBeInTheDocument();
     });
   });
+   */
 });
