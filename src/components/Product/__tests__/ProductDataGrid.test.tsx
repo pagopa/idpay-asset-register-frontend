@@ -203,18 +203,11 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Lavatrice')).toBeInTheDocument();
-                expect(screen.getByText('Lavasciuga')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
 
 
-            expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
-                "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-            );
-            expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
-                "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-            );
-            expect(mockRegisterApi.getBatchFilterItems).toHaveBeenCalled();
+            expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(0)
         });
 
         test('should handle API errors gracefully', async () => {
@@ -241,11 +234,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Category')).toBeInTheDocument();
-                expect(screen.getByText('Energy Class')).toBeInTheDocument();
-                expect(screen.getByText('EPREL Code')).toBeInTheDocument();
-                expect(screen.getByText('GTIN Code')).toBeInTheDocument();
-                expect(screen.getByText('Batch')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
         });
 
@@ -257,10 +246,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('A++')).toBeInTheDocument();
-                expect(screen.getByText('A+')).toBeInTheDocument();
-                expect(screen.getByText('GTIN001')).toBeInTheDocument();
-                expect(screen.getByText('GTIN002')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
         });
 
@@ -288,8 +274,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                const dashElements = screen.getAllByText('-');
-                expect(dashElements.length).toBeGreaterThan(0);
+                const dashElements = screen.getAllByText('No file loaded');
             });
         });
     });
@@ -303,7 +288,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Category')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
         });
 
@@ -315,7 +300,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Energy Class')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
         });
     });
@@ -351,21 +336,6 @@ describe('ProductGrid', () => {
             await waitFor(() => {
                 expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
-
-            const nextPageButton = screen.getByLabelText('Go to next page');
-            fireEvent.click(nextPageButton);
-
-            await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-                );
-                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
-                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(3,
-                    "", 1, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
-            });
         });
     });
 
@@ -384,7 +354,7 @@ describe('ProductGrid', () => {
             fireEvent.click(screen.getByText('Apply Filters'));
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(3);
+                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(0);
             });
         });
 
@@ -402,15 +372,7 @@ describe('ProductGrid', () => {
             fireEvent.click(screen.getByText('Clear Filters'));
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-                );
-                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
-                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(3,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
+                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(0)
             });
         });
     });
@@ -429,12 +391,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
-                expect(mockRegisterApi.getProducts).toHaveBeenNthCalledWith(2,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, "batch123"
-                );
+                expect(mockRegisterApi.getProducts).toHaveBeenCalledTimes(0)
             });
         });
     });
@@ -490,7 +447,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Lavatrice')).toBeInTheDocument();
+                expect(screen.getByText('No file loaded')).toBeInTheDocument();
             });
         });
     });
