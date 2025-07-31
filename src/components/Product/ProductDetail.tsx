@@ -1,19 +1,102 @@
-import { List, ListItem, Typography, Divider } from '@mui/material';
+/* eslint-disable complexity */
+import { List, ListItem, Typography, Divider, Button, Chip } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
+import { useState } from 'react';
 import { EMPTY_DATA } from '../../utils/constants';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
+import ProductConfirmDialog from './ProductConfirmDialog';
 
 type Props = {
+  open: boolean;
   data: ProductDTO;
+  isInvitaliaUser: boolean;
 };
 
-export default function ProductDetail({ data }: Props) {
+const buttonStyle = {
+  height: 48,
+  fontWeight: 600,
+  fontSize: 16,
+  marginRight: 2,
+};
+
+const callApprovedApi = async (
+  organizationId: string,
+  gtinCodes: Array<string>,
+  reason: string
+) => {
+  try {
+    await setApprovedStatusList(organizationId, gtinCodes, reason);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const callRejectedApi = async (
+  organizationId: string,
+  gtinCodes: Array<string>,
+  reason: string
+) => {
+  try {
+    await setRejectedStatusList(organizationId, gtinCodes, reason);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleOpenModal = (
+  action: string,
+  organizationId: string,
+  gtinCodes: Array<string>,
+  reason: string
+) => {
+  if (action === 'REJECTED') {
+    void callRejectedApi(organizationId, gtinCodes, reason);
+  } else if (action === 'APPROVED') {
+    void callApprovedApi(organizationId, gtinCodes, reason);
+  }
+};
+
+export default function ProductDetail({ data, isInvitaliaUser }: Props) {
   const { t } = useTranslation();
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+
+  const handleConfirmRestore = () => {
+    handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], 'TODO');
+    setRestoreDialogOpen(false);
+  };
+
   return (
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
+        {isInvitaliaUser && data.status && data.status === 'REJECTED' && (
+          <ListItem disablePadding>
+            <Box sx={{ mb: 1, ml: 2 }}>
+              <Chip
+                icon={<ErrorIcon color="error" />}
+                color="error"
+                label="Prodotto Escluso"
+                size="medium"
+              />
+            </Box>
+          </ListItem>
+        )}
+        {isInvitaliaUser && data.status && data.status !== 'REJECTED' && (
+          <ListItem disablePadding>
+            <Box sx={{ mb: 1, ml: 2 }}>
+              <Chip
+                icon={<WarningIcon color="warning" />}
+                color="warning"
+                label="Prodotto contrassegnato"
+                size="medium"
+              />
+            </Box>
+          </ListItem>
+        )}
         <ListItem disablePadding>
           <Box sx={{ mb: 1, ml: 2 }}>
             <Typography variant="h6" sx={{ maxWidth: 350, wordWrap: 'break-word' }}>
@@ -29,7 +112,6 @@ export default function ProductDetail({ data }: Props) {
           </Box>
         </ListItem>
         <Divider sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -47,7 +129,6 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -59,7 +140,6 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -70,7 +150,6 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -81,7 +160,6 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -92,7 +170,6 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -103,7 +180,6 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -114,7 +190,6 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -125,7 +200,6 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -136,7 +210,6 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
-
         <ListItem>
           <Box>
             <Typography variant="body1" color="text.secondary">
@@ -147,7 +220,61 @@ export default function ProductDetail({ data }: Props) {
             </Typography>
           </Box>
         </ListItem>
+        {isInvitaliaUser && data.status && data.status !== 'REJECTED' && (
+          <ListItem>
+            <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
+              <Button
+                color="primary"
+                variant="contained"
+                sx={{
+                  ...buttonStyle,
+                  width: '138px',
+                }}
+                onClick={() => setRestoreDialogOpen(true)}
+              >
+                Ripristina
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                sx={{
+                  ...buttonStyle,
+                  width: '92px',
+                }}
+                onClick={() =>
+                  handleOpenModal('REJECTED', data.organizationId, [data.gtinCode], 'TODO')
+                }
+              >
+                Escludi
+              </Button>
+            </Box>
+          </ListItem>
+        )}
+        {isInvitaliaUser && data.status && data.status === 'REJECTED' && (
+          <ListItem>
+            <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
+              <Button
+                color="primary"
+                variant="contained"
+                sx={{
+                  ...buttonStyle,
+                  width: '138px',
+                }}
+                onClick={() => setRestoreDialogOpen(true)}
+              >
+                Ripristina
+              </Button>
+            </Box>
+          </ListItem>
+        )}
       </List>
+      <ProductConfirmDialog
+        open={restoreDialogOpen}
+        title="Ripristina prodotto"
+        message="Vuoi ripristinare il prodotto segnalato in precedenza?"
+        onCancel={() => setRestoreDialogOpen(false)}
+        onConfirm={handleConfirmRestore}
+      />
     </Box>
   );
 }

@@ -177,11 +177,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         {actionType === 'supervisioned' && (
           <Button
             variant="contained"
+            color="primary"
             sx={{
               ...buttonStyle,
-              backgroundColor: '#0073E6',
-              color: '#fff',
-              '&:hover': { backgroundColor: '#005bb5' },
             }}
             onClick={callSupervisionedApi}
             disabled={reason.length === 0}
@@ -192,11 +190,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         {actionType === 'rejected' && (
           <Button
             variant="contained"
+            color="primary"
             sx={{
               ...buttonStyle,
-              backgroundColor: '#0073E6',
-              color: '#fff',
-              '&:hover': { backgroundColor: '#005bb5' },
             }}
             onClick={callRejectedApi}
             disabled={reason.length === 0}

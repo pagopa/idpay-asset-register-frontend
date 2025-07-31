@@ -296,13 +296,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         {tableData?.length > 0 && !loading && isInvitaliaUser && (
           <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
             <Button
+              color="primary"
               variant="contained"
               sx={{
                 ...buttonStyle,
                 width: '138px',
-                backgroundColor: '#0073E6',
-                color: '#fff',
-                '&:hover': { backgroundColor: '#005bb5' },
               }}
               disabled={selected.length === 0}
               onClick={() => handleOpenModal('supervisioned')}
@@ -311,16 +309,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             </Button>
             <Button
               variant="outlined"
+              color="error"
               sx={{
                 ...buttonStyle,
                 width: '92px',
-                color: '#D85757',
-                border: '2px solid #D85757',
-                backgroundColor: '#fff',
-                '&:hover': {
-                  border: '2px solid #b23b3b',
-                  backgroundColor: '#fff0f0',
-                },
               }}
               disabled={selected.length === 0}
               onClick={() => handleOpenModal('rejected')}
@@ -343,7 +335,12 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         open={drawerOpened}
         toggleDrawer={handleToggleDrawer}
       >
-        <ProductDetail data-testid="product-detail" data={drawerData} />
+        <ProductDetail
+          data-testid="product-detail"
+          data={drawerData}
+          isInvitaliaUser={isInvitaliaUser}
+          open={true}
+        />
       </DetailDrawer>
     </>
   );
