@@ -61,19 +61,31 @@ describe('Test suite for SideMenu component', () => {
     });
   });
 
-    test('user clicks the link to products page and triggers navigation', async () => {
-        renderWithContext(<SideMenu />);
-        const user = userEvent.setup();
+  test('user clicks the link to uploads', async () => {
+    renderWithContext(<SideMenu />);
+    const user = userEvent.setup();
 
-        const productsLink = screen.getByText('Prodotti');
-        await user.click(productsLink);
+    const homeLink = screen.getByText('Storico caricamenti');
+    await user.click(homeLink);
 
-        await waitFor(() => {
-            expect(mockOnExit).toHaveBeenCalledTimes(0);
-        });
+    await waitFor(() => {
+      expect(window.location.pathname).toBe('/');
     });
+  });
 
-    test('does not render extra items for Invitalia users', async () => {
+  test('user clicks the link to products page and triggers navigation', async () => {
+      renderWithContext(<SideMenu />);
+      const user = userEvent.setup();
+
+      const productsLink = screen.getByText('Prodotti');
+      await user.click(productsLink);
+
+      await waitFor(() => {
+          expect(mockOnExit).toHaveBeenCalledTimes(0);
+      });
+  });
+
+  test('does not render extra items for Invitalia users', async () => {
     jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(
         JSON.stringify({ org_role: 'INVITALIA' })
     );

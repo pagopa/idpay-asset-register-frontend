@@ -4,7 +4,10 @@ import {CsvDTO} from "../api/generated/register/CsvDTO";
 import {UploadsListDTO} from "../api/generated/register/UploadsListDTO";
 import {InstitutionsResponse} from "../api/generated/register/InstitutionsResponse";
 import {InstitutionResponse} from "../api/generated/register/InstitutionResponse";
-import {ProductDTO} from "../api/generated/register/ProductDTO";
+import { UpdateResponseDTO } from "../api/generated/register/UpdateResponseDTO";
+import { BatchList } from "../api/generated/register/BatchList";
+import { ProductListDTO } from "../api/generated/register/ProductListDTO";
+
 
 
 export const uploadProductList = (
@@ -37,8 +40,9 @@ export const getProductFilesList = async (
     }
   };
 
+
 export const getProducts = async (
-  xOrganizationSelected: string,
+  organizationId: string,
   page?: number,
   size?: number,
   sort?: string,
@@ -48,10 +52,10 @@ export const getProducts = async (
   gtinCode?: string,
   productCode?: string,
   productFileId?: string
-): Promise<ProductDTO> => {
+): Promise<ProductListDTO> => {
   try {
-    return await RegisterApi.getProducts(
-      xOrganizationSelected,
+    return await RegisterApi.getProductList(
+      organizationId,
       page,
       size,
       sort,
@@ -93,3 +97,60 @@ export const getInstitutionById = async (
     throw error;
   }
 };
+
+export const setSupervisionedStatusList = async (
+  xOrganizationSelected: string,
+  gtinCodes: Array<string>,
+  motivation: string
+): Promise<UpdateResponseDTO> => {
+  try {
+   return await RegisterApi.setSupervisionedStatusList(xOrganizationSelected,gtinCodes,motivation);
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+ };
+
+ 
+ export const setApprovedStatusList = async (
+  xOrganizationSelected: string,
+  gtinCodes: Array<string>,
+  motivation: string
+): Promise<UpdateResponseDTO> => {
+  try {
+    return await RegisterApi.setApprovedStatusList(xOrganizationSelected, gtinCodes, motivation);
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
+ export const setRejectedStatusList = async (
+  xOrganizationSelected: string,
+  gtinCodes: Array<string>,
+  motivation: string
+): Promise<UpdateResponseDTO> => {
+  try {
+   return await RegisterApi.setRejectedStatusList(xOrganizationSelected,gtinCodes,motivation);
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+ };
+
+ export const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchList> => {
+   try {
+     return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
+   } catch (error: any) {
+     if (error?.response && error?.response?.data) {
+       throw error.response.data;
+     }
+     throw error;
+   }
+ };

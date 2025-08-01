@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Button, Paper, TablePagination } from '@mui/material';
+import { Box, Button, Paper, TablePagination, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { RegisterApi } from '../../api/registerApiClient';
+import { getProducts, getBatchFilterList } from '../../services/registerService';
 import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA } from '../../utils/constants';
 import {
   batchIdSelector,
@@ -12,8 +12,6 @@ import {
   setBatchName,
 } from '../../redux/slices/productsSlice';
 import EmptyListTable from '../../pages/components/EmptyListTable';
-import { ProductListDTO } from '../../api/generated/register/ProductListDTO';
-import { BatchList } from '../../api/generated/register/BatchList';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { INVITALIA } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
@@ -21,53 +19,8 @@ import ProductsTable from '../../pages/components/ProductsTable';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
-import MessagePage from './MessagePage';
 import FilterBar from './FilterBar';
 import ProductModal from './ProductModal';
-
-const getProductList = async (
-  xOrganizationSelected: string,
-  page?: number,
-  size?: number,
-  sort?: string,
-  category?: string,
-  status?: string,
-  eprelCode?: string,
-  gtinCode?: string,
-  productCode?: string,
-  productFileId?: string
-): Promise<ProductListDTO> => {
-  try {
-    return await RegisterApi.getProducts(
-      xOrganizationSelected,
-      page,
-      size,
-      sort,
-      category,
-      status,
-      eprelCode,
-      gtinCode,
-      productCode,
-      productFileId
-    );
-  } catch (error: any) {
-    if (error?.response && error?.response?.data) {
-      throw error.response.data;
-    }
-    throw error;
-  }
-};
-
-const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchList> => {
-  try {
-    return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
-  } catch (error: any) {
-    if (error?.response && error?.response?.data) {
-      throw error.response.data;
-    }
-    throw error;
-  }
-};
 
 type ProductDataGridProps = {
   organizationId: string;
@@ -84,6 +37,7 @@ const buttonStyle = {
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, children }) => {
   const dispatch = useDispatch();
   const [order, setOrder] = useState<Order>('asc');
+  const [refreshKey, setRefreshKey] = useState(0);
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
   const [page, setPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -104,29 +58,35 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
 
   const [selected, setSelected] = useState<Array<string>>([]);
-  const [openModal, setOpenModal] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    setSelected([]);
+  }, [tableData]);
+
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
   const { t } = useTranslation();
 
-  const handleOpenSupervisionedModal = () => {
-    setModalAction('supervisioned');
-    setOpenModal(true);
+  const fetchProductList = () => {
+    setLoading(true);
+    callProductsApi(organizationId);
   };
 
-  const handleOpenRejectedModal = () => {
-    setModalAction('rejected');
-    setOpenModal(true);
+  const updaDataTable = () => {
+    setRefreshKey((k) => k + 1);
+    fetchProductList();
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setModalAction(undefined);
+  const handleOpenModal = (action: string) => {
+    setModalAction(action);
+    setModalOpen(true);
   };
+
   const callProductsApi = (organizationId: string) => {
     const sortKey = `${orderBy},${order}`;
-    void getProductList(
+    void getProducts(
       organizationId,
       page,
       rowsPerPage,
@@ -175,7 +135,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   useEffect(() => {
     setLoading(true);
     if (batchId === '') {
-      void getProductList(organizationId, page, rowsPerPage)
+      void getProducts(organizationId, page, rowsPerPage)
         .then((res) => {
           const { content, pageNo, totalElements } = res;
           setTableData(content ? Array.from(content) : []);
@@ -266,8 +226,21 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       setSelected,
     };
 
-    if (tableData?.length > 0 && !loading) {
-      return <ProductsTable {...commonProps} />;
+    if (tableData?.length > 0) {
+      if (loading) {
+        return (
+          <CircularProgress
+            size={36}
+            sx={{
+              color: '#0055AA',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+            }}
+          />
+        );
+      }
+      return <ProductsTable key={refreshKey} {...commonProps} />;
     }
 
     if (children) {
@@ -297,12 +270,13 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         errorStatus={apiErrorOccurred}
         tableData={tableData}
         handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+        loading={loading}
       />
       {tableData?.length === 0 && !loading && (
         <EmptyListTable message="pages.products.noFileLoaded" />
       )}
       <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
-        {!loading ? renderTable() : <MessagePage message={t(`pages.products.loading`)} />}
+        {renderTable()}
         {tableData?.length > 0 && !loading && (
           <TablePagination
             component="div"
@@ -328,34 +302,26 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         {tableData?.length > 0 && !loading && isInvitaliaUser && (
           <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
             <Button
+              color="primary"
               variant="contained"
               sx={{
                 ...buttonStyle,
                 width: '138px',
-                backgroundColor: '#0073E6',
-                color: '#fff',
-                '&:hover': { backgroundColor: '#005bb5' },
               }}
               disabled={selected.length === 0}
-              onClick={handleOpenSupervisionedModal}
+              onClick={() => handleOpenModal('supervisioned')}
             >
               Contrassegna
             </Button>
             <Button
               variant="outlined"
+              color="error"
               sx={{
                 ...buttonStyle,
                 width: '92px',
-                color: '#D85757',
-                border: '2px solid #D85757',
-                backgroundColor: '#fff',
-                '&:hover': {
-                  border: '2px solid #b23b3b',
-                  backgroundColor: '#fff0f0',
-                },
               }}
               disabled={selected.length === 0}
-              onClick={handleOpenRejectedModal}
+              onClick={() => handleOpenModal('rejected')}
             >
               Escludi
             </Button>
@@ -363,17 +329,26 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         )}
       </Paper>
       <ProductModal
-        open={openModal}
-        onClose={handleCloseModal}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
         gtinCodes={selected}
         actionType={modalAction}
+        organizationId={organizationId}
+        onUpdateTable={updaDataTable}
       />
       <DetailDrawer
         data-testid="detail-drawer"
         open={drawerOpened}
         toggleDrawer={handleToggleDrawer}
       >
-        <ProductDetail data-testid="product-detail" data={drawerData} />
+        <ProductDetail
+          data-testid="product-detail"
+          data={drawerData}
+          isInvitaliaUser={isInvitaliaUser}
+          open={true}
+          onUpdateTable={updaDataTable}
+          onClose={() => handleToggleDrawer(false)}
+        />
       </DetailDrawer>
     </>
   );

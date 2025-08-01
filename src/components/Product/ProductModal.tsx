@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogTitle,
@@ -12,12 +11,16 @@ import {
   IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTranslation } from 'react-i18next';
+import { setSupervisionedStatusList, setRejectedStatusList } from '../../services/registerService';
 
 interface ProductModalProps {
   open: boolean;
   onClose: () => void;
   gtinCodes: Array<string>;
   actionType?: string;
+  organizationId: string;
+  onUpdateTable?: () => void;
 }
 
 const buttonStyle = {
@@ -28,8 +31,15 @@ const buttonStyle = {
   width: 85,
 };
 
-const ProductModal: React.FC<ProductModalProps> = ({ open, onClose, gtinCodes, actionType }) => {
-  const [reason, setReason] = useState('');
+const ProductModal: React.FC<ProductModalProps> = ({
+  open,
+  onClose,
+  gtinCodes,
+  actionType,
+  organizationId,
+  onUpdateTable,
+}) => {
+  const [motivation, setReason] = useState('');
   const { t } = useTranslation();
 
   const MODAL_CONFIG = {
@@ -52,6 +62,32 @@ const ProductModal: React.FC<ProductModalProps> = ({ open, onClose, gtinCodes, a
   };
 
   const config = MODAL_CONFIG[actionType as keyof typeof MODAL_CONFIG];
+
+  const callSupervisionedApi = async () => {
+    try {
+      await setSupervisionedStatusList(organizationId, gtinCodes, motivation);
+      onClose();
+      if (onUpdateTable) {
+        onUpdateTable();
+      }
+    } catch (error) {
+      console.error(error);
+      onClose();
+    }
+  };
+
+  const callRejectedApi = async () => {
+    try {
+      onClose();
+      await setRejectedStatusList(organizationId, gtinCodes, motivation);
+      if (onUpdateTable) {
+        onUpdateTable();
+      }
+    } catch (error) {
+      console.error(error);
+      onClose();
+    }
+  };
 
   return (
     <Dialog
@@ -120,7 +156,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ open, onClose, gtinCodes, a
           label={config?.reasonLabel || ''}
           inputProps={{ maxLength: 200 }}
           placeholder={config?.reasonPlaceholder || ''}
-          value={reason}
+          value={motivation}
           onChange={(e) => setReason(e.target.value)}
           sx={{ mb: 1 }}
         />
@@ -134,26 +170,45 @@ const ProductModal: React.FC<ProductModalProps> = ({ open, onClose, gtinCodes, a
             mb: 2,
           }}
         >
-          {reason.length}/200
+          {motivation.length}/200
         </Box>
       </DialogContent>
       <DialogActions sx={{ p: 0 }}>
-        <Button
-          variant="contained"
-          sx={{
-            ...buttonStyle,
-            backgroundColor: '#0073E6',
-            color: '#fff',
-            '&:hover': { backgroundColor: '#005bb5' },
-          }}
-          onClick={onClose}
-        >
-          {config?.buttonText || 'Chiudi'}
-        </Button>
+        {actionType === 'supervisioned' && (
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              ...buttonStyle,
+            }}
+            onClick={callSupervisionedApi}
+            disabled={motivation.length === 0}
+          >
+            {config?.buttonText || 'Chiudi'}
+          </Button>
+        )}
+        {actionType === 'rejected' && (
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              ...buttonStyle,
+            }}
+            onClick={callRejectedApi}
+            disabled={motivation.length === 0}
+          >
+            {config?.buttonText || 'Chiudi'}
+          </Button>
+        )}
       </DialogActions>
       <IconButton
         aria-label="close"
-        onClick={onClose}
+        onClick={() => {
+          onClose();
+          if (onUpdateTable) {
+            onUpdateTable();
+          }
+        }}
         sx={{
           position: 'absolute',
           right: 8,

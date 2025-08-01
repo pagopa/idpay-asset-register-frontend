@@ -6,6 +6,7 @@ import {
   UserNotifyHandle,
 } from '@pagopa/selfcare-common-frontend/lib';
 import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import withSelectedPartyProducts from './decorators/withSelectedPartyProducts';
 import withLogin from './decorators/withLogin';
 import Layout from './components/Layout/Layout';
@@ -25,8 +26,13 @@ import InvitaliaOverview from './pages/InvitaliaOverview/invitaliaOverview';
 import { fetchUserFromLocalStorage } from './helpers';
 import { INVITALIA } from './utils/constants';
 import InvitaliaProductsList from './pages/InvitaliaProductsList/invitaliaProductsList';
+import { institutionSelector } from './redux/slices/invitaliaSlice';
 
-const StandardRoutes = () => (
+type StandardRoutesProps = {
+  organizationId: string | undefined;
+};
+
+const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
   <Routes>
     <Route path={routes.HOME} element={<Overview />} />
     <Route path={routes.ADD_PRODUCTS} element={<AddProducts />} />
@@ -34,7 +40,7 @@ const StandardRoutes = () => (
       path={routes.PRODUCTS}
       element={
         <Products>
-          <ProductDataGrid organizationId="" />
+          <ProductDataGrid organizationId={organizationId || ''} />
         </Products>
       }
     />
@@ -61,6 +67,8 @@ const SecuredRoutes = withLogin(
     const { isTOSAccepted, acceptTOS, firstAcceptance } = useTCAgreement();
     const user = useMemo(() => fetchUserFromLocalStorage(), []);
     const isInvitaliaUser = user?.org_role === INVITALIA;
+    const institution = useSelector(institutionSelector);
+    const organizationId = institution?.institutionId || '';
 
     if (
       isTOSAccepted === false &&
@@ -85,7 +93,11 @@ const SecuredRoutes = withLogin(
       return <></>;
     }
 
-    return <Layout>{isInvitaliaUser ? <InvitaliaRoutes /> : <StandardRoutes />}</Layout>;
+    return (
+      <Layout>
+        {isInvitaliaUser ? <InvitaliaRoutes /> : <StandardRoutes organizationId={organizationId} />}
+      </Layout>
+    );
   })
 );
 

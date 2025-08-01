@@ -350,5 +350,215 @@ describe('sortInstitutions', () => {
             expect(result[0].institutionId).toBe('1'); // 01/01/2023
             expect(result[1].institutionId).toBe('2'); // 31/12/2023
         });
+
+        it('NaN case', () => {
+            const institutionsWithBoundaryDates: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Test 1',
+                    createdAt: '',
+                    updatedAt: '',
+                }
+            ];
+
+            const result = sortInstitutions(institutionsWithBoundaryDates, 'asc', 'createdAt');
+
+            expect(result[0].institutionId).toBe("1");
+        });
+
+        it('should return 0 for invalid date format', () => {
+            const institutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Invalid date',
+                    createdAt: '32/13/2023',
+                    updatedAt: '32/13/2023',
+                },
+                {
+                    institutionId: '2',
+                    description: 'Valid date',
+                    createdAt: '01/01/2023',
+                    updatedAt: '01/01/2023',
+                }
+            ];
+
+            const result = sortInstitutions(institutions, 'asc', 'createdAt');
+            expect(result[0].institutionId).toBe('1');
+        });
+
+        it('should handle null and undefined values', () => {
+            const institutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Null date',
+                    createdAt: null as any,
+                    updatedAt: null as any,
+                },
+                {
+                    institutionId: '2',
+                    description: 'Undefined date',
+                    createdAt: undefined as any,
+                    updatedAt: undefined as any,
+                },
+                {
+                    institutionId: '3',
+                    description: 'Valid date',
+                    createdAt: '2023-01-01T00:00:00Z',
+                    updatedAt: '2023-01-01T00:00:00Z',
+                }
+            ];
+
+            const result = sortInstitutions(institutions, 'asc', 'createdAt');
+            expect(result[0].institutionId).toBe('3');
+            expect(result[1].institutionId).toBe('1');
+            expect(result[2].institutionId).toBe('2');
+        });
+
+        it('should sort by numeric field correctly', () => {
+            const institutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Test 1',
+                    createdAt: '2023-01-01T00:00:00Z',
+                    updatedAt: '2023-01-01T00:00:00Z',
+                    score: 10
+                } as any,
+                {
+                    institutionId: '2',
+                    description: 'Test 2',
+                    createdAt: '2023-01-01T00:00:00Z',
+                    updatedAt: '2023-01-01T00:00:00Z',
+                    score: 5
+                } as any
+            ];
+
+            const result = sortInstitutions(institutions, 'asc', 'score' as keyof Institution);
+            expect(result[0].institutionId).toBe('2');
+        });
+
+        it('should return 0 if day, month, or year is NaN', () => {
+            const institutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Invalid date parts',
+                    createdAt: 'aa/bb/cccc', // tutti NaN
+                    updatedAt: 'aa/bb/cccc',
+                },
+                {
+                    institutionId: '2',
+                    description: 'Valid date',
+                    createdAt: '01/01/2023',
+                    updatedAt: '01/01/2023',
+                }
+            ];
+
+            const result = sortInstitutions(institutions, 'asc', 'createdAt');
+            expect(result[0].institutionId).toBe('1');
+        });
+
+        it('should return 0 if day is out of range', () => {
+            const institutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Invalid day',
+                    createdAt: '32/01/2023',
+                    updatedAt: '32/01/2023',
+                },
+                {
+                    institutionId: '2',
+                    description: 'Valid date',
+                    createdAt: '01/01/2023',
+                    updatedAt: '01/01/2023',
+                }
+            ];
+
+            const result = sortInstitutions(institutions, 'asc', 'createdAt');
+            expect(result[0].institutionId).toBe('1');
+        });
+
+        it('should return 0 if parsed date is invalid after construction', () => {
+            const institutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Invalid constructed date',
+                    createdAt: '31/02/2023',
+                    updatedAt: '31/02/2023',
+                },
+                {
+                    institutionId: '2',
+                    description: 'Valid date',
+                    createdAt: '01/03/2023',
+                    updatedAt: '01/03/2023',
+                }
+            ];
+
+            const result = sortInstitutions(institutions, 'asc', 'createdAt');
+            expect(result[0].institutionId).toBe('2');
+        });
+
+        it('should return 1 when a > b in numeric comparison', () => {
+            const institutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Higher score',
+                    createdAt: '2023-01-01T00:00:00Z',
+                    updatedAt: '2023-01-01T00:00:00Z',
+                    score: 20
+                } as any,
+                {
+                    institutionId: '2',
+                    description: 'Lower score',
+                    createdAt: '2023-01-01T00:00:00Z',
+                    updatedAt: '2023-01-01T00:00:00Z',
+                    score: 10
+                } as any
+            ];
+
+            const result = sortInstitutions(institutions, 'asc', 'score' as keyof Institution);
+            expect(result[0].institutionId).toBe('2');
+            expect(result[1].institutionId).toBe('1');
+        });
+
+        it('should return 0 for invalid ISO date string', () => {
+            const institutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Invalid ISO date',
+                    createdAt: '2023-13-40T99:99:99Z',
+                    updatedAt: '2023-13-40T99:99:99Z',
+                },
+                {
+                    institutionId: '2',
+                    description: 'Valid ISO date',
+                    createdAt: '2023-01-01T00:00:00Z',
+                    updatedAt: '2023-01-01T00:00:00Z',
+                }
+            ];
+
+            const result = sortInstitutions(institutions, 'asc', 'createdAt');
+            expect(result[0].institutionId).toBe('1');
+        });
+
+        it('should return 1 when a > b in fallback comparison', () => {
+            const institutions: Institution[] = [
+                {
+                    institutionId: '1',
+                    description: 'Zebra',
+                    createdAt: '2023-01-01T00:00:00Z',
+                    updatedAt: '2023-01-01T00:00:00Z',
+                },
+                {
+                    institutionId: '2',
+                    description: 'Apple',
+                    createdAt: '2023-01-01T00:00:00Z',
+                    updatedAt: '2023-01-01T00:00:00Z',
+                }
+            ];
+
+            const result = sortInstitutions(institutions, 'asc', 'description');
+            expect(result[0].institutionId).toBe('2');
+            expect(result[1].institutionId).toBe('1');
+        });
+
     });
 });
