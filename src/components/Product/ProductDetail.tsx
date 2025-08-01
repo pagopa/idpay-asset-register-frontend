@@ -49,10 +49,11 @@ const handleOpenModal = (
   motivation: string
 ) => {
   if (action === 'REJECTED') {
-    void callRejectedApi(organizationId, gtinCodes, motivation);
+    return callRejectedApi(organizationId, gtinCodes, motivation);
   } else if (action === 'APPROVED') {
-    void callApprovedApi(organizationId, gtinCodes, motivation);
+    return callApprovedApi(organizationId, gtinCodes, motivation);
   }
+  return Promise.resolve();
 };
 
 export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, onClose }: Props) {
@@ -60,8 +61,8 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
 
-  const handleConfirmRestore = () => {
-    handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], 'TODO');
+  const handleConfirmRestore = async () => {
+    await handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], 'TODO');
     setRestoreDialogOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();

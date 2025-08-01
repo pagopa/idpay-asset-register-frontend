@@ -37,6 +37,7 @@ const buttonStyle = {
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, children }) => {
   const dispatch = useDispatch();
   const [order, setOrder] = useState<Order>('asc');
+  const [refreshKey, setRefreshKey] = useState(0);
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
   const [page, setPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -74,6 +75,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   };
 
   const updaDataTable = () => {
+    setRefreshKey((k) => k + 1);
     fetchProductList();
   };
 
@@ -238,7 +240,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           />
         );
       }
-      return <ProductsTable {...commonProps} />;
+      return <ProductsTable key={refreshKey} {...commonProps} />;
     }
 
     if (children) {
