@@ -64,7 +64,7 @@ export const RolePermissionApi = {
   },
 };
 function buildProductParams(
-  xOrganizationSelected: string,
+  organizationId: string,
   page?: number,
   size?: number,
   sort?: string,
@@ -76,10 +76,10 @@ function buildProductParams(
   productFileId?: string
 ) {
   return {
-    'x-organization-selected': xOrganizationSelected,
+    organizationId,
     ...(page !== undefined ? { page } : {}),
     ...(size !== undefined ? { size } : {}),
-    ...(sort !== undefined ? { sort } : {}),
+    ...(sort ? { sort } : {}),
     ...(category ? { category } : {}),
     ...(status ? { status } : {}),
     ...(eprelCode ? { eprelCode } : {}),
@@ -272,7 +272,7 @@ setSupervisionedStatusList: async (
   try {
     const body = { gtinCodes, motivation };
     const result = await registerClient.updateProductStatusApproved(
-      { 'x-organization-selected': xOrganizationSelected ,body}
+      { 'x-organization-selected': xOrganizationSelected, body }
     );
     return extractResponse(result, 200, onRedirectToLogin);
   } catch (error) {

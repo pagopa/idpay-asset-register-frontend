@@ -42,7 +42,7 @@ export const getProductFilesList = async (
 
 
 export const getProducts = async (
-  xOrganizationSelected: string,
+  organizationId: string,
   page?: number,
   size?: number,
   sort?: string,
@@ -55,7 +55,7 @@ export const getProducts = async (
 ): Promise<ProductListDTO> => {
   try {
     return await RegisterApi.getProductList(
-      xOrganizationSelected,
+      organizationId,
       page,
       size,
       sort,

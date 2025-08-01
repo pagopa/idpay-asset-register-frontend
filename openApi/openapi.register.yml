@@ -258,11 +258,7 @@ paths:
       tags:
         - products
       summary: Reject a list of products
-      description: 'ENG: Reject a list of products by updating their status to REJECTED.
-
-        IT: Rifiuta una lista di prodotti aggiornando il loro stato a REJECTED.
-
-        '
+      description: 'ENG: Reject a list of products by updating their status to REJECTED. IT: Rifiuta una lista di prodotti aggiornando il loro stato a REJECTED. '
       operationId: updateProductStatusRejected
       parameters:
         - $ref: '#/components/parameters/x_organization_selected_header'
@@ -299,7 +295,7 @@ paths:
         - $ref: '#/components/parameters/productFileId_query'
         - $ref: '#/components/parameters/productName_query'
         - $ref: '#/components/parameters/status_query'
-        - $ref: '#/components/parameters/x_organization_selected_header'
+        - $ref: '#/components/parameters/organizationId_query'
       responses:
         '200':
           $ref: '#/components/responses/GET_products_200_Response'
@@ -2061,6 +2057,14 @@ components:
       name: x-organization-selected
       in: header
       required: true
+      schema:
+        type: string
+        maxLength: 36
+        pattern: ^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    organizationId_query:
+      name: organizationId
+      in: query
+      required: false
       schema:
         type: string
         maxLength: 36
