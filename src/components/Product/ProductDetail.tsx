@@ -131,7 +131,9 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
           value={data?.countryOfProduction || EMPTY_DATA}
         />
         <ProductInfoRow label="Capacità" value={data?.capacity || EMPTY_DATA} />
-        {data.status !== 'APPROVED' && <ProductInfoRow label="Motivazione" value={EMPTY_DATA} />}
+        {data.status !== 'APPROVED' && (
+          <ProductInfoRow label="Motivazione" value={data?.motivation || EMPTY_DATA} />
+        )}
 
         <ProductActionButtons
           isInvitaliaUser={isInvitaliaUser}
