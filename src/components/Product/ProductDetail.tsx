@@ -1,16 +1,15 @@
-/* eslint-disable complexity */
-import { List, ListItem, Typography, Divider, Button, Chip } from '@mui/material';
-import { Box } from '@mui/system';
+import { List, Divider, Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import WarningIcon from '@mui/icons-material/Warning';
-import ErrorIcon from '@mui/icons-material/Error';
 import { useState } from 'react';
 import { EMPTY_DATA } from '../../utils/constants';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
+import ProductInfoRow from './ProductInfoRow';
+import ProductStatusChip from './ProductStatusChip';
+import ProductActionButtons from './ProductActionButtons';
 
 type Props = {
   open: boolean;
@@ -18,13 +17,6 @@ type Props = {
   isInvitaliaUser: boolean;
   onUpdateTable?: () => void;
   onClose?: () => void;
-};
-
-const buttonStyle = {
-  height: 48,
-  fontWeight: 600,
-  fontSize: 16,
-  marginRight: 2,
 };
 
 const callApprovedApi = async (
@@ -93,198 +85,52 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   return (
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
-        {isInvitaliaUser && data.status && data.status === 'REJECTED' && (
-          <ListItem disablePadding>
-            <Box sx={{ mb: 1, ml: 2 }}>
-              <Chip
-                icon={<ErrorIcon color="error" />}
-                color="error"
-                label="Prodotto Escluso"
-                size="medium"
-              />
-            </Box>
-          </ListItem>
-        )}
-        {isInvitaliaUser && data.status && data.status !== 'REJECTED' && (
-          <ListItem disablePadding>
-            <Box sx={{ mb: 1, ml: 2 }}>
-              <Chip
-                icon={<WarningIcon color="warning" />}
-                color="warning"
-                label="Prodotto contrassegnato"
-                size="medium"
-              />
-            </Box>
-          </ListItem>
-        )}
-        <ListItem disablePadding>
-          <Box sx={{ mb: 1, ml: 2 }}>
-            <Typography variant="h6" sx={{ maxWidth: 350, wordWrap: 'break-word' }}>
-              {data?.productName}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.batchName || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
+        <ProductStatusChip status={data.status} isInvitaliaUser={isInvitaliaUser} />
+        <ProductInfoRow
+          label=""
+          value={data?.productName}
+          valueVariant="h6"
+          sx={{ mb: 1, ml: 2, maxWidth: 350, wordWrap: 'break-word' }}
+        />
+        <ProductInfoRow
+          label=""
+          value={data?.batchName || EMPTY_DATA}
+          labelVariant="body2"
+          valueVariant="body2"
+        />
         <Divider sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Data verifica EPREL
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body2" fontWeight="fontWeightMedium" sx={{ mt: 4 }}>
-              SCHEDA PRODOTTO
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              {' '}
-              Codice EPREL
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.eprelCode || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Codice GTIN/EAN
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.gtinCode || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Codice prodotto
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.productCode || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Categoria
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.category ? t(`pages.products.categories.${data?.category}`) : EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Marca
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.brand || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Modello
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.model || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Classe energetica
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.energyClass || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Paese di produzione
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.countryOfProduction || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Capacità
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.capacity || EMPTY_DATA}
-            </Typography>
-          </Box>
-        </ListItem>
-        {isInvitaliaUser && data.status && data.status !== 'REJECTED' && (
-          <ListItem>
-            <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
-              <Button
-                color="primary"
-                variant="contained"
-                sx={{
-                  ...buttonStyle,
-                  width: '138px',
-                }}
-                onClick={() => setRestoreDialogOpen(true)}
-              >
-                Ripristina
-              </Button>
-              <Button
-                variant="outlined"
-                color="error"
-                sx={{
-                  ...buttonStyle,
-                  width: '92px',
-                }}
-                onClick={() => setExcludeModalOpen(true)}
-              >
-                Escludi
-              </Button>
-            </Box>
-          </ListItem>
-        )}
-        {isInvitaliaUser && data.status && data.status === 'REJECTED' && (
-          <ListItem>
-            <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
-              <Button
-                color="primary"
-                variant="contained"
-                sx={{
-                  ...buttonStyle,
-                  width: '138px',
-                }}
-                onClick={() => setRestoreDialogOpen(true)}
-              >
-                Ripristina
-              </Button>
-            </Box>
-          </ListItem>
-        )}
+        <ProductInfoRow
+          label="Data verifica EPREL"
+          value={String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || EMPTY_DATA}
+        />
+        <ProductInfoRow
+          label=""
+          value="SCHEDA PRODOTTO"
+          labelVariant="body2"
+          valueVariant="body2"
+          sx={{ mt: 4 }}
+        />
+        <ProductInfoRow label="Codice EPREL" value={data?.eprelCode || EMPTY_DATA} />
+        <ProductInfoRow label="Codice GTIN/EAN" value={data?.gtinCode || EMPTY_DATA} />
+        <ProductInfoRow label="Codice prodotto" value={data?.productCode || EMPTY_DATA} />
+        <ProductInfoRow
+          label="Categoria"
+          value={data?.category ? t(`pages.products.categories.${data?.category}`) : EMPTY_DATA}
+        />
+        <ProductInfoRow label="Marca" value={data?.brand || EMPTY_DATA} />
+        <ProductInfoRow label="Modello" value={data?.model || EMPTY_DATA} />
+        <ProductInfoRow label="Classe energetica" value={data?.energyClass || EMPTY_DATA} />
+        <ProductInfoRow
+          label="Paese di produzione"
+          value={data?.countryOfProduction || EMPTY_DATA}
+        />
+        <ProductInfoRow label="Capacità" value={data?.capacity || EMPTY_DATA} />
+        <ProductActionButtons
+          isInvitaliaUser={isInvitaliaUser}
+          status={data.status}
+          onRestore={() => setRestoreDialogOpen(true)}
+          onExclude={() => setExcludeModalOpen(true)}
+        />
       </List>
       <ProductConfirmDialog
         open={restoreDialogOpen}
