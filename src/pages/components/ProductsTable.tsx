@@ -18,7 +18,7 @@ import { INVITALIA } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import EnhancedTableHead from '../../components/Product/EnhancedTableHead';
 
-const COLUMN_WIDTHS = {
+const COLUMN_WIDTHS_INVITALIA = {
   checkbox: '5.97%',
   status: '6.05%',
   category: '6.54%',
@@ -27,6 +27,16 @@ const COLUMN_WIDTHS = {
   gtinCode: '14.81%',
   batchName: '23.77%',
   actions: '7.78%',
+};
+
+const COLUMN_WIDTHS_PRODUCER = {
+  category: '7.88%',
+  energyClass: '12.28%',
+  eprelCode: '16.75%',
+  gtinCode: '17.83%',
+  batchName: '28.63%',
+  status: '7.28%',
+  actions: '9.37%',
 };
 
 function renderUploadStatusIcon(status: string) {
@@ -97,37 +107,37 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       id: 'status',
       label: t('pages.products.listHeader.status'),
       align: 'left',
-      width: COLUMN_WIDTHS.status,
+      width: COLUMN_WIDTHS_INVITALIA.status,
     },
     {
       id: 'category',
       label: t('pages.products.listHeader.category'),
       align: 'left',
-      width: COLUMN_WIDTHS.category,
+      width: COLUMN_WIDTHS_INVITALIA.category,
     },
     {
       id: 'energyClass',
       label: t('pages.products.listHeader.energeticClass'),
       align: 'center',
-      width: COLUMN_WIDTHS.energyClass,
+      width: COLUMN_WIDTHS_INVITALIA.energyClass,
     },
     {
       id: 'eprelCode',
       label: t('pages.products.listHeader.eprelCode'),
       align: 'center',
-      width: COLUMN_WIDTHS.eprelCode,
+      width: COLUMN_WIDTHS_INVITALIA.eprelCode,
     },
     {
       id: 'gtinCode',
       label: t('pages.products.listHeader.gtinCode'),
       align: 'center',
-      width: COLUMN_WIDTHS.gtinCode,
+      width: COLUMN_WIDTHS_INVITALIA.gtinCode,
     },
     {
       id: 'batchName',
       label: t('pages.products.listHeader.batch'),
       align: 'left',
-      width: COLUMN_WIDTHS.batchName,
+      width: COLUMN_WIDTHS_INVITALIA.batchName,
     },
   ];
 
@@ -141,43 +151,43 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       id: 'category',
       label: t('pages.products.listHeader.category'),
       align: 'left',
-      width: COLUMN_WIDTHS.category,
+      width: COLUMN_WIDTHS_PRODUCER.category,
     },
     {
       id: 'energyClass',
       label: t('pages.products.listHeader.energeticClass'),
       align: 'center',
-      width: COLUMN_WIDTHS.energyClass,
+      width: COLUMN_WIDTHS_PRODUCER.energyClass,
     },
     {
       id: 'eprelCode',
       label: t('pages.products.listHeader.eprelCode'),
       align: 'center',
-      width: COLUMN_WIDTHS.eprelCode,
+      width: COLUMN_WIDTHS_PRODUCER.eprelCode,
     },
     {
       id: 'gtinCode',
       label: t('pages.products.listHeader.gtinCode'),
       align: 'center',
-      width: COLUMN_WIDTHS.gtinCode,
+      width: COLUMN_WIDTHS_PRODUCER.gtinCode,
     },
     {
       id: 'batchName',
       label: t('pages.products.listHeader.batch'),
       align: 'left',
-      width: COLUMN_WIDTHS.batchName,
+      width: COLUMN_WIDTHS_PRODUCER.batchName,
     },
     {
       id: 'status',
       label: t('pages.products.listHeader.status'),
       align: 'left',
-      width: COLUMN_WIDTHS.status,
+      width: COLUMN_WIDTHS_PRODUCER.status,
     },
     {
       id: 'actions',
       label: '',
       align: 'right',
-      width: COLUMN_WIDTHS.actions,
+      width: COLUMN_WIDTHS_PRODUCER.actions,
     },
   ];
 
@@ -219,7 +229,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       }}
       hover
     >
-      <TableCell sx={cellLeftSx(COLUMN_WIDTHS.checkbox)}>
+      <TableCell sx={cellLeftSx(COLUMN_WIDTHS_INVITALIA.checkbox)}>
         {typeof row.gtinCode === 'string' ? (
           <Checkbox
             color="primary"
@@ -230,27 +240,30 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           <Checkbox color="primary" disabled checked={false} />
         )}
       </TableCell>
-      <TableCell sx={cellLeftSx(COLUMN_WIDTHS.status)}>
+      <TableCell sx={cellLeftSx(COLUMN_WIDTHS_INVITALIA.status)}>
         {renderUploadStatusIcon(row?.status ?? emptyData ?? '')}
       </TableCell>
-      <TableCell sx={cellLeftSx(COLUMN_WIDTHS.category)}>
+      <TableCell sx={cellLeftSx(COLUMN_WIDTHS_INVITALIA.category)}>
         <Typography variant="body2">{row?.category ?? emptyData}</Typography>
       </TableCell>
-      <TableCell sx={cellCenterSx(COLUMN_WIDTHS.energyClass)}>
+      <TableCell sx={cellCenterSx(COLUMN_WIDTHS_INVITALIA.energyClass)}>
         <Typography variant="body2">{row?.energyClass ?? emptyData}</Typography>
       </TableCell>
-      <TableCell sx={cellCenterSx(COLUMN_WIDTHS.eprelCode)}>
+      <TableCell sx={cellCenterSx(COLUMN_WIDTHS_INVITALIA.eprelCode)}>
         <EprelLinks row={row} />
       </TableCell>
-      <TableCell sx={cellCenterSx(COLUMN_WIDTHS.gtinCode)}>
+      <TableCell sx={cellCenterSx(COLUMN_WIDTHS_INVITALIA.gtinCode)}>
         <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>
       </TableCell>
-      <TableCell sx={cellLeftSx(COLUMN_WIDTHS.batchName)}>
+      <TableCell sx={cellLeftSx(COLUMN_WIDTHS_INVITALIA.batchName)}>
         <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>
       </TableCell>
-      <TableCell sx={cellRightSx(COLUMN_WIDTHS.actions)}>
+      <TableCell sx={cellRightSx(COLUMN_WIDTHS_INVITALIA.actions)}>
         <ArrowForwardIosIcon
-          sx={{ cursor: 'pointer', color: '#0073E6' }}
+          sx={{
+            cursor: 'pointer',
+            color: '#0073E6',
+          }}
           onClick={() => handleListButtonClick(row)}
         />
       </TableCell>
