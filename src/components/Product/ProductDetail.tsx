@@ -10,6 +10,7 @@ import { EMPTY_DATA } from '../../utils/constants';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
 import ProductConfirmDialog from './ProductConfirmDialog';
+import ProductModal from './ProductModal';
 
 type Props = {
   open: boolean;
@@ -66,10 +67,21 @@ const handleOpenModal = (
 export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, onClose }: Props) {
   const { t } = useTranslation();
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [excludeModalOpen, setExcludeModalOpen] = useState(false);
 
   const handleConfirmRestore = () => {
     handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], 'TODO');
     setRestoreDialogOpen(false);
+    if (typeof onUpdateTable === 'function') {
+      onUpdateTable();
+    }
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
+  const handleExcludeClose = () => {
+    setExcludeModalOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();
     }
@@ -249,9 +261,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
                   ...buttonStyle,
                   width: '92px',
                 }}
-                onClick={() =>
-                  handleOpenModal('REJECTED', data.organizationId, [data.gtinCode], 'TODO')
-                }
+                onClick={() => setExcludeModalOpen(true)}
               >
                 Escludi
               </Button>
@@ -282,6 +292,14 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         message="Vuoi ripristinare il prodotto segnalato in precedenza?"
         onCancel={() => setRestoreDialogOpen(false)}
         onConfirm={handleConfirmRestore}
+      />
+      <ProductModal
+        open={excludeModalOpen}
+        onClose={handleExcludeClose}
+        gtinCodes={[data.gtinCode]}
+        actionType="rejected"
+        organizationId={data.organizationId}
+        onUpdateTable={onUpdateTable}
       />
     </Box>
   );

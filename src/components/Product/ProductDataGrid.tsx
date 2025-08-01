@@ -60,7 +60,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>(undefined);
 
-  // Reset selezione checkbox quando i dati della tabella vengono aggiornati (refresh/ripristina)
   useEffect(() => {
     setSelected([]);
   }, [tableData]);
