@@ -130,16 +130,17 @@
             "fileTooLargeDescription": "La dimensione del file non deve superare i {{x}} mb",
             "tooMuchProductsTitle": "Il file contiene troppi prodotti",
             "tooMuchProductsDescription": "È possibile caricare al massimo 100 prodotti per lotto.",
-            "wrongHeaderTitle": "Il file contiene gli header errati",
-            "wrongHeaderDescription": "Gli header del file csv non sono validi",
-            "emptyTitle": "Il file non è valido",
-            "emptyDescription": "Il file caricato è vuoto",
+            "wrongHeaderTitle": "I titoli del file sono errati",
+            "wrongHeaderDescription": "I titoli presenti nel file devono corrispondere a quelli indicati nel template.",
+            "emptyTitle": "Il file caricato è vuoto",
+            "emptyDescription": "Assicurati che il file contenga almeno una riga di dati prima di caricarlo.",
             "wrongCategoryTitle": "Il file contiene una categoria errata",
             "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
             "multipeErrorsTitle": "Il file contiene uno o più errori",
             "multipleErrorDescription": " per verificare le informazioni e carica di nuovo il file.",
             "eprelNotWorksTitle": "EPREL è giu ora non funziona",
-            "eprelNotWorksDescription": "Riprova più tardi"
+            "eprelNotWorksDescription": "Riprova più tardi",
+            "missingFileDescription": "Carica un file in formato .csv"
           }
         }
       }
@@ -151,17 +152,19 @@
       "loading": "Caricamento dati ...",
       "filterLabels": {
         "category": "Categoria",
+        "status": "Stato",
         "batch": "Lotto",
         "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN",
         "manufacturerCode": "Codice produttore",
         "filter": "Filtra",
-        "deleteFilters": "Rimuovi filtri"
+        "deleteFilters": "Rimuovi filtri"      
       },
       "listHeader": {
         "category": "Categoria",
+        "status": "Stato",
         "energeticClass": "Classe energetica",
-        "eprelCode": "Codice Eprel",
+        "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN/EAN",
         "batch": "Lotto"
       },
@@ -174,6 +177,9 @@
         "TUMBLEDRYERS": "Asciugatrici",
         "REFRIGERATINGAPPL": "Frigoriferi",
         "COOKINGHOBS": "Piani cottura",
+        "APPROVED":"Default",
+        "SUPERVISIONED":"Contrassegnati",
+        "REJECTED":"Esclusi",
         "lavatrici": "WASHINGMACHINES",
         "asciugatrici": "TUMBLEDRYERS",
         "forni": "OVENS",
@@ -181,7 +187,10 @@
         "lavastoviglie": "DISHWASHERS",
         "lavasciuga": "WASHERDRIERS",
         "frigoriferi": "REFRIGERATINGAPPL",
-        "piani cottura": "COOKINGHOBS"
+        "piani cottura": "COOKINGHOBS",
+        "default": "APPROVED",
+        "contrassegnati": "SUPERVISIONED",
+        "esclusi": "REJECTED"
       },
       "tablePaginationFrom": "di",
       "emptyList": "Nessun record corrisponde alla ricerca.",
@@ -220,5 +229,24 @@
     "positiveNumber": "Inserisci un valore positivo",
     "requiredField": "Campo obbligatorio",
     "number": "Inserisci un numero"
+  },
+  "invitaliaModal":{
+    "supervisioned": {
+    "title": "Contrassegna un prodotto",
+    "description":
+      "Segnala eventuali anomalie su un prodotto: verrà messo in pausa e potrai successivamente decidere se escluderlo o ripristinarlo.",
+    "listTitle": "I prodotti segnalati sono i seguenti:",
+    "reasonLabel": "Motivo segnalazione",
+    "reasonPlaceholder": "Motivo segnalazione",
+    "buttonText": "Chiudi"
+    },
+    "rejected":{
+    "title": "Escludi un prodotto",
+    "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
+    "listTitle": "I prodotti esclusi sono i seguenti:",
+    "reasonLabel": "Motivo esclusione",
+    "reasonPlaceholder": "Motivo esclusione",
+    "buttonText": "Escludi"
   }
+}
 }

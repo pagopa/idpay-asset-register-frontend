@@ -1,9 +1,9 @@
 import { useTheme, useMediaQuery } from '@mui/material';
-import {emptyData, maxLengthEmail} from "./utils/constants";
+import {EMPTY_DATA, maxLengthEmail} from "./utils/constants";
 
 export const formattedCurrency = (
   number: number | undefined,
-  symbol: string = emptyData,
+  symbol: string = EMPTY_DATA,
   cents: boolean = false
 ) => {
   if (number && cents === false) {
@@ -42,22 +42,21 @@ export const formatDate = (date: Date | undefined) => {
   return '';
 };
 
-export const formatDateWithHours = (isoDate: string): string => {
+export const formatDateWithHours = (isoDate: Date): string => {
     if (!isoDate) {
-        return emptyData;
+        return EMPTY_DATA;
     }
-    const date = new Date(isoDate);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const day = String(isoDate.getDate()).padStart(2, '0');
+    const month = String(isoDate.getMonth() + 1).padStart(2, '0');
+    const year = isoDate.getFullYear();
+    const hours = String(isoDate.getHours()).padStart(2, '0');
+    const minutes = String(isoDate.getMinutes()).padStart(2, '0');
     return `${day}/${month}/${year}, ${hours}:${minutes}`;
 };
 
 export const formatDateWithoutHours = (isoDate: string): string => {
     if (!isoDate) {
-        return emptyData;
+        return EMPTY_DATA;
     }
     const date = new Date(isoDate);
     const day = String(date.getDate()).padStart(2, '0');
@@ -109,14 +108,14 @@ export const fetchUserFromLocalStorage = (): { [key: string]: string } | null =>
 
 export const truncateString = (str?: string, maxLength: number = maxLengthEmail): string => {
     if (!str) {
-        return emptyData;
+        return EMPTY_DATA;
     } else {
         return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
     }
 };
 
 export const truncateStringResponsive = (str?: string, maxLength?: number): string => {
-  if (!str) {return emptyData;}
+  if (!str) {return EMPTY_DATA;}
   if (!maxLength) {return str;}
   return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
 };

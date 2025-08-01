@@ -4,7 +4,7 @@ import { renderWithContext } from '../utils/__tests__/test-utils';
 
 jest.mock('../utils/env', () => ({
   URL_API: {
-    OPERATION: 'http://mock-api/register',
+    OPERATION: 'https://mock-api/register',
   },
   API_TIMEOUT_MS: 10000,
 }));

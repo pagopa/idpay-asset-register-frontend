@@ -15,6 +15,9 @@ import { BatchList } from './generated/register/BatchList';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
 import { CsvDTO } from './generated/register/CsvDTO';
 import {InstitutionsResponse} from "./generated/register/InstitutionsResponse";
+import {ProductDTO} from "./generated/register/ProductDTO";
+import { ProductsUpdateDTO } from './generated/register/ProductsUpdateDTO';
+import { ProductListDTO } from './generated/register/ProductListDTO';
 
 const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
   const token = storageTokenOps.read();
@@ -60,48 +63,114 @@ export const RolePermissionApi = {
     return extractResponse(result, 200, onRedirectToLogin);
   },
 };
+function buildProductParams(
+  organizationId: string,
+  page?: number,
+  size?: number,
+  sort?: string,
+  category?: string,
+  status?: string,
+  eprelCode?: string,
+  gtinCode?: string,
+  productCode?: string,
+  productFileId?: string
+) {
+  return {
+    organizationId,
+    ...(page !== undefined ? { page } : {}),
+    ...(size !== undefined ? { size } : {}),
+    ...(sort ? { sort } : {}),
+    ...(category ? { category } : {}),
+    ...(status ? { status } : {}),
+    ...(eprelCode ? { eprelCode } : {}),
+    ...(gtinCode ? { gtinCode } : {}),
+    ...(productCode ? { productCode } : {}),
+    ...(productFileId ? { productFileId } : {}),
+  };
+}
 
 export const RegisterApi = {
-  getProductFiles: async (page?: number, size?: number, sort?: string): Promise<UploadsListDTO> => {
+   getProduct: async (
+    xOrganizationSelected: string,
+    page?: number,
+    size?: number,
+    sort?: string,
+    category?: string,
+    status?: string,
+    eprelCode?: string,
+    gtinCode?: string,
+    productCode?: string,
+    productFileId?: string,
+  ): Promise<ProductDTO | undefined> => {
     try {
-      const params = {
-        ...(page !== undefined ? { page } : {}),
-        ...(size !== undefined ? { size } : {}),
-        ...(sort !== undefined ? { sort } : {}),
-      };
+      const params = buildProductParams(
+        xOrganizationSelected,
+        page,
+        size,
+        sort,
+        category,
+        status,
+        eprelCode,
+        gtinCode,
+        productCode,
+        productFileId
+      );
 
-      const result = await registerClient.getProductFilesList(params);
+      const result = await registerClient.getProducts(params);
+      const productList = await extractResponse(result, 200, onRedirectToLogin) as ProductListDTO;
+      if (productList.content && productList.content.length > 0) {
+        return productList.content[0];
+      } else {
+        console.warn('Nessun prodotto trovato con i parametri specificati.');
+        return undefined;
+      }
+    } catch (error) {
+      console.error('Errore durante il recupero del prodotto:', error);
+      throw error;
+    }
+  },
+
+  getProductList: async (
+    xOrganizationSelected: string,
+    page?: number,
+    size?: number,
+    sort?: string,
+    category?: string,
+    status?: string,
+    eprelCode?: string,
+    gtinCode?: string,
+    productCode?: string,
+    productFileId?: string,
+  ): Promise<ProductListDTO> => {
+    try {
+      const params = buildProductParams(
+        xOrganizationSelected,
+        page,
+        size,
+        sort,
+        category,
+        status,
+        eprelCode,
+        gtinCode,
+        productCode,
+        productFileId
+      );
+
+      const result = await registerClient.getProducts(params);
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
       console.error('Errore durante il recupero dei file prodotto:', error);
       throw error;
     }
   },
-  getProducts: async (
-      xOrganizationSelected: string,
-      page?: number,
-      size?: number,
-      sort?: string,
-      category?: string,
-      eprelCode?: string,
-      gtinCode?: string,
-      productCode?: string,
-      productFileId?: string,
-  ): Promise<UploadsListDTO> => {
+  getProductFiles: async (page?: number, size?: number): Promise<UploadsListDTO> => {
     try {
       const params = {
-        'x-organization-selected': xOrganizationSelected,
         ...(page !== undefined ? { page } : {}),
         ...(size !== undefined ? { size } : {}),
-        ...(sort !== undefined ? { sort } : {}),
-        ...(category ? { category } : {}),
-        ...(eprelCode ? { eprelCode } : {}),
-        ...(gtinCode ? { gtinCode } : {}),
-        ...(productCode ? { productCode } : {}),
-        ...(productFileId ? { productFileId } : {}),
-      }; 
+      };
 
-      const result = await registerClient.getProducts(params);
+      const result = await registerClient.getProductFilesList(params);
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
       console.error('Errore durante il recupero dei file prodotto:', error);
@@ -173,5 +242,66 @@ export const RegisterApi = {
       throw error;
     }
   },
+
+setSupervisionedStatusList: async (
+  xOrganizationSelected: string,
+  gtinCodes: Array<string>,
+  motivation: string
+): Promise<ProductsUpdateDTO> => {
+  try {
+    const body = { gtinCodes, motivation };
+    const result = await registerClient.updateProductStatusSupervisioned({
+      'x-organization-selected': xOrganizationSelected,
+      body
+    });
+    return extractResponse(result, 200, onRedirectToLogin);
+  } catch (error) {
+    console.error(
+      `Errore durante l'aggiornamento dello stato supervisionato per l'organizzazione con ID ${xOrganizationSelected}:`,
+      error
+    );
+    throw error;
+  }
+},
+
+ setApprovedStatusList: async (
+  xOrganizationSelected: string,
+  gtinCodes: Array<string>,
+  motivation: string
+): Promise<ProductsUpdateDTO> => {
+  try {
+    const body = { gtinCodes, motivation };
+    const result = await registerClient.updateProductStatusApproved(
+      { 'x-organization-selected': xOrganizationSelected, body }
+    );
+    return extractResponse(result, 200, onRedirectToLogin);
+  } catch (error) {
+    console.error(
+      `Errore durante l'aggiornamento dello stato approvato per l'organizzazione con ID ${xOrganizationSelected}:`,
+      error
+    );
+    throw error;
+  }
+},
+
+ setRejectedStatusList: async (
+  xOrganizationSelected: string,
+  gtinCodes: Array<string>,
+  motivation: string
+): Promise<ProductsUpdateDTO> => {
+  try {
+    const body = { gtinCodes, motivation };
+    const result = await registerClient.updateProductStatusRejected(
+      { 'x-organization-selected': xOrganizationSelected, body }
+    );
+    return extractResponse(result, 200, onRedirectToLogin);
+  } catch (error) {
+    console.error(
+      `Errore durante l'aggiornamento dello stato rifiutato per l'organizzazione con ID ${xOrganizationSelected}:`,
+      error
+    );
+    throw error;
+  }
+},
 
 };

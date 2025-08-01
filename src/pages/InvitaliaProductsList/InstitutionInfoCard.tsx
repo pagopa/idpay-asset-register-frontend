@@ -6,7 +6,7 @@ import { truncateString } from '../../helpers';
 import { InstitutionResponse } from '../../api/generated/register/InstitutionResponse';
 import { getInstitutionById } from '../../services/registerService';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
-import { emptyData, maxLengthOverviewInvit } from '../../utils/constants';
+import { EMPTY_DATA, maxLengthOverviewInvit } from '../../utils/constants';
 
 const InstitutionInfoCard: React.FC = () => {
   const { t } = useTranslation();
@@ -35,15 +35,9 @@ const InstitutionInfoCard: React.FC = () => {
   const rightColumn = [
     {
       label: 'sedeLegale',
-      value:
-        (institutionInfo?.address ?? '') +
-        ', ' +
-        (institutionInfo?.zipCode ?? '') +
-        ' ' +
-        (institutionInfo?.city ?? '') +
-        ' (' +
-        (institutionInfo?.county ?? '') +
-        ')',
+      value: `${institutionInfo?.address ?? ''}, ${institutionInfo?.zipCode ?? ''} ${
+        institutionInfo?.city ?? ''
+      } (${institutionInfo?.county ?? ''})`,
       truncate: true,
     },
     { label: 'pec', value: institutionInfo?.digitalAddress, truncate: true },
@@ -78,7 +72,7 @@ const InstitutionInfoCard: React.FC = () => {
         </Tooltip>
       ) : (
         <Typography variant="body2" sx={{ fontWeight: '600' }} noWrap>
-          {value || emptyData}
+          {value || EMPTY_DATA}
         </Typography>
       )}
     </Box>

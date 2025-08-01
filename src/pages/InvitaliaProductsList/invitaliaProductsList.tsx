@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { BASE_ROUTE } from '../../routes';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
-import ProductGrid from '../../components/Product/ProductDataGrid';
+import ProductDataGrid from '../../components/Product/ProductDataGrid';
 import InstitutionInfoCard from './InstitutionInfoCard';
 
 const InvitaliaProductsList: React.FC = () => {
@@ -76,7 +76,7 @@ const InvitaliaProductsList: React.FC = () => {
             data-testid="title"
           />
         </Box>
-        <ProductGrid organizationId={institution?.institutionId || ''} />
+        <ProductDataGrid organizationId={institution?.institutionId || ''} />
       </Box>
     </Box>
   );

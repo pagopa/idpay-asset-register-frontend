@@ -1,153 +1,172 @@
-import { List, ListItem, Typography, Divider } from '@mui/material';
-import { Box } from '@mui/system';
-import { useTranslation } from 'react-i18next';
+import { List, Divider, Box } from '@mui/material';
 import { format } from 'date-fns';
-import { emptyData } from '../../utils/constants';
+import { useState } from 'react';
+import { EMPTY_DATA } from '../../utils/constants';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
+import ProductConfirmDialog from './ProductConfirmDialog';
+import ProductModal from './ProductModal';
+import ProductInfoRow from './ProductInfoRow';
+import ProductStatusChip from './ProductStatusChip';
+import ProductActionButtons from './ProductActionButtons';
 
 type Props = {
+  open: boolean;
   data: ProductDTO;
+  isInvitaliaUser: boolean;
+  onUpdateTable?: () => void;
+  onClose?: () => void;
 };
 
-export default function ProductDetail({ data }: Props) {
-  const { t } = useTranslation();
+const callApprovedApi = async (
+  organizationId: string,
+  gtinCodes: Array<string>,
+  motivation: string
+) => {
+  try {
+    await setApprovedStatusList(organizationId, gtinCodes, motivation);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const callRejectedApi = async (
+  organizationId: string,
+  gtinCodes: Array<string>,
+  motivation: string
+) => {
+  try {
+    await setRejectedStatusList(organizationId, gtinCodes, motivation);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleOpenModal = (
+  action: string,
+  organizationId: string,
+  gtinCodes: Array<string>,
+  motivation: string
+) => {
+  if (action === 'REJECTED') {
+    return callRejectedApi(organizationId, gtinCodes, motivation);
+  } else if (action === 'APPROVED') {
+    return callApprovedApi(organizationId, gtinCodes, motivation);
+  }
+  return Promise.resolve();
+};
+
+export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, onClose }: Props) {
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [excludeModalOpen, setExcludeModalOpen] = useState(false);
+  const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
+
+  const handleConfirmRestore = async () => {
+    await handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], 'TODO');
+    setRestoreDialogOpen(false);
+    if (typeof onUpdateTable === 'function') {
+      onUpdateTable();
+    }
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
+  const handleExcludeClose = () => {
+    setExcludeModalOpen(false);
+    if (typeof onUpdateTable === 'function') {
+      onUpdateTable();
+    }
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
+  const handleSupervisionClose = () => {
+    setSupervisionModalOpen(false);
+    if (typeof onUpdateTable === 'function') {
+      onUpdateTable();
+    }
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
   return (
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
-        <ListItem disablePadding>
-          <Box sx={{ mb: 1, ml: 2 }}>
-            <Typography variant="h6" sx={{ maxWidth: 350, wordWrap: 'break-word' }}>
-              {data?.productName}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.batchName || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
+        <ProductStatusChip status={data.status} isInvitaliaUser={isInvitaliaUser} />
+        <ProductInfoRow
+          label=""
+          value={data?.productName}
+          valueVariant="h6"
+          sx={{ mb: 1, ml: 2, maxWidth: 350, wordWrap: 'break-word' }}
+        />
+        <ProductInfoRow
+          label=""
+          value={data?.batchName || EMPTY_DATA}
+          labelVariant="body2"
+          valueVariant="body2"
+        />
         <Divider sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
+        <ProductInfoRow
+          label="Data verifica EPREL"
+          value={String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || EMPTY_DATA}
+        />
+        <ProductInfoRow
+          label=""
+          value="SCHEDA PRODOTTO"
+          labelVariant="body2"
+          valueVariant="body2"
+          sx={{ mt: 4 }}
+        />
+        <ProductInfoRow label="Codice EPREL" value={data?.eprelCode || EMPTY_DATA} />
+        <ProductInfoRow label="Codice GTIN/EAN" value={data?.gtinCode || EMPTY_DATA} />
+        <ProductInfoRow label="Codice prodotto" value={data?.productCode || EMPTY_DATA} />
+        <ProductInfoRow label="Categoria" value={data?.category || EMPTY_DATA} />
+        <ProductInfoRow label="Marca" value={data?.brand || EMPTY_DATA} />
+        <ProductInfoRow label="Modello" value={data?.model || EMPTY_DATA} />
+        <ProductInfoRow label="Classe energetica" value={data?.energyClass || EMPTY_DATA} />
+        <ProductInfoRow
+          label="Paese di produzione"
+          value={data?.countryOfProduction || EMPTY_DATA}
+        />
+        <ProductInfoRow label="Capacità" value={data?.capacity || EMPTY_DATA} />
+        {data.status !== 'APPROVED' && (
+          <ProductInfoRow label="Motivazione" value={data?.motivation || EMPTY_DATA} />
+        )}
 
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Data verifica EPREL
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
-        <ListItem>
-          <Box>
-            <Typography variant="body2" fontWeight="fontWeightMedium" sx={{ mt: 4 }}>
-              SCHEDA PRODOTTO
-            </Typography>
-          </Box>
-        </ListItem>
-
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              {' '}
-              Codice EPREL
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.eprelCode || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
-
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Codice GTIN/EAN
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.gtinCode || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
-
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Codice prodotto
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.productCode || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
-
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Categoria
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.category ? t(`pages.products.categories.${data?.category}`) : emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
-
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Marca
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.brand || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
-
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Modello
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.model || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
-
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Classe energetica
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.energyClass || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
-
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Paese di produzione
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.countryOfProduction || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
-
-        <ListItem>
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Capacità
-            </Typography>
-            <Typography variant="body2" fontWeight="fontWeightMedium">
-              {data?.capacity || emptyData}
-            </Typography>
-          </Box>
-        </ListItem>
+        <ProductActionButtons
+          isInvitaliaUser={isInvitaliaUser}
+          status={data.status}
+          onRestore={() => setRestoreDialogOpen(true)}
+          onExclude={() => setExcludeModalOpen(true)}
+          onSupervision={() => setSupervisionModalOpen(true)}
+        />
       </List>
+      <ProductConfirmDialog
+        open={restoreDialogOpen}
+        title="Ripristina prodotto"
+        message="Vuoi ripristinare il prodotto segnalato in precedenza?"
+        onCancel={() => setRestoreDialogOpen(false)}
+        onConfirm={handleConfirmRestore}
+      />
+      <ProductModal
+        open={excludeModalOpen}
+        onClose={handleExcludeClose}
+        gtinCodes={[data.gtinCode]}
+        actionType="rejected"
+        organizationId={data.organizationId}
+        onUpdateTable={onUpdateTable}
+      />
+      <ProductModal
+        open={supervisionModalOpen}
+        onClose={handleSupervisionClose}
+        gtinCodes={[data.gtinCode]}
+        actionType="supervisioned"
+        organizationId={data.organizationId}
+        onUpdateTable={onUpdateTable}
+      />
     </Box>
   );
 }

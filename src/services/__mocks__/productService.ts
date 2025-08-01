@@ -1,5 +1,5 @@
-import { Product } from '../../model/Product';
 import { expect } from '@jest/globals';
+import { Product } from '../../model/Product';
 
 export const mockedPartyProducts: Array<Product> = [
   {
@@ -37,9 +37,9 @@ export const mockedPartyProducts: Array<Product> = [
         roleKey: 'referente-dei-pagamenti', // TODO use real product role
       },
     ],
-    urlBO: 'http://notifiche/bo?token=<IdentityToken>',
+    urlBO: 'https://notifiche/bo?token=<IdentityToken>',
     activationDateTime: new Date(2021, 1, 2),
-    urlPublic: 'http://notifiche/public',
+    urlPublic: 'https://notifiche/public',
     imageUrl:
       'https://selcdcheckoutsa.z6.web.core.windows.net/resources/products/default/depict-image.jpeg',
     subProducts: [],
@@ -58,9 +58,9 @@ export const mockedPartyProducts: Array<Product> = [
         roleKey: 'incaricato-ente-creditore', // TODO use real product role
       },
     ],
-    urlBO: 'http://pagopa/bo#token=<IdentityToken>',
+    urlBO: 'https://pagopa/bo#token=<IdentityToken>',
     activationDateTime: new Date(2021, 1, 3),
-    urlPublic: 'http://pagopa/public',
+    urlPublic: 'https://pagopa/public',
     imageUrl:
       'https://selcdcheckoutsa.z6.web.core.windows.net/resources/products/default/depict-image.jpeg',
     subProducts: [],
@@ -79,8 +79,8 @@ export const mockedPartyProducts: Array<Product> = [
         roleKey: 'incaricato-ente-creditore', // TODO use real product role
       },
     ],
-    urlBO: 'http://checkiban/bo#token=<IdentityToken>',
-    urlPublic: 'http://www.google.it',
+    urlBO: 'https://checkiban/bo#token=<IdentityToken>',
+    urlPublic: 'https://www.google.it',
     imageUrl:
       'https://selcdcheckoutsa.z6.web.core.windows.net/resources/products/default/depict-image.jpeg',
     subProducts: [],
@@ -90,7 +90,7 @@ export const mockedPartyProducts: Array<Product> = [
     id: 'prod-cgn',
     title: 'Carta Giovani',
     description: 'Richiedi la convenzione e gestisci i dati e le agevolazioni da offrire.',
-    urlBO: 'http://cgn/bo#token=<IdentityToken>',
+    urlBO: 'https://cgn/bo#token=<IdentityToken>',
     authorized: false,
     status: 'INACTIVE',
     selfcareRole: 'ADMIN',
@@ -110,7 +110,7 @@ export const mockedPartyProducts: Array<Product> = [
     id: 'prod-interop',
     title: 'PDND',
     description: 'Condividi dati con altri Enti in maniera semplice, sicura ed economica.',
-    urlBO: 'http://PDND/bo#token=<IdentityToken>',
+    urlBO: 'https://PDND/bo#token=<IdentityToken>',
     authorized: true,
     selfcareRole: 'ADMIN',
     roles: [

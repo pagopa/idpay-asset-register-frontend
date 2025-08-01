@@ -4,6 +4,10 @@ import {CsvDTO} from "../api/generated/register/CsvDTO";
 import {UploadsListDTO} from "../api/generated/register/UploadsListDTO";
 import {InstitutionsResponse} from "../api/generated/register/InstitutionsResponse";
 import {InstitutionResponse} from "../api/generated/register/InstitutionResponse";
+import { UpdateResponseDTO } from "../api/generated/register/UpdateResponseDTO";
+import { BatchList } from "../api/generated/register/BatchList";
+import { ProductListDTO } from "../api/generated/register/ProductListDTO";
+
 
 
 export const uploadProductList = (
@@ -24,12 +28,10 @@ export const downloadErrorReport = (
     RegisterApi.downloadErrorReport(productFileId).then((res) => res);
 
 export const getProductFilesList = async (
-    page?: number,
-    size?: number,
-    sort?: string
+    page?: number, size?: number,
   ): Promise<UploadsListDTO> => {
     try {
-      return await RegisterApi.getProductFiles(page, size, sort);
+      return await RegisterApi.getProductFiles(page, size);
     } catch (error: any) {
       if (error.response && error.response.data) {
         throw error.response.data;
@@ -38,24 +40,27 @@ export const getProductFilesList = async (
     }
   };
 
+
 export const getProducts = async (
-  xOrganizationSelected: string,
+  organizationId: string,
   page?: number,
   size?: number,
   sort?: string,
   category?: string,
+  status?: string,
   eprelCode?: string,
   gtinCode?: string,
   productCode?: string,
   productFileId?: string
-): Promise<UploadsListDTO> => {
+): Promise<ProductListDTO> => {
   try {
-    return await RegisterApi.getProducts(
-      xOrganizationSelected,
+    return await RegisterApi.getProductList(
+      organizationId,
       page,
       size,
       sort,
       category,
+      status,
       eprelCode,
       gtinCode,
       productCode,
@@ -69,9 +74,6 @@ export const getProducts = async (
   }
 };
 
-
-
-
 export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
   try {
     return await RegisterApi.getInstitutionsList();
@@ -82,7 +84,6 @@ export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
     throw error;
   }
 };
-
 
 export const getInstitutionById = async (
     institutionId: string
@@ -96,3 +97,60 @@ export const getInstitutionById = async (
     throw error;
   }
 };
+
+export const setSupervisionedStatusList = async (
+  xOrganizationSelected: string,
+  gtinCodes: Array<string>,
+  motivation: string
+): Promise<UpdateResponseDTO> => {
+  try {
+   return await RegisterApi.setSupervisionedStatusList(xOrganizationSelected,gtinCodes,motivation);
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+ };
+
+ 
+ export const setApprovedStatusList = async (
+  xOrganizationSelected: string,
+  gtinCodes: Array<string>,
+  motivation: string
+): Promise<UpdateResponseDTO> => {
+  try {
+    return await RegisterApi.setApprovedStatusList(xOrganizationSelected, gtinCodes, motivation);
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
+ export const setRejectedStatusList = async (
+  xOrganizationSelected: string,
+  gtinCodes: Array<string>,
+  motivation: string
+): Promise<UpdateResponseDTO> => {
+  try {
+   return await RegisterApi.setRejectedStatusList(xOrganizationSelected,gtinCodes,motivation);
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+ };
+
+ export const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchList> => {
+   try {
+     return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
+   } catch (error: any) {
+     if (error?.response && error?.response?.data) {
+       throw error.response.data;
+     }
+     throw error;
+   }
+ };

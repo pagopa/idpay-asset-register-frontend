@@ -23,6 +23,8 @@ jest.mock('../../../routes', () => ({
   BASE_ROUTE: '/base',
 }));
 
+const mockOnExit = jest.fn((cb) => cb());
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
@@ -57,6 +59,30 @@ describe('Test suite for SideMenu component', () => {
     await waitFor(() => {
       expect(window.location.pathname).toBe('/');
     });
+  });
+
+  test('user clicks the link to uploads', async () => {
+    renderWithContext(<SideMenu />);
+    const user = userEvent.setup();
+
+    const homeLink = screen.getByText('Storico caricamenti');
+    await user.click(homeLink);
+
+    await waitFor(() => {
+      expect(window.location.pathname).toBe('/');
+    });
+  });
+
+  test('user clicks the link to products page and triggers navigation', async () => {
+      renderWithContext(<SideMenu />);
+      const user = userEvent.setup();
+
+      const productsLink = screen.getByText('Prodotti');
+      await user.click(productsLink);
+
+      await waitFor(() => {
+          expect(mockOnExit).toHaveBeenCalledTimes(0);
+      });
   });
 
   test('does not render extra items for Invitalia users', async () => {

@@ -1,26 +1,28 @@
-import { Dispatch, SetStateAction, useState, forwardRef, useImperativeHandle } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { useTranslation } from 'react-i18next';
+import {Dispatch, forwardRef, SetStateAction, useImperativeHandle} from 'react';
+import {useDropzone} from 'react-dropzone';
+import {useTranslation} from 'react-i18next';
 import {
-  Box,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  Link,
-  MenuItem,
-  Select,
-  Typography,
+    Box,
+    Button,
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    Typography,
 } from '@mui/material';
-import { useFormik } from 'formik';
+import {useFormik} from 'formik';
 import * as Yup from 'yup';
-import RejectedFile from '../../components/RejectedFile/RejectedFile';
-import LoadingFile from '../../components/LoadingFile/LoadingFile';
-import AcceptedFile from '../../components/AcceptedFile/AcceptedFile';
-import { PRODUCTS_CATEGORY } from '../../utils/constants';
-import { initUploadBoxStyle, initUploadHelperBoxStyle } from '../../helpers';
-import InitUploadBox from '../../components/InitUploadBox/InitUploadBox';
-import { downloadErrorReport, uploadProductList } from '../../services/registerService';
-import { categoryList, downloadCsv } from './helpers';
+import {useUnloadEventOnExit} from "@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor";
+import {useNavigate} from "react-router-dom";
+import {PRODUCTS_CATEGORY} from '../../utils/constants';
+import {downloadErrorReport, uploadProductList, uploadProductListVerify} from '../../services/registerService';
+import ROUTES from "../../routes";
+import {useErrorHandling} from "../../hooks/useErrorHandling";
+import {useFileState} from "../../hooks/useFileState";
+import {categoryList, downloadCsv} from './helpers';
+import FileUploadSection from "./fileUploadSection";
 
 type Props = {
   fileAccepted: boolean;
@@ -32,321 +34,264 @@ export type FormAddProductsRef = {
 };
 
 const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
-  // eslint-disable-next-line sonarjs/cognitive-complexity
-  ({ fileAccepted, setFileAccepted }, ref) => {
-    const { t } = useTranslation();
-    const [fileIsLoading, setFileIsLoading] = useState(false);
-    const [fileRejected, setFileRejected] = useState(false);
-    const [alertTitle, setAlertTitle] = useState('');
-    const [alertDescription, setAlertDescription] = useState<string>('');
-    const [fileName, setFileName] = useState('');
-    const [fileDate, setFileDate] = useState('');
-    const [isReport, setIsReport] = useState(false);
-    const [idReport, setIdReport] = useState('');
+    // eslint-disable-next-line sonarjs/cognitive-complexity
+    ({ fileAccepted, setFileAccepted }, ref) => {
+        const { t } = useTranslation();
+        const navigate = useNavigate();
+        const onExit = useUnloadEventOnExit();
 
-    const validationSchema = Yup.object().shape({
-      category: Yup.string().required(t('validation.categoryRequired')),
-    });
+        const fileState = useFileState();
+        const errorHandling = useErrorHandling(t);
 
-    const handleDownloadReport = async () => {
-      try {
-        const res = await downloadErrorReport(idReport);
+        const validationSchema = Yup.object().shape({
+            category: Yup.string().required(t('validation.categoryRequired')),
+        });
 
-        downloadCsv(res.data, res.filename);
-      } catch (error) {
-        console.error('Errore nel download del report:', error);
-      }
-    };
+        const formik = useFormik({
+            initialValues: { category: '' },
+            validateOnMount: true,
+            validateOnChange: true,
+            enableReinitialize: true,
+            validationSchema,
+            onSubmit: (values) => console.log(values),
+        });
 
-    const formik = useFormik({
-      initialValues: {
-        category: '',
-      },
-      validateOnMount: true,
-      validateOnChange: true,
-      enableReinitialize: true,
-      validationSchema,
-      onSubmit: (values) => {
-        console.log(values);
-      },
-    });
+        const templateFileName =
+            formik.values.category === PRODUCTS_CATEGORY.COOKINGHOBS
+                ? 'cookinghobs_template.csv'
+                : 'eprel_template.csv';
 
-    const templateFileName =
-      formik.values.category === PRODUCTS_CATEGORY.COOKINGHOBS
-        ? 'cookinghobs_template.csv'
-        : 'eprel_template.csv';
+        const isCategoryValid = () => !formik.errors.category && formik.values.category !== '';
 
-    const validateCategory = async () => {
-      await formik.setFieldTouched('category', true, true);
-      await formik.validateField('category');
-      return !formik.errors.category && formik.values.category !== '';
-    };
+        const validateForm = async () => {
+            await formik.setFieldTouched('category', true, true);
+            await formik.validateField('category');
+            const categoryValid = isCategoryValid();
+            return categoryValid && fileAccepted;        };
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        validateForm: async () => {
-          await formik.setFieldTouched('category', true, true);
-          await formik.validateField('category');
-          const isCategoryValid = !formik.errors.category && formik.values.category !== '';
-          return isCategoryValid && fileAccepted;
-        },
-      }),
-      [formik, fileAccepted]
-    );
+        useImperativeHandle(ref, () => ({ validateForm }), [formik, fileAccepted]);
 
-    const { getRootProps, getInputProps } = useDropzone({
-      maxFiles: 1,
-      maxSize: 2097152,
-      accept: {
-        'text/csv': ['.csv'],
-      },
-      onFileDialogOpen: async () => {
-        await validateCategory();
-      },
-      onDrop: async () => {
-        setFileRejected(false);
-        await validateCategory();
-      },
-      onDropAccepted: async (files) => {
-        const isValid = await validateCategory();
-        if (!isValid) {
-          return;
-        }
-
-        setFileIsLoading(true);
-        setIsReport(false);
-
-        uploadProductList(files[0], formik.values.category)
-          .then((res: any) => {
-            if (res.status === 'OK') {
-              setFileName(files[0].name);
-              const dateField =
-                Object.prototype.toString.call(files[0].lastModified) === '[object Date]'
-                  ? files[0].lastModified
-                  : new Date();
-              const fileDate = dateField && dateField.toLocaleString('fr-BE');
-              setFileDate(fileDate || '');
-              setFileIsLoading(false);
-              setFileRejected(false);
-              setFileAccepted(true);
-            } else {
-              switch (res.errorKey) {
-                case 'product.invalid.file.extension':
-                  setAlertTitle(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.invalidTypeTitle')
-                  );
-                  setAlertDescription(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.invalidTypeDescription')
-                  );
-                  break;
-                case 'product.invalid.file.maxrow':
-                  setAlertTitle(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.tooMuchProductsTitle')
-                  );
-                  setAlertDescription(
-                    t(
-                      'pages.addProducts.form.fileUpload.fileUploadError.tooMuchProductsDescription'
-                    )
-                  );
-                  break;
-                case 'product.invalid.file.header':
-                  setAlertTitle(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.wrongHeaderTitle')
-                  );
-                  setAlertDescription(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.wrongHeaderDescription')
-                  );
-                  break;
-                case 'product.invalid.file.report':
-                  setIsReport(true);
-                  setIdReport(res?.productFileId.toString());
-                  setAlertTitle(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.multipeErrorsTitle')
-                  );
-                  setAlertDescription(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.multipleErrorDescription')
-                  );
-                  break;
-                case 'product.invalid.file.empty':
-                  setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.emptyTitle'));
-                  setAlertDescription(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.emptyDescription')
-                  );
-                  break;
-                default:
-                  setAlertTitle(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.errorGenericTitle')
-                  );
-                  setAlertDescription(
-                    t('pages.addProducts.form.fileUpload.fileUploadError.errorDescription')
-                  );
-                  break;
-              }
-              setFileIsLoading(false);
-              setFileAccepted(false);
-              setFileRejected(true);
+        const handleDownloadReport = async () => {
+            try {
+                const res = await downloadErrorReport(errorHandling.idReport);
+                downloadCsv(res.data, res.filename);
+            } catch (error) {
+                console.error('Errore nel download del report:', error);
             }
-          })
-          .catch((_error: any) => {
-            setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.errorGenericTitle'));
-            setAlertDescription(
-              t('pages.addProducts.form.fileUpload.fileUploadError.errorDescription')
-            );
-            setFileIsLoading(false);
+        };
+
+        const processFileUpload = async (files: Array<File>) => {
+            if (!isCategoryValid()) {
+                errorHandling.showCategoryError();
+                setFileAccepted(false);
+                fileState.setFileRejectedState();
+                return;
+            }
+
+            fileState.setFileIsLoading(true);
+            errorHandling.clearErrors();
+
+            try {
+                const res = await uploadProductListVerify(files[0], formik.values.category);
+
+                if (res.status === 'OK') {
+                    fileState.setFileAcceptedState(files[0]);
+                    setFileAccepted(true);
+                } else {
+                    errorHandling.handleUploadError(res);
+                    setFileAccepted(false);
+                    fileState.setFileRejectedState();
+                }
+            } catch (error) {
+                errorHandling.handleGenericError();
+                setFileAccepted(false);
+                fileState.setFileRejectedState();
+            }
+        };
+
+        const { getRootProps, getInputProps } = useDropzone({
+            maxFiles: 1,
+            maxSize: 2097152,
+            accept: { 'text/csv': ['.csv'] },
+            onFileDialogOpen: () => {
+                if (!isCategoryValid()) {
+                    errorHandling.showCategoryError();
+                    setFileAccepted(false);
+                    fileState.setFileRejected(true);
+                }
+            },
+            onDrop: () => fileState.setFileRejected(false),
+            onDropAccepted: processFileUpload,
+            onDropRejected: (files) => {
+                errorHandling.clearErrors();
+                const errorKey = files[0].errors[0].code;
+                errorHandling.handleDropRejectedError(errorKey);
+                fileState.setFileRejectedState();
+                setFileAccepted(false);
+            },
+        });
+
+        const handleContinue = async () => {
+            const isValid = await validateForm();
+            if (!isValid) {
+                if (!isCategoryValid()) {
+                    errorHandling.showCategoryError();
+                    fileState.setFileRejected(true);
+                    setFileAccepted(false);
+                    return;
+                }
+
+                if (isCategoryValid() && !fileAccepted) {
+                    errorHandling.clearErrors();
+                    errorHandling.showMissingFileError();
+                    fileState.setFileRejected(true);
+                    setFileAccepted(false);
+                    return;
+                }
+
+                return;
+            }
+
+            fileState.setFileIsLoading(true);
+            errorHandling.clearErrors();
+
+            try {
+                if (!fileState.currentFile) {
+                    throw new Error('No file available');
+                }
+
+                const res = await uploadProductList(fileState.currentFile, formik.values.category);
+
+                if (res.status === 'OK') {
+                    onExit(() => navigate(ROUTES.HOME, { replace: true }));
+                } else {
+                    errorHandling.handleUploadError(res);
+                    setFileAccepted(false);
+                    fileState.setFileRejectedState();
+                }
+            } catch (error) {
+                errorHandling.handleGenericError();
+                setFileAccepted(false);
+                fileState.setFileRejectedState();
+            }
+        };
+
+        const resetFileStatus = () => {
+            errorHandling.clearErrors();
+            fileState.resetFileState();
             setFileAccepted(false);
-            setFileRejected(true);
-          });
-      },
-      onDropRejected: (files) => {
-          setIsReport(false);
-          const errorKey = files[0].errors[0].code;
-        switch (errorKey) {
-          case 'file-invalid-type':
-            setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.invalidTypeTitle'));
-            setAlertDescription(
-              t('pages.addProducts.form.fileUpload.fileUploadError.invalidTypeDescription')
-            );
-            break;
-          case 'file-too-large':
-            setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.fileTooLargeTitle'));
-            setAlertDescription(
-              t('pages.addProducts.form.fileUpload.fileUploadError.fileTooLargeDescription', {
-                x: 2,
-              })
-            );
-            break;
-          default:
-            setAlertTitle(t('pages.addProducts.form.fileUpload.fileUploadError.errorTitle'));
-            setAlertDescription(
-              t('pages.addProducts.form.fileUpload.fileUploadError.errorDescription')
-            );
-            break;
-        }
-        setFileIsLoading(false);
-        setFileRejected(true);
-        setFileAccepted(false);
-      },
-    });
+        };
 
-    const InitStatusPartial = (
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(12, 1fr)',
-        }}
-      >
-        <Box sx={initUploadBoxStyle} {...getRootProps({ className: 'dropzone' })}>
-          <input
-            {...getInputProps()}
-            data-testid="drop-input"
-            onClick={async (e) => {
-              if (!formik.values.category) {
+        const handleInputClick = (e: any) => {
+            if (!isCategoryValid()) {
                 e.preventDefault();
-                await validateCategory();
-              }
-            }}
-          />
-          <InitUploadBox
-            text={t('pages.addProducts.form.fileUpload.dragAreaText')}
-            link={t('pages.addProducts.form.fileUpload.dragAreaLink')}
-          />
-        </Box>
-        {formik.values.category !== '' && (
-          <Box sx={initUploadHelperBoxStyle}>
-            <FormHelperText sx={{ fontSize: '0.875rem' }}>
-              {t('pages.addProducts.form.fileUpload.fileUploadHelpText')}&#160;
-              <Link
-                href={formik.values.category ? `${templateFileName}` : undefined}
-                download={!!formik.values.category}
-                type="text/csv"
-                target="_blank"
-                variant="body2"
-                sx={{
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                }}
-              >
-                {t('pages.addProducts.form.fileUpload.fileUploadHelpLinkLabel')}
-              </Link>
-            </FormHelperText>
-          </Box>
-        )}
-      </Box>
-    );
+                errorHandling.showCategoryError();
+                setFileAccepted(false);
+                fileState.setFileRejected(true);
+            }
+        };
 
-    return (
-      <Box gridColumn="auto" pt={2}>
-        <Typography variant="body1" sx={{ gridColumn: 'span 12', fontWeight: 600 }}>
-          {t('pages.addProducts.form.categoryLabel')}
-        </Typography>
+        return (
+            <>
+                <Paper
+                    sx={{
+                        display: 'grid',
+                        alignItems: 'baseline',
+                        background: 'background.paper',
+                        p: 3,
+                        pt: 0,
+                        columnGap: 3,
+                    }}
+                >
+                    <Box gridColumn="auto" pt={2}>
+                        <Typography variant="body1" sx={{ gridColumn: 'span 12', fontWeight: 600 }}>
+                            {t('pages.addProducts.form.categoryLabel')}
+                        </Typography>
 
-        {/* Select Input */}
-        <FormControl
-          sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', mt: 2, mb: 3 }}
-          size="small"
-        >
-          <InputLabel id="category-label">
-            {t('pages.addProducts.form.categoryPlaceholder')}
-          </InputLabel>
-          <Select
-            id="category"
-            name="category"
-            value={formik.values.category}
-            labelId="category-label"
-            label={t('pages.addProducts.form.categoryPlaceholder')}
-            onChange={(e) => formik.setFieldValue('category', e.target.value)}
-            error={formik.touched.category && Boolean(formik.errors.category)}
-            inputProps={{
-              'data-testid': 'selectTimeParam-test',
-            }}
-            data-testid="category-label"
-          >
-            {categoryList.map((el) => (
-              <MenuItem
-                key={`category-select-${el.value}`}
-                value={el.value}
-                data-testid="category-select-id"
-              >
-                {t(el.label)}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText
-            error={formik.touched.category && Boolean(formik.errors.category)}
-            sx={{ gridColumn: 'span 12' }}
-          >
-            {formik.touched.category && formik.errors.category}
-          </FormHelperText>
-        </FormControl>
+                        <FormControl
+                            sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', mt: 2, mb: 3 }}
+                            size="small"
+                        >
+                            <InputLabel id="category-label">
+                                {t('pages.addProducts.form.categoryPlaceholder')}
+                            </InputLabel>
+                            <Select
+                                id="category"
+                                name="category"
+                                value={formik.values.category}
+                                labelId="category-label"
+                                label={t('pages.addProducts.form.categoryPlaceholder')}
+                                onChange={(e) => formik.setFieldValue('category', e.target.value)}
+                                error={formik.touched.category && Boolean(formik.errors.category)}
+                                inputProps={{ 'data-testid': 'selectTimeParam-test' }}
+                                data-testid="category-label"
+                            >
+                                {categoryList.map((el) => (
+                                    <MenuItem
+                                        key={`category-select-${el.value}`}
+                                        value={el.value}
+                                        data-testid={`category-option-${el.value}`}
+                                    >
+                                        {t(el.label)}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            <FormHelperText
+                                error={formik.touched.category && Boolean(formik.errors.category)}
+                                sx={{ gridColumn: 'span 12' }}
+                            >
+                                {formik.touched.category && formik.errors.category}
+                            </FormHelperText>
+                        </FormControl>
 
-        {/* File Input */}
-        {fileRejected && (
-          <Box pb={3}>
-            <RejectedFile
-              title={t(alertTitle)}
-              description={alertDescription}
-              isReport={isReport}
-              onDownloadReport={() => handleDownloadReport()}
-              dismissFn={() => setFileRejected(false)}
-            />
-          </Box>
-        )}
+                        <FileUploadSection
+                            fileRejected={fileState.fileRejected}
+                            fileIsLoading={fileState.fileIsLoading}
+                            fileAccepted={fileAccepted}
+                            fileName={fileState.fileName}
+                            fileDate={fileState.fileDate}
+                            alertTitle={errorHandling.alertTitle}
+                            alertDescription={errorHandling.alertDescription}
+                            isReport={errorHandling.isReport}
+                            onDownloadReport={handleDownloadReport}
+                            onDismissError={() => fileState.setFileRejected(false)}
+                            onChangeFile={resetFileStatus}
+                            getRootProps={getRootProps}
+                            getInputProps={getInputProps}
+                            onInputClick={handleInputClick}
+                            formikCategory={formik.values.category}
+                            templateFileName={templateFileName}
+                            t={t}
+                        />
 
-        {fileIsLoading ? (
-          <LoadingFile message={t('pages.addProducts.form.fileUpload.fileIsLoading')} />
-        ) : fileAccepted ? (
-          <AcceptedFile
-            fileName={fileName}
-            fileDate={fileDate}
-            chipLabel={t('pages.addProducts.form.fileUpload.validFile')}
-          />
-        ) : (
-          InitStatusPartial
-        )}
-      </Box>
-    );
-  }
+                    </Box>
+                </Paper>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        gridColumn: 'span 12',
+                        justifyContent: 'space-between',
+                        paddingTop: 5,
+                        paddingBottom: 5,
+                    }}
+                >
+                    <Button
+                        variant="outlined"
+                        onClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
+                        data-testid="cancel-button-test"
+                    >
+                        {t('commons.backBtn')}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleContinue}
+                        data-testid="continue-button-test"
+                    >
+                        {t('commons.continueBtn')}
+                    </Button>
+                </Box>
+        </>
+        );
+    }
 );
-
 export default FormAddProducts;

@@ -23,10 +23,10 @@ import { ButtonNaked } from '@pagopa/mui-italia';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { ArrowForward } from '@mui/icons-material';
 import ROUTES from '../../routes';
-import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
-import { UploadDTO } from '../../api/generated/register/UploadDTO';
 import { getProductFilesList } from '../../services/registerService';
-import { emptyData } from '../../utils/constants';
+import { EMPTY_DATA } from '../../utils/constants';
+import { UploadDTO } from '../../api/generated/register/UploadDTO';
+import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 
 function renderUploadStatusChip(status: string) {
   switch (status) {
@@ -42,9 +42,7 @@ function renderUploadStatusChip(status: string) {
   }
 }
 
-const formatDateTime = (isoDate: string): string => {
-  const date = new Date(isoDate);
-
+const formatDateTime = (date: Date): string => {
   const optionsDate: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'long',
@@ -63,11 +61,10 @@ const formatDateTime = (isoDate: string): string => {
   return `${formattedDate}, ${formattedTime}`;
 };
 
-const formatDate = (isoDate: string): string => {
-  const date = new Date(isoDate);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
+const formatDate = (isoDate: Date): string => {
+  const day = String(isoDate.getDate()).padStart(2, '0');
+  const month = String(isoDate.getMonth() + 1).padStart(2, '0');
+  const year = isoDate.getFullYear();
   return `${day}/${month}/${year}`;
 };
 
@@ -75,7 +72,7 @@ const UploadInfoBox: React.FC<{
   loading: boolean;
   error: string | null;
   data: UploadsListDTO | null;
-  firstUploadDate?: string;
+  firstUploadDate?: Date;
   onExit: ReturnType<typeof useUnloadEventOnExit>;
   t: (key: string) => string;
   stopNavigation: boolean;
@@ -87,13 +84,13 @@ const UploadInfoBox: React.FC<{
     !error &&
     data?.content &&
     data.content.length > 0 &&
-    data.content[0].uploadStatus !== 'IN_PROGRESS' &&
+    data.content[0].uploadStatus !== 'IN_PROCESS' &&
     data.content[0].uploadStatus !== 'UPLOADED'
   ) {
     return (
       <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
         <Typography variant="body2">
-          Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : emptyData}</b>
+          Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : EMPTY_DATA}</b>
         </Typography>
         <Button
           variant="contained"
@@ -189,9 +186,11 @@ const UploadsTable: React.FC<{
                   data.content.slice(0, rowsPerPage).map((row: UploadDTO) => (
                     <TableRow key={row.productFileId}>
                       <TableCell sx={{ padding: 0 }}>{row.batchName}</TableCell>
-                      <TableCell>{renderUploadStatusChip(row.uploadStatus ?? emptyData)}</TableCell>
                       <TableCell>
-                        {row.dateUpload ? formatDate(row.dateUpload) : emptyData}
+                        {renderUploadStatusChip(row.uploadStatus ?? EMPTY_DATA)}
+                      </TableCell>
+                      <TableCell>
+                        {row.dateUpload ? formatDate(row.dateUpload) : EMPTY_DATA}
                       </TableCell>
                     </TableRow>
                   ))}
