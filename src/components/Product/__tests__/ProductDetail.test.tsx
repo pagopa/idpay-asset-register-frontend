@@ -6,6 +6,29 @@ import i18n from '../../../locale';
 import '@testing-library/jest-dom';
 import {CategoryEnum} from "../../../api/generated/register/UploadDTO";
 
+jest.mock('../../../utils/env', () => ({
+    __esModule: true,
+    ENV: {
+        URL_API: {
+            OPERATION: 'https://mock-api/register',
+        },
+        ASSISTANCE: {
+            EMAIL: 'email@example.com',
+        },
+        API_TIMEOUT_MS: {
+            OPERATION: 5000,
+        },
+    },
+}));
+
+jest.mock('../../../routes', () => ({
+    __esModule: true,
+    default: {
+        HOME: '/home'
+    },
+    BASE_ROUTE: '/base'
+}));
+
 const mockProduct: ProductDTO = {
     batchName: 'Batch 001',
     registrationDate: new Date('2023-01-01'),
@@ -36,7 +59,7 @@ describe('ProductDetail', () => {
     it('renders product details correctly', () => {
         render(
             <I18nextProvider i18n={i18n}>
-                <ProductDetail data={mockProduct} />
+                <ProductDetail data={mockProduct} open={false} isInvitaliaUser={false} />
             </I18nextProvider>
         );
 
@@ -57,7 +80,7 @@ describe('ProductDetail', () => {
     it('renders product empty details correctly', () => {
         render(
             <I18nextProvider i18n={i18n}>
-                <ProductDetail data={mockProductEmpty} />
+                <ProductDetail data={mockProductEmpty} open={false} isInvitaliaUser={false} />
             </I18nextProvider>
         );
 
