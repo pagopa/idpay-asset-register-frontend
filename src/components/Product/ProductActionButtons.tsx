@@ -5,6 +5,7 @@ type ProductActionButtonsProps = {
   status: string | undefined;
   onRestore: () => void;
   onExclude: () => void;
+  onSupervision?: () => void;
 };
 
 const buttonStyle = {
@@ -19,9 +20,35 @@ export default function ProductActionButtons({
   status,
   onRestore,
   onExclude,
+  onSupervision,
 }: ProductActionButtonsProps) {
   if (!isInvitaliaUser || !status) {
     return null;
+  }
+  if (status === 'APPROVED') {
+    return (
+      <ListItem>
+        <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
+          <Button
+            color="primary"
+            variant="contained"
+            sx={{ ...buttonStyle, width: '138px' }}
+            onClick={onSupervision}
+            disabled={!onSupervision}
+          >
+            Contrassegna
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            sx={{ ...buttonStyle, width: '92px' }}
+            onClick={onExclude}
+          >
+            Escludi
+          </Button>
+        </Box>
+      </ListItem>
+    );
   }
 
   if (status !== 'REJECTED') {

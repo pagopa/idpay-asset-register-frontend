@@ -39,7 +39,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   organizationId,
   onUpdateTable,
 }) => {
-  const [reason, setReason] = useState('');
+  const [motivation, setReason] = useState('');
   const { t } = useTranslation();
 
   const MODAL_CONFIG = {
@@ -65,7 +65,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const callSupervisionedApi = async () => {
     try {
-      await setSupervisionedStatusList(organizationId, gtinCodes, reason);
+      await setSupervisionedStatusList(organizationId, gtinCodes, motivation);
       onClose();
       if (onUpdateTable) {
         onUpdateTable();
@@ -79,7 +79,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const callRejectedApi = async () => {
     try {
       onClose();
-      await setRejectedStatusList(organizationId, gtinCodes, reason);
+      await setRejectedStatusList(organizationId, gtinCodes, motivation);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -156,7 +156,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           label={config?.reasonLabel || ''}
           inputProps={{ maxLength: 200 }}
           placeholder={config?.reasonPlaceholder || ''}
-          value={reason}
+          value={motivation}
           onChange={(e) => setReason(e.target.value)}
           sx={{ mb: 1 }}
         />
@@ -170,7 +170,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             mb: 2,
           }}
         >
-          {reason.length}/200
+          {motivation.length}/200
         </Box>
       </DialogContent>
       <DialogActions sx={{ p: 0 }}>
@@ -182,7 +182,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
               ...buttonStyle,
             }}
             onClick={callSupervisionedApi}
-            disabled={reason.length === 0}
+            disabled={motivation.length === 0}
           >
             {config?.buttonText || 'Chiudi'}
           </Button>
@@ -195,7 +195,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
               ...buttonStyle,
             }}
             onClick={callRejectedApi}
-            disabled={reason.length === 0}
+            disabled={motivation.length === 0}
           >
             {config?.buttonText || 'Chiudi'}
           </Button>

@@ -1,5 +1,4 @@
 import { List, Divider, Box } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { EMPTY_DATA } from '../../utils/constants';
@@ -22,10 +21,10 @@ type Props = {
 const callApprovedApi = async (
   organizationId: string,
   gtinCodes: Array<string>,
-  reason: string
+  motivation: string
 ) => {
   try {
-    await setApprovedStatusList(organizationId, gtinCodes, reason);
+    await setApprovedStatusList(organizationId, gtinCodes, motivation);
   } catch (error) {
     console.error(error);
   }
@@ -34,10 +33,10 @@ const callApprovedApi = async (
 const callRejectedApi = async (
   organizationId: string,
   gtinCodes: Array<string>,
-  reason: string
+  motivation: string
 ) => {
   try {
-    await setRejectedStatusList(organizationId, gtinCodes, reason);
+    await setRejectedStatusList(organizationId, gtinCodes, motivation);
   } catch (error) {
     console.error(error);
   }
@@ -47,19 +46,19 @@ const handleOpenModal = (
   action: string,
   organizationId: string,
   gtinCodes: Array<string>,
-  reason: string
+  motivation: string
 ) => {
   if (action === 'REJECTED') {
-    void callRejectedApi(organizationId, gtinCodes, reason);
+    void callRejectedApi(organizationId, gtinCodes, motivation);
   } else if (action === 'APPROVED') {
-    void callApprovedApi(organizationId, gtinCodes, reason);
+    void callApprovedApi(organizationId, gtinCodes, motivation);
   }
 };
 
 export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, onClose }: Props) {
-  const { t } = useTranslation();
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
+  const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
 
   const handleConfirmRestore = () => {
     handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], 'TODO');
@@ -74,6 +73,16 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
 
   const handleExcludeClose = () => {
     setExcludeModalOpen(false);
+    if (typeof onUpdateTable === 'function') {
+      onUpdateTable();
+    }
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
+  const handleSupervisionClose = () => {
+    setSupervisionModalOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();
     }
@@ -113,10 +122,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         <ProductInfoRow label="Codice EPREL" value={data?.eprelCode || EMPTY_DATA} />
         <ProductInfoRow label="Codice GTIN/EAN" value={data?.gtinCode || EMPTY_DATA} />
         <ProductInfoRow label="Codice prodotto" value={data?.productCode || EMPTY_DATA} />
-        <ProductInfoRow
-          label="Categoria"
-          value={data?.category ? t(`pages.products.categories.${data?.category}`) : EMPTY_DATA}
-        />
+        <ProductInfoRow label="Categoria" value={data?.category || EMPTY_DATA} />
         <ProductInfoRow label="Marca" value={data?.brand || EMPTY_DATA} />
         <ProductInfoRow label="Modello" value={data?.model || EMPTY_DATA} />
         <ProductInfoRow label="Classe energetica" value={data?.energyClass || EMPTY_DATA} />
@@ -125,11 +131,14 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
           value={data?.countryOfProduction || EMPTY_DATA}
         />
         <ProductInfoRow label="Capacità" value={data?.capacity || EMPTY_DATA} />
+        <ProductInfoRow label="Motivazione" value={EMPTY_DATA} />
+
         <ProductActionButtons
           isInvitaliaUser={isInvitaliaUser}
           status={data.status}
           onRestore={() => setRestoreDialogOpen(true)}
           onExclude={() => setExcludeModalOpen(true)}
+          onSupervision={() => setSupervisionModalOpen(true)}
         />
       </List>
       <ProductConfirmDialog
@@ -144,6 +153,14 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         onClose={handleExcludeClose}
         gtinCodes={[data.gtinCode]}
         actionType="rejected"
+        organizationId={data.organizationId}
+        onUpdateTable={onUpdateTable}
+      />
+      <ProductModal
+        open={supervisionModalOpen}
+        onClose={handleSupervisionClose}
+        gtinCodes={[data.gtinCode]}
+        actionType="supervisioned"
         organizationId={data.organizationId}
         onUpdateTable={onUpdateTable}
       />
