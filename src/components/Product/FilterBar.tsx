@@ -71,9 +71,9 @@ export default function FilterBar({
   const handleBatchChange = (event: SelectChangeEvent) =>
     setBatchFilter(event.target.value as string);
   const handleEprelCodeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setEprelCodeFilter(event.target.value);
+    setEprelCodeFilter(event.target.value.trim());
   const handleGtinCodeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setGtinCodeFilter(event.target.value);
+    setGtinCodeFilter(event.target.value.trim());
 
   const handleFilter = () => setFiltering(true);
   const handleDeleteFilters = () => handleDeleteFiltersButtonClick();
