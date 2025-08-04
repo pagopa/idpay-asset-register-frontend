@@ -4,11 +4,10 @@ import ErrorIcon from '@mui/icons-material/Error';
 
 type ProductStatusChipProps = {
   status: string | undefined;
-  isInvitaliaUser: boolean;
 };
 
-export default function ProductStatusChip({ status, isInvitaliaUser }: ProductStatusChipProps) {
-  if (!isInvitaliaUser || !status) {
+export default function ProductStatusChip({ status }: ProductStatusChipProps) {
+  if (!status || status === 'APPROVED') {
     return null;
   }
 
@@ -19,7 +18,7 @@ export default function ProductStatusChip({ status, isInvitaliaUser }: ProductSt
         color="error"
         label="Prodotto Escluso"
         size="medium"
-        sx={{ mb: 1, ml: 2 }}
+        sx={{ mb: 1 }}
       />
     );
   }
@@ -30,7 +29,7 @@ export default function ProductStatusChip({ status, isInvitaliaUser }: ProductSt
       color="warning"
       label="Prodotto contrassegnato"
       size="medium"
-      sx={{ mb: 1, ml: 2 }}
+      sx={{ mb: 1 }}
     />
   );
 }

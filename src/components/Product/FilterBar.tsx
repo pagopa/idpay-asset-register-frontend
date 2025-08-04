@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -61,19 +61,35 @@ export default function FilterBar({
 }: FilterProps) {
   const { t } = useTranslation();
 
-  const noFilterSetted = (): boolean =>
-    !categoryFilter && !statusFilter && !batchFilter && !eprelCodeFilter && !gtinCodeFilter;
+  const [hasInteractedWithFilters, setHasInteractedWithFilters] = useState(false);
 
-  const handleCategoryChange = (event: SelectChangeEvent) =>
+  const noFilterSetted = (): boolean =>
+    !categoryFilter.trim() &&
+    !statusFilter.trim() &&
+    !batchFilter.trim() &&
+    !eprelCodeFilter.trim() &&
+    !gtinCodeFilter.trim();
+
+  const handleCategoryChange = (event: SelectChangeEvent) => {
     setCategoryFilter(event.target.value as string);
-  const handleStatusChange = (event: SelectChangeEvent) =>
+    setHasInteractedWithFilters(true);
+  };
+  const handleStatusChange = (event: SelectChangeEvent) => {
     setStatusFilter(event.target.value as string);
-  const handleBatchChange = (event: SelectChangeEvent) =>
+    setHasInteractedWithFilters(true);
+  };
+  const handleBatchChange = (event: SelectChangeEvent) => {
     setBatchFilter(event.target.value as string);
-  const handleEprelCodeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setEprelCodeFilter(event.target.value);
-  const handleGtinCodeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setGtinCodeFilter(event.target.value);
+    setHasInteractedWithFilters(true);
+  };
+  const handleEprelCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEprelCodeFilter(event.target.value.trim());
+    setHasInteractedWithFilters(true);
+  };
+  const handleGtinCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setGtinCodeFilter(event.target.value.trim());
+    setHasInteractedWithFilters(true);
+  };
 
   const handleFilter = () => setFiltering(true);
   const handleDeleteFilters = () => handleDeleteFiltersButtonClick();
@@ -101,6 +117,9 @@ export default function FilterBar({
             label={t('pages.products.filterLabels.category')}
             MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
             onChange={handleCategoryChange}
+            sx={{
+              paddingRight: '38px !important',
+            }}
           >
             {Object.keys(PRODUCTS_CATEGORY).map((category) => (
               <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
@@ -121,6 +140,9 @@ export default function FilterBar({
             label={t('pages.products.filterLabels.status')}
             MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
             onChange={handleStatusChange}
+            sx={{
+              paddingRight: '38px !important',
+            }}
           >
             {Object.keys(PRODUCTS_STATES).map((status) => (
               <MenuItem key={status} value={t(`pages.products.categories.${status}`)}>
@@ -142,7 +164,7 @@ export default function FilterBar({
             MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
             onChange={handleBatchChange}
             sx={{
-              paddingRight: '40px !important',
+              paddingRight: '38px !important',
             }}
           >
             {batchFilterItems?.map((batch) => (
@@ -182,7 +204,7 @@ export default function FilterBar({
         </Button>
 
         <Button
-          disabled={noFilterSetted() && !errorStatus}
+          disabled={!hasInteractedWithFilters && noFilterSetted() && !errorStatus}
           variant="text"
           sx={{
             height: 44,

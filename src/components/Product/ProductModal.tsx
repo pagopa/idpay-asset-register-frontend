@@ -13,20 +13,25 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { setSupervisionedStatusList, setRejectedStatusList } from '../../services/registerService';
+import { MAX_LENGTH_DETAILL_PR } from '../../utils/constants';
+import { truncateString } from '../../helpers';
 
 interface ProductModalProps {
   open: boolean;
   onClose: () => void;
   gtinCodes: Array<string>;
+  productName?: string;
   actionType?: string;
   organizationId: string;
   onUpdateTable?: () => void;
+  selectedProducts?: Array<{ productName?: string; gtinCode: string; category?: string }>;
 }
 
 const buttonStyle = {
-  height: 48,
   fontWeight: 600,
   fontSize: 16,
+  paddingLeft: 8,
+  paddingRight: 8,
   marginRight: 2,
   width: 85,
 };
@@ -35,11 +40,18 @@ const ProductModal: React.FC<ProductModalProps> = ({
   open,
   onClose,
   gtinCodes,
+  productName,
   actionType,
   organizationId,
   onUpdateTable,
+  selectedProducts,
 }) => {
   const [motivation, setReason] = useState('');
+  React.useEffect(() => {
+    if (open) {
+      setReason('');
+    }
+  }, [open]);
   const { t } = useTranslation();
 
   const MODAL_CONFIG = {
@@ -130,14 +142,38 @@ const ProductModal: React.FC<ProductModalProps> = ({
           {config?.listTitle || ''}
         </Typography>
         <Box sx={{ mb: 2 }}>
-          {gtinCodes.map((code) => (
+          {selectedProducts && selectedProducts.length > 0 ? (
+            selectedProducts.map(
+              (item: { productName?: string; gtinCode: string; category?: string }) => (
+                <Typography
+                  key={item.gtinCode}
+                  sx={{
+                    fontFamily: 'Titillium Web',
+                    fontWeight: 400,
+                    fontSize: 18,
+                    mb: 1,
+                  }}
+                >
+                  {item.productName && item.productName.trim() !== ''
+                    ? truncateString(item.productName, MAX_LENGTH_DETAILL_PR)
+                    : `${item.category ? item.category + ' ' : ''}Codice GTIN/EAN ${item.gtinCode}`}
+                </Typography>
+              )
+            )
+          ) : (
             <Typography
-              key={code}
-              sx={{ fontFamily: 'Titillium Web', fontWeight: 400, fontSize: 16 }}
+              sx={{
+                fontFamily: 'Titillium Web',
+                fontWeight: 400,
+                fontSize: 18,
+                mb: 1,
+              }}
             >
-              - {code}
+              {!productName || productName.trim() === ''
+                ? `Codice GTIN/EAN ${gtinCodes.join(', ')}`
+                : truncateString(productName, MAX_LENGTH_DETAILL_PR)}
             </Typography>
-          ))}
+          )}
         </Box>
         <Typography
           sx={{
@@ -197,7 +233,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             onClick={callRejectedApi}
             disabled={motivation.length === 0}
           >
-            {config?.buttonText || 'Chiudi'}
+            {config?.buttonText || 'Contrassegna'}
           </Button>
         )}
       </DialogActions>

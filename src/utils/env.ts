@@ -52,14 +52,14 @@ export const ENV = {
       .required()
       .asString(),
     PRIVACY_POLICY_ID: env
-      .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID_MERCHANTS')
+      .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID_ASSET_REGISTER')
       .required()
       .asString(),
     PRIVACY_POLICY_JSON_URL: env
-      .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL_MERCHANTS')
+      .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL_ASSET_REGISTER')
       .required()
       .asString(),
-    TOS_ID: env.get('REACT_APP_ONE_TRUST_TOS_ID_MERCHANTS').required().asString(),
-    TOS_JSON_URL: env.get('REACT_APP_ONE_TRUST_TOS_JSON_URL_MERCHANTS').required().asString(),
+    TOS_ID: env.get('REACT_APP_ONE_TRUST_TOS_ID_ASSET_REGISTER').required().asString(),
+    TOS_JSON_URL: env.get('REACT_APP_ONE_TRUST_TOS_JSON_URL_ASSET_REGISTER').required().asString(),
   },
 };

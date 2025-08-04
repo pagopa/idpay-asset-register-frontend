@@ -27,7 +27,7 @@ export default function ProductActionButtons({
   }
   if (status === 'APPROVED') {
     return (
-      <ListItem>
+      <ListItem sx={{ pl: 0 }}>
         <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
           <Button
             color="primary"
@@ -53,7 +53,7 @@ export default function ProductActionButtons({
 
   if (status !== 'REJECTED') {
     return (
-      <ListItem>
+      <ListItem sx={{ pl: 0 }}>
         <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
           <Button
             color="primary"
@@ -77,7 +77,7 @@ export default function ProductActionButtons({
   }
 
   return (
-    <ListItem>
+    <ListItem sx={{ pl: 0 }}>
       <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
         <Button
           color="primary"
