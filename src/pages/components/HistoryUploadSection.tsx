@@ -192,17 +192,27 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                 </b>
               </TableCell>
               <TableCell sx={rowBaseCell}>
-                <span
-                  style={{
-                    color: '#0073E6',
-                    fontWeight: 'bold',
-                    textDecoration: 'underline',
-                  }}
-                  onClick={() => handleLinkProducts(row?.batchName || '', row?.productFileId || '')}
-                >
-                  {row.addedProductNumber ?? 0}{' '}
-                  {t('pages.uploadHistory.uploadHistoryAddedProducts')}
-                </span>
+                {(row.addedProductNumber ?? 0) > 0 ? (
+                  <span
+                    style={{
+                      color: '#0073E6',
+                      fontWeight: 'bold',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() =>
+                      handleLinkProducts(row?.batchName || '', row?.productFileId || '')
+                    }
+                  >
+                    {row.addedProductNumber ?? 0}{' '}
+                    {t('pages.uploadHistory.uploadHistoryAddedProducts')}
+                  </span>
+                ) : (
+                  <span>
+                    {row.addedProductNumber ?? 0}{' '}
+                    {t('pages.uploadHistory.uploadHistoryAddedProducts')}
+                  </span>
+                )}
               </TableCell>
               <TableCell align="right" sx={styleRightRow}>
                 {row.uploadStatus === 'PARTIAL' && (
