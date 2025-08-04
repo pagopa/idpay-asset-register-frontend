@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -61,6 +61,8 @@ export default function FilterBar({
 }: FilterProps) {
   const { t } = useTranslation();
 
+  const [hasInteractedWithFilters, setHasInteractedWithFilters] = useState(false);
+
   const noFilterSetted = (): boolean =>
     !categoryFilter.trim() &&
     !statusFilter.trim() &&
@@ -68,16 +70,26 @@ export default function FilterBar({
     !eprelCodeFilter.trim() &&
     !gtinCodeFilter.trim();
 
-  const handleCategoryChange = (event: SelectChangeEvent) =>
+  const handleCategoryChange = (event: SelectChangeEvent) => {
     setCategoryFilter(event.target.value as string);
-  const handleStatusChange = (event: SelectChangeEvent) =>
+    setHasInteractedWithFilters(true);
+  };
+  const handleStatusChange = (event: SelectChangeEvent) => {
     setStatusFilter(event.target.value as string);
-  const handleBatchChange = (event: SelectChangeEvent) =>
+    setHasInteractedWithFilters(true);
+  };
+  const handleBatchChange = (event: SelectChangeEvent) => {
     setBatchFilter(event.target.value as string);
-  const handleEprelCodeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setHasInteractedWithFilters(true);
+  };
+  const handleEprelCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEprelCodeFilter(event.target.value.trim());
-  const handleGtinCodeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setHasInteractedWithFilters(true);
+  };
+  const handleGtinCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGtinCodeFilter(event.target.value.trim());
+    setHasInteractedWithFilters(true);
+  };
 
   const handleFilter = () => setFiltering(true);
   const handleDeleteFilters = () => handleDeleteFiltersButtonClick();
@@ -192,7 +204,7 @@ export default function FilterBar({
         </Button>
 
         <Button
-          disabled={noFilterSetted() && !errorStatus}
+          disabled={!hasInteractedWithFilters && noFilterSetted() && !errorStatus}
           variant="text"
           sx={{
             height: 44,
