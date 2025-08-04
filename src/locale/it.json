@@ -255,18 +255,19 @@
       "reasonPlaceholder": "Motivo segnalazione",
       "buttonText": "Contrassegna"
     },
-    "rejected":{
-    "title": "Escludi un prodotto",
-    "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
-    "listTitle": "I prodotti esclusi sono i seguenti:",
-    "reasonLabel": "Motivo esclusione",
-    "reasonPlaceholder": "Motivo esclusione",
-    "buttonText": "Escludi"
-  },
-  "detailProduct":{
-    "ProductRow":{
-      "eprelCode":"Codice EPREL",
-      "gtinCode":"Codice GTIN/EAN"
+    "rejected": {
+      "title": "Escludi un prodotto",
+      "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
+      "listTitle": "I prodotti esclusi sono i seguenti:",
+      "reasonLabel": "Motivo esclusione",
+      "reasonPlaceholder": "Motivo esclusione",
+      "buttonText": "Escludi"
+    },
+    "detailProduct": {
+      "ProductRow": {
+        "eprelCode": "Codice EPREL",
+        "gtinCode": "Codice GTIN/EAN"
+      }
     }
   }
 }
