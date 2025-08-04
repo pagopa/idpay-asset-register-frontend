@@ -23,10 +23,10 @@ jest.mock('env-var', () => ({
             REACT_APP_MIXPANEL_API_HOST: { default: () => ({ asString: () => 'https://api-eu.mixpanel.com' }) },
             REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL: { required: () => ({ asString: () => 'cdn-url' }) },
             REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS: { required: () => ({ asString: () => 'cdn-settings' }) },
-            REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID_MERCHANTS: { required: () => ({ asString: () => 'privacy-id' }) },
-            REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL_MERCHANTS: { required: () => ({ asString: () => 'privacy-json' }) },
-            REACT_APP_ONE_TRUST_TOS_ID_MERCHANTS: { required: () => ({ asString: () => 'tos-id' }) },
-            REACT_APP_ONE_TRUST_TOS_JSON_URL_MERCHANTS: { required: () => ({ asString: () => 'tos-json' }) },
+            REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID_ASSET_REGISTER: { required: () => ({ asString: () => 'privacy-id' }) },
+            REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL_ASSET_REGISTER: { required: () => ({ asString: () => 'privacy-json' }) },
+            REACT_APP_ONE_TRUST_TOS_ID_ASSET_REGISTER: { required: () => ({ asString: () => 'tos-id' }) },
+            REACT_APP_ONE_TRUST_TOS_JSON_URL_ASSET_REGISTER: { required: () => ({ asString: () => 'tos-json' }) },
         };
 
         return mockValues[key];

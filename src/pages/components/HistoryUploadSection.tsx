@@ -59,7 +59,7 @@ const styleRightRow = {
 
 function renderUploadStatusIcon(status: string) {
   switch (status) {
-    case 'IN_PROGRESS':
+    case 'IN_PROCESS':
     case 'UPLOADED':
       return <CachedIcon color="disabled" />;
     case 'EPREL_ERROR':
