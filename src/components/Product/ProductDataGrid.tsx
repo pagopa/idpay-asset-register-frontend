@@ -16,6 +16,7 @@ import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { INVITALIA } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
+import {userFromJwtTokenAsJWTUser} from "../../hooks/useLogin";
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
@@ -86,8 +87,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const callProductsApi = (organizationId: string) => {
     const sortKey = `${orderBy},${order}`;
+    const user = userFromJwtTokenAsJWTUser(localStorage.getItem("token") || '');
+
     void getProducts(
-      organizationId,
+      isInvitaliaUser ? organizationId : user.org_id,
       page,
       rowsPerPage,
       sortKey,
@@ -134,6 +137,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   useEffect(() => {
     setLoading(true);
+    /*
     if (batchId === '') {
       void getProducts(organizationId, page, rowsPerPage)
         .then((res) => {
@@ -152,6 +156,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           setLoading(false);
         });
     }
+    */
     void getBatchFilterList(organizationId)
       .then((res) => {
         const { left } = res as BatchFilterList;
