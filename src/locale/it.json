@@ -207,6 +207,22 @@
       "uploadHistoryRowsPerPage": "Righe per pagina",
       "uploadHistoryEmptyState": "Non ci sono prodotti caricati",
       "uploadHistoryNoFilesUploaded": "Non ci sono file caricati."
+    },
+    "productDetail": {
+      "eprelCheckDate": "Data verifica EPREL",
+      "productSheet": "SCHEDA PRODOTTO",
+      "eprelCode": "Codice EPREL",
+      "gtinCode": "Codice GTIN/EAN",
+      "productCode": "Codice prodotto",
+      "category": "Categoria",
+      "brand": "Marca",
+      "model": "Modello",
+      "energyClass": "Classe energetica",
+      "countryOfProduction": "Paese di produzione",
+      "capacity": "Capacità",
+      "motivation": "Motivazione",
+      "restoreProductTitle": "Ripristina prodotto",
+      "restoreProductMessage": "Vuoi ripristinare il prodotto segnalato in precedenza?"
     }
   },
   "roles": {
@@ -239,13 +255,18 @@
       "reasonPlaceholder": "Motivo segnalazione",
       "buttonText": "Contrassegna"
     },
-    "rejected": {
-      "title": "Escludi un prodotto",
-      "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
-      "listTitle": "I prodotti esclusi sono i seguenti:",
-      "reasonLabel": "Motivo esclusione",
-      "reasonPlaceholder": "Motivo esclusione",
-      "buttonText": "Escludi"
+    "rejected":{
+    "title": "Escludi un prodotto",
+    "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
+    "listTitle": "I prodotti esclusi sono i seguenti:",
+    "reasonLabel": "Motivo esclusione",
+    "reasonPlaceholder": "Motivo esclusione",
+    "buttonText": "Escludi"
+  },
+  "detailProduct":{
+    "ProductRow":{
+      "eprelCode":"Codice EPREL",
+      "gtinCode":"Codice GTIN/EAN"
     }
   }
 }
