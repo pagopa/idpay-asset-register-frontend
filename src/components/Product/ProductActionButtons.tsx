@@ -53,7 +53,7 @@ export default function ProductActionButtons({
 
   if (status !== 'REJECTED') {
     return (
-        <ListItem sx={{ pl: 0 }}>
+      <ListItem sx={{ pl: 0 }}>
         <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
           <Button
             color="primary"

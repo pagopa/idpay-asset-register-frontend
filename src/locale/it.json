@@ -158,7 +158,7 @@
         "gtinCode": "Codice GTIN",
         "manufacturerCode": "Codice produttore",
         "filter": "Filtra",
-        "deleteFilters": "Rimuovi filtri"
+        "deleteFilters": "Rimuovi filtri"      
       },
       "listHeader": {
         "category": "Categoria",
@@ -270,4 +270,5 @@
       }
     }
   }
+}
 }

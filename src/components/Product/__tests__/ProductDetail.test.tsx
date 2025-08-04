@@ -91,6 +91,19 @@ const defaultProps = {
     onClose: jest.fn(),
 };
 
+
+const mockProductEmpty: ProductDTO = {
+    batchName: '',
+    registrationDate: null,
+    eprelCode: '',
+    gtinCode: '',
+    productCode: '',
+    category: '',
+    brand: '',
+    model: '',
+    energyClass: '',
+    countryOfProduction: '',
+};
 describe('ProductDetail', () => {
     beforeEach(() => {
         jest.clearAllMocks();
