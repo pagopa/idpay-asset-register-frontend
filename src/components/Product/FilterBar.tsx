@@ -101,6 +101,9 @@ export default function FilterBar({
             label={t('pages.products.filterLabels.category')}
             MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
             onChange={handleCategoryChange}
+            sx={{
+              paddingRight: '38px !important',
+            }}
           >
             {Object.keys(PRODUCTS_CATEGORY).map((category) => (
               <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
@@ -121,6 +124,9 @@ export default function FilterBar({
             label={t('pages.products.filterLabels.status')}
             MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
             onChange={handleStatusChange}
+            sx={{
+              paddingRight: '38px !important',
+            }}
           >
             {Object.keys(PRODUCTS_STATES).map((status) => (
               <MenuItem key={status} value={t(`pages.products.categories.${status}`)}>
@@ -142,7 +148,7 @@ export default function FilterBar({
             MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
             onChange={handleBatchChange}
             sx={{
-              paddingRight: '40px !important',
+              paddingRight: '38px !important',
             }}
           >
             {batchFilterItems?.map((batch) => (

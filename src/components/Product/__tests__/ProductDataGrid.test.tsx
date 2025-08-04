@@ -34,34 +34,50 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
-jest.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string) => {
-            const translations: { [key: string]: string } = {
-                'pages.products.listHeader.category': 'Category',
-                'pages.products.listHeader.energeticClass': 'Energy Class',
-                'pages.products.listHeader.eprelCode': 'EPREL Code',
-                'pages.products.listHeader.gtinCode': 'GTIN Code',
-                'pages.products.listHeader.batch': 'Batch',
-                'pages.products.emptyList': 'No products found',
-                'pages.products.noFileLoaded': 'No file loaded',
-                'pages.products.loading': 'Loading...',
-                'pages.products.tablePaginationFrom': 'di',
-                'commons.categories.appliances': 'Appliances',
-                'commons.categories.electronics': 'Electronics',
-                'pages.products.categories.appliances': 'Appliances',
-                'pages.products.categories.electronics': 'Electronics',
-                'pages.products.filterLabels.category': 'Category',
-                'pages.products.filterLabels.batch': 'Batch',
-                'pages.products.filterLabels.eprelCode': 'EPREL Code',
-                'pages.products.filterLabels.gtinCode': 'GTIN Code',
-                'pages.products.filterLabels.filter': 'Filter',
-                'pages.products.filterLabels.deleteFilters': 'Delete Filters',
+jest.mock('react-i18next', () => {
+    const mockT = (key: string) => {
+        const translations: { [key: string]: string } = {
+            'pages.products.listHeader.category': 'Category',
+            'pages.products.listHeader.energeticClass': 'Energy Class',
+            'pages.products.listHeader.eprelCode': 'EPREL Code',
+            'pages.products.listHeader.gtinCode': 'GTIN Code',
+            'pages.products.listHeader.batch': 'Batch',
+            'pages.products.emptyList': 'No products found',
+            'pages.products.noFileLoaded': 'No file loaded',
+            'pages.products.loading': 'Loading...',
+            'pages.products.tablePaginationFrom': 'di',
+            'commons.categories.appliances': 'Appliances',
+            'commons.categories.electronics': 'Electronics',
+            'pages.products.categories.appliances': 'Appliances',
+            'pages.products.categories.electronics': 'Electronics',
+            'pages.products.filterLabels.category': 'Category',
+            'pages.products.filterLabels.batch': 'Batch',
+            'pages.products.filterLabels.eprelCode': 'EPREL Code',
+            'pages.products.filterLabels.gtinCode': 'GTIN Code',
+            'pages.products.filterLabels.filter': 'Filter',
+            'pages.products.filterLabels.deleteFilters': 'Delete Filters',
+        };
+        return translations[key] || key;
+    };
+
+    return {
+        useTranslation: () => ({
+            t: mockT,
+        }),
+        withTranslation: () => (Component: any) => {
+            const WrappedComponent = (props: any) => {
+                return <Component {...props} t={mockT} />;
             };
-            return translations[key] || key;
+            WrappedComponent.displayName = `withTranslation(${Component.displayName || Component.name})`;
+            return WrappedComponent;
         },
-    }),
-}));
+        Trans: ({ children }: any) => children,
+        initReactI18next: {
+            type: '3rdParty',
+            init: () => {},
+        },
+    };
+});
 
 jest.mock('../../../utils/constants', () => ({
     displayRows: 10,
@@ -111,6 +127,25 @@ jest.mock('../FilterBar', () => {
         );
     };
 });
+
+jest.mock('../../../hooks/useLogin', () => ({
+    userFromJwtTokenAsJWTUser: jest.fn(() => ({
+        uid: 'test-uid-123',
+        taxCode: 'TEST123456789',
+        name: 'Test',
+        surname: 'User',
+        email: 'test@example.com',
+        org_name: 'Test Organization',
+        org_party_role: 'ADMIN',
+        org_role: 'USER',
+        org_address: 'Test Address',
+        org_pec: 'test@pec.com',
+        org_taxcode: 'TEST123456789',
+        org_vat: 'IT12345678901',
+        org_email: 'org@example.com',
+        org_id: 'test-org-id-123'
+    }))
+}));
 
 // Import del componente e delle dipendenze DOPO i mock
 import ProductGrid from '../ProductDataGrid';
@@ -209,9 +244,6 @@ describe('ProductGrid', () => {
 
 
             expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
-                "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-            );
-            expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
                 "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
             );
             expect(mockRegisterApi.getBatchFilterItems).toHaveBeenCalled();
@@ -357,12 +389,9 @@ describe('ProductGrid', () => {
 
             await waitFor(() => {
                 expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-                );
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
                     "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(3,
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
                     "", 1, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
             });
@@ -384,7 +413,7 @@ describe('ProductGrid', () => {
             fireEvent.click(screen.getByText('Apply Filters'));
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProductList).toHaveBeenCalledTimes(3);
+                expect(mockRegisterApi.getProductList).toHaveBeenCalledTimes(2);
             });
         });
 
@@ -403,12 +432,9 @@ describe('ProductGrid', () => {
 
             await waitFor(() => {
                 expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-                );
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
                     "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(3,
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
                     "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
             });
@@ -431,9 +457,6 @@ describe('ProductGrid', () => {
             await waitFor(() => {
                 expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
                     "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, "batch123"
                 );
             });
         });

@@ -1,7 +1,9 @@
 import { List, Divider, Box } from '@mui/material';
 import { format } from 'date-fns';
 import { useState } from 'react';
-import { EMPTY_DATA } from '../../utils/constants';
+import { useTranslation } from 'react-i18next';
+import { EMPTY_DATA, MAX_LENGTH_DETAILL_PR } from '../../utils/constants';
+import { truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
 import ProductConfirmDialog from './ProductConfirmDialog';
@@ -61,6 +63,8 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
 
+  const { t } = useTranslation();
+
   const handleConfirmRestore = async () => {
     await handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], 'TODO');
     setRestoreDialogOpen(false);
@@ -95,45 +99,75 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   return (
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
-        <ProductStatusChip status={data.status} isInvitaliaUser={isInvitaliaUser} />
+        <ProductStatusChip status={data.status} />
         <ProductInfoRow
           label=""
-          value={data?.productName}
+          value={truncateString(data?.productName, MAX_LENGTH_DETAILL_PR)}
           valueVariant="h6"
           sx={{ mb: 1, maxWidth: 350, wordWrap: 'break-word' }}
         />
         <ProductInfoRow
           label=""
-          value={data?.batchName || EMPTY_DATA}
+          value={truncateString(data?.batchName || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
           labelVariant="body2"
           valueVariant="body2"
         />
         <Divider sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
         <ProductInfoRow
-          label="Data verifica EPREL"
-          value={String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || EMPTY_DATA}
+          label={t('pages.productDetail.eprelCheckDate')}
+          value={truncateString(
+            String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || EMPTY_DATA,
+            MAX_LENGTH_DETAILL_PR
+          )}
         />
         <ProductInfoRow
           label=""
-          value="SCHEDA PRODOTTO"
+          value={t('pages.productDetail.productSheet')}
           labelVariant="body2"
           valueVariant="body2"
-          sx={{ mt: 4 , mb: 2 }}
+          sx={{ mt: 4, mb: 2 }}
         />
-        <ProductInfoRow label="Codice EPREL" value={data?.eprelCode || EMPTY_DATA} />
-        <ProductInfoRow label="Codice GTIN/EAN" value={data?.gtinCode || EMPTY_DATA} />
-        <ProductInfoRow label="Codice prodotto" value={data?.productCode || EMPTY_DATA} />
-        <ProductInfoRow label="Categoria" value={data?.category || EMPTY_DATA} />
-        <ProductInfoRow label="Marca" value={data?.brand || EMPTY_DATA} />
-        <ProductInfoRow label="Modello" value={data?.model || EMPTY_DATA} />
-        <ProductInfoRow label="Classe energetica" value={data?.energyClass || EMPTY_DATA} />
         <ProductInfoRow
-          label="Paese di produzione"
-          value={data?.countryOfProduction || EMPTY_DATA}
+          label={t('pages.productDetail.eprelCode')}
+          value={truncateString(data?.eprelCode || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
         />
-        <ProductInfoRow label="Capacità" value={data?.capacity || EMPTY_DATA} />
+        <ProductInfoRow
+          label={t('pages.productDetail.gtinCode')}
+          value={truncateString(data?.gtinCode || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+        />
+        <ProductInfoRow
+          label={t('pages.productDetail.productCode')}
+          value={truncateString(data?.productCode || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+        />
+        <ProductInfoRow
+          label={t('pages.productDetail.category')}
+          value={truncateString(data?.category || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+        />
+        <ProductInfoRow
+          label={t('pages.productDetail.brand')}
+          value={truncateString(data?.brand || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+        />
+        <ProductInfoRow
+          label={t('pages.productDetail.model')}
+          value={truncateString(data?.model || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+        />
+        <ProductInfoRow
+          label={t('pages.productDetail.energyClass')}
+          value={truncateString(data?.energyClass || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+        />
+        <ProductInfoRow
+          label={t('pages.productDetail.countryOfProduction')}
+          value={truncateString(data?.countryOfProduction || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+        />
+        <ProductInfoRow
+          label={t('pages.productDetail.capacity')}
+          value={truncateString(data?.capacity || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+        />
         {data.status !== 'APPROVED' && (
-          <ProductInfoRow label="Motivazione" value={data?.motivation || EMPTY_DATA} />
+          <ProductInfoRow
+            label={t('pages.productDetail.motivation')}
+            value={truncateString(data?.motivation || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+          />
         )}
 
         <ProductActionButtons
@@ -146,8 +180,8 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
       </List>
       <ProductConfirmDialog
         open={restoreDialogOpen}
-        title="Ripristina prodotto"
-        message="Vuoi ripristinare il prodotto segnalato in precedenza?"
+        title={t('pages.productDetail.restoreProductTitle')}
+        message={t('pages.productDetail.restoreProductMessage')}
         onCancel={() => setRestoreDialogOpen(false)}
         onConfirm={handleConfirmRestore}
       />
@@ -155,6 +189,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         open={excludeModalOpen}
         onClose={handleExcludeClose}
         gtinCodes={[data.gtinCode]}
+        productName={data.productName}
         actionType="rejected"
         organizationId={data.organizationId}
         onUpdateTable={onUpdateTable}
@@ -163,6 +198,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         open={supervisionModalOpen}
         onClose={handleSupervisionClose}
         gtinCodes={[data.gtinCode]}
+        productName={data.productName}
         actionType="supervisioned"
         organizationId={data.organizationId}
         onUpdateTable={onUpdateTable}

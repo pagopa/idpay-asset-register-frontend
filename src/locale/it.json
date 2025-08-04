@@ -158,7 +158,7 @@
         "gtinCode": "Codice GTIN",
         "manufacturerCode": "Codice produttore",
         "filter": "Filtra",
-        "deleteFilters": "Rimuovi filtri"      
+        "deleteFilters": "Rimuovi filtri"
       },
       "listHeader": {
         "category": "Categoria",
@@ -177,9 +177,9 @@
         "TUMBLEDRYERS": "Asciugatrici",
         "REFRIGERATINGAPPL": "Frigoriferi",
         "COOKINGHOBS": "Piani cottura",
-        "APPROVED":"Default",
-        "SUPERVISIONED":"Contrassegnati",
-        "REJECTED":"Esclusi",
+        "APPROVED": "Default",
+        "SUPERVISIONED": "Contrassegnati",
+        "REJECTED": "Esclusi",
         "lavatrici": "WASHINGMACHINES",
         "asciugatrici": "TUMBLEDRYERS",
         "forni": "OVENS",
@@ -207,6 +207,22 @@
       "uploadHistoryRowsPerPage": "Righe per pagina",
       "uploadHistoryEmptyState": "Non ci sono prodotti caricati",
       "uploadHistoryNoFilesUploaded": "Non ci sono file caricati."
+    },
+    "productDetail": {
+      "eprelCheckDate": "Data verifica EPREL",
+      "productSheet": "SCHEDA PRODOTTO",
+      "eprelCode": "Codice EPREL",
+      "gtinCode": "Codice GTIN/EAN",
+      "productCode": "Codice prodotto",
+      "category": "Categoria",
+      "brand": "Marca",
+      "model": "Modello",
+      "energyClass": "Classe energetica",
+      "countryOfProduction": "Paese di produzione",
+      "capacity": "Capacità",
+      "motivation": "Motivazione",
+      "restoreProductTitle": "Ripristina prodotto",
+      "restoreProductMessage": "Vuoi ripristinare il prodotto segnalato in precedenza?"
     }
   },
   "roles": {
@@ -230,15 +246,14 @@
     "requiredField": "Campo obbligatorio",
     "number": "Inserisci un numero"
   },
-  "invitaliaModal":{
+  "invitaliaModal": {
     "supervisioned": {
-    "title": "Contrassegna un prodotto",
-    "description":
-      "Segnala eventuali anomalie su un prodotto: verrà messo in pausa e potrai successivamente decidere se escluderlo o ripristinarlo.",
-    "listTitle": "I prodotti segnalati sono i seguenti:",
-    "reasonLabel": "Motivo segnalazione",
-    "reasonPlaceholder": "Motivo segnalazione",
-    "buttonText": "Chiudi"
+      "title": "Contrassegna un prodotto",
+      "description": "Segnala eventuali anomalie su un prodotto: verrà messo in pausa e potrai successivamente decidere se escluderlo o ripristinarlo.",
+      "listTitle": "I prodotti segnalati sono i seguenti:",
+      "reasonLabel": "Motivo segnalazione",
+      "reasonPlaceholder": "Motivo segnalazione",
+      "buttonText": "Contrassegna"
     },
     "rejected":{
     "title": "Escludi un prodotto",
@@ -247,6 +262,11 @@
     "reasonLabel": "Motivo esclusione",
     "reasonPlaceholder": "Motivo esclusione",
     "buttonText": "Escludi"
+  },
+  "detailProduct":{
+    "ProductRow":{
+      "eprelCode":"Codice EPREL",
+      "gtinCode":"Codice GTIN/EAN"
+    }
   }
-}
 }
