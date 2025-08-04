@@ -24,9 +24,10 @@ interface ProductModalProps {
 }
 
 const buttonStyle = {
-  height: 48,
   fontWeight: 600,
   fontSize: 16,
+  paddingLeft: 8,
+  paddingRight: 8,
   marginRight: 2,
   width: 85,
 };
@@ -197,7 +198,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             onClick={callRejectedApi}
             disabled={motivation.length === 0}
           >
-            {config?.buttonText || 'Chiudi'}
+            {config?.buttonText || 'Contrassegna'}
           </Button>
         )}
       </DialogActions>
