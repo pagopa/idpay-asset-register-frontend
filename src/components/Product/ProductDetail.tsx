@@ -189,6 +189,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         open={excludeModalOpen}
         onClose={handleExcludeClose}
         gtinCodes={[data.gtinCode]}
+        productName={data.productName}
         actionType="rejected"
         organizationId={data.organizationId}
         onUpdateTable={onUpdateTable}
@@ -197,6 +198,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         open={supervisionModalOpen}
         onClose={handleSupervisionClose}
         gtinCodes={[data.gtinCode]}
+        productName={data.productName}
         actionType="supervisioned"
         organizationId={data.organizationId}
         onUpdateTable={onUpdateTable}

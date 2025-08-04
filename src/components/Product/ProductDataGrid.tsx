@@ -16,7 +16,7 @@ import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { INVITALIA } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
-import {userFromJwtTokenAsJWTUser} from "../../hooks/useLogin";
+import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import DetailDrawer from './DetailDrawer';
 import ProductDetail from './ProductDetail';
@@ -87,7 +87,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const callProductsApi = (organizationId: string) => {
     const sortKey = `${orderBy},${order}`;
-    const user = userFromJwtTokenAsJWTUser(localStorage.getItem("token") || '');
+    const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
 
     void getProducts(
       isInvitaliaUser ? organizationId : user.org_id,
@@ -337,6 +337,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         gtinCodes={selected}
+        selectedProducts={selected.map((gtinCode) => {
+          const prod = tableData.find((row) => row.gtinCode === gtinCode);
+          return { productName: prod?.productName, gtinCode, category: prod?.category };
+        })}
         actionType={modalAction}
         organizationId={organizationId}
         onUpdateTable={updaDataTable}
