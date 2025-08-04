@@ -364,7 +364,7 @@ describe('ProductDetail', () => {
             render(<ProductDetail {...defaultProps} />);
 
             const infoRows = screen.getAllByTestId('product-info-row');
-            expect(infoRows[3]).toHaveTextContent('SCHEDA PRODOTTO');
+            expect(infoRows[3]).toHaveTextContent('pages.productDetail.productSheet');
         });
 
         it('should handle invalid registration date', () => {
