@@ -62,7 +62,11 @@ export default function FilterBar({
   const { t } = useTranslation();
 
   const noFilterSetted = (): boolean =>
-    !categoryFilter && !statusFilter && !batchFilter && !eprelCodeFilter && !gtinCodeFilter;
+    !categoryFilter.trim() &&
+    !statusFilter.trim() &&
+    !batchFilter.trim() &&
+    !eprelCodeFilter.trim() &&
+    !gtinCodeFilter.trim();
 
   const handleCategoryChange = (event: SelectChangeEvent) =>
     setCategoryFilter(event.target.value as string);

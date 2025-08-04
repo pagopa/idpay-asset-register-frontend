@@ -47,6 +47,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
   selectedProducts,
 }) => {
   const [motivation, setReason] = useState('');
+  React.useEffect(() => {
+    if (open) {
+      setReason('');
+    }
+  }, [open]);
   const { t } = useTranslation();
 
   const MODAL_CONFIG = {
