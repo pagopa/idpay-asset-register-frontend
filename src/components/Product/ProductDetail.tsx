@@ -100,7 +100,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
           label=""
           value={data?.productName}
           valueVariant="h6"
-          sx={{ mb: 1, ml: 2, maxWidth: 350, wordWrap: 'break-word' }}
+          sx={{ mb: 1, maxWidth: 350, wordWrap: 'break-word' }}
         />
         <ProductInfoRow
           label=""
@@ -118,7 +118,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
           value="SCHEDA PRODOTTO"
           labelVariant="body2"
           valueVariant="body2"
-          sx={{ mt: 4 }}
+          sx={{ mt: 4 , mb: 2 }}
         />
         <ProductInfoRow label="Codice EPREL" value={data?.eprelCode || EMPTY_DATA} />
         <ProductInfoRow label="Codice GTIN/EAN" value={data?.gtinCode || EMPTY_DATA} />

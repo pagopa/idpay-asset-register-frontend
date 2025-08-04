@@ -18,7 +18,7 @@ export default function ProductInfoRow({
 }: ProductInfoRowProps) {
   return (
     <ListItem disablePadding>
-      <Box sx={{ ...sx }}>
+      <Box sx={{ my: 1 , ...sx}}>
         <Typography variant={labelVariant} color="text.secondary">
           {label}
         </Typography>
