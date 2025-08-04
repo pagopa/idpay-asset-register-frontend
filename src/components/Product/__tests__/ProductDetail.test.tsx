@@ -185,7 +185,7 @@ describe('ProductDetail', () => {
             fireEvent.click(screen.getByText('Confirm'));
 
             await waitFor(() => {
-                expect(mockSetApprovedStatusList).toHaveBeenCalledWith('ORG123', ['GTIN123'], 'TODO');
+                expect(mockSetApprovedStatusList).toHaveBeenCalledWith('ORG123', ['GTIN123'], '-');
                 expect(defaultProps.onUpdateTable).toHaveBeenCalled();
                 expect(defaultProps.onClose).toHaveBeenCalled();
             });
@@ -364,7 +364,7 @@ describe('ProductDetail', () => {
             render(<ProductDetail {...defaultProps} />);
 
             const infoRows = screen.getAllByTestId('product-info-row');
-            expect(infoRows[3]).toHaveTextContent('SCHEDA PRODOTTO');
+            expect(infoRows[3]).toHaveTextContent('pages.productDetail.productSheet');
         });
 
         it('should handle invalid registration date', () => {
@@ -422,7 +422,7 @@ describe('ProductDetail', () => {
             fireEvent.click(screen.getByText('Confirm'));
 
             await waitFor(() => {
-                expect(mockSetApprovedStatusList).toHaveBeenCalledWith('ORG123', ['GTIN123'], 'TODO');
+                expect(mockSetApprovedStatusList).toHaveBeenCalledWith('ORG123', ['GTIN123'], '-');
             });
         });
     });

@@ -66,7 +66,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const { t } = useTranslation();
 
   const handleConfirmRestore = async () => {
-    await handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], 'TODO');
+    await handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], EMPTY_DATA);
     setRestoreDialogOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();

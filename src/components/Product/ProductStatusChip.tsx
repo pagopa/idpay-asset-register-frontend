@@ -7,7 +7,7 @@ type ProductStatusChipProps = {
 };
 
 export default function ProductStatusChip({ status }: ProductStatusChipProps) {
-  if (!status) {
+  if (!status || status === 'APPROVED') {
     return null;
   }
 
