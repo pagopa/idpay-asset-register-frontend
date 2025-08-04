@@ -49,7 +49,8 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
     org_pec: jwtUser.org_pec,
     org_taxcode: jwtUser.org_fc,
     org_vat: jwtUser.org_vat,
-    org_email: jwtUser.org_email
+    org_email: jwtUser.org_email,
+    org_id: jwtUser.org_id
   };
 };
 
