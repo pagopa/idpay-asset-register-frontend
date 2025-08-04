@@ -4,11 +4,10 @@ import ErrorIcon from '@mui/icons-material/Error';
 
 type ProductStatusChipProps = {
   status: string | undefined;
-  isInvitaliaUser: boolean;
 };
 
-export default function ProductStatusChip({ status, isInvitaliaUser }: ProductStatusChipProps) {
-  if (!isInvitaliaUser || !status) {
+export default function ProductStatusChip({ status }: ProductStatusChipProps) {
+  if (!status) {
     return null;
   }
 
