@@ -1,5 +1,5 @@
 import { ListItem, Box, Typography } from '@mui/material';
-import { ReactNode } from 'react';
+import { ReactNode, forwardRef } from 'react';
 
 type ProductInfoRowProps = {
   label: string;
@@ -9,16 +9,10 @@ type ProductInfoRowProps = {
   sx?: object;
 };
 
-export default function ProductInfoRow({
-  label,
-  value,
-  labelVariant = 'body1',
-  valueVariant = 'body2',
-  sx = {},
-}: ProductInfoRowProps) {
-  return (
-    <ListItem disablePadding>
-      <Box sx={{ my: 1 , ...sx}}>
+const ProductInfoRow = forwardRef<HTMLLIElement, ProductInfoRowProps>(
+  ({ label, value, labelVariant = 'body1', valueVariant = 'body2', sx = {} }, ref) => (
+    <ListItem disablePadding ref={ref}>
+      <Box sx={{ my: 1, ...sx }}>
         <Typography variant={labelVariant} color="text.secondary">
           {label}
         </Typography>
@@ -27,5 +21,7 @@ export default function ProductInfoRow({
         </Typography>
       </Box>
     </ListItem>
-  );
-}
+  )
+);
+
+export default ProductInfoRow;
