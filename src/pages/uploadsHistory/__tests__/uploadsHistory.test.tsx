@@ -1,4 +1,4 @@
-import { render, screen, waitFor} from '@testing-library/react';
+import {act, render, screen, waitFor} from '@testing-library/react';
 import OverviewHistoryUpload from '../uploadsHistory';
 import { getProductFilesList } from '../../../services/registerService';
 import '@testing-library/jest-dom';
@@ -85,7 +85,7 @@ describe('OverviewHistoryUpload', () => {
     });
   });
 
-  /*
+
     test('shows error message when API fails', async () => {
         mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
         act(() => {
@@ -112,7 +112,6 @@ describe('OverviewHistoryUpload', () => {
            expect(screen.getByTestId('title-overview')).toBeInTheDocument();
        });
    });
-    */
 
   test('does not show InfoUpload when uploadStatus is not UPLOADED', async () => {
     const dataWithoutUploaded = {
@@ -136,7 +135,7 @@ describe('OverviewHistoryUpload', () => {
     });
   });
 
-  /*
+
   test('handles empty content array correctly', async () => {
     const emptyData = {
       totalElements: 0,
@@ -207,7 +206,7 @@ describe('OverviewHistoryUpload', () => {
       expect(screen.getByText('Nessun file caricato')).toBeInTheDocument();
     });
   });
-  */
+
 
   test('useEffect dependency array works correctly', async () => {
     mockGetProductFilesList.mockResolvedValue(mockData);
