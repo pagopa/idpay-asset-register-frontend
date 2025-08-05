@@ -2,7 +2,7 @@ import { List, Divider, Box, Tooltip } from '@mui/material';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EMPTY_DATA, MAX_LENGTH_DETAILL_PR } from '../../utils/constants';
+import { EMPTY_DATA, MAX_LENGTH_DETAILL_PR, PRODUCTS_STATES } from '../../utils/constants';
 import { truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
@@ -50,9 +50,9 @@ const handleOpenModal = (
   gtinCodes: Array<string>,
   motivation: string
 ) => {
-  if (action === 'REJECTED') {
+  if (action === PRODUCTS_STATES.REJECTED) {
     return callRejectedApi(organizationId, gtinCodes, motivation);
-  } else if (action === 'APPROVED') {
+  } else if (action === PRODUCTS_STATES.APPROVED) {
     return callApprovedApi(organizationId, gtinCodes, motivation);
   }
   return Promise.resolve();
@@ -199,7 +199,7 @@ function ProductInfoRows({ data, status, children }: ProductInfoRowsProps) {
   const baseRows = getProductInfoRowsConfig(data, t);
 
   const rows =
-    status !== 'APPROVED'
+    status !== PRODUCTS_STATES.APPROVED
       ? [
           ...baseRows,
           {
@@ -258,7 +258,12 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const { t } = useTranslation();
 
   const handleConfirmRestore = async () => {
-    await handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], EMPTY_DATA);
+    await handleOpenModal(
+      PRODUCTS_STATES.APPROVED,
+      data.organizationId,
+      [data.gtinCode],
+      EMPTY_DATA
+    );
     setRestoreDialogOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();

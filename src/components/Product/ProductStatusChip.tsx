@@ -1,17 +1,18 @@
 import { Chip } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
+import { PRODUCTS_STATES } from '../../utils/constants';
 
 type ProductStatusChipProps = {
   status: string | undefined;
 };
 
 export default function ProductStatusChip({ status }: ProductStatusChipProps) {
-  if (!status || status === 'APPROVED') {
+  if (!status || status === PRODUCTS_STATES.APPROVED) {
     return null;
   }
 
-  if (status === 'REJECTED') {
+  if (status === PRODUCTS_STATES.REJECTED) {
     return (
       <Chip
         icon={<ErrorIcon color="error" />}
