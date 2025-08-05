@@ -928,22 +928,24 @@ describe('FormAddProducts', () => {
             render(<FormAddProducts {...defaultProps} />);
 
             const continueBtn = screen.getByTestId('continue-button-test');
-
-            // Case 1: No category selected
             await userEvent.click(continueBtn);
             expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
-
-            // Reset mocks
             jest.clearAllMocks();
-
-            // Case 2: Valid category but no file
             const categorySelect = screen.getByRole('combobox');
-            fireEvent.mouseDown(categorySelect);
+            await userEvent.click(categorySelect);
+
             await waitFor(() => {
-                const option = screen.getByTestId('category-option-cookinghobs');
-                fireEvent.click(option);
+                expect(screen.getByRole('listbox')).toBeInTheDocument();
             });
 
+            const option = await screen.findByTestId('category-option-cookinghobs');
+            await userEvent.click(option);
+
+            await waitFor(() => {
+                expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 100));
             await userEvent.click(continueBtn);
             expect(mockErrorHandling.showMissingFileError).toHaveBeenCalled();
         });
