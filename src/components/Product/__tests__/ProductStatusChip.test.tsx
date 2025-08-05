@@ -179,33 +179,62 @@ describe('ProductStatusChip', () => {
         });
     });
 
-    describe('test di snapshot', () => {
-        it('dovrebbe matchare snapshot per status undefined', () => {
+    describe('test di rendering completo', () => {
+        it('dovrebbe non renderizzare nulla per status undefined', () => {
             const { container } = renderWithTheme(
                 <ProductStatusChip status={undefined} />
             );
-            expect(container).toMatchSnapshot();
+            expect(container.firstChild).toBeNull();
+            expect(container.innerHTML).toBe('');
         });
 
-        it('dovrebbe matchare snapshot per status APPROVED', () => {
+        it('dovrebbe non renderizzare nulla per status APPROVED', () => {
             const { container } = renderWithTheme(
                 <ProductStatusChip status="APPROVED" />
             );
-            expect(container).toMatchSnapshot();
+            expect(container.firstChild).toBeNull();
+            expect(container.innerHTML).toBe('');
         });
 
-        it('dovrebbe matchare snapshot per status REJECTED', () => {
+        it('dovrebbe renderizzare struttura corretta per status REJECTED', () => {
             const { container } = renderWithTheme(
                 <ProductStatusChip status="REJECTED" />
             );
-            expect(container).toMatchSnapshot();
+
+            expect(container.firstChild).not.toBeNull();
+
+            const chip = container.querySelector('.MuiChip-root');
+            expect(chip).toBeInTheDocument();
+            expect(chip).toHaveClass('MuiChip-colorError');
+            expect(chip).toHaveClass('MuiChip-sizeMedium');
+
+            expect(container).toHaveTextContent('Prodotto Escluso');
+
+            expect(container.querySelector('[data-testid="error-icon"]')).toBeInTheDocument();
         });
 
-        it('dovrebbe matchare snapshot per status warning', () => {
+        it('dovrebbe renderizzare struttura corretta per status warning', () => {
             const { container } = renderWithTheme(
                 <ProductStatusChip status="PENDING" />
             );
-            expect(container).toMatchSnapshot();
+
+            expect(container.firstChild).not.toBeNull();
+
+            const chip = container.querySelector('.MuiChip-root');
+            expect(chip).toBeInTheDocument();
+            expect(chip).toHaveClass('MuiChip-colorWarning');
+            expect(chip).toHaveClass('MuiChip-sizeMedium');
+
+            expect(container).toHaveTextContent('Prodotto contrassegnato');
+
+            expect(container.querySelector('[data-testid="warning-icon"]')).toBeInTheDocument();
+        });
+
+        it('dovrebbe applicare correttamente gli stili sx', () => {
+            renderWithTheme(<ProductStatusChip status="REJECTED" />);
+
+            const chip = screen.getByText('Prodotto Escluso').closest('.MuiChip-root');
+            expect(chip).toHaveStyle('margin-bottom: 8px');
         });
     });
 });
