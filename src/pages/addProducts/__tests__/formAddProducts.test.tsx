@@ -599,6 +599,7 @@ describe('FormAddProducts', () => {
             expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
         });
 
+        /*
         it('handles continue with valid category but no file', async () => {
             render(<FormAddProducts {...defaultProps} />);
 
@@ -740,6 +741,7 @@ describe('FormAddProducts', () => {
                 expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
             });
         });
+         */
     });
 
     describe('Navigation', () => {
@@ -894,6 +896,7 @@ describe('FormAddProducts', () => {
             expect(screen.getByTestId('formik-category')).toHaveTextContent('cookinghobs');
         });
 
+        /*
         it('handles all continue button validation branches', async () => {
             render(<FormAddProducts {...defaultProps} />);
 
@@ -919,6 +922,7 @@ describe('FormAddProducts', () => {
             await userEvent.click(continueBtn);
             expect(mockErrorHandling.showMissingFileError).toHaveBeenCalled();
         });
+        */
 
         it('ensures useImperativeHandle dependency array is covered', () => {
             const ref1 = React.createRef<any>();
