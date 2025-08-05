@@ -150,6 +150,12 @@
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
       "loading": "Caricamento dati ...",
+      "buttonModal":{
+        "confirmSupervisioned":"Conferma",
+        "cancelSupervisioned":"Annulla",
+        "supervisioned":"Contrassegna",
+        "rejected":"Escludi"
+      },
       "filterLabels": {
         "category": "Categoria",
         "status": "Stato",
@@ -262,12 +268,6 @@
       "reasonLabel": "Motivo esclusione",
       "reasonPlaceholder": "Motivo esclusione",
       "buttonText": "Escludi"
-    },
-    "detailProduct": {
-      "ProductRow": {
-        "eprelCode": "Codice EPREL",
-        "gtinCode": "Codice GTIN/EAN"
-      }
     }
   }
 }
