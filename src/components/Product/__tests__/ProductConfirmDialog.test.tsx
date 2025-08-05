@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ProductConfirmDialog from '../ProductConfirmDialog';
+import React from "react";
 
 const mockOnCancel = jest.fn();
 const mockOnConfirm = jest.fn();
@@ -12,6 +13,35 @@ const defaultProps = {
     onCancel: mockOnCancel,
     onConfirm: mockOnConfirm,
 };
+
+jest.mock('react-i18next', () => {
+    const mockT = (key: string) => {
+        const translations: { [key: string]: string } = {
+            'pages.products.buttonModal.confirmSupervisioned': 'Conferma',
+            'pages.products.buttonModal.cancelSupervisioned': 'Annulla',
+            'pages.products.buttonModal.supervisioned': 'Contrassegna',
+            'pages.products.buttonModal.rejected': 'Escludi',
+        };
+        return translations[key] || key;
+    };
+    return {
+        useTranslation: () => ({
+            t: mockT,
+        }),
+        withTranslation: () => (Component: any) => {
+            const WrappedComponent = (props: any) => {
+                return <Component {...props} t={mockT} />;
+            };
+            WrappedComponent.displayName = `withTranslation(${Component.displayName || Component.name})`;
+            return WrappedComponent;
+        },
+        Trans: ({ children }: any) => children,
+        initReactI18next: {
+            type: '3rdParty',
+            init: () => {},
+        },
+    };
+});
 
 describe('ProductConfirmDialog', () => {
     beforeEach(() => {
@@ -74,8 +104,8 @@ describe('ProductConfirmDialog', () => {
         it('should render both buttons with correct text', () => {
             render(<ProductConfirmDialog {...defaultProps} />);
 
-            expect(screen.getByRole('button', { name: 'Annulla' })).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: 'Conferma' })).toBeInTheDocument();
+            expect(screen.getByText('products.buttonModal.cancelSupervisioned')).toBeInTheDocument();
+            expect(screen.getByText('products.buttonModal.confirmSupervisioned' )).toBeInTheDocument();
         });
     });
 
@@ -83,7 +113,7 @@ describe('ProductConfirmDialog', () => {
         it('should call onCancel when cancel button is clicked', () => {
             render(<ProductConfirmDialog {...defaultProps} />);
 
-            const cancelButton = screen.getByRole('button', { name: 'Annulla' });
+            const cancelButton = screen.getByText('products.buttonModal.cancelSupervisioned' );
             fireEvent.click(cancelButton);
 
             expect(mockOnCancel).toHaveBeenCalledTimes(1);
@@ -93,7 +123,7 @@ describe('ProductConfirmDialog', () => {
         it('should call onConfirm when confirm button is clicked', () => {
             render(<ProductConfirmDialog {...defaultProps} />);
 
-            const confirmButton = screen.getByRole('button', { name: 'Conferma' });
+            const confirmButton = screen.getByText('products.buttonModal.confirmSupervisioned' );
             fireEvent.click(confirmButton);
 
             expect(mockOnConfirm).toHaveBeenCalledTimes(1);
@@ -117,7 +147,7 @@ describe('ProductConfirmDialog', () => {
         it('should apply correct styles to cancel button', () => {
             render(<ProductConfirmDialog {...defaultProps} />);
 
-            const cancelButton = screen.getByRole('button', { name: 'Annulla' });
+            const cancelButton = screen.getByText('products.buttonModal.cancelSupervisioned');
 
             expect(cancelButton).toHaveAttribute('type', 'button');
         });
@@ -125,7 +155,7 @@ describe('ProductConfirmDialog', () => {
         it('should apply correct styles to confirm button', () => {
             render(<ProductConfirmDialog {...defaultProps} />);
 
-            const confirmButton = screen.getByRole('button', { name: 'Conferma' });
+            const confirmButton = screen.getByText('products.buttonModal.confirmSupervisioned');
 
             expect(confirmButton).toHaveAttribute('type', 'button');
         });
@@ -144,8 +174,9 @@ describe('ProductConfirmDialog', () => {
             render(<ProductConfirmDialog {...defaultProps} message="" />);
 
             expect(screen.getByRole('dialog')).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: 'Annulla' })).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: 'Conferma' })).toBeInTheDocument();
+
+            expect(screen.getByText('products.buttonModal.cancelSupervisioned')).toBeInTheDocument();
+            expect(screen.getByText('products.buttonModal.confirmSupervisioned')).toBeInTheDocument();
         });
 
         it('should handle long title and message', () => {
@@ -169,7 +200,7 @@ describe('ProductConfirmDialog', () => {
         it('should handle multiple rapid clicks on cancel button', () => {
             render(<ProductConfirmDialog {...defaultProps} />);
 
-            const cancelButton = screen.getByRole('button', { name: 'Annulla' });
+            const cancelButton = screen.getByText('products.buttonModal.cancelSupervisioned');
 
             fireEvent.click(cancelButton);
             fireEvent.click(cancelButton);
@@ -181,7 +212,7 @@ describe('ProductConfirmDialog', () => {
         it('should handle multiple rapid clicks on confirm button', () => {
             render(<ProductConfirmDialog {...defaultProps} />);
 
-            const confirmButton = screen.getByRole('button', { name: 'Conferma' });
+            const confirmButton = screen.getByText('products.buttonModal.confirmSupervisioned');
 
             fireEvent.click(confirmButton);
             fireEvent.click(confirmButton);
@@ -258,7 +289,7 @@ describe('ProductConfirmDialog', () => {
 
             expect(screen.getByRole('dialog')).toBeInTheDocument();
 
-            const confirmButton = screen.getByRole('button', { name: 'Conferma' });
+            const confirmButton = screen.getByText('products.buttonModal.confirmSupervisioned');
             fireEvent.click(confirmButton);
 
             expect(mockOnConfirm).toHaveBeenCalledTimes(1);
