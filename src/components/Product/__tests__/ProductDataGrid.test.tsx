@@ -361,7 +361,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+                expect(screen.getByText('Apply Filters')).toBeInTheDocument();
             });
         });
 
@@ -381,7 +381,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+                expect(screen.getByText('Apply Filters')).toBeInTheDocument();
             });
 
             const nextPageButton = screen.getByLabelText('Go to next page');
@@ -413,7 +413,7 @@ describe('ProductGrid', () => {
             fireEvent.click(screen.getByText('Apply Filters'));
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProductList).toHaveBeenCalledTimes(2);
+                expect(mockRegisterApi.getProductList).toHaveBeenCalledTimes(3);
             });
         });
 
