@@ -140,7 +140,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       const isValid = await validateForm();
       if (!isValid) {
         if (!isCategoryValid()) {
-          // errorHandling.showCategoryError();
+          errorHandling.showCategoryError();
           fileState.setFileRejected(true);
           setFileAccepted(false);
           return;
