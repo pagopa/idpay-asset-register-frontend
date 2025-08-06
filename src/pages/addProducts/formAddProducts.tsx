@@ -197,6 +197,12 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       }
     };
 
+    const handleSelectChange = (e: any): void => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      formik.setFieldValue('category', e.target.value);
+      errorHandling.clearErrors();
+    };
+
     return (
       <>
         <Paper
@@ -227,7 +233,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
                 value={formik.values.category}
                 labelId="category-label"
                 label={t('pages.addProducts.form.categoryPlaceholder')}
-                onChange={(e) => formik.setFieldValue('category', e.target.value)}
+                onChange={handleSelectChange}
                 error={formik.touched.category && Boolean(formik.errors.category)}
                 inputProps={{ 'data-testid': 'selectTimeParam-test' }}
                 data-testid="category-label"
