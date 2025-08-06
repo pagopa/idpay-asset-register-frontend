@@ -44,6 +44,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [loading, setLoading] = useState<boolean>(true);
   const [itemsQty, setItemsQty] = useState<number | undefined>(0);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [producerFilter, setProducerFilter] = useState<string>('');
   const [batchFilter, setBatchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
@@ -137,26 +138,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   useEffect(() => {
     setLoading(true);
-    /*
-    if (batchId === '') {
-      void getProducts(organizationId, page, rowsPerPage)
-        .then((res) => {
-          const { content, pageNo, totalElements } = res;
-          setTableData(content ? Array.from(content) : []);
-          setPage(pageNo || 0);
-          setItemsQty(totalElements);
-          setPaginatorFrom(pageNo !== undefined ? pageNo * rowsPerPage + 1 : paginatorFrom);
-          setPaginatorTo(
-            totalElements && totalElements > rowsPerPage ? rowsPerPage : totalElements
-          );
-          setLoading(false);
-        })
-        .catch(() => {
-          setTableData([]);
-          setLoading(false);
-        });
-    }
-    */
     void getBatchFilterList(organizationId)
       .then((res) => {
         const { left } = res as BatchFilterList;
@@ -184,6 +165,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
     setStatusFilter('');
+    setProducerFilter('');
     setBatchFilter('');
     setEprelCodeFilter('');
     setGtinCodeFilter('');
@@ -258,6 +240,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       <FilterBar
         categoryFilter={categoryFilter}
         setCategoryFilter={setCategoryFilter}
+        producerFilter={producerFilter}
+        setProducerFilter={setProducerFilter}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
         setFiltering={setFiltering}
@@ -307,24 +291,22 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               variant="contained"
               sx={{
                 ...buttonStyle,
-                width: '138px',
               }}
               disabled={selected.length === 0}
               onClick={() => handleOpenModal('supervisioned')}
             >
-              {t('products.buttonModal.supervisioned')}
+              {t('invitaliaModal.supervisioned.title')}
             </Button>
             <Button
               variant="outlined"
               color="error"
               sx={{
                 ...buttonStyle,
-                width: '92px',
               }}
               disabled={selected.length === 0}
               onClick={() => handleOpenModal('rejected')}
             >
-              {t('products.buttonModal.rejected')}
+              {t('invitaliaModal.rejected.title')}
             </Button>
           </Box>
         )}

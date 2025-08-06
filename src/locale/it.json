@@ -159,6 +159,7 @@
       "filterLabels": {
         "category": "Categoria",
         "status": "Stato",
+        "producer": "Produttore",
         "batch": "Lotto",
         "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN",
@@ -168,6 +169,7 @@
       },
       "listHeader": {
         "category": "Categoria",
+        "producer": "Produttore",
         "status": "Stato",
         "energeticClass": "Classe energetica",
         "eprelCode": "Codice EPREL",

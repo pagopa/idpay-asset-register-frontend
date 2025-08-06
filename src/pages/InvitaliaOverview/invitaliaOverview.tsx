@@ -4,14 +4,17 @@ import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import {Search} from "@mui/icons-material";
 import { getInstitutionsList } from "../../services/registerService";
-import {InstitutionsResponse} from "../../api/generated/register/InstitutionsResponse";
 import {Order} from "../../components/Product/helpers";
 import {Institution} from "../../model/Institution";
+import {setInstitutionList} from "../../redux/slices/invitaliaSlice";
+import {useAppDispatch} from "../../redux/hooks";
+import {InstitutionsResponse} from "../../api/generated/register/InstitutionsResponse";
 import InstitutionsTable from "./institutionsTable";
 import {sortInstitutions} from "./helpers";
 
 const InvitaliaOverview: React.FC = () => {
     const { t } = useTranslation();
+    const dispatch = useAppDispatch();
     const [institutions, setInstitutions] = useState<InstitutionsResponse>({
         institutions: [],
     });
@@ -32,6 +35,7 @@ const InvitaliaOverview: React.FC = () => {
         try {
             const institutionsData = await getInstitutionsList();
             setInstitutions(institutionsData);
+            dispatch(setInstitutionList(institutionsData?.institutions as Array<Institution>));
         } catch (error) {
             console.error('Errore nel recupero delle istituzioni:', error);
         } finally {
