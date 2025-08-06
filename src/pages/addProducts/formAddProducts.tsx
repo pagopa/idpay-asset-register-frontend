@@ -95,12 +95,13 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
       fileState.setFileIsLoading(true);
       errorHandling.clearErrors();
+      const uploadTime = new Date(Date.now());
 
       try {
         const res = await uploadProductListVerify(files[0], formik.values.category);
 
         if (res.status === 'OK') {
-          fileState.setFileAcceptedState(files[0]);
+          fileState.setFileAcceptedState(files[0], uploadTime);
           setFileAccepted(true);
         } else {
           errorHandling.handleUploadError(res);
