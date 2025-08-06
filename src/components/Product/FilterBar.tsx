@@ -103,7 +103,7 @@ export default function FilterBar({
           gap: 1,
           mb: 5,
           width: '100%',
-          overflow: 'hidden',
+          overflow: 'visible',
         }}
       >
         <FormControl size="small" sx={{ flexBasis: FILTER_WIDTHS.categoria }}>

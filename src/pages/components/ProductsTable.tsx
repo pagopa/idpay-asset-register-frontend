@@ -258,7 +258,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       <TableCell sx={cellLeftSx(COLUMN_WIDTHS_INVITALIA.batchName)}>
         <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>
       </TableCell>
-      <TableCell sx={cellRightSx(COLUMN_WIDTHS_INVITALIA.actions)}>
+      <TableCell sx={cellCenterSx(COLUMN_WIDTHS_INVITALIA.actions)}>
         <ArrowForwardIosIcon
           sx={{
             cursor: 'pointer',

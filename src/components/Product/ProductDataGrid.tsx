@@ -170,20 +170,16 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, []);
 
   useEffect(() => {
-    setLoading(true);
-    callProductsApi(organizationId);
-    // eslint-disable-next-line
-  }, [page, orderBy, order, rowsPerPage]);
-
-  useEffect(() => {
-    setLoading(true);
-    if (!filtering) {
-      setLoading(false);
-      return;
+    if (filtering) {
+      setLoading(true);
+      callProductsApi(organizationId);
+      setFiltering(false);
+    } else {
+      setLoading(true);
+      callProductsApi(organizationId);
     }
-    callProductsApi(organizationId);
     // eslint-disable-next-line
-  }, [filtering]);
+  }, [page, orderBy, order, rowsPerPage, filtering]);
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
@@ -316,7 +312,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               disabled={selected.length === 0}
               onClick={() => handleOpenModal('supervisioned')}
             >
-              Contrassegna
+              {t('products.buttonModal.supervisioned')}
             </Button>
             <Button
               variant="outlined"
@@ -328,7 +324,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               disabled={selected.length === 0}
               onClick={() => handleOpenModal('rejected')}
             >
-              Escludi
+              {t('products.buttonModal.rejected')}
             </Button>
           </Box>
         )}

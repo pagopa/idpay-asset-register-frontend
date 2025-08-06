@@ -1,4 +1,5 @@
 import { Button, Box, ListItem } from '@mui/material';
+import { PRODUCTS_STATES } from '../../utils/constants';
 
 type ProductActionButtonsProps = {
   isInvitaliaUser: boolean;
@@ -25,7 +26,7 @@ export default function ProductActionButtons({
   if (!isInvitaliaUser || !status) {
     return null;
   }
-  if (status === 'APPROVED') {
+  if (status === PRODUCTS_STATES.APPROVED) {
     return (
       <ListItem sx={{ pl: 0 }}>
         <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
@@ -51,7 +52,7 @@ export default function ProductActionButtons({
     );
   }
 
-  if (status !== 'REJECTED') {
+  if (status !== PRODUCTS_STATES.REJECTED) {
     return (
       <ListItem sx={{ pl: 0 }}>
         <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
