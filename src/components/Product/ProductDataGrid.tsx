@@ -223,7 +223,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           />
         );
       }
-      return <ProductsTable key={refreshKey} {...commonProps} />;
+      return(
+        <Box sx={{ width: '100%', overflowX: 'auto' }}>
+          <ProductsTable key={refreshKey} {...commonProps} />
+        </Box>
+      );
     }
 
     if (children) {
@@ -237,6 +241,32 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   return (
     <>
+      {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
+          <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
+            <Button
+                color="primary"
+                variant="contained"
+                sx={{
+                  ...buttonStyle,
+                }}
+                disabled={selected.length === 0}
+                onClick={() => handleOpenModal('supervisioned')}
+            >
+              {t('invitaliaModal.supervisioned.title')}
+            </Button>
+            <Button
+                variant="outlined"
+                color="error"
+                sx={{
+                  ...buttonStyle,
+                }}
+                disabled={selected.length === 0}
+                onClick={() => handleOpenModal('rejected')}
+            >
+              {t('invitaliaModal.rejected.title')}
+            </Button>
+          </Box>
+      )}
       <FilterBar
         categoryFilter={categoryFilter}
         setCategoryFilter={setCategoryFilter}
@@ -284,32 +314,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             }}
           />
         )}
-        {tableData?.length > 0 && !loading && isInvitaliaUser && (
-          <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
-            <Button
-              color="primary"
-              variant="contained"
-              sx={{
-                ...buttonStyle,
-              }}
-              disabled={selected.length === 0}
-              onClick={() => handleOpenModal('supervisioned')}
-            >
-              {t('invitaliaModal.supervisioned.title')}
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              sx={{
-                ...buttonStyle,
-              }}
-              disabled={selected.length === 0}
-              onClick={() => handleOpenModal('rejected')}
-            >
-              {t('invitaliaModal.rejected.title')}
-            </Button>
-          </Box>
-        )}
       </Paper>
       <ProductModal
         open={modalOpen}
@@ -320,7 +324,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           return { productName: prod?.productName, gtinCode, category: prod?.category };
         })}
         actionType={modalAction}
-        organizationId={organizationId}
+        status={""}
         onUpdateTable={updaDataTable}
       />
       <DetailDrawer

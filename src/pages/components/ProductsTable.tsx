@@ -158,6 +158,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
             }),
           }}
           hover
+          onClick={() => handleListButtonClick(row)}
       >
         <TableCell sx={checkboxCellSx}>
           {typeof row.gtinCode === 'string' ? (
@@ -165,6 +166,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                   color="primary"
                   checked={selected.includes(row.gtinCode)}
                   onChange={() => handleCheckboxClick(row.gtinCode)}
+                  onClick={(e) => e.stopPropagation()} // blocca il click qui
               />
           ) : (
               <Checkbox color="primary" disabled checked={false} />
@@ -194,7 +196,6 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                 cursor: 'pointer',
                 color: '#0073E6',
               }}
-              onClick={() => handleListButtonClick(row)}
           />
         </TableCell>
       </TableRow>

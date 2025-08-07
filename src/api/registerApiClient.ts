@@ -8,8 +8,8 @@ import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/stor
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
 import { createClient, WithDefaultsT } from './generated/register/client';
+import {PortalConsentDTO} from "./generated/register/PortalConsentDTO";
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
-import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
 import { UploadsListDTO } from './generated/register/UploadsListDTO';
 import { BatchList } from './generated/register/BatchList';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
@@ -244,20 +244,19 @@ export const RegisterApi = {
   },
 
 setSupervisionedStatusList: async (
-  xOrganizationSelected: string,
   gtinCodes: Array<string>,
+  status: string,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, motivation };
+    const body = { gtinCodes, status, motivation };
     const result = await registerClient.updateProductStatusSupervisioned({
-      'x-organization-selected': xOrganizationSelected,
       body
     });
     return extractResponse(result, 200, onRedirectToLogin);
   } catch (error) {
     console.error(
-      `Errore durante l'aggiornamento dello stato supervisionato per l'organizzazione con ID ${xOrganizationSelected}:`,
+      'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
       error
     );
     throw error;
@@ -265,19 +264,19 @@ setSupervisionedStatusList: async (
 },
 
  setApprovedStatusList: async (
-  xOrganizationSelected: string,
   gtinCodes: Array<string>,
+  status: string,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, motivation };
+    const body = { gtinCodes, status, motivation };
     const result = await registerClient.updateProductStatusApproved(
-      { 'x-organization-selected': xOrganizationSelected, body }
+      { body }
     );
     return extractResponse(result, 200, onRedirectToLogin);
   } catch (error) {
     console.error(
-      `Errore durante l'aggiornamento dello stato approvato per l'organizzazione con ID ${xOrganizationSelected}:`,
+        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
       error
     );
     throw error;
@@ -285,19 +284,19 @@ setSupervisionedStatusList: async (
 },
 
  setRejectedStatusList: async (
-  xOrganizationSelected: string,
   gtinCodes: Array<string>,
+  status: string,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, motivation };
+    const body = { gtinCodes, status, motivation };
     const result = await registerClient.updateProductStatusRejected(
-      { 'x-organization-selected': xOrganizationSelected, body }
+      { body }
     );
     return extractResponse(result, 200, onRedirectToLogin);
   } catch (error) {
     console.error(
-      `Errore durante l'aggiornamento dello stato rifiutato per l'organizzazione con ID ${xOrganizationSelected}:`,
+        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
       error
     );
     throw error;
