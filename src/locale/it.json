@@ -89,7 +89,8 @@
         "institutionName": "Nome produttore",
         "createdAt": "Creata il",
         "updatedAt": "Ultima modifica"
-      }
+      },
+      "manufacturerSheet": "SCHEDA PRODUTTORE"
     },
     "invitaliaProductsList": {
       "infoCardTitle": "Dati produttore",
