@@ -101,6 +101,7 @@ type InstitutionsTableProps = {
   onPageChange: (event: unknown, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Institution) => void;
+  onDetailRequest: (institution: Institution) => void;
 };
 
 const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
@@ -115,6 +116,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   onPageChange,
   onRowsPerPageChange,
   onRequestSort,
+  onDetailRequest,
 }) => {
   const paginationInfo = usePagination(page, rowsPerPage, totalElements);
   const { t } = useTranslation();
@@ -178,7 +180,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
               <ChevronRight
                 color="primary"
                 sx={{ verticalAlign: 'middle' }}
-                onClick={() => goToInstitutionPage(row)}
+                onClick={() => onDetailRequest(row)}
               />
             </TableCell>
           </TableRow>

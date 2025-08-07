@@ -88,7 +88,8 @@
         "institutionName": "Nome produttore",
         "createdAt": "Creata il",
         "updatedAt": "Ultima modifica"
-      }
+      },
+      "manufacturerSheet": "SCHEDA PRODUTTORE"
     },
     "invitaliaProductsList": {
       "infoCardTitle": "Dati produttore",
@@ -150,11 +151,11 @@
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
       "loading": "Caricamento dati ...",
-      "buttonModal":{
-        "confirmSupervisioned":"Conferma",
-        "cancelSupervisioned":"Annulla",
-        "supervisioned":"Contrassegna",
-        "rejected":"Escludi"
+      "buttonModal": {
+        "confirmSupervisioned": "Conferma",
+        "cancelSupervisioned": "Annulla",
+        "supervisioned": "Contrassegna",
+        "rejected": "Escludi"
       },
       "filterLabels": {
         "category": "Categoria",
@@ -164,7 +165,7 @@
         "gtinCode": "Codice GTIN",
         "manufacturerCode": "Codice produttore",
         "filter": "Filtra",
-        "deleteFilters": "Rimuovi filtri"      
+        "deleteFilters": "Rimuovi filtri"
       },
       "listHeader": {
         "category": "Categoria",
