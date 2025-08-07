@@ -92,12 +92,10 @@ const InvitaliaOverview: React.FC = () => {
   };
 
   const handleDetailRequest = async (institution: Institution) => {
-    console.log('§>', { institution });
     try {
       const res = await getInstitutionById(institution.institutionId);
       setInstitutionData(res);
       setDrawerOpened(true);
-      console.log('§>', { res, institutionData });
     } catch (error) {
       console.error('Errore nel recupero del dettaglio della istituzione:', error);
     }
