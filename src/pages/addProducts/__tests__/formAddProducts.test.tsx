@@ -7,7 +7,7 @@ import FormAddProducts from '../formAddProducts';
 import { useFileState } from '../../../hooks/useFileState';
 import { useErrorHandling } from '../../../hooks/useErrorHandling';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
-import { uploadProductListVerify, uploadProductList, downloadErrorReport } from '../../../services/registerService';
+import { uploadProductListVerify, downloadErrorReport } from '../../../services/registerService';
 import { downloadCsv } from '../helpers';
 import { JSX } from 'react/jsx-runtime';
 import '@testing-library/jest-dom';
@@ -510,7 +510,7 @@ describe('FormAddProducts', () => {
             });
 
             expect(mockFileState.setFileIsLoading).toHaveBeenCalledTimes(0);
-            expect(mockErrorHandling.clearErrors).toHaveBeenCalledTimes(0);
+            expect(mockErrorHandling.clearErrors).toHaveBeenCalledTimes(1);
             expect(uploadProductListVerify).toHaveBeenCalledTimes(0);
             expect(mockFileState.setFileAcceptedState).toHaveBeenCalledTimes(0);
             expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
