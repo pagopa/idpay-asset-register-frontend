@@ -30,9 +30,9 @@ export default function SideMenu() {
               <SidenavItem
                 title={t('pages.invitaliaProductsList.productsTitle')}
                 handleClick={() =>
-                  onExit(() => navigate(ROUTES.INVITALIA_PRODUCTS_LIST, { replace: true }))
+                  onExit(() => navigate(ROUTES.HOME, { replace: true }))
                 }
-                isSelected={location.pathname === ROUTES.INVITALIA_PRODUCTS_LIST}
+                isSelected={location.pathname === ROUTES.HOME}
                 icon={InventoryIcon}
                 level={0}
                 data-testid="initiativeList-click-test"
@@ -45,8 +45,8 @@ export default function SideMenu() {
                 ? 'pages.invitaliaOverview.manufacturerMenuItem'
                 : 'pages.overview.overviewTitle'
             )}
-            handleClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
-            isSelected={location.pathname === ROUTES.HOME}
+            handleClick={() => onExit(() => navigate(isInvitaliaUser ? ROUTES.PRODUCERS : ROUTES.HOME, { replace: true }))}
+            isSelected={location.pathname === (isInvitaliaUser ? ROUTES.PRODUCERS : ROUTES.HOME)}
             icon={isInvitaliaUser ? BuildIcon : ListAltIcon}
             level={0}
             data-testid="go-to-home"
