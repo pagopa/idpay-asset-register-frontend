@@ -29,7 +29,7 @@ const DrawerItem: React.FC<DrawerItemProps> = ({ itemHeader, itemValue, copyable
               pr: 2,
             }}
           >
-            <Typography noWrap variant={'overline'}>
+            <Typography noWrap fontWeight={'600'}>
               {itemValue}
             </Typography>
           </Box>

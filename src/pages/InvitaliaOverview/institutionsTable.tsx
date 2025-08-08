@@ -161,7 +161,10 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
     return (
       <TableBody>
         {((data.institutions as Array<Institution>) ?? []).map((row: Institution) => (
-          <TableRow key={row.institutionId}>
+          <TableRow
+              key={row.institutionId}
+              onClick={() => onDetailRequest(row)}
+          >
             <TableCell>
               <Link
                 underline="hover"
@@ -180,7 +183,6 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
               <ChevronRight
                 color="primary"
                 sx={{ verticalAlign: 'middle' }}
-                onClick={() => onDetailRequest(row)}
               />
             </TableCell>
           </TableRow>
