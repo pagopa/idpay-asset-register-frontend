@@ -76,7 +76,6 @@ function buildProductParams(
   productFileId?: string
 ) {
   return {
-    organizationId,
     ...(page !== undefined ? { page } : {}),
     ...(size !== undefined ? { size } : {}),
     ...(sort ? { sort } : {}),
@@ -86,6 +85,7 @@ function buildProductParams(
     ...(gtinCode ? { gtinCode } : {}),
     ...(productCode ? { productCode } : {}),
     ...(productFileId ? { productFileId } : {}),
+    ...(organizationId ? { organizationId } : {}),
   };
 }
 

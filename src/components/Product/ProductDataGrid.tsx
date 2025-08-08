@@ -90,8 +90,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     const sortKey = `${orderBy},${order}`;
     const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
 
+    console.log(organizationId);
     void getProducts(
-      isInvitaliaUser ? organizationId : user.org_id,
+      isInvitaliaUser ? producerFilter : user.org_id,
       page,
       rowsPerPage,
       sortKey,
