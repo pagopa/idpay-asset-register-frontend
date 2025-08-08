@@ -81,8 +81,8 @@ const cellBaseSx = (width: string | number) => ({
 const cellLeftSx = (width: string | number) => ({
   ...cellBaseSx(width),
   textAlign: 'left',
-  padding: '16px',
 });
+
 const cellCenterSx = (width: string | number) => ({ ...cellBaseSx(width), textAlign: 'center' });
 const cellRightSx = (width: string | number) => ({ ...cellBaseSx(width), textAlign: 'right' });
 

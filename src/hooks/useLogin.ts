@@ -13,6 +13,7 @@ import { IDPayUser } from '../model/IDPayUser';
 import {getUserPermission} from "../services/rolePermissionService";
 import {setPermissionsList, setUserRole} from "../redux/slices/permissionsSlice";
 import {Permission} from "../model/Permission";
+import {ENV} from "../utils/env";
 
 export const userFromJwtToken: (token: string) => User = function (token: string) {
   const jwtUser: JWTUser = parseJwt(token);
@@ -72,6 +73,7 @@ const saveUserPermissions = (dispatch: Dispatch<any>, addError: any, t: any) => 
         component: 'Toast',
         showCloseIcon: true,
       });
+      window.location.assign(ENV.URL_FE.LOGIN);
     });
 };
 

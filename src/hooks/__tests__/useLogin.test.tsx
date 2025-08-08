@@ -14,7 +14,7 @@ import { Store, AnyAction } from 'redux';
 import '@testing-library/jest-dom';
 
 jest.mock('../../utils/env', () => ({
-  default: {
+  ENV: {
     URL_API: {
       OPERATION: 'https://mock-api/register',
     },

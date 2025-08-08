@@ -88,7 +88,7 @@ jest.mock('../../../utils/constants', () => ({
     },
 }));
 
-jest.mock('../DetailDrawer', () => {
+jest.mock('../../DetailDrawer/DetailDrawer', () => {
     return function MockDetailDrawer({ children, open }: any) {
         return open ? <div data-testid="detail-drawer">{children}</div> : null;
     };

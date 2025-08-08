@@ -53,8 +53,8 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
 
 const InvitaliaRoutes = () => (
   <Routes>
-    <Route path={routes.HOME} element={<InvitaliaOverview />} />
-    <Route path={routes.INVITALIA_PRODUCTS_LIST} element={<InvitaliaProductsList />} />
+    <Route path={routes.HOME} element={<InvitaliaProductsList />} />
+    <Route path={routes.PRODUCERS} element={<InvitaliaOverview />} />
     <Route path={routes.TOS} element={<TOS />} />
     <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
     <Route path="*" element={<Navigate to={routes.HOME} />} />
