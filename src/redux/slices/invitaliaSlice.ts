@@ -4,6 +4,7 @@ import {Institution} from "../../model/Institution";
 
 export interface InvitaliaState {
     institution: Institution;
+    institutionList: Array<Institution>;
 }
 
 const initialState: InvitaliaState = {
@@ -13,6 +14,7 @@ const initialState: InvitaliaState = {
         'updatedAt': '',
         'description': ''
     },
+    institutionList: []
 };
 
 export const invitaliaSlice = createSlice({
@@ -23,10 +25,16 @@ export const invitaliaSlice = createSlice({
             ...state,
             institution: action.payload,
         }),
+        setInstitutionList: (state, action: PayloadAction<Array<Institution>>) => ({
+            ...state,
+            institutionList: action.payload,
+        }),
     },
 });
 
-export const { setInstitution } = invitaliaSlice.actions;
+export const { setInstitution, setInstitutionList } = invitaliaSlice.actions;
 export const invitaliaReducer = invitaliaSlice.reducer;
 export const institutionSelector = (state: RootState): Institution | undefined =>
     state.invitalia.institution;
+export const institutionListSelector = (state: RootState): Array<Institution> | undefined =>
+    state.invitalia.institutionList;

@@ -107,7 +107,7 @@
       "title": "Aggiungi prodotti",
       "boxAddTitle": "Aggiungi i tuoi prodotti",
       "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
-      "boxAddTextProduct": "Prodotto.",
+      "boxAddTextProduct": "Prodotti.",
       "goToManual": "Dubbi? Vai al manuale",
       "form": {
         "categoryLabel": "Seleziona la categoria",
@@ -159,6 +159,7 @@
       "filterLabels": {
         "category": "Categoria",
         "status": "Stato",
+        "producer": "Produttore",
         "batch": "Lotto",
         "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN",
@@ -168,6 +169,7 @@
       },
       "listHeader": {
         "category": "Categoria",
+        "producer": "Produttore",
         "status": "Stato",
         "energeticClass": "Classe energetica",
         "eprelCode": "Codice EPREL",

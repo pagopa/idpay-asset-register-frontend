@@ -21,24 +21,24 @@ type Props = {
 };
 
 const callApprovedApi = async (
-  organizationId: string,
   gtinCodes: Array<string>,
+  status: string,
   motivation: string
 ) => {
   try {
-    await setApprovedStatusList(organizationId, gtinCodes, motivation);
+    await setApprovedStatusList(gtinCodes, status, motivation);
   } catch (error) {
     console.error(error);
   }
 };
 
 const callRejectedApi = async (
-  organizationId: string,
-  gtinCodes: Array<string>,
-  motivation: string
+    gtinCodes: Array<string>,
+    status: string,
+    motivation: string
 ) => {
   try {
-    await setRejectedStatusList(organizationId, gtinCodes, motivation);
+    await setRejectedStatusList(gtinCodes, status, motivation);
   } catch (error) {
     console.error(error);
   }
@@ -46,14 +46,14 @@ const callRejectedApi = async (
 
 const handleOpenModal = (
   action: string,
-  organizationId: string,
   gtinCodes: Array<string>,
+  status: string,
   motivation: string
 ) => {
   if (action === PRODUCTS_STATES.REJECTED) {
-    return callRejectedApi(organizationId, gtinCodes, motivation);
+    return callRejectedApi(gtinCodes, status, motivation);
   } else if (action === PRODUCTS_STATES.APPROVED) {
-    return callApprovedApi(organizationId, gtinCodes, motivation);
+    return callApprovedApi(gtinCodes, status, motivation);
   }
   return Promise.resolve();
 };
@@ -260,8 +260,8 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const handleConfirmRestore = async () => {
     await handleOpenModal(
       PRODUCTS_STATES.APPROVED,
-      data.organizationId,
       [data.gtinCode],
+      '',
       EMPTY_DATA
     );
     setRestoreDialogOpen(false);
@@ -320,7 +320,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         gtinCodes={[data.gtinCode]}
         productName={data.productName}
         actionType="rejected"
-        organizationId={data.organizationId}
+        status={""}
         onUpdateTable={onUpdateTable}
       />
       <ProductModal
@@ -329,7 +329,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         gtinCodes={[data.gtinCode]}
         productName={data.productName}
         actionType="supervisioned"
-        organizationId={data.organizationId}
+        status={""}
         onUpdateTable={onUpdateTable}
       />
     </Box>

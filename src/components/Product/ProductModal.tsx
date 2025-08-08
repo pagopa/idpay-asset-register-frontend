@@ -22,7 +22,7 @@ interface ProductModalProps {
   gtinCodes: Array<string>;
   productName?: string;
   actionType?: string;
-  organizationId: string;
+  status: string;
   onUpdateTable?: () => void;
   selectedProducts?: Array<{ productName?: string; gtinCode: string; category?: string }>;
 }
@@ -42,7 +42,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   gtinCodes,
   productName,
   actionType,
-  organizationId,
+  status,
   onUpdateTable,
   selectedProducts,
 }) => {
@@ -77,7 +77,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const callSupervisionedApi = async () => {
     try {
-      await setSupervisionedStatusList(organizationId, gtinCodes, motivation);
+      await setSupervisionedStatusList(gtinCodes, '', motivation);
       onClose();
       if (onUpdateTable) {
         onUpdateTable();
@@ -91,7 +91,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const callRejectedApi = async () => {
     try {
       onClose();
-      await setRejectedStatusList(organizationId, gtinCodes, motivation);
+      await setRejectedStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
       }

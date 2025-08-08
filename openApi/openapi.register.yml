@@ -210,8 +210,6 @@ paths:
       summary: Approve a list of products
       description: 'ENG: Approve a list of products by updating their status to APPROVED. IT: Approva una lista di prodotti aggiornando il loro stato a APPROVED.'
       operationId: updateProductStatusApproved
-      parameters:
-        - $ref: '#/components/parameters/x_organization_selected_header'
       requestBody:
         content:
           application/json:
@@ -219,24 +217,45 @@ paths:
               $ref: '#/components/schemas/ProductsUpdateDTO'
       responses:
         '200':
-          $ref: '#/components/responses/POST_products_update-status_approved_200_Response'
+          $ref: '#/components/responses/POST_products_update-status_200_Response'
         '400':
-          $ref: '#/components/responses/POST_products_update-status_approved_400_Response'
+          $ref: '#/components/responses/POST_products_update-status_400_Response'
         '401':
-          $ref: '#/components/responses/POST_products_update-status_approved_401_Response'
+          $ref: '#/components/responses/POST_products_update-status_401_Response'
         '429':
-          $ref: '#/components/responses/POST_products_update-status_approved_429_Response'
+          $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
-          $ref: '#/components/responses/POST_products_update-status_approved_500_Response'
+          $ref: '#/components/responses/POST_products_update-status_500_Response'
+  /products/update-status/wait-approved:
+    post:
+      tags:
+        - products
+      summary: Request approve for a list of products
+      description: 'ENG: Reuqest approve a list of products by updating their status to WAIT_APPROVED. IT: Richiede approvazione di una lista di prodotti aggiornando il loro stato a WAIT_APPROVED.'
+      operationId: updateProductStatusWaitApproved
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductsUpdateDTO'
+      responses:
+        '200':
+          $ref: '#/components/responses/POST_products_update-status_200_Response'
+        '400':
+          $ref: '#/components/responses/POST_products_update-status_400_Response'
+        '401':
+          $ref: '#/components/responses/POST_products_update-status_401_Response'
+        '429':
+          $ref: '#/components/responses/POST_products_update-status_429_Response'
+        '500':
+          $ref: '#/components/responses/POST_products_update-status_500_Response'
   /products/update-status/supervisioned:
     post:
       tags:
         - products
       summary: Mark products as in supervision
-      description: 'ENG: Set the status of a list of products to IN_VALIDATION. IT: Imposta lo stato di una lista di prodotti su IN_VALIDATION.        '
+      description: 'ENG: Set the status of a list of products to SUPERVISIONED. IT: Imposta lo stato di una lista di prodotti su SUPERVISIONED.        '
       operationId: updateProductStatusSupervisioned
-      parameters:
-        - $ref: '#/components/parameters/x_organization_selected_header'
       requestBody:
         content:
           application/json:
@@ -244,15 +263,38 @@ paths:
               $ref: '#/components/schemas/ProductsUpdateDTO'
       responses:
         '200':
-          $ref: '#/components/responses/POST_products_update-status_supervisioned_200_Response'
+          $ref: '#/components/responses/POST_products_update-status_200_Response'
         '400':
-          $ref: '#/components/responses/POST_products_update-status_supervisioned_400_Response'
+          $ref: '#/components/responses/POST_products_update-status_400_Response'
         '401':
-          $ref: '#/components/responses/POST_products_update-status_supervisioned_401_Response'
+          $ref: '#/components/responses/POST_products_update-status_401_Response'
         '429':
-          $ref: '#/components/responses/POST_products_update-status_supervisioned_429_Response'
+          $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
-          $ref: '#/components/responses/POST_products_update-status_supervisioned_500_Response'
+          $ref: '#/components/responses/POST_products_update-status_500_Response'
+  /products/update-status/suspended:
+    post:
+      tags:
+        - products
+      summary: Mark products as in suspend
+      description: 'ENG: Set the status of a list of products to SUSPENDED. IT: Imposta lo stato di una lista di prodotti su SUSPENDED.        '
+      operationId: updateProductStatusSuspended
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductsUpdateDTO'
+      responses:
+        '200':
+          $ref: '#/components/responses/POST_products_update-status_200_Response'
+        '400':
+          $ref: '#/components/responses/POST_products_update-status_400_Response'
+        '401':
+          $ref: '#/components/responses/POST_products_update-status_401_Response'
+        '429':
+          $ref: '#/components/responses/POST_products_update-status_429_Response'
+        '500':
+          $ref: '#/components/responses/POST_products_update-status_500_Response'
   /products/update-status/rejected:
     post:
       tags:
@@ -260,8 +302,6 @@ paths:
       summary: Reject a list of products
       description: 'ENG: Reject a list of products by updating their status to REJECTED. IT: Rifiuta una lista di prodotti aggiornando il loro stato a REJECTED. '
       operationId: updateProductStatusRejected
-      parameters:
-        - $ref: '#/components/parameters/x_organization_selected_header'
       requestBody:
         content:
           application/json:
@@ -269,15 +309,61 @@ paths:
               $ref: '#/components/schemas/ProductsUpdateDTO'
       responses:
         '200':
-          $ref: '#/components/responses/POST_products_update-status_rejected_200_Response'
+          $ref: '#/components/responses/POST_products_update-status_200_Response'
         '400':
-          $ref: '#/components/responses/POST_products_update-status_rejected_400_Response'
+          $ref: '#/components/responses/POST_products_update-status_400_Response'
         '401':
-          $ref: '#/components/responses/POST_products_update-status_rejected_401_Response'
+          $ref: '#/components/responses/POST_products_update-status_401_Response'
         '429':
-          $ref: '#/components/responses/POST_products_update-status_rejected_429_Response'
+          $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
-          $ref: '#/components/responses/POST_products_update-status_rejected_500_Response'
+          $ref: '#/components/responses/POST_products_update-status_500_Response'
+  /products/update-status/wait-rejected:
+    post:
+      tags:
+        - products
+      summary: Request reject for a list of products
+      description: 'ENG: Request reject a list of products by updating their status to WAIT_REJECTED. IT: Richiede rifiuto di una lista di prodotti aggiornando il loro stato a WAIT_REJECTED. '
+      operationId: updateProductStatusWaitRejected
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductsUpdateDTO'
+      responses:
+        '200':
+          $ref: '#/components/responses/POST_products_update-status_200_Response'
+        '400':
+          $ref: '#/components/responses/POST_products_update-status_400_Response'
+        '401':
+          $ref: '#/components/responses/POST_products_update-status_401_Response'
+        '429':
+          $ref: '#/components/responses/POST_products_update-status_429_Response'
+        '500':
+          $ref: '#/components/responses/POST_products_update-status_500_Response'
+  /products/update-status/restored:
+    post:
+      tags:
+        - products
+      summary: Restore a list of products
+      description: 'ENG: Reject a list of products by updating their status to UPLOADED. IT: Ripristina una lista di prodotti aggiornando il loro stato a UPLOADED. '
+      operationId: updateProductStatusRestored
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductsUpdateDTO'
+      responses:
+        '200':
+          $ref: '#/components/responses/POST_products_update-status_200_Response'
+        '400':
+          $ref: '#/components/responses/POST_products_update-status_400_Response'
+        '401':
+          $ref: '#/components/responses/POST_products_update-status_401_Response'
+        '429':
+          $ref: '#/components/responses/POST_products_update-status_429_Response'
+        '500':
+          $ref: '#/components/responses/POST_products_update-status_500_Response'
   /products:
     get:
       tags:
@@ -684,8 +770,12 @@ components:
           description: 'ENG: The status of the product <br> IT: Lo stato del prodotto'
           enum:
             - APPROVED
+            - WAIT_APPROVED
             - REJECTED
+            - WAIT_REJECTED
             - SUPERVISIONED
+            - SUSPENDED
+            - UPLOADED
         model:
           type: string
           description: 'ENG: The mode of the product <br> IT: il modello del prodotto'
@@ -770,6 +860,10 @@ components:
         motivation:
           type: string
           maxLength: 200
+          pattern: .*
+        organizationName:
+          type: string
+          maxLength: 50
           pattern: .*
     InstitutionResponse:
       title: InstitutionResponse
@@ -905,7 +999,7 @@ components:
           maxItems: 100
         motivation:
           type: string
-          maxLength: 200
+          maxLength: 255
           pattern: .*
   securitySchemes:
     Bearer:
@@ -1591,146 +1685,7 @@ components:
       headers:
         Access-Control-Allow-Origin:
           $ref: '#/components/headers/Access-Control-Allow-Origin'
-    POST_products_update-status_approved_200_Response:
-      description: Products approved successfully
-      headers:
-        Access-Control-Allow-Origin:
-          $ref: '#/components/headers/Access-Control-Allow-Origin'
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UpdateResponseDTO'
-    POST_products_update-status_approved_400_Response:
-      description: Bad request
-      headers:
-        Access-Control-Allow-Origin:
-          $ref: '#/components/headers/Access-Control-Allow-Origin'
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_approved_401_Response:
-      description: Authentication failed
-      headers:
-        Access-Control-Allow-Origin:
-          $ref: '#/components/headers/Access-Control-Allow-Origin'
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_approved_429_Response:
-      headers:
-        Access-Control-Allow-Origin:
-          $ref: '#/components/headers/Access-Control-Allow-Origin'
-        Retry-After:
-          $ref: '#/components/headers/Retry-After'
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-      description: Too many requests
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_approved_500_Response:
-      description: Server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_supervisioned_200_Response:
-      description: Products marked as in validation successfully
-      headers:
-        Access-Control-Allow-Origin:
-          $ref: '#/components/headers/Access-Control-Allow-Origin'
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UpdateResponseDTO'
-    POST_products_update-status_supervisioned_400_Response:
-      description: Bad request
-      headers:
-        Access-Control-Allow-Origin:
-          $ref: '#/components/headers/Access-Control-Allow-Origin'
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_supervisioned_401_Response:
-      description: Authentication failed
-      headers:
-        Access-Control-Allow-Origin:
-          $ref: '#/components/headers/Access-Control-Allow-Origin'
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_supervisioned_429_Response:
-      description: Too many requests
-      headers:
-        Access-Control-Allow-Origin:
-          $ref: '#/components/headers/Access-Control-Allow-Origin'
-        Retry-After:
-          $ref: '#/components/headers/Retry-After'
-        X-RateLimit-Limit:
-          $ref: '#/components/headers/X-RateLimit-Limit'
-        X-RateLimit-Remaining:
-          $ref: '#/components/headers/X-RateLimit-Remaining'
-        X-RateLimit-Reset:
-          $ref: '#/components/headers/X-RateLimit-Reset'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_supervisioned_500_Response:
-      description: Server error
-      headers:
-        Access-Control-Allow-Origin:
-          $ref: '#/components/headers/Access-Control-Allow-Origin'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_rejected_200_Response:
+    POST_products_update-status_200_Response:
       description: Products rejected successfully
       headers:
         Access-Control-Allow-Origin:
@@ -1745,7 +1700,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateResponseDTO'
-    POST_products_update-status_rejected_400_Response:
+    POST_products_update-status_400_Response:
       description: Bad request
       headers:
         Access-Control-Allow-Origin:
@@ -1760,7 +1715,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_rejected_401_Response:
+    POST_products_update-status_401_Response:
       description: Authentication failed
       headers:
         Access-Control-Allow-Origin:
@@ -1775,7 +1730,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_rejected_429_Response:
+    POST_products_update-status_429_Response:
       description: Too many requests
       headers:
         Access-Control-Allow-Origin:
@@ -1792,7 +1747,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RegisterErrorDTO'
-    POST_products_update-status_rejected_500_Response:
+    POST_products_update-status_500_Response:
       description: Server error
       headers:
         Access-Control-Allow-Origin:
@@ -2060,7 +2015,7 @@ components:
     x_organization_selected_header:
       name: x-organization-selected
       in: header
-      required: true
+      required: false
       schema:
         type: string
         maxLength: 36
@@ -2125,8 +2080,12 @@ components:
         type: string
         enum:
           - APPROVED
+          - WAIT_APPROVED
           - REJECTED
+          - WAIT_REJECTED
           - SUPERVISIONED
+          - SUSPENDED
+          - UPLOADED
     productName_query:
       name: productName
       in: query

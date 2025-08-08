@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   Box,
   Button,
@@ -11,13 +11,18 @@ import {
 } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
+import {useSelector} from "react-redux";
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { PRODUCTS_CATEGORY, PRODUCTS_STATES } from '../../utils/constants';
+import {INVITALIA, PRODUCTS_CATEGORY, PRODUCTS_STATES} from '../../utils/constants';
+import {fetchUserFromLocalStorage} from "../../helpers";
+import {institutionListSelector} from "../../redux/slices/invitaliaSlice";
 import { BatchFilterItems } from './helpers';
 
 interface FilterProps {
   categoryFilter: string;
   setCategoryFilter: Dispatch<SetStateAction<string>>;
+  producerFilter: string;
+  setProducerFilter: Dispatch<SetStateAction<string>>;
   statusFilter: string;
   setStatusFilter: Dispatch<SetStateAction<string>>;
   setFiltering: Dispatch<SetStateAction<boolean>>;
@@ -35,10 +40,11 @@ interface FilterProps {
 }
 
 const FILTER_WIDTHS = {
-  categoria: '15.08%',
-  stato: '15.08%',
+  categoria: '10.08%',
+  stato: '10.08%',
+  producer: '15%',
   lotto: '25.22%',
-  eprel: '15.83%',
+  eprel: '10.83%',
   gtin: '15.83%',
   rimuovi: '12.97%',
 };
@@ -46,6 +52,8 @@ const FILTER_WIDTHS = {
 export default function FilterBar({
   categoryFilter,
   setCategoryFilter,
+  producerFilter,
+  setProducerFilter,
   statusFilter,
   setStatusFilter,
   setFiltering,
@@ -60,11 +68,14 @@ export default function FilterBar({
   handleDeleteFiltersButtonClick,
 }: FilterProps) {
   const { t } = useTranslation();
-
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
+  const isInvitaliaUser = user?.org_role === INVITALIA;
   const [hasInteractedWithFilters, setHasInteractedWithFilters] = useState(false);
+  const institutionsList = useSelector(institutionListSelector);
 
   const noFilterSetted = (): boolean =>
     !categoryFilter.trim() &&
+    !producerFilter.trim() &&
     !statusFilter.trim() &&
     !batchFilter.trim() &&
     !eprelCodeFilter.trim() &&
@@ -74,6 +85,12 @@ export default function FilterBar({
     setCategoryFilter(event.target.value as string);
     setHasInteractedWithFilters(true);
   };
+
+  const handleProducerChange = (event: SelectChangeEvent) => {
+    setProducerFilter(event.target.value as string);
+    setHasInteractedWithFilters(true);
+  };
+
   const handleStatusChange = (event: SelectChangeEvent) => {
     setStatusFilter(event.target.value as string);
     setHasInteractedWithFilters(true);
@@ -128,6 +145,32 @@ export default function FilterBar({
             ))}
           </Select>
         </FormControl>
+
+        {
+          isInvitaliaUser &&
+            <FormControl size="small" sx={{ flexBasis: FILTER_WIDTHS.producer }}>
+              <InputLabel id="producer-filter-select-label">
+                {t('pages.products.filterLabels.producer')}
+              </InputLabel>
+              <Select
+                  labelId="producer-filter-select-label"
+                  id="producer-filter-select"
+                  value={producerFilter}
+                  label={t('pages.products.filterLabels.producer')}
+                  MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
+                  onChange={handleProducerChange}
+                  sx={{
+                    paddingRight: '38px !important',
+                  }}
+              >
+                {institutionsList?.map((producer) => (
+                    <MenuItem key={producer.institutionId} value={producer.institutionId}>
+                      {producer.description}
+                    </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+        }
 
         <FormControl fullWidth size="small" sx={{ flexBasis: FILTER_WIDTHS.stato }}>
           <InputLabel id="status-filter-select-label">
