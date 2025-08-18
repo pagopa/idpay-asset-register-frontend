@@ -139,7 +139,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   useEffect(() => {
     setLoading(true);
-    void getBatchFilterList(organizationId)
+    void getBatchFilterList(isInvitaliaUser ? producerFilter :organizationId)
       .then((res) => {
         const { left } = res as BatchFilterList;
         const values = left[0].value;

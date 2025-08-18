@@ -2015,7 +2015,6 @@ components:
     x_organization_selected_header:
       name: x-organization-selected
       in: header
-      required: false
       schema:
         type: string
         maxLength: 36

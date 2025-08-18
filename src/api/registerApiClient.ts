@@ -179,9 +179,18 @@ export const RegisterApi = {
   },
   getBatchFilterItems: async (xOrganizationSelected: string): Promise<BatchList> => {
     try {
-      return await registerClient.getBatchNameList({
-        'x-organization-selected': xOrganizationSelected,
-      });
+      const cleanHeader =
+          xOrganizationSelected &&
+          xOrganizationSelected.trim() !== '' &&
+          xOrganizationSelected !== 'undefined'
+              ? xOrganizationSelected
+              : "";
+
+      const params = {
+        'x-organization-selected': cleanHeader
+      };
+
+      return await registerClient.getBatchNameList(params);
     } catch (error) {
       console.error('Errore durante il recupero della lista filtri lotti:', error);
       throw error;

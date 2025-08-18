@@ -68,27 +68,27 @@ describe('ProductModal', () => {
 
     describe('Basic Rendering', () => {
         it('should render dialog when open is true', () => {
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             expect(screen.getByRole('dialog')).toBeInTheDocument();
             expect(screen.getByText('Supervisiona prodotti')).toBeInTheDocument();
         });
 
         it('should not render dialog when open is false', () => {
-            render(<ProductModal {...defaultProps} open={false} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} open={false} actionType="supervisioned" />);
 
             expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
         });
 
         it('should render close button', () => {
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const closeButton = screen.getByLabelText('close');
             expect(closeButton).toBeInTheDocument();
         });
 
         it('should render character counter', () => {
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             expect(screen.getByText('0/200')).toBeInTheDocument();
         });
@@ -96,7 +96,7 @@ describe('ProductModal', () => {
 
     describe('ActionType: supervisioned', () => {
         it('should render supervisioned modal content', () => {
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             expect(screen.getByText('Supervisiona prodotti')).toBeInTheDocument();
             expect(screen.getByText('Descrizione supervisiona')).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe('ProductModal', () => {
         });
 
         it('should have supervisioned button disabled when motivation is empty', () => {
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const supervisionedButton = screen.getByRole('button', { name: 'Supervisiona' });
             expect(supervisionedButton).toBeDisabled();
@@ -113,7 +113,7 @@ describe('ProductModal', () => {
 
         it('should enable supervisioned button when motivation is provided', async () => {
             const user = userEvent.setup();
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, 'Test motivation');
@@ -127,7 +127,7 @@ describe('ProductModal', () => {
             // @ts-ignore
             mockSetSupervisionedStatusList.mockResolvedValue(undefined);
 
-            render(<ProductModal {...defaultProps} actionType="supervisioned" onUpdateTable={mockOnUpdateTable} />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" onUpdateTable={mockOnUpdateTable} />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, 'Test motivation');
@@ -136,8 +136,8 @@ describe('ProductModal', () => {
             await user.click(supervisionedButton);
 
             expect(mockSetSupervisionedStatusList).toHaveBeenCalledWith(
-                'test-org-id',
                 ['1234567890123'],
+                "",
                 'Test motivation'
             );
             expect(mockOnClose).toHaveBeenCalled();
@@ -149,7 +149,7 @@ describe('ProductModal', () => {
             const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             mockSetSupervisionedStatusList.mockRejectedValue(new Error('API Error'));
 
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, 'Test motivation');
@@ -168,7 +168,7 @@ describe('ProductModal', () => {
 
     describe('ActionType: rejected', () => {
         it('should render rejected modal content', () => {
-            render(<ProductModal {...defaultProps} actionType="rejected" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="rejected" />);
 
             expect(screen.getByText('Rifiuta prodotti')).toBeInTheDocument();
             expect(screen.getByText('Descrizione rifiuta')).toBeInTheDocument();
@@ -177,7 +177,7 @@ describe('ProductModal', () => {
         });
 
         it('should have rejected button disabled when motivation is empty', () => {
-            render(<ProductModal {...defaultProps} actionType="rejected" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="rejected" />);
 
             const rejectedButton = screen.getByRole('button', { name: 'Rifiuta' });
             expect(rejectedButton).toBeDisabled();
@@ -185,7 +185,7 @@ describe('ProductModal', () => {
 
         it('should enable rejected button when motivation is provided', async () => {
             const user = userEvent.setup();
-            render(<ProductModal {...defaultProps} actionType="rejected" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="rejected" />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, 'Test motivation');
@@ -199,7 +199,7 @@ describe('ProductModal', () => {
             // @ts-ignore
             mockSetRejectedStatusList.mockResolvedValue(undefined);
 
-            render(<ProductModal {...defaultProps} actionType="rejected" onUpdateTable={mockOnUpdateTable} />);
+            render(<ProductModal status={''} {...defaultProps} actionType="rejected" onUpdateTable={mockOnUpdateTable} />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, 'Test motivation');
@@ -210,8 +210,8 @@ describe('ProductModal', () => {
             expect(mockOnClose).toHaveBeenCalled();
             await waitFor(() => {
                 expect(mockSetRejectedStatusList).toHaveBeenCalledWith(
-                    'test-org-id',
                     ['1234567890123'],
+                    "",
                     'Test motivation'
                 );
                 expect(mockOnUpdateTable).toHaveBeenCalled();
@@ -223,7 +223,7 @@ describe('ProductModal', () => {
             const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             mockSetRejectedStatusList.mockRejectedValue(new Error('API Error'));
 
-            render(<ProductModal {...defaultProps} actionType="rejected" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="rejected" />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, 'Test motivation');
@@ -242,14 +242,14 @@ describe('ProductModal', () => {
 
     describe('Unknown ActionType', () => {
         it('should render with empty config when actionType is unknown', () => {
-            render(<ProductModal {...defaultProps} actionType="unknown" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="unknown" />);
 
             expect(screen.getByRole('dialog')).toBeInTheDocument();
             expect(screen.queryByRole('button', { name: /supervisiona|rifiuta/i })).not.toBeInTheDocument();
         });
 
         it('should render with undefined actionType', () => {
-            render(<ProductModal {...defaultProps} actionType={undefined} />);
+            render(<ProductModal status={''} {...defaultProps} actionType={undefined} />);
 
             expect(screen.getByRole('dialog')).toBeInTheDocument();
             expect(screen.queryByRole('button', { name: /supervisiona|rifiuta/i })).not.toBeInTheDocument();
@@ -265,6 +265,7 @@ describe('ProductModal', () => {
 
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     selectedProducts={selectedProducts}
@@ -283,10 +284,9 @@ describe('ProductModal', () => {
 
             render(
                 <ProductModal
-                    {...defaultProps}
+                    status={''} {...defaultProps}
                     actionType="supervisioned"
-                    selectedProducts={selectedProducts}
-                />
+                    selectedProducts={selectedProducts}                />
             );
 
             expect(screen.getByText('Category 1 Codice GTIN/EAN 111')).toBeInTheDocument();
@@ -301,10 +301,9 @@ describe('ProductModal', () => {
 
             render(
                 <ProductModal
-                    {...defaultProps}
+                    status={''} {...defaultProps}
                     actionType="supervisioned"
-                    selectedProducts={selectedProducts}
-                />
+                    selectedProducts={selectedProducts}                />
             );
 
             expect(screen.getByText('Codice GTIN/EAN 111')).toBeInTheDocument();
@@ -318,6 +317,7 @@ describe('ProductModal', () => {
 
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     selectedProducts={selectedProducts}
@@ -333,6 +333,7 @@ describe('ProductModal', () => {
         it('should display productName when selectedProducts is not provided', () => {
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     productName="Single Product"
@@ -345,6 +346,7 @@ describe('ProductModal', () => {
         it('should display GTIN codes when productName is empty and selectedProducts not provided', () => {
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     productName=""
@@ -358,6 +360,7 @@ describe('ProductModal', () => {
         it('should display GTIN codes when productName is whitespace only', () => {
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     productName="   "
@@ -371,6 +374,7 @@ describe('ProductModal', () => {
         it('should truncate long productName', () => {
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     productName="Very long single product name that should be truncated"
@@ -386,7 +390,7 @@ describe('ProductModal', () => {
         it('should display empty selectedProducts array', () => {
             render(
                 <ProductModal
-                    {...defaultProps}
+                    status={''} {...defaultProps}
                     actionType="supervisioned"
                     selectedProducts={[]}
                     productName="Fallback Product"
@@ -400,7 +404,7 @@ describe('ProductModal', () => {
     describe('TextField Interactions', () => {
         it('should update motivation state when typing', async () => {
             const user = userEvent.setup();
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, 'New motivation');
@@ -411,7 +415,7 @@ describe('ProductModal', () => {
 
         it('should respect maxLength of 200 characters', async () => {
             const user = userEvent.setup();
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const textField = screen.getByRole('textbox');
             const longText = 'a'.repeat(250);
@@ -423,7 +427,7 @@ describe('ProductModal', () => {
 
         it('should display correct character count', async () => {
             const user = userEvent.setup();
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, '12345');
@@ -432,9 +436,9 @@ describe('ProductModal', () => {
         });
 
         it('should clear motivation when modal reopens', () => {
-            const { rerender } = render(<ProductModal {...defaultProps} open={false} actionType="supervisioned" />);
+            const { rerender } = render(<ProductModal status={''} {...defaultProps} open={false} actionType="supervisioned" />);
 
-            rerender(<ProductModal {...defaultProps} open={true} actionType="supervisioned" />);
+            rerender(<ProductModal status={''} {...defaultProps} open={true} actionType="supervisioned" />);
 
             const textField = screen.getByRole('textbox');
             expect(textField).toHaveValue('');
@@ -444,7 +448,7 @@ describe('ProductModal', () => {
     describe('Close Button Interactions', () => {
         it('should call onClose when close button is clicked', async () => {
             const user = userEvent.setup();
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const closeButton = screen.getByLabelText('close');
             await user.click(closeButton);
@@ -456,6 +460,7 @@ describe('ProductModal', () => {
             const user = userEvent.setup();
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     onUpdateTable={mockOnUpdateTable}
@@ -470,7 +475,7 @@ describe('ProductModal', () => {
         });
 
         it('should call onClose when dialog backdrop is clicked', async () => {
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const dialog = screen.getByRole('dialog');
             fireEvent.click(dialog.parentElement!);
@@ -485,7 +490,7 @@ describe('ProductModal', () => {
             // @ts-ignore
             mockSetSupervisionedStatusList.mockResolvedValue(undefined);
 
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, 'Test motivation');
@@ -502,7 +507,7 @@ describe('ProductModal', () => {
             // @ts-ignore
             mockSetRejectedStatusList.mockResolvedValue(undefined);
 
-            render(<ProductModal {...defaultProps} actionType="rejected" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="rejected" />);
 
             const textField = screen.getByRole('textbox');
             await user.type(textField, 'Test motivation');
@@ -521,7 +526,7 @@ describe('ProductModal', () => {
         it('should handle multiple GTIN codes', () => {
             render(
                 <ProductModal
-                    {...defaultProps}
+                    status={''} {...defaultProps}
                     actionType="supervisioned"
                     gtinCodes={['111', '222', '333']}
                     productName=""
@@ -534,6 +539,7 @@ describe('ProductModal', () => {
         it('should handle single GTIN code in array', () => {
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     gtinCodes={['111']}
@@ -547,6 +553,7 @@ describe('ProductModal', () => {
         it('should handle empty GTIN codes array', () => {
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     gtinCodes={[]}
@@ -565,7 +572,7 @@ describe('ProductModal', () => {
                 organizationId: 'org-id',
             };
 
-            render(<ProductModal {...minimalProps} />);
+            render(<ProductModal status={''} {...minimalProps} />);
 
             expect(screen.getByRole('dialog')).toBeInTheDocument();
         });
@@ -582,6 +589,7 @@ describe('ProductModal', () => {
 
             render(
                 <ProductModal
+                    status={''}
                     {...defaultProps}
                     actionType="supervisioned"
                     selectedProducts={selectedProducts}
@@ -599,7 +607,7 @@ describe('ProductModal', () => {
             // @ts-ignore
             mockSetSupervisionedStatusList.mockResolvedValue(undefined);
 
-            render(<ProductModal {...defaultProps} actionType="supervisioned" />);
+            render(<ProductModal status={''} {...defaultProps} actionType="supervisioned" />);
 
             const textField = screen.getByRole('textbox');
             const supervisionedButton = screen.getByRole('button', { name: 'Supervisiona' });

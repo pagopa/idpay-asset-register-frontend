@@ -1,8 +1,13 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import InvitaliaOverview from '../invitaliaOverview';
 import { getInstitutionsList } from '../../../services/registerService';
 import { Institution } from '../../../model/Institution';
-import '@testing-library/jest-dom';
-import InvitaliaOverview from "../invitaliaOverview";
+
+import React from 'react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 jest.mock('../../../services/registerService', () => ({
     getInstitutionsList: jest.fn(),
@@ -22,6 +27,7 @@ jest.mock('react-i18next', () => ({
     Trans: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+// Mock della tabella figlia: espone props utili nei test
 jest.mock('../institutionsTable', () => (props: any) => {
     const {
         data,
@@ -31,36 +37,29 @@ jest.mock('../institutionsTable', () => (props: any) => {
         page,
         rowsPerPage,
         order,
-        orderBy
+        orderBy,
     } = props;
 
     return (
         <div data-testid="mock-table">
-            {data.institutions.map((inst: any) => (
+            {(data?.institutions ?? []).map((inst: any) => (
                 <div key={inst.institutionId}>{inst.description}</div>
             ))}
-            <button
-                data-testid="page-change-btn"
-                onClick={() => onPageChange(null, 1)}
-            >
+            <button data-testid="page-change-btn" onClick={() => onPageChange?.(null, 1)}>
                 Change Page
             </button>
             <button
                 data-testid="rows-change-btn"
-                onClick={() => onRowsPerPageChange({ target: { value: '25' } } as React.ChangeEvent<HTMLInputElement>)}
+                onClick={() =>
+                    onRowsPerPageChange?.({ target: { value: '25' } } as React.ChangeEvent<HTMLInputElement>)
+                }
             >
                 Change Rows
             </button>
-            <button
-                data-testid="sort-btn"
-                onClick={(e) => onRequestSort(e, 'description')}
-            >
+            <button data-testid="sort-btn" onClick={(e) => onRequestSort?.(e, 'description')}>
                 Sort Description
             </button>
-            <button
-                data-testid="sort-btn-created"
-                onClick={(e) => onRequestSort(e, 'createdAt')}
-            >
+            <button data-testid="sort-btn-created" onClick={(e) => onRequestSort?.(e, 'createdAt')}>
                 Sort Created
             </button>
             <span data-testid="current-page">{page}</span>
@@ -71,12 +70,60 @@ jest.mock('../institutionsTable', () => (props: any) => {
     );
 });
 
+// -------------------- Test Wrapper con Redux Provider + MUI Theme --------------------
+
+const theme = createTheme();
+
+// Stato base che copre i selector potenziali (invitalia, ui, auth, ecc.)
+const basePreloadedState = {
+    invitalia: {
+        institutionList: [],
+        selectedInstitution: null,
+        loading: false,
+        error: null,
+    },
+    ui: { locale: 'it' },
+    auth: { user: { id: 'u1' } },
+};
+
+// Store fittizio che restituisce lo state così com'è
+const createTestStore = (preloadedState: any = {}) =>
+    configureStore({
+        reducer: (state = preloadedState) => state,
+        preloadedState,
+    });
+
+const TestWrapper: React.FC<{ children: React.ReactNode; preloadedState?: any }> = ({
+                                                                                        children,
+                                                                                        preloadedState = {},
+                                                                                    }) => {
+    // merge shallow + merge profondo per invitalia se necessario
+    const mergedState = {
+        ...basePreloadedState,
+        ...preloadedState,
+        invitalia: {
+            ...basePreloadedState.invitalia,
+            ...(preloadedState.invitalia ?? {}),
+        },
+    };
+
+    const store = createTestStore(mergedState);
+
+    return (
+        <Provider store={store}>
+            <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </Provider>
+    );
+};
+
+// -------------------- Dati mock --------------------
+
 const mockInstitutions: Institution[] = [
     {
         institutionId: '1',
         description: 'Alpha Institution',
         createdAt: '2025-01-01',
-        updatedAt:'2025-01-01',
+        updatedAt: '2025-01-01',
     },
     {
         institutionId: '2',
@@ -98,12 +145,20 @@ describe('InvitaliaOverview', () => {
     });
 
     it('renders title and subtitle', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         expect(await screen.findByText('pages.invitaliaOverview.overviewTitle')).toBeInTheDocument();
     });
 
     it('displays institutions in table after loading', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => {
             expect(screen.getByText('Alpha Institution')).toBeInTheDocument();
             expect(screen.getByText('Beta Institution')).toBeInTheDocument();
@@ -111,7 +166,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('filters institutions by search term', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const searchInput = screen.getByLabelText('Cerca per nome produttore');
@@ -123,7 +182,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('resets page on search change', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const searchInput = screen.getByLabelText('Cerca per nome produttore');
@@ -136,7 +199,11 @@ describe('InvitaliaOverview', () => {
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
         (getInstitutionsList as jest.Mock).mockRejectedValue(new Error('Fetch error'));
 
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => {
             expect(consoleErrorSpy).toHaveBeenCalledWith(
                 'Errore nel recupero delle istituzioni:',
@@ -150,14 +217,22 @@ describe('InvitaliaOverview', () => {
     it('handles undefined institutions list gracefully', async () => {
         (getInstitutionsList as jest.Mock).mockResolvedValue({ institutions: undefined });
 
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => {
             expect(screen.getByTestId('mock-table')).toBeInTheDocument();
         });
     });
 
     it('handles sorting request correctly', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const sortEvent = new MouseEvent('click', { bubbles: true });
@@ -168,7 +243,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('handles page change correctly', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const table = screen.getByTestId('mock-table');
@@ -178,7 +257,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('handles rows per page change correctly', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const input = screen.getByLabelText('Cerca per nome produttore');
@@ -188,7 +271,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('returns full list when searchTerm is empty', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => {
             expect(screen.getByText('Alpha Institution')).toBeInTheDocument();
             expect(screen.getByText('Beta Institution')).toBeInTheDocument();
@@ -197,7 +284,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('resets page when institutions change', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         (getInstitutionsList as jest.Mock).mockResolvedValueOnce({
@@ -211,12 +302,20 @@ describe('InvitaliaOverview', () => {
             ],
         });
 
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Delta Institution'));
     });
 
     it('paginates institutions correctly', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const input = screen.getByLabelText('Cerca per nome produttore');
@@ -226,7 +325,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('toggles sort direction on repeated sort requests', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const table = screen.getByTestId('mock-table');
@@ -239,14 +342,22 @@ describe('InvitaliaOverview', () => {
     it('handles falsy institutions list with null gracefully', async () => {
         (getInstitutionsList as jest.Mock).mockResolvedValue({ institutions: null });
 
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => {
             expect(screen.getByTestId('mock-table')).toBeInTheDocument();
         });
     });
 
     it('handles invalid rows per page input gracefully', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const fakeEvent = {
@@ -259,7 +370,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('updates rows per page with valid numeric input', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const event = {
@@ -272,7 +387,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('resets page to 0 on sort change', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const table = screen.getByTestId('mock-table');
@@ -283,7 +402,11 @@ describe('InvitaliaOverview', () => {
     });
 
     it('calls handlePageChange directly', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const event = { target: { value: '2' } } as React.ChangeEvent<HTMLInputElement>;
@@ -304,14 +427,18 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
                 description: undefined,
                 createdAt: '2025-01-04',
                 updatedAt: '2025-01-04',
-            }
+            },
         ];
 
         (getInstitutionsList as jest.Mock).mockResolvedValue({
-            institutions: institutionsWithUndefinedDesc
+            institutions: institutionsWithUndefinedDesc,
         });
 
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const searchInput = screen.getByLabelText('Cerca per nome produttore');
@@ -322,47 +449,56 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
 
     it('handles null institutions list', async () => {
         (getInstitutionsList as jest.Mock).mockResolvedValue({
-            institutions: null
+            institutions: null,
         });
 
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => {
             expect(screen.getByTestId('mock-table')).toBeInTheDocument();
         });
     });
 
     it('handles rows per page change with valid number', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
-        const mockTable = screen.getByTestId('mock-table');
-
-        const mockEvent = {
-            target: { value: '25' }
-        } as React.ChangeEvent<HTMLInputElement>;
-
         fireEvent.change(screen.getByLabelText('Cerca per nome produttore'), {
-            target: { value: '' }
+            target: { value: '' },
         });
 
         expect(screen.getByTestId('mock-table')).toBeInTheDocument();
     });
 
     it('handles sort request with same property (toggle direction)', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const table = screen.getByTestId('mock-table');
 
         fireEvent.click(table, { bubbles: true });
-
         fireEvent.click(table, { bubbles: true });
 
         expect(screen.getByTestId('mock-table')).toBeInTheDocument();
     });
 
     it('handles sort request with different property', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const table = screen.getByTestId('mock-table');
@@ -373,7 +509,11 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
     });
 
     it('handles page change correctly', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const table = screen.getByTestId('mock-table');
@@ -383,7 +523,11 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
     });
 
     it('handles non-numeric rows per page input', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const searchInput = screen.getByLabelText('Cerca per nome produttore');
@@ -393,7 +537,11 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
     });
 
     it('resets page when institutions data changes', async () => {
-        const { rerender } = render(<InvitaliaOverview />);
+        const { rerender } = render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const newInstitutions = [
@@ -402,20 +550,28 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
                 description: 'New Institution',
                 createdAt: '2025-01-05',
                 updatedAt: '2025-01-05',
-            }
+            },
         ];
 
         (getInstitutionsList as jest.Mock).mockResolvedValue({
-            institutions: newInstitutions
+            institutions: newInstitutions,
         });
 
-        rerender(<InvitaliaOverview />);
+        rerender(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
 
         expect(screen.getByTestId('mock-table')).toBeInTheDocument();
     });
 
     it('calls handlePageChange and updates page state', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         expect(screen.getByTestId('current-page')).toHaveTextContent('0');
@@ -427,7 +583,11 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
     });
 
     it('calls handleRowsPerPageChange and updates rows per page state', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         expect(screen.getByTestId('current-rows')).toHaveTextContent('10');
@@ -440,7 +600,11 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
     });
 
     it('calls handleRequestSort and toggles from asc to desc', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         expect(screen.getByTestId('current-order')).toHaveTextContent('asc');
@@ -455,7 +619,11 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
     });
 
     it('calls handleRequestSort and toggles from desc to asc', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const sortBtn = screen.getByTestId('sort-btn');
@@ -469,7 +637,11 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
     });
 
     it('calls handleRequestSort with different property sets asc', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         expect(screen.getByTestId('current-order')).toHaveTextContent('asc');
@@ -491,14 +663,18 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
                 description: undefined as any,
                 createdAt: '2025-01-04',
                 updatedAt: '2025-01-04',
-            }
+            },
         ];
 
         (getInstitutionsList as jest.Mock).mockResolvedValue({
-            institutions: institutionsWithUndefined
+            institutions: institutionsWithUndefined,
         });
 
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const searchInput = screen.getByLabelText('Cerca per nome produttore');
@@ -510,7 +686,11 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
     });
 
     it('returns full list when searchTerm is empty after filtering', async () => {
-        render(<InvitaliaOverview />);
+        render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const searchInput = screen.getByLabelText('Cerca per nome produttore');
@@ -527,7 +707,11 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
     });
 
     it('resets page to 0 when institutions change via useEffect dependency', async () => {
-        const { rerender } = render(<InvitaliaOverview />);
+        const { rerender } = render(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
         await waitFor(() => screen.getByText('Alpha Institution'));
 
         const pageChangeBtn = screen.getByTestId('page-change-btn');
@@ -540,14 +724,18 @@ describe('InvitaliaOverview - Coverage Improvements', () => {
                 description: 'New Institution',
                 createdAt: '2025-01-05',
                 updatedAt: '2025-01-05',
-            }
+            },
         ];
 
         (getInstitutionsList as jest.Mock).mockResolvedValue({
-            institutions: newInstitutions
+            institutions: newInstitutions,
         });
 
-        rerender(<InvitaliaOverview />);
+        rerender(
+            <TestWrapper>
+                <InvitaliaOverview />
+            </TestWrapper>
+        );
 
         await waitFor(() => {
             expect(screen.getByTestId('current-page')).toHaveTextContent('1');
