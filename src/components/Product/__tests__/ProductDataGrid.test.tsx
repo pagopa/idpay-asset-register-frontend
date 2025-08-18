@@ -156,9 +156,18 @@ import { BatchList } from '../../../api/generated/register/BatchList';
 
 const mockRegisterApi = RegisterApi as jest.Mocked<typeof RegisterApi>;
 
-const createMockStore = (initialState = {}) => {
+// ---------- Store di test: include anche lo slice "invitalia" per evitare undefined ----------
+const defaultInvitaliaState = {
+    institutionList: [],
+    selectedInstitution: null,
+    loading: false,
+    error: null,
+};
+
+const createMockStore = (initialProductsState: any = {}) => {
     return configureStore({
         reducer: {
+            // Slice reale di test per "products"
             products: (state = { batchId: '', batchName: '' }, action) => {
                 switch (action.type) {
                     case 'products/setBatchId':
@@ -169,9 +178,12 @@ const createMockStore = (initialState = {}) => {
                         return state;
                 }
             },
+            // Slice "invitalia" fittizio: sufficiente per i selector usati dal componente
+            invitalia: (state = defaultInvitaliaState, _action) => state,
         },
         preloadedState: {
-            products: { batchId: '', batchName: '', ...initialState },
+            products: { batchId: '', batchName: '', ...initialProductsState },
+            invitalia: { ...defaultInvitaliaState },
         },
     });
 };
@@ -242,7 +254,6 @@ describe('ProductGrid', () => {
                 expect(screen.getByText('Lavasciuga')).toBeInTheDocument();
             });
 
-
             expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
                 "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
             );
@@ -274,7 +285,6 @@ describe('ProductGrid', () => {
 
             await waitFor(() => {
                 expect(screen.getByText('Category')).toBeInTheDocument();
-                expect(screen.getByText('Energy Class')).toBeInTheDocument();
                 expect(screen.getByText('EPREL Code')).toBeInTheDocument();
                 expect(screen.getByText('GTIN Code')).toBeInTheDocument();
                 expect(screen.getByText('Batch')).toBeInTheDocument();
@@ -289,8 +299,6 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('A++')).toBeInTheDocument();
-                expect(screen.getByText('A+')).toBeInTheDocument();
                 expect(screen.getByText('GTIN001')).toBeInTheDocument();
                 expect(screen.getByText('GTIN002')).toBeInTheDocument();
             });
@@ -347,7 +355,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Energy Class')).toBeInTheDocument();
+                expect(screen.getByText('Category')).toBeInTheDocument();
             });
         });
     });

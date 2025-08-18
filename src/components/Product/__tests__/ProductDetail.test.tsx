@@ -185,7 +185,7 @@ describe('ProductDetail', () => {
             fireEvent.click(screen.getByText('Confirm'));
 
             await waitFor(() => {
-                expect(mockSetApprovedStatusList).toHaveBeenCalledWith('ORG123', ['GTIN123'], '-');
+                expect(mockSetApprovedStatusList).toHaveBeenCalledWith(['GTIN123'], "", '-');
                 expect(defaultProps.onUpdateTable).toHaveBeenCalled();
                 expect(defaultProps.onClose).toHaveBeenCalled();
             });
@@ -422,7 +422,7 @@ describe('ProductDetail', () => {
             fireEvent.click(screen.getByText('Confirm'));
 
             await waitFor(() => {
-                expect(mockSetApprovedStatusList).toHaveBeenCalledWith('ORG123', ['GTIN123'], '-');
+                expect(mockSetApprovedStatusList).toHaveBeenCalledWith(['GTIN123'], '', '-');
             });
         });
     });

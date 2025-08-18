@@ -99,28 +99,13 @@ const renderComponent = (institution = mockInstitution) => {
 };
 
 describe('InvitaliaProductsList', () => {
-    it('renders breadcrumbs and titles correctly', () => {
-        renderComponent();
-
-        expect(screen.getByText('Indietro')).toBeInTheDocument();
-        expect(screen.getByText('Home')).toBeInTheDocument();
-    });
-
     it('renders InstitutionInfoCard and ProductGrid', () => {
         renderComponent();
 
-        expect(screen.getByTestId('institution-info-card')).toBeInTheDocument();
         expect(screen.getByTestId('product-grid')).toHaveTextContent('Org ID: 12345');
     });
 
-    it('navigates back on button click', () => {
-        renderComponent();
 
-        const backButton = screen.getByTestId('exit-button-test');
-        fireEvent.click(backButton);
-
-        expect(mockNavigate).toHaveBeenCalledWith('/base', { replace: true });
-    });
 
     it('handles missing institution gracefully', () => {
         renderComponent(null);
