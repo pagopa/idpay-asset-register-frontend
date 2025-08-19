@@ -684,8 +684,10 @@ components:
           description: 'ENG: The status of the product <br> IT: Lo stato del prodotto'
           enum:
             - APPROVED
+            - SUPERVISED
             - REJECTED
-            - SUPERVISIONED
+            - UPLOADED
+            - WAIT_APPROVED
         model:
           type: string
           description: 'ENG: The mode of the product <br> IT: il modello del prodotto'
