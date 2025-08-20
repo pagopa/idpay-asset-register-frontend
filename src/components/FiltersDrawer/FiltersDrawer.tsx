@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import {
-    Button,
+    Button, Chip,
     FormControl,
     IconButton,
     InputLabel,
@@ -41,6 +41,23 @@ type Props = {
     setFiltering: Dispatch<SetStateAction<boolean>>;
 };
 
+export const getChipColor = (status?: PRODUCTS_STATES | string): "default" | "primary" | "indigo" | "success" | "error" | "secondary" | "info" | "warning" | undefined => {
+    switch (status) {
+        case PRODUCTS_STATES.SUSPENDED:
+            return 'default';
+        case PRODUCTS_STATES.WAIT_APPROVED:
+            return 'info';
+        case PRODUCTS_STATES.SUPERVISIONED:
+            return 'primary';
+        case PRODUCTS_STATES.APPROVED:
+            return 'success' ;
+        case PRODUCTS_STATES.REJECTED:
+            return 'error';
+        default:
+            return 'default';
+    }
+};
+
 export default function FiltersDrawer({
                                           open,
                                           toggleFiltersDrawer,
@@ -78,7 +95,6 @@ export default function FiltersDrawer({
         handleDeleteFiltersButtonClick();
         toggleFiltersDrawer(false);
     };
-
 
     const onSelect =
         (setter: Dispatch<SetStateAction<string>>) =>
@@ -145,7 +161,10 @@ export default function FiltersDrawer({
                     >
                         {Object.keys(PRODUCTS_STATES).map((status) => (
                             <MenuItem key={status} value={t(`pages.products.categories.${status}`)}>
-                                {t(`pages.products.categories.${status}`)}
+                                <Chip
+                                    color={getChipColor(status)}
+                                    label={t(`pages.products.categories.${status}`)}
+                                />
                             </MenuItem>
                         ))}
                     </Select>
