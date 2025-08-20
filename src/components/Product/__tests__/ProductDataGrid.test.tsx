@@ -153,7 +153,6 @@ jest.mock('../../../hooks/useLogin', () => ({
     }))
 }));
 
-// Import del componente e delle dipendenze DOPO i mock
 import ProductGrid from '../ProductDataGrid';
 import { RegisterApi } from '../../../api/registerApiClient';
 import { ProductListDTO } from '../../../api/generated/register/ProductListDTO';
@@ -162,7 +161,6 @@ import { BatchList } from '../../../api/generated/register/BatchList';
 
 const mockRegisterApi = RegisterApi as jest.Mocked<typeof RegisterApi>;
 
-// ---------- Store di test: include anche lo slice "invitalia" per evitare undefined ----------
 const defaultInvitaliaState = {
     institutionList: [],
     selectedInstitution: null,

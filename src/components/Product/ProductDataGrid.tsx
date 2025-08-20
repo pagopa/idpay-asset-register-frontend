@@ -184,7 +184,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, page, orderBy, order, rowsPerPage]);
 
-  // Fetch prodotti su applicazione filtri (fetch “manuale”)
   useEffect(() => {
     if (!ready || !filtering) {return;}
     setLoading(true);
