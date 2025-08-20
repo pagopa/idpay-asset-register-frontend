@@ -465,7 +465,10 @@ describe('ProductGrid', () => {
 
             await waitFor(() => {
                 expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, "batch123"
+                );
+                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
+                    "", 0, undefined, "category,asc", "", "", "", "", undefined, "batch123"
                 );
             });
         });
