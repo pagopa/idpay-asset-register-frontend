@@ -27,7 +27,6 @@ jest.mock('../../../api/registerApiClient', () => ({
     },
 }));
 
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -56,6 +55,7 @@ jest.mock('react-i18next', () => {
             'pages.products.filterLabels.gtinCode': 'GTIN Code',
             'pages.products.filterLabels.filter': 'Filter',
             'pages.products.filterLabels.deleteFilters': 'Delete Filters',
+            'commons.advancedFilters': 'Advanced filters',
         };
         return translations[key] || key;
     };
@@ -91,6 +91,12 @@ jest.mock('../../../utils/constants', () => ({
 jest.mock('../../DetailDrawer/DetailDrawer', () => {
     return function MockDetailDrawer({ children, open }: any) {
         return open ? <div data-testid="detail-drawer">{children}</div> : null;
+    };
+});
+
+jest.mock('../FiltersDrawer', () => {
+    return function MockDetailDrawer({ children, open }: any) {
+        return open ? <div data-testid="filter-drawer">{children}</div> : null;
     };
 });
 
@@ -367,7 +373,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Apply Filters')).toBeInTheDocument();
+                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
             });
         });
 
@@ -387,7 +393,7 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Apply Filters')).toBeInTheDocument();
+                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
             });
 
             const nextPageButton = screen.getByLabelText('Go to next page');
@@ -413,13 +419,13 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Apply Filters')).toBeInTheDocument();
+                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
             });
 
-            fireEvent.click(screen.getByText('Apply Filters'));
+            fireEvent.click(screen.getByText('Advanced filters'));
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProductList).toHaveBeenCalledTimes(3);
+                expect(mockRegisterApi.getProductList).toHaveBeenCalledTimes(1);
             });
         });
 
@@ -431,16 +437,13 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Clear Filters')).toBeInTheDocument();
+                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
             });
 
-            fireEvent.click(screen.getByText('Clear Filters'));
+            fireEvent.click(screen.getByText('Advanced filters'));
 
             await waitFor(() => {
                 expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
                     "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
                 );
             });
@@ -501,10 +504,10 @@ describe('ProductGrid', () => {
             );
 
             await waitFor(() => {
-                expect(screen.getByText('Apply Filters')).toBeInTheDocument();
+                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
             });
 
-            fireEvent.click(screen.getByText('Apply Filters'));
+            fireEvent.click(screen.getByText('Advanced filters'));
         });
     });
 
