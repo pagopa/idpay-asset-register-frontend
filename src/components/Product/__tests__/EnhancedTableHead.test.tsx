@@ -68,10 +68,8 @@ describe('EnhancedTableHead', () => {
     it('should render table head with all cells when isInvitaliaUser is true', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
-      // Verifica che ci sia il checkbox per la selezione
       expect(screen.getByRole('checkbox')).toBeInTheDocument();
 
-      // Verifica che tutte le celle dell'header siano presenti
       expect(screen.getByText('pages.products.table.headers.selected')).toBeInTheDocument();
       expect(screen.getByText('pages.products.table.headers.productName')).toBeInTheDocument();
       expect(screen.getByText('pages.products.table.headers.category')).toBeInTheDocument();
@@ -83,10 +81,8 @@ describe('EnhancedTableHead', () => {
       const props = { ...defaultProps, isInvitaliaUser: false };
       renderWithTheme(<EnhancedTableHead {...props} />);
 
-      // Verifica che non ci sia il checkbox
       expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
 
-      // Verifica che le altre celle siano comunque presenti
       expect(screen.getByText('pages.products.table.headers.productName')).toBeInTheDocument();
       expect(screen.getByText('pages.products.table.headers.category')).toBeInTheDocument();
     });
@@ -95,7 +91,6 @@ describe('EnhancedTableHead', () => {
       const props = { ...defaultProps, headCells: [] };
       renderWithTheme(<EnhancedTableHead {...props} />);
 
-      // Dovrebbe renderizzare solo il checkbox (se isInvitaliaUser è true) e la cella vuota finale
       expect(screen.getByRole('checkbox')).toBeInTheDocument();
     });
   });
@@ -140,7 +135,6 @@ describe('EnhancedTableHead', () => {
     it('should render sort labels for sortable columns', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
-      // Tutte le colonne tranne 'selectedStatus' dovrebbero avere il sort label
       const sortButtons = screen.getAllByRole('button');
       expect(sortButtons).toHaveLength(4); // productName, category, status, actions
     });
@@ -148,7 +142,6 @@ describe('EnhancedTableHead', () => {
     it('should not render sort label for selectedStatus column', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
-      // La cella selectedStatus dovrebbe contenere solo il testo, non un bottone
       const selectedCell = screen.getByText('pages.products.table.headers.selected').closest('th');
       expect(selectedCell?.querySelector('[role="button"]')).toBeNull();
     });
@@ -191,7 +184,6 @@ describe('EnhancedTableHead', () => {
       const props = { ...defaultProps, orderBy: 'category' as keyof ProductDTO };
       renderWithTheme(<EnhancedTableHead {...props} />);
 
-      // Dovrebbe esserci il testo per 'category' ma non per 'productName'
       expect(screen.getByText('sorted ascending')).toBeInTheDocument();
       expect(screen.queryByText('sorted descending')).not.toBeInTheDocument();
     });
@@ -291,7 +283,6 @@ describe('EnhancedTableHead', () => {
       renderWithTheme(<EnhancedTableHead {...props} />);
 
       const checkboxCell = screen.getByRole('checkbox').closest('th');
-      // Non dovrebbe avere width definiti se headCells[0] non esiste
       expect(checkboxCell).not.toHaveStyle({ width: '50px' });
     });
 
@@ -299,7 +290,6 @@ describe('EnhancedTableHead', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
       const allCells = screen.getAllByRole('columnheader');
-      // Dovrebbe esserci una cella extra alla fine
       expect(allCells).toHaveLength(mockHeadCells.length + 2); // +1 per checkbox, +1 per cella finale vuota
     });
 
@@ -313,7 +303,6 @@ describe('EnhancedTableHead', () => {
 
       expect(() => renderWithTheme(<EnhancedTableHead {...props} />)).not.toThrow();
 
-      // Verifica che le celle siano renderizzate
       expect(screen.getByText('ID')).toBeInTheDocument();
       expect(screen.getByText('Created')).toBeInTheDocument();
     });
@@ -321,17 +310,14 @@ describe('EnhancedTableHead', () => {
     it('should handle click on different sortable columns', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
-      // Test click su category
       const categorySort = screen.getByText('pages.products.table.headers.category').closest('[role="button"]');
       fireEvent.click(categorySort!);
       expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'category');
 
-      // Test click su status
       const statusSort = screen.getByText('pages.products.table.headers.status').closest('[role="button"]');
       fireEvent.click(statusSort!);
       expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'status');
 
-      // Test click su actions
       const actionsSort = screen.getByText('pages.products.table.headers.actions').closest('[role="button"]');
       fireEvent.click(actionsSort!);
       expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'actions');

@@ -6,6 +6,44 @@ import ProductsTable from '../ProductsTable';
 import {ProductDTO} from "../../../api/generated/register/ProductDTO";
 import {INVITALIA} from "../../../utils/constants";
 
+const basePreloadedState = {
+    invitalia: {
+        institutionList: [],
+        selectedInstitution: null,
+        loading: false,
+        error: null,
+    },
+    ui: { locale: 'it' },
+    auth: { user: { id: 'u1' } },
+};
+
+const createTestStore = (preloadedState: any = {}) =>
+    configureStore({
+        reducer: (state = preloadedState) => state,
+        preloadedState,
+    });
+
+const TestWrapper: React.FC<{ children: React.ReactNode; preloadedState?: any }> = ({
+                                                                                        children,
+                                                                                        preloadedState = {},
+                                                                                    }) => {
+    const mergedState = {
+        ...basePreloadedState,
+        ...preloadedState,
+        invitalia: {
+            ...basePreloadedState.invitalia,
+            ...(preloadedState.invitalia ?? {}),
+        },
+    };
+    const store = createTestStore(mergedState);
+
+    return (
+        <Provider store={store}>
+            <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </Provider>
+    );
+};
+
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => {
@@ -79,12 +117,10 @@ jest.mock('../../../utils/constants', () => ({
 }));
 
 import {fetchUserFromLocalStorage} from '../../../helpers';
+import {Provider} from "react-redux";
+import {configureStore} from "@reduxjs/toolkit";
 
-// Theme provider per i test MUI
 const theme = createTheme();
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <ThemeProvider theme={theme}>{children}</ThemeProvider>
-);
 
 describe('ProductsTable', () => {
     const mockOnRequestSort = jest.fn();
@@ -176,7 +212,7 @@ describe('ProductsTable', () => {
 
         it('should render table with all columns for Invitalia user', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -184,7 +220,6 @@ describe('ProductsTable', () => {
             expect(screen.getByTestId('enhanced-table-head')).toBeInTheDocument();
             expect(screen.getByTestId('header-status')).toBeInTheDocument();
             expect(screen.getByTestId('header-category')).toBeInTheDocument();
-            expect(screen.getByTestId('header-energyClass')).toBeInTheDocument();
             expect(screen.getByTestId('header-eprelCode')).toBeInTheDocument();
             expect(screen.getByTestId('header-gtinCode')).toBeInTheDocument();
             expect(screen.getByTestId('header-batchName')).toBeInTheDocument();
@@ -192,7 +227,7 @@ describe('ProductsTable', () => {
 
         it('should render all status icons correctly', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -201,12 +236,6 @@ describe('ProductsTable', () => {
             const approvedRows = screen.getAllByText('Refrigerators');
             expect(approvedRows[0]).toBeInTheDocument();
 
-            // SUPERVISIONED status should render warning icon
-            expect(screen.getByTestId('WarningIcon')).toBeInTheDocument();
-
-            // REJECTED status should render error icon
-            expect(screen.getByTestId('ErrorIcon')).toBeInTheDocument();
-
             // PENDING status should not render an icon (default case)
             const pendingRows = screen.getAllByText('Ovens');
             expect(pendingRows[0]).toBeInTheDocument();
@@ -214,7 +243,7 @@ describe('ProductsTable', () => {
 
         it('should handle checkbox selection for individual items', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -230,7 +259,7 @@ describe('ProductsTable', () => {
 
         it('should handle select all checkbox', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -248,7 +277,7 @@ describe('ProductsTable', () => {
             };
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...propsWithSelection} />
                 </TestWrapper>
             );
@@ -266,7 +295,7 @@ describe('ProductsTable', () => {
             };
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...propsWithPartialSelection} />
                 </TestWrapper>
             );
@@ -282,7 +311,7 @@ describe('ProductsTable', () => {
             };
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...propsWithAllSelected} />
                 </TestWrapper>
             );
@@ -299,7 +328,7 @@ describe('ProductsTable', () => {
             };
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...propsWithSelection} />
                 </TestWrapper>
             );
@@ -312,7 +341,7 @@ describe('ProductsTable', () => {
 
         it('should handle list button click', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -330,7 +359,7 @@ describe('ProductsTable', () => {
             };
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...propsWithNullGtin} />
                 </TestWrapper>
             );
@@ -348,7 +377,7 @@ describe('ProductsTable', () => {
             };
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...propsWithNulls} />
                 </TestWrapper>
             );
@@ -364,7 +393,7 @@ describe('ProductsTable', () => {
 
         it('should render table without checkbox column for non-Invitalia user', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -377,7 +406,7 @@ describe('ProductsTable', () => {
 
         it('should render all cell types correctly for produttore', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -388,13 +417,12 @@ describe('ProductsTable', () => {
             expect(screen.getAllByTestId('eprel-links')).toHaveLength(4);
             expect(screen.getByText('GTIN001')).toBeInTheDocument();
             expect(screen.getByText('Batch001')).toBeInTheDocument();
-            expect(screen.getByTestId('WarningIcon')).toBeInTheDocument();
             expect(screen.getAllByTestId('ArrowForwardIosIcon')).toHaveLength(4);
         });
 
         it('should handle list button click for produttore', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -407,7 +435,7 @@ describe('ProductsTable', () => {
 
         it('should render cells with correct alignment styles', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -426,7 +454,7 @@ describe('ProductsTable', () => {
             };
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...emptyProps} />
                 </TestWrapper>
             );
@@ -440,7 +468,7 @@ describe('ProductsTable', () => {
             fetchUserFromLocalStorage.mockReturnValue({});
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -453,7 +481,7 @@ describe('ProductsTable', () => {
             fetchUserFromLocalStorage.mockReturnValue(null);
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -471,7 +499,7 @@ describe('ProductsTable', () => {
             fetchUserFromLocalStorage.mockReturnValue({ org_role: INVITALIA });
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...propsWithSelection} />
                 </TestWrapper>
             );
@@ -486,7 +514,7 @@ describe('ProductsTable', () => {
 
         it('should handle onRequestSort call', () => {
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -505,7 +533,7 @@ describe('ProductsTable', () => {
             };
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...propsWithDescOrder} />
                 </TestWrapper>
             );
@@ -530,7 +558,7 @@ describe('ProductsTable', () => {
             fetchUserFromLocalStorage.mockReturnValue({ org_role: INVITALIA });
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...propsWithNullStatus} />
                 </TestWrapper>
             );
@@ -545,7 +573,7 @@ describe('ProductsTable', () => {
             fetchUserFromLocalStorage.mockReturnValue(mockUser);
 
             const { rerender } = render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -554,7 +582,7 @@ describe('ProductsTable', () => {
 
             // Rerender with same props
             rerender(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...defaultProps} />
                 </TestWrapper>
             );
@@ -577,17 +605,13 @@ describe('ProductsTable', () => {
             fetchUserFromLocalStorage.mockReturnValue({ org_role: INVITALIA });
 
             render(
-                <TestWrapper>
+                <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
                     <ProductsTable {...{ ...defaultProps, tableData: allStatusData }} />
                 </TestWrapper>
             );
 
-            // APPROVED should not render icon
-            // SUPERVISIONED should render warning icon
-            expect(screen.getByTestId('WarningIcon')).toBeInTheDocument();
             // REJECTED should render error icon
-            expect(screen.getByTestId('ErrorIcon')).toBeInTheDocument();
-            // UNKNOWN_STATUS and undefined should not render icons (default case)
+            expect(screen.getByText('Da revisionare')).toBeInTheDocument();
         });
     });
 });

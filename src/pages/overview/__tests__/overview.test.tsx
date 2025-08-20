@@ -53,7 +53,6 @@ jest.mock('../../../utils/constants', () => ({
 const mockFetchUserFromLocalStorage = fetchUserFromLocalStorage as jest.MockedFunction<typeof fetchUserFromLocalStorage>;
 const mockTruncateString = truncateString as jest.MockedFunction<typeof truncateString>;
 
-// Theme di test per Material-UI
 const theme = createTheme();
 
 const renderWithTheme = (component: React.ReactElement) => {
@@ -122,7 +121,6 @@ describe('Overview Component', () => {
 
             const { container } = renderWithTheme(<Overview />);
 
-            // Il footer è un Paper element, verifichiamo che sia presente
             const papers = container.querySelectorAll('[class*="MuiPaper"]');
             expect(papers.length).toBeGreaterThanOrEqual(2); // Info section + footer
         });
@@ -247,7 +245,6 @@ describe('Overview Component', () => {
 
             renderWithTheme(<Overview />);
 
-            // Verifica che truncateString sia chiamata per ogni campo con dati
             expect(mockTruncateString).toHaveBeenCalledWith('Test Organization Name', 20);
             expect(mockTruncateString).toHaveBeenCalledWith('TEST123456789', 20);
             expect(mockTruncateString).toHaveBeenCalledWith('IT12345678901', 20);
@@ -270,7 +267,6 @@ describe('Overview Component', () => {
 
             renderWithTheme(<Overview />);
 
-            // Verifica che truncateString sia chiamata solo per i campi con dati
             expect(mockTruncateString).toHaveBeenCalledWith('Test Org', 20);
             expect(mockTruncateString).toHaveBeenCalledWith('Via Test 123', 20);
             expect(mockTruncateString).toHaveBeenCalledWith('test@email.it', 20);
@@ -294,8 +290,6 @@ describe('Overview Component', () => {
 
             renderWithTheme(<Overview />);
 
-            // Verifica che i componenti Typography siano renderizzati
-            // (Non possiamo testare direttamente le variant, ma possiamo verificare che il testo sia presente)
             expect(screen.getByText('Ragione Sociale')).toBeInTheDocument();
             expect(screen.getByText('Codice Fiscale')).toBeInTheDocument();
             expect(screen.getByText('Partita IVA')).toBeInTheDocument();

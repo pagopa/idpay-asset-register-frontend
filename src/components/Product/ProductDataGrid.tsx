@@ -44,6 +44,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [loading, setLoading] = useState<boolean>(true);
   const [itemsQty, setItemsQty] = useState<number | undefined>(0);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [producerFilter, setProducerFilter] = useState<string>('');
   const [batchFilter, setBatchFilter] = useState<string>('');
   const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
   const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
@@ -89,8 +90,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     const sortKey = `${orderBy},${order}`;
     const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
 
+    console.log(organizationId);
     void getProducts(
-      isInvitaliaUser ? organizationId : user.org_id,
+      isInvitaliaUser ? producerFilter : user.org_id,
       page,
       rowsPerPage,
       sortKey,
@@ -137,27 +139,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   useEffect(() => {
     setLoading(true);
-    /*
-    if (batchId === '') {
-      void getProducts(organizationId, page, rowsPerPage)
-        .then((res) => {
-          const { content, pageNo, totalElements } = res;
-          setTableData(content ? Array.from(content) : []);
-          setPage(pageNo || 0);
-          setItemsQty(totalElements);
-          setPaginatorFrom(pageNo !== undefined ? pageNo * rowsPerPage + 1 : paginatorFrom);
-          setPaginatorTo(
-            totalElements && totalElements > rowsPerPage ? rowsPerPage : totalElements
-          );
-          setLoading(false);
-        })
-        .catch(() => {
-          setTableData([]);
-          setLoading(false);
-        });
-    }
-    */
-    void getBatchFilterList(organizationId)
+    void getBatchFilterList(isInvitaliaUser ? producerFilter :organizationId)
       .then((res) => {
         const { left } = res as BatchFilterList;
         const values = left[0].value;
@@ -184,6 +166,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
     setStatusFilter('');
+    setProducerFilter('');
     setBatchFilter('');
     setEprelCodeFilter('');
     setGtinCodeFilter('');
@@ -241,7 +224,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           />
         );
       }
-      return <ProductsTable key={refreshKey} {...commonProps} />;
+      return(
+        <Box sx={{ width: '100%', overflowX: 'auto' }}>
+          <ProductsTable key={refreshKey} {...commonProps} />
+        </Box>
+      );
     }
 
     if (children) {
@@ -255,9 +242,37 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   return (
     <>
+      {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
+          <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
+            <Button
+                color="primary"
+                variant="contained"
+                sx={{
+                  ...buttonStyle,
+                }}
+                disabled={selected.length === 0}
+                onClick={() => handleOpenModal('supervisioned')}
+            >
+              {t('invitaliaModal.supervisioned.title')}
+            </Button>
+            <Button
+                variant="outlined"
+                color="error"
+                sx={{
+                  ...buttonStyle,
+                }}
+                disabled={selected.length === 0}
+                onClick={() => handleOpenModal('rejected')}
+            >
+              {t('invitaliaModal.rejected.title')}
+            </Button>
+          </Box>
+      )}
       <FilterBar
         categoryFilter={categoryFilter}
         setCategoryFilter={setCategoryFilter}
+        producerFilter={producerFilter}
+        setProducerFilter={setProducerFilter}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
         setFiltering={setFiltering}
@@ -300,34 +315,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             }}
           />
         )}
-        {tableData?.length > 0 && !loading && isInvitaliaUser && (
-          <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
-            <Button
-              color="primary"
-              variant="contained"
-              sx={{
-                ...buttonStyle,
-                width: '138px',
-              }}
-              disabled={selected.length === 0}
-              onClick={() => handleOpenModal('supervisioned')}
-            >
-              {t('products.buttonModal.supervisioned')}
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              sx={{
-                ...buttonStyle,
-                width: '92px',
-              }}
-              disabled={selected.length === 0}
-              onClick={() => handleOpenModal('rejected')}
-            >
-              {t('products.buttonModal.rejected')}
-            </Button>
-          </Box>
-        )}
       </Paper>
       <ProductModal
         open={modalOpen}
@@ -338,7 +325,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           return { productName: prod?.productName, gtinCode, category: prod?.category };
         })}
         actionType={modalAction}
-        organizationId={organizationId}
+        status={""}
         onUpdateTable={updaDataTable}
       />
       <DetailDrawer

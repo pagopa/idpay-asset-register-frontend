@@ -39,7 +39,6 @@ describe('Data interface', () => {
     });
 });
 
-// Test per il tipo Order
 describe('Order type', () => {
     test('should accept asc value', () => {
         const order: Order = 'asc';
@@ -59,7 +58,6 @@ describe('Order type', () => {
     });
 });
 
-// Test per il tipo Value
 describe('Value type', () => {
     test('should accept string values', () => {
         const value: Value = 'test value';
@@ -79,7 +77,6 @@ describe('Value type', () => {
     });
 });
 
-// Test per l'interfaccia HeadCell
 describe('HeadCell interface', () => {
     test('should create valid HeadCell with all properties', () => {
         const headCell: HeadCell = {
@@ -153,7 +150,6 @@ describe('HeadCell interface', () => {
     });
 });
 
-// Test per l'interfaccia EnhancedTableProps
 describe('EnhancedTableProps interface', () => {
     test('should create valid EnhancedTableProps', () => {
         const mockOnRequestSort = jest.fn();
@@ -210,7 +206,6 @@ describe('EnhancedTableProps interface', () => {
     });
 });
 
-// Test per l'interfaccia DataProp
 describe('DataProp interface', () => {
     test('should create DataProp with all optional properties', () => {
         const dataProp: DataProp = {
@@ -283,7 +278,6 @@ describe('DataProp interface', () => {
     });
 });
 
-// Test per l'interfaccia ProductsDrawerProps
 describe('ProductsDrawerProps interface', () => {
     test('should create valid ProductsDrawerProps', () => {
         const mockToggleDrawer = jest.fn();
@@ -369,7 +363,6 @@ describe('ProductsDrawerProps interface', () => {
     });
 });
 
-// Test per verificare la compatibilità tra interfacce
 describe('Interface compatibility', () => {
     test('should verify Data and DataProp compatibility', () => {
         const data: Data = {
@@ -381,7 +374,6 @@ describe('Interface compatibility', () => {
             id: 1
         };
 
-        // DataProp può contenere subset di Data
         const dataProp: DataProp = {
             category: data.category,
             energyClass: data.energyClass,
@@ -414,7 +406,6 @@ describe('Interface compatibility', () => {
     });
 });
 
-// Test per edge cases e type safety
 describe('Type safety and edge cases', () => {
     test('should handle type unions correctly', () => {
         const orders: Order[] = ['asc', 'desc'];
@@ -442,7 +433,6 @@ describe('Type safety and edge cases', () => {
     });
 
     test('should verify optional vs required properties', () => {
-        // Data - tutte le proprietà sono required
         const data: Data = {
             category: 'test',
             energyClass: 'A',
@@ -452,7 +442,6 @@ describe('Type safety and edge cases', () => {
             id: 1
         };
 
-        // DataProp - tutte le proprietà sono optional
         const dataProp1: DataProp = {};
         const dataProp2: DataProp = { category: 'test' };
 

@@ -1,14 +1,12 @@
 import {RegisterApi} from "../api/registerApiClient";
+import { BatchList } from "../api/generated/register/BatchList";
 import {RegisterUploadResponseDTO} from "../api/generated/register/RegisterUploadResponseDTO";
 import {CsvDTO} from "../api/generated/register/CsvDTO";
 import {UploadsListDTO} from "../api/generated/register/UploadsListDTO";
 import {InstitutionsResponse} from "../api/generated/register/InstitutionsResponse";
 import {InstitutionResponse} from "../api/generated/register/InstitutionResponse";
-import { UpdateResponseDTO } from "../api/generated/register/UpdateResponseDTO";
-import { BatchList } from "../api/generated/register/BatchList";
-import { ProductListDTO } from "../api/generated/register/ProductListDTO";
-
-
+import {UpdateResponseDTO} from "../api/generated/register/UpdateResponseDTO";
+import {ProductListDTO} from "../api/generated/register/ProductListDTO";
 
 export const uploadProductList = (
     csv: File,
@@ -99,12 +97,12 @@ export const getInstitutionById = async (
 };
 
 export const setSupervisionedStatusList = async (
-  xOrganizationSelected: string,
   gtinCodes: Array<string>,
+  status: string,
   motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
-   return await RegisterApi.setSupervisionedStatusList(xOrganizationSelected,gtinCodes,motivation);
+   return await RegisterApi.setSupervisionedStatusList(gtinCodes, status, motivation);
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw error.response.data;
@@ -115,12 +113,12 @@ export const setSupervisionedStatusList = async (
 
  
  export const setApprovedStatusList = async (
-  xOrganizationSelected: string,
-  gtinCodes: Array<string>,
-  motivation: string
+     gtinCodes: Array<string>,
+     status: string,
+     motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
-    return await RegisterApi.setApprovedStatusList(xOrganizationSelected, gtinCodes, motivation);
+    return await RegisterApi.setApprovedStatusList(gtinCodes, status, motivation);
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw error.response.data;
@@ -130,12 +128,12 @@ export const setSupervisionedStatusList = async (
 };
 
  export const setRejectedStatusList = async (
-  xOrganizationSelected: string,
-  gtinCodes: Array<string>,
-  motivation: string
+     gtinCodes: Array<string>,
+     status: string,
+     motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
-   return await RegisterApi.setRejectedStatusList(xOrganizationSelected,gtinCodes,motivation);
+   return await RegisterApi.setRejectedStatusList(gtinCodes, status, motivation);
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw error.response.data;
