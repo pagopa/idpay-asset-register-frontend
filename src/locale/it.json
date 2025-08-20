@@ -41,7 +41,8 @@
       "washerdriers": "Lavasciuga",
       "refrigeratingappl": "Frigoriferi",
       "cookinghobs": "Piani cottura"
-    }
+    },
+    "advancedFilters": "Filtri avanzati"
   },
   "errors": {
     "contactAdmin": "Contatta l'assistenza",
@@ -81,6 +82,7 @@
     "invitaliaOverview": {
       "overviewTitle": "Panoramica",
       "manufacturerMenuItem": "Produttori",
+      "manufacturerSheet": "Scheda produttore",
       "overviewTitleDescription": "Consulta i prodotti caricati dai produttori con i relativi dettagli.",
       "noInstitutionsFound": "Non ci sono produttori.",
       "rowsPerPage": "Righe per pagina",
@@ -89,8 +91,7 @@
         "institutionName": "Nome produttore",
         "createdAt": "Creata il",
         "updatedAt": "Ultima modifica"
-      },
-      "manufacturerSheet": "SCHEDA PRODUTTORE"
+      }
     },
     "invitaliaProductsList": {
       "infoCardTitle": "Dati produttore",
@@ -152,11 +153,11 @@
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
       "loading": "Caricamento dati ...",
-      "buttonModal": {
-        "confirmSupervisioned": "Conferma",
-        "cancelSupervisioned": "Annulla",
-        "supervisioned": "Contrassegna",
-        "rejected": "Escludi"
+      "buttonModal":{
+        "confirmSupervisioned":"Conferma",
+        "cancelSupervisioned":"Annulla",
+        "supervisioned":"Contrassegna",
+        "rejected":"Escludi"
       },
       "filterLabels": {
         "category": "Categoria",
@@ -164,10 +165,10 @@
         "producer": "Produttore",
         "batch": "Lotto",
         "eprelCode": "Codice EPREL",
-        "gtinCode": "Codice GTIN",
+        "gtinCode": "Codice GTIN/EAN",
         "manufacturerCode": "Codice produttore",
         "filter": "Filtra",
-        "deleteFilters": "Rimuovi filtri"
+        "deleteFilters": "Annulla filtri"
       },
       "listHeader": {
         "category": "Categoria",

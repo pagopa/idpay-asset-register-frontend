@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Paper, TablePagination, CircularProgress } from '@mui/material';
+import Chip from '@mui/material/Chip';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,10 +20,12 @@ import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
+import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import ProductDetail from './ProductDetail';
-import FilterBar from './FilterBar';
 import ProductModal from './ProductModal';
+import NewFilter from './NewFilter';
+import FiltersDrawer from './FiltersDrawer';
 
 type ProductDataGridProps = {
   organizationId: string;
@@ -58,6 +62,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
+  const [filtersDrawerOpened, setFiltersDrawerOpened] = useState<boolean>(false);
 
   const [selected, setSelected] = useState<Array<string>>([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -69,6 +74,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
+  const institutions = useSelector(institutionListSelector);
   const { t } = useTranslation();
 
   const fetchProductList = () => {
@@ -92,34 +98,34 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
     console.log(organizationId);
     void getProducts(
-      isInvitaliaUser ? producerFilter : user.org_id,
-      page,
-      rowsPerPage,
-      sortKey,
-      categoryFilter ? t(`pages.products.categories.${categoryFilter?.toLowerCase()}`) : '',
-      statusFilter ? t(`pages.products.categories.${statusFilter?.toLowerCase()}`) : '',
-      eprelCodeFilter,
-      gtinCodeFilter,
-      undefined,
-      batchFilter
+        isInvitaliaUser ? producerFilter : user.org_id,
+        page,
+        rowsPerPage,
+        sortKey,
+        categoryFilter ? t(`pages.products.categories.${categoryFilter?.toLowerCase()}`) : '',
+        statusFilter ? t(`pages.products.categories.${statusFilter?.toLowerCase()}`) : '',
+        eprelCodeFilter,
+        gtinCodeFilter,
+        undefined,
+        batchFilter
     )
-      .then((res) => {
-        const { content, pageNo, totalElements } = res;
-        setTableData(content ? Array.from(content) : []);
-        setItemsQty(totalElements);
-        if (pageNo !== undefined && totalElements) {
-          setPaginatorFrom(pageNo * rowsPerPage + 1);
-          setPaginatorTo(
-            rowsPerPage * (Number(pageNo) + 1) < totalElements
-              ? rowsPerPage * (Number(pageNo) + 1)
-              : totalElements
-          );
-        }
-        setApiErrorOccurred(false);
-        setLoading(false);
-      })
-      .catch(() => handleStateForError())
-      .finally(() => setFiltering(false));
+        .then((res) => {
+          const { content, pageNo, totalElements } = res;
+          setTableData(content ? Array.from(content) : []);
+          setItemsQty(totalElements);
+          if (pageNo !== undefined && totalElements) {
+            setPaginatorFrom(pageNo * rowsPerPage + 1);
+            setPaginatorTo(
+                rowsPerPage * (Number(pageNo) + 1) < totalElements
+                    ? rowsPerPage * (Number(pageNo) + 1)
+                    : totalElements
+            );
+          }
+          setApiErrorOccurred(false);
+          setLoading(false);
+        })
+        .catch(() => handleStateForError())
+        .finally(() => setFiltering(false));
     dispatch(setBatchName(''));
     dispatch(setBatchId(''));
   };
@@ -139,17 +145,16 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   useEffect(() => {
     setLoading(true);
-    void getBatchFilterList(isInvitaliaUser ? producerFilter :organizationId)
-      .then((res) => {
-        const { left } = res as BatchFilterList;
-        const values = left[0].value;
-        setBatchFilterItems([...values]);
-      })
-      .catch(() => {
-        setBatchFilterItems([]);
-      });
-    // eslint-disable-next-line
-  }, []);
+    void getBatchFilterList(isInvitaliaUser ? producerFilter : organizationId)
+        .then((res) => {
+          const { left } = res as BatchFilterList;
+          const values = left[0].value;
+          setBatchFilterItems([...values]);
+        })
+        .catch(() => {
+          setBatchFilterItems([]);
+        });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (filtering) {
@@ -160,8 +165,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       setLoading(true);
       callProductsApi(organizationId);
     }
-    // eslint-disable-next-line
-  }, [page, orderBy, order, rowsPerPage, filtering]);
+  }, [page, orderBy, order, rowsPerPage, filtering]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
@@ -176,6 +180,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const handleToggleDrawer = (newOpen: boolean) => {
     setDrawerOpened(newOpen);
+  };
+
+  const handleToggleFiltersDrawer = (newOpen: boolean) => {
+    setFiltersDrawerOpened(newOpen);
   };
 
   const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof ProductDTO) => {
@@ -213,21 +221,21 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     if (tableData?.length > 0) {
       if (loading) {
         return (
-          <CircularProgress
-            size={36}
-            sx={{
-              color: '#0055AA',
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-            }}
-          />
+            <CircularProgress
+                size={36}
+                sx={{
+                  color: '#0055AA',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                }}
+            />
         );
       }
-      return(
-        <Box sx={{ width: '100%', overflowX: 'auto' }}>
-          <ProductsTable key={refreshKey} {...commonProps} />
-        </Box>
+      return (
+          <Box sx={{ width: '100%', overflowX: 'auto' }}>
+            <ProductsTable key={refreshKey} {...commonProps} />
+          </Box>
       );
     }
 
@@ -240,109 +248,149 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === INVITALIA;
 
+  const filtersLabel = useMemo(() => {
+    const norm = (s?: string) => (s ? s.trim() : '');
+
+    const producer = producerFilter?.trim()
+        ? (institutions?.find((p: any) => p.institutionId === producerFilter)?.description ||
+            producerFilter.trim())
+        : '';
+
+    const batch = batchFilter?.trim()
+        ? (batchFilterItems?.find((b) => b?.productFileId === batchFilter)?.batchName ||
+            batchFilter.trim())
+        : '';
+
+    return [
+      norm(categoryFilter),
+      norm(statusFilter),
+      norm(producer),
+      norm(batch),
+      norm(eprelCodeFilter),
+      norm(gtinCodeFilter),
+    ]
+        .filter((s): s is string => !!s)
+        .join(', ');
+  }, [
+    categoryFilter,
+    statusFilter,
+    producerFilter,
+    institutions,
+    batchFilter,
+    batchFilterItems,
+    eprelCodeFilter,
+    gtinCodeFilter,
+  ]);
+
   return (
-    <>
-      {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
-          <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
-            <Button
-                color="primary"
-                variant="contained"
-                sx={{
-                  ...buttonStyle,
-                }}
-                disabled={selected.length === 0}
-                onClick={() => handleOpenModal('supervisioned')}
-            >
-              {t('invitaliaModal.supervisioned.title')}
-            </Button>
-            <Button
-                variant="outlined"
-                color="error"
-                sx={{
-                  ...buttonStyle,
-                }}
-                disabled={selected.length === 0}
-                onClick={() => handleOpenModal('rejected')}
-            >
-              {t('invitaliaModal.rejected.title')}
-            </Button>
-          </Box>
-      )}
-      <FilterBar
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        producerFilter={producerFilter}
-        setProducerFilter={setProducerFilter}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        setFiltering={setFiltering}
-        batchFilter={batchFilter}
-        setBatchFilter={setBatchFilter}
-        batchFilterItems={batchFilterItems}
-        eprelCodeFilter={eprelCodeFilter}
-        setEprelCodeFilter={setEprelCodeFilter}
-        gtinCodeFilter={gtinCodeFilter}
-        setGtinCodeFilter={setGtinCodeFilter}
-        errorStatus={apiErrorOccurred}
-        tableData={tableData}
-        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
-        loading={loading}
-      />
-      {tableData?.length === 0 && !loading && (
-        <EmptyListTable message="pages.products.noFileLoaded" />
-      )}
-      <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
-        {renderTable()}
-        {tableData?.length > 0 && !loading && (
-          <TablePagination
-            component="div"
-            count={itemsQty || 0}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[rowsPerPage]}
-            labelDisplayedRows={() =>
-              `${paginatorFrom} - ${paginatorTo} ${t(
-                'pages.products.tablePaginationFrom'
-              )} ${itemsQty}`
-            }
-            sx={{
-              '& .MuiTablePagination-actions button': {
-                backgroundColor: 'transparent',
-                '&:hover': { backgroundColor: 'transparent' },
-              },
-            }}
-          />
+      <>
+        {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
+            <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
+              <Button
+                  color="primary"
+                  variant="contained"
+                  sx={{ ...buttonStyle }}
+                  disabled={selected.length === 0}
+                  onClick={() => handleOpenModal('supervisioned')}
+              >
+                {t('invitaliaModal.supervisioned.title')}
+              </Button>
+              <Button
+                  variant="outlined"
+                  color="error"
+                  sx={{ ...buttonStyle }}
+                  disabled={selected.length === 0}
+                  onClick={() => handleOpenModal('rejected')}
+              >
+                {t('invitaliaModal.rejected.title')}
+              </Button>
+            </Box>
         )}
-      </Paper>
-      <ProductModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        gtinCodes={selected}
-        selectedProducts={selected.map((gtinCode) => {
-          const prod = tableData.find((row) => row.gtinCode === gtinCode);
-          return { productName: prod?.productName, gtinCode, category: prod?.category };
-        })}
-        actionType={modalAction}
-        status={""}
-        onUpdateTable={updaDataTable}
-      />
-      <DetailDrawer
-        data-testid="detail-drawer"
-        open={drawerOpened}
-        toggleDrawer={handleToggleDrawer}
-      >
-        <ProductDetail
-          data-testid="product-detail"
-          data={drawerData}
-          isInvitaliaUser={isInvitaliaUser}
-          open={true}
-          onUpdateTable={updaDataTable}
-          onClose={() => handleToggleDrawer(false)}
+
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          {filtersLabel ? (
+              <Chip
+                  size="medium"
+                  label={filtersLabel}
+                  sx={{ color: 'white !important', backgroundColor: '#0073E6 !important' }}
+                  onDelete={handleDeleteFiltersButtonClick}
+                  deleteIcon={<CloseIcon sx={{ color: 'white !important'}} />}
+              />
+          ) : (
+              <span />
+          )}
+          <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />
+        </Box>
+
+        {tableData?.length === 0 && !loading && (
+            <EmptyListTable message="pages.products.noFileLoaded" />
+        )}
+        <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
+          {renderTable()}
+          {tableData?.length > 0 && !loading && (
+              <TablePagination
+                  component="div"
+                  count={itemsQty || 0}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  rowsPerPageOptions={[rowsPerPage]}
+                  labelDisplayedRows={() =>
+                      `${paginatorFrom} - ${paginatorTo} ${t('pages.products.tablePaginationFrom')} ${itemsQty}`
+                  }
+                  sx={{
+                    '& .MuiTablePagination-actions button': {
+                      backgroundColor: 'transparent',
+                      '&:hover': { backgroundColor: 'transparent' },
+                    },
+                  }}
+              />
+          )}
+        </Paper>
+        <ProductModal
+            open={modalOpen}
+            onClose={() => setModalOpen(false)}
+            gtinCodes={selected}
+            selectedProducts={selected.map((gtinCode) => {
+              const prod = tableData.find((row) => row.gtinCode === gtinCode);
+              return { productName: prod?.productName, gtinCode, category: prod?.category };
+            })}
+            actionType={modalAction}
+            status={''}
+            onUpdateTable={updaDataTable}
         />
-      </DetailDrawer>
-    </>
+        <DetailDrawer data-testid="detail-drawer" open={drawerOpened} toggleDrawer={handleToggleDrawer}>
+          <ProductDetail
+              data-testid="product-detail"
+              data={drawerData}
+              isInvitaliaUser={isInvitaliaUser}
+              open={true}
+              onUpdateTable={updaDataTable}
+              onClose={() => handleToggleDrawer(false)}
+          />
+        </DetailDrawer>
+        <FiltersDrawer
+            open={filtersDrawerOpened}
+            toggleFiltersDrawer={handleToggleFiltersDrawer}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            producerFilter={producerFilter}
+            setProducerFilter={setProducerFilter}
+            batchFilter={batchFilter}
+            setBatchFilter={setBatchFilter}
+            categoryFilter={categoryFilter}
+            setCategoryFilter={setCategoryFilter}
+            batchFilterItems={batchFilterItems}
+            eprelCodeFilter={eprelCodeFilter}
+            setEprelCodeFilter={setEprelCodeFilter}
+            gtinCodeFilter={gtinCodeFilter}
+            setGtinCodeFilter={setGtinCodeFilter}
+            errorStatus={apiErrorOccurred}
+            handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+            setFiltering={setFiltering}
+        />
+      </>
   );
 };
 
