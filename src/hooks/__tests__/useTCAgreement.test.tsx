@@ -31,7 +31,6 @@ jest.mock('../../api/registerApiClient', () => ({
   },
 }));
 
-// Mock corretto del service con implementazione delle funzioni
 jest.mock('../../services/rolePermissionService', () => ({
   getPortalConsent: jest.fn(),
   savePortalConsent: jest.fn(),

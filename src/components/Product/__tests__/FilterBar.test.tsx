@@ -4,8 +4,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import '@testing-library/jest-dom';
 import FilterBar from '../FilterBar';
 import { BatchFilterItems } from '../helpers';
-
-// --- Redux wrapper per i test ---
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
@@ -24,7 +22,6 @@ const basePreloadedState = {
 
 const createTestStore = (preloadedState: any = {}) =>
     configureStore({
-        // Reducer no-op che restituisce sempre lo state
         reducer: (state = preloadedState) => state,
         preloadedState: {
             ...basePreloadedState,
@@ -46,7 +43,6 @@ const renderWithProviders = (component: React.ReactElement, preloadedState?: any
     );
 };
 
-// --- Mocks i18n / constants ---
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
@@ -278,7 +274,6 @@ describe('FilterBar', () => {
         const batchSelect = screen.getByLabelText('pages.products.filterLabels.batch');
         fireEvent.mouseDown(batchSelect);
 
-        // Nessuna opzione nel menu
         expect(screen.queryByText('Batch 1')).not.toBeInTheDocument();
     });
 
@@ -286,7 +281,6 @@ describe('FilterBar', () => {
         const props = { ...defaultProps, batchFilterItems: null as any };
         renderWithProviders(<FilterBar {...props} />);
 
-        // Il componente deve renderizzare senza errori
         expect(screen.getByLabelText('pages.products.filterLabels.batch')).toBeInTheDocument();
     });
 

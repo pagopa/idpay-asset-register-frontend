@@ -33,7 +33,6 @@ jest.mock('../../api/registerApiClient', () => ({
   },
 }));
 
-// Mock delle dipendenze
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   useErrorDispatcher: jest.fn(),
 }));
@@ -88,7 +87,6 @@ jest.mock('react-redux', () => ({
 
 jest.mock('lodash/isEmpty', () => jest.fn());
 
-// Mock di window.location.assign con tipizzazione corretta
 const mockLocation = {
   assign: jest.fn(),
   href: 'http://localhost',
@@ -106,7 +104,6 @@ const mockLocation = {
   ancestorOrigins: {} as DOMStringList,
 };
 
-// Assegna il mock a window.location
 Object.defineProperty(window, 'location', {
   value: mockLocation,
   writable: true,
@@ -118,7 +115,6 @@ describe('useLogin hook', () => {
   let mockT;
   let store: Store<any, AnyAction>;
 
-  // Mock data
   const mockJwtUser = {
     uid: '123',
     org_fc: 'TAXCODE123',
@@ -158,7 +154,6 @@ describe('useLogin hook', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Setup mock store
     store = configureStore({
       reducer: {
         user: (state = {}, ) => state,
