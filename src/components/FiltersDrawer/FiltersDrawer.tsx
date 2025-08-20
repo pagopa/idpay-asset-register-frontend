@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import { INVITALIA, PRODUCTS_CATEGORY, PRODUCTS_STATES } from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { fetchUserFromLocalStorage } from '../../helpers';
-import { BatchFilterItems } from './helpers';
+import { BatchFilterItems } from '../Product/helpers';
 
 type Props = {
     open: boolean;

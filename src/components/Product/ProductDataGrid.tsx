@@ -20,12 +20,12 @@ import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
-import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
+import { institutionListSelector, institutionSelector } from '../../redux/slices/invitaliaSlice';
+import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import ProductDetail from './ProductDetail';
 import ProductModal from './ProductModal';
 import NewFilter from './NewFilter';
-import FiltersDrawer from './FiltersDrawer';
 
 type ProductDataGridProps = {
   organizationId: string;
@@ -41,6 +41,7 @@ const buttonStyle = {
 
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, children }) => {
   const dispatch = useDispatch();
+  const institution = useSelector(institutionSelector);
   const [order, setOrder] = useState<Order>('asc');
   const [refreshKey, setRefreshKey] = useState(0);
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
@@ -63,10 +64,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
   const [filtersDrawerOpened, setFiltersDrawerOpened] = useState<boolean>(false);
-
   const [selected, setSelected] = useState<Array<string>>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>(undefined);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setSelected([]);
@@ -122,10 +123,13 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             );
           }
           setApiErrorOccurred(false);
-          setLoading(false);
         })
         .catch(() => handleStateForError())
-        .finally(() => setFiltering(false));
+        .finally(() => {
+          setLoading(false);
+          setFiltering(false);
+        });
+
     dispatch(setBatchName(''));
     dispatch(setBatchId(''));
   };
@@ -143,29 +147,50 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     }
   }, [batchName, batchId, batchFilterItems]);
 
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
+  const isInvitaliaUser = user?.org_role === INVITALIA;
+
   useEffect(() => {
+    if (isInvitaliaUser && institution?.institutionId) {
+      setProducerFilter(institution.institutionId);
+    }
+    setReady(true);
+  }, [isInvitaliaUser, institution?.institutionId]);
+
+  useEffect(() => {
+    if (!ready) {return;}
+
     setLoading(true);
-    void getBatchFilterList(isInvitaliaUser ? producerFilter : organizationId)
+    const targetId = isInvitaliaUser
+        ? (producerFilter || institution?.institutionId || '')
+        : organizationId;
+
+    void getBatchFilterList(targetId)
         .then((res) => {
           const { left } = res as BatchFilterList;
-          const values = left[0].value;
+          const values = left?.[0]?.value ?? [];
           setBatchFilterItems([...values]);
         })
         .catch(() => {
           setBatchFilterItems([]);
-        });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        })
+        .finally(() => setLoading(false));
+  }, [ready, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
 
   useEffect(() => {
-    if (filtering) {
-      setLoading(true);
-      callProductsApi(organizationId);
-      setFiltering(false);
-    } else {
-      setLoading(true);
-      callProductsApi(organizationId);
-    }
-  }, [page, orderBy, order, rowsPerPage, filtering]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!ready) {return;}
+    setLoading(true);
+    callProductsApi(organizationId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, page, orderBy, order, rowsPerPage]);
+
+  // Fetch prodotti su applicazione filtri (fetch “manuale”)
+  useEffect(() => {
+    if (!ready || !filtering) {return;}
+    setLoading(true);
+    callProductsApi(organizationId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, filtering]);
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
@@ -245,9 +270,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     return null;
   };
 
-  const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = user?.org_role === INVITALIA;
-
   const filtersLabel = useMemo(() => {
     const norm = (s?: string) => (s ? s.trim() : '');
 
@@ -314,7 +336,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
                   label={filtersLabel}
                   sx={{ color: 'white !important', backgroundColor: '#0073E6 !important' }}
                   onDelete={handleDeleteFiltersButtonClick}
-                  deleteIcon={<CloseIcon sx={{ color: 'white !important'}} />}
+                  deleteIcon={<CloseIcon sx={{ color: 'white !important' }} />}
               />
           ) : (
               <span />
@@ -325,8 +347,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         {tableData?.length === 0 && !loading && (
             <EmptyListTable message="pages.products.noFileLoaded" />
         )}
+
         <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
           {renderTable()}
+
           {tableData?.length > 0 && !loading && (
               <TablePagination
                   component="div"
@@ -348,6 +372,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               />
           )}
         </Paper>
+
         <ProductModal
             open={modalOpen}
             onClose={() => setModalOpen(false)}
@@ -360,6 +385,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             status={''}
             onUpdateTable={updaDataTable}
         />
+
         <DetailDrawer data-testid="detail-drawer" open={drawerOpened} toggleDrawer={handleToggleDrawer}>
           <ProductDetail
               data-testid="product-detail"
@@ -370,6 +396,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               onClose={() => handleToggleDrawer(false)}
           />
         </DetailDrawer>
+
         <FiltersDrawer
             open={filtersDrawerOpened}
             toggleFiltersDrawer={handleToggleFiltersDrawer}
