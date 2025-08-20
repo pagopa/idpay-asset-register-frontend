@@ -21,7 +21,6 @@ describe('DetailDrawer', () => {
           <div>Contenuto Drawer</div>
         </DetailDrawer>
     );
-    // Drawer chiuso: il contenuto non deve essere presente
     expect(screen.queryByText('Contenuto Drawer')).not.toBeInTheDocument();
   });
 
@@ -42,9 +41,7 @@ describe('DetailDrawer', () => {
           <div>Contenuto Drawer</div>
         </DetailDrawer>
     );
-    // Simula evento onClose del Drawer
     fireEvent.keyDown(screen.getByRole('presentation'), {key: 'Escape'});
-    // L'onClose del Drawer chiama toggleDrawer(false)
     expect(toggleDrawer).toHaveBeenCalledWith(false);
   });
 })

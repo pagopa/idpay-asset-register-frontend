@@ -84,7 +84,6 @@ describe('withSelectedPartyProducts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Mock di withRetrievedValue
     mockWithRetrievedValue.mockImplementation((key: string, hook: any, Component: any) => {
       return (props: any) => {
         const retrievedValue = hook();
@@ -93,7 +92,6 @@ describe('withSelectedPartyProducts', () => {
       };
     });
 
-    // Mock di withSelectedParty
     mockWithSelectedParty.mockImplementation((Component: any) => {
       return (props: any) => {
         const componentProps = { ...props, party: mockParty };
@@ -101,7 +99,6 @@ describe('withSelectedPartyProducts', () => {
       };
     });
 
-    // Mock dell'hook useSelectedPartyProducts
     mockUseSelectedPartyProducts.mockReturnValue(mockProducts);
   });
 
@@ -139,7 +136,6 @@ describe('withSelectedPartyProducts', () => {
     // Arrange
     const WrappedComponent = withSelectedPartyProducts(TestComponent);
 
-    // Act & Assert - Verifica che TypeScript non richieda le props omesse
     const props = { testProp: 'test' };
 
     render(<WrappedComponent {...props} />);
@@ -195,9 +191,8 @@ describe('withSelectedPartyProducts', () => {
     withSelectedPartyProducts(mockInnerComponent);
 
     // Assert
-    // Verifica che withSelectedParty sia chiamato con il risultato di withRetrievedValue
     expect(mockWithSelectedParty).toHaveBeenCalledWith(
-        expect.any(Function) // Il componente wrappato da withRetrievedValue
+        expect.any(Function)
     );
     expect(mockWithRetrievedValue).toHaveBeenCalledWith(
         'products',

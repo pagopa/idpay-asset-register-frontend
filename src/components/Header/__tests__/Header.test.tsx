@@ -895,11 +895,10 @@ describe('Header Component - Complete Coverage', () => {
     );
   });
 
-  // Test per coprire il caso loggedUser.uid vuoto
   test('handles loggedUser with empty uid string', () => {
     const userWithEmptyUid = {
       ...mockedUser,
-      uid: '', // Questo testerà il caso ?: ''
+      uid: '',
     };
 
     renderWithContext(
@@ -912,13 +911,12 @@ describe('Header Component - Complete Coverage', () => {
     );
   });
 
-  // Test per coprire useMemo e il filtro dei prodotti
   test('useMemo activeProducts filters correctly', () => {
     mockUseAppSelector.mockImplementation((selector) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
         return [
           {
-            id: 'prod-idpay-merchants', // Stesso ID del welfareProduct - deve essere filtrato
+            id: 'prod-idpay-merchants',
             title: 'IDPay Duplicate',
             status: 'ACTIVE',
             authorized: true,
@@ -934,7 +932,7 @@ describe('Header Component - Complete Coverage', () => {
           {
             id: 'prod-inactive',
             title: 'Inactive Product',
-            status: 'INACTIVE', // Deve essere filtrato
+            status: 'INACTIVE',
             authorized: true,
             urlPublic: 'https://inactive.com',
           },
@@ -942,7 +940,7 @@ describe('Header Component - Complete Coverage', () => {
             id: 'prod-unauthorized',
             title: 'Unauthorized Product',
             status: 'ACTIVE',
-            authorized: false, // Deve essere filtrato
+            authorized: false,
             urlPublic: 'https://unauthorized.com',
           },
         ];
@@ -968,7 +966,6 @@ describe('Header Component - Complete Coverage', () => {
     );
   });
 
-  // Test per coprire il mapping dei ruoli
   test('covers party roles mapping with multiple roles', () => {
     mockUseAppSelector.mockImplementation((selector) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
@@ -1047,7 +1044,6 @@ describe('Header Component - Complete Coverage', () => {
     expect(mockOnExit).toHaveBeenCalledWith(expect.any(Function));
   });
 
-  // Test per coprire onSelectedParty con party null (non chiama trackEvent)
   test('onSelectedParty with null party does not call trackEvent', async () => {
     const user = userEvent.setup();
     const trackEventMock = jest.mocked(trackEvent);
@@ -1065,11 +1061,9 @@ describe('Header Component - Complete Coverage', () => {
     await user.click(selectPartyNullBtn);
 
     expect(trackEventMock).not.toHaveBeenCalledWith('PARTY_SELECTION', expect.any(Object));
-    // onExit non dovrebbe essere chiamato per party null
     expect(mockOnExit).not.toHaveBeenCalled();
   });
 
-  // Test per coprire onSelectedParty con party undefined
   test('onSelectedParty with undefined party does not call trackEvent', async () => {
     const user = userEvent.setup();
     const trackEventMock = jest.mocked(trackEvent);
@@ -1090,14 +1084,13 @@ describe('Header Component - Complete Coverage', () => {
     expect(mockOnExit).not.toHaveBeenCalled();
   });
 
-  // Test per coprire il caso quando party2Show è undefined/null
   test('handles party2Show as undefined', () => {
     mockUseAppSelector.mockImplementation((selector) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
         return [];
       }
       if (selector.toString().includes('selectPartySelected')) {
-        return null; // Questo renderà party2Show undefined
+        return null;
       }
       return null;
     });
@@ -1112,7 +1105,6 @@ describe('Header Component - Complete Coverage', () => {
     );
   });
 
-  // Test per coprire activeProducts.map
   test('covers activeProducts mapping', () => {
     mockUseAppSelector.mockImplementation((selector) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
@@ -1147,7 +1139,6 @@ describe('Header Component - Complete Coverage', () => {
     );
   });
 
-  // Test per coprire il caso con prodotti senza urlPublic
   test('handles products without urlPublic in mapping', () => {
     mockUseAppSelector.mockImplementation((selector) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
@@ -1157,14 +1148,14 @@ describe('Header Component - Complete Coverage', () => {
             title: 'Product No URL',
             status: 'ACTIVE',
             authorized: true,
-            urlPublic: null, // urlPublic mancante
+            urlPublic: null,
           },
           {
             id: 'prod-undefined-url',
             title: 'Product Undefined URL',
             status: 'ACTIVE',
             authorized: true,
-            urlPublic: undefined, // urlPublic undefined
+            urlPublic: undefined,
           },
         ];
       }
