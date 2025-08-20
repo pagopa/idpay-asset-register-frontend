@@ -167,7 +167,6 @@ const defaultInvitaliaState = {
 const createMockStore = (initialProductsState: any = {}) => {
     return configureStore({
         reducer: {
-            // Slice reale di test per "products"
             products: (state = { batchId: '', batchName: '' }, action) => {
                 switch (action.type) {
                     case 'products/setBatchId':
@@ -178,7 +177,6 @@ const createMockStore = (initialProductsState: any = {}) => {
                         return state;
                 }
             },
-            // Slice "invitalia" fittizio: sufficiente per i selector usati dal componente
             invitalia: (state = defaultInvitaliaState, _action) => state,
         },
         preloadedState: {

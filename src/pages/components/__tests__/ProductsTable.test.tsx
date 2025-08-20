@@ -120,7 +120,6 @@ import {fetchUserFromLocalStorage} from '../../../helpers';
 import {Provider} from "react-redux";
 import {configureStore} from "@reduxjs/toolkit";
 
-// Theme provider per i test MUI
 const theme = createTheme();
 
 describe('ProductsTable', () => {

@@ -884,7 +884,6 @@ describe('Header Component - Complete Coverage', () => {
     });
   });
 
-  // Test per coprire il caso loggedUser falsy ma non false
   test('handles loggedUser as null', () => {
     renderWithContext(
         <Header
@@ -1000,7 +999,6 @@ describe('Header Component - Complete Coverage', () => {
     );
   });
 
-  // Test per coprire onSelectedProduct callback e console.log
   test('onSelectedProduct callback executes console.log', async () => {
     const user = userEvent.setup();
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -1019,7 +1017,6 @@ describe('Header Component - Complete Coverage', () => {
 
     expect(mockOnExit).toHaveBeenCalledWith(expect.any(Function));
 
-    // Esegui la funzione passata a onExit per coprire console.log
     const exitFunction = mockOnExit.mock.calls[mockOnExit.mock.calls.length - 1][0];
     exitFunction();
 
@@ -1028,7 +1025,6 @@ describe('Header Component - Complete Coverage', () => {
     consoleSpy.mockRestore();
   });
 
-  // Test per coprire onSelectedParty con party valida, trackEvent e console.log
   test('onSelectedParty with valid party calls trackEvent and console.log', async () => {
     const user = userEvent.setup();
     const trackEventMock = jest.mocked(trackEvent);

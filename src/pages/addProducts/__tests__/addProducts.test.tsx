@@ -181,7 +181,6 @@ describe('AddProducts Component', () => {
         expect(screen.getByRole('button', { name: /esci/i })).toBeInTheDocument();
     });
 
-    // NUOVO TEST PER COPRIRE LA FUNZIONE MANCANTE
     test('handles back button click and navigation', async () => {
         const user = userEvent.setup();
 
@@ -193,21 +192,16 @@ describe('AddProducts Component', () => {
 
         const backButton = screen.getByTestId('back-button-test');
 
-        // Clicca il pulsante "Esci"
         await user.click(backButton);
 
-        // Verifica che onExit sia stato chiamato
         expect(mockOnExit).toHaveBeenCalled();
 
-        // Verifica che navigate sia stato chiamato con i parametri corretti
         expect(mockNavigate).toHaveBeenCalledWith('/base', { replace: true });
     });
 
-    // TEST AGGIUNTIVO PER COPRIRE IL CASO IN CUI onExit NON CHIAMA IL CALLBACK
     test('handles back button click when onExit does not execute callback', async () => {
         const user = userEvent.setup();
 
-        // Mock onExit per non chiamare il callback
         mockOnExit.mockImplementation(() => {});
 
         render(
@@ -220,14 +214,11 @@ describe('AddProducts Component', () => {
 
         await user.click(backButton);
 
-        // Verifica che onExit sia stato chiamato
         expect(mockOnExit).toHaveBeenCalled();
 
-        // Verifica che navigate NON sia stato chiamato se onExit non esegue il callback
         expect(mockNavigate).not.toHaveBeenCalled();
     });
 
-    // TEST PER VERIFICARE CHE IL REF SIA COLLEGATO CORRETTAMENTE
     test('formRef is properly connected to FormAddProducts', () => {
         render(
             <TestWrapper>
@@ -235,11 +226,9 @@ describe('AddProducts Component', () => {
             </TestWrapper>
         );
 
-        // Verifica che il componente FormAddProducts sia renderizzato
         expect(screen.getByTestId('form-add-products')).toBeInTheDocument();
     });
 
-    // TEST PER VERIFICARE CHE I PROPS VENGANO PASSATI CORRETTAMENTE AL FORM
     test('passes correct props to FormAddProducts', () => {
         render(
             <TestWrapper>
@@ -247,11 +236,9 @@ describe('AddProducts Component', () => {
             </TestWrapper>
         );
 
-        // Inizialmente fileAccepted dovrebbe essere false
         expect(screen.getByText('File accepted: No')).toBeInTheDocument();
     });
 
-    // TEST PER IL CONTAINER PRINCIPALE
     test('renders main container with correct data-testid', () => {
         render(
             <TestWrapper>

@@ -36,19 +36,16 @@ jest.mock('../../services/rolePermissionService', () => ({
   savePortalConsent: jest.fn(),
 }));
 
-// Mock di useErrorDispatcher
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   useErrorDispatcher: () => jest.fn(),
 }));
 
-// Mock di useTranslation
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
 }));
 
-// Cast dei mock per TypeScript
 const mockGetPortalConsent = rolePermissionService.getPortalConsent as jest.MockedFunction<typeof rolePermissionService.getPortalConsent>;
 const mockSavePortalConsent = rolePermissionService.savePortalConsent as jest.MockedFunction<typeof rolePermissionService.savePortalConsent>;
 
@@ -64,7 +61,6 @@ afterEach(() => {
 
 describe('test suite for useTCAgreement hook', () => {
 
-  // Creiamo un wrapper personalizzato che usa renderWithContext correttamente
   const createWrapper = () => {
     return ({ children }: { children: React.ReactNode }) => {
       const TestComponent = () => <div>{children}</div>;
@@ -73,7 +69,6 @@ describe('test suite for useTCAgreement hook', () => {
     };
   };
 
-  // Approccio alternativo: usa direttamente il tuo HookWrapper
   const testHookValues: any = {};
   const HookWrapper = () => {
     Object.assign(testHookValues, useTCAgreement());
@@ -91,7 +86,6 @@ describe('test suite for useTCAgreement hook', () => {
 
       renderWithContext(<HookWrapper />);
 
-      // Aspetta che l'effect si completi
       await waitFor(() => {
         expect(testHookValues.isTOSAccepted).toBe(false);
       });
@@ -103,7 +97,6 @@ describe('test suite for useTCAgreement hook', () => {
     it('should set acceptedTOS to true when getPortalConsent returns empty object', async () => {
       mockGetPortalConsent.mockResolvedValue({});
 
-      // Reset del valore precedente
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
@@ -119,7 +112,6 @@ describe('test suite for useTCAgreement hook', () => {
       const mockError = new Error('API Error');
       mockGetPortalConsent.mockRejectedValue(mockError);
 
-      // Reset del valore precedente
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
@@ -134,7 +126,6 @@ describe('test suite for useTCAgreement hook', () => {
 
   describe('acceptTOS functionality', () => {
     it('should successfully accept TOS', async () => {
-      // Setup initial state
       const mockInitialResponse = {
         versionId: '1.0.0',
         firstAcceptance: true
@@ -143,17 +134,14 @@ describe('test suite for useTCAgreement hook', () => {
       mockGetPortalConsent.mockResolvedValue(mockInitialResponse);
       mockSavePortalConsent.mockResolvedValue({});
 
-      // Reset del valore precedente
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
-      // Aspetta l'inizializzazione
       await waitFor(() => {
         expect(testHookValues.isTOSAccepted).toBe(false);
       });
 
-      // Chiama acceptTOS
       testHookValues.acceptTOS();
 
       await waitFor(() => {
@@ -164,7 +152,6 @@ describe('test suite for useTCAgreement hook', () => {
     });
 
     it('should handle acceptTOS error', async () => {
-      // Setup initial state
       const mockInitialResponse = {
         versionId: '1.0.0',
         firstAcceptance: true
@@ -173,17 +160,14 @@ describe('test suite for useTCAgreement hook', () => {
       mockGetPortalConsent.mockResolvedValue(mockInitialResponse);
       mockSavePortalConsent.mockRejectedValue(new Error('Save error'));
 
-      // Reset del valore precedente
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
-      // Aspetta l'inizializzazione
       await waitFor(() => {
         expect(testHookValues.isTOSAccepted).toBe(false);
       });
 
-      // Chiama acceptTOS
       testHookValues.acceptTOS();
 
       await waitFor(() => {
@@ -194,21 +178,17 @@ describe('test suite for useTCAgreement hook', () => {
     });
 
     it('should handle acceptTOS when acceptedTOSVersion is undefined', async () => {
-      // Setup: getPortalConsent returns empty object
       mockGetPortalConsent.mockResolvedValue({});
       mockSavePortalConsent.mockResolvedValue({});
 
-      // Reset del valore precedente
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
-      // Aspetta l'inizializzazione
       await waitFor(() => {
         expect(testHookValues.isTOSAccepted).toBe(true);
       });
 
-      // Chiama acceptTOS con acceptedTOSVersion undefined
       testHookValues.acceptTOS();
 
       await waitFor(() => {
@@ -221,7 +201,6 @@ describe('test suite for useTCAgreement hook', () => {
     it('should return correct initial values', async () => {
       mockGetPortalConsent.mockResolvedValue({});
 
-      // Reset del valore precedente
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
@@ -240,7 +219,6 @@ describe('test suite for useTCAgreement hook', () => {
     it('should handle null response from getPortalConsent', async () => {
       mockGetPortalConsent.mockResolvedValue(null as any);
 
-      // Reset del valore precedente
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
@@ -253,7 +231,6 @@ describe('test suite for useTCAgreement hook', () => {
     it('should handle undefined response from getPortalConsent', async () => {
       mockGetPortalConsent.mockResolvedValue(undefined as any);
 
-      // Reset del valore precedente
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
@@ -265,7 +242,6 @@ describe('test suite for useTCAgreement hook', () => {
   });
 });
 
-// Test alternativo usando il tuo approccio originale semplificato
 describe('Alternative test approach with HookWrapper', () => {
   const returnVal: any = {};
   const SimpleHookWrapper = () => {
@@ -274,7 +250,6 @@ describe('Alternative test approach with HookWrapper', () => {
   };
 
   beforeEach(() => {
-    // Reset dell'oggetto returnVal
     Object.keys(returnVal).forEach(key => delete returnVal[key]);
   });
 

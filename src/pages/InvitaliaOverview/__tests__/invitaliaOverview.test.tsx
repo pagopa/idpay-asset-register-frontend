@@ -27,7 +27,6 @@ jest.mock('react-i18next', () => ({
     Trans: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-// Mock della tabella figlia: espone props utili nei test
 jest.mock('../institutionsTable', () => (props: any) => {
     const {
         data,
@@ -70,11 +69,8 @@ jest.mock('../institutionsTable', () => (props: any) => {
     );
 });
 
-// -------------------- Test Wrapper con Redux Provider + MUI Theme --------------------
-
 const theme = createTheme();
 
-// Stato base che copre i selector potenziali (invitalia, ui, auth, ecc.)
 const basePreloadedState = {
     invitalia: {
         institutionList: [],
@@ -86,7 +82,6 @@ const basePreloadedState = {
     auth: { user: { id: 'u1' } },
 };
 
-// Store fittizio che restituisce lo state così com'è
 const createTestStore = (preloadedState: any = {}) =>
     configureStore({
         reducer: (state = preloadedState) => state,
@@ -97,7 +92,6 @@ const TestWrapper: React.FC<{ children: React.ReactNode; preloadedState?: any }>
                                                                                         children,
                                                                                         preloadedState = {},
                                                                                     }) => {
-    // merge shallow + merge profondo per invitalia se necessario
     const mergedState = {
         ...basePreloadedState,
         ...preloadedState,
@@ -115,8 +109,6 @@ const TestWrapper: React.FC<{ children: React.ReactNode; preloadedState?: any }>
         </Provider>
     );
 };
-
-// -------------------- Dati mock --------------------
 
 const mockInstitutions: Institution[] = [
     {
