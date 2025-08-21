@@ -166,7 +166,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                   color="primary"
                   checked={selected.includes(row.gtinCode)}
                   onChange={() => handleCheckboxClick(row.gtinCode)}
-                  onClick={(e) => e.stopPropagation()} // blocca il click qui
+                  onClick={(e) => e.stopPropagation()}
               />
           ) : (
               <Checkbox color="primary" disabled checked={false} />

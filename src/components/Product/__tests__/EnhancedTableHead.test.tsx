@@ -136,7 +136,7 @@ describe('EnhancedTableHead', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
       const sortButtons = screen.getAllByRole('button');
-      expect(sortButtons).toHaveLength(4); // productName, category, status, actions
+      expect(sortButtons).toHaveLength(4);
     });
 
     it('should not render sort label for selectedStatus column', () => {
@@ -290,7 +290,7 @@ describe('EnhancedTableHead', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
       const allCells = screen.getAllByRole('columnheader');
-      expect(allCells).toHaveLength(mockHeadCells.length + 2); // +1 per checkbox, +1 per cella finale vuota
+      expect(allCells).toHaveLength(mockHeadCells.length + 2);
     });
 
     it('should handle different ProductDTO key types', () => {
