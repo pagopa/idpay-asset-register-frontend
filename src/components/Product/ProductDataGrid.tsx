@@ -308,6 +308,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
             <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
               <Button
+                  data-testid="supervisedBtn"
                   color="primary"
                   variant="contained"
                   sx={{ ...buttonStyle }}

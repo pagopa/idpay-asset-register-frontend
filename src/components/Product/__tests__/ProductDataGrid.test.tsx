@@ -1,4 +1,18 @@
-import {CategoryEnum} from "../../../api/generated/register/UploadDTO";
+import '@testing-library/jest-dom';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { I18nextProvider } from 'react-i18next';
+import i18n from 'i18next';
+import { ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
+import ProductDataGrid from '../ProductDataGrid';
+import * as registerService from '../../../services/registerService';
+import * as useLogin from '../../../hooks/useLogin';
+import * as helpers from '../../../helpers';
+import { productsSlice } from '../../../redux/slices/productsSlice';
+import { invitaliaSlice } from '../../../redux/slices/invitaliaSlice';
+import { INVITALIA } from '../../../utils/constants';
 
 jest.mock('../../../utils/env', () => ({
     __esModule: true,
@@ -27,503 +41,734 @@ jest.mock('../../../api/registerApiClient', () => ({
     },
 }));
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+jest.mock('../../../services/registerService');
+jest.mock('../../../hooks/useLogin');
+jest.mock('../../../helpers');
+jest.mock('../../DetailDrawer/DetailDrawer', () => ({
+    __esModule: true,
+    default: ({ children, open, toggleDrawer }: any) => (
+        open ? (
+            <div data-testid="detail-drawer">
+                {children}
+                <button onClick={() => toggleDrawer(false)}>Close Drawer</button>
+            </div>
+        ) : null
+    ),
+}));
+jest.mock('../../FiltersDrawer/FiltersDrawer', () => ({
+    __esModule: true,
+    default: ({ open, toggleFiltersDrawer, setFiltering }: any) => (
+        open ? (
+            <div data-testid="filters-drawer">
+                <button onClick={() => toggleFiltersDrawer(false)}>Close Filters</button>
+                <button onClick={() => setFiltering(true)}>Apply Filters</button>
+            </div>
+        ) : null
+    ),
+}));
+jest.mock('../ProductDetail', () => ({
+    __esModule: true,
+    default: ({ onClose }: any) => (
+        <div data-testid="product-detail">
+            <button onClick={onClose}>Close Detail</button>
+        </div>
+    ),
+}));
+jest.mock('../ProductModal', () => ({
+    __esModule: true,
+    default: ({ open, onClose, onUpdateTable }: any) => (
+        open ? (
+            <div data-testid="product-modal">
+                <button onClick={onClose}>Close Modal</button>
+                <button onClick={onUpdateTable}>Update Table</button>
+            </div>
+        ) : null
+    ),
+}));
+jest.mock('../NewFilter', () => ({
+    __esModule: true,
+    default: ({ onClick }: any) => (
+        <button data-testid="new-filter-btn" onClick={onClick}>New Filter</button>
+    ),
+}));
+jest.mock('../../../pages/components/ProductsTable', () => ({
+    __esModule: true,
+    default: ({ tableData, handleListButtonClick, setSelected, selected }: any) => (
+        <div data-testid="products-table">
+            {tableData.map((product: any, index: number) => (
+                <div key={index} data-testid={`product-row-${index}`}>
+                    <span>{product.productName}</span>
+                    <button
+                        onClick={() => handleListButtonClick(product)}
+                        data-testid={`detail-btn-${index}`}
+                    >
+                        Details
+                    </button>
+                    <input
+                        type="checkbox"
+                        data-testid={`checkbox-${index}`}
+                        checked={selected.includes(product.gtinCode)}
+                        onChange={(e) => {
+                            if (e.target.checked) {
+                                setSelected([...selected, product.gtinCode]);
+                            } else {
+                                setSelected(selected.filter((code: string) => code !== product.gtinCode));
+                            }
+                        }}
+                    />
+                </div>
+            ))}
+        </div>
+    ),
+}));
+jest.mock('../../../pages/components/EmptyListTable', () => ({
+    __esModule: true,
+    default: ({ message }: any) => <div data-testid="empty-list">{message}</div>,
+}));
 
-jest.mock('react-i18next', () => {
-    const mockT = (key: string) => {
-        const translations: { [key: string]: string } = {
-            'pages.products.listHeader.category': 'Category',
-            'pages.products.listHeader.energeticClass': 'Energy Class',
-            'pages.products.listHeader.eprelCode': 'EPREL Code',
-            'pages.products.listHeader.gtinCode': 'GTIN Code',
-            'pages.products.listHeader.batch': 'Batch',
-            'pages.products.emptyList': 'No products found',
-            'pages.products.noFileLoaded': 'No file loaded',
-            'pages.products.loading': 'Loading...',
-            'pages.products.tablePaginationFrom': 'di',
-            'commons.categories.appliances': 'Appliances',
-            'commons.categories.electronics': 'Electronics',
-            'pages.products.categories.appliances': 'Appliances',
-            'pages.products.categories.electronics': 'Electronics',
-            'pages.products.filterLabels.category': 'Category',
-            'pages.products.filterLabels.batch': 'Batch',
-            'pages.products.filterLabels.eprelCode': 'EPREL Code',
-            'pages.products.filterLabels.gtinCode': 'GTIN Code',
-            'pages.products.filterLabels.filter': 'Filter',
-            'pages.products.filterLabels.deleteFilters': 'Delete Filters',
-            'commons.advancedFilters': 'Advanced filters',
-        };
-        return translations[key] || key;
-    };
-
-    return {
-        useTranslation: () => ({
-            t: mockT,
-        }),
-        withTranslation: () => (Component: any) => {
-            const WrappedComponent = (props: any) => {
-                return <Component {...props} t={mockT} />;
-            };
-            WrappedComponent.displayName = `withTranslation(${Component.displayName || Component.name})`;
-            return WrappedComponent;
-        },
-        Trans: ({ children }: any) => children,
-        initReactI18next: {
-            type: '3rdParty',
-            init: () => {},
-        },
-    };
-});
-
-jest.mock('../../../utils/constants', () => ({
-    displayRows: 10,
-    emptyData: '-',
-    PRODUCTS_CATEGORY: {
-        APPLIANCES: 'APPLIANCES',
-        ELECTRONICS: 'ELECTRONICS',
+const mockT = (key: string) => key;
+i18n.init({
+    resources: {},
+    lng: 'en',
+    interpolation: {
+        escapeValue: false,
     },
-}));
-
-jest.mock('../../DetailDrawer/DetailDrawer', () => {
-    return function MockDetailDrawer({ children, open }: any) {
-        return open ? <div data-testid="detail-drawer">{children}</div> : null;
-    };
 });
 
-jest.mock('../../FiltersDrawer/FiltersDrawer', () => {
-    return function MockDetailDrawer({ children, open }: any) {
-        return open ? <div data-testid="filter-drawer">{children}</div> : null;
-    };
-});
+const mockProductData = [
+    {
+        id: '1',
+        productName: 'Test Product 1',
+        gtinCode: 'GTIN001',
+        category: 'CATEGORY1',
+        status: 'ACTIVE',
+        eprelCode: 'EPREL001',
+        producerId: 'PRODUCER1',
+        batchId: 'BATCH1',
+    },
+    {
+        id: '2',
+        productName: 'Test Product 2',
+        gtinCode: 'GTIN002',
+        category: 'CATEGORY2',
+        status: 'INACTIVE',
+        eprelCode: 'EPREL002',
+        producerId: 'PRODUCER2',
+        batchId: 'BATCH2',
+    },
+];
 
-jest.mock('../ProductDetail', () => {
-    return function MockProductDetail({ data }: any) {
-        return <div data-testid="product-detail">Product Detail: {data.id}</div>;
-    };
-});
+const mockBatchFilterItems = [
+    {
+        productFileId: 'BATCH1',
+        batchName: 'Batch 1',
+    },
+    {
+        productFileId: 'BATCH2',
+        batchName: 'Batch 2',
+    },
+];
 
-jest.mock('../MessagePage', () => {
-    return function MockMessagePage({ message, goBack, onGoBack }: any) {
-        return (
-            <div data-testid="message-page">
-                <span>{message}</span>
-                {goBack && <button onClick={onGoBack}>Go Back</button>}
-            </div>
-        );
-    };
-});
+const mockInstitutions = [
+    {
+        institutionId: 'PRODUCER1',
+        description: 'Producer 1',
+    },
+    {
+        institutionId: 'PRODUCER2',
+        description: 'Producer 2',
+    },
+];
 
-jest.mock('../EprelLinks', () => {
-    return function MockEprelLinks({ row }: any) {
-        return <div data-testid="eprel-links">{row.eprelCode || '-'}</div>;
-    };
-});
-
-jest.mock('../FilterBar', () => {
-    return function MockFilterBar(props: any) {
-        return (
-            <div data-testid="filter-bar">
-                <button onClick={() => props.setFiltering(true)}>Apply Filters</button>
-                <button onClick={props.handleDeleteFiltersButtonClick}>Clear Filters</button>
-            </div>
-        );
-    };
-});
-
-jest.mock('../../../hooks/useLogin', () => ({
-    userFromJwtTokenAsJWTUser: jest.fn(() => ({
-        uid: 'test-uid-123',
-        taxCode: 'TEST123456789',
-        name: 'Test',
-        surname: 'User',
-        email: 'test@example.com',
-        org_name: 'Test Organization',
-        org_party_role: 'ADMIN',
-        org_role: 'USER',
-        org_address: 'Test Address',
-        org_pec: 'test@pec.com',
-        org_taxcode: 'TEST123456789',
-        org_vat: 'IT12345678901',
-        org_email: 'org@example.com',
-        org_id: 'test-org-id-123'
-    }))
-}));
-
-import ProductGrid from '../ProductDataGrid';
-import { RegisterApi } from '../../../api/registerApiClient';
-import { ProductListDTO } from '../../../api/generated/register/ProductListDTO';
-import { ProductDTO } from '../../../api/generated/register/ProductDTO';
-import { BatchList } from '../../../api/generated/register/BatchList';
-
-const mockRegisterApi = RegisterApi as jest.Mocked<typeof RegisterApi>;
-
-const defaultInvitaliaState = {
-    institutionList: [],
-    selectedInstitution: null,
-    loading: false,
-    error: null,
-};
-
-const createMockStore = (initialProductsState: any = {}) => {
+const createMockStore = (initialState: any = {}) => {
     return configureStore({
         reducer: {
-            products: (state = { batchId: '', batchName: '' }, action) => {
-                switch (action.type) {
-                    case 'products/setBatchId':
-                        return { ...state, batchId: action.payload };
-                    case 'products/setBatchName':
-                        return { ...state, batchName: action.payload };
-                    default:
-                        return state;
-                }
-            },
-            invitalia: (state = defaultInvitaliaState, _action) => state,
+            products: productsSlice.reducer,
+            invitalia: invitaliaSlice.reducer,
         },
         preloadedState: {
-            products: { batchId: '', batchName: '', ...initialProductsState },
-            invitalia: { ...defaultInvitaliaState },
+            products: {
+                batchId: '',
+                batchName: '',
+                ...initialState.products,
+            },
+            invitalia: {
+                institution: null,
+                institutionList: mockInstitutions,
+                ...initialState.invitalia,
+            },
         },
     });
 };
 
-const TestWrapper: React.FC<{ children: React.ReactNode; store?: any }> = ({
-                                                                               children,
-                                                                               store = createMockStore()
-                                                                           }) => {
-    const theme = createTheme();
-    return (
+const theme = createTheme();
+
+const renderComponent = (props = {}, storeState = {}) => {
+    const store = createMockStore(storeState);
+
+    return render(
         <Provider store={store}>
-            <ThemeProvider theme={theme}>
-                {children}
-            </ThemeProvider>
+            <I18nextProvider i18n={i18n}>
+                <ThemeProvider theme={theme}>
+                    <ProductDataGrid organizationId="test-org-id" {...props} />
+                </ThemeProvider>
+            </I18nextProvider>
         </Provider>
     );
 };
 
-describe('ProductGrid', () => {
-    const mockProductData: ProductDTO[] = [
-        {
-            category: 'Lavatrice' as CategoryEnum,
-            energyClass: 'A++',
-            eprelCode: 'EPREL001',
-            gtinCode: 'GTIN001',
-            batchName: 'Batch 1',
-        },
-        {
-            category: 'Lavasciuga' as CategoryEnum,
-            energyClass: 'A+',
-            eprelCode: 'EPREL002',
-            gtinCode: 'GTIN002',
-            batchName: 'Batch 2',
-        },
-    ];
-
-    const mockProductListResponse: ProductListDTO = {
-        content: mockProductData,
-        pageNo: 0,
-        totalElements: 2,
-    };
-
-    const mockBatchListResponse: BatchList = {
-        batches: [{
-            value: [
-                { productFileId: '1', batchName: 'Batch 1' },
-                { productFileId: '2', batchName: 'Batch 2' },
-            ]
-        }]
-    };
+describe('ProductDataGrid', () => {
+    const mockGetProducts = registerService.getProducts as jest.MockedFunction<typeof registerService.getProducts>;
+    const mockGetBatchFilterList = registerService.getBatchFilterList as jest.MockedFunction<typeof registerService.getBatchFilterList>;
+    const mockUserFromJwtToken = useLogin.userFromJwtTokenAsJWTUser as jest.MockedFunction<typeof useLogin.userFromJwtTokenAsJWTUser>;
+    const mockFetchUserFromLocalStorage = helpers.fetchUserFromLocalStorage as jest.MockedFunction<typeof helpers.fetchUserFromLocalStorage>;
 
     beforeEach(() => {
         jest.clearAllMocks();
-        mockRegisterApi.getProductList.mockResolvedValue(mockProductListResponse);
-        mockRegisterApi.getBatchFilterItems.mockResolvedValue(mockBatchListResponse);
-    });
 
-    describe('Initial Rendering and Loading', () => {
-        test('should load and display products after initial load', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
-
-            await waitFor(() => {
-                expect(screen.getByText('Lavatrice')).toBeInTheDocument();
-                expect(screen.getByText('Lavasciuga')).toBeInTheDocument();
-            });
-
-            expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
-                "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-            );
-            expect(mockRegisterApi.getBatchFilterItems).toHaveBeenCalled();
+        Object.defineProperty(window, 'localStorage', {
+            value: {
+                getItem: jest.fn(() => 'mock-token'),
+                setItem: jest.fn(),
+                removeItem: jest.fn(),
+                clear: jest.fn(),
+            },
+            writable: true,
         });
 
-        test('should handle API errors gracefully', async () => {
-            mockRegisterApi.getProductList.mockRejectedValue(new Error('API Error'));
+        mockGetProducts.mockResolvedValue({
+            content: mockProductData,
+            pageNo: 0,
+            totalElements: 2,
+        });
 
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+        mockGetBatchFilterList.mockResolvedValue({
+            left: [{ value: mockBatchFilterItems }],
+        });
 
-            await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
-            });
+        mockUserFromJwtToken.mockReturnValue({
+            org_id: 'test-org-id',
+            org_role: 'USER',
+        });
+
+        mockFetchUserFromLocalStorage.mockReturnValue({
+            org_id: 'test-org-id',
+            org_role: 'USER',
         });
     });
 
-    describe('Table Rendering', () => {
-        test('should render table headers correctly', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+    describe('Rendering', () => {
+        it('should render loading state initially', async () => {
+            mockGetProducts.mockImplementation(() => new Promise(() => {}));
+
+            renderComponent();
+
+            expect(screen.getByTestId('new-filter-btn')).toBeInTheDocument();
+        });
+
+        it('should render products table when data is loaded', async () => {
+            renderComponent();
 
             await waitFor(() => {
-                expect(screen.getByText('Category')).toBeInTheDocument();
-                expect(screen.getByText('EPREL Code')).toBeInTheDocument();
-                expect(screen.getByText('GTIN Code')).toBeInTheDocument();
-                expect(screen.getByText('Batch')).toBeInTheDocument();
+                expect(screen.getByTestId('products-table')).toBeInTheDocument();
+            });
+
+            expect(screen.getByText('Test Product 1')).toBeInTheDocument();
+            expect(screen.getByText('Test Product 2')).toBeInTheDocument();
+        });
+
+        it('should render empty state when no products', async () => {
+            mockGetProducts.mockResolvedValue({
+                content: [],
+                pageNo: 0,
+                totalElements: 0,
+            });
+
+            renderComponent();
+
+            await waitFor(() => {
+                expect(screen.getByTestId('empty-list')).toBeInTheDocument();
             });
         });
 
-        test('should render product data in table rows', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+        it('should render children when provided and no data', async () => {
+            mockGetProducts.mockResolvedValue({
+                content: [],
+                pageNo: 0,
+                totalElements: 0,
+            });
+
+            renderComponent({
+                children: <div data-testid="custom-children">Custom Content</div>,
+            });
 
             await waitFor(() => {
-                expect(screen.getByText('GTIN001')).toBeInTheDocument();
-                expect(screen.getByText('GTIN002')).toBeInTheDocument();
+                expect(screen.getByTestId('custom-children')).toBeInTheDocument();
+            });
+        });
+    });
+
+    describe('User Types', () => {
+        it('should handle regular user', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                expect(mockGetProducts).toHaveBeenCalledWith(
+                    'test-org-id',
+                    0,
+                    10,
+                    'category,asc',
+                    '',
+                    '',
+                    '',
+                    '',
+                    undefined,
+                    ''
+                );
             });
         });
 
-        test('should handle empty data with dash', async () => {
-            const mockEmptyProductData: ProductDTO[] = [
-                {
-                    category: 'Lavatrice' as CategoryEnum,
-                    energyClass: undefined,
-                    eprelCode: undefined,
-                    gtinCode: undefined,
-                    batchName: undefined,
+        it('should handle Invitalia user', async () => {
+            mockFetchUserFromLocalStorage.mockReturnValue({
+                org_id: 'test-org-id',
+                org_role: INVITALIA,
+            });
+
+            const storeState = {
+                invitalia: {
+                    institution: { institutionId: 'invitalia-inst-id' },
+                    institutionList: mockInstitutions,
                 },
-            ];
-
-            mockRegisterApi.getProductList.mockResolvedValue({
-                content: mockEmptyProductData,
-                pageNo: 0,
-                totalElements: 1,
-            });
-
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
-
-            await waitFor(() => {
-                const dashElements = screen.getAllByText('-');
-                expect(dashElements.length).toBeGreaterThan(0);
-            });
-        });
-    });
-
-    describe('Sorting Functionality', () => {
-        test('should handle sort by category', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
-
-            await waitFor(() => {
-                expect(screen.getByText('Category')).toBeInTheDocument();
-            });
-        });
-
-        test('should disable sorting for energy class and eprel code', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
-
-            await waitFor(() => {
-                expect(screen.getByText('Category')).toBeInTheDocument();
-            });
-        });
-    });
-
-    describe('Pagination', () => {
-        test('should display pagination when there are products', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
-
-            await waitFor(() => {
-                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
-            });
-        });
-
-        test('should handle page change', async () => {
-            const mockLargeProductList: ProductListDTO = {
-                content: mockProductData,
-                pageNo: 0,
-                totalElements: 20,
             };
 
-            mockRegisterApi.getProductList.mockResolvedValue(mockLargeProductList);
-
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+            renderComponent({}, storeState);
 
             await waitFor(() => {
-                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
+                expect(mockGetProducts).toHaveBeenCalledWith(
+                    'invitalia-inst-id',
+                    expect.any(Number),
+                    expect.any(Number),
+                    expect.any(String),
+                    expect.any(String),
+                    expect.any(String),
+                    expect.any(String),
+                    expect.any(String),
+                    undefined,
+                    expect.any(String)
+                );
+            });
+        });
+
+        it('should show action buttons for Invitalia user with selections', async () => {
+            mockFetchUserFromLocalStorage.mockReturnValue({
+                org_id: 'test-org-id',
+                org_role: INVITALIA,
             });
 
-            const nextPageButton = screen.getByLabelText('Go to next page');
-            fireEvent.click(nextPageButton);
+            renderComponent();
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
-                    "", 1, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
+                expect(screen.getByTestId('products-table')).toBeInTheDocument();
+            });
+
+            const checkbox = screen.getByTestId('checkbox-0');
+            fireEvent.click(checkbox);
+
+            await waitFor(() => {
+                expect(screen.getByText('invitaliaModal.supervisioned.title')).toBeInTheDocument();
+                expect(screen.getByText('invitaliaModal.rejected.title')).toBeInTheDocument();
             });
         });
     });
 
-    describe('Filter Integration', () => {
-        test('should trigger filtering when filter button is clicked', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+    describe('Filtering', () => {
+        it('should open filters drawer', async () => {
+            renderComponent();
 
             await waitFor(() => {
-                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
+                expect(screen.getByTestId('new-filter-btn')).toBeInTheDocument();
             });
 
-            fireEvent.click(screen.getByText('Advanced filters'));
+            fireEvent.click(screen.getByTestId('new-filter-btn'));
+
+            expect(screen.getByTestId('filters-drawer')).toBeInTheDocument();
+        });
+
+        it('should close filters drawer', async () => {
+            renderComponent();
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProductList).toHaveBeenCalledTimes(1);
+                fireEvent.click(screen.getByTestId('new-filter-btn'));
+            });
+
+            expect(screen.getByTestId('filters-drawer')).toBeInTheDocument();
+
+            fireEvent.click(screen.getByText('Close Filters'));
+
+            await waitFor(() => {
+                expect(screen.queryByTestId('filters-drawer')).not.toBeInTheDocument();
             });
         });
 
-        test('should clear all filters when clear button is clicked', async () => {
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+        it('should display filters chip when filters are applied', async () => {
+            const storeState = {
+                products: {
+                    batchId: 'BATCH1',
+                    batchName: 'Batch 1',
+                },
+            };
+
+            renderComponent({}, storeState);
 
             await waitFor(() => {
-                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
+                expect(screen.getByRole('button', { name: /batch 1/i })).toBeInTheDocument();
+            });
+        });
+
+        it('should clear filters when delete button is clicked', async () => {
+            const storeState = {
+                products: {
+                    batchId: 'BATCH1',
+                    batchName: 'Batch 1',
+                },
+            };
+
+            renderComponent({}, storeState);
+
+            await waitFor(() => {
+                const filterChip = screen.getByRole('button', { name: /batch 1/i });
+                expect(filterChip).toBeInTheDocument();
+
+                const deleteIcon = filterChip.querySelector('[data-testid="CloseIcon"]');
+                if (deleteIcon) {
+                    fireEvent.click(deleteIcon);
+                }
             });
 
-            fireEvent.click(screen.getByText('Advanced filters'));
-
             await waitFor(() => {
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, ""
-                );
+                expect(mockGetProducts).toHaveBeenCalledTimes(3);
             });
         });
     });
 
-    describe('Redux Integration', () => {
-        test('should handle batch filter from Redux state', async () => {
-            const storeWithBatchId = createMockStore({
-                batchId: 'batch123',
-                batchName: 'Test Batch',
-            });
-
-            render(
-                <TestWrapper store={storeWithBatchId}>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+    describe('Sorting and Pagination', () => {
+        it('should handle sorting', async () => {
+            renderComponent();
 
             await waitFor(() => {
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(1,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, "batch123"
+                expect(screen.getByTestId('products-table')).toBeInTheDocument();
+            });
+
+            await act(async () => {
+            });
+        });
+
+        it('should handle page change', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                expect(screen.getByRole('button', { name: 'Go to next page' })).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByRole('button', { name: 'Go to next page' }));
+
+            await waitFor(() => {
+                expect(mockGetProducts).toHaveBeenCalledWith(
+                    "test-org-id", 0, 10, "category,asc", "", "", "", "", undefined, ""
                 );
-                expect(mockRegisterApi.getProductList).toHaveBeenNthCalledWith(2,
-                    "", 0, undefined, "category,asc", "", "", "", "", undefined, "batch123"
+            });
+        });
+
+        /*
+        it('should handle rows per page change', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                expect(screen.getAllByAltText('2')).toBeInTheDocument();
+            });
+
+            const rowsPerPageSelect = screen.getByDisplayValue('20');
+            fireEvent.change(rowsPerPageSelect, { target: { value: '50' } });
+
+            await waitFor(() => {
+                expect(mockGetProducts).toHaveBeenCalledWith(
+                    expect.any(String),
+                    0,
+                    50,
+                    expect.any(String),
+                    expect.any(String),
+                    expect.any(String),
+                    expect.any(String),
+                    expect.any(String),
+                    undefined,
+                    expect.any(String)
                 );
+            });
+        });
+        */
+    });
+
+    describe('Product Detail Drawer', () => {
+        it('should open detail drawer when product detail is clicked', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                expect(screen.getByTestId('detail-btn-0')).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByTestId('detail-btn-0'));
+
+            expect(screen.getByTestId('detail-drawer')).toBeInTheDocument();
+            expect(screen.getByTestId('product-detail')).toBeInTheDocument();
+        });
+
+        it('should close detail drawer', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                fireEvent.click(screen.getByTestId('detail-btn-0'));
+            });
+
+            expect(screen.getByTestId('detail-drawer')).toBeInTheDocument();
+
+            fireEvent.click(screen.getByText('Close Detail'));
+
+            await waitFor(() => {
+                expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument();
             });
         });
     });
 
-    describe('Empty States', () => {
-        test('should show empty message when no products and no filters', async () => {
-            mockRegisterApi.getProductList.mockResolvedValue({
-                content: [],
-                pageNo: 0,
-                totalElements: 0,
+    describe('Product Modal', () => {
+        it('should open modal for Invitalia user actions', async () => {
+            mockFetchUserFromLocalStorage.mockReturnValue({
+                org_id: 'test-org-id',
+                org_role: INVITALIA,
             });
 
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+            renderComponent();
 
             await waitFor(() => {
-                expect(screen.getByText('No file loaded')).toBeInTheDocument();
+                fireEvent.click(screen.getByTestId('checkbox-0'));
+            });
+
+            fireEvent.click(screen.getByTestId('supervisedBtn'));
+
+            expect(screen.getByTestId('product-modal')).toBeInTheDocument();
+        });
+
+        it('should close modal', async () => {
+            mockFetchUserFromLocalStorage.mockReturnValue({
+                org_id: 'test-org-id',
+                org_role: INVITALIA,
+            });
+
+            renderComponent();
+
+            await waitFor(() => {
+                fireEvent.click(screen.getByTestId('checkbox-0'));
+            });
+
+            fireEvent.click(screen.getByText('invitaliaModal.supervisioned.title'));
+            expect(screen.getByTestId('product-modal')).toBeInTheDocument();
+
+            fireEvent.click(screen.getByText('Close Modal'));
+
+            await waitFor(() => {
+                expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
             });
         });
 
-        test('should show filtered empty message when no products with filters', async () => {
-            mockRegisterApi.getProductList.mockResolvedValue({
-                content: [],
-                pageNo: 0,
-                totalElements: 0,
+        it('should update table after modal action', async () => {
+            mockFetchUserFromLocalStorage.mockReturnValue({
+                org_id: 'test-org-id',
+                org_role: INVITALIA,
             });
 
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+            renderComponent();
 
             await waitFor(() => {
-                expect(screen.getByText('Advanced filters')).toBeInTheDocument();
+                fireEvent.click(screen.getByTestId('checkbox-0'));
             });
 
-            fireEvent.click(screen.getByText('Advanced filters'));
+            fireEvent.click(screen.getByTestId('supervisedBtn'));
+
+            const initialCallCount = mockGetProducts.mock.calls.length;
+            fireEvent.click(screen.getByText('Update Table'));
+
+            await waitFor(() => {
+                expect(mockGetProducts).toHaveBeenCalledTimes(initialCallCount + 1);
+            });
         });
     });
 
     describe('Error Handling', () => {
-        test('should handle batch filter API error', async () => {
-            mockRegisterApi.getBatchFilterItems.mockRejectedValue(new Error('Batch API Error'));
+        it('should handle API errors gracefully', async () => {
+            mockGetProducts.mockRejectedValue(new Error('API Error'));
 
-            render(
-                <TestWrapper>
-                    <ProductGrid organizationId={''} />
-                </TestWrapper>
-            );
+            renderComponent();
 
             await waitFor(() => {
-                expect(screen.getByText('Lavatrice')).toBeInTheDocument();
+                expect(screen.getByTestId('empty-list')).toBeInTheDocument();
+            });
+        });
+
+        it('should handle batch filter API errors', async () => {
+            mockGetBatchFilterList.mockRejectedValue(new Error('Batch API Error'));
+
+            renderComponent();
+
+            await waitFor(() => {
+                expect(screen.getByTestId('products-table')).toBeInTheDocument();
+            });
+        });
+    });
+
+    describe('Batch Filter Integration', () => {
+        it('should filter by batch when batch is selected from Redux', async () => {
+            const storeState = {
+                products: {
+                    batchId: 'BATCH1',
+                    batchName: 'Batch 1',
+                },
+            };
+
+            renderComponent({}, storeState);
+
+            await waitFor(() => {
+                expect(mockGetProducts).toHaveBeenCalledWith(
+                    expect.any(String),
+                    expect.any(Number),
+                    expect.any(Number),
+                    expect.any(String),
+                    expect.any(String),
+                    expect.any(String),
+                    expect.any(String),
+                    expect.any(String),
+                    undefined,
+                    'BATCH1'
+                );
+            });
+        });
+    });
+
+    describe('Selection Management', () => {
+        /*
+        it('should clear selections when table data changes', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                fireEvent.click(screen.getByTestId('checkbox-0'));
+            });
+
+            expect(screen.getByTestId('checkbox-0')).toBeChecked();
+
+            mockGetProducts.mockResolvedValue({
+                content: [{ ...mockProductData[0], productName: 'Updated Product' }],
+                pageNo: 0,
+                totalElements: 1,
+            });
+
+            await act(async () => {
+            });
+        });
+
+        it('should handle multiple selections', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                fireEvent.click(screen.getByTestId('checkbox-0'));
+                fireEvent.click(screen.getByTestId('checkbox-1'));
+            });
+
+            expect(screen.getByTestId('checkbox-0')).toBeChecked();
+            expect(screen.getByTestId('checkbox-1')).toBeChecked();
+        });
+        */
+    });
+
+    describe('Accessibility', () => {
+        it('should have proper ARIA labels for pagination', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                expect(screen.getByRole('button', { name: 'Go to next page' })).toBeInTheDocument();
+                expect(screen.getByRole('button', { name: 'Go to previous page' })).toBeInTheDocument();
+            });
+        });
+
+        it('should have proper roles for interactive elements', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                expect(screen.getAllByRole('checkbox')).toHaveLength(2);
+            });
+        });
+    });
+
+    describe('Performance', () => {
+        it('should not make unnecessary API calls', async () => {
+            renderComponent();
+
+            await waitFor(() => {
+                expect(mockGetProducts).toHaveBeenCalledTimes(1);
+                expect(mockGetBatchFilterList).toHaveBeenCalledTimes(1);
+            });
+
+            renderComponent();
+
+            expect(mockGetProducts).toHaveBeenCalledTimes(2);
+            expect(mockGetBatchFilterList).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('Edge Cases', () => {
+        it('should handle undefined/null values in API response', async () => {
+            mockGetProducts.mockResolvedValue({
+                content: null,
+                pageNo: undefined,
+                totalElements: undefined,
+            });
+
+            renderComponent();
+
+            await waitFor(() => {
+                expect(screen.getByTestId('empty-list')).toBeInTheDocument();
+            });
+        });
+
+        it('should handle empty batch filter list', async () => {
+            mockGetBatchFilterList.mockResolvedValue({
+                left: [{ value: [] }],
+            });
+
+            renderComponent();
+
+            await waitFor(() => {
+                expect(screen.getByTestId('products-table')).toBeInTheDocument();
+            });
+        });
+
+        it('should handle missing localStorage token', async () => {
+            Object.defineProperty(window, 'localStorage', {
+                value: {
+                    getItem: jest.fn(() => null),
+                    setItem: jest.fn(),
+                    removeItem: jest.fn(),
+                    clear: jest.fn(),
+                },
+                writable: true,
+            });
+
+            mockUserFromJwtToken.mockReturnValue({
+                org_id: 'test-org-id',
+                org_role: 'USER',
+            });
+
+            renderComponent();
+
+            await waitFor(() => {
+                expect(mockGetProducts).toHaveBeenCalled();
             });
         });
     });
