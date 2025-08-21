@@ -19,7 +19,27 @@ import {ProductDTO} from "./generated/register/ProductDTO";
 import { ProductsUpdateDTO } from './generated/register/ProductsUpdateDTO';
 import { ProductListDTO } from './generated/register/ProductListDTO';
 
-const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
+const rawFetchApi = buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION);
+
+const sanitizedFetchApi: typeof rawFetchApi = (input, init) => {
+  const headers = new Headers(init?.headers ?? {});
+  const toDelete: Array<string> = [];
+  headers.forEach((value, key) => {
+    if (
+        value === null ||
+        value === '' ||
+        value === 'undefined' ||
+        value === 'null'
+    ) {
+      // eslint-disable-next-line functional/immutable-data
+      toDelete.push(key);
+    }
+  });
+  toDelete.forEach((k) => headers.delete(k));
+  return rawFetchApi(input, { ...init, headers });
+};
+
+const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation: (arg0: any) => any) => (params: any) => {
   const token = storageTokenOps.read();
   return wrappedOperation({
     ...params,
@@ -30,7 +50,7 @@ const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (par
 const registerClient = createClient({
   baseUrl: ENV.URL_API.OPERATION,
   basePath: '',
-  fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION),
+  fetchApi: sanitizedFetchApi,
   withDefaults: withBearerAndPartyId,
 });
 
@@ -90,7 +110,7 @@ function buildProductParams(
 }
 
 export const RegisterApi = {
-   getProduct: async (
+    getProduct: async (
     xOrganizationSelected: string,
     page?: number,
     size?: number,
@@ -179,16 +199,14 @@ export const RegisterApi = {
   },
   getBatchFilterItems: async (xOrganizationSelected: string): Promise<BatchList> => {
     try {
-      const cleanHeader =
-          xOrganizationSelected &&
-          xOrganizationSelected.trim() !== '' &&
-          xOrganizationSelected !== 'undefined'
-              ? xOrganizationSelected
-              : "";
+      const trimmed = (xOrganizationSelected ?? '').trim();
 
-      const params = {
-        'x-organization-selected': cleanHeader
-      };
+      const params: Record<string, string> = {};
+
+      if (trimmed) {
+        // eslint-disable-next-line functional/immutable-data
+        params['x-organization-selected'] = trimmed;
+      }
 
       return await registerClient.getBatchNameList(params);
     } catch (error) {
