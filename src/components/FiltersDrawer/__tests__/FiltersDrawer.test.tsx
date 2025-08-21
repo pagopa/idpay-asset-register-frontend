@@ -197,4 +197,117 @@ describe('FiltersDrawer', () => {
         expect(props.handleDeleteFiltersButtonClick).toHaveBeenCalled();
         expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
     });
+
+    it('filter button is disabled when all filters are empty', () => {
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        const props = defaultProps();
+        renderWithProviders(<FiltersDrawer {...props} />);
+
+        const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+        expect(filterBtn).toBeDisabled();
+    });
+
+    it('filter button triggers callbacks when enabled and clicked', () => {
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        const props = { ...defaultProps(), statusFilter: 'pages.products.categories.STATE_A' };
+        renderWithProviders(<FiltersDrawer {...props} />);
+
+        const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+        expect(filterBtn).not.toBeDisabled();
+
+        fireEvent.click(filterBtn);
+        expect(props.setFiltering).toHaveBeenCalledWith(true);
+        expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
+    });
+
+    it('delete filters button is enabled when errorStatus=true even if no interaction/filters', () => {
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        const props = { ...defaultProps(), errorStatus: true };
+        renderWithProviders(<FiltersDrawer {...props} />);
+
+        const deleteBtn = screen.getByText('pages.products.filterLabels.deleteFilters');
+        expect(deleteBtn).not.toBeDisabled();
+    });
+
+    it('whitespace-only inputs do not enable filter button (trim)', () => {
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        const props = defaultProps();
+        renderWithProviders(<FiltersDrawer {...props} />);
+
+        const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
+        fireEvent.change(eprelInput, { target: { value: '     ' } });
+
+        const gtinInput = screen.getByLabelText('pages.products.filterLabels.gtinCode');
+        fireEvent.change(gtinInput, { target: { value: '  ' } });
+
+        const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+        expect(filterBtn).toBeDisabled();
+    });
+
+    it('batch select renders all provided options', async () => {
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        const props = defaultProps();
+        renderWithProviders(<FiltersDrawer {...props} />);
+
+        const batchSelect = screen.getByLabelText('pages.products.filterLabels.batch');
+        fireEvent.mouseDown(batchSelect);
+
+        const opt1 = await screen.findByRole('option', { name: 'Batch 1' });
+        const opt2 = await screen.findByRole('option', { name: 'Batch 2' });
+        expect(opt1).toBeInTheDocument();
+        expect(opt2).toBeInTheDocument();
+    });
+
+    it('category select shows exactly PRODUCTS_CATEGORY keys', async () => {
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        const props = defaultProps();
+        renderWithProviders(<FiltersDrawer {...props} />);
+
+        const catSelect = screen.getByLabelText('pages.products.filterLabels.category');
+        fireEvent.mouseDown(catSelect);
+
+        const optA = await screen.findByRole('option', { name: 'pages.products.categories.CATEGORY_A' });
+        const optB = await screen.findByRole('option', { name: 'pages.products.categories.CATEGORY_B' });
+        expect(optA).toBeInTheDocument();
+        expect(optB).toBeInTheDocument();
+    });
+
+    it('onClose of Drawer triggers toggleFiltersDrawer(false)', () => {
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        const props = defaultProps();
+        renderWithProviders(<FiltersDrawer {...props} />);
+
+        fireEvent.keyDown(document.body, { key: 'Escape' });
+        const closeBtn = screen.getByTestId('open-detail-button');
+        fireEvent.click(closeBtn);
+
+        expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
+    });
+});
+
+describe('getChipColor (real constants, no mock)', () => {
+    let getChipColor: any;
+    let REAL_STATES: any;
+
+    beforeAll(() => {
+        jest.isolateModules(() => {
+            REAL_STATES = jest.requireActual('../../../utils/constants').PRODUCTS_STATES;
+            const mod = jest.requireActual('../FiltersDrawer');
+            getChipColor = mod.getChipColor;
+        });
+    });
+
+    it('returns expected colors for each known status', () => {
+        expect(getChipColor(REAL_STATES.UPLOADED)).toBe('default');
+        expect(getChipColor(REAL_STATES.WAIT_APPROVED)).toBe('default');
+        expect(getChipColor(REAL_STATES.SUPERVISED)).toBe('default');
+        expect(getChipColor(REAL_STATES.APPROVED)).toBe('default');
+        expect(getChipColor(REAL_STATES.REJECTED)).toBe('default');
+    });
+
+    it('returns default for unknown/null/undefined', () => {
+        expect(getChipColor('SOMETHING_ELSE')).toBe('default');
+        expect(getChipColor(undefined)).toBe('default');
+        expect(getChipColor(null as unknown as string)).toBe('default');
+    });
 });
