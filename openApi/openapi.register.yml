@@ -249,36 +249,13 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/supervisioned:
+  /products/update-status/supervised:
     post:
       tags:
         - products
       summary: Mark products as in supervision
-      description: 'ENG: Set the status of a list of products to SUPERVISIONED. IT: Imposta lo stato di una lista di prodotti su SUPERVISIONED.        '
+      description: 'ENG: Set the status of a list of products to SUPERVISED. IT: Imposta lo stato di una lista di prodotti su SUPERVISED.        '
       operationId: updateProductStatusSupervisioned
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProductsUpdateDTO'
-      responses:
-        '200':
-          $ref: '#/components/responses/POST_products_update-status_200_Response'
-        '400':
-          $ref: '#/components/responses/POST_products_update-status_400_Response'
-        '401':
-          $ref: '#/components/responses/POST_products_update-status_401_Response'
-        '429':
-          $ref: '#/components/responses/POST_products_update-status_429_Response'
-        '500':
-          $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/suspended:
-    post:
-      tags:
-        - products
-      summary: Mark products as in suspend
-      description: 'ENG: Set the status of a list of products to SUSPENDED. IT: Imposta lo stato di una lista di prodotti su SUSPENDED.        '
-      operationId: updateProductStatusSuspended
       requestBody:
         content:
           application/json:
@@ -302,29 +279,6 @@ paths:
       summary: Reject a list of products
       description: 'ENG: Reject a list of products by updating their status to REJECTED. IT: Rifiuta una lista di prodotti aggiornando il loro stato a REJECTED. '
       operationId: updateProductStatusRejected
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProductsUpdateDTO'
-      responses:
-        '200':
-          $ref: '#/components/responses/POST_products_update-status_200_Response'
-        '400':
-          $ref: '#/components/responses/POST_products_update-status_400_Response'
-        '401':
-          $ref: '#/components/responses/POST_products_update-status_401_Response'
-        '429':
-          $ref: '#/components/responses/POST_products_update-status_429_Response'
-        '500':
-          $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/wait-rejected:
-    post:
-      tags:
-        - products
-      summary: Request reject for a list of products
-      description: 'ENG: Request reject a list of products by updating their status to WAIT_REJECTED. IT: Richiede rifiuto di una lista di prodotti aggiornando il loro stato a WAIT_REJECTED. '
-      operationId: updateProductStatusWaitRejected
       requestBody:
         content:
           application/json:
@@ -772,9 +726,7 @@ components:
             - APPROVED
             - WAIT_APPROVED
             - REJECTED
-            - WAIT_REJECTED
-            - SUPERVISIONED
-            - SUSPENDED
+            - SUPERVISED
             - UPLOADED
         model:
           type: string
@@ -997,10 +949,19 @@ components:
             maxLength: 14
             pattern: ^[a-zA-Z0-9]{1,14}$
           maxItems: 100
+        currentStatus:
+          type: string
+          enum:
+            - APPROVED
+            - WAIT_APPROVED
+            - REJECTED
+            - SUPERVISED
+            - UPLOADED
         motivation:
           type: string
           maxLength: 255
           pattern: .*
+
   securitySchemes:
     Bearer:
       type: apiKey
@@ -2015,6 +1976,7 @@ components:
     x_organization_selected_header:
       name: x-organization-selected
       in: header
+      required: false
       schema:
         type: string
         maxLength: 36
@@ -2081,9 +2043,7 @@ components:
           - APPROVED
           - WAIT_APPROVED
           - REJECTED
-          - WAIT_REJECTED
-          - SUPERVISIONED
-          - SUSPENDED
+          - SUPERVISED
           - UPLOADED
     productName_query:
       name: productName
