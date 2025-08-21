@@ -43,11 +43,11 @@ type Props = {
 
 export const getChipColor = (status?: PRODUCTS_STATES | string): "default" | "primary" | "indigo" | "success" | "error" | "secondary" | "info" | "warning" | undefined => {
     switch (status) {
-        case PRODUCTS_STATES.SUSPENDED:
+        case PRODUCTS_STATES.UPLOADED:
             return 'default';
         case PRODUCTS_STATES.WAIT_APPROVED:
             return 'info';
-        case PRODUCTS_STATES.SUPERVISIONED:
+        case PRODUCTS_STATES.SUPERVISED:
             return 'primary';
         case PRODUCTS_STATES.APPROVED:
             return 'success' ;
