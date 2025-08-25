@@ -1,18 +1,18 @@
 import { categoryList } from '../helpers';
-import { PRODUCTS_CATEGORY } from '../../../utils/constants';
+import {PRODUCTS_CATEGORIES} from '../../../utils/constants';
 import { downloadCsv } from '../helpers';
 
 describe('categoryList', () => {
     it('should contain all expected categories with correct labels and values', () => {
         const expectedCategories = [
-            { label: 'commons.categories.tumbledryers', value: PRODUCTS_CATEGORY.TUMBLEDRYERS },
-            { label: 'commons.categories.rangehoods', value: PRODUCTS_CATEGORY.RANGEHOODS },
-            { label: 'commons.categories.ovens', value: PRODUCTS_CATEGORY.OVENS },
-            { label: 'commons.categories.refrigeratingappl', value: PRODUCTS_CATEGORY.REFRIGERATINGAPPL },
-            { label: 'commons.categories.washerdriers', value: PRODUCTS_CATEGORY.WASHERDRIERS },
-            { label: 'commons.categories.dishwashers', value: PRODUCTS_CATEGORY.DISHWASHERS },
-            { label: 'commons.categories.washingmachines', value: PRODUCTS_CATEGORY.WASHINGMACHINES },
-            { label: 'commons.categories.cookinghobs', value: PRODUCTS_CATEGORY.COOKINGHOBS },
+            { label: 'commons.categories.tumbledryers', value: PRODUCTS_CATEGORIES.TUMBLEDRYERS },
+            { label: 'commons.categories.rangehoods', value: PRODUCTS_CATEGORIES.RANGEHOODS },
+            { label: 'commons.categories.ovens', value: PRODUCTS_CATEGORIES.OVENS },
+            { label: 'commons.categories.refrigeratingappl', value: PRODUCTS_CATEGORIES.REFRIGERATINGAPPL },
+            { label: 'commons.categories.washerdriers', value: PRODUCTS_CATEGORIES.WASHERDRIERS },
+            { label: 'commons.categories.dishwashers', value: PRODUCTS_CATEGORIES.DISHWASHERS },
+            { label: 'commons.categories.washingmachines', value: PRODUCTS_CATEGORIES.WASHINGMACHINES },
+            { label: 'commons.categories.cookinghobs', value: PRODUCTS_CATEGORIES.COOKINGHOBS },
         ];
 
         expect(categoryList).toEqual(expectedCategories);
