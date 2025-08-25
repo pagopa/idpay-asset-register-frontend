@@ -20,11 +20,7 @@ type Props = {
   onClose?: () => void;
 };
 
-const callApprovedApi = async (
-  gtinCodes: Array<string>,
-  status: string,
-  motivation: string
-) => {
+const callApprovedApi = async (gtinCodes: Array<string>, status: string, motivation: string) => {
   try {
     await setApprovedStatusList(gtinCodes, status, motivation);
   } catch (error) {
@@ -32,11 +28,7 @@ const callApprovedApi = async (
   }
 };
 
-const callRejectedApi = async (
-    gtinCodes: Array<string>,
-    status: string,
-    motivation: string
-) => {
+const callRejectedApi = async (gtinCodes: Array<string>, status: string, motivation: string) => {
   try {
     await setRejectedStatusList(gtinCodes, status, motivation);
   } catch (error) {
@@ -204,9 +196,9 @@ function ProductInfoRows({ data, status, children }: ProductInfoRowsProps) {
           ...baseRows,
           {
             label: t('pages.productDetail.motivation'),
-            value: data?.motivation || EMPTY_DATA,
+            value: (data as any)?.motivation || EMPTY_DATA,
             renderCustom: () => {
-              const motivationValue = data?.motivation || EMPTY_DATA;
+              const motivationValue = (data as any)?.motivation || EMPTY_DATA;
               const truncatedMotivation = truncateString(motivationValue, MAX_LENGTH_DETAILL_PR);
               return (
                 <ProductInfoRow
@@ -258,12 +250,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const { t } = useTranslation();
 
   const handleConfirmRestore = async () => {
-    await handleOpenModal(
-      PRODUCTS_STATES.APPROVED,
-      [data.gtinCode],
-      '',
-      EMPTY_DATA
-    );
+    await handleOpenModal(PRODUCTS_STATES.APPROVED, [data.gtinCode], '', EMPTY_DATA);
     setRestoreDialogOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();
@@ -320,7 +307,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         gtinCodes={[data.gtinCode]}
         productName={data.productName}
         actionType="rejected"
-        status={""}
+        status={''}
         onUpdateTable={onUpdateTable}
       />
       <ProductModal
@@ -329,7 +316,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         gtinCodes={[data.gtinCode]}
         productName={data.productName}
         actionType="supervisioned"
-        status={""}
+        status={''}
         onUpdateTable={onUpdateTable}
       />
     </Box>
