@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -11,11 +11,11 @@ import {
 } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
-import {useSelector} from "react-redux";
+import { useSelector } from 'react-redux';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import {INVITALIA, PRODUCTS_CATEGORY, PRODUCTS_STATES} from '../../utils/constants';
-import {fetchUserFromLocalStorage} from "../../helpers";
-import {institutionListSelector} from "../../redux/slices/invitaliaSlice";
+import {PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES} from '../../utils/constants';
+import { fetchUserFromLocalStorage } from '../../helpers';
+import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { BatchFilterItems } from './helpers';
 
 interface FilterProps {
@@ -69,7 +69,7 @@ export default function FilterBar({
 }: FilterProps) {
   const { t } = useTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = user?.org_role === INVITALIA;
+  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
   const [hasInteractedWithFilters, setHasInteractedWithFilters] = useState(false);
   const institutionsList = useSelector(institutionListSelector);
 
@@ -138,7 +138,7 @@ export default function FilterBar({
               paddingRight: '38px !important',
             }}
           >
-            {Object.keys(PRODUCTS_CATEGORY).map((category) => (
+            {Object.keys(PRODUCTS_CATEGORIES).map((category) => (
               <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
                 {t(`pages.products.categories.${category}`)}
               </MenuItem>
@@ -146,31 +146,30 @@ export default function FilterBar({
           </Select>
         </FormControl>
 
-        {
-          isInvitaliaUser &&
-            <FormControl size="small" sx={{ flexBasis: FILTER_WIDTHS.producer }}>
-              <InputLabel id="producer-filter-select-label">
-                {t('pages.products.filterLabels.producer')}
-              </InputLabel>
-              <Select
-                  labelId="producer-filter-select-label"
-                  id="producer-filter-select"
-                  value={producerFilter}
-                  label={t('pages.products.filterLabels.producer')}
-                  MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
-                  onChange={handleProducerChange}
-                  sx={{
-                    paddingRight: '38px !important',
-                  }}
-              >
-                {institutionsList?.map((producer) => (
-                    <MenuItem key={producer.institutionId} value={producer.institutionId}>
-                      {producer.description}
-                    </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-        }
+        {isInvitaliaUser && (
+          <FormControl size="small" sx={{ flexBasis: FILTER_WIDTHS.producer }}>
+            <InputLabel id="producer-filter-select-label">
+              {t('pages.products.filterLabels.producer')}
+            </InputLabel>
+            <Select
+              labelId="producer-filter-select-label"
+              id="producer-filter-select"
+              value={producerFilter}
+              label={t('pages.products.filterLabels.producer')}
+              MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
+              onChange={handleProducerChange}
+              sx={{
+                paddingRight: '38px !important',
+              }}
+            >
+              {institutionsList?.map((producer) => (
+                <MenuItem key={producer.institutionId} value={producer.institutionId}>
+                  {producer.description}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
 
         <FormControl fullWidth size="small" sx={{ flexBasis: FILTER_WIDTHS.stato }}>
           <InputLabel id="status-filter-select-label">

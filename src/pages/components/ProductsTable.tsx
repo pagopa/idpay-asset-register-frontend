@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import {useSelector} from "react-redux";
 import EprelLinks from '../../components/Product/EprelLinks';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { INVITALIA } from '../../utils/constants';
+import {USERS_TYPES} from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import EnhancedTableHead from '../../components/Product/EnhancedTableHead';
 import {institutionListSelector} from "../../redux/slices/invitaliaSlice";
@@ -40,7 +40,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   const { t } = useTranslation();
   const institutionsList = useSelector(institutionListSelector);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = user?.org_role === INVITALIA;
+  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
   const isAllSelected = tableData.length > 0 && selected.length === tableData.length;
   const isIndeterminate = selected.length > 0 && selected.length < tableData.length;
 

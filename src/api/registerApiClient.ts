@@ -277,7 +277,7 @@ setSupervisionedStatusList: async (
 ): Promise<ProductsUpdateDTO> => {
   try {
     const body = { gtinCodes, status, motivation };
-    const result = await registerClient.updateProductStatusSupervisioned({
+    const result = await registerClient.updateProductStatusSupervised({
       body
     });
     return extractResponse(result, 200, onRedirectToLogin);

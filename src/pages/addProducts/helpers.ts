@@ -1,38 +1,38 @@
-import {PRODUCTS_CATEGORY} from "../../utils/constants";
+import {PRODUCTS_CATEGORIES} from "../../utils/constants";
 import {CsvDTO} from "../../api/generated/register/CsvDTO";
 
 export const categoryList = [
     {
         label: "commons.categories.tumbledryers",
-        value: PRODUCTS_CATEGORY.TUMBLEDRYERS
+        value: PRODUCTS_CATEGORIES.TUMBLEDRYERS
     },
     {
         label: "commons.categories.rangehoods",
-        value: PRODUCTS_CATEGORY.RANGEHOODS
+        value: PRODUCTS_CATEGORIES.RANGEHOODS
     },
     {
         label: "commons.categories.ovens",
-        value: PRODUCTS_CATEGORY.OVENS
+        value: PRODUCTS_CATEGORIES.OVENS
     },
     {
         label: "commons.categories.refrigeratingappl",
-        value: PRODUCTS_CATEGORY.REFRIGERATINGAPPL
+        value: PRODUCTS_CATEGORIES.REFRIGERATINGAPPL
     },
     {
         label: "commons.categories.washerdriers",
-        value: PRODUCTS_CATEGORY.WASHERDRIERS
+        value: PRODUCTS_CATEGORIES.WASHERDRIERS
     },
     {
         label: "commons.categories.dishwashers",
-        value: PRODUCTS_CATEGORY.DISHWASHERS
+        value: PRODUCTS_CATEGORIES.DISHWASHERS
     },
     {
         label: 'commons.categories.washingmachines',
-        value: PRODUCTS_CATEGORY.WASHINGMACHINES
+        value: PRODUCTS_CATEGORIES.WASHINGMACHINES
     },
     {
         label: "commons.categories.cookinghobs",
-        value: PRODUCTS_CATEGORY.COOKINGHOBS
+        value: PRODUCTS_CATEGORIES.COOKINGHOBS
     },
 ];
 

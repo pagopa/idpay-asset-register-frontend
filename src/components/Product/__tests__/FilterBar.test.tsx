@@ -7,6 +7,23 @@ import { BatchFilterItems } from '../helpers';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
+jest.mock('../../../utils/constants', () => ({
+    INVITALIA: 'INVITALIA',
+    USERS_TYPES: {
+        INVITALIA_L1: 'INVITALIA_L1',
+        INVITALIA_L2: 'INVITALIA_L2',
+        OTHER: 'OTHER',
+    },
+    PRODUCTS_CATEGORIES: {
+        CATEGORY_1: 'category1',
+        CATEGORY_2: 'category2',
+    },
+    PRODUCTS_STATES: {
+        STATE_1: 'state1',
+        STATE_2: 'state2',
+    },
+}));
+
 const defaultInvitaliaState = {
     institutionList: [],
     selectedInstitution: null,
@@ -47,17 +64,6 @@ jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string) => key,
     }),
-}));
-
-jest.mock('../../../utils/constants', () => ({
-    PRODUCTS_CATEGORY: {
-        CATEGORY_1: 'category1',
-        CATEGORY_2: 'category2',
-    },
-    PRODUCTS_STATES: {
-        STATE_1: 'state1',
-        STATE_2: 'state2',
-    },
 }));
 
 describe('FilterBar', () => {
@@ -103,7 +109,7 @@ describe('FilterBar', () => {
     });
 
     it('should have filter and delete buttons disabled when no filters are set', () => {
-        renderWithProviders(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar loading={false} {...defaultProps} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
@@ -114,7 +120,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when category filter is set', () => {
         const props = { ...defaultProps, categoryFilter: 'pages.products.categories.CATEGORY_1' };
-        renderWithProviders(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
@@ -125,7 +131,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when status filter is set', () => {
         const props = { ...defaultProps, statusFilter: 'pages.products.categories.STATE_1' };
-        renderWithProviders(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         expect(filterButton).not.toBeDisabled();
@@ -133,7 +139,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when batch filter is set', () => {
         const props = { ...defaultProps, batchFilter: '1' };
-        renderWithProviders(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         expect(filterButton).not.toBeDisabled();
@@ -141,7 +147,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when eprel code filter is set', () => {
         const props = { ...defaultProps, eprelCodeFilter: 'EPREL123' };
-        renderWithProviders(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         expect(filterButton).not.toBeDisabled();
@@ -149,7 +155,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when gtin code filter is set', () => {
         const props = { ...defaultProps, gtinCodeFilter: 'GTIN123' };
-        renderWithProviders(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         expect(filterButton).not.toBeDisabled();
@@ -157,14 +163,14 @@ describe('FilterBar', () => {
 
     it('should enable delete button when errorStatus is true even with no filters', () => {
         const props = { ...defaultProps, errorStatus: true };
-        renderWithProviders(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
         expect(deleteButton).not.toBeDisabled();
     });
 
     it('should call setCategoryFilter when category select changes', () => {
-        renderWithProviders(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar loading={false} {...defaultProps} />);
 
         const categorySelect = screen.getByLabelText('pages.products.filterLabels.category');
         fireEvent.mouseDown(categorySelect);

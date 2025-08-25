@@ -9,7 +9,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import { useMemo } from 'react';
 import ROUTES from '../../routes';
 import { fetchUserFromLocalStorage } from '../../helpers';
-import { INVITALIA } from '../../utils/constants';
+import {USERS_TYPES} from '../../utils/constants';
 import SidenavItem from './SidenavItem';
 
 /** The side menu of the application */
@@ -19,7 +19,7 @@ export default function SideMenu() {
   const onExit = useUnloadEventOnExit();
   const location = useLocation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = user?.org_role === INVITALIA;
+  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
 
   return (
     <Box display="grid" mt={1}>

@@ -255,7 +255,7 @@ paths:
         - products
       summary: Mark products as in supervision
       description: 'ENG: Set the status of a list of products to SUPERVISED. IT: Imposta lo stato di una lista di prodotti su SUPERVISED.        '
-      operationId: updateProductStatusSupervisioned
+      operationId: updateProductStatusSupervised
       requestBody:
         content:
           application/json:
@@ -809,10 +809,43 @@ components:
           description: 'ENG: The name of the product  <br> IT: Nome del prodotto'
           maxLength: 255
           pattern: .*
-        motivation:
-          type: string
-          maxLength: 200
-          pattern: .*
+        statusChangeChronology:
+          type: array
+          items:
+            properties:
+              username:
+                type: string
+                maxLength: 200
+                pattern: .*
+              role:
+                type: string
+                maxLength: 2
+                pattern: ^(L1|L2)$";
+              motivation:
+                type: string
+                maxLength: 200
+                pattern: .*
+              updateDate:
+                type: string
+                maxLength: 255
+                format: date
+              currentStatus:
+                type: string
+                enum:
+                  - APPROVED
+                  - WAIT_APPROVED
+                  - REJECTED
+                  - SUPERVISED
+                  - UPLOADED
+              targetStatus:
+                type: string
+                enum:
+                  - APPROVED
+                  - WAIT_APPROVED
+                  - REJECTED
+                  - SUPERVISED
+                  - UPLOADED
+          maxItems: 1000
         organizationName:
           type: string
           maxLength: 50
@@ -959,7 +992,7 @@ components:
             - UPLOADED
         motivation:
           type: string
-          maxLength: 255
+          maxLength: 200
           pattern: .*
 
   securitySchemes:

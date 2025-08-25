@@ -12,9 +12,13 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('../../../utils/constants', () => ({
-    INVITALIA: 'INVITALIA',
-    PRODUCTS_CATEGORY: { CATEGORY_A: 'category_a', CATEGORY_B: 'category_b' },
-    PRODUCTS_STATES: { STATE_A: 'state_a', STATE_B: 'state_b' },
+    PRODUCTS_CATEGORIES: { CATEGORY_A: 'CATEGORY_A', CATEGORY_B: 'CATEGORY_B' },
+    PRODUCTS_STATES: { STATE_A: 'STATE_A', STATE_B: 'STATE_B' },
+    USERS_TYPES: {
+        INVITALIA_L1: 'INVITALIA_L1',
+        INVITALIA_L2: 'INVITALIA_L2',
+        OTHER: 'OTHER',
+    },
 }));
 
 const mockInstitutions = [
@@ -78,7 +82,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('renders header and close button; clicking close closes the drawer', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -90,7 +94,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('shows "producer" Select when user is INVITALIA', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -106,7 +110,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('changes status via Select and enables "delete filters" after interaction', async () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -125,7 +129,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('changes batch via Select', async () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -139,7 +143,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('changes category via Select', async () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -155,7 +159,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('types in eprel/gtin inputs and calls setters with trimmed values', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -169,7 +173,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('enables "filter" button when at least one filter is set', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = {
             ...defaultProps(),
             statusFilter: 'pages.products.categories.STATE_A',
@@ -181,7 +185,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('enables "delete filters" after interaction and invokes callbacks', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = { ...defaultProps(), errorStatus: false };
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -199,7 +203,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('filter button is disabled when all filters are empty', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -208,7 +212,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('filter button triggers callbacks when enabled and clicked', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = { ...defaultProps(), statusFilter: 'pages.products.categories.STATE_A' };
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -221,7 +225,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('delete filters button is enabled when errorStatus=true even if no interaction/filters', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = { ...defaultProps(), errorStatus: true };
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -230,7 +234,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('whitespace-only inputs do not enable filter button (trim)', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -245,7 +249,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('batch select renders all provided options', async () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -259,7 +263,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('category select shows exactly PRODUCTS_CATEGORY keys', async () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -273,7 +277,7 @@ describe('FiltersDrawer', () => {
     });
 
     it('onClose of Drawer triggers toggleFiltersDrawer(false)', () => {
-        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA' });
+        mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
         const props = defaultProps();
         renderWithProviders(<FiltersDrawer {...props} />);
 
