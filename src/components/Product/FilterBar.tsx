@@ -13,7 +13,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { INVITALIA, PRODUCTS_CATEGORIES, PRODUCTS_STATES } from '../../utils/constants';
+import {PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES} from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { BatchFilterItems } from './helpers';
@@ -69,7 +69,7 @@ export default function FilterBar({
 }: FilterProps) {
   const { t } = useTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = user?.org_role === INVITALIA;
+  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
   const [hasInteractedWithFilters, setHasInteractedWithFilters] = useState(false);
   const institutionsList = useSelector(institutionListSelector);
 

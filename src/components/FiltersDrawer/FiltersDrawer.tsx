@@ -16,7 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import React, { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { INVITALIA, PRODUCTS_CATEGORIES, PRODUCTS_STATES } from '../../utils/constants';
+import {PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES} from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { BatchFilterItems } from '../Product/helpers';
@@ -98,7 +98,7 @@ export default function FiltersDrawer({
   const institutionsList = useSelector(institutionListSelector);
   const { t } = useTranslation();
   const noFilterSetted = (): boolean => areFiltersEmpty;
-  const isInvitaliaUser = user?.org_role === INVITALIA;
+  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
   const handleFilter = () => {
     setFiltering(true);
     toggleFiltersDrawer(false);

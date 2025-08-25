@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import {getProducts, getBatchFilterList, getInstitutionsList} from '../../services/registerService';
-import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA } from '../../utils/constants';
+import {PAGINATION_ROWS_PRODUCTS, EMPTY_DATA, USERS_TYPES} from '../../utils/constants';
 import {
   batchIdSelector,
   batchNameSelector,
@@ -15,7 +15,6 @@ import {
 } from '../../redux/slices/productsSlice';
 import EmptyListTable from '../../pages/components/EmptyListTable';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { INVITALIA } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
@@ -69,15 +68,17 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>(undefined);
   const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setSelected([]);
-  }, [tableData]);
-
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
   const institutions = useSelector(institutionListSelector);
   const { t } = useTranslation();
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
+  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
+  const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
+
+  useEffect(() => {
+    setSelected([]);
+  }, [tableData]);
 
   const fetchProductList = () => {
     setLoading(true);
@@ -160,9 +161,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     }
   }, [batchName, batchId, batchFilterItems]);
 
-  const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = user?.org_role === INVITALIA;
-
   useEffect(() => {
     if (isInvitaliaUser && institution?.institutionId) {
       setProducerFilter(institution.institutionId);
@@ -172,6 +170,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   useEffect(() => {
     void fetchInstitutions();
+
+    if(isInvitaliaAdmin){
+      setStatusFilter("Da approvare");
+    }
 
     if (!ready) {return;}
 

@@ -24,7 +24,7 @@ import Products from './pages/components/Products';
 import ProductDataGrid from './components/Product/ProductDataGrid';
 import InvitaliaOverview from './pages/InvitaliaOverview/invitaliaOverview';
 import { fetchUserFromLocalStorage } from './helpers';
-import { INVITALIA } from './utils/constants';
+import {USERS_TYPES} from './utils/constants';
 import InvitaliaProductsList from './pages/InvitaliaProductsList/invitaliaProductsList';
 import { institutionSelector } from './redux/slices/invitaliaSlice';
 
@@ -66,7 +66,7 @@ const SecuredRoutes = withLogin(
     const location = useLocation();
     const { isTOSAccepted, acceptTOS, firstAcceptance } = useTCAgreement();
     const user = useMemo(() => fetchUserFromLocalStorage(), []);
-    const isInvitaliaUser = user?.org_role === INVITALIA;
+    const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
     const institution = useSelector(institutionSelector);
     const organizationId = institution?.institutionId || '';
 
