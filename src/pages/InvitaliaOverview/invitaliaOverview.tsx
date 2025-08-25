@@ -9,12 +9,15 @@ import { InstitutionsResponse } from '../../api/generated/register/InstitutionsR
 import { InstitutionResponse } from '../../api/generated/register/InstitutionResponse';
 import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
+import {setInstitutionList} from "../../redux/slices/invitaliaSlice";
+import {useAppDispatch} from "../../redux/hooks";
 import InstitutionsTable from './institutionsTable';
 import { sortInstitutions } from './helpers';
 import ManufacturerDetail from './ManufacturerDetail';
 
 const InvitaliaOverview: React.FC = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const [institutions, setInstitutions] = useState<InstitutionsResponse>({
     institutions: [],
   });
@@ -36,6 +39,8 @@ const InvitaliaOverview: React.FC = () => {
     try {
       const institutionsData = await getInstitutionsList();
       setInstitutions(institutionsData);
+      const institutionList = institutionsData.institutions;
+      dispatch(setInstitutionList(institutionList as Array<Institution>));
     } catch (error) {
       console.error('Errore nel recupero delle istituzioni:', error);
     } finally {

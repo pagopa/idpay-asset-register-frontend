@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProducts, getBatchFilterList } from '../../services/registerService';
+import {getProducts, getBatchFilterList, getInstitutionsList} from '../../services/registerService';
 import { PAGINATION_ROWS_PRODUCTS, EMPTY_DATA } from '../../utils/constants';
 import {
   batchIdSelector,
@@ -20,8 +20,9 @@ import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
-import { institutionListSelector, institutionSelector } from '../../redux/slices/invitaliaSlice';
+import {institutionListSelector, institutionSelector, setInstitutionList} from '../../redux/slices/invitaliaSlice';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
+import {Institution} from "../../model/Institution";
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import ProductDetail from './ProductDetail';
 import ProductModal from './ProductModal';
@@ -81,6 +82,18 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const fetchProductList = () => {
     setLoading(true);
     callProductsApi(organizationId);
+  };
+
+  const fetchInstitutions = async () => {
+    try {
+      const institutionsData = await getInstitutionsList();
+      const institutionList = institutionsData.institutions;
+      dispatch(setInstitutionList(institutionList as Array<Institution>));
+    } catch (error) {
+      console.error('Errore nel recupero delle istituzioni:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updaDataTable = () => {
@@ -158,6 +171,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [isInvitaliaUser, institution?.institutionId]);
 
   useEffect(() => {
+    void fetchInstitutions();
+
     if (!ready) {return;}
 
     setLoading(true);
