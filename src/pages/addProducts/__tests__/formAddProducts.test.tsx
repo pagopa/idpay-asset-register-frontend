@@ -93,7 +93,7 @@ jest.mock('../helpers', () => ({
 }));
 
 jest.mock('../../../utils/constants', () => ({
-    PRODUCTS_CATEGORY: {
+    PRODUCTS_CATEGORIES: {
         COOKINGHOBS: 'cookinghobs',
     },
 }));

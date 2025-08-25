@@ -50,7 +50,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('../../../utils/constants', () => ({
-    PRODUCTS_CATEGORY: {
+    PRODUCTS_CATEGORIES: {
         CATEGORY_1: 'category1',
         CATEGORY_2: 'category2',
     },
