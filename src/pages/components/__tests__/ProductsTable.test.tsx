@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ProductsTable from '../ProductsTable';
 import {ProductDTO} from "../../../api/generated/register/ProductDTO";
-import {INVITALIA} from "../../../utils/constants";
+import {INVITALIA, USERS_TYPES} from "../../../utils/constants";
 
 const basePreloadedState = {
     invitalia: {
@@ -114,6 +114,11 @@ jest.mock('../../../helpers', () => ({
 
 jest.mock('../../../utils/constants', () => ({
     INVITALIA: 'INVITALIA',
+    USERS_TYPES: {
+        INVITALIA_L1: 'INVITALIA_L1',
+        INVITALIA_L2: 'INVITALIA_L2',
+        OTHER: 'OTHER',
+    },
 }));
 
 import {fetchUserFromLocalStorage} from '../../../helpers';
@@ -207,7 +212,7 @@ describe('ProductsTable', () => {
 
     describe('Invitalia User Tests', () => {
         beforeEach(() => {
-            fetchUserFromLocalStorage.mockReturnValue({ org_role: INVITALIA });
+            fetchUserFromLocalStorage.mockReturnValue({ org_role: USERS_TYPES.INVITALIA_L1 });
         });
 
         it('should render table with all columns for Invitalia user', () => {
@@ -496,7 +501,7 @@ describe('ProductsTable', () => {
                 selected: ['GTIN001', 'GTIN002'],
             };
 
-            fetchUserFromLocalStorage.mockReturnValue({ org_role: INVITALIA });
+            fetchUserFromLocalStorage.mockReturnValue({ org_role: USERS_TYPES.INVITALIA_L1 });
 
             render(
                 <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
@@ -555,7 +560,7 @@ describe('ProductsTable', () => {
                 emptyData: 'No Status',
             };
 
-            fetchUserFromLocalStorage.mockReturnValue({ org_role: INVITALIA });
+            fetchUserFromLocalStorage.mockReturnValue({ org_role: USERS_TYPES.INVITALIA_L1 });
 
             render(
                 <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
@@ -569,7 +574,7 @@ describe('ProductsTable', () => {
         });
 
         it('should memoize user correctly', () => {
-            const mockUser = { org_role: INVITALIA };
+            const mockUser = { org_role: USERS_TYPES.INVITALIA_L1 };
             fetchUserFromLocalStorage.mockReturnValue(mockUser);
 
             const { rerender } = render(
@@ -602,7 +607,7 @@ describe('ProductsTable', () => {
                 { ...mockProductData[0], status: undefined },
             ];
 
-            fetchUserFromLocalStorage.mockReturnValue({ org_role: INVITALIA });
+            fetchUserFromLocalStorage.mockReturnValue({ org_role: USERS_TYPES.INVITALIA_L1 });
 
             render(
                 <TestWrapper preloadedState={{ ui: { locale: 'it' }, auth: { user: { id: 'u1' } } }}>
