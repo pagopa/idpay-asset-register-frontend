@@ -16,7 +16,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useNavigate } from 'react-router-dom';
-import { PRODUCTS_CATEGORY } from '../../utils/constants';
+import { PRODUCTS_CATEGORIES } from '../../utils/constants';
 import {
   downloadErrorReport,
   uploadProductList,
@@ -61,7 +61,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
     });
 
     const templateFileName =
-      formik.values.category === PRODUCTS_CATEGORY.COOKINGHOBS
+      formik.values.category === PRODUCTS_CATEGORIES.COOKINGHOBS
         ? 'cookinghobs_template.csv'
         : 'eprel_template.csv';
 
