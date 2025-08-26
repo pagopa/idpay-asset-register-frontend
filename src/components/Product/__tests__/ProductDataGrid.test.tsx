@@ -141,7 +141,7 @@ const mockProductData = [
         productName: 'Test Product 1',
         gtinCode: 'GTIN001',
         category: 'CATEGORY1',
-        status: 'ACTIVE',
+        status: 'SUPERVISED',
         eprelCode: 'EPREL001',
         producerId: 'PRODUCER1',
         batchId: 'BATCH1',
@@ -249,6 +249,18 @@ describe('ProductDataGrid', () => {
         mockUserFromJwtToken.mockReturnValue({
             org_id: 'test-org-id',
             org_role: 'USER',
+            uid: '',
+            taxCode: '',
+            name: '',
+            surname: '',
+            email: '',
+            org_name: '',
+            org_party_role: '',
+            org_address: '',
+            org_pec: '',
+            org_taxcode: '',
+            org_vat: '',
+            org_email: ''
         });
 
         mockFetchUserFromLocalStorage.mockReturnValue({
