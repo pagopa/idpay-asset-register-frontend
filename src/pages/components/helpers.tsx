@@ -24,7 +24,7 @@ export function renderUploadStatusIcon(status: string) {
                     sx={chipSx}
                 />
             );
-        case 'SUPERVISIONED':
+        case 'SUPERVISED':
             return (
                 <Chip
                     color="primary"
