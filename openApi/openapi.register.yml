@@ -433,6 +433,7 @@ components:
           enum:
             - operatore
             - invitalia
+            - invitalia_admin
         permissions:
           type: array
           items:

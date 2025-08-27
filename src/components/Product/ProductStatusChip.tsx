@@ -1,10 +1,12 @@
 import { Chip } from '@mui/material';
-import WarningIcon from '@mui/icons-material/Warning';
-import ErrorIcon from '@mui/icons-material/Error';
 import { PRODUCTS_STATES } from '../../utils/constants';
 
 type ProductStatusChipProps = {
   status: string | undefined;
+};
+
+const chipSx = {
+  mb: 1,
 };
 
 export default function ProductStatusChip({ status }: ProductStatusChipProps) {
@@ -12,25 +14,36 @@ export default function ProductStatusChip({ status }: ProductStatusChipProps) {
     return null;
   }
 
-  if (status === PRODUCTS_STATES.REJECTED) {
-    return (
-      <Chip
-        icon={<ErrorIcon color="error" />}
-        color="error"
-        label="Prodotto Escluso"
-        size="medium"
-        sx={{ mb: 1 }}
-      />
-    );
+  switch (status) {
+    case 'APPROVED':
+    case 'UPLOADED':
+      return (
+          <Chip
+              color="default"
+              label="Da revisionare"
+              size="medium"
+              sx={chipSx}
+          />
+      );
+    case 'SUPERVISED':
+      return (
+          <Chip
+              color="primary"
+              label="Da controllare"
+              size="medium"
+              sx={chipSx}
+          />
+      );
+    case 'REJECTED':
+      return (
+          <Chip
+              color="error"
+              label="Escluso"
+              size="medium"
+              sx={chipSx}
+          />
+      );
+    default:
+      return null;
   }
-
-  return (
-    <Chip
-      icon={<WarningIcon color="warning" />}
-      color="warning"
-      label="Prodotto contrassegnato"
-      size="medium"
-      sx={{ mb: 1 }}
-    />
-  );
 }

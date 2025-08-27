@@ -289,7 +289,6 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
           <ProductActionButtons
             isInvitaliaUser={isInvitaliaUser}
             status={data.status}
-            onRestore={() => setRestoreDialogOpen(true)}
             onExclude={() => setExcludeModalOpen(true)}
             onSupervision={() => setSupervisionModalOpen(true)}
           />

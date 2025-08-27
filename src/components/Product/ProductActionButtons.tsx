@@ -4,45 +4,39 @@ import { PRODUCTS_STATES } from '../../utils/constants';
 type ProductActionButtonsProps = {
   isInvitaliaUser: boolean;
   status: string | undefined;
-  onRestore: () => void;
   onExclude: () => void;
   onSupervision?: () => void;
 };
 
 const buttonStyle = {
-  height: 48,
   fontWeight: 600,
   fontSize: 16,
-  marginRight: 2,
+  marginBottom: 2,
+  width: "100%",
 };
 
 export default function ProductActionButtons({
   isInvitaliaUser,
   status,
-  onRestore,
   onExclude,
   onSupervision,
 }: ProductActionButtonsProps) {
-  if (!isInvitaliaUser || !status) {
-    return null;
-  }
-  if (status === PRODUCTS_STATES.APPROVED) {
+  if (isInvitaliaUser && status === PRODUCTS_STATES.SUPERVISED) {
     return (
       <ListItem sx={{ pl: 0 }}>
-        <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
+        <Box mt={2} display="flex" flexDirection="column" sx={{ width: "100%" }}>
           <Button
             color="primary"
             variant="contained"
-            sx={{ ...buttonStyle, width: '138px' }}
+            sx={{ ...buttonStyle}}
             onClick={onSupervision}
             disabled={!onSupervision}
           >
-            Contrassegna
+            Richiedi approvazione
           </Button>
           <Button
-            variant="outlined"
             color="error"
-            sx={{ ...buttonStyle, width: '92px' }}
+            sx={{ ...buttonStyle }}
             onClick={onExclude}
           >
             Escludi
@@ -50,45 +44,7 @@ export default function ProductActionButtons({
         </Box>
       </ListItem>
     );
+  } else {
+    return null;
   }
-
-  if (status !== PRODUCTS_STATES.REJECTED) {
-    return (
-      <ListItem sx={{ pl: 0 }}>
-        <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
-          <Button
-            color="primary"
-            variant="contained"
-            sx={{ ...buttonStyle, width: '138px' }}
-            onClick={onRestore}
-          >
-            Ripristina
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            sx={{ ...buttonStyle, width: '92px' }}
-            onClick={onExclude}
-          >
-            Escludi
-          </Button>
-        </Box>
-      </ListItem>
-    );
-  }
-
-  return (
-    <ListItem sx={{ pl: 0 }}>
-      <Box mt={2} display="flex" flexDirection="row" justifyContent="flex-start">
-        <Button
-          color="primary"
-          variant="contained"
-          sx={{ ...buttonStyle, width: '138px' }}
-          onClick={onRestore}
-        >
-          Ripristina
-        </Button>
-      </Box>
-    </ListItem>
-  );
 }

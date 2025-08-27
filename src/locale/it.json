@@ -243,7 +243,8 @@
   "roles": {
     "admin": "Amministratore",
     "operatore": "Operatore",
-    "invitalia": "Operatore"
+    "invitalia": "Operatore",
+    "invitalia_admin": "Operatore"
   },
   "session": {
     "expired": {
