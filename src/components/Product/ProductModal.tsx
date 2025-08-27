@@ -32,8 +32,74 @@ const buttonStyle = {
   fontSize: 16,
   paddingLeft: 8,
   paddingRight: 8,
-  marginRight: 2,
   width: 85,
+};
+
+const modalStyles = {
+  dialogPaper: {
+    width: 600,
+    borderRadius: 4,
+    padding: 4,
+    background: '#FFFFFF',
+    boxShadow: `
+      0px 9px 46px 8px #002B551A,
+      0px 24px 38px 3px #002B550D,
+      0px 11px 15px -7px #002B551A
+    `,
+  },
+  dialogTitle: {
+    padding: 0,
+    marginBottom: 2,
+    fontFamily: 'Titillium Web',
+    fontWeight: 700,
+    fontSize: 24,
+  },
+  descriptionText: {
+    marginBottom: 2,
+    fontFamily: 'Titillium Web',
+    fontWeight: 400,
+    fontSize: 18,
+    lineHeight: '24px',
+  },
+  listTitle: {
+    fontFamily: 'Titillium Web',
+    fontWeight: 600,
+    fontSize: 18,
+    marginBottom: 1,
+  },
+  productText: {
+    fontFamily: 'Titillium Web',
+    fontWeight: 400,
+    fontSize: 18,
+    marginBottom: 1,
+  },
+  reasonLabel: {
+    fontFamily: 'Titillium Web',
+    fontWeight: 600,
+    fontSize: 18,
+    lineHeight: '24px',
+    marginBottom: 1,
+  },
+  textField: {
+    marginBottom: 1,
+  },
+  charCounter: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    fontFamily: 'Titillium Web',
+    fontSize: 14,
+    color: '#888',
+    marginBottom: 2,
+  },
+  dialogActions: {
+    padding: 0,
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 8,
+    top: 8,
+    color: (theme: any) => theme.palette.grey[500],
+  },
 };
 
 const ProductModal: React.FC<ProductModalProps> = ({
@@ -107,53 +173,20 @@ const ProductModal: React.FC<ProductModalProps> = ({
       onClose={onClose}
       slotProps={{
         paper: {
-          sx: {
-            width: 600,
-            height: 557,
-            borderRadius: 4,
-            p: 4,
-            background: '#FFFFFF',
-            boxShadow: `
-              0px 9px 46px 8px #002B551A,
-              0px 24px 38px 3px #002B550D,
-              0px 11px 15px -7px #002B551A
-            `,
-          },
+          sx: modalStyles.dialogPaper,
         },
       }}
     >
-      <DialogTitle sx={{ p: 0, mb: 2, fontFamily: 'Titillium Web', fontWeight: 700, fontSize: 24 }}>
-        {config?.title || ''}
-      </DialogTitle>
+      <DialogTitle sx={modalStyles.dialogTitle}>{config?.title || ''}</DialogTitle>
 
       <DialogContent sx={{ p: 0 }}>
-        <Typography
-          sx={{
-            mb: 2,
-            fontFamily: 'Titillium Web',
-            fontWeight: 400,
-            fontSize: 18,
-            lineHeight: '24px',
-          }}
-        >
-          {config?.description || ''}
-        </Typography>
-        <Typography sx={{ fontFamily: 'Titillium Web', fontWeight: 600, fontSize: 18, mb: 1 }}>
-          {config?.listTitle || ''}
-        </Typography>
+        <Typography sx={modalStyles.descriptionText}>{config?.description || ''}</Typography>
+        <Typography sx={modalStyles.listTitle}>{config?.listTitle || ''}</Typography>
         <Box sx={{ mb: 2 }}>
           {selectedProducts && selectedProducts.length > 0 ? (
             selectedProducts.map(
               (item: { productName?: string; gtinCode: string; category?: string }) => (
-                <Typography
-                  key={item.gtinCode}
-                  sx={{
-                    fontFamily: 'Titillium Web',
-                    fontWeight: 400,
-                    fontSize: 18,
-                    mb: 1,
-                  }}
-                >
+                <Typography key={item.gtinCode} sx={modalStyles.productText}>
                   {item.productName && item.productName.trim() !== ''
                     ? truncateString(item.productName, MAX_LENGTH_DETAILL_PR)
                     : `${item.category ? item.category + ' ' : ''}Codice GTIN/EAN ${item.gtinCode}`}
@@ -161,31 +194,14 @@ const ProductModal: React.FC<ProductModalProps> = ({
               )
             )
           ) : (
-            <Typography
-              sx={{
-                fontFamily: 'Titillium Web',
-                fontWeight: 400,
-                fontSize: 18,
-                mb: 1,
-              }}
-            >
+            <Typography sx={modalStyles.productText}>
               {!productName || productName.trim() === ''
                 ? `Codice GTIN/EAN ${gtinCodes.join(', ')}`
                 : truncateString(productName, MAX_LENGTH_DETAILL_PR)}
             </Typography>
           )}
         </Box>
-        <Typography
-          sx={{
-            fontFamily: 'Titillium Web',
-            fontWeight: 600,
-            fontSize: 18,
-            lineHeight: '24px',
-            mb: 1,
-          }}
-        >
-          {config?.reasonLabel || ''}
-        </Typography>
+        <Typography sx={modalStyles.reasonLabel}>{config?.reasonLabel || ''}</Typography>
         <TextField
           fullWidth
           multiline
@@ -194,22 +210,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
           placeholder={config?.reasonPlaceholder || ''}
           value={motivation}
           onChange={(e) => setReason(e.target.value)}
-          sx={{ mb: 1 }}
+          sx={modalStyles.textField}
         />
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            fontFamily: 'Titillium Web',
-            fontSize: 14,
-            color: '#888',
-            mb: 2,
-          }}
-        >
-          {motivation.length}/200
-        </Box>
+        <Box sx={modalStyles.charCounter}>{motivation.length}/200</Box>
       </DialogContent>
-      <DialogActions sx={{ p: 0 }}>
+      <DialogActions sx={modalStyles.dialogActions}>
         {actionType === 'supervisioned' && (
           <Button
             variant="contained"
@@ -245,12 +250,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             onUpdateTable();
           }
         }}
-        sx={{
-          position: 'absolute',
-          right: 8,
-          top: 8,
-          color: (theme) => theme.palette.grey[500],
-        }}
+        sx={modalStyles.closeButton}
       >
         <CloseIcon />
       </IconButton>

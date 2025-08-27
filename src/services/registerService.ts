@@ -126,6 +126,20 @@ export const setSupervisionedStatusList = async (
     throw error;
   }
 };
+ export const setWaitApprovedStatusList = async (
+     gtinCodes: Array<string>,
+     status: string,
+     motivation: string
+): Promise<UpdateResponseDTO> => {
+  try {
+    return await RegisterApi.setWaitApprovedStatusList(gtinCodes, status, motivation);
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
 
  export const setRejectedStatusList = async (
      gtinCodes: Array<string>,

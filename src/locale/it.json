@@ -268,15 +268,49 @@
       "listTitle": "I prodotti segnalati sono i seguenti:",
       "reasonLabel": "Motivo segnalazione",
       "reasonPlaceholder": "Motivo segnalazione",
-      "buttonText": "Contrassegna"
+      "buttonText": "Da controllare",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Annulla"
     },
     "rejected": {
-      "title": "Escludi un prodotto",
+      "title": "Richiedi esclusione",
       "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
       "listTitle": "I prodotti esclusi sono i seguenti:",
       "reasonLabel": "Motivo esclusione",
       "reasonPlaceholder": "Motivo esclusione",
-      "buttonText": "Escludi"
+      "buttonText": "Escludi",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Escludi"
+    },
+     "waitApproved": {
+      "title": "Approva",
+      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "listTitle": "Richiedi approvazione",
+      "reasonLabel": "Richiedi approvazione",
+      "reasonPlaceholder": "Richiedi approvazione",
+      "buttonText": "Approva",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Annulla"
+    },
+      "approved": {
+      "title": "Approva",
+      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "listTitle": "Richiedi approvazione",
+      "reasonLabel": "Richiedi approvazione",
+      "reasonPlaceholder": "Richiedi approvazione",
+      "buttonText": "Approva",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Annulla"
+    },
+      "restored": {
+      "title": "Rifiuta",
+      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "listTitle": "Richiedi approvazione",
+      "reasonLabel": "Richiedi approvazione",
+      "reasonPlaceholder": "Richiedi approvazione",
+      "buttonText": "Rifiuta",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Rifiuta"
     }
   }
 }

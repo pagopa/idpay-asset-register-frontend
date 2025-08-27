@@ -309,6 +309,25 @@ setSupervisionedStatusList: async (
     throw error;
   }
 },
+setWaitApprovedStatusList: async (
+  gtinCodes: Array<string>,
+  status: string,
+  motivation: string
+): Promise<ProductsUpdateDTO> => {
+  try {
+    const body = { gtinCodes, status, motivation };
+    const result = await registerClient.updateProductStatusWaitApproved(
+      { body }
+    );
+    return extractResponse(result, 200, onRedirectToLogin);
+  } catch (error) {
+    console.error(
+        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
+      error
+    );
+    throw error;
+  }
+},
 
  setRejectedStatusList: async (
   gtinCodes: Array<string>,

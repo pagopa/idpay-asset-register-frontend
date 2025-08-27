@@ -34,9 +34,6 @@ export enum USERS_TYPES {
   INVITALIA_L2 = 'invitalia_admin'
 }
 
-export const INVITALIA = 'invitalia';
-export const PRODUTTORE = 'operatore';
-
 export const EMPTY_DATA = '-';
 export const MAX_TABLE_HEIGHT = 700;
 export const PAGINATION_ROWS_PRODUCTS = 10;

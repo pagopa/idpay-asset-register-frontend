@@ -18,6 +18,7 @@ type Props = {
   isInvitaliaUser: boolean;
   onUpdateTable?: () => void;
   onClose?: () => void;
+  children?: React.ReactNode;
 };
 
 const callApprovedApi = async (gtinCodes: Array<string>, status: string, motivation: string) => {
@@ -296,6 +297,8 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
       </List>
       <ProductConfirmDialog
         open={restoreDialogOpen}
+        cancelButtonText="Cancel"
+        confirmButtonText="Confirm"
         title={t('pages.productDetail.restoreProductTitle')}
         message={t('pages.productDetail.restoreProductMessage')}
         onCancel={() => setRestoreDialogOpen(false)}
