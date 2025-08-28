@@ -142,7 +142,7 @@ describe('ProductDetail', () => {
             const approvedData = { ...mockProductData, status: 'APPROVED' };
             render(<ProductDetail {...defaultProps} data={approvedData} />);
 
-            expect(screen.getAllByTestId('product-info-row')).toHaveLength(13);
+            expect(screen.getAllByTestId('product-info-row')).toHaveLength(14);
         });
 
         it('should render motivation row when status is not APPROVED', () => {

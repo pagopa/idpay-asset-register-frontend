@@ -137,7 +137,7 @@ describe('ProductModal', () => {
 
             expect(mockSetSupervisionedStatusList).toHaveBeenCalledWith(
                 ['1234567890123'],
-                "",
+                "SUPERVISED",
                 'Test motivation'
             );
             expect(mockOnClose).toHaveBeenCalled();
