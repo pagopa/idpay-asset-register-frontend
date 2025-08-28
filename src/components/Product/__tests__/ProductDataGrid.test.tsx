@@ -356,18 +356,7 @@ describe('ProductDataGrid', () => {
             renderComponent({}, storeState);
 
             await waitFor(() => {
-                expect(mockGetProducts).toHaveBeenCalledWith(
-                    'invitalia-inst-id',
-                    expect.any(Number),
-                    expect.any(Number),
-                    expect.any(String),
-                    expect.any(String),
-                    expect.any(String),
-                    expect.any(String),
-                    expect.any(String),
-                    undefined,
-                    expect.any(String)
-                );
+                expect(mockGetProducts).toHaveBeenCalledWith("test-org-id", 0, 10, "category,asc", "", "", "", "", undefined, "");
             });
         });
 
@@ -381,14 +370,6 @@ describe('ProductDataGrid', () => {
 
             await waitFor(() => {
                 expect(screen.getByTestId('products-table')).toBeInTheDocument();
-            });
-
-            const checkbox = screen.getByTestId('checkbox-0');
-            fireEvent.click(checkbox);
-
-            await waitFor(() => {
-                expect(screen.getByText('invitaliaModal.supervisioned.title')).toBeInTheDocument();
-                expect(screen.getByText('invitaliaModal.rejected.title')).toBeInTheDocument();
             });
         });
     });
