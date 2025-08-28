@@ -175,7 +175,7 @@
         "producer": "Produttore",
         "status": "Stato",
         "energeticClass": "Classe energetica",
-        "eprelCode": "Codice EPREL",
+        "eprelCode": "EPREL",
         "gtinCode": "Codice GTIN/EAN",
         "batch": "Lotto"
       },
