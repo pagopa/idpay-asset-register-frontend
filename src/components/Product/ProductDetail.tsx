@@ -6,6 +6,7 @@ import { EMPTY_DATA, MAX_LENGTH_DETAILL_PR, PRODUCTS_STATES } from '../../utils/
 import { truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
+import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -21,17 +22,25 @@ type Props = {
   children?: React.ReactNode;
 };
 
-const callApprovedApi = async (gtinCodes: Array<string>, status: string, motivation: string) => {
+const callApprovedApi = async (
+  gtinCodes: Array<string>,
+  currentStatus: CurrentStatusEnum,
+  motivation: string
+) => {
   try {
-    await setApprovedStatusList(gtinCodes, status, motivation);
+    await setApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error) {
     console.error(error);
   }
 };
 
-const callRejectedApi = async (gtinCodes: Array<string>, status: string, motivation: string) => {
+const callRejectedApi = async (
+  gtinCodes: Array<string>,
+  currentStatus: CurrentStatusEnum,
+  motivation: string
+) => {
   try {
-    await setRejectedStatusList(gtinCodes, status, motivation);
+    await setRejectedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error) {
     console.error(error);
   }
@@ -40,13 +49,13 @@ const callRejectedApi = async (gtinCodes: Array<string>, status: string, motivat
 const handleOpenModal = (
   action: string,
   gtinCodes: Array<string>,
-  status: string,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ) => {
   if (action === PRODUCTS_STATES.REJECTED) {
-    return callRejectedApi(gtinCodes, status, motivation);
+    return callRejectedApi(gtinCodes, currentStatus, motivation);
   } else if (action === PRODUCTS_STATES.APPROVED) {
-    return callApprovedApi(gtinCodes, status, motivation);
+    return callApprovedApi(gtinCodes, currentStatus, motivation);
   }
   return Promise.resolve();
 };
@@ -182,17 +191,17 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
 
 type ProductInfoRowsProps = {
   data: ProductDTO;
-  status: string;
+  currentStatus: CurrentStatusEnum;
   children?: React.ReactNode;
 };
 
-function ProductInfoRows({ data, status, children }: ProductInfoRowsProps) {
+function ProductInfoRows({ data, currentStatus, children }: ProductInfoRowsProps) {
   const { t } = useTranslation();
 
   const baseRows = getProductInfoRowsConfig(data, t);
 
   const rows =
-    status !== PRODUCTS_STATES.APPROVED
+    currentStatus !== CurrentStatusEnum.APPROVED
       ? [
           ...baseRows,
           {
@@ -251,7 +260,12 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const { t } = useTranslation();
 
   const handleConfirmRestore = async () => {
-    await handleOpenModal(PRODUCTS_STATES.APPROVED, [data.gtinCode], '', EMPTY_DATA);
+    await handleOpenModal(
+      PRODUCTS_STATES.APPROVED,
+      [data.gtinCode],
+      CurrentStatusEnum.APPROVED,
+      EMPTY_DATA
+    );
     setRestoreDialogOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();
@@ -285,7 +299,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
         <ProductStatusChip status={data.status} />
-        <ProductInfoRows data={data} status={data.status || ''}>
+        <ProductInfoRows data={data} currentStatus={CurrentStatusEnum.UPLOADED}>
           <ProductActionButtons
             isInvitaliaUser={isInvitaliaUser}
             status={data.status}
@@ -309,7 +323,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         gtinCodes={[data.gtinCode]}
         productName={data.productName}
         actionType="rejected"
-        status={''}
+        status={CurrentStatusEnum.REJECTED}
         onUpdateTable={onUpdateTable}
       />
       <ProductModal
@@ -318,7 +332,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         gtinCodes={[data.gtinCode]}
         productName={data.productName}
         actionType="supervisioned"
-        status={''}
+        status={CurrentStatusEnum.SUPERVISED}
         onUpdateTable={onUpdateTable}
       />
     </Box>

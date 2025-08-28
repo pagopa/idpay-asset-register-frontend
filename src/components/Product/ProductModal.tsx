@@ -13,6 +13,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { setSupervisionedStatusList, setRejectedStatusList } from '../../services/registerService';
+import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
 import { MAX_LENGTH_DETAILL_PR } from '../../utils/constants';
 import { truncateString } from '../../helpers';
 
@@ -22,7 +23,7 @@ interface ProductModalProps {
   gtinCodes: Array<string>;
   productName?: string;
   actionType?: string;
-  status: string;
+  status: CurrentStatusEnum;
   onUpdateTable?: () => void;
   selectedProducts?: Array<{ productName?: string; gtinCode: string; category?: string }>;
 }
@@ -143,7 +144,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const callSupervisionedApi = async () => {
     try {
-      await setSupervisionedStatusList(gtinCodes, '', motivation);
+      await setSupervisionedStatusList(gtinCodes, CurrentStatusEnum.SUPERVISED, motivation);
       onClose();
       if (onUpdateTable) {
         onUpdateTable();

@@ -974,7 +974,7 @@ components:
       type: object
       required:
         - gtinCodes
-        - status
+        - currentStatus
       properties:
         gtinCodes:
           type: array

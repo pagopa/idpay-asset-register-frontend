@@ -7,6 +7,7 @@ import {InstitutionsResponse} from "../api/generated/register/InstitutionsRespon
 import {InstitutionResponse} from "../api/generated/register/InstitutionResponse";
 import {UpdateResponseDTO} from "../api/generated/register/UpdateResponseDTO";
 import {ProductListDTO} from "../api/generated/register/ProductListDTO";
+import { CurrentStatusEnum } from "../api/generated/register/ProductsUpdateDTO";
 
 export const uploadProductList = (
     csv: File,
@@ -98,11 +99,11 @@ export const getInstitutionById = async (
 
 export const setSupervisionedStatusList = async (
   gtinCodes: Array<string>,
-  status: string,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
-   return await RegisterApi.setSupervisionedStatusList(gtinCodes, status, motivation);
+   return await RegisterApi.setSupervisionedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw error.response.data;
@@ -114,11 +115,11 @@ export const setSupervisionedStatusList = async (
  
  export const setApprovedStatusList = async (
      gtinCodes: Array<string>,
-     status: string,
+     currentStatus: CurrentStatusEnum,
      motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
-    return await RegisterApi.setApprovedStatusList(gtinCodes, status, motivation);
+    return await RegisterApi.setApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw error.response.data;
@@ -128,11 +129,11 @@ export const setSupervisionedStatusList = async (
 };
  export const setWaitApprovedStatusList = async (
      gtinCodes: Array<string>,
-     status: string,
+     currentStatus: CurrentStatusEnum,
      motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
-    return await RegisterApi.setWaitApprovedStatusList(gtinCodes, status, motivation);
+    return await RegisterApi.setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw error.response.data;
@@ -143,11 +144,11 @@ export const setSupervisionedStatusList = async (
 
  export const setRejectedStatusList = async (
      gtinCodes: Array<string>,
-     status: string,
+     currentStatus: CurrentStatusEnum,
      motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
-   return await RegisterApi.setRejectedStatusList(gtinCodes, status, motivation);
+   return await RegisterApi.setRejectedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw error.response.data;

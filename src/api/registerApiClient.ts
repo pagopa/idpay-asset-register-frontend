@@ -16,7 +16,7 @@ import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadRe
 import { CsvDTO } from './generated/register/CsvDTO';
 import {InstitutionsResponse} from "./generated/register/InstitutionsResponse";
 import {ProductDTO} from "./generated/register/ProductDTO";
-import { ProductsUpdateDTO } from './generated/register/ProductsUpdateDTO';
+import { CurrentStatusEnum, ProductsUpdateDTO } from './generated/register/ProductsUpdateDTO';
 import { ProductListDTO } from './generated/register/ProductListDTO';
 
 const rawFetchApi = buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION);
@@ -272,11 +272,11 @@ export const RegisterApi = {
 
 setSupervisionedStatusList: async (
   gtinCodes: Array<string>,
-  status: string,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, status, motivation };
+    const body = { gtinCodes, currentStatus, motivation };
     const result = await registerClient.updateProductStatusSupervised({
       body
     });
@@ -292,11 +292,11 @@ setSupervisionedStatusList: async (
 
  setApprovedStatusList: async (
   gtinCodes: Array<string>,
-  status: string,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, status, motivation };
+    const body = { gtinCodes, currentStatus, motivation };
     const result = await registerClient.updateProductStatusApproved(
       { body }
     );
@@ -311,11 +311,11 @@ setSupervisionedStatusList: async (
 },
 setWaitApprovedStatusList: async (
   gtinCodes: Array<string>,
-  status: string,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, status, motivation };
+    const body = { gtinCodes, currentStatus, motivation };
     const result = await registerClient.updateProductStatusWaitApproved(
       { body }
     );
@@ -331,11 +331,11 @@ setWaitApprovedStatusList: async (
 
  setRejectedStatusList: async (
   gtinCodes: Array<string>,
-  status: string,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, status, motivation };
+    const body = { gtinCodes, currentStatus, motivation };
     const result = await registerClient.updateProductStatusRejected(
       { body }
     );

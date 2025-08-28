@@ -37,6 +37,7 @@ import {
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { Institution } from '../../model/Institution';
 import { setWaitApprovedStatusList } from '../../services/registerService';
+import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import ProductDetail from './ProductDetail';
 import ProductModal from './ProductModal';
@@ -267,18 +268,22 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const callWaitApprovedApi = async (
     gtinCodes: Array<string>,
-    status: string,
+    currentStatus: CurrentStatusEnum,
     motivation: string
   ) => {
     try {
-      await setWaitApprovedStatusList(gtinCodes, status, motivation);
+      await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleConfirmRestore = async (gtinCodes: Array<string>) => {
-    await callWaitApprovedApi(gtinCodes, PRODUCTS_STATES.APPROVED, '');
+  const handleConfirmRestore = async (
+    gtinCodes: Array<string>,
+    currentStatus: CurrentStatusEnum,
+    motivation: string
+  ) => {
+    await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
     setRestoreDialogOpen(false);
   };
 
@@ -384,7 +389,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             variant="outlined"
             sx={{ ...buttonStyle }}
             disabled={selected.length === 0}
-            onClick={() => handleOpenModal('supervisioned')}
+            onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED.toLowerCase())}
           >
             <FlagIcon /> {` ${t('invitaliaModal.supervisioned.buttonText')} (${selected.length})`}
           </Button>
@@ -455,7 +460,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           return { productName: prod?.productName, gtinCode, category: prod?.category };
         })}
         actionType={modalAction}
-        status={''}
+        status={
+          (tableData.find((row) => row.gtinCode === selected[0])
+            ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED
+        }
         onUpdateTable={updaDataTable}
       />
 
@@ -468,7 +476,14 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         title={t('invitaliaModal.waitApproved.listTitle')}
         message={t('invitaliaModal.waitApproved.description')}
         onCancel={() => setRestoreDialogOpen(false)}
-        onConfirm={() => handleConfirmRestore(selected)}
+        onConfirm={() => {
+          const currentStatus =
+            (tableData.find((row) => row.gtinCode === selected[0])
+              ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED;
+          void handleConfirmRestore(selected, currentStatus, '').catch((error) => {
+            console.error('Errore durante il ripristino:', error);
+          });
+        }}
       />
 
       <DetailDrawer
