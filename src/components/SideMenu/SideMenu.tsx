@@ -32,7 +32,7 @@ export default function SideMenu() {
                 handleClick={() =>
                   onExit(() => navigate(ROUTES.HOME, { replace: true }))
                 }
-                isSelected={location.pathname === ROUTES.HOME}
+                isSelected={[`${ROUTES.HOME}/`, ROUTES.HOME].includes(location.pathname)}
                 icon={InventoryIcon}
                 level={0}
                 data-testid="initiativeList-click-test"
