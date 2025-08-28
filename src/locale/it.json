@@ -156,7 +156,7 @@
       "buttonModal":{
         "confirmSupervisioned":"Conferma",
         "cancelSupervisioned":"Annulla",
-        "supervisioned":"Contrassegna",
+        "supervised":"Contrassegna",
         "rejected":"Escludi"
       },
       "filterLabels": {
@@ -263,7 +263,7 @@
     "number": "Inserisci un numero"
   },
   "invitaliaModal": {
-    "supervisioned": {
+    "supervised": {
       "title": "Contrassegna un prodotto",
       "description": "Segnala eventuali anomalie su un prodotto: verrà messo in pausa e potrai successivamente decidere se escluderlo o ripristinarlo.",
       "listTitle": "I prodotti segnalati sono i seguenti:",

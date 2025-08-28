@@ -331,7 +331,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         onClose={handleSupervisionClose}
         gtinCodes={[data.gtinCode]}
         productName={data.productName}
-        actionType="supervisioned"
+        actionType="supervised"
         status={CurrentStatusEnum.SUPERVISED}
         onUpdateTable={onUpdateTable}
       />

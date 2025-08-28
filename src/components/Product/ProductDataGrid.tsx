@@ -82,6 +82,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
   const [filtersDrawerOpened, setFiltersDrawerOpened] = useState<boolean>(false);
   const [selected, setSelected] = useState<Array<string>>([]);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>(undefined);
   const [ready, setReady] = useState(false);
@@ -391,7 +392,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             disabled={selected.length === 0}
             onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED.toLowerCase())}
           >
-            <FlagIcon /> {` ${t('invitaliaModal.supervisioned.buttonText')} (${selected.length})`}
+            <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
           </Button>
           <Button
             color="primary"

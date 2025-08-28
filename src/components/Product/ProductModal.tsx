@@ -122,13 +122,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const { t } = useTranslation();
 
   const MODAL_CONFIG = {
-    supervisioned: {
-      title: t('invitaliaModal.supervisioned.title'),
-      description: t('invitaliaModal.supervisioned.description'),
-      listTitle: t('invitaliaModal.supervisioned.listTitle'),
-      reasonLabel: t('invitaliaModal.supervisioned.reasonLabel'),
-      reasonPlaceholder: t('invitaliaModal.supervisioned.reasonPlaceholder'),
-      buttonText: t('invitaliaModal.supervisioned.buttonText'),
+    supervised: {
+      title: t('invitaliaModal.supervised.title'),
+      description: t('invitaliaModal.supervised.description'),
+      listTitle: t('invitaliaModal.supervised.listTitle'),
+      reasonLabel: t('invitaliaModal.supervised.reasonLabel'),
+      reasonPlaceholder: t('invitaliaModal.supervised.reasonPlaceholder'),
+      buttonText: t('invitaliaModal.supervised.buttonText'),
     },
     rejected: {
       title: t('invitaliaModal.rejected.title'),
@@ -144,7 +144,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const callSupervisionedApi = async () => {
     try {
-      await setSupervisionedStatusList(gtinCodes, CurrentStatusEnum.SUPERVISED, motivation);
+      await setSupervisionedStatusList(gtinCodes, status, motivation);
       onClose();
       if (onUpdateTable) {
         onUpdateTable();
@@ -216,7 +216,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         <Box sx={modalStyles.charCounter}>{motivation.length}/200</Box>
       </DialogContent>
       <DialogActions sx={modalStyles.dialogActions}>
-        {actionType === 'supervisioned' && (
+        {actionType === 'supervised' && (
           <Button
             variant="contained"
             color="primary"
