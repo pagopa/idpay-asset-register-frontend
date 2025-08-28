@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
+import {useTranslation} from "react-i18next";
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
 import ProductDataGrid from '../../components/Product/ProductDataGrid';
 import MsgResult from '../../components/Product/MsgResult';
 
 const InvitaliaProductsList: React.FC = () => {
+  const { t } = useTranslation();
   const institution = useSelector(institutionSelector);
   const [showMsg, setShowMsg] = useState(false);
 
@@ -47,8 +49,15 @@ const InvitaliaProductsList: React.FC = () => {
         <ProductDataGrid organizationId={institution?.institutionId || ''} />
       </Box>
       {showMsg && (
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-          <MsgResult message="I prodotti selezionati sono ora da controllare" />
+        <Box sx={{
+          position: 'absolute',
+          right: 12,
+          bottom: 32,
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'flex-end'
+        }}>
+          <MsgResult message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')} />
         </Box>
       )}
     </Box>

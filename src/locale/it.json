@@ -104,7 +104,8 @@
       "state": "Stato",
       "APPROVED": "Approvato",
       "EXCLUDED": "Escluso",
-      "MARKED": "Contrassegnato"
+      "MARKED": "Contrassegnato",
+      "richiestaApprovazioneSuccessMsg": "Richiesta di approvazione inviata"
     },
     "addProducts": {
       "title": "Aggiungi prodotti",
