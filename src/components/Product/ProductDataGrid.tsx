@@ -1,12 +1,22 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Paper, TablePagination, CircularProgress } from '@mui/material';
 import Chip from '@mui/material/Chip';
+import FlagIcon from '@mui/icons-material/Flag';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import {getProducts, getBatchFilterList, getInstitutionsList} from '../../services/registerService';
-import {PAGINATION_ROWS_PRODUCTS, EMPTY_DATA, USERS_TYPES} from '../../utils/constants';
+import {
+  getProducts,
+  getBatchFilterList,
+  getInstitutionsList,
+} from '../../services/registerService';
+import {
+  PAGINATION_ROWS_PRODUCTS,
+  EMPTY_DATA,
+  USERS_TYPES,
+  PRODUCTS_STATES,
+} from '../../utils/constants';
 import {
   batchIdSelector,
   batchNameSelector,
@@ -19,13 +29,20 @@ import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
-import {institutionListSelector, institutionSelector, setInstitutionList} from '../../redux/slices/invitaliaSlice';
+import {
+  institutionListSelector,
+  institutionSelector,
+  setInstitutionList,
+} from '../../redux/slices/invitaliaSlice';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
-import {Institution} from "../../model/Institution";
+import { Institution } from '../../model/Institution';
+import { setWaitApprovedStatusList } from '../../services/registerService';
+import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import ProductDetail from './ProductDetail';
 import ProductModal from './ProductModal';
 import NewFilter from './NewFilter';
+import ProductConfirmDialog from './ProductConfirmDialog';
 
 type ProductDataGridProps = {
   organizationId: string;
@@ -34,7 +51,7 @@ type ProductDataGridProps = {
 
 const buttonStyle = {
   height: 48,
-  fontWeight: 600,
+  fontWeight: 700,
   fontSize: 16,
   marginRight: 2,
 };
@@ -65,15 +82,17 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
   const [filtersDrawerOpened, setFiltersDrawerOpened] = useState<boolean>(false);
   const [selected, setSelected] = useState<Array<string>>([]);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>(undefined);
   const [ready, setReady] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
   const institutions = useSelector(institutionListSelector);
   const { t } = useTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
+  const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
 
   useEffect(() => {
@@ -102,47 +121,42 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     fetchProductList();
   };
 
-  const handleOpenModal = (action: string) => {
-    setModalAction(action);
-    setModalOpen(true);
-  };
-
   const callProductsApi = (organizationId: string) => {
     const sortKey = `${orderBy},${order}`;
     const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
 
     console.log(organizationId);
     void getProducts(
-        isInvitaliaUser ? producerFilter : user.org_id,
-        page,
-        rowsPerPage,
-        sortKey,
-        categoryFilter ? t(`pages.products.categories.${categoryFilter?.toLowerCase()}`) : '',
-        statusFilter ? t(`pages.products.categories.${statusFilter?.toLowerCase()}`) : '',
-        eprelCodeFilter,
-        gtinCodeFilter,
-        undefined,
-        batchFilter
+      isInvitaliaUser ? producerFilter : user.org_id,
+      page,
+      rowsPerPage,
+      sortKey,
+      categoryFilter ? t(`pages.products.categories.${categoryFilter?.toLowerCase()}`) : '',
+      statusFilter ? t(`pages.products.categories.${statusFilter?.toLowerCase()}`) : '',
+      eprelCodeFilter,
+      gtinCodeFilter,
+      undefined,
+      batchFilter
     )
-        .then((res) => {
-          const { content, pageNo, totalElements } = res;
-          setTableData(content ? Array.from(content) : []);
-          setItemsQty(totalElements);
-          if (pageNo !== undefined && totalElements) {
-            setPaginatorFrom(pageNo * rowsPerPage + 1);
-            setPaginatorTo(
-                rowsPerPage * (Number(pageNo) + 1) < totalElements
-                    ? rowsPerPage * (Number(pageNo) + 1)
-                    : totalElements
-            );
-          }
-          setApiErrorOccurred(false);
-        })
-        .catch(() => handleStateForError())
-        .finally(() => {
-          setLoading(false);
-          setFiltering(false);
-        });
+      .then((res) => {
+        const { content, pageNo, totalElements } = res;
+        setTableData(content ? Array.from(content) : []);
+        setItemsQty(totalElements);
+        if (pageNo !== undefined && totalElements) {
+          setPaginatorFrom(pageNo * rowsPerPage + 1);
+          setPaginatorTo(
+            rowsPerPage * (Number(pageNo) + 1) < totalElements
+              ? rowsPerPage * (Number(pageNo) + 1)
+              : totalElements
+          );
+        }
+        setApiErrorOccurred(false);
+      })
+      .catch(() => handleStateForError())
+      .finally(() => {
+        setLoading(false);
+        setFiltering(false);
+      });
 
     dispatch(setBatchName(''));
     dispatch(setBatchId(''));
@@ -171,38 +185,44 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   useEffect(() => {
     void fetchInstitutions();
 
-    if(isInvitaliaAdmin){
-      setStatusFilter("Da approvare");
+    if (isInvitaliaAdmin) {
+      setStatusFilter('Da approvare');
     }
 
-    if (!ready) {return;}
+    if (!ready) {
+      return;
+    }
 
     setLoading(true);
     const targetId = isInvitaliaUser
-        ? (producerFilter || institution?.institutionId || '')
-        : organizationId;
+      ? producerFilter || institution?.institutionId || ''
+      : organizationId;
 
     void getBatchFilterList(targetId)
-        .then((res) => {
-          const { left } = res as BatchFilterList;
-          const values = left?.[0]?.value ?? [];
-          setBatchFilterItems([...values]);
-        })
-        .catch(() => {
-          setBatchFilterItems([]);
-        })
-        .finally(() => setLoading(false));
+      .then((res) => {
+        const { left } = res as BatchFilterList;
+        const values = left?.[0]?.value ?? [];
+        setBatchFilterItems([...values]);
+      })
+      .catch(() => {
+        setBatchFilterItems([]);
+      })
+      .finally(() => setLoading(false));
   }, [ready, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
 
   useEffect(() => {
-    if (!ready) {return;}
+    if (!ready) {
+      return;
+    }
     setLoading(true);
     callProductsApi(organizationId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, page, orderBy, order, rowsPerPage]);
 
   useEffect(() => {
-    if (!ready || !filtering) {return;}
+    if (!ready || !filtering) {
+      return;
+    }
     setLoading(true);
     callProductsApi(organizationId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -247,6 +267,38 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     setDrawerOpened(true);
   };
 
+  const callWaitApprovedApi = async (
+    gtinCodes: Array<string>,
+    currentStatus: CurrentStatusEnum,
+    motivation: string
+  ) => {
+    try {
+      await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleConfirmRestore = async (
+    gtinCodes: Array<string>,
+    currentStatus: CurrentStatusEnum,
+    motivation: string
+  ) => {
+    await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
+    setRestoreDialogOpen(false);
+    window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
+  };
+
+  const handleOpenModal = (action: string) => {
+    if (action === PRODUCTS_STATES.WAIT_APPROVED) {
+      setRestoreDialogOpen(true);
+    } else {
+      setModalAction(action);
+      setModalOpen(true);
+    }
+    return Promise.resolve();
+  };
+
   const renderTable = () => {
     const commonProps = {
       tableData,
@@ -262,21 +314,21 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     if (tableData?.length > 0) {
       if (loading) {
         return (
-            <CircularProgress
-                size={36}
-                sx={{
-                  color: '#0055AA',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                }}
-            />
+          <CircularProgress
+            size={36}
+            sx={{
+              color: '#0055AA',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+            }}
+          />
         );
       }
       return (
-          <Box sx={{ width: '100%', overflowX: 'auto' }}>
-            <ProductsTable key={refreshKey} {...commonProps} />
-          </Box>
+        <Box sx={{ width: '100%', overflowX: 'auto' }}>
+          <ProductsTable key={refreshKey} {...commonProps} />
+        </Box>
       );
     }
 
@@ -290,14 +342,14 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     const norm = (s?: string) => (s ? s.trim() : '');
 
     const producer = producerFilter?.trim()
-        ? (institutions?.find((p: any) => p.institutionId === producerFilter)?.description ||
-            producerFilter.trim())
-        : '';
+      ? institutions?.find((p: any) => p.institutionId === producerFilter)?.description ||
+        producerFilter.trim()
+      : '';
 
     const batch = batchFilter?.trim()
-        ? (batchFilterItems?.find((b) => b?.productFileId === batchFilter)?.batchName ||
-            batchFilter.trim())
-        : '';
+      ? batchFilterItems?.find((b) => b?.productFileId === batchFilter)?.batchName ||
+        batchFilter.trim()
+      : '';
 
     return [
       norm(categoryFilter),
@@ -307,8 +359,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       norm(eprelCodeFilter),
       norm(gtinCodeFilter),
     ]
-        .filter((s): s is string => !!s)
-        .join(', ');
+      .filter((s): s is string => !!s)
+      .join(', ');
   }, [
     categoryFilter,
     statusFilter,
@@ -321,120 +373,183 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   ]);
 
   return (
-      <>
-        {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
-            <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
-              <Button
-                  data-testid="supervisedBtn"
-                  color="primary"
-                  variant="contained"
-                  sx={{ ...buttonStyle }}
-                  disabled={selected.length === 0}
-                  onClick={() => handleOpenModal('supervisioned')}
-              >
-                {t('invitaliaModal.supervisioned.title')}
-              </Button>
-              <Button
-                  variant="outlined"
-                  color="error"
-                  sx={{ ...buttonStyle }}
-                  disabled={selected.length === 0}
-                  onClick={() => handleOpenModal('rejected')}
-              >
-                {t('invitaliaModal.rejected.title')}
-              </Button>
-            </Box>
-        )}
+    <>
+      {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
+        <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
+          <Button
+            variant="outlined"
+            color="error"
+            sx={{ ...buttonStyle }}
+            disabled={
+              selected.length === 0 ||
+              selected.some(
+                (gtinCode) =>
+                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
+                  PRODUCTS_STATES.REJECTED.toLowerCase()
+              )
+            }
+            onClick={() => handleOpenModal(PRODUCTS_STATES.REJECTED.toLowerCase())}
+          >
+            {`${t('invitaliaModal.rejected.buttonText')} (${selected.length})`}
+          </Button>
+          <Button
+            color="primary"
+            variant="outlined"
+            sx={{ ...buttonStyle }}
+            disabled={
+              selected.length === 0 ||
+              selected.some(
+                (gtinCode) =>
+                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
+                  PRODUCTS_STATES.SUPERVISED.toLowerCase()
+              )
+            }
+            onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED.toLowerCase())}
+          >
+            <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
+          </Button>
 
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-          {filtersLabel ? (
-              <Chip
-                  size="medium"
-                  label={filtersLabel}
-                  sx={{ color: 'white !important', backgroundColor: '#0073E6 !important' }}
-                  onDelete={handleDeleteFiltersButtonClick}
-                  deleteIcon={<CloseIcon sx={{ color: 'white !important' }} />}
-              />
-          ) : (
-              <span />
-          )}
-          <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />
+          <Button
+            data-testid="approvedBtn"
+            color="primary"
+            variant="contained"
+            sx={{ ...buttonStyle }}
+            disabled={
+              selected.length === 0 ||
+              selected.some(
+                (gtinCode) =>
+                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
+                  PRODUCTS_STATES.WAIT_APPROVED.toLowerCase()
+              )
+            }
+            onClick={() => handleOpenModal(PRODUCTS_STATES.WAIT_APPROVED)}
+          >
+            {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
+          </Button>
         </Box>
+      )}
 
-        {tableData?.length === 0 && !loading && (
-            <EmptyListTable message="pages.products.noFileLoaded" />
-        )}
-
-        <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
-          {renderTable()}
-
-          {tableData?.length > 0 && !loading && (
-              <TablePagination
-                  component="div"
-                  count={itemsQty || 0}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  rowsPerPage={rowsPerPage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                  rowsPerPageOptions={[rowsPerPage]}
-                  labelDisplayedRows={() =>
-                      `${paginatorFrom} - ${paginatorTo} ${t('pages.products.tablePaginationFrom')} ${itemsQty}`
-                  }
-                  sx={{
-                    '& .MuiTablePagination-actions button': {
-                      backgroundColor: 'transparent',
-                      '&:hover': { backgroundColor: 'transparent' },
-                    },
-                  }}
-              />
-          )}
-        </Paper>
-
-        <ProductModal
-            open={modalOpen}
-            onClose={() => setModalOpen(false)}
-            gtinCodes={selected}
-            selectedProducts={selected.map((gtinCode) => {
-              const prod = tableData.find((row) => row.gtinCode === gtinCode);
-              return { productName: prod?.productName, gtinCode, category: prod?.category };
-            })}
-            actionType={modalAction}
-            status={''}
-            onUpdateTable={updaDataTable}
-        />
-
-        <DetailDrawer data-testid="detail-drawer" open={drawerOpened} toggleDrawer={handleToggleDrawer}>
-          <ProductDetail
-              data-testid="product-detail"
-              data={drawerData}
-              isInvitaliaUser={isInvitaliaUser}
-              open={true}
-              onUpdateTable={updaDataTable}
-              onClose={() => handleToggleDrawer(false)}
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        {filtersLabel ? (
+          <Chip
+            size="medium"
+            label={filtersLabel}
+            sx={{ color: 'white !important', backgroundColor: '#0073E6 !important' }}
+            onDelete={handleDeleteFiltersButtonClick}
+            deleteIcon={<CloseIcon sx={{ color: 'white !important' }} />}
           />
-        </DetailDrawer>
+        ) : (
+          <span />
+        )}
+        <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />
+      </Box>
 
-        <FiltersDrawer
-            open={filtersDrawerOpened}
-            toggleFiltersDrawer={handleToggleFiltersDrawer}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            producerFilter={producerFilter}
-            setProducerFilter={setProducerFilter}
-            batchFilter={batchFilter}
-            setBatchFilter={setBatchFilter}
-            categoryFilter={categoryFilter}
-            setCategoryFilter={setCategoryFilter}
-            batchFilterItems={batchFilterItems}
-            eprelCodeFilter={eprelCodeFilter}
-            setEprelCodeFilter={setEprelCodeFilter}
-            gtinCodeFilter={gtinCodeFilter}
-            setGtinCodeFilter={setGtinCodeFilter}
-            errorStatus={apiErrorOccurred}
-            handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
-            setFiltering={setFiltering}
+      {tableData?.length === 0 && !loading && (
+        <EmptyListTable message="pages.products.noFileLoaded" />
+      )}
+
+      <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
+        {renderTable()}
+
+        {tableData?.length > 0 && !loading && (
+          <TablePagination
+            component="div"
+            count={itemsQty || 0}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[rowsPerPage]}
+            labelDisplayedRows={() =>
+              `${paginatorFrom} - ${paginatorTo} ${t(
+                'pages.products.tablePaginationFrom'
+              )} ${itemsQty}`
+            }
+            sx={{
+              '& .MuiTablePagination-actions button': {
+                backgroundColor: 'transparent',
+                '&:hover': { backgroundColor: 'transparent' },
+              },
+            }}
+          />
+        )}
+      </Paper>
+
+      <ProductModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        gtinCodes={selected}
+        selectedProducts={selected.map((gtinCode) => {
+          const prod = tableData.find((row) => row.gtinCode === gtinCode);
+          return { productName: prod?.productName, gtinCode, category: prod?.category };
+        })}
+        actionType={modalAction}
+        status={
+          (tableData.find((row) => row.gtinCode === selected[0])
+            ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED
+        }
+        onUpdateTable={updaDataTable}
+      />
+
+      <ProductConfirmDialog
+        open={restoreDialogOpen}
+        cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
+        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${
+          selected.length
+        })`}
+        title={t('invitaliaModal.waitApproved.listTitle')}
+        message={t('invitaliaModal.waitApproved.description')}
+        onCancel={() => setRestoreDialogOpen(false)}
+        onConfirm={async () => {
+          const currentStatus =
+            (tableData.find((row) => row.gtinCode === selected[0])
+              ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED;
+          try {
+            await handleConfirmRestore(selected, currentStatus, '');
+            updaDataTable();
+            setRestoreDialogOpen(false);
+          } catch (error) {
+            console.error('Errore durante il ripristino:', error);
+          }
+        }}
+      />
+
+      <DetailDrawer
+        data-testid="detail-drawer"
+        open={drawerOpened}
+        toggleDrawer={handleToggleDrawer}
+      >
+        <ProductDetail
+          data-testid="product-detail"
+          data={drawerData}
+          isInvitaliaUser={isInvitaliaUser}
+          open={true}
+          onUpdateTable={updaDataTable}
+          onClose={() => handleToggleDrawer(false)}
         />
-      </>
+      </DetailDrawer>
+
+      <FiltersDrawer
+        open={filtersDrawerOpened}
+        toggleFiltersDrawer={handleToggleFiltersDrawer}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        producerFilter={producerFilter}
+        setProducerFilter={setProducerFilter}
+        batchFilter={batchFilter}
+        setBatchFilter={setBatchFilter}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        batchFilterItems={batchFilterItems}
+        eprelCodeFilter={eprelCodeFilter}
+        setEprelCodeFilter={setEprelCodeFilter}
+        gtinCodeFilter={gtinCodeFilter}
+        setGtinCodeFilter={setGtinCodeFilter}
+        errorStatus={apiErrorOccurred}
+        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
+        setFiltering={setFiltering}
+      />
+    </>
   );
 };
 

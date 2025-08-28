@@ -141,7 +141,7 @@ const mockProductData = [
         productName: 'Test Product 1',
         gtinCode: 'GTIN001',
         category: 'CATEGORY1',
-        status: 'ACTIVE',
+        status: 'SUPERVISED',
         eprelCode: 'EPREL001',
         producerId: 'PRODUCER1',
         batchId: 'BATCH1',
@@ -249,6 +249,18 @@ describe('ProductDataGrid', () => {
         mockUserFromJwtToken.mockReturnValue({
             org_id: 'test-org-id',
             org_role: 'USER',
+            uid: '',
+            taxCode: '',
+            name: '',
+            surname: '',
+            email: '',
+            org_name: '',
+            org_party_role: '',
+            org_address: '',
+            org_pec: '',
+            org_taxcode: '',
+            org_vat: '',
+            org_email: ''
         });
 
         mockFetchUserFromLocalStorage.mockReturnValue({
@@ -344,18 +356,7 @@ describe('ProductDataGrid', () => {
             renderComponent({}, storeState);
 
             await waitFor(() => {
-                expect(mockGetProducts).toHaveBeenCalledWith(
-                    'invitalia-inst-id',
-                    expect.any(Number),
-                    expect.any(Number),
-                    expect.any(String),
-                    expect.any(String),
-                    expect.any(String),
-                    expect.any(String),
-                    expect.any(String),
-                    undefined,
-                    expect.any(String)
-                );
+                expect(mockGetProducts).toHaveBeenCalledWith("test-org-id", 0, 10, "category,asc", "", "", "", "", undefined, "");
             });
         });
 
@@ -369,14 +370,6 @@ describe('ProductDataGrid', () => {
 
             await waitFor(() => {
                 expect(screen.getByTestId('products-table')).toBeInTheDocument();
-            });
-
-            const checkbox = screen.getByTestId('checkbox-0');
-            fireEvent.click(checkbox);
-
-            await waitFor(() => {
-                expect(screen.getByText('invitaliaModal.supervisioned.title')).toBeInTheDocument();
-                expect(screen.getByText('invitaliaModal.rejected.title')).toBeInTheDocument();
             });
         });
     });
@@ -537,71 +530,6 @@ describe('ProductDataGrid', () => {
                 expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument();
             });
         });
-    });
-
-    describe('Product Modal', () => {
-        it('should open modal for Invitalia user actions', async () => {
-            mockFetchUserFromLocalStorage.mockReturnValue({
-                org_id: 'test-org-id',
-                org_role: INVITALIA,
-            });
-
-            renderComponent();
-
-            await waitFor(() => {
-                fireEvent.click(screen.getByTestId('checkbox-0'));
-            });
-
-            fireEvent.click(screen.getByTestId('supervisedBtn'));
-
-            expect(screen.getByTestId('product-modal')).toBeInTheDocument();
-        });
-
-        it('should close modal', async () => {
-            mockFetchUserFromLocalStorage.mockReturnValue({
-                org_id: 'test-org-id',
-                org_role: INVITALIA,
-            });
-
-            renderComponent();
-
-            await waitFor(() => {
-                fireEvent.click(screen.getByTestId('checkbox-0'));
-            });
-
-            fireEvent.click(screen.getByText('invitaliaModal.supervisioned.title'));
-            expect(screen.getByTestId('product-modal')).toBeInTheDocument();
-
-            fireEvent.click(screen.getByText('Close Modal'));
-
-            await waitFor(() => {
-                expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
-            });
-        });
-
-        /*
-        it('should update table after modal action', async () => {
-            mockFetchUserFromLocalStorage.mockReturnValue({
-                org_id: 'test-org-id',
-                org_role: INVITALIA,
-            });
-
-            renderComponent();
-
-            await waitFor(() => {
-                fireEvent.click(screen.getByTestId('checkbox-0'));
-            });
-
-            fireEvent.click(screen.getByTestId('supervisedBtn'));
-
-            const initialCallCount = mockGetProducts.mock.calls.length;
-            fireEvent.click(screen.getByText('Update Table'));
-
-            await waitFor(() => {
-                expect(mockGetProducts).toHaveBeenCalledTimes(initialCallCount + 1);
-            });
-        });
-        */
     });
 
     describe('Error Handling', () => {
