@@ -1,14 +1,35 @@
-import React, { useEffect } from 'react';
-import {Box} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
 import ProductDataGrid from '../../components/Product/ProductDataGrid';
+import MsgResult from '../../components/Product/MsgResult';
 
 const InvitaliaProductsList: React.FC = () => {
   const institution = useSelector(institutionSelector);
+  const [showMsg, setShowMsg] = useState(false);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const timeout = setTimeout(() => setShowMsg(false), 10000);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    const handleShow = () => setShowMsg(true);
+    const handleDismiss = () => setShowMsg(false);
+    window.addEventListener('INVITALIA_MSG_SHOW', () => {
+      handleShow();
+      const timeout = setTimeout(() => handleDismiss(), 10000);
+      return () => clearTimeout(timeout);
+    });
+    window.addEventListener('INVITALIA_MSG_DISMISS', handleDismiss);
+    return () => {
+      window.removeEventListener('INVITALIA_MSG_SHOW', handleShow);
+      window.removeEventListener('INVITALIA_MSG_DISMISS', handleDismiss);
+    };
+  }, []);
+
   return (
     <Box pt={'16px'} pl={'8px'}>
       <Box pt={'16px'}>
@@ -25,6 +46,11 @@ const InvitaliaProductsList: React.FC = () => {
         </Box>
         <ProductDataGrid organizationId={institution?.institutionId || ''} />
       </Box>
+      {showMsg && (
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+          <MsgResult message="I prodotti selezionati sono ora da controllare" />
+        </Box>
+      )}
     </Box>
   );
 };

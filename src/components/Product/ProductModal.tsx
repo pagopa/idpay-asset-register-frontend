@@ -149,6 +149,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
       if (onUpdateTable) {
         onUpdateTable();
       }
+      if (onUpdateTable) {
+        onUpdateTable();
+      }
     } catch (error) {
       console.error(error);
       onClose();

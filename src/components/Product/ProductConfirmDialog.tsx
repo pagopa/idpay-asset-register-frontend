@@ -80,7 +80,9 @@ const ProductConfirmDialog: React.FC<ConfirmDialogProps> = ({
         {cancelButtonText}
       </Button>
       <Button
-        onClick={onConfirm}
+        onClick={() => {
+          onConfirm();
+        }}
         color="primary"
         variant="contained"
         sx={dialogStyles.buttonOkCancel}

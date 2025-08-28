@@ -286,6 +286,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   ) => {
     await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
     setRestoreDialogOpen(false);
+    window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
   };
 
   const handleOpenModal = (action: string) => {
@@ -379,26 +380,48 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             variant="outlined"
             color="error"
             sx={{ ...buttonStyle }}
-            disabled={selected.length === 0}
+            disabled={
+              selected.length === 0 ||
+              selected.some(
+                (gtinCode) =>
+                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
+                  PRODUCTS_STATES.REJECTED.toLowerCase()
+              )
+            }
             onClick={() => handleOpenModal(PRODUCTS_STATES.REJECTED.toLowerCase())}
           >
             {`${t('invitaliaModal.rejected.buttonText')} (${selected.length})`}
           </Button>
           <Button
-            data-testid="supervisedBtn"
             color="primary"
             variant="outlined"
             sx={{ ...buttonStyle }}
-            disabled={selected.length === 0}
+            disabled={
+              selected.length === 0 ||
+              selected.some(
+                (gtinCode) =>
+                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
+                  PRODUCTS_STATES.SUPERVISED.toLowerCase()
+              )
+            }
             onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED.toLowerCase())}
           >
             <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
           </Button>
+
           <Button
+            data-testid="approvedBtn"
             color="primary"
             variant="contained"
             sx={{ ...buttonStyle }}
-            disabled={selected.length === 0}
+            disabled={
+              selected.length === 0 ||
+              selected.some(
+                (gtinCode) =>
+                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
+                  PRODUCTS_STATES.WAIT_APPROVED.toLowerCase()
+              )
+            }
             onClick={() => handleOpenModal(PRODUCTS_STATES.WAIT_APPROVED)}
           >
             {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
@@ -477,13 +500,17 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         title={t('invitaliaModal.waitApproved.listTitle')}
         message={t('invitaliaModal.waitApproved.description')}
         onCancel={() => setRestoreDialogOpen(false)}
-        onConfirm={() => {
+        onConfirm={async () => {
           const currentStatus =
             (tableData.find((row) => row.gtinCode === selected[0])
               ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED;
-          void handleConfirmRestore(selected, currentStatus, '').catch((error) => {
+          try {
+            await handleConfirmRestore(selected, currentStatus, '');
+            updaDataTable();
+            setRestoreDialogOpen(false);
+          } catch (error) {
             console.error('Errore durante il ripristino:', error);
-          });
+          }
         }}
       />
 
