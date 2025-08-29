@@ -14,7 +14,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { setSupervisionedStatusList, setRejectedStatusList } from '../../services/registerService';
 import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
-import { MAX_LENGTH_DETAILL_PR } from '../../utils/constants';
+import { MAX_LENGTH_DETAILL_PR, PRODUCTS_STATES } from '../../utils/constants';
 import { truncateString } from '../../helpers';
 
 interface ProductModalProps {
@@ -219,7 +219,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         <Box sx={modalStyles.charCounter}>{motivation.length}/200</Box>
       </DialogContent>
       <DialogActions sx={modalStyles.dialogActions}>
-        {actionType === 'supervised' && (
+        {actionType === PRODUCTS_STATES.SUPERVISED.toLowerCase() && (
           <Button
             variant="contained"
             color="primary"
@@ -232,7 +232,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             {config?.buttonText || 'Chiudi'}
           </Button>
         )}
-        {actionType === 'rejected' && (
+        {actionType === PRODUCTS_STATES.REJECTED.toLowerCase() && (
           <Button
             variant="contained"
             color="primary"

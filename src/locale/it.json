@@ -303,16 +303,15 @@
       "buttonText": "Approva",
       "buttonTextConfirm": "Richiedi approvazione",
       "buttonTextCancel": "Annulla"
-    },
-      "restored": {
-      "title": "Rifiuta",
-      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
-      "listTitle": "Richiedi approvazione",
-      "reasonLabel": "Richiedi approvazione",
-      "reasonPlaceholder": "Richiedi approvazione",
-      "buttonText": "Rifiuta",
-      "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Rifiuta"
+    }
+  },
+  "chip": {
+    "productStatusLabel":{
+      "uploaded": "Da revisionare",
+      "waitApproved": "Da approvare",
+      "approved": "Approvato",
+      "supervised": "Da controllare",
+      "rejected": "Escluso"
     }
   }
 }

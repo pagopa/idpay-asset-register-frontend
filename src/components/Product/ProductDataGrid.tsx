@@ -127,7 +127,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
     console.log(organizationId);
     void getProducts(
-      isInvitaliaUser ? producerFilter : user.org_id,
+      isInvitaliaUser || isInvitaliaAdmin ? producerFilter : user.org_id,
       page,
       rowsPerPage,
       sortKey,
@@ -183,7 +183,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [isInvitaliaUser, institution?.institutionId]);
 
   useEffect(() => {
-    void fetchInstitutions();
+    if (isInvitaliaAdmin || isInvitaliaUser) {
+      void fetchInstitutions();
+    }
 
     if (isInvitaliaAdmin) {
       setStatusFilter('Da approvare');
@@ -380,14 +382,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             variant="outlined"
             color="error"
             sx={{ ...buttonStyle }}
-            disabled={
-              selected.length === 0 ||
-              selected.some(
-                (gtinCode) =>
-                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
-                  PRODUCTS_STATES.REJECTED.toLowerCase()
-              )
-            }
             onClick={() => handleOpenModal(PRODUCTS_STATES.REJECTED.toLowerCase())}
           >
             {`${t('invitaliaModal.rejected.buttonText')} (${selected.length})`}
@@ -396,14 +390,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             color="primary"
             variant="outlined"
             sx={{ ...buttonStyle }}
-            disabled={
-              selected.length === 0 ||
-              selected.some(
-                (gtinCode) =>
-                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
-                  PRODUCTS_STATES.SUPERVISED.toLowerCase()
-              )
-            }
             onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED.toLowerCase())}
           >
             <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}

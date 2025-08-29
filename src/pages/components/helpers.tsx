@@ -1,32 +1,4 @@
-import { Chip } from '@mui/material';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-
-export function renderUploadStatusIcon(status: string) {
-  const chipSx = {
-    mb: 1,
-    whiteSpace: 'nowrap',
-    '& .MuiChip-label': {
-      whiteSpace: 'nowrap',
-      overflow: 'visible',
-      textOverflow: 'clip',
-      paddingLeft: '12px',
-      paddingRight: '12px',
-    },
-  };
-  switch (status) {
-    case 'APPROVED':
-    case 'UPLOADED':
-      return <Chip color="default" label="Da revisionare" size="medium" sx={chipSx} />;
-    case 'WAIT_APPROVED':
-      return <Chip color="info" label="Da approvare" size="medium" sx={chipSx} />;
-    case 'SUPERVISED':
-      return <Chip color="primary" label="Da controllare" size="medium" sx={chipSx} />;
-    case 'REJECTED':
-      return <Chip color="error" label="Escluso" size="medium" sx={chipSx} />;
-    default:
-      return;
-  }
-}
 
 export interface ProductsTableProps {
   tableData: Array<ProductDTO>;

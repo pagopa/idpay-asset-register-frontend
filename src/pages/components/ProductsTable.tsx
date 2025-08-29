@@ -13,10 +13,11 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import EprelLinks from '../../components/Product/EprelLinks';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { USERS_TYPES } from '../../utils/constants';
+import { PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import EnhancedTableHead from '../../components/Product/EnhancedTableHead';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
+import ProductStatusChip from '../../components/Product/ProductStatusChip';
 import {
   actionsCellSx,
   cellCenterSx,
@@ -24,7 +25,6 @@ import {
   cellRightSx,
   checkboxCellSx,
   ProductsTableProps,
-  renderUploadStatusIcon,
   rowTableSx,
 } from './helpers';
 
@@ -170,6 +170,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           <Checkbox
             color="primary"
             checked={selected.includes(row.gtinCode)}
+            disabled={row.status !== PRODUCTS_STATES.UPLOADED}
             onChange={() => handleCheckboxClick(row.gtinCode)}
             onClick={(e) => e.stopPropagation()}
           />
@@ -193,7 +194,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        {renderUploadStatusIcon(row?.status ?? emptyData ?? '')}
+        <ProductStatusChip status={row?.status ?? emptyData ?? ''} />
       </TableCell>
       <TableCell sx={actionsCellSx}>
         <ArrowForwardIosIcon
@@ -223,7 +224,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
             case 'batchName':
               return <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>;
             case 'status':
-              return renderUploadStatusIcon(row?.status ?? emptyData ?? '');
+              return <ProductStatusChip status={row?.status ?? emptyData ?? ''} />;
             case 'actions':
               return (
                 <ArrowForwardIosIcon
