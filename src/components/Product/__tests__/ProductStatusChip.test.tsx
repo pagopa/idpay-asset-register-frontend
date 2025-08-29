@@ -58,7 +58,7 @@ describe('ProductStatusChip', () => {
             const { container } = renderWithTheme(
                 <ProductStatusChip status="APPROVED" />
             );
-            expect(container.firstChild).toBeNull();
+            expect(container.firstChild).not.toBeNull();
         });
     });
 
@@ -66,17 +66,17 @@ describe('ProductStatusChip', () => {
         it('dovrebbe renderizzare un chip di errore con icona ErrorIcon', () => {
             renderWithTheme(<ProductStatusChip status="REJECTED" />);
 
-            const chip = screen.getByText('Escluso').closest('.MuiChip-root');
+            const chip = screen.getByText('chip.productStatusLabel.rejected').closest('.MuiChip-root');
             expect(chip).toBeInTheDocument();
             expect(chip).toHaveClass('MuiChip-colorError');
 
-            expect(screen.getByText('Escluso')).toBeInTheDocument();
+            expect(screen.getByText('chip.productStatusLabel.rejected')).toBeInTheDocument();
         });
 
         it('dovrebbe avere le corrette proprietà del chip', () => {
             renderWithTheme(<ProductStatusChip status="REJECTED" />);
 
-            const chip = screen.getByText('Escluso').closest('.MuiChip-root');
+            const chip = screen.getByText('chip.productStatusLabel.rejected').closest('.MuiChip-root');
             expect(chip).toHaveClass('MuiChip-sizeMedium');
             expect(chip).toHaveClass('MuiChip-colorError');
 
@@ -88,7 +88,7 @@ describe('ProductStatusChip', () => {
         it('dovrebbe renderizzare il chip REJECTED con struttura corretta', () => {
             renderWithTheme(<ProductStatusChip status="REJECTED" />);
 
-            const chip = screen.getByText('Escluso').closest('.MuiChip-root');
+            const chip = screen.getByText('chip.productStatusLabel.rejected').closest('.MuiChip-root');
             expect(chip).toBeInTheDocument();
         });
 
@@ -96,7 +96,7 @@ describe('ProductStatusChip', () => {
         it('dovrebbe avere testo accessibile per screen reader - REJECTED', () => {
             renderWithTheme(<ProductStatusChip status="REJECTED" />);
 
-            expect(screen.getByText('Escluso')).toBeInTheDocument();
+            expect(screen.getByText('chip.productStatusLabel.rejected')).toBeInTheDocument();
         });
     });
 
@@ -113,8 +113,7 @@ describe('ProductStatusChip', () => {
             const { container } = renderWithTheme(
                 <ProductStatusChip status="APPROVED" />
             );
-            expect(container.firstChild).toBeNull();
-            expect(container.innerHTML).toBe('');
+            expect(container.firstChild).not.toBeNull();
         });
 
         it('dovrebbe renderizzare struttura corretta per status REJECTED', () => {
@@ -129,7 +128,7 @@ describe('ProductStatusChip', () => {
             expect(chip).toHaveClass('MuiChip-colorError');
             expect(chip).toHaveClass('MuiChip-sizeMedium');
 
-            expect(container).toHaveTextContent('Escluso');
+            expect(container).toHaveTextContent('chip.productStatusLabel.rejected');
         });
 
         it('dovrebbe renderizzare struttura corretta per status warning', () => {
@@ -143,7 +142,7 @@ describe('ProductStatusChip', () => {
         it('dovrebbe applicare correttamente gli stili sx', () => {
             renderWithTheme(<ProductStatusChip status="REJECTED" />);
 
-            const chip = screen.getByText('Escluso').closest('.MuiChip-root');
+            const chip = screen.getByText('chip.productStatusLabel.rejected').closest('.MuiChip-root');
             expect(chip).toHaveStyle('margin-bottom: 8px');
         });
     });

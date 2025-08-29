@@ -30,9 +30,14 @@ jest.mock('../../../services/registerService', () => ({
     setRejectedStatusList: jest.fn(),
 }));
 
-jest.mock('../../../utils/constants', () => ({
-    MAX_LENGTH_DETAILL_PR: 50,
-}));
+jest.mock('../../../utils/constants', () => {
+    const actual = jest.requireActual('../../../utils/constants');
+    return {
+        ...actual,
+        MAX_LENGTH_DETAILL_PR: 50,
+    };
+});
+
 
 jest.mock('../../../helpers', () => ({
     truncateString: jest.fn((str: string, maxLength: number) =>
