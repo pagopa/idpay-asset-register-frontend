@@ -441,7 +441,7 @@ describe('sortInstitutions', () => {
                 {
                     institutionId: '1',
                     description: 'Invalid date parts',
-                    createdAt: 'aa/bb/cccc', // tutti NaN
+                    createdAt: 'aa/bb/cccc',
                     updatedAt: 'aa/bb/cccc',
                 },
                 {

@@ -142,7 +142,7 @@ describe('ProductDetail', () => {
             const approvedData = { ...mockProductData, status: 'APPROVED' };
             render(<ProductDetail {...defaultProps} data={approvedData} />);
 
-            expect(screen.getAllByTestId('product-info-row')).toHaveLength(13);
+            expect(screen.getAllByTestId('product-info-row')).toHaveLength(14);
         });
 
         it('should render motivation row when status is not APPROVED', () => {
@@ -155,84 +155,6 @@ describe('ProductDetail', () => {
             render(<ProductDetail {...defaultProps} isInvitaliaUser={false} />);
 
             expect(screen.queryByTestId('action-buttons')).not.toBeInTheDocument();
-        });
-    });
-
-    describe('Restore functionality', () => {
-        it('should open restore dialog when restore button is clicked', () => {
-            render(<ProductDetail {...defaultProps} />);
-
-            fireEvent.click(screen.getByText('Restore'));
-
-            expect(screen.getByTestId('confirm-dialog')).toBeInTheDocument();
-        });
-
-        it('should close restore dialog when cancel is clicked', () => {
-            render(<ProductDetail {...defaultProps} />);
-
-            fireEvent.click(screen.getByText('Restore'));
-            fireEvent.click(screen.getByText('Cancel'));
-
-            expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
-        });
-
-        it('should call setApprovedStatusList and callbacks when restore is confirmed', async () => {
-            mockSetApprovedStatusList.mockResolvedValue(undefined);
-
-            render(<ProductDetail {...defaultProps} />);
-
-            fireEvent.click(screen.getByText('Restore'));
-            fireEvent.click(screen.getByText('Confirm'));
-
-            await waitFor(() => {
-                expect(mockSetApprovedStatusList).toHaveBeenCalledWith('ORG123', ['GTIN123'], '-');
-                expect(defaultProps.onUpdateTable).toHaveBeenCalled();
-                expect(defaultProps.onClose).toHaveBeenCalled();
-            });
-
-            expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
-        });
-
-        it('should handle restore API error gracefully', async () => {
-            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-            mockSetApprovedStatusList.mockRejectedValue(new Error('API Error'));
-
-            render(<ProductDetail {...defaultProps} />);
-
-            fireEvent.click(screen.getByText('Restore'));
-            fireEvent.click(screen.getByText('Confirm'));
-
-            await waitFor(() => {
-                expect(consoleSpy).toHaveBeenCalledWith(new Error('API Error'));
-            });
-
-            consoleSpy.mockRestore();
-        });
-
-        it('should work without onUpdateTable callback', async () => {
-            mockSetApprovedStatusList.mockResolvedValue(undefined);
-
-            render(<ProductDetail {...defaultProps} onUpdateTable={undefined} />);
-
-            fireEvent.click(screen.getByText('Restore'));
-            fireEvent.click(screen.getByText('Confirm'));
-
-            await waitFor(() => {
-                expect(mockSetApprovedStatusList).toHaveBeenCalled();
-            });
-        });
-
-        it('should work without onClose callback', async () => {
-            mockSetApprovedStatusList.mockResolvedValue(undefined);
-
-            render(<ProductDetail {...defaultProps} onClose={undefined} />);
-
-            fireEvent.click(screen.getByText('Restore'));
-            fireEvent.click(screen.getByText('Confirm'));
-
-            await waitFor(() => {
-                expect(mockSetApprovedStatusList).toHaveBeenCalled();
-            });
         });
     });
 
@@ -315,23 +237,7 @@ describe('ProductDetail', () => {
     });
 
     describe('API helper functions', () => {
-        it('should handle callApprovedApi error', async () => {
-            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-            mockSetApprovedStatusList.mockRejectedValue(new Error('Approved API Error'));
-
-            render(<ProductDetail {...defaultProps} />);
-
-            fireEvent.click(screen.getByText('Restore'));
-            fireEvent.click(screen.getByText('Confirm'));
-
-            await waitFor(() => {
-                expect(consoleSpy).toHaveBeenCalledWith(new Error('Approved API Error'));
-            });
-
-            consoleSpy.mockRestore();
-        });
-
-        it('should handle callRejectedApi error', async () => {
+       it('should handle callRejectedApi error', async () => {
             const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
             mockSetRejectedStatusList.mockRejectedValue(new Error('Rejected API Error'));
 
@@ -411,19 +317,6 @@ describe('ProductDetail', () => {
 
             const component = screen.getByTestId('product-detail');
             expect(component).toBeInTheDocument();
-        });
-
-        it('should handle APPROVED action in handleOpenModal', async () => {
-            mockSetApprovedStatusList.mockResolvedValue(undefined);
-
-            render(<ProductDetail {...defaultProps} />);
-
-            fireEvent.click(screen.getByText('Restore'));
-            fireEvent.click(screen.getByText('Confirm'));
-
-            await waitFor(() => {
-                expect(mockSetApprovedStatusList).toHaveBeenCalledWith('ORG123', ['GTIN123'], '-');
-            });
         });
     });
 });

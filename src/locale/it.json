@@ -41,7 +41,8 @@
       "washerdriers": "Lavasciuga",
       "refrigeratingappl": "Frigoriferi",
       "cookinghobs": "Piani cottura"
-    }
+    },
+    "advancedFilters": "Filtri avanzati"
   },
   "errors": {
     "contactAdmin": "Contatta l'assistenza",
@@ -80,6 +81,8 @@
     },
     "invitaliaOverview": {
       "overviewTitle": "Panoramica",
+      "manufacturerMenuItem": "Produttori",
+      "manufacturerSheet": "Scheda produttore",
       "overviewTitleDescription": "Consulta i prodotti caricati dai produttori con i relativi dettagli.",
       "noInstitutionsFound": "Non ci sono produttori.",
       "rowsPerPage": "Righe per pagina",
@@ -101,13 +104,14 @@
       "state": "Stato",
       "APPROVED": "Approvato",
       "EXCLUDED": "Escluso",
-      "MARKED": "Contrassegnato"
+      "MARKED": "Contrassegnato",
+      "richiestaApprovazioneSuccessMsg": "Richiesta di approvazione inviata"
     },
     "addProducts": {
       "title": "Aggiungi prodotti",
       "boxAddTitle": "Aggiungi i tuoi prodotti",
       "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
-      "boxAddTextProduct": "Prodotto.",
+      "boxAddTextProduct": "Prodotti.",
       "goToManual": "Dubbi? Vai al manuale",
       "form": {
         "categoryLabel": "Seleziona la categoria",
@@ -150,21 +154,29 @@
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
       "loading": "Caricamento dati ...",
+      "buttonModal":{
+        "confirmSupervisioned":"Conferma",
+        "cancelSupervisioned":"Annulla",
+        "supervised":"Contrassegna",
+        "rejected":"Escludi"
+      },
       "filterLabels": {
         "category": "Categoria",
         "status": "Stato",
+        "producer": "Produttore",
         "batch": "Lotto",
         "eprelCode": "Codice EPREL",
-        "gtinCode": "Codice GTIN",
+        "gtinCode": "Codice GTIN/EAN",
         "manufacturerCode": "Codice produttore",
         "filter": "Filtra",
-        "deleteFilters": "Rimuovi filtri"      
+        "deleteFilters": "Annulla filtri"
       },
       "listHeader": {
         "category": "Categoria",
+        "producer": "Produttore",
         "status": "Stato",
         "energeticClass": "Classe energetica",
-        "eprelCode": "Codice EPREL",
+        "eprelCode": "EPREL",
         "gtinCode": "Codice GTIN/EAN",
         "batch": "Lotto"
       },
@@ -177,9 +189,11 @@
         "TUMBLEDRYERS": "Asciugatrici",
         "REFRIGERATINGAPPL": "Frigoriferi",
         "COOKINGHOBS": "Piani cottura",
-        "APPROVED": "Default",
-        "SUPERVISIONED": "Contrassegnati",
-        "REJECTED": "Esclusi",
+        "UPLOADED": "Da revisionare",
+        "WAIT_APPROVED": "Da approvare",
+        "SUPERVISED": "Da controllare",
+        "APPROVED": "Approvato",
+        "REJECTED": "Escluso",
         "lavatrici": "WASHINGMACHINES",
         "asciugatrici": "TUMBLEDRYERS",
         "forni": "OVENS",
@@ -188,9 +202,11 @@
         "lavasciuga": "WASHERDRIERS",
         "frigoriferi": "REFRIGERATINGAPPL",
         "piani cottura": "COOKINGHOBS",
-        "default": "APPROVED",
-        "contrassegnati": "SUPERVISIONED",
-        "esclusi": "REJECTED"
+        "approvato": "APPROVED",
+        "da controllare": "SUPERVISED",
+        "escluso": "REJECTED",
+        "da revisionare": "UPLOADED",
+        "da approvare": "WAIT_APPROVED"
       },
       "tablePaginationFrom": "di",
       "emptyList": "Nessun record corrisponde alla ricerca.",
@@ -228,7 +244,8 @@
   "roles": {
     "admin": "Amministratore",
     "operatore": "Operatore",
-    "invitalia": "Operatore"
+    "invitalia": "Operatore",
+    "invitalia_admin": "Operatore"
   },
   "session": {
     "expired": {
@@ -247,27 +264,54 @@
     "number": "Inserisci un numero"
   },
   "invitaliaModal": {
-    "supervisioned": {
+    "supervised": {
       "title": "Contrassegna un prodotto",
       "description": "Segnala eventuali anomalie su un prodotto: verrà messo in pausa e potrai successivamente decidere se escluderlo o ripristinarlo.",
       "listTitle": "I prodotti segnalati sono i seguenti:",
       "reasonLabel": "Motivo segnalazione",
       "reasonPlaceholder": "Motivo segnalazione",
-      "buttonText": "Contrassegna"
+      "buttonText": "Da controllare",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Annulla"
     },
     "rejected": {
-      "title": "Escludi un prodotto",
+      "title": "Richiedi esclusione",
       "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
       "listTitle": "I prodotti esclusi sono i seguenti:",
       "reasonLabel": "Motivo esclusione",
       "reasonPlaceholder": "Motivo esclusione",
-      "buttonText": "Escludi"
+      "buttonText": "Escludi",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Escludi"
     },
-    "detailProduct": {
-      "ProductRow": {
-        "eprelCode": "Codice EPREL",
-        "gtinCode": "Codice GTIN/EAN"
-      }
+     "waitApproved": {
+      "title": "Approva",
+      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "listTitle": "Richiedi approvazione",
+      "reasonLabel": "Richiedi approvazione",
+      "reasonPlaceholder": "Richiedi approvazione",
+      "buttonText": "Approva",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Annulla"
+    },
+      "approved": {
+      "title": "Approva",
+      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "listTitle": "Richiedi approvazione",
+      "reasonLabel": "Richiedi approvazione",
+      "reasonPlaceholder": "Richiedi approvazione",
+      "buttonText": "Approva",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Annulla"
+    }
+  },
+  "chip": {
+    "productStatusLabel":{
+      "uploaded": "Da revisionare",
+      "waitApproved": "Da approvare",
+      "approved": "Approvato",
+      "supervised": "Da controllare",
+      "rejected": "Escluso"
     }
   }
 }

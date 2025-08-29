@@ -21,7 +21,6 @@ describe('Test suite for SideNavItem component', (injectedStore?: ReturnType<
         <Provider store={store}>
           <SidenavItem
             handleClick={function (): void {
-              //
             }}
             title={''}
             icon={SvgIcon}

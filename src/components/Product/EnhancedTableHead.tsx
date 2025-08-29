@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 
 interface HeadCell {
-  id: keyof ProductDTO | 'selectedStatus' | 'actions';
+  id: keyof ProductDTO | 'selectedStatus' | 'actions' | 'producer';
   label: string;
   align: 'left' | 'center' | 'right';
   width?: number | string;

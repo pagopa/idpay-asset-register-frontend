@@ -1,11 +1,12 @@
-import { List, Divider, Box } from '@mui/material';
+import { List, Divider, Box, Tooltip } from '@mui/material';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EMPTY_DATA, MAX_LENGTH_DETAILL_PR } from '../../utils/constants';
+import { EMPTY_DATA, MAX_LENGTH_DETAILL_PR, PRODUCTS_STATES } from '../../utils/constants';
 import { truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
+import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -18,27 +19,28 @@ type Props = {
   isInvitaliaUser: boolean;
   onUpdateTable?: () => void;
   onClose?: () => void;
+  children?: React.ReactNode;
 };
 
 const callApprovedApi = async (
-  organizationId: string,
   gtinCodes: Array<string>,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ) => {
   try {
-    await setApprovedStatusList(organizationId, gtinCodes, motivation);
+    await setApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error) {
     console.error(error);
   }
 };
 
 const callRejectedApi = async (
-  organizationId: string,
   gtinCodes: Array<string>,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ) => {
   try {
-    await setRejectedStatusList(organizationId, gtinCodes, motivation);
+    await setRejectedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error) {
     console.error(error);
   }
@@ -46,17 +48,209 @@ const callRejectedApi = async (
 
 const handleOpenModal = (
   action: string,
-  organizationId: string,
   gtinCodes: Array<string>,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ) => {
-  if (action === 'REJECTED') {
-    return callRejectedApi(organizationId, gtinCodes, motivation);
-  } else if (action === 'APPROVED') {
-    return callApprovedApi(organizationId, gtinCodes, motivation);
+  if (action === PRODUCTS_STATES.REJECTED) {
+    return callRejectedApi(gtinCodes, currentStatus, motivation);
+  } else if (action === PRODUCTS_STATES.APPROVED) {
+    return callApprovedApi(gtinCodes, currentStatus, motivation);
   }
   return Promise.resolve();
 };
+
+type ProductInfoRowVariant = 'body2' | 'body1' | undefined;
+type ProductInfoValueVariant = 'h6' | 'body2' | undefined;
+
+type RowConfig = {
+  type?: 'row';
+  label: string;
+  value: string;
+  labelVariant?: ProductInfoRowVariant;
+  valueVariant?: ProductInfoValueVariant;
+  sx?: any;
+};
+
+type DividerConfig = {
+  type: 'divider';
+};
+
+function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | DividerConfig> {
+  const getValueOrEmpty = (field: unknown) =>
+    field !== undefined && field !== null && field !== '' ? String(field) : EMPTY_DATA;
+
+  const baseRows: Array<{
+    label: string;
+    dataKey: keyof ProductDTO | null;
+    labelVariant?: ProductInfoRowVariant;
+    valueVariant?: ProductInfoValueVariant;
+    sx?: any;
+    isTranslation?: boolean;
+  }> = [
+    {
+      label: '',
+      dataKey: 'productName',
+      valueVariant: 'h6',
+      sx: { mb: 1, maxWidth: 350, wordWrap: 'break-word' },
+    },
+    {
+      label: '',
+      dataKey: 'batchName',
+      labelVariant: 'body2',
+      valueVariant: 'body2',
+    },
+    {
+      label: t('pages.productDetail.eprelCheckDate'),
+      dataKey: 'registrationDate',
+    },
+    {
+      label: '',
+      dataKey: null,
+      labelVariant: 'body2',
+      valueVariant: 'body2',
+      sx: { mt: 4, mb: 2 },
+      isTranslation: true,
+    },
+    {
+      label: t('pages.productDetail.eprelCode'),
+      dataKey: 'eprelCode',
+    },
+    {
+      label: t('pages.productDetail.gtinCode'),
+      dataKey: 'gtinCode',
+    },
+    {
+      label: t('pages.productDetail.productCode'),
+      dataKey: 'productCode',
+    },
+    {
+      label: t('pages.productDetail.category'),
+      dataKey: 'category',
+    },
+    {
+      label: t('pages.productDetail.brand'),
+      dataKey: 'brand',
+    },
+    {
+      label: t('pages.productDetail.model'),
+      dataKey: 'model',
+    },
+    {
+      label: t('pages.productDetail.energyClass'),
+      dataKey: 'energyClass',
+    },
+    {
+      label: t('pages.productDetail.countryOfProduction'),
+      dataKey: 'countryOfProduction',
+    },
+    {
+      label: t('pages.productDetail.capacity'),
+      dataKey: 'capacity',
+    },
+  ];
+
+  const mapBaseRowToRowConfig = (row: {
+    label: string;
+    dataKey: keyof ProductDTO | null;
+    labelVariant?: ProductInfoRowVariant;
+    valueVariant?: ProductInfoValueVariant;
+    sx?: any;
+    isTranslation?: boolean;
+  }) => ({
+    label: row.label,
+    value: row.dataKey ? getValueOrEmpty(data[row.dataKey as keyof ProductDTO]) : '',
+    labelVariant: row.labelVariant,
+    valueVariant: row.valueVariant,
+    sx: row.sx,
+  });
+
+  const firstTwoRows = baseRows.slice(0, 2).map(mapBaseRowToRowConfig);
+
+  const divider: DividerConfig = { type: 'divider' };
+
+  const dateRow: RowConfig = {
+    label: baseRows[2].label,
+    value: data?.registrationDate
+      ? String(format(Number(data?.registrationDate), 'dd/MM/yyyy'))
+      : EMPTY_DATA,
+  };
+
+  const productSheetRow: RowConfig = {
+    label: '',
+    value: t('pages.productDetail.productSheet'),
+    labelVariant: 'body2',
+    valueVariant: 'body2',
+    sx: { mt: 4, mb: 2 },
+  };
+
+  const remainingRows = baseRows.slice(4).map(mapBaseRowToRowConfig);
+
+  return [...firstTwoRows, divider, dateRow, productSheetRow, ...remainingRows];
+}
+
+type ProductInfoRowsProps = {
+  data: ProductDTO;
+  currentStatus: CurrentStatusEnum;
+  children?: React.ReactNode;
+};
+
+function ProductInfoRows({ data, currentStatus, children }: ProductInfoRowsProps) {
+  const { t } = useTranslation();
+
+  const baseRows = getProductInfoRowsConfig(data, t);
+
+  const rows =
+    currentStatus !== CurrentStatusEnum.APPROVED
+      ? [
+          ...baseRows,
+          {
+            label: t('pages.productDetail.motivation'),
+            value: (data as any)?.motivation || EMPTY_DATA,
+            renderCustom: () => {
+              const motivationValue = (data as any)?.motivation || EMPTY_DATA;
+              const truncatedMotivation = truncateString(motivationValue, MAX_LENGTH_DETAILL_PR);
+              return (
+                <ProductInfoRow
+                  label={t('pages.productDetail.motivation')}
+                  value={
+                    <Tooltip title={motivationValue} arrow>
+                      <span>{truncatedMotivation}</span>
+                    </Tooltip>
+                  }
+                />
+              );
+            },
+          } as RowConfig & { renderCustom?: () => JSX.Element },
+        ]
+      : baseRows;
+
+  return (
+    <>
+      {rows.map((row, idx) =>
+        'type' in row && row.type === 'divider' ? (
+          <Divider key={`divider-${idx}`} sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
+        ) : (row as any).renderCustom ? (
+          (row as any).renderCustom()
+        ) : (
+          <ProductInfoRow
+            key={idx}
+            label={(row as RowConfig).label}
+            value={
+              <Tooltip title={(row as RowConfig).value} arrow>
+                <span>{truncateString((row as RowConfig).value, MAX_LENGTH_DETAILL_PR)}</span>
+              </Tooltip>
+            }
+            labelVariant={(row as RowConfig).labelVariant}
+            valueVariant={(row as RowConfig).valueVariant}
+            sx={(row as RowConfig).sx}
+          />
+        )
+      )}
+      {children}
+    </>
+  );
+}
 
 export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, onClose }: Props) {
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
@@ -66,7 +260,12 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const { t } = useTranslation();
 
   const handleConfirmRestore = async () => {
-    await handleOpenModal('APPROVED', data.organizationId, [data.gtinCode], EMPTY_DATA);
+    await handleOpenModal(
+      PRODUCTS_STATES.APPROVED,
+      [data.gtinCode],
+      CurrentStatusEnum.APPROVED,
+      EMPTY_DATA
+    );
     setRestoreDialogOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();
@@ -100,86 +299,19 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
         <ProductStatusChip status={data.status} />
-        <ProductInfoRow
-          label=""
-          value={truncateString(data?.productName, MAX_LENGTH_DETAILL_PR)}
-          valueVariant="h6"
-          sx={{ mb: 1, maxWidth: 350, wordWrap: 'break-word' }}
-        />
-        <ProductInfoRow
-          label=""
-          value={truncateString(data?.batchName || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-          labelVariant="body2"
-          valueVariant="body2"
-        />
-        <Divider sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
-        <ProductInfoRow
-          label={t('pages.productDetail.eprelCheckDate')}
-          value={truncateString(
-            String(format(Number(data?.registrationDate), 'dd/MM/yyyy')) || EMPTY_DATA,
-            MAX_LENGTH_DETAILL_PR
-          )}
-        />
-        <ProductInfoRow
-          label=""
-          value={t('pages.productDetail.productSheet')}
-          labelVariant="body2"
-          valueVariant="body2"
-          sx={{ mt: 4, mb: 2 }}
-        />
-        <ProductInfoRow
-          label={t('pages.productDetail.eprelCode')}
-          value={truncateString(data?.eprelCode || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-        />
-        <ProductInfoRow
-          label={t('pages.productDetail.gtinCode')}
-          value={truncateString(data?.gtinCode || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-        />
-        <ProductInfoRow
-          label={t('pages.productDetail.productCode')}
-          value={truncateString(data?.productCode || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-        />
-        <ProductInfoRow
-          label={t('pages.productDetail.category')}
-          value={truncateString(data?.category || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-        />
-        <ProductInfoRow
-          label={t('pages.productDetail.brand')}
-          value={truncateString(data?.brand || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-        />
-        <ProductInfoRow
-          label={t('pages.productDetail.model')}
-          value={truncateString(data?.model || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-        />
-        <ProductInfoRow
-          label={t('pages.productDetail.energyClass')}
-          value={truncateString(data?.energyClass || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-        />
-        <ProductInfoRow
-          label={t('pages.productDetail.countryOfProduction')}
-          value={truncateString(data?.countryOfProduction || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-        />
-        <ProductInfoRow
-          label={t('pages.productDetail.capacity')}
-          value={truncateString(data?.capacity || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
-        />
-        {data.status !== 'APPROVED' && (
-          <ProductInfoRow
-            label={t('pages.productDetail.motivation')}
-            value={truncateString(data?.motivation || EMPTY_DATA, MAX_LENGTH_DETAILL_PR)}
+        <ProductInfoRows data={data} currentStatus={CurrentStatusEnum.UPLOADED}>
+          <ProductActionButtons
+            isInvitaliaUser={isInvitaliaUser}
+            status={data.status}
+            onExclude={() => setExcludeModalOpen(true)}
+            onSupervision={() => setSupervisionModalOpen(true)}
           />
-        )}
-
-        <ProductActionButtons
-          isInvitaliaUser={isInvitaliaUser}
-          status={data.status}
-          onRestore={() => setRestoreDialogOpen(true)}
-          onExclude={() => setExcludeModalOpen(true)}
-          onSupervision={() => setSupervisionModalOpen(true)}
-        />
+        </ProductInfoRows>
       </List>
       <ProductConfirmDialog
         open={restoreDialogOpen}
+        cancelButtonText="Cancel"
+        confirmButtonText="Confirm"
         title={t('pages.productDetail.restoreProductTitle')}
         message={t('pages.productDetail.restoreProductMessage')}
         onCancel={() => setRestoreDialogOpen(false)}
@@ -191,7 +323,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         gtinCodes={[data.gtinCode]}
         productName={data.productName}
         actionType="rejected"
-        organizationId={data.organizationId}
+        status={CurrentStatusEnum.REJECTED}
         onUpdateTable={onUpdateTable}
       />
       <ProductModal
@@ -199,8 +331,8 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         onClose={handleSupervisionClose}
         gtinCodes={[data.gtinCode]}
         productName={data.productName}
-        actionType="supervisioned"
-        organizationId={data.organizationId}
+        actionType="supervised"
+        status={CurrentStatusEnum.SUPERVISED}
         onUpdateTable={onUpdateTable}
       />
     </Box>

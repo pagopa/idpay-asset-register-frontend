@@ -8,18 +8,38 @@ import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/stor
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
 import { createClient, WithDefaultsT } from './generated/register/client';
+import {PortalConsentDTO} from "./generated/register/PortalConsentDTO";
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
-import { PortalConsentDTO } from './generated/register/PortalConsentDTO';
 import { UploadsListDTO } from './generated/register/UploadsListDTO';
 import { BatchList } from './generated/register/BatchList';
 import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadResponseDTO';
 import { CsvDTO } from './generated/register/CsvDTO';
 import {InstitutionsResponse} from "./generated/register/InstitutionsResponse";
 import {ProductDTO} from "./generated/register/ProductDTO";
-import { ProductsUpdateDTO } from './generated/register/ProductsUpdateDTO';
+import { CurrentStatusEnum, ProductsUpdateDTO } from './generated/register/ProductsUpdateDTO';
 import { ProductListDTO } from './generated/register/ProductListDTO';
 
-const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (params: any) => {
+const rawFetchApi = buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION);
+
+const sanitizedFetchApi: typeof rawFetchApi = (input, init) => {
+  const headers = new Headers(init?.headers ?? {});
+  const toDelete: Array<string> = [];
+  headers.forEach((value, key) => {
+    if (
+        value === null ||
+        value === '' ||
+        value === 'undefined' ||
+        value === 'null'
+    ) {
+      // eslint-disable-next-line functional/immutable-data
+      toDelete.push(key);
+    }
+  });
+  toDelete.forEach((k) => headers.delete(k));
+  return rawFetchApi(input, { ...init, headers });
+};
+
+const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation: (arg0: any) => any) => (params: any) => {
   const token = storageTokenOps.read();
   return wrappedOperation({
     ...params,
@@ -30,7 +50,7 @@ const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation) => (par
 const registerClient = createClient({
   baseUrl: ENV.URL_API.OPERATION,
   basePath: '',
-  fetchApi: buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION),
+  fetchApi: sanitizedFetchApi,
   withDefaults: withBearerAndPartyId,
 });
 
@@ -76,7 +96,6 @@ function buildProductParams(
   productFileId?: string
 ) {
   return {
-    organizationId,
     ...(page !== undefined ? { page } : {}),
     ...(size !== undefined ? { size } : {}),
     ...(sort ? { sort } : {}),
@@ -86,11 +105,12 @@ function buildProductParams(
     ...(gtinCode ? { gtinCode } : {}),
     ...(productCode ? { productCode } : {}),
     ...(productFileId ? { productFileId } : {}),
+    ...(organizationId ? { organizationId } : {}),
   };
 }
 
 export const RegisterApi = {
-   getProduct: async (
+    getProduct: async (
     xOrganizationSelected: string,
     page?: number,
     size?: number,
@@ -179,9 +199,16 @@ export const RegisterApi = {
   },
   getBatchFilterItems: async (xOrganizationSelected: string): Promise<BatchList> => {
     try {
-      return await registerClient.getBatchNameList({
-        'x-organization-selected': xOrganizationSelected,
-      });
+      const trimmed = (xOrganizationSelected ?? '').trim();
+
+      const params: Record<string, string> = {};
+
+      if (trimmed) {
+        // eslint-disable-next-line functional/immutable-data
+        params['x-organization-selected'] = trimmed;
+      }
+
+      return await registerClient.getBatchNameList(params);
     } catch (error) {
       console.error('Errore durante il recupero della lista filtri lotti:', error);
       throw error;
@@ -244,20 +271,19 @@ export const RegisterApi = {
   },
 
 setSupervisionedStatusList: async (
-  xOrganizationSelected: string,
   gtinCodes: Array<string>,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, motivation };
-    const result = await registerClient.updateProductStatusSupervisioned({
-      'x-organization-selected': xOrganizationSelected,
+    const body = { gtinCodes, currentStatus, motivation };
+    const result = await registerClient.updateProductStatusSupervised({
       body
     });
     return extractResponse(result, 200, onRedirectToLogin);
   } catch (error) {
     console.error(
-      `Errore durante l'aggiornamento dello stato supervisionato per l'organizzazione con ID ${xOrganizationSelected}:`,
+      'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
       error
     );
     throw error;
@@ -265,19 +291,38 @@ setSupervisionedStatusList: async (
 },
 
  setApprovedStatusList: async (
-  xOrganizationSelected: string,
   gtinCodes: Array<string>,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, motivation };
+    const body = { gtinCodes, currentStatus, motivation };
     const result = await registerClient.updateProductStatusApproved(
-      { 'x-organization-selected': xOrganizationSelected, body }
+      { body }
     );
     return extractResponse(result, 200, onRedirectToLogin);
   } catch (error) {
     console.error(
-      `Errore durante l'aggiornamento dello stato approvato per l'organizzazione con ID ${xOrganizationSelected}:`,
+        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
+      error
+    );
+    throw error;
+  }
+},
+setWaitApprovedStatusList: async (
+  gtinCodes: Array<string>,
+  currentStatus: CurrentStatusEnum,
+  motivation: string
+): Promise<ProductsUpdateDTO> => {
+  try {
+    const body = { gtinCodes, currentStatus, motivation };
+    const result = await registerClient.updateProductStatusWaitApproved(
+      { body }
+    );
+    return extractResponse(result, 200, onRedirectToLogin);
+  } catch (error) {
+    console.error(
+        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
       error
     );
     throw error;
@@ -285,19 +330,19 @@ setSupervisionedStatusList: async (
 },
 
  setRejectedStatusList: async (
-  xOrganizationSelected: string,
   gtinCodes: Array<string>,
+  currentStatus: CurrentStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    const body = { gtinCodes, motivation };
+    const body = { gtinCodes, currentStatus, motivation };
     const result = await registerClient.updateProductStatusRejected(
-      { 'x-organization-selected': xOrganizationSelected, body }
+      { body }
     );
     return extractResponse(result, 200, onRedirectToLogin);
   } catch (error) {
     console.error(
-      `Errore durante l'aggiornamento dello stato rifiutato per l'organizzazione con ID ${xOrganizationSelected}:`,
+        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
       error
     );
     throw error;

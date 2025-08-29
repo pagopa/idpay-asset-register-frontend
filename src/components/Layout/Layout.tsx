@@ -24,6 +24,7 @@ const Layout = ({ children }: Props) => {
     matchPath({ path: ROUTES.HOME, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.PRODUCTS, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.INVITALIA_PRODUCTS_LIST, end: true }, location.pathname) ||
+    matchPath({ path: ROUTES.PRODUCERS, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.UPLOADS, end: true }, location.pathname);
 
   useEffect(() => {

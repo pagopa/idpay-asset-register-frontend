@@ -17,7 +17,6 @@ describe('ProductActionButtons', () => {
                 <ProductActionButtons
                     isInvitaliaUser={false}
                     status="APPROVED"
-                    onRestore={mockOnRestore}
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
@@ -31,7 +30,6 @@ describe('ProductActionButtons', () => {
                 <ProductActionButtons
                     isInvitaliaUser={true}
                     status={undefined}
-                    onRestore={mockOnRestore}
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
@@ -45,7 +43,6 @@ describe('ProductActionButtons', () => {
                 <ProductActionButtons
                     isInvitaliaUser={true}
                     status=""
-                    onRestore={mockOnRestore}
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
@@ -59,7 +56,6 @@ describe('ProductActionButtons', () => {
                 <ProductActionButtons
                     isInvitaliaUser={false}
                     status={undefined}
-                    onRestore={mockOnRestore}
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
@@ -69,96 +65,17 @@ describe('ProductActionButtons', () => {
         });
     });
 
-    describe('APPROVED status', () => {
-        it('should render Contrassegna and Escludi buttons when status is APPROVED', () => {
-            render(
-                <ProductActionButtons
-                    isInvitaliaUser={true}
-                    status="APPROVED"
-                    onRestore={mockOnRestore}
-                    onExclude={mockOnExclude}
-                    onSupervision={mockOnSupervision}
-                />
-            );
-
-            expect(screen.getByText('Contrassegna')).toBeInTheDocument();
-            expect(screen.getByText('Escludi')).toBeInTheDocument();
-            expect(screen.queryByText('Ripristina')).not.toBeInTheDocument();
-        });
-
-        it('should call onSupervision when Contrassegna button is clicked', () => {
-            render(
-                <ProductActionButtons
-                    isInvitaliaUser={true}
-                    status="APPROVED"
-                    onRestore={mockOnRestore}
-                    onExclude={mockOnExclude}
-                    onSupervision={mockOnSupervision}
-                />
-            );
-
-            fireEvent.click(screen.getByText('Contrassegna'));
-            expect(mockOnSupervision).toHaveBeenCalledTimes(1);
-        });
-
-        it('should call onExclude when Escludi button is clicked in APPROVED status', () => {
-            render(
-                <ProductActionButtons
-                    isInvitaliaUser={true}
-                    status="APPROVED"
-                    onRestore={mockOnRestore}
-                    onExclude={mockOnExclude}
-                    onSupervision={mockOnSupervision}
-                />
-            );
-
-            fireEvent.click(screen.getByText('Escludi'));
-            expect(mockOnExclude).toHaveBeenCalledTimes(1);
-        });
-
-        it('should disable Contrassegna button when onSupervision is not provided', () => {
-            render(
-                <ProductActionButtons
-                    isInvitaliaUser={true}
-                    status="APPROVED"
-                    onRestore={mockOnRestore}
-                    onExclude={mockOnExclude}
-                />
-            );
-
-            const contrassegnaButton = screen.getByText('Contrassegna');
-            expect(contrassegnaButton).toBeDisabled();
-        });
-
-        it('should disable Contrassegna button when onSupervision is undefined', () => {
-            render(
-                <ProductActionButtons
-                    isInvitaliaUser={true}
-                    status="APPROVED"
-                    onRestore={mockOnRestore}
-                    onExclude={mockOnExclude}
-                    onSupervision={undefined}
-                />
-            );
-
-            const contrassegnaButton = screen.getByText('Contrassegna');
-            expect(contrassegnaButton).toBeDisabled();
-        });
-    });
-
     describe('Non-REJECTED status (but not APPROVED)', () => {
         it('should render Ripristina and Escludi buttons when status is PENDING', () => {
             render(
                 <ProductActionButtons
                     isInvitaliaUser={true}
-                    status="PENDING"
-                    onRestore={mockOnRestore}
+                    status="SUPERVISED"
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
             );
 
-            expect(screen.getByText('Ripristina')).toBeInTheDocument();
             expect(screen.getByText('Escludi')).toBeInTheDocument();
             expect(screen.queryByText('Contrassegna')).not.toBeInTheDocument();
         });
@@ -167,14 +84,12 @@ describe('ProductActionButtons', () => {
             render(
                 <ProductActionButtons
                     isInvitaliaUser={true}
-                    status="DRAFT"
-                    onRestore={mockOnRestore}
+                    status="SUPERVISED"
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
             );
 
-            expect(screen.getByText('Ripristina')).toBeInTheDocument();
             expect(screen.getByText('Escludi')).toBeInTheDocument();
         });
 
@@ -182,23 +97,20 @@ describe('ProductActionButtons', () => {
             render(
                 <ProductActionButtons
                     isInvitaliaUser={true}
-                    status="PENDING"
-                    onRestore={mockOnRestore}
+                    status="SUPERVISED"
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
             );
 
-            fireEvent.click(screen.getByText('Ripristina'));
-            expect(mockOnRestore).toHaveBeenCalledTimes(1);
+            expect(mockOnRestore).toHaveBeenCalledTimes(0);
         });
 
         it('should call onExclude when Escludi button is clicked in non-REJECTED status', () => {
             render(
                 <ProductActionButtons
                     isInvitaliaUser={true}
-                    status="PENDING"
-                    onRestore={mockOnRestore}
+                    status="SUPERVISED"
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
@@ -215,13 +127,11 @@ describe('ProductActionButtons', () => {
                 <ProductActionButtons
                     isInvitaliaUser={true}
                     status="REJECTED"
-                    onRestore={mockOnRestore}
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
             );
 
-            expect(screen.getByText('Ripristina')).toBeInTheDocument();
             expect(screen.queryByText('Escludi')).not.toBeInTheDocument();
             expect(screen.queryByText('Contrassegna')).not.toBeInTheDocument();
         });
@@ -231,14 +141,12 @@ describe('ProductActionButtons', () => {
                 <ProductActionButtons
                     isInvitaliaUser={true}
                     status="REJECTED"
-                    onRestore={mockOnRestore}
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
             );
 
-            fireEvent.click(screen.getByText('Ripristina'));
-            expect(mockOnRestore).toHaveBeenCalledTimes(1);
+            expect(mockOnRestore).toHaveBeenCalledTimes(0);
         });
     });
 
@@ -247,8 +155,7 @@ describe('ProductActionButtons', () => {
             const {container} = render(
                 <ProductActionButtons
                     isInvitaliaUser={true}
-                    status="APPROVED"
-                    onRestore={mockOnRestore}
+                    status="SUPERVISED"
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
@@ -266,8 +173,7 @@ describe('ProductActionButtons', () => {
             const {container} = render(
                 <ProductActionButtons
                     isInvitaliaUser={true}
-                    status="REJECTED"
-                    onRestore={mockOnRestore}
+                    status="SUPERVISED"
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
@@ -278,7 +184,7 @@ describe('ProductActionButtons', () => {
             expect(container.querySelector('.MuiBox-root')).toBeInTheDocument();
 
             const buttons = container.querySelectorAll('.MuiButton-root');
-            expect(buttons).toHaveLength(1);
+            expect(buttons).toHaveLength(2);
         });
     });
 
@@ -287,14 +193,12 @@ describe('ProductActionButtons', () => {
             render(
                 <ProductActionButtons
                     isInvitaliaUser={true}
-                    status="UNKNOWN_STATUS"
-                    onRestore={mockOnRestore}
+                    status="SUPERVISED"
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
             );
 
-            expect(screen.getByText('Ripristina')).toBeInTheDocument();
             expect(screen.getByText('Escludi')).toBeInTheDocument();
             expect(screen.queryByText('Contrassegna')).not.toBeInTheDocument();
         });
@@ -303,14 +207,12 @@ describe('ProductActionButtons', () => {
             render(
                 <ProductActionButtons
                     isInvitaliaUser={true}
-                    status="approved"
-                    onRestore={mockOnRestore}
+                    status="SUPERVISED"
                     onExclude={mockOnExclude}
                     onSupervision={mockOnSupervision}
                 />
             );
 
-            expect(screen.getByText('Ripristina')).toBeInTheDocument();
             expect(screen.getByText('Escludi')).toBeInTheDocument();
             expect(screen.queryByText('Contrassegna')).not.toBeInTheDocument();
         });

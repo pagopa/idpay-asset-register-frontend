@@ -16,10 +16,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { visuallyHidden } from '@mui/utils';
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from '@mui/icons-material';
-import { useDispatch } from 'react-redux';
 import { formatDateWithoutHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { Order } from '../../components/Product/helpers';
@@ -28,6 +27,7 @@ import { InstitutionsResponse } from '../../api/generated/register/InstitutionsR
 import ROUTES from '../../routes';
 import { setInstitution } from '../../redux/slices/invitaliaSlice';
 import EmptyListTable from '../components/EmptyListTable';
+import {useAppDispatch} from "../../redux/hooks";
 import { EnhancedTableProps, HeadCell } from './helpers';
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -101,6 +101,7 @@ type InstitutionsTableProps = {
   onPageChange: (event: unknown, newPage: number) => void;
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Institution) => void;
+  onDetailRequest: (institution: Institution) => void;
 };
 
 const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
@@ -115,11 +116,16 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   onPageChange,
   onRowsPerPageChange,
   onRequestSort,
+  onDetailRequest,
 }) => {
   const paginationInfo = usePagination(page, rowsPerPage, totalElements);
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setInstitution({} as Institution));
+  }, []);
 
   const goToInstitutionPage = (institution: Institution) => {
     dispatch(setInstitution(institution));
@@ -159,7 +165,10 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
     return (
       <TableBody>
         {((data.institutions as Array<Institution>) ?? []).map((row: Institution) => (
-          <TableRow key={row.institutionId}>
+          <TableRow
+              key={row.institutionId}
+              onClick={() => onDetailRequest(row)}
+          >
             <TableCell>
               <Link
                 underline="hover"
@@ -178,7 +187,6 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
               <ChevronRight
                 color="primary"
                 sx={{ verticalAlign: 'middle' }}
-                onClick={() => goToInstitutionPage(row)}
               />
             </TableCell>
           </TableRow>

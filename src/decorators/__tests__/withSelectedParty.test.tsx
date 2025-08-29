@@ -103,10 +103,8 @@ describe('withSelectedParty', () => {
     mockUseSelectedParty.mockReturnValue(mockParty);
     const WrappedComponent = withSelectedParty(TestComponent);
 
-    // Act & Assert - Questo test verifica che TypeScript non richieda le props 'party' e 'reload'
     const props = { testProp: 'test' };
 
-    // Se il tipo è corretto, questo non dovrebbe causare errori di TypeScript
     render(<WrappedComponent {...props} />);
 
     expect(screen.getByTestId('test-prop')).toHaveTextContent('test');
@@ -152,7 +150,6 @@ describe('withSelectedParty', () => {
     const WrappedComponent = withSelectedParty(NamedComponent);
 
     // Assert
-    // Verifichiamo che il decorator sia stato chiamato con il componente corretto
     expect(mockWithRetrievedValue).toHaveBeenCalledWith(
         'party',
         useSelectedParty,

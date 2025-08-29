@@ -1,18 +1,20 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import '@testing-library/jest-dom';
 import FilterBar from '../FilterBar';
 import { BatchFilterItems } from '../helpers';
-import '@testing-library/jest-dom';
-
-jest.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string) => key,
-    }),
-}));
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 
 jest.mock('../../../utils/constants', () => ({
-    PRODUCTS_CATEGORY: {
+    INVITALIA: 'INVITALIA',
+    USERS_TYPES: {
+        INVITALIA_L1: 'INVITALIA_L1',
+        INVITALIA_L2: 'INVITALIA_L2',
+        OTHER: 'OTHER',
+    },
+    PRODUCTS_CATEGORIES: {
         CATEGORY_1: 'category1',
         CATEGORY_2: 'category2',
     },
@@ -22,14 +24,47 @@ jest.mock('../../../utils/constants', () => ({
     },
 }));
 
-const renderWithTheme = (component: React.ReactElement) => {
+const defaultInvitaliaState = {
+    institutionList: [],
+    selectedInstitution: null,
+    loading: false,
+    error: null,
+};
+
+const basePreloadedState = {
+    invitalia: defaultInvitaliaState,
+    ui: { locale: 'it' },
+    auth: { user: { id: 'u1' } },
+};
+
+const createTestStore = (preloadedState: any = {}) =>
+    configureStore({
+        reducer: (state = preloadedState) => state,
+        preloadedState: {
+            ...basePreloadedState,
+            ...preloadedState,
+            invitalia: {
+                ...defaultInvitaliaState,
+                ...(preloadedState.invitalia ?? {}),
+            },
+        },
+    });
+
+const renderWithProviders = (component: React.ReactElement, preloadedState?: any) => {
     const theme = createTheme();
+    const store = createTestStore(preloadedState);
     return render(
-        <ThemeProvider theme={theme}>
-            {component}
-        </ThemeProvider>
+        <Provider store={store}>
+            <ThemeProvider theme={theme}>{component}</ThemeProvider>
+        </Provider>
     );
 };
+
+jest.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string) => key,
+    }),
+}));
 
 describe('FilterBar', () => {
     const mockBatchFilterItems: Array<BatchFilterItems> = [
@@ -41,6 +76,8 @@ describe('FilterBar', () => {
         categoryFilter: '',
         setCategoryFilter: jest.fn(),
         statusFilter: '',
+        producerFilter: '',
+        setProducerFilter: jest.fn(),
         setStatusFilter: jest.fn(),
         setFiltering: jest.fn(),
         batchFilter: '',
@@ -60,7 +97,7 @@ describe('FilterBar', () => {
     });
 
     it('should render all filter elements', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar loading={false} {...defaultProps} />);
 
         expect(screen.getByLabelText('pages.products.filterLabels.category')).toBeInTheDocument();
         expect(screen.getByLabelText('pages.products.filterLabels.status')).toBeInTheDocument();
@@ -72,7 +109,7 @@ describe('FilterBar', () => {
     });
 
     it('should have filter and delete buttons disabled when no filters are set', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar loading={false} {...defaultProps} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
@@ -83,7 +120,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when category filter is set', () => {
         const props = { ...defaultProps, categoryFilter: 'pages.products.categories.CATEGORY_1' };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
@@ -94,7 +131,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when status filter is set', () => {
         const props = { ...defaultProps, statusFilter: 'pages.products.categories.STATE_1' };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         expect(filterButton).not.toBeDisabled();
@@ -102,7 +139,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when batch filter is set', () => {
         const props = { ...defaultProps, batchFilter: '1' };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         expect(filterButton).not.toBeDisabled();
@@ -110,7 +147,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when eprel code filter is set', () => {
         const props = { ...defaultProps, eprelCodeFilter: 'EPREL123' };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         expect(filterButton).not.toBeDisabled();
@@ -118,7 +155,7 @@ describe('FilterBar', () => {
 
     it('should enable filter button when gtin code filter is set', () => {
         const props = { ...defaultProps, gtinCodeFilter: 'GTIN123' };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         expect(filterButton).not.toBeDisabled();
@@ -126,14 +163,14 @@ describe('FilterBar', () => {
 
     it('should enable delete button when errorStatus is true even with no filters', () => {
         const props = { ...defaultProps, errorStatus: true };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar loading={false} {...props} />);
 
         const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
         expect(deleteButton).not.toBeDisabled();
     });
 
     it('should call setCategoryFilter when category select changes', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar loading={false} {...defaultProps} />);
 
         const categorySelect = screen.getByLabelText('pages.products.filterLabels.category');
         fireEvent.mouseDown(categorySelect);
@@ -145,7 +182,7 @@ describe('FilterBar', () => {
     });
 
     it('should call setStatusFilter when status select changes', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar {...defaultProps} />);
 
         const statusSelect = screen.getByLabelText('pages.products.filterLabels.status');
         fireEvent.mouseDown(statusSelect);
@@ -157,7 +194,7 @@ describe('FilterBar', () => {
     });
 
     it('should call setBatchFilter when batch select changes', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar {...defaultProps} />);
 
         const batchSelect = screen.getByLabelText('pages.products.filterLabels.batch');
         fireEvent.mouseDown(batchSelect);
@@ -169,7 +206,7 @@ describe('FilterBar', () => {
     });
 
     it('should call setEprelCodeFilter when eprel code input changes', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar {...defaultProps} />);
 
         const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
         fireEvent.change(eprelInput, { target: { value: 'EPREL123' } });
@@ -178,7 +215,7 @@ describe('FilterBar', () => {
     });
 
     it('should call setGtinCodeFilter when gtin code input changes', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar {...defaultProps} />);
 
         const gtinInput = screen.getByLabelText('pages.products.filterLabels.gtinCode');
         fireEvent.change(gtinInput, { target: { value: 'GTIN123' } });
@@ -188,7 +225,7 @@ describe('FilterBar', () => {
 
     it('should call setFiltering when filter button is clicked', () => {
         const props = { ...defaultProps, categoryFilter: 'pages.products.categories.CATEGORY_1' };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         fireEvent.click(filterButton);
@@ -198,7 +235,7 @@ describe('FilterBar', () => {
 
     it('should call handleDeleteFiltersButtonClick when delete filters button is clicked', () => {
         const props = { ...defaultProps, categoryFilter: 'pages.products.categories.CATEGORY_1' };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar {...props} />);
 
         const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
         fireEvent.click(deleteButton);
@@ -207,7 +244,7 @@ describe('FilterBar', () => {
     });
 
     it('should render all category options in select', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar {...defaultProps} />);
 
         const categorySelect = screen.getByLabelText('pages.products.filterLabels.category');
         fireEvent.mouseDown(categorySelect);
@@ -217,7 +254,7 @@ describe('FilterBar', () => {
     });
 
     it('should render all status options in select', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar {...defaultProps} />);
 
         const statusSelect = screen.getByLabelText('pages.products.filterLabels.status');
         fireEvent.mouseDown(statusSelect);
@@ -227,7 +264,7 @@ describe('FilterBar', () => {
     });
 
     it('should render all batch options in select', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar {...defaultProps} />);
 
         const batchSelect = screen.getByLabelText('pages.products.filterLabels.batch');
         fireEvent.mouseDown(batchSelect);
@@ -238,20 +275,18 @@ describe('FilterBar', () => {
 
     it('should handle empty batchFilterItems array', () => {
         const props = { ...defaultProps, batchFilterItems: [] };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar {...props} />);
 
         const batchSelect = screen.getByLabelText('pages.products.filterLabels.batch');
         fireEvent.mouseDown(batchSelect);
 
-        // Non dovrebbero esserci opzioni nel menu
         expect(screen.queryByText('Batch 1')).not.toBeInTheDocument();
     });
 
     it('should handle null/undefined batchFilterItems', () => {
         const props = { ...defaultProps, batchFilterItems: null as any };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar {...props} />);
 
-        // Il componente dovrebbe renderizzarsi senza errori
         expect(screen.getByLabelText('pages.products.filterLabels.batch')).toBeInTheDocument();
     });
 
@@ -265,7 +300,7 @@ describe('FilterBar', () => {
             gtinCodeFilter: 'GTIN123',
         };
 
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar {...props} />);
 
         expect(screen.getByDisplayValue('pages.products.categories.CATEGORY_1')).toBeInTheDocument();
         expect(screen.getByDisplayValue('pages.products.categories.STATE_1')).toBeInTheDocument();
@@ -275,9 +310,11 @@ describe('FilterBar', () => {
     });
 
     it('should apply correct styling and layout', () => {
-        renderWithTheme(<FilterBar {...defaultProps} />);
+        renderWithProviders(<FilterBar {...defaultProps} />);
 
-        const container = screen.getByLabelText('pages.products.filterLabels.category').closest('.MuiBox-root');
+        const container = screen
+            .getByLabelText('pages.products.filterLabels.category')
+            .closest('.MuiBox-root');
         expect(container).toHaveStyle({
             display: 'flex',
             'flex-direction': 'row',
@@ -286,7 +323,7 @@ describe('FilterBar', () => {
 
     it('should have correct button heights and min widths', () => {
         const props = { ...defaultProps, categoryFilter: 'test' };
-        renderWithTheme(<FilterBar {...props} />);
+        renderWithProviders(<FilterBar {...props} />);
 
         const filterButton = screen.getByText('pages.products.filterLabels.filter');
         const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
