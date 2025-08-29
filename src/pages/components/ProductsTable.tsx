@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import EprelLinks from '../../components/Product/EprelLinks';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { USERS_TYPES } from '../../utils/constants';
+import { PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import EnhancedTableHead from '../../components/Product/EnhancedTableHead';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
@@ -170,7 +170,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           <Checkbox
             color="primary"
             checked={selected.includes(row.gtinCode)}
-            disabled={row.status === 'REJECTED'}
+            disabled={row.status !== PRODUCTS_STATES.UPLOADED}
             onChange={() => handleCheckboxClick(row.gtinCode)}
             onClick={(e) => e.stopPropagation()}
           />
