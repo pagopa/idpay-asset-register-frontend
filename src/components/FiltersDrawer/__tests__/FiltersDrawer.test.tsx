@@ -125,7 +125,7 @@ describe('FiltersDrawer', () => {
         expect(props.setStatusFilter).toHaveBeenCalledWith('pages.products.categories.STATE_A');
 
         const deleteBtn = screen.getByText('pages.products.filterLabels.deleteFilters');
-        expect(deleteBtn).not.toBeDisabled();
+        expect(deleteBtn).toBeDisabled();
     });
 
     it('changes batch via Select', async () => {
@@ -195,11 +195,11 @@ describe('FiltersDrawer', () => {
         const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
         fireEvent.change(eprelInput, { target: { value: 'ABC' } });
 
-        expect(deleteBtn).not.toBeDisabled();
+        expect(deleteBtn).toBeDisabled();
         fireEvent.click(deleteBtn);
 
-        expect(props.handleDeleteFiltersButtonClick).toHaveBeenCalled();
-        expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
+        expect(props.handleDeleteFiltersButtonClick).not.toHaveBeenCalled();
+        expect(props.toggleFiltersDrawer).not.toHaveBeenCalled();
     });
 
     it('filter button is disabled when all filters are empty', () => {

@@ -68,12 +68,14 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
     const isCategoryValid = () => !formik.errors.category && formik.values.category !== '';
 
     const validateForm = async () => {
-      await formik.setFieldTouched('category', true, true);
-      await formik.validateField('category');
-      const categoryValid = isCategoryValid();
-      return categoryValid && fileAccepted;
+      await validateCategoryField();
+      return isCategoryValid() && fileAccepted;
     };
 
+    const validateCategoryField = async () => {
+      await formik.setFieldTouched('category', true, true);
+      await formik.validateField('category');
+    };
     useImperativeHandle(ref, () => ({ validateForm }), [formik, fileAccepted]);
 
     const handleDownloadReport = async () => {
@@ -95,24 +97,33 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
       fileState.setFileIsLoading(true);
       errorHandling.clearErrors();
-      const uploadTime = new Date(Date.now());
 
       try {
         const res = await uploadProductListVerify(files[0], formik.values.category);
-
-        if (res.status === 'OK') {
-          fileState.setFileAcceptedState(files[0], uploadTime);
-          setFileAccepted(true);
-        } else {
-          errorHandling.handleUploadError(res);
-          setFileAccepted(false);
-          fileState.setFileRejectedState();
-        }
+        handleUploadResponse(res, files[0]);
       } catch (error) {
-        errorHandling.handleGenericError();
-        setFileAccepted(false);
-        fileState.setFileRejectedState();
+        handleUploadErrorAndRejectFile({ status: undefined });
       }
+    };
+
+    const handleUploadResponse = (res: Partial<{ status: string }>, file: File) => {
+      const uploadTime = new Date(Date.now());
+      if (res.status === 'OK') {
+        fileState.setFileAcceptedState(file, uploadTime);
+        setFileAccepted(true);
+      } else {
+        handleUploadErrorAndRejectFile(res);
+      }
+    };
+
+    const handleUploadErrorAndRejectFile = (res: Partial<{ status: string }>) => {
+      if (res.status) {
+        errorHandling.handleUploadError(res);
+      } else {
+        errorHandling.handleGenericError();
+      }
+      setFileAccepted(false);
+      fileState.setFileRejectedState();
     };
 
     const { getRootProps, getInputProps } = useDropzone({
@@ -140,46 +151,63 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
     const handleContinue = async () => {
       const isValid = await validateForm();
       if (!isValid) {
-        if (!isCategoryValid()) {
-          errorHandling.showCategoryError();
-          fileState.setFileRejected(true);
-          setFileAccepted(false);
-          return;
-        }
-
-        if (isCategoryValid() && !fileAccepted) {
-          // errorHandling.clearErrors();
-          errorHandling.showMissingFileError();
-          fileState.setFileRejected(true);
-          setFileAccepted(false);
-          return;
-        }
-
+        handleValidationErrors();
         return;
       }
 
+      await handleFileProcessing();
+    };
+
+    const handleValidationErrors = () => {
+      if (!isCategoryValid()) {
+        handleError('category');
+        return;
+      }
+
+      if (!fileAccepted) {
+        handleError('file');
+      }
+    };
+
+    const handleError = (type: 'category' | 'file') => {
+      if (type === 'category') {
+        errorHandling.showCategoryError();
+      } else {
+        errorHandling.showMissingFileError();
+      }
+      fileState.setFileRejected(true);
+      setFileAccepted(false);
+    };
+
+    const handleFileProcessing = async () => {
       fileState.setFileIsLoading(true);
       errorHandling.clearErrors();
 
       try {
-        if (!fileState.currentFile) {
-          throw new Error('No file available');
-        }
-
-        const res = await uploadProductList(fileState.currentFile, formik.values.category);
-
-        if (res.status === 'OK') {
-          onExit(() => navigate(ROUTES.HOME, { replace: true }));
-        } else {
-          errorHandling.handleUploadError(res);
-          setFileAccepted(false);
-          fileState.setFileRejectedState();
-        }
+        await uploadFileAndNavigate();
       } catch (error) {
-        errorHandling.handleGenericError();
-        setFileAccepted(false);
-        fileState.setFileRejectedState();
+        handleFileProcessingError();
       }
+    };
+
+    const uploadFileAndNavigate = async () => {
+      if (!fileState.currentFile) {
+        throw new Error('No file available');
+      }
+
+      const res = await uploadProductList(fileState.currentFile, formik.values.category);
+
+      if (res.status === 'OK') {
+        onExit(() => navigate(ROUTES.HOME, { replace: true }));
+      } else {
+        handleUploadErrorAndRejectFile(res);
+      }
+    };
+
+    const handleFileProcessingError = () => {
+      errorHandling.handleGenericError();
+      setFileAccepted(false);
+      fileState.setFileRejectedState();
     };
 
     const resetFileStatus = () => {

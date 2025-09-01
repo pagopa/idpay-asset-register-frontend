@@ -42,7 +42,7 @@ export const formatDate = (date: Date | undefined) => {
   return '';
 };
 
-export const formatDateWithHours = (isoDate: Date): string => {
+export const formatDateWithHours = (isoDate: Date | null | undefined): string => {
     if (!isoDate) {
         return EMPTY_DATA;
     }
@@ -51,7 +51,8 @@ export const formatDateWithHours = (isoDate: Date): string => {
     const year = isoDate.getFullYear();
     const hours = String(isoDate.getHours()).padStart(2, '0');
     const minutes = String(isoDate.getMinutes()).padStart(2, '0');
-    return `${day}/${month}/${year}, ${hours}:${minutes}`;
+    const seconds = String(isoDate.getSeconds()).padStart(2, '0');
+    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
 };
 
 export const formatDateWithoutHours = (isoDate: string): string => {

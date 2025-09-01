@@ -43,22 +43,17 @@ function renderUploadStatusChip(status: string) {
 }
 
 const formatDateTime = (date: Date): string => {
-  const optionsDate: Intl.DateTimeFormatOptions = {
+  const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-  };
-
-  const optionsTime: Intl.DateTimeFormatOptions = {
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     hour12: false,
   };
 
-  const formattedDate = new Intl.DateTimeFormat('it-IT', optionsDate).format(date);
-  const formattedTime = new Intl.DateTimeFormat('it-IT', optionsTime).format(date);
-
-  return `${formattedDate}, ${formattedTime}`;
+  return new Intl.DateTimeFormat('it-IT', options).format(date);
 };
 
 const formatDate = (isoDate: Date): string => {

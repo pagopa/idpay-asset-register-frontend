@@ -14,9 +14,9 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
-import React, { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react';
+import React, { Dispatch, SetStateAction, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import {PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES} from '../../utils/constants';
+import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { BatchFilterItems } from '../Product/helpers';
@@ -93,12 +93,12 @@ export default function FiltersDrawer({
   const menuProps = useMemo(() => ({ PaperProps: { style: { maxHeight: 350 } } }), []);
   const selectSx = useMemo(() => ({ paddingRight: '38px !important' }), []);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const markInteracted = useCallback(() => setHasInteractedWithFilters(true), []);
-  const [hasInteractedWithFilters, setHasInteractedWithFilters] = useState(false);
   const institutionsList = useSelector(institutionListSelector);
   const { t } = useTranslation();
   const noFilterSetted = (): boolean => areFiltersEmpty;
-  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
+  const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
+    user?.org_role as USERS_TYPES
+  );
   const handleFilter = () => {
     setFiltering(true);
     toggleFiltersDrawer(false);
@@ -111,13 +111,12 @@ export default function FiltersDrawer({
   const onSelect =
     (setter: Dispatch<SetStateAction<string>>) => (event: SelectChangeEvent<string>) => {
       setter(event.target.value as string);
-      markInteracted();
+      // Non attivare alcun aggiornamento della griglia
     };
 
   const onInput =
     (setter: Dispatch<SetStateAction<string>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
       setter(event.target.value.trim());
-      markInteracted();
     };
 
   const areFiltersEmpty = useMemo(
@@ -132,7 +131,10 @@ export default function FiltersDrawer({
     <Drawer
       anchor="right"
       open={open}
-      onClose={() => toggleFiltersDrawer(false)}
+      onClose={() => {
+        handleDeleteFiltersButtonClick();
+        toggleFiltersDrawer(false);
+      }}
       data-testid="detail-drawer"
     >
       <Box
@@ -191,7 +193,10 @@ export default function FiltersDrawer({
               value={producerFilter}
               label={t('pages.products.filterLabels.producer')}
               MenuProps={menuProps}
-              onChange={onSelect(setProducerFilter)}
+              onChange={(event) => {
+                setProducerFilter(event.target.value as string);
+                // Non attivare alcun aggiornamento della griglia
+              }}
               sx={selectSx}
             >
               {institutionsList?.map((producer) => (
@@ -278,7 +283,7 @@ export default function FiltersDrawer({
         </Button>
 
         <Button
-          disabled={!hasInteractedWithFilters && noFilterSetted() && !errorStatus}
+          disabled={noFilterSetted() && !errorStatus}
           variant="text"
           fullWidth
           sx={{ height: 44, minWidth: 100 }}
