@@ -183,16 +183,16 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [isInvitaliaUser, institution?.institutionId]);
 
   useEffect(() => {
+    if (!filtering) {
+      return;
+    }
+
     if (isInvitaliaAdmin || isInvitaliaUser) {
       void fetchInstitutions();
     }
 
     if (isInvitaliaAdmin) {
       setStatusFilter('Da approvare');
-    }
-
-    if (!ready) {
-      return;
     }
 
     setLoading(true);
@@ -210,7 +210,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         setBatchFilterItems([]);
       })
       .finally(() => setLoading(false));
-  }, [ready, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
+  }, [filtering, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
 
   useEffect(() => {
     if (!ready) {
@@ -222,11 +222,13 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [ready, page, orderBy, order, rowsPerPage]);
 
   useEffect(() => {
-    if (!ready || !filtering) {
+    if (!ready) {
       return;
     }
-    setLoading(true);
-    callProductsApi(organizationId);
+    if (filtering) {
+      setLoading(true);
+      callProductsApi(organizationId);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, filtering]);
 
