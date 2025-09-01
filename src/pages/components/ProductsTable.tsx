@@ -207,55 +207,59 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     </TableRow>
   );
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   const renderProduttoreRow = (row: ProductDTO, index: number) => (
     <TableRow tabIndex={-1} key={index} sx={rowTableSx} hover>
-      {headCellsProduttore.map((headCell) => {
-        const cellContent: React.ReactNode = (() => {
-          switch (headCell.id) {
-            case 'category':
-              return <Typography variant="body2">{row?.category ?? emptyData}</Typography>;
-            case 'energyClass':
-              return <Typography variant="body2">{row?.energyClass ?? emptyData}</Typography>;
-            case 'eprelCode':
-              return <EprelLinks row={row} />;
-            case 'gtinCode':
-              return <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>;
-            case 'batchName':
-              return <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>;
-            case 'status':
-              return <ProductStatusChip status={row?.status ?? emptyData ?? ''} />;
-            case 'actions':
-              return (
-                <ArrowForwardIosIcon
-                  sx={{ cursor: 'pointer', color: '#0073E6' }}
-                  onClick={() => handleListButtonClick(row)}
-                />
-              );
-            default:
-              return null;
-          }
-        })();
-
-        const cellSx = (() => {
-          if (headCell.id === 'actions') {
-            return actionsCellSx;
-          }
-          return headCell.align === 'left'
-            ? cellLeftSx
-            : headCell.align === 'center'
-            ? cellCenterSx
-            : cellRightSx;
-        })();
-
-        return (
-          <TableCell key={headCell.id as string} sx={cellSx}>
-            {cellContent}
-          </TableCell>
-        );
-      })}
+      {headCellsProduttore.map((headCell) => (
+        <TableCell key={headCell.id as string} sx={getCellSx(headCell)}>
+          {getCellContent(headCell, row)}
+        </TableCell>
+      ))}
     </TableRow>
   );
+
+  const getCellContent = (
+    headCell: { id: keyof ProductDTO | 'actions'; label: string },
+    row: ProductDTO
+  ) => {
+    switch (headCell.id) {
+      case 'category':
+        return <Typography variant="body2">{row?.category ?? emptyData}</Typography>;
+      case 'energyClass':
+        return <Typography variant="body2">{row?.energyClass ?? emptyData}</Typography>;
+      case 'eprelCode':
+        return <EprelLinks row={row} />;
+      case 'gtinCode':
+        return <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>;
+      case 'batchName':
+        return <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>;
+      case 'status':
+        return <ProductStatusChip status={row?.status ?? emptyData ?? ''} />;
+      case 'actions':
+        return (
+          <ArrowForwardIosIcon
+            sx={{ cursor: 'pointer', color: '#0073E6' }}
+            onClick={() => handleListButtonClick(row)}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const getCellSx = (headCell: {
+    id: keyof ProductDTO | 'actions';
+    label: string;
+    align: 'left' | 'center' | 'right';
+  }) => {
+    if (headCell.id === 'actions') {
+      return actionsCellSx;
+    }
+    return headCell.align === 'left'
+      ? cellLeftSx
+      : headCell.align === 'center'
+      ? cellCenterSx
+      : cellRightSx;
+  };
 
   return (
     <TableContainer>
