@@ -48,7 +48,7 @@ jest.mock('../helpers', () => ({
 
 import useTCAgreement from '../hooks/useTCAgreement';
 import { fetchUserFromLocalStorage } from '../helpers';
-import { INVITALIA } from '../utils/constants';
+import {USERS_TYPES} from "../utils/constants";
 
 beforeEach(() => {
   jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -79,7 +79,7 @@ describe('Test suite for App component', () => {
     });
 
     (fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
-      org_role: INVITALIA,
+      org_role: USERS_TYPES.INVITALIA_L1,
     });
 
     renderWithContext(<App />);

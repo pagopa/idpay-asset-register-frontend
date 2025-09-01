@@ -12,7 +12,7 @@ import * as useLogin from '../../../hooks/useLogin';
 import * as helpers from '../../../helpers';
 import { productsSlice } from '../../../redux/slices/productsSlice';
 import { invitaliaSlice } from '../../../redux/slices/invitaliaSlice';
-import { INVITALIA } from '../../../utils/constants';
+import {USERS_TYPES} from "../../../utils/constants";
 
 jest.mock('../../../utils/env', () => ({
     __esModule: true,
@@ -343,7 +343,7 @@ describe('ProductDataGrid', () => {
         it('should handle Invitalia user', async () => {
             mockFetchUserFromLocalStorage.mockReturnValue({
                 org_id: 'test-org-id',
-                org_role: INVITALIA,
+                org_role: USERS_TYPES.INVITALIA_L1,
             });
 
             const storeState = {
@@ -356,14 +356,14 @@ describe('ProductDataGrid', () => {
             renderComponent({}, storeState);
 
             await waitFor(() => {
-                expect(mockGetProducts).toHaveBeenCalledWith("test-org-id", 0, 10, "category,asc", "", "", "", "", undefined, "");
+                expect(mockGetProducts).toHaveBeenCalledWith("invitalia-inst-id", 0, 10, "category,asc", "", "", "", "", undefined, "");
             });
         });
 
         it('should show action buttons for Invitalia user with selections', async () => {
             mockFetchUserFromLocalStorage.mockReturnValue({
                 org_id: 'test-org-id',
-                org_role: INVITALIA,
+                org_role: USERS_TYPES.INVITALIA_L1,
             });
 
             renderComponent();
