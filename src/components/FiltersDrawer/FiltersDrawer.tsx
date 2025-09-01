@@ -131,7 +131,10 @@ export default function FiltersDrawer({
     <Drawer
       anchor="right"
       open={open}
-      onClose={() => toggleFiltersDrawer(false)}
+      onClose={() => {
+        handleDeleteFiltersButtonClick();
+        toggleFiltersDrawer(false);
+      }}
       data-testid="detail-drawer"
     >
       <Box
