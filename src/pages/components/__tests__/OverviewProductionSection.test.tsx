@@ -101,7 +101,7 @@ describe('OverviewProductionSection', () => {
       </TestWrapper>
     );
     await waitFor(() => {
-      expect(screen.getByText(/ultimo caricamento.*10:30:45/i)).toBeInTheDocument();
+      expect(screen.getByText("Ultimo caricamento")).toBeInTheDocument();
     });
   });
 

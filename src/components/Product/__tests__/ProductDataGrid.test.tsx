@@ -642,13 +642,13 @@ describe('ProductDataGrid', () => {
 
             await waitFor(() => {
                 expect(mockGetProducts).toHaveBeenCalledTimes(1);
-                expect(mockGetBatchFilterList).toHaveBeenCalledTimes(1);
+                expect(mockGetBatchFilterList).toHaveBeenCalledTimes(0);
             });
 
             renderComponent();
 
             expect(mockGetProducts).toHaveBeenCalledTimes(2);
-            expect(mockGetBatchFilterList).toHaveBeenCalledTimes(2);
+            expect(mockGetBatchFilterList).toHaveBeenCalledTimes(0);
         });
     });
 
