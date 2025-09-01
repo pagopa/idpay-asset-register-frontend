@@ -42,7 +42,7 @@ export const formatDate = (date: Date | undefined) => {
   return '';
 };
 
-export const formatDateWithHours = (isoDate: Date): string => {
+export const formatDateWithHours = (isoDate: Date | null | undefined): string => {
     if (!isoDate) {
         return EMPTY_DATA;
     }
