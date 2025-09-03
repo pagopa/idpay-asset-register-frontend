@@ -57,7 +57,11 @@ const buttonStyle = {
 };
 
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, children }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
+  const batchName = useSelector(batchNameSelector);
+  const batchId = useSelector(batchIdSelector);
+  const institutions = useSelector(institutionListSelector);
   const institution = useSelector(institutionSelector);
   const [order, setOrder] = useState<Order>('asc');
   const [refreshKey, setRefreshKey] = useState(0);
@@ -82,15 +86,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
   const [filtersDrawerOpened, setFiltersDrawerOpened] = useState<boolean>(false);
   const [selected, setSelected] = useState<Array<string>>([]);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>(undefined);
-  const [ready, setReady] = useState(false);
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
-  const batchName = useSelector(batchNameSelector);
-  const batchId = useSelector(batchIdSelector);
-  const institutions = useSelector(institutionListSelector);
-  const { t } = useTranslation();
+  const [ready, setReady] = useState(false);
+  const [adminDefaultApplied, setAdminDefaultApplied] = useState(false);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
@@ -183,12 +183,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [isInvitaliaUser, institution?.institutionId]);
 
   useEffect(() => {
-    if (isInvitaliaAdmin) {
+    if (isInvitaliaAdmin && !adminDefaultApplied) {
       setStatusFilter('Da approvare');
-    }
-
-    if (!filtering) {
-      return;
+      setAdminDefaultApplied(true);
     }
 
     if (isInvitaliaAdmin || isInvitaliaUser) {
@@ -222,13 +219,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [ready, page, orderBy, order, rowsPerPage]);
 
   useEffect(() => {
-    if (!ready) {
+    if (!ready || !filtering) {
       return;
     }
-    if (filtering) {
-      setLoading(true);
-      callProductsApi(organizationId);
-    }
+    setLoading(true);
+    callProductsApi(organizationId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, filtering]);
 

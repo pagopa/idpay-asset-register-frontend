@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
-import React, { Dispatch, SetStateAction, useMemo } from 'react';
+import React, {Dispatch, SetStateAction, useEffect, useMemo, useState} from 'react';
 import { useSelector } from 'react-redux';
 import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
@@ -90,48 +90,95 @@ export default function FiltersDrawer({
   handleDeleteFiltersButtonClick,
   setFiltering,
 }: Props) {
+  const { t } = useTranslation();
+  const [draftStatus, setDraftStatus] = useState(statusFilter);
+  const [draftProducer, setDraftProducer] = useState(producerFilter);
+  const [draftBatch, setDraftBatch] = useState(batchFilter);
+  const [draftCategory, setDraftCategory] = useState(categoryFilter);
+  const [draftEprel, setDraftEprel] = useState(eprelCodeFilter);
+  const [draftGtin, setDraftGtin] = useState(gtinCodeFilter);
   const menuProps = useMemo(() => ({ PaperProps: { style: { maxHeight: 350 } } }), []);
   const selectSx = useMemo(() => ({ paddingRight: '38px !important' }), []);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
+  const isDirty = useMemo(() => (
+      draftStatus !== statusFilter ||
+      draftProducer !== producerFilter ||
+      draftBatch !== batchFilter ||
+      draftCategory !== categoryFilter ||
+      draftEprel !== eprelCodeFilter ||
+      draftGtin !== gtinCodeFilter
+  ), [draftStatus, draftProducer, draftBatch, draftCategory, draftEprel, draftGtin,
+    statusFilter, producerFilter, batchFilter, categoryFilter, eprelCodeFilter, gtinCodeFilter]);
+  const appliedEmpty = useMemo(() =>
+          ![categoryFilter, producerFilter, statusFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
+              .filter(Boolean)
+              .some(v => v.trim()),
+      [categoryFilter, producerFilter, statusFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
+  );
   const institutionsList = useSelector(institutionListSelector);
-  const { t } = useTranslation();
-  const noFilterSetted = (): boolean => areFiltersEmpty;
   const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
     user?.org_role as USERS_TYPES
   );
+
+  useEffect(() => {
+    if (open) {
+      setDraftStatus(statusFilter);
+      setDraftProducer(producerFilter);
+      setDraftBatch(batchFilter);
+      setDraftCategory(categoryFilter);
+      setDraftEprel(eprelCodeFilter);
+      setDraftGtin(gtinCodeFilter);
+    }
+  }, [open, statusFilter, producerFilter, batchFilter, categoryFilter, eprelCodeFilter, gtinCodeFilter]);
+
   const handleFilter = () => {
+    setStatusFilter(draftStatus);
+    setProducerFilter(draftProducer);
+    setBatchFilter(draftBatch);
+    setCategoryFilter(draftCategory);
+    setEprelCodeFilter(draftEprel);
+    setGtinCodeFilter(draftGtin);
+
     setFiltering(true);
     toggleFiltersDrawer(false);
   };
+
   const handleDeleteFilters = () => {
     handleDeleteFiltersButtonClick();
+    setDraftStatus('');
+    setDraftProducer('');
+    setDraftBatch('');
+    setDraftCategory('');
+    setDraftEprel('');
+    setDraftGtin('');
     toggleFiltersDrawer(false);
   };
 
-  const onSelect =
-    (setter: Dispatch<SetStateAction<string>>) => (event: SelectChangeEvent<string>) => {
-      setter(event.target.value as string);
-    };
+  const onDraftSelect = (setter: Dispatch<SetStateAction<string>>) =>
+      (event: SelectChangeEvent<string>) => {
+        setter(event.target.value as string);
+      };
 
-  const onInput =
-    (setter: Dispatch<SetStateAction<string>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setter(event.target.value.trim());
-    };
+  const onDraftInput = (setter: Dispatch<SetStateAction<string>>) =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        setter(event.target.value.trim());
+      };
 
-  const areFiltersEmpty = useMemo(
-    () =>
-      ![categoryFilter, producerFilter, statusFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
-        .filter(Boolean)
-        .some((v) => v.trim()),
-    [batchFilter, categoryFilter, eprelCodeFilter, gtinCodeFilter, producerFilter, statusFilter]
-  );
+  const resetDraftsToApplied = () => {
+    setDraftStatus(statusFilter);
+    setDraftProducer(producerFilter);
+    setDraftBatch(batchFilter);
+    setDraftCategory(categoryFilter);
+    setDraftEprel(eprelCodeFilter);
+    setDraftGtin(gtinCodeFilter);
+  };
 
   return (
     <Drawer
       anchor="right"
       open={open}
       onClose={() => {
-        handleDeleteFiltersButtonClick();
+        resetDraftsToApplied();
         toggleFiltersDrawer(false);
       }}
       data-testid="detail-drawer"
@@ -164,10 +211,10 @@ export default function FiltersDrawer({
           <Select
             labelId="status-filter-select-label"
             id="status-filter-select"
-            value={statusFilter}
+            value={draftStatus}
             label={t('pages.products.filterLabels.status')}
             MenuProps={menuProps}
-            onChange={onSelect(setStatusFilter)}
+            onChange={onDraftSelect(setDraftStatus)}
             sx={selectSx}
           >
             {(Object.keys(PRODUCTS_STATES) as Array<PRODUCTS_STATES>)
@@ -197,12 +244,10 @@ export default function FiltersDrawer({
             <Select
               labelId="producer-filter-select-label"
               id="producer-filter-select"
-              value={producerFilter}
+              value={draftProducer}
               label={t('pages.products.filterLabels.producer')}
               MenuProps={menuProps}
-              onChange={(event) => {
-                setProducerFilter(event.target.value as string);
-              }}
+              onChange={(e) => setDraftProducer(e.target.value as string)}
               sx={selectSx}
             >
               {institutionsList?.map((producer) => (
@@ -221,10 +266,10 @@ export default function FiltersDrawer({
           <Select
             labelId="batch-filter-select-label"
             id="batch-filter-select"
-            value={batchFilter}
+            value={draftBatch}
             label={t('pages.products.filterLabels.batch')}
             MenuProps={menuProps}
-            onChange={onSelect(setBatchFilter)}
+            onChange={onDraftSelect(setDraftBatch)}
             sx={selectSx}
           >
             {batchFilterItems?.map((batch) => (
@@ -242,10 +287,10 @@ export default function FiltersDrawer({
           <Select
             labelId="category-filter-select-label"
             id="category-filter-select"
-            value={categoryFilter}
+            value={draftCategory}
             label={t('pages.products.filterLabels.category')}
             MenuProps={menuProps}
-            onChange={onSelect(setCategoryFilter)}
+            onChange={onDraftSelect(setDraftCategory)}
             sx={selectSx}
           >
             {Object.keys(PRODUCTS_CATEGORIES).map((category) => (
@@ -263,8 +308,8 @@ export default function FiltersDrawer({
           label={t('pages.products.filterLabels.eprelCode')}
           variant="outlined"
           margin="normal"
-          value={eprelCodeFilter}
-          onChange={onInput(setEprelCodeFilter)}
+          value={draftEprel}
+          onChange={onDraftInput(setDraftEprel)}
         />
 
         <TextField
@@ -274,12 +319,12 @@ export default function FiltersDrawer({
           label={t('pages.products.filterLabels.gtinCode')}
           variant="outlined"
           margin="normal"
-          value={gtinCodeFilter}
-          onChange={onInput(setGtinCodeFilter)}
+          value={draftGtin}
+          onChange={onDraftInput(setDraftGtin)}
         />
 
         <Button
-          disabled={noFilterSetted()}
+          disabled={!isDirty}
           variant="outlined"
           fullWidth
           sx={{ height: 44, minWidth: 100, marginY: '24px' }}
@@ -289,7 +334,7 @@ export default function FiltersDrawer({
         </Button>
 
         <Button
-          disabled={noFilterSetted() && !errorStatus}
+          disabled={appliedEmpty && !errorStatus}
           variant="text"
           fullWidth
           sx={{ height: 44, minWidth: 100 }}
