@@ -1,9 +1,9 @@
 import { List, Divider, Box, Tooltip } from '@mui/material';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import {useMemo, useState} from 'react';
 import { useTranslation } from 'react-i18next';
-import { EMPTY_DATA, MAX_LENGTH_DETAILL_PR, PRODUCTS_STATES } from '../../utils/constants';
-import { truncateString } from '../../helpers';
+import {EMPTY_DATA, MAX_LENGTH_DETAILL_PR, PRODUCTS_STATES, USERS_TYPES} from '../../utils/constants';
+import {fetchUserFromLocalStorage, truncateString} from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
 import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
@@ -197,11 +197,12 @@ type ProductInfoRowsProps = {
 
 function ProductInfoRows({ data, currentStatus, children }: ProductInfoRowsProps) {
   const { t } = useTranslation();
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   const baseRows = getProductInfoRowsConfig(data, t);
 
   const rows =
-    currentStatus !== CurrentStatusEnum.APPROVED
+    currentStatus !== CurrentStatusEnum.APPROVED && user?.org_role !== USERS_TYPES.OPERATORE
       ? [
           ...baseRows,
           {
