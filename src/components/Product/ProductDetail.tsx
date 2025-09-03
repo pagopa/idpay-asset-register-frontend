@@ -1,4 +1,4 @@
-import { List, Divider, Box, Tooltip } from '@mui/material';
+import {List, Divider, Box, Tooltip, Typography} from '@mui/material';
 import { format } from 'date-fns';
 import {useMemo, useState} from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import {fetchUserFromLocalStorage, truncateString} from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
 import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
+import {statusChangeMessage} from "../../model/Product";
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -195,31 +196,59 @@ type ProductInfoRowsProps = {
   children?: React.ReactNode;
 };
 
-function ProductInfoRows({ data, currentStatus, children }: ProductInfoRowsProps) {
+function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const { t } = useTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   const baseRows = getProductInfoRowsConfig(data, t);
 
   const rows =
-    currentStatus !== CurrentStatusEnum.APPROVED && user?.org_role !== USERS_TYPES.OPERATORE
+      user?.org_role !== USERS_TYPES.OPERATORE && Boolean(data?.statusChangeChronology?.length)
       ? [
           ...baseRows,
           {
-            label: t('pages.productDetail.motivation'),
-            value: (data as any)?.motivation || EMPTY_DATA,
             renderCustom: () => {
-              const motivationValue = (data as any)?.motivation || EMPTY_DATA;
-              const truncatedMotivation = truncateString(motivationValue, MAX_LENGTH_DETAILL_PR);
+              const chronology =
+                  ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
+
+              const renderEntry = (entry: any, idx: number) => {
+                const operator = entry?.role ? `operatore ${entry.role}` : 'operatore';
+                const dateLabel = entry?.updateDate
+                    ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
+                    : EMPTY_DATA;
+                const motivationText = entry?.motivation?.trim() || EMPTY_DATA;
+                const header = `${operator} · ${dateLabel}`;
+
+                return (
+                    <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
+                      <Tooltip
+                          title={<Box component="span" sx={{ whiteSpace: 'pre-line' }}>{motivationText}</Box>}
+                          arrow
+                      >
+                        <Box component="span">
+                          <Typography variant='body1' color="text.secondary">
+                            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                          </Typography>
+                          <Typography variant='body2' fontWeight="fontWeightMedium">
+                            {truncateString(motivationText, MAX_LENGTH_DETAILL_PR)}
+                          </Typography>
+                        </Box>
+                      </Tooltip>
+                    </Box>
+                );
+              };
+
               return (
-                <ProductInfoRow
-                  label={t('pages.productDetail.motivation')}
-                  value={
-                    <Tooltip title={motivationValue} arrow>
-                      <span>{truncatedMotivation}</span>
-                    </Tooltip>
-                  }
-                />
+                  <ProductInfoRow
+                      label={t('pages.productDetail.motivation')}
+                      labelVariant="overline"
+                      sx={{ marginTop: 3 }}
+                      value={
+                        <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2}}>
+                          {chronology.map(renderEntry)}
+                        </Box>
+                      }
+                  />
               );
             },
           } as RowConfig & { renderCustom?: () => JSX.Element },

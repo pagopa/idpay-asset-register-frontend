@@ -183,16 +183,16 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [isInvitaliaUser, institution?.institutionId]);
 
   useEffect(() => {
+    if (isInvitaliaAdmin) {
+      setStatusFilter('Da approvare');
+    }
+
     if (!filtering) {
       return;
     }
 
     if (isInvitaliaAdmin || isInvitaliaUser) {
       void fetchInstitutions();
-    }
-
-    if (isInvitaliaAdmin) {
-      setStatusFilter('Da approvare');
     }
 
     setLoading(true);
@@ -210,7 +210,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         setBatchFilterItems([]);
       })
       .finally(() => setLoading(false));
-  }, [filtering, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
+  }, [ready, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
 
   useEffect(() => {
     if (!ready) {
