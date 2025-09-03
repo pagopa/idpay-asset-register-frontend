@@ -111,7 +111,6 @@ export default function FiltersDrawer({
   const onSelect =
     (setter: Dispatch<SetStateAction<string>>) => (event: SelectChangeEvent<string>) => {
       setter(event.target.value as string);
-      // Non attivare alcun aggiornamento della griglia
     };
 
   const onInput =
@@ -171,14 +170,22 @@ export default function FiltersDrawer({
             onChange={onSelect(setStatusFilter)}
             sx={selectSx}
           >
-            {Object.keys(PRODUCTS_STATES).map((status) => (
-              <MenuItem key={status} value={t(`pages.products.categories.${status}`)}>
-                <Chip
-                  color={getChipColor(status)}
-                  label={t(`pages.products.categories.${status}`)}
-                />
-              </MenuItem>
-            ))}
+            {(Object.keys(PRODUCTS_STATES) as Array<PRODUCTS_STATES>)
+                .filter((status) =>
+                    isInvitaliaUser ||
+                    ![PRODUCTS_STATES.WAIT_APPROVED, PRODUCTS_STATES.SUPERVISED].includes(status)
+                )
+                .map((status) => (
+                    <MenuItem
+                        key={status}
+                        value={t(`pages.products.categories.${status}`)}
+                    >
+                      <Chip
+                          color={getChipColor(status)}
+                          label={t(`pages.products.categories.${status}`)}
+                      />
+                    </MenuItem>
+                ))}
           </Select>
         </FormControl>
 
@@ -195,7 +202,6 @@ export default function FiltersDrawer({
               MenuProps={menuProps}
               onChange={(event) => {
                 setProducerFilter(event.target.value as string);
-                // Non attivare alcun aggiornamento della griglia
               }}
               sx={selectSx}
             >
