@@ -11,11 +11,11 @@ import {
   IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import FlagIcon from '@mui/icons-material/Flag';
 import { useTranslation } from 'react-i18next';
 import { setSupervisionedStatusList, setRejectedStatusList } from '../../services/registerService';
 import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
-import { MAX_LENGTH_DETAILL_PR, PRODUCTS_STATES } from '../../utils/constants';
-import { truncateString } from '../../helpers';
+import { PRODUCTS_STATES } from '../../utils/constants';
 
 interface ProductModalProps {
   open: boolean;
@@ -33,7 +33,6 @@ const buttonStyle = {
   fontSize: 16,
   paddingLeft: 8,
   paddingRight: 8,
-  width: 85,
 };
 
 const modalStyles = {
@@ -101,54 +100,67 @@ const modalStyles = {
     top: 8,
     color: (theme: any) => theme.palette.grey[500],
   },
+  buttonCancel: {
+    height: 48,
+    fontWeight: 600,
+    fontSize: 16,
+    marginRight: 2,
+    gap: '16px',
+  },
 };
 
 const ProductModal: React.FC<ProductModalProps> = ({
   open,
   onClose,
   gtinCodes,
-  productName,
   actionType,
   status,
   onUpdateTable,
   selectedProducts,
 }) => {
   const [motivation, setReason] = useState('');
+  const [motivationTouched, setMotivationTouched] = useState(false);
   React.useEffect(() => {
     if (open) {
       setReason('');
+      setMotivationTouched(false);
     }
   }, [open]);
   const { t } = useTranslation();
 
   const MODAL_CONFIG = {
-    supervised: {
+    SUPERVISED: {
       title: t('invitaliaModal.supervised.title'),
       description: t('invitaliaModal.supervised.description'),
       listTitle: t('invitaliaModal.supervised.listTitle'),
       reasonLabel: t('invitaliaModal.supervised.reasonLabel'),
       reasonPlaceholder: t('invitaliaModal.supervised.reasonPlaceholder'),
       buttonText: t('invitaliaModal.supervised.buttonText'),
+      buttonTextConfirm: t('invitaliaModal.supervised.buttonTextConfirm'),
+      buttonTextCancel: t('invitaliaModal.supervised.buttonTextCancel'),
     },
-    rejected: {
+    REJECTED: {
       title: t('invitaliaModal.rejected.title'),
       description: t('invitaliaModal.rejected.description'),
       listTitle: t('invitaliaModal.rejected.listTitle'),
       reasonLabel: t('invitaliaModal.rejected.reasonLabel'),
       reasonPlaceholder: t('invitaliaModal.rejected.reasonPlaceholder'),
       buttonText: t('invitaliaModal.rejected.buttonText'),
+      buttonTextConfirm: t('invitaliaModal.rejected.buttonTextConfirm'),
+      buttonTextCancel: t('invitaliaModal.rejected.buttonTextCancel'),
     },
   };
 
   const config = MODAL_CONFIG[actionType as keyof typeof MODAL_CONFIG];
 
   const callSupervisionedApi = async () => {
+    if (!motivation.trim()) {
+      setMotivationTouched(true);
+      return;
+    }
     try {
       await setSupervisionedStatusList(gtinCodes, status, motivation);
       onClose();
-      if (onUpdateTable) {
-        onUpdateTable();
-      }
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -159,6 +171,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   const callRejectedApi = async () => {
+    if (!motivation.trim()) {
+      setMotivationTouched(true);
+      return;
+    }
     try {
       onClose();
       await setRejectedStatusList(gtinCodes, status, motivation);
@@ -168,6 +184,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
     } catch (error) {
       console.error(error);
       onClose();
+    }
+  };
+
+  const handleCloseWithUpdate = () => {
+    onClose();
+    if (onUpdateTable) {
+      onUpdateTable();
     }
   };
 
@@ -186,40 +209,34 @@ const ProductModal: React.FC<ProductModalProps> = ({
       <DialogContent sx={{ p: 0 }}>
         <Typography sx={modalStyles.descriptionText}>{config?.description || ''}</Typography>
         <Typography sx={modalStyles.listTitle}>{config?.listTitle || ''}</Typography>
-        <Box sx={{ mb: 2 }}>
-          {selectedProducts && selectedProducts.length > 0 ? (
-            selectedProducts.map(
-              (item: { productName?: string; gtinCode: string; category?: string }) => (
-                <Typography key={item.gtinCode} sx={modalStyles.productText}>
-                  {item.productName && item.productName.trim() !== ''
-                    ? truncateString(item.productName, MAX_LENGTH_DETAILL_PR)
-                    : `${item.category ? item.category + ' ' : ''}Codice GTIN/EAN ${item.gtinCode}`}
-                </Typography>
-              )
-            )
-          ) : (
-            <Typography sx={modalStyles.productText}>
-              {!productName || productName.trim() === ''
-                ? `Codice GTIN/EAN ${gtinCodes.join(', ')}`
-                : truncateString(productName, MAX_LENGTH_DETAILL_PR)}
-            </Typography>
-          )}
-        </Box>
-        <Typography sx={modalStyles.reasonLabel}>{config?.reasonLabel || ''}</Typography>
         <TextField
+          required
+          label={config?.reasonLabel}
+          color="primary"
           fullWidth
-          multiline
-          label={config?.reasonLabel || ''}
           inputProps={{ maxLength: 200 }}
-          placeholder={config?.reasonPlaceholder || ''}
           value={motivation}
-          onChange={(e) => setReason(e.target.value)}
+          onChange={(e) => {
+            setReason(e.target.value);
+          }}
+          onBlur={() => setMotivationTouched(true)}
           sx={modalStyles.textField}
+          error={motivationTouched && !motivation.trim()}
+          id={motivationTouched && !motivation.trim() ? 'outlined-error-helper-text' : undefined}
+          helperText={motivationTouched && !motivation.trim() ? 'Campo obbligatorio' : undefined}
         />
         <Box sx={modalStyles.charCounter}>{motivation.length}/200</Box>
       </DialogContent>
       <DialogActions sx={modalStyles.dialogActions}>
-        {actionType === PRODUCTS_STATES.SUPERVISED.toLowerCase() && (
+        <Button
+          variant="outlined"
+          onClick={handleCloseWithUpdate}
+          color="primary"
+          sx={modalStyles.buttonCancel}
+        >
+          {config?.buttonTextCancel}
+        </Button>
+        {actionType === PRODUCTS_STATES.SUPERVISED && (
           <Button
             variant="contained"
             color="primary"
@@ -227,12 +244,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
               ...buttonStyle,
             }}
             onClick={callSupervisionedApi}
-            disabled={motivation.length === 0}
           >
-            {config?.buttonText || 'Chiudi'}
+            <FlagIcon /> {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
           </Button>
         )}
-        {actionType === PRODUCTS_STATES.REJECTED.toLowerCase() && (
+        {actionType === PRODUCTS_STATES.REJECTED && (
           <Button
             variant="contained"
             color="primary"
@@ -240,24 +256,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
               ...buttonStyle,
             }}
             onClick={callRejectedApi}
-            disabled={motivation.length === 0}
           >
-            {config?.buttonText || 'Contrassegna'}
+            {config?.buttonTextConfirm}
           </Button>
         )}
+
+        <IconButton aria-label="close" onClick={handleCloseWithUpdate} sx={modalStyles.closeButton}>
+          <CloseIcon />
+        </IconButton>
       </DialogActions>
-      <IconButton
-        aria-label="close"
-        onClick={() => {
-          onClose();
-          if (onUpdateTable) {
-            onUpdateTable();
-          }
-        }}
-        sx={modalStyles.closeButton}
-      >
-        <CloseIcon />
-      </IconButton>
     </Dialog>
   );
 };

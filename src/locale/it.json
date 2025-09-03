@@ -154,12 +154,6 @@
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
       "loading": "Caricamento dati ...",
-      "buttonModal":{
-        "confirmSupervisioned":"Conferma",
-        "cancelSupervisioned":"Annulla",
-        "supervised":"Contrassegna",
-        "rejected":"Escludi"
-      },
       "filterLabels": {
         "category": "Categoria",
         "status": "Stato",
@@ -265,14 +259,15 @@
   },
   "invitaliaModal": {
     "supervised": {
-      "title": "Contrassegna un prodotto",
-      "description": "Segnala eventuali anomalie su un prodotto: verrà messo in pausa e potrai successivamente decidere se escluderlo o ripristinarlo.",
-      "listTitle": "I prodotti segnalati sono i seguenti:",
-      "reasonLabel": "Motivo segnalazione",
-      "reasonPlaceholder": "Motivo segnalazione",
+      "title": "Richiedi ulteriori controlli ai produttori",
+      "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali conrolli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'.",
+      "listTitle": "Perchè stai richidendo ulteriori controlli?",
+      "reasonLabel": "Nota interna",
+      "reasonPlaceholder": "Nota interna",
       "buttonText": "Da controllare",
-      "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Annulla"
+      "buttonTextConfirm": "Richiedi controlli",
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio"
     },
     "rejected": {
       "title": "Richiedi esclusione",
@@ -282,7 +277,8 @@
       "reasonPlaceholder": "Motivo esclusione",
       "buttonText": "Escludi",
       "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Escludi"
+      "buttonTextCancel": "Escludi",
+      "errorMessage": "Campo obbligatorio"
     },
      "waitApproved": {
       "title": "Approva",
@@ -292,7 +288,8 @@
       "reasonPlaceholder": "Richiedi approvazione",
       "buttonText": "Approva",
       "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Annulla"
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio"
     },
       "approved": {
       "title": "Approva",
@@ -302,7 +299,8 @@
       "reasonPlaceholder": "Richiedi approvazione",
       "buttonText": "Approva",
       "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Annulla"
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio"
     }
   },
   "chip": {

@@ -1,9 +1,14 @@
 import { List, Divider, Box, Tooltip } from '@mui/material';
 import { format } from 'date-fns';
-import {useMemo, useState} from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {EMPTY_DATA, MAX_LENGTH_DETAILL_PR, PRODUCTS_STATES, USERS_TYPES} from '../../utils/constants';
-import {fetchUserFromLocalStorage, truncateString} from '../../helpers';
+import {
+  EMPTY_DATA,
+  MAX_LENGTH_DETAILL_PR,
+  PRODUCTS_STATES,
+  USERS_TYPES,
+} from '../../utils/constants';
+import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
 import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
@@ -322,8 +327,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         open={excludeModalOpen}
         onClose={handleExcludeClose}
         gtinCodes={[data.gtinCode]}
-        productName={data.productName}
-        actionType="rejected"
+        actionType={PRODUCTS_STATES.REJECTED}
         status={CurrentStatusEnum.REJECTED}
         onUpdateTable={onUpdateTable}
       />
@@ -331,8 +335,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         open={supervisionModalOpen}
         onClose={handleSupervisionClose}
         gtinCodes={[data.gtinCode]}
-        productName={data.productName}
-        actionType="supervised"
+        actionType={PRODUCTS_STATES.SUPERVISED}
         status={CurrentStatusEnum.SUPERVISED}
         onUpdateTable={onUpdateTable}
       />

@@ -131,8 +131,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       page,
       rowsPerPage,
       sortKey,
-      categoryFilter ? t(`pages.products.categories.${categoryFilter?.toLowerCase()}`) : '',
-      statusFilter ? t(`pages.products.categories.${statusFilter?.toLowerCase()}`) : '',
+      categoryFilter ? t(`pages.products.categories.${categoryFilter}`) : '',
+      statusFilter ? t(`pages.products.categories.${statusFilter}`) : '',
       eprelCodeFilter,
       gtinCodeFilter,
       undefined,
@@ -381,18 +381,20 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
         <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
           <Button
+            data-testid="rejectedBtn"
             variant="outlined"
             color="error"
             sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModal(PRODUCTS_STATES.REJECTED.toLowerCase())}
+            onClick={() => handleOpenModal(PRODUCTS_STATES.REJECTED)}
           >
             {`${t('invitaliaModal.rejected.buttonText')} (${selected.length})`}
           </Button>
           <Button
+            data-testid="supervisedBtn"
             color="primary"
             variant="outlined"
             sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED.toLowerCase())}
+            onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED)}
           >
             <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
           </Button>
@@ -406,8 +408,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               selected.length === 0 ||
               selected.some(
                 (gtinCode) =>
-                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
-                  PRODUCTS_STATES.WAIT_APPROVED.toLowerCase()
+                  String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
+                  PRODUCTS_STATES.WAIT_APPROVED
               )
             }
             onClick={() => handleOpenModal(PRODUCTS_STATES.WAIT_APPROVED)}
@@ -467,16 +469,19 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         gtinCodes={selected}
-        selectedProducts={selected.map((gtinCode) => {
-          const prod = tableData.find((row) => row.gtinCode === gtinCode);
-          return { productName: prod?.productName, gtinCode, category: prod?.category };
-        })}
         actionType={modalAction}
         status={
           (tableData.find((row) => row.gtinCode === selected[0])
             ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED
         }
         onUpdateTable={updaDataTable}
+        selectedProducts={
+          tableData.filter((row) => row.gtinCode && selected.includes(row.gtinCode)) as Array<{
+            productName?: string;
+            gtinCode: string;
+            category?: string;
+          }>
+        }
       />
 
       <ProductConfirmDialog
