@@ -171,7 +171,10 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           <Checkbox
             color="primary"
             checked={selected.includes(row.gtinCode)}
-            disabled={row.status !== PRODUCTS_STATES.UPLOADED}
+            disabled={
+              (user?.org_role === USERS_TYPES.INVITALIA_L2 && row.status !== PRODUCTS_STATES.WAIT_APPROVED)
+              || (user?.org_role === USERS_TYPES.INVITALIA_L1 && row.status !== PRODUCTS_STATES.UPLOADED)
+            }
             onChange={() => handleCheckboxClick(row.gtinCode)}
             onClick={(e) => e.stopPropagation()}
           />
