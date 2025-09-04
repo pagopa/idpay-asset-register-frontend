@@ -370,7 +370,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
                   data-testid="request-approval-btn"
                   onClick={() => setRestoreDialogOpen(true)}
                 >
-                  {t('invitaliaModal.waitApproved.buttonText')}
+                  {t('invitaliaModal.waitApproved.buttonTextConfirm')}
                 </Button>
                 <Button
                   color="error"
@@ -383,7 +383,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
                   data-testid="exclude-btn"
                   onClick={() => setExcludeModalOpen(true)}
                 >
-                  {t('invitaliaModal.rejected.buttonText')}
+                  {t('invitaliaModal.rejected.buttonTextConfirm')}
                 </Button>
               </Box>
             </>
