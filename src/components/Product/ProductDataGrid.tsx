@@ -396,7 +396,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           </Button>
 
           <Button
-            data-testid="approvedBtn"
+            data-testid="waitApprovedBtn"
             color="primary"
             variant="contained"
             sx={{ ...buttonStyle }}

@@ -271,13 +271,13 @@
     },
     "rejected": {
       "title": "Richiedi esclusione",
-      "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
-      "listTitle": "I prodotti esclusi sono i seguenti:",
-      "reasonLabel": "Motivo esclusione",
-      "reasonPlaceholder": "Motivo esclusione",
+      "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori ricevernanno la notifica dell'esclusione.",
+      "listTitle": "Perchè stai escludendo i prodotti?",
+      "reasonLabel": "Nota interna",
+      "reasonPlaceholder": "Nota interna",
       "buttonText": "Escludi",
-      "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Escludi",
+      "buttonTextConfirm": "Escludi",
+      "buttonTextCancel": "Annulla",
       "errorMessage": "Campo obbligatorio"
     },
      "waitApproved": {

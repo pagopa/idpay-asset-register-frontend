@@ -1,23 +1,24 @@
-import { List, Divider, Box, Tooltip, Typography } from '@mui/material';
+import { List, Divider, Box, Tooltip, Typography, Button } from '@mui/material';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import FlagIcon from '@mui/icons-material/Flag';
 import {
   EMPTY_DATA,
   MAX_LENGTH_DETAILL_PR,
   PRODUCTS_STATES,
+  USERS_NAMES,
   USERS_TYPES,
 } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
+import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import { statusChangeMessage } from '../../model/Product';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
 import ProductStatusChip from './ProductStatusChip';
-import ProductActionButtons from './ProductActionButtons';
 
 type Props = {
   open: boolean;
@@ -27,7 +28,8 @@ type Props = {
   onClose?: () => void;
   children?: React.ReactNode;
 };
-
+{
+  /* TODO for L2 
 const callApprovedApi = async (
   gtinCodes: Array<string>,
   currentStatus: ProductStatusEnum,
@@ -39,6 +41,8 @@ const callApprovedApi = async (
     console.error(error);
   }
 };
+*/
+}
 
 const callRejectedApi = async (
   gtinCodes: Array<string>,
@@ -47,6 +51,18 @@ const callRejectedApi = async (
 ) => {
   try {
     await setRejectedStatusList(gtinCodes, currentStatus, motivation);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const callWaitApprovedApi = async (
+  gtinCodes: Array<string>,
+  currentStatus: ProductStatusEnum,
+  motivation: string
+) => {
+  try {
+    await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error) {
     console.error(error);
   }
@@ -61,7 +77,7 @@ const handleOpenModal = (
   if (action === PRODUCTS_STATES.REJECTED) {
     return callRejectedApi(gtinCodes, currentStatus, motivation);
   } else if (action === PRODUCTS_STATES.APPROVED) {
-    return callApprovedApi(gtinCodes, currentStatus, motivation);
+    return callWaitApprovedApi(gtinCodes, currentStatus, motivation);
   }
   return Promise.resolve();
 };
@@ -302,7 +318,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
     await handleOpenModal(
       PRODUCTS_STATES.APPROVED,
       [data.gtinCode],
-      ProductStatusEnum.APPROVED,
+      data.status as ProductStatusEnum,
       EMPTY_DATA
     );
     setRestoreDialogOpen(false);
@@ -338,37 +354,86 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
         <ProductStatusChip status={data.status} />
-        <ProductInfoRows data={data} currentStatus={ProductStatusEnum.UPLOADED}>
-          <ProductActionButtons
-            isInvitaliaUser={isInvitaliaUser}
-            status={data.status}
-            onExclude={() => setExcludeModalOpen(true)}
-            onSupervision={() => setSupervisionModalOpen(true)}
-          />
+        <ProductInfoRows data={data} currentStatus={data.status as ProductStatusEnum}>
+          {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
+            <>
+              <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: 16,
+                    marginBottom: 2,
+                    width: '100%',
+                  }}
+                  data-testid="request-approval-btn"
+                  onClick={() => setRestoreDialogOpen(true)}
+                >
+                  {t('invitaliaModal.waitApproved.buttonText')}
+                </Button>
+                <Button
+                  color="error"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: 16,
+                    marginBottom: 2,
+                    width: '100%',
+                  }}
+                  data-testid="exclude-btn"
+                  onClick={() => setExcludeModalOpen(true)}
+                >
+                  {t('invitaliaModal.rejected.buttonText')}
+                </Button>
+              </Box>
+            </>
+          )}
+          {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
+            <>
+              <Box mt={2} display="flex" flexDirection="row" gap={2} sx={{ width: '100%' }}>
+                <Button
+                  data-testid="rejectedBtn"
+                  variant="outlined"
+                  color="error"
+                  sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
+                  onClick={() => setExcludeModalOpen(true)}
+                >
+                  {t('invitaliaModal.rejected.buttonText')}
+                </Button>
+                <Button
+                  data-testid="supervisedBtn"
+                  color="primary"
+                  variant="outlined"
+                  sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
+                  onClick={() => setSupervisionModalOpen(true)}
+                >
+                  <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}
+                </Button>
+                <Button
+                  data-testid="approvedBtn"
+                  color="primary"
+                  variant="contained"
+                  sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
+                  onClick={() => setRestoreDialogOpen(true)}
+                >
+                  {t('invitaliaModal.waitApproved.buttonText')}
+                </Button>
+              </Box>
+            </>
+          )}
         </ProductInfoRows>
       </List>
+
       <ProductConfirmDialog
         open={restoreDialogOpen}
-        cancelButtonText="Cancel"
-        confirmButtonText="Confirm"
-        title={t('pages.productDetail.restoreProductTitle')}
-        message={t('pages.productDetail.restoreProductMessage')}
+        cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
+        confirmButtonText={t('invitaliaModal.waitApproved.buttonTextConfirm')}
+        title={t('invitaliaModal.waitApproved.listTitle')}
+        message={t('invitaliaModal.waitApproved.description', {
+          L2: USERS_NAMES.INVITALIA_L2,
+        })}
         onCancel={() => setRestoreDialogOpen(false)}
         onConfirm={handleConfirmRestore}
-      />
-      <ProductModal
-        open={excludeModalOpen}
-        onClose={handleExcludeClose}
-        actionType={PRODUCTS_STATES.REJECTED}
-        onUpdateTable={onUpdateTable}
-        selectedProducts={[
-          {
-            status: data.status ? data.status : ProductStatusEnum.UPLOADED,
-            productName: data.productName,
-            gtinCode: data.gtinCode,
-            category: data.category,
-          },
-        ]}
       />
       <ProductModal
         open={supervisionModalOpen}
@@ -377,7 +442,21 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         onUpdateTable={onUpdateTable}
         selectedProducts={[
           {
-            status: data.status ? data.status : ProductStatusEnum.UPLOADED,
+            status: data.status as ProductStatusEnum,
+            productName: data.productName,
+            gtinCode: data.gtinCode,
+            category: data.category,
+          },
+        ]}
+      />
+      <ProductModal
+        open={excludeModalOpen}
+        onClose={handleExcludeClose}
+        actionType={PRODUCTS_STATES.REJECTED}
+        onUpdateTable={onUpdateTable}
+        selectedProducts={[
+          {
+            status: data.status as ProductStatusEnum,
             productName: data.productName,
             gtinCode: data.gtinCode,
             category: data.category,
