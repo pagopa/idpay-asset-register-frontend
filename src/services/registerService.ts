@@ -7,7 +7,7 @@ import {InstitutionsResponse} from "../api/generated/register/InstitutionsRespon
 import {InstitutionResponse} from "../api/generated/register/InstitutionResponse";
 import {UpdateResponseDTO} from "../api/generated/register/UpdateResponseDTO";
 import {ProductListDTO} from "../api/generated/register/ProductListDTO";
-import { CurrentStatusEnum } from "../api/generated/register/ProductsUpdateDTO";
+import { ProductStatusEnum } from "../api/generated/register/ProductStatus";
 
 export const uploadProductList = (
     csv: File,
@@ -99,7 +99,7 @@ export const getInstitutionById = async (
 
 export const setSupervisionedStatusList = async (
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
@@ -115,7 +115,7 @@ export const setSupervisionedStatusList = async (
  
  export const setApprovedStatusList = async (
      gtinCodes: Array<string>,
-     currentStatus: CurrentStatusEnum,
+     currentStatus: ProductStatusEnum,
      motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
@@ -129,7 +129,7 @@ export const setSupervisionedStatusList = async (
 };
  export const setWaitApprovedStatusList = async (
      gtinCodes: Array<string>,
-     currentStatus: CurrentStatusEnum,
+     currentStatus: ProductStatusEnum,
      motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {
@@ -144,7 +144,7 @@ export const setSupervisionedStatusList = async (
 
  export const setRejectedStatusList = async (
      gtinCodes: Array<string>,
-     currentStatus: CurrentStatusEnum,
+     currentStatus: ProductStatusEnum,
      motivation: string
 ): Promise<UpdateResponseDTO> => {
   try {

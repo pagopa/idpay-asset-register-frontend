@@ -1,4 +1,4 @@
-import {List, Divider, Box, Tooltip, Typography} from '@mui/material';
+import { List, Divider, Box, Tooltip, Typography } from '@mui/material';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +11,8 @@ import {
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
-import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
-import {statusChangeMessage} from "../../model/Product";
+import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
+import { statusChangeMessage } from '../../model/Product';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -30,7 +30,7 @@ type Props = {
 
 const callApprovedApi = async (
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ) => {
   try {
@@ -42,7 +42,7 @@ const callApprovedApi = async (
 
 const callRejectedApi = async (
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ) => {
   try {
@@ -55,7 +55,7 @@ const callRejectedApi = async (
 const handleOpenModal = (
   action: string,
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ) => {
   if (action === PRODUCTS_STATES.REJECTED) {
@@ -197,7 +197,7 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
 
 type ProductInfoRowsProps = {
   data: ProductDTO;
-  currentStatus: CurrentStatusEnum;
+  currentStatus: ProductStatusEnum;
   children?: React.ReactNode;
 };
 
@@ -208,52 +208,56 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const baseRows = getProductInfoRowsConfig(data, t);
 
   const rows =
-      user?.org_role !== USERS_TYPES.OPERATORE && Boolean(data?.statusChangeChronology?.length)
+    user?.org_role !== USERS_TYPES.OPERATORE && Boolean(data?.statusChangeChronology?.length)
       ? [
           ...baseRows,
           {
             renderCustom: () => {
               const chronology =
-                  ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
+                ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
 
               const renderEntry = (entry: any, idx: number) => {
                 const operator = entry?.role ? `operatore ${entry.role}` : 'operatore';
                 const dateLabel = entry?.updateDate
-                    ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
-                    : EMPTY_DATA;
+                  ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
+                  : EMPTY_DATA;
                 const motivationText = entry?.motivation?.trim() || EMPTY_DATA;
                 const header = `${operator} · ${dateLabel}`;
 
                 return (
-                    <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
-                      <Tooltip
-                          title={<Box component="span" sx={{ whiteSpace: 'pre-line' }}>{motivationText}</Box>}
-                          arrow
-                      >
-                        <Box component="span">
-                          <Typography variant='body1' color="text.secondary">
-                            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-                          </Typography>
-                          <Typography variant='body2' fontWeight="fontWeightMedium">
-                            {truncateString(motivationText, MAX_LENGTH_DETAILL_PR)}
-                          </Typography>
+                  <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
+                    <Tooltip
+                      title={
+                        <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
+                          {motivationText}
                         </Box>
-                      </Tooltip>
-                    </Box>
+                      }
+                      arrow
+                    >
+                      <Box component="span">
+                        <Typography variant="body1" color="text.secondary">
+                          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                        </Typography>
+                        <Typography variant="body2" fontWeight="fontWeightMedium">
+                          {truncateString(motivationText, MAX_LENGTH_DETAILL_PR)}
+                        </Typography>
+                      </Box>
+                    </Tooltip>
+                  </Box>
                 );
               };
 
               return (
-                  <ProductInfoRow
-                      label={t('pages.productDetail.motivation')}
-                      labelVariant="overline"
-                      sx={{ marginTop: 3 }}
-                      value={
-                        <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2}}>
-                          {chronology.map(renderEntry)}
-                        </Box>
-                      }
-                  />
+                <ProductInfoRow
+                  label={t('pages.productDetail.motivation')}
+                  labelVariant="overline"
+                  sx={{ marginTop: 3 }}
+                  value={
+                    <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                      {chronology.map(renderEntry)}
+                    </Box>
+                  }
+                />
               );
             },
           } as RowConfig & { renderCustom?: () => JSX.Element },
@@ -298,7 +302,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
     await handleOpenModal(
       PRODUCTS_STATES.APPROVED,
       [data.gtinCode],
-      CurrentStatusEnum.APPROVED,
+      ProductStatusEnum.APPROVED,
       EMPTY_DATA
     );
     setRestoreDialogOpen(false);
@@ -334,7 +338,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
         <ProductStatusChip status={data.status} />
-        <ProductInfoRows data={data} currentStatus={CurrentStatusEnum.UPLOADED}>
+        <ProductInfoRows data={data} currentStatus={ProductStatusEnum.UPLOADED}>
           <ProductActionButtons
             isInvitaliaUser={isInvitaliaUser}
             status={data.status}
@@ -355,18 +359,30 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
       <ProductModal
         open={excludeModalOpen}
         onClose={handleExcludeClose}
-        gtinCodes={[data.gtinCode]}
         actionType={PRODUCTS_STATES.REJECTED}
-        status={CurrentStatusEnum.REJECTED}
         onUpdateTable={onUpdateTable}
+        selectedProducts={[
+          {
+            status: data.status ? data.status : ProductStatusEnum.UPLOADED,
+            productName: data.productName,
+            gtinCode: data.gtinCode,
+            category: data.category,
+          },
+        ]}
       />
       <ProductModal
         open={supervisionModalOpen}
         onClose={handleSupervisionClose}
-        gtinCodes={[data.gtinCode]}
         actionType={PRODUCTS_STATES.SUPERVISED}
-        status={CurrentStatusEnum.SUPERVISED}
         onUpdateTable={onUpdateTable}
+        selectedProducts={[
+          {
+            status: data.status ? data.status : ProductStatusEnum.UPLOADED,
+            productName: data.productName,
+            gtinCode: data.gtinCode,
+            category: data.category,
+          },
+        ]}
       />
     </Box>
   );

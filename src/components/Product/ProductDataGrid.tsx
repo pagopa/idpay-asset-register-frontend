@@ -38,7 +38,7 @@ import {
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { Institution } from '../../model/Institution';
 import { setWaitApprovedStatusList } from '../../services/registerService';
-import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
+import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import ProductDetail from './ProductDetail';
 import ProductModal from './ProductModal';
@@ -269,7 +269,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const callWaitApprovedApi = async (
     gtinCodes: Array<string>,
-    currentStatus: CurrentStatusEnum,
+    currentStatus: ProductStatusEnum,
     motivation: string
   ) => {
     try {
@@ -281,7 +281,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const handleConfirmRestore = async (
     gtinCodes: Array<string>,
-    currentStatus: CurrentStatusEnum,
+    currentStatus: ProductStatusEnum,
     motivation: string
   ) => {
     await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
@@ -464,20 +464,16 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       <ProductModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        gtinCodes={selected}
         actionType={modalAction}
-        status={
-          (tableData.find((row) => row.gtinCode === selected[0])
-            ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED
-        }
         onUpdateTable={updaDataTable}
-        selectedProducts={
-          tableData.filter((row) => row.gtinCode && selected.includes(row.gtinCode)) as Array<{
-            productName?: string;
-            gtinCode: string;
-            category?: string;
-          }>
-        }
+        selectedProducts={tableData
+          .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
+          .map((row) => ({
+            status: row.status as ProductStatusEnum,
+            productName: row.productName,
+            gtinCode: row.gtinCode,
+            category: row.category,
+          }))}
       />
 
       <ProductConfirmDialog
@@ -492,7 +488,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         onConfirm={async () => {
           const currentStatus =
             (tableData.find((row) => row.gtinCode === selected[0])
-              ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED;
+              ?.status as unknown as ProductStatusEnum) || ProductStatusEnum.SUPERVISED;
           try {
             await handleConfirmRestore(selected, currentStatus, '');
             updaDataTable();

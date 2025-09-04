@@ -16,7 +16,8 @@ import { RegisterUploadResponseDTO } from './generated/register/RegisterUploadRe
 import { CsvDTO } from './generated/register/CsvDTO';
 import {InstitutionsResponse} from "./generated/register/InstitutionsResponse";
 import {ProductDTO} from "./generated/register/ProductDTO";
-import { CurrentStatusEnum, ProductsUpdateDTO } from './generated/register/ProductsUpdateDTO';
+import { ProductStatusEnum } from './generated/register/ProductStatus';
+import { ProductsUpdateDTO } from './generated/register/ProductsUpdateDTO';
 import { ProductListDTO } from './generated/register/ProductListDTO';
 
 const rawFetchApi = buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION);
@@ -272,7 +273,7 @@ export const RegisterApi = {
 
 setSupervisionedStatusList: async (
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
@@ -292,7 +293,7 @@ setSupervisionedStatusList: async (
 
  setApprovedStatusList: async (
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
@@ -311,7 +312,7 @@ setSupervisionedStatusList: async (
 },
 setWaitApprovedStatusList: async (
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
@@ -331,7 +332,7 @@ setWaitApprovedStatusList: async (
 
  setRejectedStatusList: async (
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {

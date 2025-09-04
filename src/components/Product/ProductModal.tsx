@@ -14,18 +14,21 @@ import CloseIcon from '@mui/icons-material/Close';
 import FlagIcon from '@mui/icons-material/Flag';
 import { useTranslation } from 'react-i18next';
 import { setSupervisionedStatusList, setRejectedStatusList } from '../../services/registerService';
-import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
+import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import { PRODUCTS_STATES } from '../../utils/constants';
 
 interface ProductModalProps {
   open: boolean;
   onClose: () => void;
-  gtinCodes: Array<string>;
   productName?: string;
   actionType?: string;
-  status: CurrentStatusEnum;
   onUpdateTable?: () => void;
-  selectedProducts?: Array<{ productName?: string; gtinCode: string; category?: string }>;
+  selectedProducts?: Array<{
+    status: ProductStatusEnum;
+    productName?: string;
+    gtinCode: string;
+    category?: string;
+  }>;
 }
 
 const buttonStyle = {
@@ -112,9 +115,7 @@ const modalStyles = {
 const ProductModal: React.FC<ProductModalProps> = ({
   open,
   onClose,
-  gtinCodes,
   actionType,
-  status,
   onUpdateTable,
   selectedProducts,
 }) => {
@@ -152,6 +153,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   const config = MODAL_CONFIG[actionType as keyof typeof MODAL_CONFIG];
+
+  if (!selectedProducts || selectedProducts.length === 0) {
+    return null;
+  }
+  const gtinCodes = selectedProducts.map((p) => p.gtinCode);
+  // selected with same status always
+  const status: ProductStatusEnum = selectedProducts[0].status;
 
   const callSupervisionedApi = async () => {
     if (!motivation.trim()) {
