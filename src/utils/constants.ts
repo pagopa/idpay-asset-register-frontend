@@ -49,3 +49,5 @@ export const maxLengthEmail: number = 40;
 export const maxLengthOverviewProd: number = 75;
 export const maxLengthOverviewInvit: number = 140;
 export const MAX_LENGTH_DETAILL_PR: number = 40;
+export const MAX_LENGTH_TABLE_PR: number = 15;
+
