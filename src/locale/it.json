@@ -282,7 +282,7 @@
     },
      "waitApproved": {
       "title": "Approva",
-      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
       "listTitle": "Richiedi approvazione",
       "reasonLabel": "Richiedi approvazione",
       "reasonPlaceholder": "Richiedi approvazione",
@@ -293,7 +293,7 @@
     },
       "approved": {
       "title": "Approva",
-      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
       "listTitle": "Richiedi approvazione",
       "reasonLabel": "Richiedi approvazione",
       "reasonPlaceholder": "Richiedi approvazione",

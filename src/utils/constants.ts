@@ -1,5 +1,5 @@
 export const testToken = '';
-
+ 
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
 export const MOCK_USER = IS_DEVELOP;
 export const LOG_REDUX_ACTIONS = IS_DEVELOP;
@@ -34,8 +34,11 @@ export enum USERS_TYPES {
   INVITALIA_L2 = 'invitalia_admin'
 }
 
-export const L1 = 'L1';
-export const L2 = 'L2';
+export enum USERS_NAMES {
+  OPERATORE = 'operatore',
+  INVITALIA_L1 = 'L1',
+  INVITALIA_L2 = 'L2'
+}
 
 export const EMPTY_DATA = '-';
 export const MAX_TABLE_HEIGHT = 700;

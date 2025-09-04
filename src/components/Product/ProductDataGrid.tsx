@@ -16,6 +16,7 @@ import {
   EMPTY_DATA,
   USERS_TYPES,
   PRODUCTS_STATES,
+  USERS_NAMES,
 } from '../../utils/constants';
 import {
   batchIdSelector,
@@ -486,7 +487,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           selected.length
         })`}
         title={t('invitaliaModal.waitApproved.listTitle')}
-        message={t('invitaliaModal.waitApproved.description')}
+        message={t('invitaliaModal.waitApproved.description', { L2: USERS_NAMES.INVITALIA_L2 })}
         onCancel={() => setRestoreDialogOpen(false)}
         onConfirm={async () => {
           const currentStatus =
