@@ -1,4 +1,3 @@
-import i18n from '@pagopa/selfcare-common-frontend/lib/locale/locale-utils';
 import {
   buildFetchApi,
   extractResponse,
@@ -63,8 +62,8 @@ const onRedirectToLogin = () =>
       techDescription: 'token expired or not valid',
       toNotify: false,
       blocking: false,
-      displayableTitle: i18n.t('session.expired.title'),
-      displayableDescription: i18n.t('session.expired.message'),
+      displayableTitle: 'Ti stiamo reindirizzando alla pagina di accesso',
+      displayableDescription: 'La tua sessione è scaduta',
     })
   );
 
