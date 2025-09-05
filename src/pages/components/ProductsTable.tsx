@@ -7,14 +7,15 @@ import {
   Typography,
   Checkbox,
   TableRow,
+  Tooltip,
 } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import EprelLinks from '../../components/Product/EprelLinks';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
-import { fetchUserFromLocalStorage } from '../../helpers';
+import { PRODUCTS_STATES, USERS_TYPES, MAX_LENGTH_TABLE_PR } from '../../utils/constants';
+import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import EnhancedTableHead from '../../components/Product/EnhancedTableHead';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import ProductStatusChip from '../../components/Product/ProductStatusChip';
@@ -170,7 +171,10 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           <Checkbox
             color="primary"
             checked={selected.includes(row.gtinCode)}
-            disabled={row.status !== PRODUCTS_STATES.UPLOADED}
+            disabled={
+              (user?.org_role === USERS_TYPES.INVITALIA_L2 && row.status !== PRODUCTS_STATES.WAIT_APPROVED)
+              || (user?.org_role === USERS_TYPES.INVITALIA_L1 && row.status !== PRODUCTS_STATES.UPLOADED)
+            }
             onChange={() => handleCheckboxClick(row.gtinCode)}
             onClick={(e) => e.stopPropagation()}
           />
@@ -182,16 +186,32 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <Typography variant="body2">{row?.category ?? emptyData}</Typography>
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <Typography variant="body2">{getProducer(row?.organizationId) ?? emptyData}</Typography>
+        <Tooltip title={getProducer(row?.organizationId) ?? emptyData} arrow>
+          <Typography variant="body2">
+            {truncateString(getProducer(row?.organizationId) ?? emptyData, MAX_LENGTH_TABLE_PR)}
+          </Typography>
+        </Tooltip>
       </TableCell>
       <TableCell sx={cellCenterSx}>
-        <EprelLinks row={row} />
+        <Tooltip title={row?.eprelCode ?? emptyData} arrow>
+          <span>
+            <EprelLinks row={row} />
+          </span>
+        </Tooltip>
       </TableCell>
       <TableCell sx={cellCenterSx}>
-        <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>
+        <Tooltip title={row?.gtinCode ?? emptyData} arrow>
+          <Typography variant="body2">
+            {truncateString(row?.gtinCode ?? emptyData, MAX_LENGTH_TABLE_PR)}
+          </Typography>
+        </Tooltip>
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>
+        <Tooltip title={row?.batchName ?? emptyData} arrow>
+          <Typography variant="body2">
+            {truncateString(row?.batchName ?? emptyData, MAX_LENGTH_TABLE_PR)}
+          </Typography>
+        </Tooltip>
       </TableCell>
       <TableCell sx={cellLeftSx}>
         <ProductStatusChip status={row?.status ?? emptyData ?? ''} />

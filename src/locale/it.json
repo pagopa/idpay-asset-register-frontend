@@ -154,12 +154,6 @@
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
       "loading": "Caricamento dati ...",
-      "buttonModal":{
-        "confirmSupervisioned":"Conferma",
-        "cancelSupervisioned":"Annulla",
-        "supervised":"Contrassegna",
-        "rejected":"Escludi"
-      },
       "filterLabels": {
         "category": "Categoria",
         "status": "Stato",
@@ -194,19 +188,19 @@
         "SUPERVISED": "Da controllare",
         "APPROVED": "Approvato",
         "REJECTED": "Escluso",
-        "lavatrici": "WASHINGMACHINES",
-        "asciugatrici": "TUMBLEDRYERS",
-        "forni": "OVENS",
-        "cappe": "RANGEHOODS",
-        "lavastoviglie": "DISHWASHERS",
-        "lavasciuga": "WASHERDRIERS",
-        "frigoriferi": "REFRIGERATINGAPPL",
-        "piani cottura": "COOKINGHOBS",
-        "approvato": "APPROVED",
-        "da controllare": "SUPERVISED",
-        "escluso": "REJECTED",
-        "da revisionare": "UPLOADED",
-        "da approvare": "WAIT_APPROVED"
+        "Lavatrici": "WASHINGMACHINES",
+        "Asciugatrici": "TUMBLEDRYERS",
+        "Forni": "OVENS",
+        "Cappe": "RANGEHOODS",
+        "Lavastoviglie": "DISHWASHERS",
+        "Lavasciuga": "WASHERDRIERS",
+        "Frigoriferi": "REFRIGERATINGAPPL",
+        "Piani cottura": "COOKINGHOBS",
+        "Approvato": "APPROVED",
+        "Da controllare": "SUPERVISED",
+        "Escluso": "REJECTED",
+        "Da revisionare": "UPLOADED",
+        "Da approvare": "WAIT_APPROVED"
       },
       "tablePaginationFrom": "di",
       "emptyList": "Nessun record corrisponde alla ricerca.",
@@ -236,7 +230,7 @@
       "energyClass": "Classe energetica",
       "countryOfProduction": "Paese di produzione",
       "capacity": "Capacità",
-      "motivation": "Motivazione",
+      "motivation": "Note interne",
       "restoreProductTitle": "Ripristina prodotto",
       "restoreProductMessage": "Vuoi ripristinare il prodotto segnalato in precedenza?"
     }
@@ -265,44 +259,48 @@
   },
   "invitaliaModal": {
     "supervised": {
-      "title": "Contrassegna un prodotto",
-      "description": "Segnala eventuali anomalie su un prodotto: verrà messo in pausa e potrai successivamente decidere se escluderlo o ripristinarlo.",
-      "listTitle": "I prodotti segnalati sono i seguenti:",
-      "reasonLabel": "Motivo segnalazione",
-      "reasonPlaceholder": "Motivo segnalazione",
+      "title": "Richiedi ulteriori controlli ai produttori",
+      "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali conrolli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'.",
+      "listTitle": "Perchè stai richidendo ulteriori controlli?",
+      "reasonLabel": "Nota interna",
+      "reasonPlaceholder": "Nota interna",
       "buttonText": "Da controllare",
-      "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Annulla"
+      "buttonTextConfirm": "Richiedi controlli",
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio"
     },
     "rejected": {
       "title": "Richiedi esclusione",
-      "description": "Una volta escluso, il prodotto non sarà più visibile agli utenti finali. L'operazione è tracciata e, se necessario, revocabile.",
-      "listTitle": "I prodotti esclusi sono i seguenti:",
-      "reasonLabel": "Motivo esclusione",
-      "reasonPlaceholder": "Motivo esclusione",
+      "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori ricevernanno la notifica dell'esclusione.",
+      "listTitle": "Perchè stai escludendo i prodotti?",
+      "reasonLabel": "Nota interna",
+      "reasonPlaceholder": "Nota interna",
       "buttonText": "Escludi",
-      "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Escludi"
+      "buttonTextConfirm": "Escludi",
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio"
     },
      "waitApproved": {
       "title": "Approva",
-      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
       "listTitle": "Richiedi approvazione",
       "reasonLabel": "Richiedi approvazione",
       "reasonPlaceholder": "Richiedi approvazione",
       "buttonText": "Approva",
       "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Annulla"
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio"
     },
       "approved": {
       "title": "Approva",
-      "description": "Stai per inoltrare i prodotti selezionati a L2 per l'approvazione finale. Quando L2 avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
       "listTitle": "Richiedi approvazione",
       "reasonLabel": "Richiedi approvazione",
       "reasonPlaceholder": "Richiedi approvazione",
       "buttonText": "Approva",
       "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Annulla"
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio"
     }
   },
   "chip": {
