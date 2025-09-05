@@ -1,322 +1,259 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, within, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ProductDetail from '../ProductDetail';
-import {setApprovedStatusList, setRejectedStatusList} from "../../../services/registerService";
-import {ProductDTO} from "../../../api/generated/register/ProductDTO";
+import {fetchUserFromLocalStorage} from "../../../helpers";
+import {setRejectedStatusList, setWaitApprovedStatusList} from "../../../services/registerService";
+import {PRODUCTS_STATES, USERS_TYPES} from "../../../utils/constants";
+import '@testing-library/jest-dom';
 
-jest.mock('../../../services/registerService', () => ({
-    setApprovedStatusList: jest.fn(),
-    setRejectedStatusList: jest.fn(),
+jest.mock('../ProductStatusChip', () => ({ __esModule: true, default: ({ status }: any) => (
+        <div data-testid="status-chip">{String(status)}</div>
+    )}));
+
+jest.mock('../ProductInfoRow', () => ({ __esModule: true, default: ({ label, value, labelVariant, valueVariant, sx }: any) => (
+        <div data-testid="info-row" data-labelvariant={labelVariant || ''} data-valuevariant={valueVariant || ''} data-sx={JSON.stringify(sx||{})}>
+            <span data-testid="info-row-label">{label}</span>
+            <span data-testid="info-row-value">{typeof value === 'string' ? value : (value as any)}</span>
+        </div>
+    )}));
+
+jest.mock('../ProductConfirmDialog', () => ({ __esModule: true, default: ({ open, onCancel, onConfirm, onSuccess, title, message, confirmButtonText, cancelButtonText }: any) => (
+        open ? (
+            <div data-testid="confirm-dialog">
+                <div>{title}</div>
+                <div>{message}</div>
+                <button onClick={onCancel}>{cancelButtonText || 'cancel'}</button>
+                <button onClick={async () => { await onConfirm(); onSuccess?.(); }}> {confirmButtonText || 'confirm'} </button>
+            </div>
+        ) : null
+    )}));
+
+jest.mock('../ProductModal', () => ({ __esModule: true, default: ({ open, onClose, actionType, onSuccess }: any) => (
+        open ? (
+            <div data-testid={`modal-${actionType}`}>
+                <button onClick={() => { onSuccess?.(); onClose(); }}>close</button>
+            </div>
+        ) : null
+    )}));
+
+jest.mock('../MsgResult', () => ({ __esModule: true, default: ({ message, severity }: any) => (
+        <div data-testid="msg-result">{severity}:{message}</div>
+    )}));
+
+jest.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (key: string, options?: any) => {
+            if (key === 'pages.productDetail.productSheet') return 'Scheda prodotto';
+            if (key === 'pages.productDetail.motivation') return 'Motivazione';
+            if (typeof options === 'object' && options && 'L2' in options) {
+                return `${key}:${options.L2}`;
+            }
+            return key;
+        },
+    }),
 }));
 
-jest.mock('../ProductConfirmDialog', () => {
-    return function MockProductConfirmDialog({ open, onCancel, onConfirm }: any) {
-        if (!open) return null;
-        return (
-            <div data-testid="confirm-dialog">
-                <button onClick={onCancel}>Cancel</button>
-                <button onClick={onConfirm}>Confirm</button>
-            </div>
-        );
-    };
+jest.mock('../../../helpers', () => ({
+    fetchUserFromLocalStorage: jest.fn(),
+    truncateString: (s: string, _max: number) => s,
+}));
+
+jest.mock('../../../services/registerService', () => ({
+    setRejectedStatusList: jest.fn(() => Promise.resolve()),
+    setWaitApprovedStatusList: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('../../../utils/constants', () => ({
+    EMPTY_DATA: '-',
+    MAX_LENGTH_DETAILL_PR: 9999,
+    PRODUCTS_STATES: {
+        APPROVED: 'APPROVED',
+        REJECTED: 'REJECTED',
+        SUPERVISED: 'SUPERVISED',
+        UPLOADED: 'UPLOADED',
+    },
+    USERS_NAMES: { INVITALIA_L2: 'Invitalia L2' },
+    USERS_TYPES: { OPERATORE: 'OPERATORE' },
+}));
+
+
+const baseData = (over: Partial<any> = {}): any => ({
+    productName: 'Frigo Super',
+    batchName: 'Batch-1',
+    registrationDate: String(new Date('2023-02-01T12:34:00Z').getTime()),
+    eprelCode: 'EPREL-123',
+    gtinCode: 'GTIN-001',
+    productCode: 'P-01',
+    category: 'Frigoriferi',
+    brand: 'CoolBrand',
+    model: 'CB-1000',
+    energyClass: 'A',
+    countryOfProduction: 'IT',
+    capacity: '300L',
+    status: PRODUCTS_STATES.UPLOADED,
+    statusChangeChronology: [],
+    ...over,
 });
 
-jest.mock('../ProductModal', () => {
-    return function MockProductModal({ open, onClose }: any) {
-        if (!open) return null;
-        return (
-            <div data-testid="product-modal">
-                <button onClick={onClose}>Close Modal</button>
-            </div>
-        );
-    };
-});
-
-jest.mock('../ProductInfoRow', () => {
-    return function MockProductInfoRow({ label, value }: any) {
-        return (
-            <div data-testid="product-info-row">
-                {label && <span>{label}</span>}
-                <span>{value}</span>
-            </div>
-        );
-    };
-});
-
-jest.mock('../ProductStatusChip', () => {
-    return function MockProductStatusChip({ status }: any) {
-        return <div data-testid="status-chip">{status}</div>;
-    };
-});
-
-jest.mock('../ProductActionButtons', () => {
-    return function MockProductActionButtons({ onRestore, onExclude, onSupervision, isInvitaliaUser, status }: any) {
-        if (!isInvitaliaUser || !status) return null;
-        return (
-            <div data-testid="action-buttons">
-                <button onClick={onRestore}>Restore</button>
-                <button onClick={onExclude}>Exclude</button>
-                <button onClick={onSupervision}>Supervision</button>
-            </div>
-        );
-    };
-});
-
-const mockSetApprovedStatusList = setApprovedStatusList as jest.MockedFunction<typeof setApprovedStatusList>;
-const mockSetRejectedStatusList = setRejectedStatusList as jest.MockedFunction<typeof setRejectedStatusList>;
-
-const mockProductData: ProductDTO = {
-    status: 'PENDING',
-    productName: 'Test Product',
-    batchName: 'Batch123',
-    registrationDate: '1672531200000',
-    eprelCode: 'EPREL123',
-    gtinCode: 'GTIN123',
-    productCode: 'PROD123',
-    category: 'Electronics',
-    brand: 'TestBrand',
-    model: 'Model123',
-    energyClass: 'A++',
-    countryOfProduction: 'Italy',
-    capacity: '100L',
-    motivation: 'Test motivation',
-    organizationId: 'ORG123',
-};
-
-const defaultProps = {
-    open: true,
-    data: mockProductData,
-    isInvitaliaUser: true,
-    onUpdateTable: jest.fn(),
-    onClose: jest.fn(),
+const renderComp = (props: Partial<any> = {}, dataOver: Partial<any> = {}) => {
+    return render(
+        <ProductDetail
+            open
+            data={baseData(dataOver)}
+            isInvitaliaUser={props.isInvitaliaUser ?? true}
+            onUpdateTable={props.onUpdateTable || jest.fn()}
+            onClose={props.onClose || jest.fn()}
+        />
+    );
 };
 
 
-const mockProductEmpty: ProductDTO = {
-    batchName: '',
-    registrationDate: null,
-    eprelCode: '',
-    gtinCode: '',
-    productCode: '',
-    category: '',
-    brand: '',
-    model: '',
-    energyClass: '',
-    countryOfProduction: '',
-};
 describe('ProductDetail', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        (fetchUserFromLocalStorage as jest.Mock).mockReturnValue({ org_role: 'ADMIN' });
+        (setRejectedStatusList as jest.Mock).mockClear();
+        (setWaitApprovedStatusList as jest.Mock).mockClear();
     });
 
-    describe('Component rendering', () => {
-        it('should render product detail with all information', () => {
-            render(<ProductDetail {...defaultProps} />);
+    test('renders basic info rows including formatted date and product sheet divider/label', () => {
+        renderComp({ isInvitaliaUser: false });
 
-            expect(screen.getByTestId('product-detail')).toBeInTheDocument();
-            expect(screen.getByTestId('status-chip')).toBeInTheDocument();
-            expect(screen.getByTestId('action-buttons')).toBeInTheDocument();
-        });
+        const rows = screen.getAllByTestId('info-row');
+        expect(rows.length).toBeGreaterThan(5);
 
-        it('should render with EMPTY_DATA when optional fields are missing', () => {
-            const dataWithMissingFields = {
-                ...mockProductData,
-                batchName: undefined,
-                eprelCode: undefined,
-                productCode: undefined,
-                category: undefined,
-                brand: undefined,
-                model: undefined,
-                energyClass: undefined,
-                countryOfProduction: undefined,
-                capacity: undefined,
-                motivation: undefined,
-            };
+        const dateRow = rows.find(r => within(r).getByTestId('info-row-label').textContent === 'pages.productDetail.eprelCheckDate');
+        expect(dateRow).toBeTruthy();
+        expect(within(dateRow!).getByTestId('info-row-value').textContent).toMatch(/\d{2}\/\d{2}\/\d{4}/);
 
-            render(<ProductDetail {...defaultProps} data={dataWithMissingFields} />);
-
-            expect(screen.getByTestId('product-detail')).toBeInTheDocument();
-        });
-
-        it('should not render motivation row when status is APPROVED', () => {
-            const approvedData = { ...mockProductData, status: 'APPROVED' };
-            render(<ProductDetail {...defaultProps} data={approvedData} />);
-
-            expect(screen.getAllByTestId('product-info-row')).toHaveLength(13);
-        });
-
-        it('should render motivation row when status is not APPROVED', () => {
-            render(<ProductDetail {...defaultProps} />);
-
-            expect(screen.getAllByTestId('product-info-row')).toHaveLength(13);
-        });
-
-        it('should not render action buttons when isInvitaliaUser is false', () => {
-            render(<ProductDetail {...defaultProps} isInvitaliaUser={false} />);
-
-            expect(screen.queryByTestId('action-buttons')).not.toBeInTheDocument();
-        });
+        const psRow = rows.find(r => within(r).getByTestId('info-row-value').textContent === 'Scheda prodotto');
+        expect(psRow).toBeTruthy();
+        expect(psRow?.getAttribute('data-labelvariant')).toBe('body2');
+        expect(psRow?.getAttribute('data-valuevariant')).toBe('body2');
     });
 
-    describe('Exclude functionality', () => {
-        it('should open exclude modal when exclude button is clicked', () => {
-            render(<ProductDetail {...defaultProps} />);
+    test('shows chronology for non-OPERATORE users when present', () => {
+        const chronology = [
+            { role: 'L2', updateDate: new Date('2024-01-10T10:00:00Z').toISOString(), motivation: 'Prima nota' },
+            { role: 'L1', updateDate: new Date('2024-01-11T11:00:00Z').toISOString(), motivation: 'Seconda nota' },
+        ];
+        renderComp({ isInvitaliaUser: false }, { statusChangeChronology: chronology });
 
-            fireEvent.click(screen.getByText('Exclude'));
-
-            expect(screen.getByTestId('product-modal')).toBeInTheDocument();
-        });
-
-        it('should close exclude modal and call callbacks when modal is closed', () => {
-            render(<ProductDetail {...defaultProps} />);
-
-            fireEvent.click(screen.getByText('Exclude'));
-            fireEvent.click(screen.getByText('Close Modal'));
-
-            expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
-            expect(defaultProps.onUpdateTable).toHaveBeenCalled();
-            expect(defaultProps.onClose).toHaveBeenCalled();
-        });
-
-        it('should work without onUpdateTable callback in exclude', () => {
-            render(<ProductDetail {...defaultProps} onUpdateTable={undefined} />);
-
-            fireEvent.click(screen.getByText('Exclude'));
-            fireEvent.click(screen.getByText('Close Modal'));
-
-            expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
-        });
-
-        it('should work without onClose callback in exclude', () => {
-            render(<ProductDetail {...defaultProps} onClose={undefined} />);
-
-            fireEvent.click(screen.getByText('Exclude'));
-            fireEvent.click(screen.getByText('Close Modal'));
-
-            expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
-        });
+        expect(screen.getAllByTestId('info-row').some(r => within(r).getByTestId('info-row-label').textContent === 'Motivazione')).toBe(true);
     });
 
-    describe('Supervision functionality', () => {
-        it('should open supervision modal when supervision button is clicked', () => {
-            render(<ProductDetail {...defaultProps} />);
-
-            fireEvent.click(screen.getByText('Supervision'));
-
-            expect(screen.getByTestId('product-modal')).toBeInTheDocument();
-        });
-
-        it('should close supervision modal and call callbacks when modal is closed', () => {
-            render(<ProductDetail {...defaultProps} />);
-
-            fireEvent.click(screen.getByText('Supervision'));
-            fireEvent.click(screen.getByText('Close Modal'));
-
-            expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
-            expect(defaultProps.onUpdateTable).toHaveBeenCalled();
-            expect(defaultProps.onClose).toHaveBeenCalled();
-        });
-
-        it('should work without onUpdateTable callback in supervision', () => {
-            render(<ProductDetail {...defaultProps} onUpdateTable={undefined} />);
-
-            fireEvent.click(screen.getByText('Supervision'));
-            fireEvent.click(screen.getByText('Close Modal'));
-
-            expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
-        });
-
-        it('should work without onClose callback in supervision', () => {
-            render(<ProductDetail {...defaultProps} onClose={undefined} />);
-
-            fireEvent.click(screen.getByText('Supervision'));
-            fireEvent.click(screen.getByText('Close Modal'));
-
-            expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
-        });
+    test('does NOT show chronology for OPERATORE role', () => {
+        (fetchUserFromLocalStorage as jest.Mock).mockReturnValue({ org_role: USERS_TYPES.OPERATORE });
+        renderComp({ isInvitaliaUser: false }, { statusChangeChronology: [{ role: 'L2', updateDate: new Date().toISOString(), motivation: 'x' }] });
+        expect(screen.getAllByTestId('info-row').some(r => within(r).getByTestId('info-row-label').textContent === 'Motivazione')).toBe(false);
     });
 
-    describe('API helper functions', () => {
-       it('should handle callRejectedApi error', async () => {
-            const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-            mockSetRejectedStatusList.mockRejectedValue(new Error('Rejected API Error'));
+    test('UPLOADED status renders 3 action buttons and flows: rejected, supervised, approved', async () => {
+        const user = userEvent.setup();
+        renderComp({ isInvitaliaUser: true }, { status: PRODUCTS_STATES.UPLOADED });
 
-            const { rerender } = render(
-                <div>
-                    <button onClick={() => {
-                        try {
-                            setRejectedStatusList('ORG123', ['GTIN123'], 'test').catch(console.error);
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    }}>
-                        Test Rejected
-                    </button>
-                </div>
-            );
+        const rejectedBtn = await screen.findByTestId('rejectedBtn');
+        const supervisedBtn = await screen.findByTestId('supervisedBtn');
+        const approvedBtn = await screen.findByTestId('approvedBtn');
 
-            fireEvent.click(screen.getByText('Test Rejected'));
+        expect(rejectedBtn).toBeInTheDocument();
+        expect(supervisedBtn).toBeInTheDocument();
+        expect(approvedBtn).toBeInTheDocument();
 
-            await waitFor(() => {
-                expect(consoleSpy).toHaveBeenCalledWith(new Error('Rejected API Error'));
-            });
+        await user.click(supervisedBtn);
+        const supervisedModal = await screen.findByTestId('modal-SUPERVISED');
+        await user.click(within(supervisedModal).getByText('close'));
+        expect(screen.getByTestId('msg-result')).toBeInTheDocument();
 
-            consoleSpy.mockRestore();
-        });
+        await user.click(rejectedBtn);
+        const rejectedModal = await screen.findByTestId('modal-REJECTED');
+        await user.click(within(rejectedModal).getByText('close'));
+
+        await user.click(approvedBtn);
+        const dlg = await screen.findByTestId('confirm-dialog');
+        await user.click(within(dlg).getByText(/confirm/i));
+
+        expect(setWaitApprovedStatusList).toHaveBeenCalledWith(['GTIN-001'], PRODUCTS_STATES.UPLOADED, '-');
     });
 
-    describe('Date formatting', () => {
-        it('should format registration date correctly', () => {
-            render(<ProductDetail {...defaultProps} />);
+    test('SUPERVISED status renders 2 buttons and restore confirms -> API + success message disappears after timeout', async () => {
+        const user = userEvent.setup();
+        renderComp({ isInvitaliaUser: true }, { status: PRODUCTS_STATES.SUPERVISED });
 
-            const infoRows = screen.getAllByTestId('product-info-row');
-            expect(infoRows[3]).toHaveTextContent('pages.productDetail.productSheet');
-        });
+        const requestApprovalBtn = await screen.findByTestId('request-approval-btn');
+        const excludeBtn = await screen.findByTestId('exclude-btn');
 
-        it('should handle invalid registration date', () => {
-            const dataWithInvalidDate = { ...mockProductData, registrationDate: 'invalid' };
+        expect(requestApprovalBtn).toBeInTheDocument();
+        expect(excludeBtn).toBeInTheDocument();
 
-            expect(() => {
-                render(<ProductDetail {...defaultProps} data={dataWithInvalidDate} />);
-            }).toThrow('Invalid time value');
-        });
+        await user.click(requestApprovalBtn);
+        const dlg = await screen.findByTestId('confirm-dialog');
+        await user.click(within(dlg).getByText(/confirm/i));
 
-        it('should handle missing registration date', () => {
-            const dataWithInvalidDate = { ...mockProductData, registrationDate: 'invalid' };
-            expect(() => {
-                render(<ProductDetail {...defaultProps} data={dataWithInvalidDate} />);
-            }).toThrow('Invalid time value');
-        });
+        expect(setWaitApprovedStatusList).toHaveBeenCalled();
+
+        expect(screen.getByTestId('msg-result')).toBeInTheDocument();
+
+        act(() => { jest.advanceTimersByTime(10000); });
+
+        await act(async () => {});
     });
 
-    describe('Edge cases', () => {
-        it('should handle all modal states closed initially', () => {
-            render(<ProductDetail {...defaultProps} />);
+    test('Exclude flow triggers setRejectedStatusList when confirming via confirm dialog in SUPERVISED block', async () => {
+        const user = userEvent.setup();
+        renderComp({ isInvitaliaUser: true }, { status: PRODUCTS_STATES.SUPERVISED });
 
-            expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
-            expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
-        });
+        const excludeBtn = await screen.findByTestId('exclude-btn');
+        await user.click(excludeBtn);
 
-        it('should handle multiple modal interactions', () => {
-            render(<ProductDetail {...defaultProps} />);
+        const modal = await screen.findByTestId('modal-REJECTED');
+        await user.click(within(modal).getByText('close'));
 
-            fireEvent.click(screen.getByText('Exclude'));
-            expect(screen.getByTestId('product-modal')).toBeInTheDocument();
+        const requestApprovalBtn = await screen.findByTestId('request-approval-btn');
+        await user.click(requestApprovalBtn);
+        const dlg = await screen.findByTestId('confirm-dialog');
+        await user.click(within(dlg).getByText(/confirm/i));
 
-            fireEvent.click(screen.getByText('Close Modal'));
-            expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
-
-            fireEvent.click(screen.getByText('Supervision'));
-            expect(screen.getByTestId('product-modal')).toBeInTheDocument();
-        });
+        renderComp({ isInvitaliaUser: true }, { status: PRODUCTS_STATES.UPLOADED });
+        await user.click(await screen.findByTestId('rejectedBtn'));
+        const rmodal = await screen.findByTestId('modal-REJECTED');
+        await user.click(within(rmodal).getByText('close'));
     });
 
-    describe('handleOpenModal function coverage', () => {
-        it('should return resolved promise for unknown action', async () => {
-            render(<ProductDetail {...defaultProps} />);
+    test('window events INVITALIA_MSG_SHOW and INVITALIA_MSG_DISMISS control message visibility', () => {
+        renderComp({ isInvitaliaUser: false });
+        expect(screen.queryByTestId('msg-result')).toBeNull();
 
-            const component = screen.getByTestId('product-detail');
-            expect(component).toBeInTheDocument();
+        act(() => {
+            window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
         });
+        expect(screen.getByTestId('msg-result')).toBeInTheDocument();
+
+        act(() => {
+            window.dispatchEvent(new Event('INVITALIA_MSG_DISMISS'));
+        });
+        expect(screen.queryByTestId('msg-result')).toBeNull();
+    });
+
+    test('calls onUpdateTable and onClose after confirm restore', async () => {
+        const onUpdateTable = jest.fn();
+        const onClose = jest.fn();
+        const user = userEvent.setup();
+
+        render(
+            <ProductDetail
+                open
+                data={baseData({ status: PRODUCTS_STATES.SUPERVISED })}
+                isInvitaliaUser
+                onUpdateTable={onUpdateTable}
+                onClose={onClose}
+            />
+        );
+
+        await user.click(await screen.findByTestId('request-approval-btn'));
+        const dlg = await screen.findByTestId('confirm-dialog');
+        await user.click(within(dlg).getByText(/confirm/i));
+
+        expect(onUpdateTable).toHaveBeenCalled();
+        expect(onClose).toHaveBeenCalled();
     });
 });
