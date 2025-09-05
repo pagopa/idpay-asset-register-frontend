@@ -44,6 +44,7 @@ import ProductDetail from './ProductDetail';
 import ProductModal from './ProductModal';
 import NewFilter from './NewFilter';
 import ProductConfirmDialog from './ProductConfirmDialog';
+import MsgResult from './MsgResult';
 
 type ProductDataGridProps = {
   organizationId: string;
@@ -92,6 +93,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [ready, setReady] = useState(false);
   const [adminDefaultApplied, setAdminDefaultApplied] = useState(false);
+  const [showMsg, setShowMsg] = useState(false);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
@@ -286,7 +288,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   ) => {
     await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
     setRestoreDialogOpen(false);
-    window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
+    setShowMsg(true);
   };
 
   const handleOpenModal = (action: string) => {
@@ -474,6 +476,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             gtinCode: row.gtinCode,
             category: row.category,
           }))}
+        onSuccess={() => setShowMsg(true)}
       />
 
       <ProductConfirmDialog
@@ -497,6 +500,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             console.error('Errore durante il ripristino:', error);
           }
         }}
+        onSuccess={() => setShowMsg(true)}
       />
 
       <DetailDrawer
@@ -534,6 +538,24 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
         setFiltering={setFiltering}
       />
+      {showMsg && (
+        <Box
+          sx={{
+            position: 'absolute',
+            right: 12,
+            bottom: 32,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            zIndex: 9999,
+          }}
+        >
+          <MsgResult
+            severity="success"
+            message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
+          />
+        </Box>
+      )}
     </>
   );
 };

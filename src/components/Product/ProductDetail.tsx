@@ -1,6 +1,6 @@
 import { List, Divider, Box, Tooltip, Typography, Button } from '@mui/material';
 import { format } from 'date-fns';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import FlagIcon from '@mui/icons-material/Flag';
 import {
@@ -19,6 +19,7 @@ import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
 import ProductStatusChip from './ProductStatusChip';
+import MsgResult from './MsgResult';
 
 type Props = {
   open: boolean;
@@ -311,8 +312,28 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
+  const [showMsg, setShowMsg] = useState(false);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => setShowMsg(false), 10000);
+    return () => clearTimeout(timeout);
+  }, []);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const handleShow = () => setShowMsg(true);
+    const handleDismiss = () => setShowMsg(false);
+    window.addEventListener('INVITALIA_MSG_SHOW', () => {
+      handleShow();
+      const timeout = setTimeout(() => handleDismiss(), 10000);
+      return () => clearTimeout(timeout);
+    });
+    window.addEventListener('INVITALIA_MSG_DISMISS', handleDismiss);
+    return () => {
+      window.removeEventListener('INVITALIA_MSG_SHOW', handleShow);
+      window.removeEventListener('INVITALIA_MSG_DISMISS', handleDismiss);
+    };
+  }, []);
 
   const handleConfirmRestore = async () => {
     await handleOpenModal(
@@ -349,6 +370,8 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
       onClose();
     }
   };
+
+  const handleSuccess = () => setShowMsg(true);
 
   return (
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
@@ -434,6 +457,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         })}
         onCancel={() => setRestoreDialogOpen(false)}
         onConfirm={handleConfirmRestore}
+        onSuccess={handleSuccess}
       />
       <ProductModal
         open={supervisionModalOpen}
@@ -448,6 +472,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
             category: data.category,
           },
         ]}
+        onSuccess={handleSuccess}
       />
       <ProductModal
         open={excludeModalOpen}
@@ -462,7 +487,26 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
             category: data.category,
           },
         ]}
+        onSuccess={handleSuccess}
       />
+
+      {showMsg && (
+        <Box
+          sx={{
+            position: 'absolute',
+            right: 12,
+            bottom: 32,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <MsgResult
+            severity="success"
+            message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
+          />
+        </Box>
+      )}
     </Box>
   );
 }

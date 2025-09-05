@@ -29,6 +29,7 @@ interface ProductModalProps {
     gtinCode: string;
     category?: string;
   }>;
+  onSuccess?: () => void;
 }
 
 const buttonStyle = {
@@ -118,6 +119,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   actionType,
   onUpdateTable,
   selectedProducts,
+  onSuccess,
 }) => {
   const [motivation, setReason] = useState('');
   const [motivationTouched, setMotivationTouched] = useState(false);
@@ -172,6 +174,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
       if (onUpdateTable) {
         onUpdateTable();
       }
+      if (typeof onSuccess === 'function') {
+        onSuccess();
+      }
     } catch (error) {
       console.error(error);
       onClose();
@@ -188,6 +193,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
       await setRejectedStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
+      }
+      if (typeof onSuccess === 'function') {
+        onSuccess();
       }
     } catch (error) {
       console.error(error);
