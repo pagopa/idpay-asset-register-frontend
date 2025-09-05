@@ -1,5 +1,4 @@
 export const testToken = '';
- 
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
 export const MOCK_USER = IS_DEVELOP;
 export const LOG_REDUX_ACTIONS = IS_DEVELOP;
@@ -49,4 +48,7 @@ export const maxLengthEmail: number = 40;
 export const maxLengthOverviewProd: number = 75;
 export const maxLengthOverviewInvit: number = 140;
 export const MAX_LENGTH_DETAILL_PR: number = 40;
-export const MAX_LENGTH_TABLE_PR: number = 15;
+export const MIN_LENGTH_TABLE_PR: number = 15;
+export const MAX_LENGTH_TABLE_PR: number = 45;
+
+
