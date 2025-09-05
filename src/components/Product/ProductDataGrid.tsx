@@ -16,6 +16,7 @@ import {
   EMPTY_DATA,
   USERS_TYPES,
   PRODUCTS_STATES,
+  USERS_NAMES,
 } from '../../utils/constants';
 import {
   batchIdSelector,
@@ -37,12 +38,13 @@ import {
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { Institution } from '../../model/Institution';
 import { setWaitApprovedStatusList } from '../../services/registerService';
-import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
+import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
 import ProductDetail from './ProductDetail';
 import ProductModal from './ProductModal';
 import NewFilter from './NewFilter';
 import ProductConfirmDialog from './ProductConfirmDialog';
+import MsgResult from './MsgResult';
 
 type ProductDataGridProps = {
   organizationId: string;
@@ -57,7 +59,11 @@ const buttonStyle = {
 };
 
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, children }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
+  const batchName = useSelector(batchNameSelector);
+  const batchId = useSelector(batchIdSelector);
+  const institutions = useSelector(institutionListSelector);
   const institution = useSelector(institutionSelector);
   const [order, setOrder] = useState<Order>('asc');
   const [refreshKey, setRefreshKey] = useState(0);
@@ -82,15 +88,12 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
   const [filtersDrawerOpened, setFiltersDrawerOpened] = useState<boolean>(false);
   const [selected, setSelected] = useState<Array<string>>([]);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>(undefined);
-  const [ready, setReady] = useState(false);
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
-  const batchName = useSelector(batchNameSelector);
-  const batchId = useSelector(batchIdSelector);
-  const institutions = useSelector(institutionListSelector);
-  const { t } = useTranslation();
+  const [ready, setReady] = useState(false);
+  const [adminDefaultApplied, setAdminDefaultApplied] = useState(false);
+  const [showMsg, setShowMsg] = useState(false);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
@@ -131,8 +134,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       page,
       rowsPerPage,
       sortKey,
-      categoryFilter ? t(`pages.products.categories.${categoryFilter?.toLowerCase()}`) : '',
-      statusFilter ? t(`pages.products.categories.${statusFilter?.toLowerCase()}`) : '',
+      categoryFilter ? t(`pages.products.categories.${categoryFilter}`) : '',
+      statusFilter ? t(`pages.products.categories.${statusFilter}`) : '',
       eprelCodeFilter,
       gtinCodeFilter,
       undefined,
@@ -183,16 +186,13 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [isInvitaliaUser, institution?.institutionId]);
 
   useEffect(() => {
-    if (!filtering) {
-      return;
+    if (isInvitaliaAdmin && !adminDefaultApplied) {
+      setStatusFilter('Da approvare');
+      setAdminDefaultApplied(true);
     }
 
     if (isInvitaliaAdmin || isInvitaliaUser) {
       void fetchInstitutions();
-    }
-
-    if (isInvitaliaAdmin) {
-      setStatusFilter('Da approvare');
     }
 
     setLoading(true);
@@ -210,7 +210,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         setBatchFilterItems([]);
       })
       .finally(() => setLoading(false));
-  }, [filtering, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
+  }, [ready, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
 
   useEffect(() => {
     if (!ready) {
@@ -222,13 +222,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [ready, page, orderBy, order, rowsPerPage]);
 
   useEffect(() => {
-    if (!ready) {
+    if (!ready || !filtering) {
       return;
     }
-    if (filtering) {
-      setLoading(true);
-      callProductsApi(organizationId);
-    }
+    setLoading(true);
+    callProductsApi(organizationId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, filtering]);
 
@@ -273,7 +271,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const callWaitApprovedApi = async (
     gtinCodes: Array<string>,
-    currentStatus: CurrentStatusEnum,
+    currentStatus: ProductStatusEnum,
     motivation: string
   ) => {
     try {
@@ -285,12 +283,12 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const handleConfirmRestore = async (
     gtinCodes: Array<string>,
-    currentStatus: CurrentStatusEnum,
+    currentStatus: ProductStatusEnum,
     motivation: string
   ) => {
     await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
     setRestoreDialogOpen(false);
-    window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
+    setShowMsg(true);
   };
 
   const handleOpenModal = (action: string) => {
@@ -381,24 +379,26 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
         <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
           <Button
+            data-testid="rejectedBtn"
             variant="outlined"
             color="error"
             sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModal(PRODUCTS_STATES.REJECTED.toLowerCase())}
+            onClick={() => handleOpenModal(PRODUCTS_STATES.REJECTED)}
           >
             {`${t('invitaliaModal.rejected.buttonText')} (${selected.length})`}
           </Button>
           <Button
+            data-testid="supervisedBtn"
             color="primary"
             variant="outlined"
             sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED.toLowerCase())}
+            onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED)}
           >
             <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
           </Button>
 
           <Button
-            data-testid="approvedBtn"
+            data-testid="waitApprovedBtn"
             color="primary"
             variant="contained"
             sx={{ ...buttonStyle }}
@@ -406,8 +406,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               selected.length === 0 ||
               selected.some(
                 (gtinCode) =>
-                  tableData.find((row) => row.gtinCode === gtinCode)?.status?.toLowerCase() ===
-                  PRODUCTS_STATES.WAIT_APPROVED.toLowerCase()
+                  String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
+                  PRODUCTS_STATES.WAIT_APPROVED
               )
             }
             onClick={() => handleOpenModal(PRODUCTS_STATES.WAIT_APPROVED)}
@@ -466,17 +466,17 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       <ProductModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        gtinCodes={selected}
-        selectedProducts={selected.map((gtinCode) => {
-          const prod = tableData.find((row) => row.gtinCode === gtinCode);
-          return { productName: prod?.productName, gtinCode, category: prod?.category };
-        })}
         actionType={modalAction}
-        status={
-          (tableData.find((row) => row.gtinCode === selected[0])
-            ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED
-        }
         onUpdateTable={updaDataTable}
+        selectedProducts={tableData
+          .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
+          .map((row) => ({
+            status: row.status as ProductStatusEnum,
+            productName: row.productName,
+            gtinCode: row.gtinCode,
+            category: row.category,
+          }))}
+        onSuccess={() => setShowMsg(true)}
       />
 
       <ProductConfirmDialog
@@ -486,12 +486,12 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           selected.length
         })`}
         title={t('invitaliaModal.waitApproved.listTitle')}
-        message={t('invitaliaModal.waitApproved.description')}
+        message={t('invitaliaModal.waitApproved.description', { L2: USERS_NAMES.INVITALIA_L2 })}
         onCancel={() => setRestoreDialogOpen(false)}
         onConfirm={async () => {
           const currentStatus =
             (tableData.find((row) => row.gtinCode === selected[0])
-              ?.status as unknown as CurrentStatusEnum) || CurrentStatusEnum.SUPERVISED;
+              ?.status as unknown as ProductStatusEnum) || ProductStatusEnum.SUPERVISED;
           try {
             await handleConfirmRestore(selected, currentStatus, '');
             updaDataTable();
@@ -500,6 +500,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             console.error('Errore durante il ripristino:', error);
           }
         }}
+        onSuccess={() => setShowMsg(true)}
       />
 
       <DetailDrawer
@@ -537,6 +538,24 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
         setFiltering={setFiltering}
       />
+      {showMsg && (
+        <Box
+          sx={{
+            position: 'absolute',
+            right: 12,
+            bottom: 32,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            zIndex: 9999,
+          }}
+        >
+          <MsgResult
+            severity="success"
+            message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
+          />
+        </Box>
+      )}
     </>
   );
 };

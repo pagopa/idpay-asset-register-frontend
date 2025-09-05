@@ -1,17 +1,25 @@
-import { List, Divider, Box, Tooltip } from '@mui/material';
+import { List, Divider, Box, Tooltip, Typography, Button } from '@mui/material';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EMPTY_DATA, MAX_LENGTH_DETAILL_PR, PRODUCTS_STATES } from '../../utils/constants';
-import { truncateString } from '../../helpers';
+import FlagIcon from '@mui/icons-material/Flag';
+import {
+  EMPTY_DATA,
+  MAX_LENGTH_DETAILL_PR,
+  PRODUCTS_STATES,
+  USERS_NAMES,
+  USERS_TYPES,
+} from '../../utils/constants';
+import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { setApprovedStatusList, setRejectedStatusList } from '../../services/registerService';
-import { CurrentStatusEnum } from '../../api/generated/register/ProductsUpdateDTO';
+import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
+import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
+import { statusChangeMessage } from '../../model/Product';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
 import ProductStatusChip from './ProductStatusChip';
-import ProductActionButtons from './ProductActionButtons';
+import MsgResult from './MsgResult';
 
 type Props = {
   open: boolean;
@@ -21,10 +29,11 @@ type Props = {
   onClose?: () => void;
   children?: React.ReactNode;
 };
-
+{
+  /* TODO for L2 
 const callApprovedApi = async (
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ) => {
   try {
@@ -33,10 +42,12 @@ const callApprovedApi = async (
     console.error(error);
   }
 };
+*/
+}
 
 const callRejectedApi = async (
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ) => {
   try {
@@ -46,16 +57,28 @@ const callRejectedApi = async (
   }
 };
 
+const callWaitApprovedApi = async (
+  gtinCodes: Array<string>,
+  currentStatus: ProductStatusEnum,
+  motivation: string
+) => {
+  try {
+    await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const handleOpenModal = (
   action: string,
   gtinCodes: Array<string>,
-  currentStatus: CurrentStatusEnum,
+  currentStatus: ProductStatusEnum,
   motivation: string
 ) => {
   if (action === PRODUCTS_STATES.REJECTED) {
     return callRejectedApi(gtinCodes, currentStatus, motivation);
   } else if (action === PRODUCTS_STATES.APPROVED) {
-    return callApprovedApi(gtinCodes, currentStatus, motivation);
+    return callWaitApprovedApi(gtinCodes, currentStatus, motivation);
   }
   return Promise.resolve();
 };
@@ -191,32 +214,65 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
 
 type ProductInfoRowsProps = {
   data: ProductDTO;
-  currentStatus: CurrentStatusEnum;
+  currentStatus: ProductStatusEnum;
   children?: React.ReactNode;
 };
 
-function ProductInfoRows({ data, currentStatus, children }: ProductInfoRowsProps) {
+function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const { t } = useTranslation();
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   const baseRows = getProductInfoRowsConfig(data, t);
 
   const rows =
-    currentStatus !== CurrentStatusEnum.APPROVED
+    user?.org_role !== USERS_TYPES.OPERATORE && Boolean(data?.statusChangeChronology?.length)
       ? [
           ...baseRows,
           {
-            label: t('pages.productDetail.motivation'),
-            value: (data as any)?.motivation || EMPTY_DATA,
             renderCustom: () => {
-              const motivationValue = (data as any)?.motivation || EMPTY_DATA;
-              const truncatedMotivation = truncateString(motivationValue, MAX_LENGTH_DETAILL_PR);
+              const chronology =
+                ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
+
+              const renderEntry = (entry: any, idx: number) => {
+                const operator = entry?.role ? `operatore ${entry.role}` : 'operatore';
+                const dateLabel = entry?.updateDate
+                  ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
+                  : EMPTY_DATA;
+                const motivationText = entry?.motivation?.trim() || EMPTY_DATA;
+                const header = `${operator} · ${dateLabel}`;
+
+                return (
+                  <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
+                    <Tooltip
+                      title={
+                        <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
+                          {motivationText}
+                        </Box>
+                      }
+                      arrow
+                    >
+                      <Box component="span">
+                        <Typography variant="body1" color="text.secondary">
+                          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                        </Typography>
+                        <Typography variant="body2" fontWeight="fontWeightMedium">
+                          {truncateString(motivationText, MAX_LENGTH_DETAILL_PR)}
+                        </Typography>
+                      </Box>
+                    </Tooltip>
+                  </Box>
+                );
+              };
+
               return (
                 <ProductInfoRow
                   label={t('pages.productDetail.motivation')}
+                  labelVariant="overline"
+                  sx={{ marginTop: 3 }}
                   value={
-                    <Tooltip title={motivationValue} arrow>
-                      <span>{truncatedMotivation}</span>
-                    </Tooltip>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                      {chronology.map(renderEntry)}
+                    </Box>
                   }
                 />
               );
@@ -256,14 +312,34 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
+  const [showMsg, setShowMsg] = useState(false);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => setShowMsg(false), 10000);
+    return () => clearTimeout(timeout);
+  }, []);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const handleShow = () => setShowMsg(true);
+    const handleDismiss = () => setShowMsg(false);
+    window.addEventListener('INVITALIA_MSG_SHOW', () => {
+      handleShow();
+      const timeout = setTimeout(() => handleDismiss(), 10000);
+      return () => clearTimeout(timeout);
+    });
+    window.addEventListener('INVITALIA_MSG_DISMISS', handleDismiss);
+    return () => {
+      window.removeEventListener('INVITALIA_MSG_SHOW', handleShow);
+      window.removeEventListener('INVITALIA_MSG_DISMISS', handleDismiss);
+    };
+  }, []);
 
   const handleConfirmRestore = async () => {
     await handleOpenModal(
       PRODUCTS_STATES.APPROVED,
       [data.gtinCode],
-      CurrentStatusEnum.APPROVED,
+      data.status as ProductStatusEnum,
       EMPTY_DATA
     );
     setRestoreDialogOpen(false);
@@ -295,46 +371,142 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
     }
   };
 
+  const handleSuccess = () => setShowMsg(true);
+
   return (
     <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
       <List>
         <ProductStatusChip status={data.status} />
-        <ProductInfoRows data={data} currentStatus={CurrentStatusEnum.UPLOADED}>
-          <ProductActionButtons
-            isInvitaliaUser={isInvitaliaUser}
-            status={data.status}
-            onExclude={() => setExcludeModalOpen(true)}
-            onSupervision={() => setSupervisionModalOpen(true)}
-          />
+        <ProductInfoRows data={data} currentStatus={data.status as ProductStatusEnum}>
+          {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
+            <>
+              <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: 16,
+                    marginBottom: 2,
+                    width: '100%',
+                  }}
+                  data-testid="request-approval-btn"
+                  onClick={() => setRestoreDialogOpen(true)}
+                >
+                  {t('invitaliaModal.waitApproved.buttonTextConfirm')}
+                </Button>
+                <Button
+                  color="error"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: 16,
+                    marginBottom: 2,
+                    width: '100%',
+                  }}
+                  data-testid="exclude-btn"
+                  onClick={() => setExcludeModalOpen(true)}
+                >
+                  {t('invitaliaModal.rejected.buttonTextConfirm')}
+                </Button>
+              </Box>
+            </>
+          )}
+          {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
+            <>
+              <Box mt={2} display="flex" flexDirection="row" gap={2} sx={{ width: '100%' }}>
+                <Button
+                  data-testid="rejectedBtn"
+                  variant="outlined"
+                  color="error"
+                  sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
+                  onClick={() => setExcludeModalOpen(true)}
+                >
+                  {t('invitaliaModal.rejected.buttonText')}
+                </Button>
+                <Button
+                  data-testid="supervisedBtn"
+                  color="primary"
+                  variant="outlined"
+                  sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
+                  onClick={() => setSupervisionModalOpen(true)}
+                >
+                  <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}
+                </Button>
+                <Button
+                  data-testid="approvedBtn"
+                  color="primary"
+                  variant="contained"
+                  sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
+                  onClick={() => setRestoreDialogOpen(true)}
+                >
+                  {t('invitaliaModal.waitApproved.buttonText')}
+                </Button>
+              </Box>
+            </>
+          )}
         </ProductInfoRows>
       </List>
+
       <ProductConfirmDialog
         open={restoreDialogOpen}
-        cancelButtonText="Cancel"
-        confirmButtonText="Confirm"
-        title={t('pages.productDetail.restoreProductTitle')}
-        message={t('pages.productDetail.restoreProductMessage')}
+        cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
+        confirmButtonText={t('invitaliaModal.waitApproved.buttonTextConfirm')}
+        title={t('invitaliaModal.waitApproved.listTitle')}
+        message={t('invitaliaModal.waitApproved.description', {
+          L2: USERS_NAMES.INVITALIA_L2,
+        })}
         onCancel={() => setRestoreDialogOpen(false)}
         onConfirm={handleConfirmRestore}
-      />
-      <ProductModal
-        open={excludeModalOpen}
-        onClose={handleExcludeClose}
-        gtinCodes={[data.gtinCode]}
-        productName={data.productName}
-        actionType="rejected"
-        status={CurrentStatusEnum.REJECTED}
-        onUpdateTable={onUpdateTable}
+        onSuccess={handleSuccess}
       />
       <ProductModal
         open={supervisionModalOpen}
         onClose={handleSupervisionClose}
-        gtinCodes={[data.gtinCode]}
-        productName={data.productName}
-        actionType="supervised"
-        status={CurrentStatusEnum.SUPERVISED}
+        actionType={PRODUCTS_STATES.SUPERVISED}
         onUpdateTable={onUpdateTable}
+        selectedProducts={[
+          {
+            status: data.status as ProductStatusEnum,
+            productName: data.productName,
+            gtinCode: data.gtinCode,
+            category: data.category,
+          },
+        ]}
+        onSuccess={handleSuccess}
       />
+      <ProductModal
+        open={excludeModalOpen}
+        onClose={handleExcludeClose}
+        actionType={PRODUCTS_STATES.REJECTED}
+        onUpdateTable={onUpdateTable}
+        selectedProducts={[
+          {
+            status: data.status as ProductStatusEnum,
+            productName: data.productName,
+            gtinCode: data.gtinCode,
+            category: data.category,
+          },
+        ]}
+        onSuccess={handleSuccess}
+      />
+
+      {showMsg && (
+        <Box
+          sx={{
+            position: 'absolute',
+            right: 12,
+            bottom: 32,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <MsgResult
+            severity="success"
+            message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
+          />
+        </Box>
+      )}
     </Box>
   );
 }
