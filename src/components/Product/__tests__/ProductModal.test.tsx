@@ -1,28 +1,19 @@
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom';
 import ProductModal from '../ProductModal';
+import '@testing-library/jest-dom';
 
 jest.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string) => {
-            const translations: Record<string, string> = {
-                'invitaliaModal.supervised.title': 'Supervisiona prodotti',
-                'invitaliaModal.supervised.description': 'Descrizione supervisiona',
-                'invitaliaModal.supervised.listTitle': 'Lista prodotti supervisiona',
-                'invitaliaModal.supervised.reasonLabel': 'Motivo supervisiona',
-                'invitaliaModal.supervised.reasonPlaceholder': 'Inserisci motivo supervisiona',
-                'invitaliaModal.supervised.buttonText': 'Supervisiona',
-                'invitaliaModal.rejected.title': 'Rifiuta prodotti',
-                'invitaliaModal.rejected.description': 'Descrizione rifiuta',
-                'invitaliaModal.rejected.listTitle': 'Lista prodotti rifiuta',
-                'invitaliaModal.rejected.reasonLabel': 'Motivo rifiuta',
-                'invitaliaModal.rejected.reasonPlaceholder': 'Inserisci motivo rifiuta',
-                'invitaliaModal.rejected.buttonText': 'Rifiuta',
-            };
-            return translations[key] || key;
-        },
-    }),
+    useTranslation: () => ({ t: (k: string) => k }),
+}));
+
+jest.mock('../../../utils/constants', () => ({
+    PRODUCTS_STATES: { SUPERVISED: 'SUPERVISED', REJECTED: 'REJECTED' },
+}));
+
+jest.mock('../../../api/generated/register/ProductStatus', () => ({
+    ProductStatusEnum: { DRAFT: 'DRAFT' },
 }));
 
 jest.mock('../../../services/registerService', () => ({
@@ -30,365 +21,232 @@ jest.mock('../../../services/registerService', () => ({
     setRejectedStatusList: jest.fn(),
 }));
 
-jest.mock('../../../utils/constants', () => {
-    const actual = jest.requireActual('../../../utils/constants');
-    return {
-        ...actual,
-        MAX_LENGTH_DETAILL_PR: 50,
+import {
+    setSupervisionedStatusList,
+    setRejectedStatusList,
+} from '../../../services/registerService';
+
+const mockSetSupervisionedStatusList = setSupervisionedStatusList as unknown as jest.Mock;
+const mockSetRejectedStatusList = setRejectedStatusList as unknown as jest.Mock;
+
+const renderModal = (props?: Partial<React.ComponentProps<typeof ProductModal>>) => {
+    const onClose = jest.fn();
+    const onUpdateTable = jest.fn();
+
+    const defaultProps: React.ComponentProps<typeof ProductModal> = {
+        open: true,
+        onClose,
+        actionType: 'SUPERVISED',
+        onUpdateTable,
+        selectedProducts: [
+            { status: 'DRAFT' as any, productName: 'A', gtinCode: '001' },
+            { status: 'DRAFT' as any, productName: 'B', gtinCode: '002' },
+        ],
     };
-});
 
-
-jest.mock('../../../helpers', () => ({
-    truncateString: jest.fn((str: string, maxLength: number) =>
-        str.length > maxLength ? str.substring(0, maxLength) + '...' : str
-    ),
-}));
-
-import { setSupervisionedStatusList, setRejectedStatusList } from '../../../services/registerService';
-import { truncateString } from '../../../helpers';
-
-const mockSetSupervisionedStatusList = setSupervisionedStatusList as jest.MockedFunction<typeof setSupervisionedStatusList>;
-const mockSetRejectedStatusList = setRejectedStatusList as jest.MockedFunction<typeof setRejectedStatusList>;
-const mockTruncateString = truncateString as jest.MockedFunction<typeof truncateString>;
+    const allProps = { ...defaultProps, ...props };
+    const utils = render(<ProductModal {...allProps} />);
+    return { ...utils, onClose, onUpdateTable, props: allProps };
+};
 
 describe('ProductModal', () => {
-    const mockOnClose = jest.fn();
-    const mockOnUpdateTable = jest.fn();
-
-    const defaultProps = {
-        open: true,
-        onClose: mockOnClose,
-        gtinCodes: ['1234567890123'],
-    };
-
-    const supervisedStatus = 'SUPERVISED' as unknown as any;
-    const rejectedStatus = 'REJECTED' as unknown as any;
-
     beforeEach(() => {
         jest.clearAllMocks();
-        mockTruncateString.mockImplementation((str: string, maxLength: number) =>
-            str.length > maxLength ? str.substring(0, maxLength) + '...' : str
+    });
+
+    test('base render (SUPERVISED): headings/descriptions and char counter', () => {
+        renderModal({ actionType: 'SUPERVISED' });
+
+        expect(screen.getByText('invitaliaModal.supervised.title')).toBeInTheDocument();
+        expect(screen.getByText('invitaliaModal.supervised.description')).toBeInTheDocument();
+        expect(screen.getByText('invitaliaModal.supervised.listTitle')).toBeInTheDocument();
+
+        expect(
+            screen.getByRole('button', { name: /invitaliaModal\.supervised\.buttonTextConfirm/i })
+        ).toHaveTextContent('(2)');
+
+        expect(screen.getByText('0/200')).toBeInTheDocument();
+    });
+
+    test('validation: rejects empty reason on supervised confirm', async () => {
+        renderModal({ actionType: 'SUPERVISED' });
+
+        const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
+        await userEvent.click(confirm);
+
+        expect(await screen.findByText('Campo obbligatorio')).toBeInTheDocument();
+
+        expect(mockSetSupervisionedStatusList).not.toHaveBeenCalled();
+    });
+
+    test('char counter updates while typing', async () => {
+        renderModal({ actionType: 'SUPERVISED' });
+        const input = screen.getByRole('textbox') as HTMLInputElement;
+        await userEvent.type(input, 'hi');
+        expect(screen.getByText('2/200')).toBeInTheDocument();
+    });
+
+    test('successful SUPERVISED flow: calls API with mapped gtins and status, then closes and updates table', async () => {
+        mockSetSupervisionedStatusList.mockResolvedValueOnce(undefined);
+
+        const { onClose, onUpdateTable, props } = renderModal({ actionType: 'SUPERVISED' });
+
+        const input = screen.getByRole('textbox') as HTMLInputElement;
+        await userEvent.type(input, 'Valid reason');
+
+        const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
+        await userEvent.click(confirm);
+
+        await waitFor(() => {
+            expect(mockSetSupervisionedStatusList).toHaveBeenCalledWith(
+                props.selectedProducts!.map(p => p.gtinCode),
+                props.selectedProducts![0].status,
+                'Valid reason'
+            );
+            expect(onClose).toHaveBeenCalledTimes(1);
+            expect(onUpdateTable).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    test('error SUPERVISED flow: closes but does not update table', async () => {
+        mockSetSupervisionedStatusList.mockRejectedValueOnce(new Error('boom'));
+        const { onClose, onUpdateTable } = renderModal({ actionType: 'SUPERVISED' });
+
+        await userEvent.type(screen.getByRole('textbox'), 'Reason');
+        await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
+
+        await waitFor(() => {
+            expect(onClose).toHaveBeenCalledTimes(1);
+            expect(onUpdateTable).not.toHaveBeenCalled();
+        });
+    });
+
+
+    test('Cancel button and Close icon: call onClose and onUpdateTable', async () => {
+        const { onClose, onUpdateTable } = renderModal({ actionType: 'SUPERVISED' });
+
+        await userEvent.click(
+            screen.getByRole('button', { name: 'invitaliaModal.supervised.buttonTextCancel' })
         );
+        expect(onClose).toHaveBeenCalledTimes(1);
+        expect(onUpdateTable).toHaveBeenCalledTimes(1);
+
+        await userEvent.click(screen.getByRole('button', { name: /close/i }));
+        expect(onClose).toHaveBeenCalledTimes(2);
+        expect(onUpdateTable).toHaveBeenCalledTimes(2);
     });
 
-    describe('Basic Rendering', () => {
-        it('renders dialog when open is true', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
-            expect(screen.getByText('Supervisiona prodotti')).toBeInTheDocument();
-            expect(screen.getByText('0/200')).toBeInTheDocument();
-            expect(screen.getByLabelText('close')).toBeInTheDocument();
+    test('REJECTED branch: dedicated UI and setRejectedStatusList call', async () => {
+        mockSetRejectedStatusList.mockResolvedValueOnce(undefined);
+
+        const { onClose, onUpdateTable, props } = renderModal({
+            actionType: 'REJECTED',
+            selectedProducts: [{ status: 'DRAFT' as any, gtinCode: '001' }],
         });
 
-        it('does not render dialog when open is false', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} open={false} actionType="supervised" />);
-            expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-        });
-    });
+        expect(screen.getByText('invitaliaModal.rejected.title')).toBeInTheDocument();
+        expect(screen.getByRole('textbox')).toBeInTheDocument();
 
-    describe('ActionType: supervised', () => {
-        it('renders supervised content', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            expect(screen.getByText('Supervisiona prodotti')).toBeInTheDocument();
-            expect(screen.getByText('Descrizione supervisiona')).toBeInTheDocument();
-            expect(screen.getByText('Lista prodotti supervisiona')).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: 'Supervisiona' })).toBeInTheDocument();
-        });
+        await userEvent.type(screen.getByRole('textbox'), 'Reject reason');
+        await userEvent.click(
+            screen.getByRole('button', { name: 'invitaliaModal.rejected.buttonTextConfirm' })
+        );
 
-        it('disables button when motivation is empty, enables when provided', async () => {
-            const user = userEvent.setup();
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            const btn = screen.getByRole('button', { name: 'Supervisiona' });
-            expect(btn).toBeDisabled();
-            await user.type(screen.getByRole('textbox'), 'Motivo');
-            expect(btn).toBeEnabled();
-        });
-
-        it('calls setSupervisionedStatusList with correct args and closes, then updates table', async () => {
-            const user = userEvent.setup();
-            mockSetSupervisionedStatusList.mockResolvedValue(undefined);
-            render(
-                <ProductModal
-                    status={supervisedStatus}
-                    {...defaultProps}
-                    actionType="supervised"
-                    onUpdateTable={mockOnUpdateTable}
-                />
+        await waitFor(() => {
+            expect(mockSetRejectedStatusList).toHaveBeenCalledWith(
+                props.selectedProducts!.map(p => p.gtinCode),
+                props.selectedProducts![0].status,
+                'Reject reason'
             );
-            await user.type(screen.getByRole('textbox'), 'Test motivation');
-            await user.click(screen.getByRole('button', { name: 'Supervisiona' }));
-            expect(mockSetSupervisionedStatusList).toHaveBeenCalledWith(['1234567890123'], supervisedStatus, 'Test motivation');
-            expect(mockOnClose).toHaveBeenCalled();
-            expect(mockOnUpdateTable).toHaveBeenCalled();
-        });
-
-        it('handles API error (logs error and closes)', async () => {
-            const user = userEvent.setup();
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-            mockSetSupervisionedStatusList.mockRejectedValue(new Error('API Error'));
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            await user.type(screen.getByRole('textbox'), 'Test motivation');
-            await user.click(screen.getByRole('button', { name: 'Supervisiona' }));
-            await waitFor(() => {
-                expect(consoleErrorSpy).toHaveBeenCalled();
-                expect(mockOnClose).toHaveBeenCalled();
-            });
-            consoleErrorSpy.mockRestore();
+            expect(onClose).toHaveBeenCalled();
+            expect(onUpdateTable).toHaveBeenCalled();
         });
     });
 
-    describe('ActionType: rejected', () => {
-        it('renders rejected content', () => {
-            render(<ProductModal status={rejectedStatus} {...defaultProps} actionType="rejected" />);
-            expect(screen.getByText('Rifiuta prodotti')).toBeInTheDocument();
-            expect(screen.getByText('Descrizione rifiuta')).toBeInTheDocument();
-            expect(screen.getByText('Lista prodotti rifiuta')).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: 'Rifiuta' })).toBeInTheDocument();
-        });
+    test('error REJECTED flow: closes but does not update table', async () => {
+        mockSetRejectedStatusList.mockRejectedValueOnce(new Error('fail'));
+        const { onClose, onUpdateTable } = renderModal({ actionType: 'REJECTED' });
 
-        it('disables button when motivation is empty, enables when provided', async () => {
-            const user = userEvent.setup();
-            render(<ProductModal status={rejectedStatus} {...defaultProps} actionType="rejected" />);
-            const btn = screen.getByRole('button', { name: 'Rifiuta' });
-            expect(btn).toBeDisabled();
-            await user.type(screen.getByRole('textbox'), 'Motivo');
-            expect(btn).toBeEnabled();
-        });
+        await userEvent.type(screen.getByRole('textbox'), 'Reason');
+        await userEvent.click(
+            screen.getByRole('button', { name: 'invitaliaModal.rejected.buttonTextConfirm' })
+        );
 
-        it('calls setRejectedStatusList, closes first, then updates table', async () => {
-            const user = userEvent.setup();
-            mockSetRejectedStatusList.mockResolvedValue(undefined);
-            render(
-                <ProductModal
-                    status={rejectedStatus}
-                    {...defaultProps}
-                    actionType="rejected"
-                    onUpdateTable={mockOnUpdateTable}
-                />
-            );
-            await user.type(screen.getByRole('textbox'), 'Motivo rifiuto');
-            await user.click(screen.getByRole('button', { name: 'Rifiuta' }));
-            expect(mockOnClose).toHaveBeenCalled();
-            await waitFor(() => {
-                expect(mockSetRejectedStatusList).toHaveBeenCalledWith(['1234567890123'], rejectedStatus, 'Motivo rifiuto');
-                expect(mockOnUpdateTable).toHaveBeenCalled();
-            });
-        });
-
-        it('handles API error (logs error and closes)', async () => {
-            const user = userEvent.setup();
-            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-            mockSetRejectedStatusList.mockRejectedValue(new Error('API Error'));
-            render(<ProductModal status={rejectedStatus} {...defaultProps} actionType="rejected" />);
-            await user.type(screen.getByRole('textbox'), 'Motivo rifiuto');
-            await user.click(screen.getByRole('button', { name: 'Rifiuta' }));
-            await waitFor(() => {
-                expect(consoleErrorSpy).toHaveBeenCalled();
-                expect(mockOnClose).toHaveBeenCalled();
-            });
-            consoleErrorSpy.mockRestore();
+        await waitFor(() => {
+            expect(onClose).toHaveBeenCalledTimes(2);
+            expect(onUpdateTable).not.toHaveBeenCalled();
         });
     });
 
-    describe('Unknown/undefined actionType', () => {
-        it('renders without action buttons if actionType is unknown', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType={'unknown' as any} />);
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
-            expect(screen.queryByRole('button', { name: /Supervisiona|Rifiuta/i })).not.toBeInTheDocument();
-        });
-
-        it('renders without action buttons if actionType is undefined', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType={undefined} />);
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
-            expect(screen.queryByRole('button', { name: /Supervisiona|Rifiuta/i })).not.toBeInTheDocument();
-        });
+    test('validation with spaces only: sets touched and shows error', async () => {
+        renderModal({ actionType: 'REJECTED' });
+        await userEvent.type(screen.getByRole('textbox'), '   ');
+        await userEvent.click(
+            screen.getByRole('button', { name: 'invitaliaModal.rejected.buttonTextConfirm' })
+        );
+        expect(await screen.findByText('Campo obbligatorio')).toBeInTheDocument();
     });
 
-    describe('Product display logic', () => {
-        it('shows selectedProducts when provided', () => {
-            const selectedProducts = [
-                { productName: 'Product 1', gtinCode: '111', category: 'Cat 1' },
-                { productName: 'Product 2', gtinCode: '222', category: 'Cat 2' },
-            ];
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" selectedProducts={selectedProducts} />);
-            expect(screen.getByText('Product 1')).toBeInTheDocument();
-            expect(screen.getByText('Product 2')).toBeInTheDocument();
-        });
+    test('state resets when modal reopens (open prop effect)', async () => {
+        const { rerender } = render(
+            <ProductModal
+                open={true}
+                onClose={jest.fn()}
+                actionType="SUPERVISED"
+                onUpdateTable={jest.fn()}
+                selectedProducts={[{ status: 'DRAFT' as any, gtinCode: '001' }]}
+            />
+        );
 
-        it('shows category + GTIN when productName is empty', () => {
-            const selectedProducts = [
-                { productName: '', gtinCode: '111', category: 'Category 1' },
-                { productName: '   ', gtinCode: '222', category: 'Category 2' },
-            ];
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" selectedProducts={selectedProducts} />);
-            expect(screen.getByText('Category 1 Codice GTIN/EAN 111')).toBeInTheDocument();
-            expect(screen.getByText('Category 2 Codice GTIN/EAN 222')).toBeInTheDocument();
-        });
+        const input = screen.getByRole('textbox') as HTMLInputElement;
+        await userEvent.type(input, 'test');
+        expect(screen.getByText('4/200')).toBeInTheDocument();
 
-        it('shows just GTIN when both productName and category are empty', () => {
-            const selectedProducts = [
-                { productName: '', gtinCode: '111', category: '' },
-                { productName: undefined, gtinCode: '222', category: undefined },
-            ];
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" selectedProducts={selectedProducts} />);
-            expect(screen.getByText('Codice GTIN/EAN 111')).toBeInTheDocument();
-            expect(screen.getByText('Codice GTIN/EAN 222')).toBeInTheDocument();
-        });
+        rerender(
+            <ProductModal
+                open={false}
+                onClose={jest.fn()}
+                actionType="SUPERVISED"
+                onUpdateTable={jest.fn()}
+                selectedProducts={[{ status: 'DRAFT' as any, gtinCode: '001' }]}
+            />
+        );
 
-        it('truncates long product names in selectedProducts', () => {
-            const selectedProducts = [{ productName: 'Very long product name that should be truncated', gtinCode: '111' }];
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" selectedProducts={selectedProducts} />);
-            expect(mockTruncateString).toHaveBeenCalledWith('Very long product name that should be truncated', 50);
-        });
+        rerender(
+            <ProductModal
+                open={true}
+                onClose={jest.fn()}
+                actionType="SUPERVISED"
+                onUpdateTable={jest.fn()}
+                selectedProducts={[{ status: 'DRAFT' as any, gtinCode: '001' }]}
+            />
+        );
 
-        it('shows productName when selectedProducts not provided', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" productName="Single Product" />);
-            expect(screen.getByText('Single Product')).toBeInTheDocument();
-        });
-
-        it('shows GTIN codes when productName is empty and no selectedProducts', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" productName="" gtinCodes={['111', '222']} />);
-            expect(screen.getByText('Codice GTIN/EAN 111, 222')).toBeInTheDocument();
-        });
-
-        it('shows GTIN codes when productName is whitespace only', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" productName="   " gtinCodes={['111', '222']} />);
-            expect(screen.getByText('Codice GTIN/EAN 111, 222')).toBeInTheDocument();
-        });
-
-        it('truncates long single productName', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" productName="Very long single product name that should be truncated" />);
-            expect(mockTruncateString).toHaveBeenCalledWith('Very long single product name that should be truncated', 50);
-        });
-
-        it('handles empty selectedProducts array with productName fallback', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" selectedProducts={[]} productName="Fallback Product" />);
-            expect(screen.getByText('Fallback Product')).toBeInTheDocument();
-        });
+        const inputAfter = screen.getByRole('textbox') as HTMLInputElement;
+        expect(inputAfter).toHaveValue('');
+        expect(screen.getByText('0/200')).toBeInTheDocument();
     });
 
-    describe('TextField interactions', () => {
-        it('updates motivation and counter', async () => {
-            const user = userEvent.setup();
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            const tf = screen.getByRole('textbox');
-            await user.type(tf, 'New motivation');
-            expect(tf).toHaveValue('New motivation');
-            expect(screen.getByText('14/200')).toBeInTheDocument();
-        });
 
-        it('respects maxLength 200', async () => {
-            const user = userEvent.setup();
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            const tf = screen.getByRole('textbox');
-            const longText = 'a'.repeat(250);
-            await user.type(tf, longText);
-            expect(tf.getAttribute('maxlength')).toBe('200');
-        });
+    test('returns null when selectedProducts is missing or empty', () => {
+        const { container: c1 } = render(
+            <ProductModal open={true} onClose={jest.fn()} actionType="SUPERVISED" />
+        );
+        expect(c1.firstChild).toBeNull();
 
-        it('shows correct character count', async () => {
-            const user = userEvent.setup();
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            const tf = screen.getByRole('textbox');
-            await user.type(tf, '12345');
-            expect(screen.getByText('5/200')).toBeInTheDocument();
-        });
-
-        it('clears motivation when modal reopens', () => {
-            const { rerender } = render(<ProductModal status={supervisedStatus} {...defaultProps} open={false} actionType="supervised" />);
-            rerender(<ProductModal status={supervisedStatus} {...defaultProps} open={true} actionType="supervised" />);
-            expect(screen.getByRole('textbox')).toHaveValue('');
-        });
+        const { container: c2 } = render(
+            <ProductModal
+                open={true}
+                onClose={jest.fn()}
+                actionType="SUPERVISED"
+                selectedProducts={[]}
+            />
+        );
+        expect(c2.firstChild).toBeNull();
     });
 
-    describe('Close button', () => {
-        it('calls onClose when close icon clicked', async () => {
-            const user = userEvent.setup();
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            await user.click(screen.getByLabelText('close'));
-            expect(mockOnClose).toHaveBeenCalled();
-        });
-
-        it('calls onUpdateTable if provided when close icon clicked', async () => {
-            const user = userEvent.setup();
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" onUpdateTable={mockOnUpdateTable} />);
-            await user.click(screen.getByLabelText('close'));
-            expect(mockOnClose).toHaveBeenCalled();
-            expect(mockOnUpdateTable).toHaveBeenCalled();
-        });
-    });
-
-    describe('API calls without onUpdateTable', () => {
-        it('handles supervised call without onUpdateTable', async () => {
-            const user = userEvent.setup();
-            mockSetSupervisionedStatusList.mockResolvedValue(undefined);
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            await user.type(screen.getByRole('textbox'), 'Motivo');
-            await user.click(screen.getByRole('button', { name: 'Supervisiona' }));
-            expect(mockSetSupervisionedStatusList).toHaveBeenCalled();
-            expect(mockOnClose).toHaveBeenCalled();
-        });
-
-        it('handles rejected call without onUpdateTable', async () => {
-            const user = userEvent.setup();
-            mockSetRejectedStatusList.mockResolvedValue(undefined);
-            render(<ProductModal status={rejectedStatus} {...defaultProps} actionType="rejected" />);
-            await user.type(screen.getByRole('textbox'), 'Motivo');
-            await user.click(screen.getByRole('button', { name: 'Rifiuta' }));
-            expect(mockOnClose).toHaveBeenCalled();
-            await waitFor(() => expect(mockSetRejectedStatusList).toHaveBeenCalled());
-        });
-    });
-
-    describe('Edge cases', () => {
-        it('handles multiple GTIN codes', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" gtinCodes={['111', '222', '333']} productName="" />);
-            expect(screen.getByText('Codice GTIN/EAN 111, 222, 333')).toBeInTheDocument();
-        });
-
-        it('handles single GTIN in array', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" gtinCodes={['111']} productName="" />);
-            expect(screen.getByText('Codice GTIN/EAN 111')).toBeInTheDocument();
-        });
-
-        it('handles empty GTIN array', () => {
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" gtinCodes={[]} productName="" />);
-            expect(screen.getByText('Supervisiona prodotti')).toBeInTheDocument();
-        });
-
-        it('renders with minimal required props', () => {
-            const minimalProps = { open: true, onClose: mockOnClose, gtinCodes: ['123'] };
-            render(<ProductModal status={supervisedStatus} {...minimalProps} />);
-            expect(screen.getByRole('dialog')).toBeInTheDocument();
-        });
-
-        it('handles mixed selectedProducts cases', () => {
-            const selectedProducts = [
-                { productName: 'Product 1', gtinCode: '111', category: 'Cat1' },
-                { productName: '', gtinCode: '222', category: 'Cat2' },
-                { productName: 'Product 3', gtinCode: '333' },
-                { productName: '', gtinCode: '444' },
-            ];
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" selectedProducts={selectedProducts} />);
-            expect(screen.getByText('Product 1')).toBeInTheDocument();
-            expect(screen.getByText('Cat2 Codice GTIN/EAN 222')).toBeInTheDocument();
-            expect(screen.getByText('Product 3')).toBeInTheDocument();
-            expect(screen.getByText('Codice GTIN/EAN 444')).toBeInTheDocument();
-        });
-
-        it('submits with different motivation lengths', async () => {
-            const user = userEvent.setup();
-            mockSetSupervisionedStatusList.mockResolvedValue(undefined);
-            render(<ProductModal status={supervisedStatus} {...defaultProps} actionType="supervised" />);
-            const tf = screen.getByRole('textbox');
-            const btn = screen.getByRole('button', { name: 'Supervisiona' });
-            await user.type(tf, 'a');
-            expect(btn).toBeEnabled();
-            await user.clear(tf);
-            await user.type(tf, 'This is a longer motivation text');
-            expect(btn).toBeEnabled();
-            expect(screen.getByText('Supervisiona prodotti')).toBeInTheDocument();
-        });
+    test('renders without actionType: shows textbox', () => {
+        renderModal({ actionType: undefined as any });
+        expect(screen.getByRole('textbox')).toBeInTheDocument();
     });
 });

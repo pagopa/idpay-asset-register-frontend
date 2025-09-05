@@ -12,7 +12,7 @@ export const useErrorHandling = (t: any) => {
     };
 
     const showMissingFileError = () => {
-        setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.missingFileDescription'));
+        setAlertDescription(t('pages.addProducts.form.fileUpload.fileUploadError.invalidTypeDescription'));
     };
 
     const handleUploadError = (res: any) => {

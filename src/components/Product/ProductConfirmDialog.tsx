@@ -9,6 +9,7 @@ interface ConfirmDialogProps {
   cancelButtonText: string;
   confirmButtonText: string;
   onConfirm: () => void;
+  onSuccess?: () => void;
   children?: React.ReactNode;
 }
 const dialogStyles = {
@@ -52,6 +53,7 @@ const ProductConfirmDialog: React.FC<ConfirmDialogProps> = ({
   message,
   onCancel,
   onConfirm,
+  onSuccess,
   cancelButtonText,
   confirmButtonText,
   children,
@@ -82,6 +84,9 @@ const ProductConfirmDialog: React.FC<ConfirmDialogProps> = ({
       <Button
         onClick={() => {
           onConfirm();
+          if (typeof onSuccess === 'function') {
+            onSuccess();
+          }
         }}
         color="primary"
         variant="contained"

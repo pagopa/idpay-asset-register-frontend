@@ -4,8 +4,8 @@ import { ReactNode, forwardRef } from 'react';
 type ProductInfoRowProps = {
   label: string;
   value: ReactNode;
-  labelVariant?: 'body1' | 'body2';
-  valueVariant?: 'body2' | 'h6';
+  labelVariant?: 'body1' | 'body2'| 'overline';
+  valueVariant?: 'body1' | 'body2' | 'h6';
   sx?: object;
 };
 

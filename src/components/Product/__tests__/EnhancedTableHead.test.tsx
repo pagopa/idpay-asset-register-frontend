@@ -290,7 +290,7 @@ describe('EnhancedTableHead', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
       const allCells = screen.getAllByRole('columnheader');
-      expect(allCells).toHaveLength(mockHeadCells.length + 2);
+      expect(allCells).toHaveLength(mockHeadCells.length + 1);
     });
 
     it('should handle different ProductDTO key types', () => {

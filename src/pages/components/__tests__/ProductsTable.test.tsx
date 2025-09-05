@@ -1,11 +1,27 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ProductsTable from '../ProductsTable';
-import { ProductDTO } from '../../../api/generated/register/ProductDTO';
-import { USERS_TYPES } from '../../../utils/constants';
-import { StatusEnum, CategoryEnum } from '../../../api/generated/register/ProductDTO';
+import type { ProductDTO } from '../../../api/generated/register/ProductDTO';
+
+const CategoryEnumLocal = {
+  Frigorifero: 'Frigorifero',
+  Lavatrice: 'Lavatrice',
+  Lavastoviglie: 'Lavastoviglie',
+  Forno: 'Forno',
+} as const;
+
+jest.mock('../../../api/generated/register/ProductStatus', () => ({
+  ProductStatusEnum: {
+    DRAFT: 'DRAFT',
+    APPROVED : 'APPROVED',
+    WAIT_APPROVED : 'WAIT_APPROVED',
+    REJECTED : 'REJECTED',
+    SUPERVISED : 'SUPERVISED',
+    UPLOADED : 'UPLOADED'
+  },
+}));
 
 const basePreloadedState = {
   invitalia: {
@@ -122,9 +138,9 @@ jest.mock('../../../utils/constants', () => ({
   },
 }));
 
-import { fetchUserFromLocalStorage } from '../../../helpers';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
+import {ProductStatusEnum} from "../../../api/generated/register/ProductStatus";
 
 const theme = createTheme();
 
@@ -135,32 +151,32 @@ describe('ProductsTable', () => {
 
   const mockProductData: ProductDTO[] = [
     {
-      status: StatusEnum.APPROVED,
-      category: CategoryEnum.Frigorifero,
+      status: ProductStatusEnum.APPROVED,
+      category: CategoryEnumLocal.Frigorifero,
       energyClass: 'A++',
       eprelCode: 'EPREL001',
       gtinCode: 'GTIN001',
       batchName: 'Batch001',
     },
     {
-      status: StatusEnum.SUPERVISED,
-      category: CategoryEnum.Lavatrice,
+      status: ProductStatusEnum.SUPERVISED,
+      category: CategoryEnumLocal.Lavatrice,
       energyClass: 'A+',
       eprelCode: 'EPREL002',
       gtinCode: 'GTIN002',
       batchName: 'Batch002',
     },
     {
-      status: StatusEnum.REJECTED,
-      category: CategoryEnum.Lavastoviglie,
+      status: ProductStatusEnum.REJECTED,
+      category: CategoryEnumLocal.Lavastoviglie,
       energyClass: 'B',
       eprelCode: 'EPREL003',
       gtinCode: 'GTIN003',
       batchName: 'Batch003',
     },
     {
-      status: StatusEnum.WAIT_APPROVED,
-      category: CategoryEnum.Forno,
+      status: ProductStatusEnum.WAIT_APPROVED,
+      category: CategoryEnumLocal.Forno,
       energyClass: 'C',
       eprelCode: 'EPREL004',
       gtinCode: 'GTIN004',

@@ -95,7 +95,6 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
             )}
           </TableCell>
         ))}
-        <TableCell sx={cellRightSx} />
       </TableRow>
     </TableHead>
   );
