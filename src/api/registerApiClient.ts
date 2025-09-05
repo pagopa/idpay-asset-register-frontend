@@ -1,10 +1,10 @@
-import i18n from '@pagopa/selfcare-common-frontend/lib/locale/locale-utils';
 import {
   buildFetchApi,
   extractResponse,
 } from '@pagopa/selfcare-common-frontend/lib/utils/api-utils';
 import { appStateActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice';
 import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+import i18n from '../locale';
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
 import { createClient, WithDefaultsT } from './generated/register/client';
