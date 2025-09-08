@@ -311,5 +311,8 @@
       "supervised": "Da controllare",
       "rejected": "Escluso"
     }
+  },
+  "msgResutlt":{
+    "errorMixSelected":"Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato."
   }
 }

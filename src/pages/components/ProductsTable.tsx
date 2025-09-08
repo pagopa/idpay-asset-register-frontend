@@ -152,6 +152,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     );
   };
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const renderInvitaliaRow = (row: any, index: number) => (
     <TableRow
       tabIndex={-1}
@@ -175,7 +176,8 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
               (user?.org_role === USERS_TYPES.INVITALIA_L2 &&
                 row.status !== PRODUCTS_STATES.WAIT_APPROVED) ||
               (user?.org_role === USERS_TYPES.INVITALIA_L1 &&
-                row.status !== PRODUCTS_STATES.UPLOADED)
+                row.status !== PRODUCTS_STATES.UPLOADED &&
+                row.status !== PRODUCTS_STATES.SUPERVISED)
             }
             onChange={() => handleCheckboxClick(row.gtinCode)}
             onClick={(e) => e.stopPropagation()}

@@ -94,6 +94,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [ready, setReady] = useState(false);
   const [adminDefaultApplied, setAdminDefaultApplied] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
+  const [showMixStatusError, setShowMixStatusError] = useState(false);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
@@ -301,6 +302,28 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     return Promise.resolve();
   };
 
+  // Nuova funzione per controllo status misti
+  const handleOpenModalWithStatusCheck = (action: string) => {
+    const selectedStatuses = selected
+      .map((gtinCode) => String(tableData.find((row) => row.gtinCode === gtinCode)?.status))
+      .filter(Boolean);
+
+    // Se non ci sono selezioni, non fare nulla
+    if (selectedStatuses.length === 0) {
+      return;
+    }
+
+    const allUploaded = selectedStatuses.every((status) => status === PRODUCTS_STATES.UPLOADED);
+    const allSupervised = selectedStatuses.every((status) => status === PRODUCTS_STATES.SUPERVISED);
+
+    if (allUploaded || allSupervised) {
+      void handleOpenModal(action);
+    } else {
+      setShowMixStatusError(true);
+      setTimeout(() => setShowMixStatusError(false), 3000);
+    }
+  };
+
   const renderTable = () => {
     const commonProps = {
       tableData,
@@ -383,7 +406,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             variant="outlined"
             color="error"
             sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModal(PRODUCTS_STATES.REJECTED)}
+            onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.REJECTED)}
           >
             {`${t('invitaliaModal.rejected.buttonText')} (${selected.length})`}
           </Button>
@@ -392,7 +415,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             color="primary"
             variant="outlined"
             sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED)}
+            onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED)}
           >
             <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
           </Button>
@@ -410,7 +433,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
                   PRODUCTS_STATES.WAIT_APPROVED
               )
             }
-            onClick={() => handleOpenModal(PRODUCTS_STATES.WAIT_APPROVED)}
+            onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.WAIT_APPROVED)}
           >
             {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
           </Button>
@@ -554,6 +577,21 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             severity="success"
             message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
           />
+        </Box>
+      )}
+      {showMixStatusError && (
+        <Box
+          sx={{
+            position: 'absolute',
+            right: 12,
+            bottom: 80,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            zIndex: 9999,
+          }}
+        >
+          <MsgResult severity="error" message={t('msgResutlt.errorMixSelected')} />
         </Box>
       )}
     </>
