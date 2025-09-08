@@ -377,140 +377,147 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
   };
 
   return (
-    <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
-      <List>
-        <ProductStatusChip status={data.status} />
-        <ProductInfoRows data={data} currentStatus={data.status as ProductStatusEnum}>
-          {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
-            <>
-              <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  sx={{
-                    fontWeight: 600,
-                    fontSize: 16,
-                    marginBottom: 2,
-                    width: '100%',
-                  }}
-                  data-testid="request-approval-btn"
-                  onClick={() => setRestoreDialogOpen(true)}
-                >
-                  {t('invitaliaModal.waitApproved.buttonTextConfirm')}
-                </Button>
-                <Button
-                  color="error"
-                  sx={{
-                    fontWeight: 600,
-                    fontSize: 16,
-                    marginBottom: 2,
-                    width: '100%',
-                  }}
-                  data-testid="exclude-btn"
-                  onClick={() => setExcludeModalOpen(true)}
-                >
-                  {t('invitaliaModal.rejected.buttonTextConfirm')}
-                </Button>
-              </Box>
-            </>
-          )}
-          {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
-            <>
-              <Box mt={2} display="flex" flexDirection="row" gap={2} sx={{ width: '100%' }}>
-                <Button
-                  data-testid="rejectedBtn"
-                  variant="outlined"
-                  color="error"
-                  sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
-                  onClick={() => setExcludeModalOpen(true)}
-                >
-                  {t('invitaliaModal.rejected.buttonText')}
-                </Button>
-                <Button
-                  data-testid="supervisedBtn"
-                  color="primary"
-                  variant="outlined"
-                  sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
-                  onClick={() => setSupervisionModalOpen(true)}
-                >
-                  <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}
-                </Button>
-                <Button
-                  data-testid="approvedBtn"
-                  color="primary"
-                  variant="contained"
-                  sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
-                  onClick={() => setRestoreDialogOpen(true)}
-                >
-                  {t('invitaliaModal.waitApproved.buttonText')}
-                </Button>
-              </Box>
-            </>
-          )}
-        </ProductInfoRows>
-      </List>
+    <>
+      <style>{`
+        .btn-approve {
+          font-weight: 600 !important;
+          font-size: 16px !important;
+          width: 100% !important;
+          margin-bottom: 16px !important;
+        }
+        .btn-exclude {
+          font-weight: 600 !important;
+          font-size: 16px !important;
+          width: 100% !important;
+          margin-bottom: 16px !important;
+        }
+      `}</style>
+      <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
+        <List>
+          <ProductStatusChip status={data.status} />
+          <ProductInfoRows data={data} currentStatus={data.status as ProductStatusEnum}>
+            {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
+              <>
+                <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    className="btn-approve"
+                    data-testid="request-approval-btn"
+                    onClick={() => setRestoreDialogOpen(true)}
+                  >
+                    {t('invitaliaModal.waitApproved.buttonTextConfirm')}
+                  </Button>
+                  <Button
+                    color="error"
+                    className="btn-exclude"
+                    data-testid="exclude-btn"
+                    variant="outlined"
+                    onClick={() => setExcludeModalOpen(true)}
+                  >
+                    {t('invitaliaModal.rejected.buttonTextConfirm')}
+                  </Button>
+                </Box>
+              </>
+            )}
+            {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
+              <>
+                <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
+                  <Button
+                    data-testid="approvedBtn"
+                    color="primary"
+                    variant="contained"
+                    className="btn-approve"
+                    onClick={() => setRestoreDialogOpen(true)}
+                  >
+                    {t('invitaliaModal.waitApproved.buttonText')}
+                  </Button>
+                  <Button
+                    data-testid="supervisedBtn"
+                    color="primary"
+                    variant="outlined"
+                    className="btn-exclude"
+                    onClick={() => setSupervisionModalOpen(true)}
+                  >
+                    <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}
+                  </Button>
+                  <Button
+                    color="error"
+                    className="btn-exclude"
+                    data-testid="rejectedBtn"
+                    variant="outlined"
+                    onClick={() => setExcludeModalOpen(true)}
+                  >
+                    {t('invitaliaModal.rejected.buttonText')}
+                  </Button>
+                </Box>
+              </>
+            )}
+          </ProductInfoRows>
+        </List>
 
-      <ProductConfirmDialog
-        open={restoreDialogOpen}
-        cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
-        confirmButtonText={t('invitaliaModal.waitApproved.buttonTextConfirm')}
-        title={t('invitaliaModal.waitApproved.listTitle')}
-        message={t('invitaliaModal.waitApproved.description', {
-          L2: USERS_NAMES.INVITALIA_L2,
-        })}
-        onCancel={() => setRestoreDialogOpen(false)}
-        onConfirm={handleConfirmRestore}
-        onSuccess={handleSuccess}
-      />
+        <ProductConfirmDialog
+          open={restoreDialogOpen}
+          cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
+          confirmButtonText={t('invitaliaModal.waitApproved.buttonTextConfirm')}
+          title={t('invitaliaModal.waitApproved.listTitle')}
+          message={t('invitaliaModal.waitApproved.description', {
+            L2: USERS_NAMES.INVITALIA_L2,
+          })}
+          onCancel={() => setRestoreDialogOpen(false)}
+          onConfirm={handleConfirmRestore}
+          onSuccess={handleSuccess}
+        />
 
-      <ProductModal
-        open={supervisionModalOpen}
-        onClose={handleSupervisionClose}
-        actionType={PRODUCTS_STATES.SUPERVISED}
-        onUpdateTable={onUpdateTable}
-        selectedProducts={[
-          {
-            status: data.status as ProductStatusEnum,
-            productName: data.productName,
-            gtinCode: data.gtinCode,
-            category: data.category,
-          },
-        ]}
-        onSuccess={handleSuccess}
-      />
-      <ProductModal
-        open={excludeModalOpen}
-        onClose={handleExcludeClose}
-        actionType={PRODUCTS_STATES.REJECTED}
-        onUpdateTable={onUpdateTable}
-        selectedProducts={[
-          {
-            status: data.status as ProductStatusEnum,
-            productName: data.productName,
-            gtinCode: data.gtinCode,
-            category: data.category,
-          },
-        ]}
-        onSuccess={handleSuccess}
-      />
+        <ProductModal
+          open={supervisionModalOpen}
+          onClose={handleSupervisionClose}
+          actionType={PRODUCTS_STATES.SUPERVISED}
+          onUpdateTable={onUpdateTable}
+          selectedProducts={[
+            {
+              status: data.status as ProductStatusEnum,
+              productName: data.productName,
+              gtinCode: data.gtinCode,
+              category: data.category,
+            },
+          ]}
+          onSuccess={handleSuccess}
+        />
+        <ProductModal
+          open={excludeModalOpen}
+          onClose={handleExcludeClose}
+          actionType={PRODUCTS_STATES.REJECTED}
+          onUpdateTable={onUpdateTable}
+          selectedProducts={[
+            {
+              status: data.status as ProductStatusEnum,
+              productName: data.productName,
+              gtinCode: data.gtinCode,
+              category: data.category,
+            },
+          ]}
+          onSuccess={handleSuccess}
+        />
 
-      {showMsg && (
-        <Box
-          sx={{
-            position: 'absolute',
-            right: 12,
-            bottom: 32,
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <MsgResult
-            severity="success"
-            message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
-          />
-        </Box>
-      )}
-    </Box>
+        {showMsg && (
+          <Box
+            sx={{
+              position: 'absolute',
+              right: 12,
+              bottom: 32,
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <MsgResult
+              severity="success"
+              message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
+            />
+          </Box>
+        )}
+      </Box>
+    </>
   );
 }
