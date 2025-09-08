@@ -7,6 +7,7 @@ import {
   EMPTY_DATA,
   MAX_LENGTH_DETAILL_PR,
   PRODUCTS_STATES,
+  USERS_NAMES,
   USERS_TYPES,
 } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
@@ -14,6 +15,7 @@ import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import { statusChangeMessage } from '../../model/Product';
+import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
 import ProductStatusChip from './ProductStatusChip';
@@ -307,7 +309,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
 }
 
 export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, onClose }: Props) {
-  //  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -340,7 +342,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
       data.status as ProductStatusEnum,
       EMPTY_DATA
     );
-    // setRestoreDialogOpen(false);
+    setRestoreDialogOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();
     }
@@ -392,7 +394,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
                     width: '100%',
                   }}
                   data-testid="request-approval-btn"
-                  onClick={() => handleConfirmRestore()}
+                  onClick={() => setRestoreDialogOpen(true)}
                 >
                   {t('invitaliaModal.waitApproved.buttonTextConfirm')}
                 </Button>
@@ -438,7 +440,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
                   color="primary"
                   variant="contained"
                   sx={{ fontWeight: 600, fontSize: 16, width: '100%' }}
-                  onClick={() => handleConfirmRestore()}
+                  onClick={() => setRestoreDialogOpen(true)}
                 >
                   {t('invitaliaModal.waitApproved.buttonText')}
                 </Button>
@@ -448,7 +450,6 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         </ProductInfoRows>
       </List>
 
-      {/*
       <ProductConfirmDialog
         open={restoreDialogOpen}
         cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
@@ -461,7 +462,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         onConfirm={handleConfirmRestore}
         onSuccess={handleSuccess}
       />
-      */}
+
       <ProductModal
         open={supervisionModalOpen}
         onClose={handleSupervisionClose}
