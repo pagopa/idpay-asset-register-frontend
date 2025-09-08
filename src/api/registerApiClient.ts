@@ -83,6 +83,7 @@ export const RolePermissionApi = {
     return extractResponse(result, 200, onRedirectToLogin);
   },
 };
+
 function buildProductParams(
   organizationId: string,
   page?: number,
@@ -270,83 +271,103 @@ export const RegisterApi = {
     }
   },
 
-setSupervisionedStatusList: async (
-  gtinCodes: Array<string>,
-  currentStatus: ProductStatusEnum,
-  motivation: string
-): Promise<ProductsUpdateDTO> => {
-  try {
-    const body = { gtinCodes, currentStatus, motivation };
-    const result = await registerClient.updateProductStatusSupervised({
-      body
-    });
-    return extractResponse(result, 200, onRedirectToLogin);
-  } catch (error) {
-    console.error(
-      'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
-      error
-    );
-    throw error;
-  }
-},
+  setSupervisionedStatusList: async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatusEnum,
+    motivation: string
+  ): Promise<ProductsUpdateDTO> => {
+    try {
+      const body = { gtinCodes, currentStatus, motivation };
+      const result = await registerClient.updateProductStatusSupervised({
+        body
+      });
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error(
+        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
+        error
+      );
+      throw error;
+    }
+  },
 
  setApprovedStatusList: async (
   gtinCodes: Array<string>,
   currentStatus: ProductStatusEnum,
   motivation: string
-): Promise<ProductsUpdateDTO> => {
-  try {
-    const body = { gtinCodes, currentStatus, motivation };
-    const result = await registerClient.updateProductStatusApproved(
-      { body }
-    );
-    return extractResponse(result, 200, onRedirectToLogin);
-  } catch (error) {
-    console.error(
-        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
-      error
-    );
-    throw error;
-  }
-},
-setWaitApprovedStatusList: async (
-  gtinCodes: Array<string>,
-  currentStatus: ProductStatusEnum,
-  motivation: string
-): Promise<ProductsUpdateDTO> => {
-  try {
-    const body = { gtinCodes, currentStatus, motivation };
-    const result = await registerClient.updateProductStatusWaitApproved(
-      { body }
-    );
-    return extractResponse(result, 200, onRedirectToLogin);
-  } catch (error) {
-    console.error(
-        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
-      error
-    );
-    throw error;
-  }
-},
+  ): Promise<ProductsUpdateDTO> => {
+    try {
+      const body = { gtinCodes, currentStatus, motivation };
+      const result = await registerClient.updateProductStatusApproved(
+        { body }
+      );
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error(
+          'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
+        error
+      );
+      throw error;
+    }
+  },
 
- setRejectedStatusList: async (
-  gtinCodes: Array<string>,
-  currentStatus: ProductStatusEnum,
-  motivation: string
-): Promise<ProductsUpdateDTO> => {
-  try {
-    const body = { gtinCodes, currentStatus, motivation };
-    const result = await registerClient.updateProductStatusRejected(
-      { body }
-    );
-    return extractResponse(result, 200, onRedirectToLogin);
-  } catch (error) {
-    console.error(
-        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
-      error
-    );
-    throw error;
-  }
-},
+  setWaitApprovedStatusList: async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatusEnum,
+    motivation: string
+  ): Promise<ProductsUpdateDTO> => {
+    try {
+      const body = { gtinCodes, currentStatus, motivation };
+      const result = await registerClient.updateProductStatusWaitApproved(
+        { body }
+      );
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error(
+          'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
+        error
+      );
+      throw error;
+    }
+  },
 
+  setRejectedStatusList: async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatusEnum,
+    motivation: string
+  ): Promise<ProductsUpdateDTO> => {
+    try {
+      const body = { gtinCodes, currentStatus, motivation };
+      const result = await registerClient.updateProductStatusRejected(
+        { body }
+      );
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error(
+          'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
+        error
+      );
+      throw error;
+    }
+  },
+
+  setRestoredStatusList: async (
+      gtinCodes: Array<string>,
+      currentStatus: ProductStatusEnum,
+      motivation: string
+  ): Promise<ProductsUpdateDTO> => {
+    try {
+      const body = { gtinCodes, currentStatus, motivation };
+      const result = await registerClient.updateProductStatusRestored(
+          { body }
+      );
+      return extractResponse(result, 200, onRedirectToLogin);
+    } catch (error) {
+      console.error(
+          'Errore durante l\'aggiornamento dello stato restored per i prodotti: ', gtinCodes,
+          error
+      );
+      throw error;
+    }
+  },
 };

@@ -16,7 +16,7 @@ import {
   EMPTY_DATA,
   USERS_TYPES,
   PRODUCTS_STATES,
-  USERS_NAMES,
+  USERS_NAMES, MIDDLE_STATES,
 } from '../../utils/constants';
 import {
   batchIdSelector,
@@ -302,21 +302,20 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     return Promise.resolve();
   };
 
-  // Nuova funzione per controllo status misti
   const handleOpenModalWithStatusCheck = (action: string) => {
     const selectedStatuses = selected
       .map((gtinCode) => String(tableData.find((row) => row.gtinCode === gtinCode)?.status))
       .filter(Boolean);
 
-    // Se non ci sono selezioni, non fare nulla
     if (selectedStatuses.length === 0) {
       return;
     }
 
     const allUploaded = selectedStatuses.every((status) => status === PRODUCTS_STATES.UPLOADED);
     const allSupervised = selectedStatuses.every((status) => status === PRODUCTS_STATES.SUPERVISED);
+    const allWaitApproved = selectedStatuses.every((status) => status === PRODUCTS_STATES.WAIT_APPROVED);
 
-    if (allUploaded || allSupervised) {
+    if (allUploaded || allSupervised || (isInvitaliaAdmin && allWaitApproved)) {
       void handleOpenModal(action);
     } else {
       setShowMixStatusError(true);
@@ -399,45 +398,47 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   return (
     <>
-      {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
-        <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
-          <Button
-            data-testid="rejectedBtn"
-            variant="outlined"
-            color="error"
-            sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.REJECTED)}
-          >
-            {`${t('invitaliaModal.rejected.buttonText')} (${selected.length})`}
-          </Button>
-          <Button
-            data-testid="supervisedBtn"
-            color="primary"
-            variant="outlined"
-            sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED)}
-          >
-            <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
-          </Button>
+      {tableData?.length > 0 && !loading && selected.length !== 0 && (
+          <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
+            <Button
+                data-testid="rejectedBtn"
+                variant="outlined"
+                color="error"
+                sx={{ ...buttonStyle }}
+                onClick={() => handleOpenModalWithStatusCheck(isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION)}
+            >
+              {isInvitaliaUser ? `${t('invitaliaModal.rejected.buttonText')} (${selected.length})` : `${t('invitaliaModal.rejectApprovation.buttonText')} (${selected.length})`}
+            </Button>
+            {isInvitaliaUser && (
+                <Button
+                    data-testid="supervisedBtn"
+                    color="primary"
+                    variant="outlined"
+                    sx={{ ...buttonStyle }}
+                    onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED)}
+                >
+                  <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
+                </Button>
 
-          <Button
-            data-testid="waitApprovedBtn"
-            color="primary"
-            variant="contained"
-            sx={{ ...buttonStyle }}
-            disabled={
-              selected.length === 0 ||
-              selected.some(
-                (gtinCode) =>
-                  String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
-                  PRODUCTS_STATES.WAIT_APPROVED
-              )
-            }
-            onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.WAIT_APPROVED)}
-          >
-            {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
-          </Button>
-        </Box>
+            )}
+            <Button
+              data-testid="waitApprovedBtn"
+              color="primary"
+              variant="contained"
+              sx={{ ...buttonStyle }}
+              disabled={
+                selected.length === 0 ||
+                  ( selected.some(
+                    (gtinCode) =>
+                      String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
+                      PRODUCTS_STATES.WAIT_APPROVED
+                    ) && isInvitaliaUser)
+              }
+              onClick={() => handleOpenModalWithStatusCheck(isInvitaliaUser ? PRODUCTS_STATES.WAIT_APPROVED : MIDDLE_STATES.ACCEPT_APPROVATION)}
+            >
+              {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
+            </Button>
+          </Box>
       )}
 
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
@@ -535,6 +536,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           data-testid="product-detail"
           data={drawerData}
           isInvitaliaUser={isInvitaliaUser}
+          isInvitaliaAdmin={isInvitaliaAdmin}
           open={true}
           onUpdateTable={updaDataTable}
           onClose={() => handleToggleDrawer(false)}

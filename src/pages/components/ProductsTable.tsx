@@ -135,7 +135,11 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelected = tableData
-        .filter((row) => row.status === 'UPLOADED')
+        .filter((row: any) =>
+            (user?.org_role === USERS_TYPES.INVITALIA_L2 &&
+                row.status === PRODUCTS_STATES.WAIT_APPROVED) ||
+            (user?.org_role === USERS_TYPES.INVITALIA_L1 &&
+                row.status === PRODUCTS_STATES.UPLOADED))
         .map((row) => row.gtinCode)
         .filter((code): code is string => code !== undefined);
       setSelected(newSelected);

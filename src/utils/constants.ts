@@ -1,4 +1,5 @@
 export const testToken = '';
+
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
 export const MOCK_USER = IS_DEVELOP;
 export const LOG_REDUX_ACTIONS = IS_DEVELOP;
@@ -20,11 +21,16 @@ export enum PRODUCTS_CATEGORIES {
 }
 
 export enum PRODUCTS_STATES {
-  UPLOADED= 'UPLOADED',
+  UPLOADED = 'UPLOADED',
   WAIT_APPROVED = 'WAIT_APPROVED',
   SUPERVISED = 'SUPERVISED',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED'
+}
+
+export enum MIDDLE_STATES {
+  REJECT_APPROVATION = 'REJECT_APPROVATION',
+  ACCEPT_APPROVATION = 'ACCEPT_APPROVATION'
 }
 
 export enum USERS_TYPES {

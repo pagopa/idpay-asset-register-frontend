@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import FlagIcon from '@mui/icons-material/Flag';
 import {
   EMPTY_DATA,
-  MAX_LENGTH_DETAILL_PR,
+  MAX_LENGTH_DETAILL_PR, MIDDLE_STATES,
   PRODUCTS_STATES,
   USERS_NAMES,
   USERS_TYPES,
@@ -25,6 +25,7 @@ type Props = {
   open: boolean;
   data: ProductDTO;
   isInvitaliaUser: boolean;
+  isInvitaliaAdmin: boolean;
   onUpdateTable?: () => void;
   onClose?: () => void;
   children?: React.ReactNode;
@@ -308,7 +309,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   );
 }
 
-export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, onClose }: Props) {
+export default function ProductDetail({ data, isInvitaliaUser, isInvitaliaAdmin, onUpdateTable, onClose }: Props) {
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
@@ -453,6 +454,30 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
                 </Box>
               </>
             )}
+            {isInvitaliaAdmin && String(data.status) === PRODUCTS_STATES.WAIT_APPROVED && (
+                <>
+                  <Box mt={2} mr={2} display="flex" flexDirection="column">
+                    <Button
+                        data-testid="approvedBtn"
+                        color="primary"
+                        variant="contained"
+                        className="btn-approve"
+                        onClick={() => setSupervisionModalOpen(true)}
+                    >
+                      {t('invitaliaModal.waitApproved.buttonText')}
+                    </Button>
+                    <Button
+                        color="error"
+                        className="btn-exclude"
+                        data-testid="rejectedBtn"
+                        variant="outlined"
+                        onClick={() => setExcludeModalOpen(true)}
+                    >
+                      {t('invitaliaModal.rejectApprovation.buttonText')}
+                    </Button>
+                  </Box>
+                </>
+            )}
           </ProductInfoRows>
         </List>
 
@@ -472,7 +497,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         <ProductModal
           open={supervisionModalOpen}
           onClose={handleSupervisionClose}
-          actionType={PRODUCTS_STATES.SUPERVISED}
+          actionType={isInvitaliaUser ? PRODUCTS_STATES.SUPERVISED : MIDDLE_STATES.ACCEPT_APPROVATION}
           onUpdateTable={onUpdateTable}
           selectedProducts={[
             {
@@ -487,7 +512,7 @@ export default function ProductDetail({ data, isInvitaliaUser, onUpdateTable, on
         <ProductModal
           open={excludeModalOpen}
           onClose={handleExcludeClose}
-          actionType={PRODUCTS_STATES.REJECTED}
+          actionType={isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION}
           onUpdateTable={onUpdateTable}
           selectedProducts={[
             {
