@@ -40,6 +40,7 @@ type Props = {
   errorStatus: boolean;
   handleDeleteFiltersButtonClick: () => void;
   setFiltering: Dispatch<SetStateAction<boolean>>;
+  setPage: Dispatch<SetStateAction<number>>;
 };
 
 export const getChipColor = (
@@ -89,6 +90,7 @@ export default function FiltersDrawer({
   errorStatus,
   handleDeleteFiltersButtonClick,
   setFiltering,
+  setPage
 }: Props) {
   const { t } = useTranslation();
   const [draftStatus, setDraftStatus] = useState(statusFilter);
@@ -139,6 +141,7 @@ export default function FiltersDrawer({
     setEprelCodeFilter(draftEprel);
     setGtinCodeFilter(draftGtin);
 
+    setPage(0);
     setFiltering(true);
     toggleFiltersDrawer(false);
   };
@@ -151,6 +154,7 @@ export default function FiltersDrawer({
     setDraftCategory('');
     setDraftEprel('');
     setDraftGtin('');
+    setPage(0);
     toggleFiltersDrawer(false);
   };
 

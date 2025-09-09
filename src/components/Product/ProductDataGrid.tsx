@@ -580,6 +580,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         errorStatus={apiErrorOccurred}
         handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
         setFiltering={setFiltering}
+        setPage={setPage}
       />
       {showMsg && (
         <Box
