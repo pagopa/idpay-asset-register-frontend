@@ -1,11 +1,12 @@
-import { List, Divider, Box, Tooltip, Typography, Button } from '@mui/material';
+import { List, Divider, Box, Tooltip, Typography, Button, SxProps, Theme } from '@mui/material';
 import { format } from 'date-fns';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import FlagIcon from '@mui/icons-material/Flag';
 import {
   EMPTY_DATA,
-  MAX_LENGTH_DETAILL_PR, MIDDLE_STATES,
+  MAX_LENGTH_DETAILL_PR,
+  MIDDLE_STATES,
   PRODUCTS_STATES,
   USERS_NAMES,
   USERS_TYPES,
@@ -19,7 +20,6 @@ import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
 import ProductStatusChip from './ProductStatusChip';
-import MsgResult from './MsgResult';
 
 type Props = {
   open: boolean;
@@ -30,22 +30,6 @@ type Props = {
   onClose?: () => void;
   children?: React.ReactNode;
 };
-{
-  /* TODO for L2 
-const callApprovedApi = async (
-  gtinCodes: Array<string>,
-  currentStatus: ProductStatusEnum,
-  motivation: string
-) => {
-  try {
-    await setApprovedStatusList(gtinCodes, currentStatus, motivation);
-  } catch (error) {
-    console.error(error);
-  }
-};
-*/
-}
-
 const callRejectedApi = async (
   gtinCodes: Array<string>,
   currentStatus: ProductStatusEnum,
@@ -93,23 +77,44 @@ type RowConfig = {
   value: string;
   labelVariant?: ProductInfoRowVariant;
   valueVariant?: ProductInfoValueVariant;
-  sx?: any;
+  sx?: SxProps<Theme>;
 };
 
 type DividerConfig = {
   type: 'divider';
 };
 
-function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | DividerConfig> {
-  const getValueOrEmpty = (field: unknown) =>
-    field !== undefined && field !== null && field !== '' ? String(field) : EMPTY_DATA;
+const mapBaseRowToRowConfig = (
+  row: {
+    label: string;
+    dataKey: keyof ProductDTO | null;
+    labelVariant?: ProductInfoRowVariant;
+    valueVariant?: ProductInfoValueVariant;
+    sx?: SxProps<Theme>;
+    isTranslation?: boolean;
+  },
+  data: ProductDTO
+) => ({
+  label: row.label,
+  value:
+    row.dataKey &&
+    data[row.dataKey as keyof ProductDTO] !== undefined &&
+    data[row.dataKey as keyof ProductDTO] !== null &&
+    data[row.dataKey as keyof ProductDTO] !== ''
+      ? String(data[row.dataKey as keyof ProductDTO])
+      : EMPTY_DATA,
+  labelVariant: row.labelVariant,
+  valueVariant: row.valueVariant,
+  sx: row.sx,
+});
 
+function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | DividerConfig> {
   const baseRows: Array<{
     label: string;
     dataKey: keyof ProductDTO | null;
     labelVariant?: ProductInfoRowVariant;
     valueVariant?: ProductInfoValueVariant;
-    sx?: any;
+    sx?: SxProps<Theme>;
     isTranslation?: boolean;
   }> = [
     {
@@ -174,22 +179,7 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
     },
   ];
 
-  const mapBaseRowToRowConfig = (row: {
-    label: string;
-    dataKey: keyof ProductDTO | null;
-    labelVariant?: ProductInfoRowVariant;
-    valueVariant?: ProductInfoValueVariant;
-    sx?: any;
-    isTranslation?: boolean;
-  }) => ({
-    label: row.label,
-    value: row.dataKey ? getValueOrEmpty(data[row.dataKey as keyof ProductDTO]) : '',
-    labelVariant: row.labelVariant,
-    valueVariant: row.valueVariant,
-    sx: row.sx,
-  });
-
-  const firstTwoRows = baseRows.slice(0, 2).map(mapBaseRowToRowConfig);
+  const firstTwoRows = baseRows.slice(0, 2).map((row) => mapBaseRowToRowConfig(row, data));
 
   const divider: DividerConfig = { type: 'divider' };
 
@@ -208,7 +198,7 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
     sx: { mt: 4, mb: 2 },
   };
 
-  const remainingRows = baseRows.slice(4).map(mapBaseRowToRowConfig);
+  const remainingRows = baseRows.slice(4).map((row) => mapBaseRowToRowConfig(row, data));
 
   return [...firstTwoRows, divider, dateRow, productSheetRow, ...remainingRows];
 }
@@ -218,6 +208,37 @@ type ProductInfoRowsProps = {
   currentStatus: ProductStatusEnum;
   children?: React.ReactNode;
 };
+
+function renderEntry(entry: any, idx: number) {
+  const operator = entry?.role ? `operatore ${entry.role}` : 'operatore';
+  const dateLabel = entry?.updateDate
+    ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
+    : EMPTY_DATA;
+  const motivationText = entry?.motivation?.trim() || EMPTY_DATA;
+  const header = `${operator} · ${dateLabel}`;
+
+  return (
+    <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
+      <Tooltip
+        title={
+          <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
+            {motivationText}
+          </Box>
+        }
+        arrow
+      >
+        <Box component="span">
+          <Typography variant="body1" color="text.secondary">
+            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+          </Typography>
+          <Typography variant="body2" fontWeight="fontWeightMedium">
+            {truncateString(motivationText, MAX_LENGTH_DETAILL_PR)}
+          </Typography>
+        </Box>
+      </Tooltip>
+    </Box>
+  );
+}
 
 function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const { t } = useTranslation();
@@ -233,38 +254,6 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
             renderCustom: () => {
               const chronology =
                 ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
-
-              const renderEntry = (entry: any, idx: number) => {
-                const operator = entry?.role ? `operatore ${entry.role}` : 'operatore';
-                const dateLabel = entry?.updateDate
-                  ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
-                  : EMPTY_DATA;
-                const motivationText = entry?.motivation?.trim() || EMPTY_DATA;
-                const header = `${operator} · ${dateLabel}`;
-
-                return (
-                  <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
-                    <Tooltip
-                      title={
-                        <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
-                          {motivationText}
-                        </Box>
-                      }
-                      arrow
-                    >
-                      <Box component="span">
-                        <Typography variant="body1" color="text.secondary">
-                          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-                        </Typography>
-                        <Typography variant="body2" fontWeight="fontWeightMedium">
-                          {truncateString(motivationText, MAX_LENGTH_DETAILL_PR)}
-                        </Typography>
-                      </Box>
-                    </Tooltip>
-                  </Box>
-                );
-              };
-
               return (
                 <ProductInfoRow
                   label={t('pages.productDetail.motivation')}
@@ -272,7 +261,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                   sx={{ marginTop: 3 }}
                   value={
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                      {chronology.map(renderEntry)}
+                      {chronology.map((entry, idx) => renderEntry(entry, idx))}
                     </Box>
                   }
                 />
@@ -300,7 +289,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
             }
             labelVariant={(row as RowConfig).labelVariant}
             valueVariant={(row as RowConfig).valueVariant}
-            sx={(row as RowConfig).sx}
+            sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
           />
         )
       )}
@@ -309,32 +298,26 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   );
 }
 
-export default function ProductDetail({ data, isInvitaliaUser, isInvitaliaAdmin, onUpdateTable, onClose }: Props) {
+type ProductDetailProps = Props & {
+  onShowApprovedMsg?: () => void;
+  onShowRejectedMsg?: () => void;
+  onShowWaitApprovedMsg?: () => void;
+};
+
+export default function ProductDetail({
+  data,
+  isInvitaliaUser,
+  isInvitaliaAdmin,
+  onUpdateTable,
+  onClose,
+  onShowApprovedMsg,
+  onShowRejectedMsg,
+  onShowWaitApprovedMsg,
+}: ProductDetailProps) {
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
-  const [showMsg, setShowMsg] = useState(false);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => setShowMsg(false), 10000);
-    return () => clearTimeout(timeout);
-  }, []);
   const { t } = useTranslation();
-
-  useEffect(() => {
-    const handleShow = () => setShowMsg(true);
-    const handleDismiss = () => setShowMsg(false);
-    window.addEventListener('INVITALIA_MSG_SHOW', () => {
-      handleShow();
-      const timeout = setTimeout(() => handleDismiss(), 10000);
-      return () => clearTimeout(timeout);
-    });
-    window.addEventListener('INVITALIA_MSG_DISMISS', handleDismiss);
-    return () => {
-      window.removeEventListener('INVITALIA_MSG_SHOW', handleShow);
-      window.removeEventListener('INVITALIA_MSG_DISMISS', handleDismiss);
-    };
-  }, []);
 
   const handleConfirmRestore = async () => {
     await handleOpenModal(
@@ -350,31 +333,39 @@ export default function ProductDetail({ data, isInvitaliaUser, isInvitaliaAdmin,
     if (typeof onClose === 'function') {
       onClose();
     }
-    handleSuccess();
+    if (typeof onShowWaitApprovedMsg === 'function') {
+      onShowWaitApprovedMsg();
+    } else if (typeof onShowApprovedMsg === 'function') {
+      onShowApprovedMsg();
+    }
   };
 
-  const handleExcludeClose = () => {
-    setExcludeModalOpen(false);
+  const handleModalClose = (setModalOpen: (open: boolean) => void, showRejectedMsg?: boolean) => {
+    setModalOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();
     }
     if (typeof onClose === 'function') {
       onClose();
     }
-  };
-
-  const handleSupervisionClose = () => {
-    setSupervisionModalOpen(false);
-    if (typeof onUpdateTable === 'function') {
-      onUpdateTable();
-    }
-    if (typeof onClose === 'function') {
-      onClose();
+    if (showRejectedMsg && typeof onShowRejectedMsg === 'function') {
+      onShowRejectedMsg();
     }
   };
 
-  const handleSuccess = () => {
-    window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
+  const handleSuccess = (actionType?: string) => {
+    if (actionType === PRODUCTS_STATES.SUPERVISED && typeof onShowWaitApprovedMsg === 'function') {
+      onShowWaitApprovedMsg();
+    } else if (typeof onShowApprovedMsg === 'function') {
+      onShowApprovedMsg();
+    }
+  };
+
+  const handleExcludeClick = () => {
+    setExcludeModalOpen(true);
+    if (typeof onShowRejectedMsg === 'function') {
+      onShowRejectedMsg();
+    }
   };
 
   return (
@@ -414,7 +405,7 @@ export default function ProductDetail({ data, isInvitaliaUser, isInvitaliaAdmin,
                     className="btn-exclude"
                     data-testid="exclude-btn"
                     variant="outlined"
-                    onClick={() => setExcludeModalOpen(true)}
+                    onClick={handleExcludeClick}
                   >
                     {t('invitaliaModal.rejected.buttonTextConfirm')}
                   </Button>
@@ -447,7 +438,7 @@ export default function ProductDetail({ data, isInvitaliaUser, isInvitaliaAdmin,
                     className="btn-exclude"
                     data-testid="rejectedBtn"
                     variant="outlined"
-                    onClick={() => setExcludeModalOpen(true)}
+                    onClick={handleExcludeClick}
                   >
                     {t('invitaliaModal.rejected.buttonText')}
                   </Button>
@@ -455,28 +446,28 @@ export default function ProductDetail({ data, isInvitaliaUser, isInvitaliaAdmin,
               </>
             )}
             {isInvitaliaAdmin && String(data.status) === PRODUCTS_STATES.WAIT_APPROVED && (
-                <>
-                  <Box mt={2} mr={2} display="flex" flexDirection="column">
-                    <Button
-                        data-testid="approvedBtn"
-                        color="primary"
-                        variant="contained"
-                        className="btn-approve"
-                        onClick={() => setSupervisionModalOpen(true)}
-                    >
-                      {t('invitaliaModal.waitApproved.buttonText')}
-                    </Button>
-                    <Button
-                        color="error"
-                        className="btn-exclude"
-                        data-testid="rejectedBtn"
-                        variant="outlined"
-                        onClick={() => setExcludeModalOpen(true)}
-                    >
-                      {t('invitaliaModal.rejectApprovation.buttonText')}
-                    </Button>
-                  </Box>
-                </>
+              <>
+                <Box mt={2} mr={2} display="flex" flexDirection="column">
+                  <Button
+                    data-testid="supervisedBtn"
+                    color="primary"
+                    variant="contained"
+                    className="btn-approve"
+                    onClick={() => setSupervisionModalOpen(true)}
+                  >
+                    {t('invitaliaModal.waitApproved.buttonText')}
+                  </Button>
+                  <Button
+                    color="error"
+                    className="btn-exclude"
+                    data-testid="rejectedBtn"
+                    variant="outlined"
+                    onClick={handleExcludeClick}
+                  >
+                    {t('invitaliaModal.rejectApprovation.buttonText')}
+                  </Button>
+                </Box>
+              </>
             )}
           </ProductInfoRows>
         </List>
@@ -496,8 +487,10 @@ export default function ProductDetail({ data, isInvitaliaUser, isInvitaliaAdmin,
 
         <ProductModal
           open={supervisionModalOpen}
-          onClose={handleSupervisionClose}
-          actionType={isInvitaliaUser ? PRODUCTS_STATES.SUPERVISED : MIDDLE_STATES.ACCEPT_APPROVATION}
+          onClose={() => handleModalClose(setSupervisionModalOpen)}
+          actionType={
+            isInvitaliaUser ? PRODUCTS_STATES.SUPERVISED : MIDDLE_STATES.ACCEPT_APPROVATION
+          }
           onUpdateTable={onUpdateTable}
           selectedProducts={[
             {
@@ -507,11 +500,15 @@ export default function ProductDetail({ data, isInvitaliaUser, isInvitaliaAdmin,
               category: data.category,
             },
           ]}
-          onSuccess={handleSuccess}
+          onSuccess={() =>
+            handleSuccess(
+              isInvitaliaUser ? PRODUCTS_STATES.SUPERVISED : MIDDLE_STATES.ACCEPT_APPROVATION
+            )
+          }
         />
         <ProductModal
           open={excludeModalOpen}
-          onClose={handleExcludeClose}
+          onClose={() => handleModalClose(setExcludeModalOpen, true)}
           actionType={isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION}
           onUpdateTable={onUpdateTable}
           selectedProducts={[
@@ -524,24 +521,6 @@ export default function ProductDetail({ data, isInvitaliaUser, isInvitaliaAdmin,
           ]}
           onSuccess={handleSuccess}
         />
-
-        {showMsg && (
-          <Box
-            sx={{
-              position: 'absolute',
-              right: 12,
-              bottom: 32,
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'flex-end',
-            }}
-          >
-            <MsgResult
-              severity="success"
-              message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
-            />
-          </Box>
-        )}
       </Box>
     </>
   );

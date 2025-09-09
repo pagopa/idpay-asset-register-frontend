@@ -104,8 +104,7 @@
       "state": "Stato",
       "APPROVED": "Approvato",
       "EXCLUDED": "Escluso",
-      "MARKED": "Contrassegnato",
-      "richiestaApprovazioneSuccessMsg": "Richiesta di approvazione inviata"
+      "MARKED": "Contrassegnato"
     },
     "addProducts": {
       "title": "Aggiungi prodotti",
@@ -301,7 +300,28 @@
       "buttonTextConfirm": "Richiedi approvazione",
       "buttonTextCancel": "Annulla",
       "errorMessage": "Campo obbligatorio"
-    }
+      },
+      "rejectApprovation": {
+        "title": "Rifiuta approvazione",
+        "description": "Stai per rifiutare la richiesta di approvazione inviata da L1. Dopo questa operazione, i prodotti torneranno allo stato “Da revisionare”.",
+        "listTitle": "Perché stai rifiutando l’approvazione di questi prodotti?",
+        "reasonLabel": "Nota interna",
+        "reasonPlaceholder": "Nota interna",
+        "buttonText": "Rifiuta",
+        "buttonTextConfirm": "Rifiuta",
+        "buttonTextCancel": "Annulla",
+        "errorMessage": "Campo obbligatorio"
+      },
+      "acceptApprovation": {
+        "title": "Approva prodotti",
+        "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nell’elenco informatico degli elettrodomestici.",
+        "listTitle": "",
+        "reasonLabel": "",
+        "reasonPlaceholder": "",
+        "buttonText": "Approva",
+        "buttonTextConfirm": "Approva",
+        "buttonTextCancel": "Annulla"
+      }
   },
   "chip": {
     "productStatusLabel":{
@@ -313,6 +333,12 @@
     }
   },
   "msgResutlt":{
-    "errorMixSelected":"Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato."
+    "errorMixSelected":"Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato.",
+    "errorYourselfApproved":"Non puoi inviare una richiesta di approvazione a te stesso.",
+    "okButtonApproved": "Richiesta di approvazione inviata.",
+    "okButtonRejected": "I prodotti selezionati sono stati esclusi.",
+    "okWaitApproved": "I prodotti selezionati sono ora da controllare.",
+    "okL2ButtonApproved":"I prodotti sono stati approvati.",
+    "okL2ButtonRejected":"L'approvazione è stata rifiutata."
   }
 }
