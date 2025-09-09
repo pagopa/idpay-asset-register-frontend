@@ -72,6 +72,10 @@ jest.mock('../../../utils/constants', () => ({
         SUPERVISED: 'SUPERVISED',
         UPLOADED: 'UPLOADED',
     },
+    MIDDLE_STATES: {
+        REJECT_APPROVATION: 'REJECT_APPROVATION',
+        ACCEPT_APPROVATION:'ACCEPT_APPROVATION'
+    },
     USERS_NAMES: { INVITALIA_L2: 'Invitalia L2' },
     USERS_TYPES: { OPERATORE: 'OPERATORE' },
 }));

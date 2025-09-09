@@ -9,7 +9,14 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('../../../utils/constants', () => ({
-    PRODUCTS_STATES: { SUPERVISED: 'SUPERVISED', REJECTED: 'REJECTED' },
+    PRODUCTS_STATES: {
+        SUPERVISED: 'SUPERVISED',
+        REJECTED: 'REJECTED'
+    },
+    MIDDLE_STATES: {
+        REJECT_APPROVATION: 'REJECT_APPROVATION',
+        ACCEPT_APPROVATION:'ACCEPT_APPROVATION'
+    },
 }));
 
 jest.mock('../../../api/generated/register/ProductStatus', () => ({
@@ -148,9 +155,8 @@ describe('ProductModal', () => {
         expect(screen.getByRole('textbox')).toBeInTheDocument();
 
         await userEvent.type(screen.getByRole('textbox'), 'Reject reason');
-        await userEvent.click(
-            screen.getByRole('button', { name: 'invitaliaModal.rejected.buttonTextConfirm' })
-        );
+        const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
+        await userEvent.click(confirm);
 
         await waitFor(() => {
             expect(mockSetRejectedStatusList).toHaveBeenCalledWith(
@@ -168,9 +174,9 @@ describe('ProductModal', () => {
         const { onClose, onUpdateTable } = renderModal({ actionType: 'REJECTED' });
 
         await userEvent.type(screen.getByRole('textbox'), 'Reason');
-        await userEvent.click(
-            screen.getByRole('button', { name: 'invitaliaModal.rejected.buttonTextConfirm' })
-        );
+        const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
+        await userEvent.click(confirm);
+
 
         await waitFor(() => {
             expect(onClose).toHaveBeenCalledTimes(2);
@@ -181,9 +187,9 @@ describe('ProductModal', () => {
     test('validation with spaces only: sets touched and shows error', async () => {
         renderModal({ actionType: 'REJECTED' });
         await userEvent.type(screen.getByRole('textbox'), '   ');
-        await userEvent.click(
-            screen.getByRole('button', { name: 'invitaliaModal.rejected.buttonTextConfirm' })
-        );
+        const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
+        await userEvent.click(confirm);
+
         expect(await screen.findByText('Campo obbligatorio')).toBeInTheDocument();
     });
 
