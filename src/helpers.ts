@@ -1,5 +1,5 @@
 import { useTheme, useMediaQuery } from '@mui/material';
-import {EMPTY_DATA, maxLengthEmail} from "./utils/constants";
+import {EMPTY_DATA, MAX_LENGTH_TABLE_PR, maxLengthEmail, MIN_LENGTH_TABLE_PR} from "./utils/constants";
 
 export const formattedCurrency = (
   number: number | undefined,
@@ -121,7 +121,13 @@ export const truncateStringResponsive = (str?: string, maxLength?: number): stri
   return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
 };
 
-
+export const getTablePrLength = () =>
+  typeof window !== 'undefined'
+    ? window.innerWidth > 1440
+      ? MAX_LENGTH_TABLE_PR
+      : MIN_LENGTH_TABLE_PR
+    : MAX_LENGTH_TABLE_PR;
+    
 export const useResponsiveMaxLength = (): number => {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.only('xs'));

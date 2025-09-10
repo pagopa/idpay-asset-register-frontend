@@ -13,9 +13,14 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import FlagIcon from '@mui/icons-material/Flag';
 import { useTranslation } from 'react-i18next';
-import { setSupervisionedStatusList, setRejectedStatusList } from '../../services/registerService';
+import {
+  setSupervisionedStatusList,
+  setRejectedStatusList,
+  setRestoredStatusList,
+  setApprovedStatusList
+} from '../../services/registerService';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
-import { PRODUCTS_STATES } from '../../utils/constants';
+import {MIDDLE_STATES, PRODUCTS_STATES} from '../../utils/constants';
 
 interface ProductModalProps {
   open: boolean;
@@ -29,7 +34,7 @@ interface ProductModalProps {
     gtinCode: string;
     category?: string;
   }>;
-  onSuccess?: () => void;
+  onSuccess?: (actionType: string | undefined) => void;
 }
 
 const buttonStyle = {
@@ -152,6 +157,26 @@ const ProductModal: React.FC<ProductModalProps> = ({
       buttonTextConfirm: t('invitaliaModal.rejected.buttonTextConfirm'),
       buttonTextCancel: t('invitaliaModal.rejected.buttonTextCancel'),
     },
+    REJECT_APPROVATION: {
+      title: t('invitaliaModal.rejectApprovation.title'),
+      description: t('invitaliaModal.rejectApprovation.description'),
+      listTitle: t('invitaliaModal.rejectApprovation.listTitle'),
+      reasonLabel: t('invitaliaModal.rejectApprovation.reasonLabel'),
+      reasonPlaceholder: t('invitaliaModal.rejectApprovation.reasonPlaceholder'),
+      buttonText: t('invitaliaModal.rejectApprovation.buttonText'),
+      buttonTextConfirm: t('invitaliaModal.rejectApprovation.buttonTextConfirm'),
+      buttonTextCancel: t('invitaliaModal.rejectApprovation.buttonTextCancel'),
+    },
+    ACCEPT_APPROVATION: {
+      title: t('invitaliaModal.acceptApprovation.title'),
+      description: t('invitaliaModal.acceptApprovation.description'),
+      listTitle: t('invitaliaModal.acceptApprovation.listTitle'),
+      reasonLabel: t('invitaliaModal.acceptApprovation.reasonLabel'),
+      reasonPlaceholder: t('invitaliaModal.acceptApprovation.reasonPlaceholder'),
+      buttonText: t('invitaliaModal.acceptApprovation.buttonText'),
+      buttonTextConfirm: t('invitaliaModal.acceptApprovation.buttonTextConfirm'),
+      buttonTextCancel: t('invitaliaModal.acceptApprovation.buttonTextCancel'),
+    }
   };
 
   const config = MODAL_CONFIG[actionType as keyof typeof MODAL_CONFIG];
@@ -169,13 +194,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      await setSupervisionedStatusList(gtinCodes, status, motivation);
       onClose();
+      await setSupervisionedStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
       }
       if (typeof onSuccess === 'function') {
-        onSuccess();
+        onSuccess(actionType);
       }
     } catch (error) {
       console.error(error);
@@ -195,7 +220,43 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onUpdateTable();
       }
       if (typeof onSuccess === 'function') {
-        onSuccess();
+        onSuccess(actionType);
+      }
+    } catch (error) {
+      console.error(error);
+      onClose();
+    }
+  };
+
+  const callRestoredApi = async () => {
+    if (!motivation.trim()) {
+      setMotivationTouched(true);
+      return;
+    }
+    try {
+      onClose();
+      await setRestoredStatusList(gtinCodes, status, motivation);
+      if (onUpdateTable) {
+        onUpdateTable();
+      }
+      if (typeof onSuccess === 'function') {
+        onSuccess(actionType);
+      }
+    } catch (error) {
+      console.error(error);
+      onClose();
+    }
+  };
+
+  const callApprovedApi = async () => {
+    try {
+      onClose();
+      await setApprovedStatusList(gtinCodes, status, motivation);
+      if (onUpdateTable) {
+        onUpdateTable();
+      }
+      if (typeof onSuccess === 'function') {
+        onSuccess(actionType);
       }
     } catch (error) {
       console.error(error);
@@ -225,23 +286,27 @@ const ProductModal: React.FC<ProductModalProps> = ({
       <DialogContent sx={{ p: 0 }}>
         <Typography sx={modalStyles.descriptionText}>{config?.description || ''}</Typography>
         <Typography sx={modalStyles.listTitle}>{config?.listTitle || ''}</Typography>
-        <TextField
-          required
-          label={config?.reasonLabel}
-          color="primary"
-          fullWidth
-          inputProps={{ maxLength: 200 }}
-          value={motivation}
-          onChange={(e) => {
-            setReason(e.target.value);
-          }}
-          onBlur={() => setMotivationTouched(true)}
-          sx={modalStyles.textField}
-          error={motivationTouched && !motivation.trim()}
-          id={motivationTouched && !motivation.trim() ? 'outlined-error-helper-text' : undefined}
-          helperText={motivationTouched && !motivation.trim() ? 'Campo obbligatorio' : undefined}
-        />
-        <Box sx={modalStyles.charCounter}>{motivation.length}/200</Box>
+        { actionType !== MIDDLE_STATES.ACCEPT_APPROVATION &&
+          <>
+            <TextField
+                required
+                label={config?.reasonLabel}
+                color="primary"
+                fullWidth
+                inputProps={{ maxLength: 200 }}
+                value={motivation}
+                onChange={(e) => {
+                  setReason(e.target.value);
+                }}
+                onBlur={() => setMotivationTouched(true)}
+                sx={modalStyles.textField}
+                error={motivationTouched && !motivation.trim()}
+                id={motivationTouched && !motivation.trim() ? 'outlined-error-helper-text' : undefined}
+                helperText={motivationTouched && !motivation.trim() ? 'Campo obbligatorio' : undefined}
+            />
+            <Box sx={modalStyles.charCounter}>{motivation.length}/200</Box>
+          </>
+        }
       </DialogContent>
       <DialogActions sx={modalStyles.dialogActions}>
         <Button
@@ -273,10 +338,33 @@ const ProductModal: React.FC<ProductModalProps> = ({
             }}
             onClick={callRejectedApi}
           >
-            {config?.buttonTextConfirm}
+            {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
           </Button>
         )}
-
+        {actionType === MIDDLE_STATES.REJECT_APPROVATION && (
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                  ...buttonStyle,
+                }}
+                onClick={callRestoredApi}
+            >
+              {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
+            </Button>
+        )}
+        {actionType === MIDDLE_STATES.ACCEPT_APPROVATION && (
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                  ...buttonStyle,
+                }}
+                onClick={callApprovedApi}
+            >
+              {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
+            </Button>
+        )}
         <IconButton aria-label="close" onClick={handleCloseWithUpdate} sx={modalStyles.closeButton}>
           <CloseIcon />
         </IconButton>

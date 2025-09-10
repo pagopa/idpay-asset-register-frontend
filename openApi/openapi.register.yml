@@ -616,7 +616,7 @@ components:
             - Lavatrice
             - Lavasciuga
             - Piano cottura
-            - Frigorifero
+            - Apperecchio di refrigerazione
             - Asciugatrice
             - Lavastoviglie
             - Cappa da cucina
@@ -631,7 +631,7 @@ components:
           type: string
           description: 'ENG: The computed name of file <br> IT: Nome ricalcolato del
             file csv'
-          pattern: ^(Frigoriferi|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\.csv$
+          pattern: ^(Apparecchi_di_refrigerazione|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\.csv$
           maxLength: 255
         uploadStatus:
           type: string
@@ -671,7 +671,6 @@ components:
           type: string
           maxLength: 255
           pattern: .*
-
     ProductListDTO:
       type: object
       properties:
@@ -748,7 +747,7 @@ components:
             - Lavatrice
             - Lavasciuga
             - Piano cottura
-            - Frigorifero
+            - Apparecchio di refrigerazione
             - Asciugatrice
             - Lavastoviglie
             - Cappa da cucina
@@ -793,7 +792,7 @@ components:
           type: string
           description: 'ENG: The batch name the product <br> IT: il nomelotto del
             prodotto'
-          pattern: ^(Frigoriferi|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\\.csv$
+          pattern: ^(Apparecchi_di_refrigerazione|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\\.csv$
           maxLength: 255
         linkEprel:
           type: string
@@ -921,7 +920,7 @@ components:
                 pattern: ^[a-fA-F0-9]{24}$
               batchName:
                 type: string
-                pattern: ^(Frigoriferi|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\.csv$
+                pattern: ^(Apparecchi_di_refrigerazione|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\.csv$
                 maxLength: 255
           maxItems: 1000
     ErrorDTO:

@@ -14,8 +14,8 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import EprelLinks from '../../components/Product/EprelLinks';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { PRODUCTS_STATES, USERS_TYPES, MAX_LENGTH_TABLE_PR } from '../../utils/constants';
-import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
+import { PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
+import { fetchUserFromLocalStorage, getTablePrLength, truncateString } from '../../helpers';
 import EnhancedTableHead from '../../components/Product/EnhancedTableHead';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import ProductStatusChip from '../../components/Product/ProductStatusChip';
@@ -135,7 +135,14 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelected = tableData
-        .filter((row) => row.status === 'UPLOADED')
+        .filter(
+          (row: any) =>
+            (user?.org_role === USERS_TYPES.INVITALIA_L2 &&
+              row.status === PRODUCTS_STATES.WAIT_APPROVED) ||
+            (user?.org_role === USERS_TYPES.INVITALIA_L1 &&
+              (row.status === PRODUCTS_STATES.UPLOADED ||
+                row.status === PRODUCTS_STATES.SUPERVISED))
+        )
         .map((row) => row.gtinCode)
         .filter((code): code is string => code !== undefined);
       setSelected(newSelected);
@@ -172,8 +179,11 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
             color="primary"
             checked={selected.includes(row.gtinCode)}
             disabled={
-              (user?.org_role === USERS_TYPES.INVITALIA_L2 && row.status !== PRODUCTS_STATES.WAIT_APPROVED)
-              || (user?.org_role === USERS_TYPES.INVITALIA_L1 && row.status !== PRODUCTS_STATES.UPLOADED)
+              (user?.org_role === USERS_TYPES.INVITALIA_L2 &&
+                row.status !== PRODUCTS_STATES.WAIT_APPROVED) ||
+              (user?.org_role === USERS_TYPES.INVITALIA_L1 &&
+                row.status !== PRODUCTS_STATES.UPLOADED &&
+                row.status !== PRODUCTS_STATES.SUPERVISED)
             }
             onChange={() => handleCheckboxClick(row.gtinCode)}
             onClick={(e) => e.stopPropagation()}
@@ -188,7 +198,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       <TableCell sx={cellLeftSx}>
         <Tooltip title={getProducer(row?.organizationId) ?? emptyData} arrow>
           <Typography variant="body2">
-            {truncateString(getProducer(row?.organizationId) ?? emptyData, MAX_LENGTH_TABLE_PR)}
+            {truncateString(getProducer(row?.organizationId) ?? emptyData, getTablePrLength())}
           </Typography>
         </Tooltip>
       </TableCell>
@@ -202,14 +212,14 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       <TableCell sx={cellCenterSx}>
         <Tooltip title={row?.gtinCode ?? emptyData} arrow>
           <Typography variant="body2">
-            {truncateString(row?.gtinCode ?? emptyData, MAX_LENGTH_TABLE_PR)}
+            {truncateString(row?.gtinCode ?? emptyData, getTablePrLength())}
           </Typography>
         </Tooltip>
       </TableCell>
       <TableCell sx={cellLeftSx}>
         <Tooltip title={row?.batchName ?? emptyData} arrow>
           <Typography variant="body2">
-            {truncateString(row?.batchName ?? emptyData, MAX_LENGTH_TABLE_PR)}
+            {truncateString(row?.batchName ?? emptyData, getTablePrLength())}
           </Typography>
         </Tooltip>
       </TableCell>
@@ -249,9 +259,21 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       case 'eprelCode':
         return <EprelLinks row={row} />;
       case 'gtinCode':
-        return <Typography variant="body2">{row?.gtinCode ?? emptyData}</Typography>;
+        return (
+          <Tooltip title={row?.gtinCode ?? emptyData} arrow>
+            <Typography variant="body2">
+              {truncateString(row?.gtinCode ?? emptyData, getTablePrLength())}
+            </Typography>
+          </Tooltip>
+        );
       case 'batchName':
-        return <Typography variant="body2">{row?.batchName ?? emptyData}</Typography>;
+        return (
+          <Tooltip title={row?.batchName ?? emptyData} arrow>
+            <Typography variant="body2">
+              {truncateString(row?.batchName ?? emptyData, getTablePrLength())}
+            </Typography>
+          </Tooltip>
+        );
       case 'status':
         return <ProductStatusChip status={row?.status ?? emptyData ?? ''} />;
       case 'actions':
