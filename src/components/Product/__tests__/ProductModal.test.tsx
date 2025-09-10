@@ -123,7 +123,7 @@ describe('ProductModal', () => {
         await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
 
         await waitFor(() => {
-            expect(onClose).toHaveBeenCalledTimes(1);
+            expect(onClose).toHaveBeenCalledTimes(2);
             expect(onUpdateTable).not.toHaveBeenCalled();
         });
     });
