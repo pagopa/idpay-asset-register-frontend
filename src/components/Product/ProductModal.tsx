@@ -34,7 +34,7 @@ interface ProductModalProps {
     gtinCode: string;
     category?: string;
   }>;
-  onSuccess?: () => void;
+  onSuccess?: (actionType: string | undefined) => void;
 }
 
 const buttonStyle = {
@@ -194,13 +194,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      await setSupervisionedStatusList(gtinCodes, status, motivation);
       onClose();
+      await setSupervisionedStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
       }
       if (typeof onSuccess === 'function') {
-        onSuccess();
+        onSuccess(actionType);
       }
     } catch (error) {
       console.error(error);
@@ -220,7 +220,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onUpdateTable();
       }
       if (typeof onSuccess === 'function') {
-        onSuccess();
+        onSuccess(actionType);
       }
     } catch (error) {
       console.error(error);
@@ -240,7 +240,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onUpdateTable();
       }
       if (typeof onSuccess === 'function') {
-        onSuccess();
+        onSuccess(actionType);
       }
     } catch (error) {
       console.error(error);
@@ -256,7 +256,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onUpdateTable();
       }
       if (typeof onSuccess === 'function') {
-        onSuccess();
+        onSuccess(actionType);
       }
     } catch (error) {
       console.error(error);

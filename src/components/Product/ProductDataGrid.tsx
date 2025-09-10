@@ -550,11 +550,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             gtinCode: row.gtinCode,
             category: row.category,
           }))}
-        onSuccess={() =>
+        onSuccess={(action: string | undefined) =>
           handleModalSuccess({
             selected,
             tableData,
-            modalAction,
+            modalAction: action,
             isInvitaliaUser,
             setShowMsgRejected,
             setShowMsgApproved,

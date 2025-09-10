@@ -75,15 +75,6 @@ export const handleModalSuccess = ({
     return;
   }
 
-  if (
-    isInvitaliaUser &&
-    modalAction === PRODUCTS_STATES.REJECTED &&
-    (allUploaded || allSupervised)
-  ) {
-    resetMsgs();
-    return;
-  }
-
   if (isInvitaliaUser && modalAction === PRODUCTS_STATES.WAIT_APPROVED && allSupervised) {
     setShowMsgWaitApproved(true);
     setShowMsgApproved(false);
@@ -99,12 +90,21 @@ export const handleModalSuccess = ({
   }
 
   if (
-    modalAction === PRODUCTS_STATES.REJECTED ||
-    modalAction === MIDDLE_STATES.REJECT_APPROVATION
+      modalAction === PRODUCTS_STATES.REJECTED ||
+      modalAction === MIDDLE_STATES.REJECT_APPROVATION
   ) {
     setShowMsgRejected(true);
     setShowMsgApproved(false);
     setShowMsgWaitApproved(false);
+    return;
+  }
+
+  if (
+    isInvitaliaUser &&
+    modalAction === PRODUCTS_STATES.REJECTED &&
+    (allUploaded || allSupervised)
+  ) {
+    resetMsgs();
     return;
   }
 

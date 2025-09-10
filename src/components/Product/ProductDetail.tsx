@@ -300,7 +300,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
 
 type ProductDetailProps = Props & {
   onShowApprovedMsg?: () => void;
-  onShowRejectedMsg?: () => void;
+  onShowRejectedMsg: () => void;
   onShowWaitApprovedMsg?: () => void;
 };
 
@@ -356,16 +356,14 @@ export default function ProductDetail({
   const handleSuccess = (actionType?: string) => {
     if (actionType === PRODUCTS_STATES.SUPERVISED && typeof onShowWaitApprovedMsg === 'function') {
       onShowWaitApprovedMsg();
-    } else if (typeof onShowApprovedMsg === 'function') {
-      onShowApprovedMsg();
+    } else if (actionType === PRODUCTS_STATES.REJECTED) {
+      onShowRejectedMsg();
     }
   };
 
   const handleExcludeClick = () => {
     setExcludeModalOpen(true);
-    if (typeof onShowRejectedMsg === 'function') {
-      onShowRejectedMsg();
-    }
+
   };
 
   return (
