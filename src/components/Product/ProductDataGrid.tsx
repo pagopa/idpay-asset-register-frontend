@@ -17,7 +17,9 @@ import {
   USERS_TYPES,
   PRODUCTS_STATES,
   USERS_NAMES,
+  MIDDLE_STATES,
 } from '../../utils/constants';
+import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import {
   batchIdSelector,
   batchNameSelector,
@@ -29,7 +31,6 @@ import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
-import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import {
   institutionListSelector,
   institutionSelector,
@@ -38,8 +39,9 @@ import {
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { Institution } from '../../model/Institution';
 import { setWaitApprovedStatusList } from '../../services/registerService';
-import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
+import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import { BatchFilterItems, BatchFilterList, Order } from './helpers';
+import { getStatusChecks, handleModalSuccess } from './ProductDataGrid.helpers';
 import ProductDetail from './ProductDetail';
 import ProductModal from './ProductModal';
 import NewFilter from './NewFilter';
@@ -61,6 +63,8 @@ const buttonStyle = {
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, children }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const [showMsgRejected, setShowMsgRejected] = useState(false);
+  const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
   const batchName = useSelector(batchNameSelector);
   const batchId = useSelector(batchIdSelector);
   const institutions = useSelector(institutionListSelector);
@@ -93,7 +97,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [ready, setReady] = useState(false);
   const [adminDefaultApplied, setAdminDefaultApplied] = useState(false);
-  const [showMsg, setShowMsg] = useState(false);
+  const [showMsgApproved, setShowMsgApproved] = useState(false);
+  const [showMixStatusError, setShowMixStatusError] = useState(false);
+  const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
+
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
@@ -218,8 +225,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     }
     setLoading(true);
     callProductsApi(organizationId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, page, orderBy, order, rowsPerPage]);
+  }, [ready, page, orderBy, order, rowsPerPage, organizationId]);
 
   useEffect(() => {
     if (!ready || !filtering) {
@@ -227,8 +233,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     }
     setLoading(true);
     callProductsApi(organizationId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, filtering]);
+  }, [ready, filtering, organizationId]);
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
@@ -288,7 +293,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   ) => {
     await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
     setRestoreDialogOpen(false);
-    setShowMsg(true);
+    setShowMsgApproved(true);
   };
 
   const handleOpenModal = (action: string) => {
@@ -301,43 +306,28 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     return Promise.resolve();
   };
 
-  const renderTable = () => {
-    const commonProps = {
-      tableData,
-      emptyData: EMPTY_DATA,
-      order,
-      orderBy,
-      onRequestSort: handleRequestSort,
-      handleListButtonClick,
+  const handleOpenModalWithStatusCheck = (action: string) => {
+    const { allUploaded, allSupervised, allWaitApproved, someUploaded, length } = getStatusChecks(
       selected,
-      setSelected,
-    };
+      tableData
+    );
 
-    if (tableData?.length > 0) {
-      if (loading) {
-        return (
-          <CircularProgress
-            size={36}
-            sx={{
-              color: '#0055AA',
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-            }}
-          />
-        );
-      }
-      return (
-        <Box sx={{ width: '100%', overflowX: 'auto' }}>
-          <ProductsTable key={refreshKey} {...commonProps} />
-        </Box>
-      );
+    if (length === 0) {
+      return;
     }
 
-    if (children) {
-      return children;
+    if (isInvitaliaAdmin && someUploaded) {
+      setShowYourselfApprovedError(true);
+      setTimeout(() => setShowYourselfApprovedError(false), 3000);
+      return;
     }
-    return null;
+
+    if (allUploaded || allSupervised || (isInvitaliaAdmin && allWaitApproved)) {
+      void handleOpenModal(action);
+    } else {
+      setShowMixStatusError(true);
+      setTimeout(() => setShowMixStatusError(false), 3000);
+    }
   };
 
   const filtersLabel = useMemo(() => {
@@ -374,48 +364,104 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     gtinCodeFilter,
   ]);
 
-  return (
-    <>
-      {tableData?.length > 0 && !loading && isInvitaliaUser && selected.length !== 0 && (
-        <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
-          <Button
-            data-testid="rejectedBtn"
-            variant="outlined"
-            color="error"
-            sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModal(PRODUCTS_STATES.REJECTED)}
-          >
-            {`${t('invitaliaModal.rejected.buttonText')} (${selected.length})`}
-          </Button>
+  const renderActionButtons = () => {
+    if (!(tableData?.length > 0 && !loading && selected.length !== 0)) {
+      return null;
+    }
+    const isSomeSupervised = selected.some(
+      (gtinCode) =>
+        String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
+        PRODUCTS_STATES.SUPERVISED
+    );
+    return (
+      <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
+        <Button
+          data-testid="rejectedBtn"
+          variant="outlined"
+          color="error"
+          sx={{ ...buttonStyle }}
+          onClick={() =>
+            handleOpenModalWithStatusCheck(
+              isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION
+            )
+          }
+        >
+          {isInvitaliaUser
+            ? `${t('invitaliaModal.rejected.buttonText')} (${selected.length})`
+            : `${t('invitaliaModal.rejectApprovation.buttonText')} (${selected.length})`}
+        </Button>
+        {isInvitaliaUser && !isSomeSupervised && (
           <Button
             data-testid="supervisedBtn"
             color="primary"
             variant="outlined"
             sx={{ ...buttonStyle }}
-            onClick={() => handleOpenModal(PRODUCTS_STATES.SUPERVISED)}
+            onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED)}
           >
             <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
           </Button>
+        )}
+        <Button
+          data-testid="waitApprovedBtn"
+          color="primary"
+          variant="contained"
+          sx={{ ...buttonStyle }}
+          disabled={
+            selected.length === 0 ||
+            (selected.some(
+              (gtinCode) =>
+                String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
+                PRODUCTS_STATES.WAIT_APPROVED
+            ) &&
+              isInvitaliaUser)
+          }
+          onClick={() =>
+            handleOpenModalWithStatusCheck(
+              isInvitaliaUser ? PRODUCTS_STATES.WAIT_APPROVED : MIDDLE_STATES.ACCEPT_APPROVATION
+            )
+          }
+        >
+          {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
+        </Button>
+      </Box>
+    );
+  };
 
-          <Button
-            data-testid="waitApprovedBtn"
-            color="primary"
-            variant="contained"
-            sx={{ ...buttonStyle }}
-            disabled={
-              selected.length === 0 ||
-              selected.some(
-                (gtinCode) =>
-                  String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
-                  PRODUCTS_STATES.WAIT_APPROVED
-              )
-            }
-            onClick={() => handleOpenModal(PRODUCTS_STATES.WAIT_APPROVED)}
-          >
-            {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
-          </Button>
-        </Box>
+  const renderResultMessages = () => (
+    <>
+      {showMsgWaitApproved && (
+        <MsgResult severity="success" message={t('msgResutlt.okWaitApproved')} bottom={80} />
       )}
+      {showMsgApproved && (
+        <MsgResult
+          severity="success"
+          message={
+            isInvitaliaAdmin ? t('msgResutlt.okL2ButtonApproved') : t('msgResutlt.okButtonApproved')
+          }
+          bottom={80}
+        />
+      )}
+      {showMsgRejected && (
+        <MsgResult
+          severity="success"
+          message={
+            isInvitaliaAdmin ? t('msgResutlt.okL2ButtonRejected') : t('msgResutlt.okButtonRejected')
+          }
+          bottom={80}
+        />
+      )}
+      {showMixStatusError && (
+        <MsgResult severity="error" message={t('msgResutlt.errorMixSelected')} bottom={80} />
+      )}
+      {showYourselfApprovedError && (
+        <MsgResult severity="error" message={t('msgResutlt.errorYourselfApproved')} bottom={80} />
+      )}
+    </>
+  );
+
+  return (
+    <>
+      {renderActionButtons()}
 
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
         {filtersLabel ? (
@@ -437,7 +483,35 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       )}
 
       <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
-        {renderTable()}
+        {tableData?.length > 0 ? (
+          loading ? (
+            <CircularProgress
+              size={36}
+              sx={{
+                color: '#0055AA',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+              }}
+            />
+          ) : (
+            <Box sx={{ width: '100%', overflowX: 'auto' }}>
+              <ProductsTable
+                key={refreshKey}
+                tableData={tableData}
+                emptyData={EMPTY_DATA}
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+                handleListButtonClick={handleListButtonClick}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            </Box>
+          )
+        ) : (
+          children || null
+        )}
 
         {tableData?.length > 0 && !loading && (
           <TablePagination
@@ -476,7 +550,17 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             gtinCode: row.gtinCode,
             category: row.category,
           }))}
-        onSuccess={() => setShowMsg(true)}
+        onSuccess={(action: string | undefined) =>
+          handleModalSuccess({
+            selected,
+            tableData,
+            modalAction: action,
+            isInvitaliaUser,
+            setShowMsgRejected,
+            setShowMsgApproved,
+            setShowMsgWaitApproved,
+          })
+        }
       />
 
       <ProductConfirmDialog
@@ -493,6 +577,15 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             (tableData.find((row) => row.gtinCode === selected[0])
               ?.status as unknown as ProductStatusEnum) || ProductStatusEnum.SUPERVISED;
           try {
+            if (isInvitaliaUser && currentStatus === ProductStatusEnum.UPLOADED) {
+              setShowMsgWaitApproved(true);
+              setShowMsgApproved(false);
+              setShowMsgRejected(false);
+            } else {
+              setShowMsgApproved(true);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }
             await handleConfirmRestore(selected, currentStatus, '');
             updaDataTable();
             setRestoreDialogOpen(false);
@@ -500,7 +593,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             console.error('Errore durante il ripristino:', error);
           }
         }}
-        onSuccess={() => setShowMsg(true)}
+        onSuccess={() => setShowMsgApproved(true)}
       />
 
       <DetailDrawer
@@ -512,9 +605,25 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           data-testid="product-detail"
           data={drawerData}
           isInvitaliaUser={isInvitaliaUser}
+          isInvitaliaAdmin={isInvitaliaAdmin}
           open={true}
           onUpdateTable={updaDataTable}
           onClose={() => handleToggleDrawer(false)}
+          onShowApprovedMsg={() => {
+            setShowMsgApproved(true);
+            setShowMsgWaitApproved(false);
+            setShowMsgRejected(false);
+          }}
+          onShowRejectedMsg={() => {
+            setShowMsgRejected(true);
+            setShowMsgApproved(false);
+            setShowMsgWaitApproved(false);
+          }}
+          onShowWaitApprovedMsg={() => {
+            setShowMsgWaitApproved(true);
+            setShowMsgApproved(false);
+            setShowMsgRejected(false);
+          }}
         />
       </DetailDrawer>
 
@@ -537,25 +646,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         errorStatus={apiErrorOccurred}
         handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
         setFiltering={setFiltering}
+        setPage={setPage}
       />
-      {showMsg && (
-        <Box
-          sx={{
-            position: 'absolute',
-            right: 12,
-            bottom: 32,
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            zIndex: 9999,
-          }}
-        >
-          <MsgResult
-            severity="success"
-            message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
-          />
-        </Box>
-      )}
+      {renderResultMessages()}
     </>
   );
 };

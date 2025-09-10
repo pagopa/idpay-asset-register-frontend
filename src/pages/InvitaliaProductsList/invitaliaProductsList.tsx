@@ -49,21 +49,7 @@ const InvitaliaProductsList: React.FC = () => {
         <ProductDataGrid organizationId={institution?.institutionId || ''} />
       </Box>
       {showMsg && (
-        <Box
-          sx={{
-            position: 'absolute',
-            right: 12,
-            bottom: 32,
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <MsgResult
-            severity="success"
-            message={t('pages.invitaliaProductsList.richiestaApprovazioneSuccessMsg')}
-          />
-        </Box>
+        <MsgResult severity="success" message={t('msgResutlt.okButtonApproved')} bottom={80} />
       )}
     </Box>
   );
