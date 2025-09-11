@@ -1,7 +1,7 @@
 {
   "name": "idpay-asset-register-frontend",
   "version": "1.0.0",
-  "homepage": "registro-dei-beni",
+  "homepage": "elenco-informatico-elettrodomestici",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",
