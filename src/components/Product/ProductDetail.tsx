@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import FlagIcon from '@mui/icons-material/Flag';
 import {
   EMPTY_DATA,
+  L1_MOTIVATION_OK,
   MAX_LENGTH_DETAILL_PR,
   MIDDLE_STATES,
   PRODUCTS_STATES,
@@ -210,7 +211,7 @@ type ProductInfoRowsProps = {
 };
 
 function renderEntry(entry: any, idx: number) {
-  const operator = entry?.role ? `operatore ${entry.role}` : 'operatore';
+  const operator = entry?.role ? `${USERS_NAMES.OPERATORE} ${entry.role}` : USERS_NAMES.OPERATORE;
   const dateLabel = entry?.updateDate
     ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
     : EMPTY_DATA;
@@ -247,7 +248,8 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const baseRows = getProductInfoRowsConfig(data, t);
 
   const rows =
-    user?.org_role !== USERS_TYPES.OPERATORE && Boolean(data?.statusChangeChronology?.length)
+    user?.org_role !== USERS_TYPES.OPERATORE.toLowerCase() &&
+    Boolean(data?.statusChangeChronology?.length)
       ? [
           ...baseRows,
           {
@@ -324,7 +326,7 @@ export default function ProductDetail({
       PRODUCTS_STATES.APPROVED,
       [data.gtinCode],
       data.status as ProductStatusEnum,
-      EMPTY_DATA
+      L1_MOTIVATION_OK
     );
     setRestoreDialogOpen(false);
     if (typeof onUpdateTable === 'function') {
@@ -363,7 +365,6 @@ export default function ProductDetail({
 
   const handleExcludeClick = () => {
     setExcludeModalOpen(true);
-
   };
 
   return (

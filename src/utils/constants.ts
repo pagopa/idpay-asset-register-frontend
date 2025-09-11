@@ -40,19 +40,21 @@ export enum USERS_TYPES {
 }
 
 export enum USERS_NAMES {
-  OPERATORE = 'operatore',
+  OPERATORE = 'Operatore',
   INVITALIA_L1 = 'L1',
   INVITALIA_L2 = 'L2'
 }
 
 export const EMPTY_DATA = '-';
+export const L1_MOTIVATION_OK = 'Da approvare';
+export const L2_MOTIVATION_OK = 'Approvato';
 export const MAX_TABLE_HEIGHT = 700;
 export const PAGINATION_ROWS_PRODUCTS = 10;
 export const PAGINATION_ROWS_UPLOADS = 20;
 
-export const maxLengthEmail: number = 40;
-export const maxLengthOverviewProd: number = 75;
-export const maxLengthOverviewInvit: number = 140;
+export const MAX_LENGTH_EMAIL: number = 40;
+export const MAX_LENGTH_OVERVIEW_PROD: number = 75;
+export const MAX_LENGTH_OVERVIEW_INVIT: number = 140;
 
 export const MAX_LENGTH_DETAILL_PR: number = 40;
 export const MIN_LENGTH_TABLE_PR: number = 15;

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import OverviewProductionSection from '../components/OverviewProductionSection';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
-import { EMPTY_DATA, maxLengthOverviewProd } from '../../utils/constants';
+import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_PROD } from '../../utils/constants';
 
 const Overview: React.FC = () => {
   const { t } = useTranslation();
@@ -90,7 +90,7 @@ const Overview: React.FC = () => {
                     {truncate && value ? (
                       <Tooltip title={value}>
                         <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }}>
-                          {truncateString(value, maxLengthOverviewProd)}
+                          {truncateString(value, MAX_LENGTH_OVERVIEW_PROD)}
                         </Typography>
                       </Tooltip>
                     ) : (
