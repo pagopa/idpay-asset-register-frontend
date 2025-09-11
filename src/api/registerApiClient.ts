@@ -3,7 +3,8 @@ import {
   extractResponse,
 } from '@pagopa/selfcare-common-frontend/lib/utils/api-utils';
 import { appStateActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice';
-import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+import {storageTokenOps, storageUserOps} from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
 import { createClient, WithDefaultsT } from './generated/register/client';
@@ -21,7 +22,7 @@ import { ProductListDTO } from './generated/register/ProductListDTO';
 
 const rawFetchApi = buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION);
 
-const sanitizedFetchApi: typeof rawFetchApi = (input, init) => {
+const sanitizedFetchApi: typeof rawFetchApi = async (input, init) => {
   const headers = new Headers(init?.headers ?? {});
   const toDelete: Array<string> = [];
   headers.forEach((value, key) => {
@@ -36,15 +37,19 @@ const sanitizedFetchApi: typeof rawFetchApi = (input, init) => {
     }
   });
   toDelete.forEach((k) => headers.delete(k));
-  return rawFetchApi(input, { ...init, headers });
+  const res = await rawFetchApi(input, { ...init, headers });
+
+  if (res?.status === 401) {
+    onRedirectToLogin();
+  }
+  return res;
 };
 
-const withBearerAndPartyId: WithDefaultsT<'Bearer'> = (wrappedOperation: (arg0: any) => any) => (params: any) => {
-  const token = storageTokenOps.read();
-  return wrappedOperation({
-    ...params,
-    Bearer: `Bearer ${token}`,
-  });
+const withBearerAndPartyId: WithDefaultsT<'Bearer'> =
+  (wrappedOperation: (arg0: any) => any) => (params: any) => {
+    const token = storageTokenOps.read();
+    const extra = token ? { Bearer: `Bearer ${token}` } : {};
+    return wrappedOperation({ ...params, ...extra });
 };
 
 const registerClient = createClient({
@@ -54,18 +59,22 @@ const registerClient = createClient({
   withDefaults: withBearerAndPartyId,
 });
 
-const onRedirectToLogin = () =>
+const onRedirectToLogin = () => {
   store.dispatch(
-    appStateActions.addError({
-      id: 'tokenNotValid',
-      error: new Error(),
-      techDescription: 'token expired or not valid',
-      toNotify: false,
-      blocking: false,
-      displayableTitle: 'Ti stiamo reindirizzando alla pagina di accesso',
-      displayableDescription: 'La tua sessione è scaduta',
-    })
+      appStateActions.addError({
+        id: 'tokenNotValid',
+        error: new Error(),
+        techDescription: 'token expired or not valid',
+        toNotify: false,
+        blocking: false,
+        displayableTitle: 'Ti stiamo reindirizzando alla pagina di accesso',
+        displayableDescription: 'La tua sessione è scaduta',
+      })
   );
+  
+  storageUserOps.delete();
+  window.location.assign(CONFIG.URL_FE.LOGIN);
+};
 
 export const RolePermissionApi = {
   userPermission: async (): Promise<UserPermissionDTO> => {
@@ -209,7 +218,8 @@ export const RegisterApi = {
         params['x-organization-selected'] = trimmed;
       }
 
-      return await registerClient.getBatchNameList(params);
+      const result = await registerClient.getBatchNameList(params);
+      return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
       console.error('Errore durante il recupero della lista filtri lotti:', error);
       throw error;
