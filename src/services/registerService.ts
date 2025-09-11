@@ -146,7 +146,7 @@ export const setSupervisionedStatusList = async (
      gtinCodes: Array<string>,
      currentStatus: ProductStatusEnum,
      motivation: string
-): Promise<UpdateResponseDTO> => {
+ ): Promise<UpdateResponseDTO> => {
   try {
    return await RegisterApi.setRejectedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
@@ -156,6 +156,21 @@ export const setSupervisionedStatusList = async (
     throw error;
   }
  };
+
+  export const setRestoredStatusList = async (
+      gtinCodes: Array<string>,
+      currentStatus: ProductStatusEnum,
+      motivation: string
+  ): Promise<UpdateResponseDTO> => {
+    try {
+      return await RegisterApi.setRestoredStatusList(gtinCodes, currentStatus, motivation);
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        throw error.response.data;
+      }
+      throw error;
+    }
+  };
 
  export const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchList> => {
    try {
