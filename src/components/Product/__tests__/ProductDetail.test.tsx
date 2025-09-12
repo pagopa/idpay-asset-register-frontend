@@ -3,7 +3,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ProductDetail from '../ProductDetail';
 import { ProductDTO } from '../../../api/generated/register/ProductDTO';
 import { ProductStatusEnum } from '../../../api/generated/register/ProductStatus';
-import { PRODUCTS_STATES, MIDDLE_STATES, USERS_TYPES, EMPTY_DATA } from '../../../utils/constants';
+import { PRODUCTS_STATES, MIDDLE_STATES, USERS_TYPES } from '../../../utils/constants';
 import * as registerService from '../../../services/registerService';
 import * as helpers from '../../../helpers';
 import '@testing-library/jest-dom';
@@ -54,7 +54,7 @@ jest.mock('../../../helpers', () => ({
 }));
 
 jest.mock('../ProductConfirmDialog', () => {
-    return function ProductConfirmDialog({ open, onCancel, onConfirm, onSuccess }: any) {
+    return function ProductConfirmDialog({ open, onCancel, onConfirm }: any) {
         return open ? (
             <div data-testid="confirm-dialog">
                 <button onClick={onCancel} data-testid="dialog-cancel">Cancel</button>
@@ -80,7 +80,7 @@ jest.mock('../ProductModal', () => {
 });
 
 jest.mock('../ProductInfoRow', () => {
-    return function ProductInfoRow({ label, value, labelVariant, valueVariant }: any) {
+    return function ProductInfoRow({ label, value }: any) {
         return (
             <div data-testid="product-info-row">
                 <span data-testid="row-label">{label}</span>
@@ -96,7 +96,6 @@ jest.mock('../ProductStatusChip', () => {
     };
 });
 
-// Mock di date-fns
 jest.mock('date-fns', () => ({
     format: jest.fn((date: any, formatString: string) => {
         if (formatString === 'dd/MM/yyyy') return '01/01/2024';
@@ -111,7 +110,7 @@ const mockProductData: ProductDTO = {
     gtinCode: '1234567890123',
     productName: 'Test Product',
     batchName: 'Test Batch',
-    registrationDate: '1672531200000', // 2023-01-01
+    registrationDate: '1672531200000',
     eprelCode: 'EPREL123',
     productCode: 'PROD123',
     category: 'Test Category',
@@ -371,11 +370,6 @@ describe('ProductDetail', () => {
 
     describe('API calls', () => {
         it('should call setWaitApprovedStatusList for approved action', async () => {
-            const gtinCodes = ['123'];
-            const currentStatus = ProductStatusEnum.UPLOADED;
-            const motivation = 'test';
-
-            // Simuliamo la chiamata diretta alla funzione handleOpenModal
             renderComponent({
                 isInvitaliaUser: true,
                 data: { ...mockProductData, status: ProductStatusEnum.UPLOADED }
@@ -424,7 +418,6 @@ describe('ProductDetail', () => {
 
         it('should format registration date correctly', () => {
             renderComponent();
-            // Il mock di date-fns dovrebbe restituire la data formattata
             expect(screen.getByTestId('product-detail')).toBeInTheDocument();
         });
 
@@ -488,7 +481,6 @@ describe('ProductDetail', () => {
             fireEvent.click(screen.getByTestId('request-approval-btn'));
             fireEvent.click(screen.getByTestId('dialog-confirm'));
 
-            // Non dovrebbe generare errori
             await waitFor(() => {
                 expect(registerService.setWaitApprovedStatusList).toHaveBeenCalled();
             });
@@ -535,12 +527,10 @@ describe('ProductDetail', () => {
                 data: { ...mockProductData, status: ProductStatusEnum.UPLOADED }
             });
 
-            // Test supervision modal
             fireEvent.click(screen.getByTestId('supervisedBtn'));
             expect(screen.getByTestId('modal-action-type')).toHaveTextContent(PRODUCTS_STATES.SUPERVISED);
             fireEvent.click(screen.getByTestId('modal-close'));
 
-            // Test rejection modal
             fireEvent.click(screen.getByTestId('rejectedBtn'));
             expect(screen.getByTestId('modal-action-type')).toHaveTextContent(PRODUCTS_STATES.REJECTED);
         });
