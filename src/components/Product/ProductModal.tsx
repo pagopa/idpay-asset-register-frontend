@@ -17,14 +17,19 @@ import {
   setSupervisionedStatusList,
   setRejectedStatusList,
   setRestoredStatusList,
-  setApprovedStatusList
+  setApprovedStatusList,
 } from '../../services/registerService';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
-import {MIDDLE_STATES, PRODUCTS_STATES} from '../../utils/constants';
+import {
+  EMPTY_DATA,
+  // L2_MOTIVATION_OK,
+  MIDDLE_STATES,
+  PRODUCTS_STATES,
+} from '../../utils/constants';
 
 interface ProductModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose: (cancelled?: boolean) => void;
   productName?: string;
   actionType?: string;
   onUpdateTable?: () => void;
@@ -176,7 +181,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       buttonText: t('invitaliaModal.acceptApprovation.buttonText'),
       buttonTextConfirm: t('invitaliaModal.acceptApprovation.buttonTextConfirm'),
       buttonTextCancel: t('invitaliaModal.acceptApprovation.buttonTextCancel'),
-    }
+    },
   };
 
   const config = MODAL_CONFIG[actionType as keyof typeof MODAL_CONFIG];
@@ -185,7 +190,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
     return null;
   }
   const gtinCodes = selectedProducts.map((p) => p.gtinCode);
-  // selected with same status always
   const status: ProductStatusEnum = selectedProducts[0].status;
 
   const callSupervisionedApi = async () => {
@@ -194,7 +198,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      onClose();
+      onClose(false);
       await setSupervisionedStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
@@ -204,7 +208,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       }
     } catch (error) {
       console.error(error);
-      onClose();
+      onClose(false);
     }
   };
 
@@ -214,7 +218,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      onClose();
+      onClose(false);
       await setRejectedStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
@@ -224,7 +228,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       }
     } catch (error) {
       console.error(error);
-      onClose();
+      onClose(false);
     }
   };
 
@@ -234,7 +238,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      onClose();
+      onClose(false);
       await setRestoredStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
@@ -244,14 +248,14 @@ const ProductModal: React.FC<ProductModalProps> = ({
       }
     } catch (error) {
       console.error(error);
-      onClose();
+      onClose(false);
     }
   };
 
   const callApprovedApi = async () => {
     try {
-      onClose();
-      await setApprovedStatusList(gtinCodes, status, motivation);
+      onClose(false);
+      await setApprovedStatusList(gtinCodes, status, EMPTY_DATA);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -260,21 +264,18 @@ const ProductModal: React.FC<ProductModalProps> = ({
       }
     } catch (error) {
       console.error(error);
-      onClose();
+      onClose(false);
     }
   };
 
   const handleCloseWithUpdate = () => {
-    onClose();
-    if (onUpdateTable) {
-      onUpdateTable();
-    }
+    onClose(true);
   };
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={() => onClose(true)}
       slotProps={{
         paper: {
           sx: modalStyles.dialogPaper,
@@ -286,27 +287,31 @@ const ProductModal: React.FC<ProductModalProps> = ({
       <DialogContent sx={{ p: 0 }}>
         <Typography sx={modalStyles.descriptionText}>{config?.description || ''}</Typography>
         <Typography sx={modalStyles.listTitle}>{config?.listTitle || ''}</Typography>
-        { actionType !== MIDDLE_STATES.ACCEPT_APPROVATION &&
+        {actionType !== MIDDLE_STATES.ACCEPT_APPROVATION && (
           <>
             <TextField
-                required
-                label={config?.reasonLabel}
-                color="primary"
-                fullWidth
-                inputProps={{ maxLength: 200 }}
-                value={motivation}
-                onChange={(e) => {
-                  setReason(e.target.value);
-                }}
-                onBlur={() => setMotivationTouched(true)}
-                sx={modalStyles.textField}
-                error={motivationTouched && !motivation.trim()}
-                id={motivationTouched && !motivation.trim() ? 'outlined-error-helper-text' : undefined}
-                helperText={motivationTouched && !motivation.trim() ? 'Campo obbligatorio' : undefined}
+              required
+              label={config?.reasonLabel}
+              color="primary"
+              fullWidth
+              inputProps={{ maxLength: 200 }}
+              value={motivation}
+              onChange={(e) => {
+                setReason(e.target.value);
+              }}
+              onBlur={() => setMotivationTouched(true)}
+              sx={modalStyles.textField}
+              error={motivationTouched && !motivation.trim()}
+              id={
+                motivationTouched && !motivation.trim() ? 'outlined-error-helper-text' : undefined
+              }
+              helperText={
+                motivationTouched && !motivation.trim() ? 'Campo obbligatorio' : undefined
+              }
             />
             <Box sx={modalStyles.charCounter}>{motivation.length}/200</Box>
           </>
-        }
+        )}
       </DialogContent>
       <DialogActions sx={modalStyles.dialogActions}>
         <Button
@@ -342,28 +347,28 @@ const ProductModal: React.FC<ProductModalProps> = ({
           </Button>
         )}
         {actionType === MIDDLE_STATES.REJECT_APPROVATION && (
-            <Button
-                variant="contained"
-                color="primary"
-                sx={{
-                  ...buttonStyle,
-                }}
-                onClick={callRestoredApi}
-            >
-              {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
-            </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              ...buttonStyle,
+            }}
+            onClick={callRestoredApi}
+          >
+            {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
+          </Button>
         )}
         {actionType === MIDDLE_STATES.ACCEPT_APPROVATION && (
-            <Button
-                variant="contained"
-                color="primary"
-                sx={{
-                  ...buttonStyle,
-                }}
-                onClick={callApprovedApi}
-            >
-              {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
-            </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              ...buttonStyle,
+            }}
+            onClick={callApprovedApi}
+          >
+            {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
+          </Button>
         )}
         <IconButton aria-label="close" onClick={handleCloseWithUpdate} sx={modalStyles.closeButton}>
           <CloseIcon />
