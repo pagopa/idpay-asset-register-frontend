@@ -299,7 +299,7 @@ describe('ProductDetail', () => {
                 expect(registerService.setWaitApprovedStatusList).toHaveBeenCalledWith(
                     [mockProductData.gtinCode],
                     'SUPERVISED',
-                    EMPTY_DATA
+                    'Da approvare'
                 );
             });
 

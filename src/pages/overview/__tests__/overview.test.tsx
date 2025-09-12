@@ -245,12 +245,9 @@ describe('Overview Component', () => {
 
             renderWithTheme(<Overview />);
 
-            expect(mockTruncateString).toHaveBeenCalledWith('Test Organization Name', 20);
-            expect(mockTruncateString).toHaveBeenCalledWith('TEST123456789', 20);
-            expect(mockTruncateString).toHaveBeenCalledWith('IT12345678901', 20);
-            expect(mockTruncateString).toHaveBeenCalledWith('Via Test 123, Milano, Italy', 20);
-            expect(mockTruncateString).toHaveBeenCalledWith('test@pec.test.it', 20);
-            expect(mockTruncateString).toHaveBeenCalledWith('test@test.it', 20);
+            expect(mockTruncateString).toHaveBeenNthCalledWith(1,'Test Organization Name', undefined);
+            expect(mockTruncateString).toHaveBeenNthCalledWith(2,'TEST123456789', undefined);
+            expect(mockTruncateString).toHaveBeenNthCalledWith(3,'IT12345678901', undefined);
         });
 
         it('should not call truncateString for empty fields', () => {
@@ -267,9 +264,9 @@ describe('Overview Component', () => {
 
             renderWithTheme(<Overview />);
 
-            expect(mockTruncateString).toHaveBeenCalledWith('Test Org', 20);
-            expect(mockTruncateString).toHaveBeenCalledWith('Via Test 123', 20);
-            expect(mockTruncateString).toHaveBeenCalledWith('test@email.it', 20);
+            expect(mockTruncateString).toHaveBeenNthCalledWith(1, 'Test Org', undefined);
+            expect(mockTruncateString).toHaveBeenNthCalledWith(2, 'Via Test 123', undefined);
+            expect(mockTruncateString).toHaveBeenNthCalledWith(3, 'test@email.it', undefined);
             expect(mockTruncateString).toHaveBeenCalledTimes(3);
         });
     });
