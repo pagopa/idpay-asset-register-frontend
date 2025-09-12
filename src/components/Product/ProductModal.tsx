@@ -24,7 +24,7 @@ import { L2_MOTIVATION_OK, MIDDLE_STATES, PRODUCTS_STATES } from '../../utils/co
 
 interface ProductModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose: (cancelled?: boolean) => void;
   productName?: string;
   actionType?: string;
   onUpdateTable?: () => void;
@@ -193,7 +193,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      onClose();
+      onClose(false);
       await setSupervisionedStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
@@ -203,7 +203,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       }
     } catch (error) {
       console.error(error);
-      onClose();
+      onClose(false);
     }
   };
 
@@ -213,7 +213,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      onClose();
+      onClose(false);
       await setRejectedStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
@@ -223,7 +223,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       }
     } catch (error) {
       console.error(error);
-      onClose();
+      onClose(false);
     }
   };
 
@@ -233,7 +233,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      onClose();
+      onClose(false);
       await setRestoredStatusList(gtinCodes, status, motivation);
       if (onUpdateTable) {
         onUpdateTable();
@@ -243,13 +243,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
       }
     } catch (error) {
       console.error(error);
-      onClose();
+      onClose(false);
     }
   };
 
   const callApprovedApi = async () => {
     try {
-      onClose();
+      onClose(false);
       await setApprovedStatusList(gtinCodes, status, L2_MOTIVATION_OK);
       if (onUpdateTable) {
         onUpdateTable();
@@ -259,21 +259,18 @@ const ProductModal: React.FC<ProductModalProps> = ({
       }
     } catch (error) {
       console.error(error);
-      onClose();
+      onClose(false);
     }
   };
 
   const handleCloseWithUpdate = () => {
-    onClose();
-    if (onUpdateTable) {
-      onUpdateTable();
-    }
+    onClose(true);
   };
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={() => onClose(true)}
       slotProps={{
         paper: {
           sx: modalStyles.dialogPaper,

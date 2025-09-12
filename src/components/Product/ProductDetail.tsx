@@ -486,7 +486,17 @@ export default function ProductDetail({
 
         <ProductModal
           open={supervisionModalOpen}
-          onClose={() => handleModalClose(setSupervisionModalOpen)}
+          onClose={(cancelled) => {
+            setSupervisionModalOpen(false);
+            if (!cancelled) {
+              if (typeof onUpdateTable === 'function') {
+                onUpdateTable();
+              }
+              if (typeof onClose === 'function') {
+                onClose();
+              }
+            }
+          }}
           actionType={
             isInvitaliaUser ? PRODUCTS_STATES.SUPERVISED : MIDDLE_STATES.ACCEPT_APPROVATION
           }
