@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import FlagIcon from '@mui/icons-material/Flag';
 import {
   EMPTY_DATA,
+  // L1_MOTIVATION_OK,
   MAX_LENGTH_DETAILL_PR,
   MIDDLE_STATES,
   PRODUCTS_STATES,
@@ -210,12 +211,16 @@ type ProductInfoRowsProps = {
 };
 
 function renderEntry(entry: any, idx: number) {
-  const operator = entry?.role ? `operatore ${entry.role}` : 'operatore';
+  const operator = entry?.role ? `${USERS_NAMES.OPERATORE} ${entry.role}` : USERS_NAMES.OPERATORE;
   const dateLabel = entry?.updateDate
     ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
     : EMPTY_DATA;
   const motivationText = entry?.motivation?.trim() || EMPTY_DATA;
   const header = `${operator} · ${dateLabel}`;
+
+  if (motivationText === EMPTY_DATA) {
+    return null;
+  }
 
   return (
     <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
@@ -247,13 +252,20 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const baseRows = getProductInfoRowsConfig(data, t);
 
   const rows =
-    user?.org_role !== USERS_TYPES.OPERATORE && Boolean(data?.statusChangeChronology?.length)
+    user?.org_role !== USERS_TYPES.OPERATORE.toLowerCase() &&
+    Boolean(data?.statusChangeChronology?.length)
       ? [
           ...baseRows,
           {
             renderCustom: () => {
               const chronology =
                 ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
+              const filteredChronology = chronology.filter(
+                (entry) => (entry?.motivation?.trim() || EMPTY_DATA) !== EMPTY_DATA
+              );
+              if (filteredChronology.length === 0) {
+                return null;
+              }
               return (
                 <ProductInfoRow
                   label={t('pages.productDetail.motivation')}
@@ -261,7 +273,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                   sx={{ marginTop: 3 }}
                   value={
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                      {chronology.map((entry, idx) => renderEntry(entry, idx))}
+                      {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
                     </Box>
                   }
                 />
@@ -363,7 +375,6 @@ export default function ProductDetail({
 
   const handleExcludeClick = () => {
     setExcludeModalOpen(true);
-
   };
 
   return (
@@ -485,7 +496,17 @@ export default function ProductDetail({
 
         <ProductModal
           open={supervisionModalOpen}
-          onClose={() => handleModalClose(setSupervisionModalOpen)}
+          onClose={(cancelled) => {
+            setSupervisionModalOpen(false);
+            if (!cancelled) {
+              if (typeof onUpdateTable === 'function') {
+                onUpdateTable();
+              }
+              if (typeof onClose === 'function') {
+                onClose();
+              }
+            }
+          }}
           actionType={
             isInvitaliaUser ? PRODUCTS_STATES.SUPERVISED : MIDDLE_STATES.ACCEPT_APPROVATION
           }

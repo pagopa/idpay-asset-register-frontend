@@ -1,5 +1,5 @@
 import { useTheme, useMediaQuery } from '@mui/material';
-import {EMPTY_DATA, MAX_LENGTH_TABLE_PR, maxLengthEmail, MIN_LENGTH_TABLE_PR} from "./utils/constants";
+import {EMPTY_DATA, MAX_LENGTH_TABLE_PR, MAX_LENGTH_EMAIL, MIN_LENGTH_TABLE_PR} from "./utils/constants";
 
 export const formattedCurrency = (
   number: number | undefined,
@@ -107,7 +107,7 @@ export const fetchUserFromLocalStorage = (): { [key: string]: string } | null =>
     }
 };
 
-export const truncateString = (str?: string, maxLength: number = maxLengthEmail): string => {
+export const truncateString = (str?: string, maxLength: number = MAX_LENGTH_EMAIL): string => {
     if (!str) {
         return EMPTY_DATA;
     } else {
