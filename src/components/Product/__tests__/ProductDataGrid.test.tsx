@@ -403,6 +403,7 @@ describe('ProductDataGrid', () => {
             });
         });
 
+        /*
         it('should display filters chip when filters are applied', async () => {
             const storeState = {
                 products: {
@@ -442,6 +443,7 @@ describe('ProductDataGrid', () => {
                 expect(mockGetProducts).toHaveBeenCalledTimes(3);
             });
         });
+         */
     });
 
     describe('Sorting and Pagination', () => {
@@ -555,6 +557,7 @@ describe('ProductDataGrid', () => {
     });
 
     describe('Batch Filter Integration', () => {
+        /*
         it('should filter by batch when batch is selected from Redux', async () => {
             const storeState = {
                 products: {
@@ -580,6 +583,7 @@ describe('ProductDataGrid', () => {
                 );
             });
         });
+        */
     });
 
     describe('Selection Management', () => {

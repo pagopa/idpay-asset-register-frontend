@@ -907,22 +907,20 @@ components:
           maxItems: 1000
     BatchList:
       title: BatchList
-      type: object
-      properties:
-        batches:
-          type: array
-          items:
-            properties:
-              productFileId:
-                type: string
-                minLength: 24
-                maxLength: 24
-                pattern: ^[a-fA-F0-9]{24}$
-              batchName:
-                type: string
-                pattern: ^(Apparecchi_di_refrigerazione|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\.csv$
-                maxLength: 255
-          maxItems: 1000
+      type: array
+      items:
+        type: object
+        properties:
+          productFileId:
+            type: string
+            minLength: 24
+            maxLength: 24
+            pattern: ^[a-fA-F0-9]{24}$
+          batchName:
+            type: string
+            pattern: ^(Apparecchi_di_refrigerazione|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\.csv$
+            maxLength: 255
+      maxItems: 1000
     ErrorDTO:
       type: object
       required:
