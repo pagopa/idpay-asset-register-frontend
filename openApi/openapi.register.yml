@@ -2018,12 +2018,14 @@ components:
           - gtinCode, desc
           - eprelCode, desc
           - status, desc
+          - organizationName, desc
           - category, asc
           - batchName, asc
           - energyClass, asc
           - gtinCode, asc
           - eprelCode, asc
           - status, asc
+          - organizationName, asc
     eprelCode_query:
       name: eprelCode
       in: query

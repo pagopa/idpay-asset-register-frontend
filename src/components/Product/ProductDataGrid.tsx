@@ -18,6 +18,7 @@ import {
   PRODUCTS_STATES,
   USERS_NAMES,
   MIDDLE_STATES,
+  // L1_MOTIVATION_OK,
 } from '../../utils/constants';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import {
@@ -586,7 +587,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               setShowMsgWaitApproved(false);
               setShowMsgRejected(false);
             }
-            await handleConfirmRestore(selected, currentStatus, '');
+            await handleConfirmRestore(selected, currentStatus, EMPTY_DATA);
             updaDataTable();
             setRestoreDialogOpen(false);
           } catch (error) {

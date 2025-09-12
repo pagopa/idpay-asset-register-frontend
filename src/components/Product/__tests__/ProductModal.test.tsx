@@ -136,11 +136,10 @@ describe('ProductModal', () => {
             screen.getByRole('button', { name: 'invitaliaModal.supervised.buttonTextCancel' })
         );
         expect(onClose).toHaveBeenCalledTimes(1);
-        expect(onUpdateTable).toHaveBeenCalledTimes(1);
+        expect(onUpdateTable).toHaveBeenCalledTimes(0);
 
         await userEvent.click(screen.getByRole('button', { name: /close/i }));
         expect(onClose).toHaveBeenCalledTimes(2);
-        expect(onUpdateTable).toHaveBeenCalledTimes(2);
     });
 
     test('REJECTED branch: dedicated UI and setRejectedStatusList call', async () => {

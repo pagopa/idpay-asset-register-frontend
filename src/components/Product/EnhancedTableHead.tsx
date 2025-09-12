@@ -81,7 +81,7 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
                 active={orderBy === headCell.id}
                 direction={orderBy === headCell.id ? order : 'asc'}
                 onClick={(event) => onRequestSort(event, headCell.id as keyof ProductDTO)}
-                hideSortIcon={true}
+                hideSortIcon={false}
               >
                 {t(headCell.label)}
                 {orderBy === headCell?.id ? (

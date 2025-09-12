@@ -59,7 +59,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       align: 'left',
     },
     {
-      id: 'producer',
+      id: 'organizationName',
       label: t('pages.products.listHeader.producer'),
       align: 'left',
     },

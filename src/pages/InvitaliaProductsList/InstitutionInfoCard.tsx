@@ -6,7 +6,7 @@ import { truncateString } from '../../helpers';
 import { InstitutionResponse } from '../../api/generated/register/InstitutionResponse';
 import { getInstitutionById } from '../../services/registerService';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
-import { EMPTY_DATA, maxLengthOverviewInvit } from '../../utils/constants';
+import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_INVIT } from '../../utils/constants';
 
 const InstitutionInfoCard: React.FC = () => {
   const { t } = useTranslation();
@@ -67,7 +67,7 @@ const InstitutionInfoCard: React.FC = () => {
       {truncate && value ? (
         <Tooltip title={value}>
           <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }} noWrap>
-            {truncateString(value, maxLengthOverviewInvit)}
+            {truncateString(value, MAX_LENGTH_OVERVIEW_INVIT)}
           </Typography>
         </Tooltip>
       ) : (
