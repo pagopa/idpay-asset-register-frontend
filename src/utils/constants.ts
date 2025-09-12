@@ -46,8 +46,8 @@ export enum USERS_NAMES {
 }
 
 export const EMPTY_DATA = '-';
-export const L1_MOTIVATION_OK = 'Da approvare';
-export const L2_MOTIVATION_OK = 'Approvato';
+// export const L1_MOTIVATION_OK = 'Da approvare';
+// export const L2_MOTIVATION_OK = 'Approvato';
 export const MAX_TABLE_HEIGHT = 700;
 export const PAGINATION_ROWS_PRODUCTS = 10;
 export const PAGINATION_ROWS_UPLOADS = 20;

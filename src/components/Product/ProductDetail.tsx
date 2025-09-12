@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import FlagIcon from '@mui/icons-material/Flag';
 import {
   EMPTY_DATA,
-  L1_MOTIVATION_OK,
+  // L1_MOTIVATION_OK,
   MAX_LENGTH_DETAILL_PR,
   MIDDLE_STATES,
   PRODUCTS_STATES,
@@ -218,6 +218,10 @@ function renderEntry(entry: any, idx: number) {
   const motivationText = entry?.motivation?.trim() || EMPTY_DATA;
   const header = `${operator} · ${dateLabel}`;
 
+  if (motivationText === EMPTY_DATA) {
+    return null;
+  }
+
   return (
     <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
       <Tooltip
@@ -256,6 +260,12 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
             renderCustom: () => {
               const chronology =
                 ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
+              const filteredChronology = chronology.filter(
+                (entry) => (entry?.motivation?.trim() || EMPTY_DATA) !== EMPTY_DATA
+              );
+              if (filteredChronology.length === 0) {
+                return null;
+              }
               return (
                 <ProductInfoRow
                   label={t('pages.productDetail.motivation')}
@@ -263,7 +273,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                   sx={{ marginTop: 3 }}
                   value={
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                      {chronology.map((entry, idx) => renderEntry(entry, idx))}
+                      {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
                     </Box>
                   }
                 />
@@ -326,7 +336,7 @@ export default function ProductDetail({
       PRODUCTS_STATES.APPROVED,
       [data.gtinCode],
       data.status as ProductStatusEnum,
-      L1_MOTIVATION_OK
+      EMPTY_DATA
     );
     setRestoreDialogOpen(false);
     if (typeof onUpdateTable === 'function') {

@@ -20,7 +20,12 @@ import {
   setApprovedStatusList,
 } from '../../services/registerService';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
-import { L2_MOTIVATION_OK, MIDDLE_STATES, PRODUCTS_STATES } from '../../utils/constants';
+import {
+  EMPTY_DATA,
+  // L2_MOTIVATION_OK,
+  MIDDLE_STATES,
+  PRODUCTS_STATES,
+} from '../../utils/constants';
 
 interface ProductModalProps {
   open: boolean;
@@ -250,7 +255,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const callApprovedApi = async () => {
     try {
       onClose(false);
-      await setApprovedStatusList(gtinCodes, status, L2_MOTIVATION_OK);
+      await setApprovedStatusList(gtinCodes, status, EMPTY_DATA);
       if (onUpdateTable) {
         onUpdateTable();
       }
