@@ -41,7 +41,7 @@ import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { Institution } from '../../model/Institution';
 import { setWaitApprovedStatusList } from '../../services/registerService';
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
-import { BatchFilterItems, BatchFilterList, Order } from './helpers';
+import { BatchFilterItems, Order } from './helpers';
 import { getStatusChecks, handleModalSuccess } from './ProductDataGrid.helpers';
 import ProductDetail from './ProductDetail';
 import ProductModal from './ProductModal';
@@ -210,9 +210,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
     void getBatchFilterList(targetId)
       .then((res) => {
-        const { left } = res as BatchFilterList;
-        const values = left?.[0]?.value ?? [];
-        setBatchFilterItems([...values]);
+        setBatchFilterItems(res as Array<BatchFilterItems>);
       })
       .catch(() => {
         setBatchFilterItems([]);
