@@ -210,7 +210,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
     void getBatchFilterList(targetId)
       .then((res) => {
-        setBatchFilterItems(res as Array<BatchFilterItems>);
+        setBatchFilterItems(res as Array<BatchFilterItems> | []);
       })
       .catch(() => {
         setBatchFilterItems([]);
