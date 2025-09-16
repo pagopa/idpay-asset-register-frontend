@@ -39,7 +39,7 @@
       "rangehoods": "Cappe da cucina",
       "dishwashers": "Lavastoviglie",
       "washerdriers": "Lavasciuga",
-      "refrigeratingappl": "Apparecchi di refigerazione",
+      "refrigeratingappl": "Apparecchi di refrigerazione",
       "cookinghobs": "Piani cottura"
     },
     "advancedFilters": "Filtri avanzati"
@@ -180,7 +180,7 @@
         "RANGEHOODS": "Cappe",
         "DISHWASHERS": "Lavastoviglie",
         "TUMBLEDRYERS": "Asciugatrici",
-        "REFRIGERATINGAPPL": "Apparecchi di refigerazione",
+        "REFRIGERATINGAPPL": "Apparecchi di refrigerazione",
         "COOKINGHOBS": "Piani cottura",
         "UPLOADED": "Da revisionare",
         "WAIT_APPROVED": "Da approvare",
@@ -193,7 +193,7 @@
         "Cappe": "RANGEHOODS",
         "Lavastoviglie": "DISHWASHERS",
         "Lavasciuga": "WASHERDRIERS",
-        "Apparecchi di refigerazione": "REFRIGERATINGAPPL",
+        "Apparecchi di refrigerazione": "REFRIGERATINGAPPL",
         "Piani cottura": "COOKINGHOBS",
         "Approvato": "APPROVED",
         "Da controllare": "SUPERVISED",
