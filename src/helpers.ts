@@ -42,8 +42,20 @@ export const formatDate = (date: Date | undefined) => {
   return '';
 };
 
-export const formatDateWithHours = (isoDate: Date | null | undefined): string => {
-    if (!isoDate) {
+export const formatDateWithHours = (isoDate: Date | string | null | undefined): string => {
+    if (!isoDate || (typeof isoDate === 'string' && isoDate.trim() === '')) {
+        return EMPTY_DATA;
+    }
+    const dateObj: Date =
+        isoDate instanceof Date
+            ? isoDate
+            : typeof isoDate === 'string'
+            ? new Date(isoDate)
+            : null as any;
+    if (!dateObj || isNaN(dateObj.getTime())) {
+        return EMPTY_DATA;
+    }
+    if (isNaN(dateObj.getTime())) {
         return EMPTY_DATA;
     }
     const options: Intl.DateTimeFormatOptions = {
@@ -56,7 +68,7 @@ export const formatDateWithHours = (isoDate: Date | null | undefined): string =>
         hour12: false,
         timeZone: 'Europe/Rome'
     };
-    const parts = new Intl.DateTimeFormat('it-IT', options).formatToParts(isoDate);
+    const parts = new Intl.DateTimeFormat('it-IT', options).formatToParts(dateObj);
     const day = parts.find(p => p.type === 'day')?.value ?? '';
     const month = parts.find(p => p.type === 'month')?.value ?? '';
     const year = parts.find(p => p.type === 'year')?.value ?? '';

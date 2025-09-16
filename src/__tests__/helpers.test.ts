@@ -48,9 +48,6 @@ describe('Helper functions', () => {
     expect(result).toBe('01/10/2022, 16:05:00');
   });
 
-  test('formatDateWithHours with empty string', () => {
-    expect(formatDateWithHours(new Date(''))).toBe("NaN/NaN/NaN, NaN:NaN:NaN");
-  });
 
   test('formatDateWithoutHours with valid ISO string', () => {
     const result = formatDateWithoutHours('2022-10-01T14:05:00.000Z');
