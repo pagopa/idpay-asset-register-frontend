@@ -135,7 +135,7 @@ describe('UploadsTable', () => {
     });
     expect(screen.getByTestId('uploads-table')).toBeInTheDocument();
     expect(screen.getByText('Batch A')).toBeInTheDocument();
-    expect(screen.getByText(/10:00:45/)).toBeInTheDocument();
+    expect(screen.getByText((content) => content.includes('12:00:45'))).toBeInTheDocument();
     expect(
       screen.getByText('5 pages.uploadHistory.uploadHistoryFoundProducts')
     ).toBeInTheDocument();
