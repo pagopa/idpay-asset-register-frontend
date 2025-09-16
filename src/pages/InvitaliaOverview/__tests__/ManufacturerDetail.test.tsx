@@ -20,7 +20,7 @@ const mockData = {
 describe('ManufacturerDetail', () => {
   it('renders all DrawerItems with correct values', () => {
     render(<ManufacturerDetail data={mockData as any} />);
-    expect(screen.getAllByText(mockData.description).length).toBeGreaterThan(0);
+    expect(screen.getByRole('heading', { name: mockData.description })).toBeInTheDocument();
     expect(screen.getByText(mockData.fiscalCode)).toBeInTheDocument();
     expect(screen.getByText(mockData.vatNumber)).toBeInTheDocument();
     expect(screen.getByText(mockData.address)).toBeInTheDocument();
