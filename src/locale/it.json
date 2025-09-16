@@ -63,7 +63,7 @@
       "termsDescription": "Accedendo, accetti i",
       "termsDescription2": "del servizio e confermi di aver letto l’",
       "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
-      "title": "Registro dei beni"
+      "title": "Elenco informatico elettrodomestici"
     },
     "overview": {
       "overviewTitle": "Panoramica",
@@ -126,7 +126,7 @@
           "fileUploadError": {
             "errorGenericTitle": "Errore durante il caricamento del file",
             "errorDescription": "Si è verificato un errore. Riprova più tardi",
-            "errorTitle": "II file contiene degli errori",
+            "errorTitle": "Il file contiene degli errori",
             "invalidTypeTitle": "Il formato del file non è valido",
             "invalidTypeDescription": "È possibile caricare solo file in formato .csv",
             "fileTooLargeTitle": "Il file non è valido",
@@ -141,7 +141,7 @@
             "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
             "multipeErrorsTitle": "Il file contiene uno o più errori",
             "multipleErrorDescription": " per verificare le informazioni e carica di nuovo il file.",
-            "eprelNotWorksTitle": "EPREL è giu ora non funziona",
+            "eprelNotWorksTitle": "EPREL è giù ora non funziona",
             "eprelNotWorksDescription": "Riprova più tardi",
             "missingFileDescription": "Carica un file in formato .csv"
           }
@@ -259,8 +259,8 @@
   "invitaliaModal": {
     "supervised": {
       "title": "Richiedi ulteriori controlli ai produttori",
-      "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali conrolli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'.",
-      "listTitle": "Perchè stai richidendo ulteriori controlli?",
+      "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali controlli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'.",
+      "listTitle": "Perchè stai richiedendo ulteriori controlli?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
       "buttonText": "Da controllare",
@@ -270,7 +270,7 @@
     },
     "rejected": {
       "title": "Richiedi esclusione",
-      "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori ricevernanno la notifica dell'esclusione.",
+      "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori riceveranno la notifica dell'esclusione.",
       "listTitle": "Perchè stai escludendo i prodotti?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
