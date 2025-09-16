@@ -2,6 +2,10 @@ import {PRODUCTS_CATEGORIES} from "../../utils/constants";
 import {CsvDTO} from "../../api/generated/register/CsvDTO";
 
 export const categoryList = [
+     {
+        label: "commons.categories.refrigeratingappl",
+        value: PRODUCTS_CATEGORIES.REFRIGERATINGAPPL
+    },
     {
         label: "commons.categories.tumbledryers",
         value: PRODUCTS_CATEGORIES.TUMBLEDRYERS
@@ -13,10 +17,6 @@ export const categoryList = [
     {
         label: "commons.categories.ovens",
         value: PRODUCTS_CATEGORIES.OVENS
-    },
-    {
-        label: "commons.categories.refrigeratingappl",
-        value: PRODUCTS_CATEGORIES.REFRIGERATINGAPPL
     },
     {
         label: "commons.categories.washerdriers",
