@@ -11,6 +11,7 @@ jest.mock('env-var', () => ({
             REACT_APP_URL_FE_LOGOUT: { required: () => ({ asString: () => '/logout' }) },
             REACT_APP_URL_FE_LANDING: { required: () => ({ asString: () => '/landing' }) },
             REACT_APP_URL_FE_ASSISTANCE_ASSET_REGISTER: { required: () => ({ asString: () => '/assistance' }) },
+            REACT_APP_URL_FE_EIE_MANUAL: { asString: () => '/manual' },
             REACT_APP_URL_API_REGISTER: { required: () => ({ asString: () => 'https://mock-api/register' }) },
             REACT_APP_API_ROLE_PERMISSION_TIMEOUT_MS: { required: () => ({ asInt: () => 5000 }) },
             REACT_APP_API_OPERATION_TIMEOUT_MS: { required: () => ({ asInt: () => 5000 }) },

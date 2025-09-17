@@ -7,6 +7,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useNavigate } from 'react-router-dom';
 import { BASE_ROUTE } from '../../routes';
+import { ENV } from '../../utils/env';
 import FormAddProducts, { FormAddProductsRef } from './formAddProducts';
 
 const AddProducts: React.FC = () => {
@@ -17,7 +18,7 @@ const AddProducts: React.FC = () => {
   const formRef = useRef<FormAddProductsRef>(null);
 
   return (
-    <Box pb={0}  data-testid="add-products-container">
+    <Box pb={0} data-testid="add-products-container">
       <Box sx={{ display: 'flex', gridColumn: 'span 12', alignItems: 'center', marginTop: 5 }}>
         <ButtonNaked
           component="button"
@@ -82,15 +83,26 @@ const AddProducts: React.FC = () => {
               <strong>{t('pages.addProducts.boxAddTextProduct')}</strong>
             </Typography>
             <Typography letterSpacing={'0.3px'} fontWeight={700}>
-              <Link href="">{t('pages.addProducts.goToManual')}</Link>
+              <Link
+                href={ENV.URL_FE.EIE_MANUAL || ''}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (!ENV.URL_FE.EIE_MANUAL) {
+                    e.preventDefault();
+                  }
+                }}
+              >
+                {t('pages.addProducts.goToManual')}
+              </Link>
             </Typography>
           </Box>
         </Paper>
 
         <FormAddProducts
-            ref={formRef}
-            fileAccepted={fileAccepted}
-            setFileAccepted={setFileAccepted}
+          ref={formRef}
+          fileAccepted={fileAccepted}
+          setFileAccepted={setFileAccepted}
         />
       </Box>
     </Box>

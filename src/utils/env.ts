@@ -19,6 +19,7 @@ export const ENV = {
       .get('REACT_APP_URL_FE_ASSISTANCE_ASSET_REGISTER')
       .required()
       .asString(),
+    EIE_MANUAL: env.get('REACT_APP_URL_FE_EIE_MANUAL').asString(),
   },
 
   URL_API: {
