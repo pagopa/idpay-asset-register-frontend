@@ -1,13 +1,14 @@
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 
 export const getSelectedStatuses = (
   selected: Array<string>,
   tableData: Array<ProductDTO>
-): Array<string> =>
+): Array<ProductStatusEnum> =>
   selected
-    .map((gtinCode) => String(tableData.find((row) => row.gtinCode === gtinCode)?.status))
-    .filter(Boolean);
+    .map((gtinCode) => tableData.find((row) => row.gtinCode === gtinCode)?.status)
+    .filter((status): status is ProductStatusEnum => status !== undefined);
 
 export const isAllStatus = (statuses: Array<string>, status: string) =>
   statuses.every((s) => s === status);
@@ -90,21 +91,21 @@ export const handleModalSuccess = ({
   }
 
   if (
+    isInvitaliaUser &&
+    modalAction === PRODUCTS_STATES.REJECTED &&
+    (allUploaded || allSupervised)
+  ) {
+    resetMsgs();
+    return;
+  }
+
+  if (
       modalAction === PRODUCTS_STATES.REJECTED ||
       modalAction === MIDDLE_STATES.REJECT_APPROVATION
   ) {
     setShowMsgRejected(true);
     setShowMsgApproved(false);
     setShowMsgWaitApproved(false);
-    return;
-  }
-
-  if (
-    isInvitaliaUser &&
-    modalAction === PRODUCTS_STATES.REJECTED &&
-    (allUploaded || allSupervised)
-  ) {
-    resetMsgs();
     return;
   }
 
