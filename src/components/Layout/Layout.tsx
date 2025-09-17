@@ -6,6 +6,10 @@ import { useSelector } from 'react-redux';
 import { userSelectors } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
 import { useLocation } from 'react-router-dom';
 import { matchPath } from 'react-router';
+import {
+  storageTokenOps,
+  storageUserOps,
+} from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import Header from '../Header/Header';
 import SideMenu from '../SideMenu/SideMenu';
 import ROUTES from '../../routes';
@@ -14,7 +18,31 @@ type Props = {
   children?: React.ReactNode;
 };
 
+import { ENV } from '../../utils/env';
+
 const Layout = ({ children }: Props) => {
+  const customExitAction = () => {
+    storageTokenOps.delete();
+    storageUserOps.delete();
+    Object.keys(localStorage).forEach((key) => {
+      if (
+        key.toLowerCase().includes('filter') ||
+        key === 'user' ||
+        key === 'token' ||
+        key.startsWith('persist:')
+      ) {
+        localStorage.removeItem(key);
+      }
+    });
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.toLowerCase().includes('filter') || key === 'user' || key === 'token') {
+        sessionStorage.removeItem(key);
+      }
+    });
+
+    window.location.assign(ENV.URL_FE.LOGOUT);
+  };
+
   const onExit = useUnloadEventOnExit();
   const loggedUser = useSelector(userSelectors.selectLoggedUser);
   const location = useLocation();
@@ -44,7 +72,7 @@ const Layout = ({ children }: Props) => {
       <Box gridArea="header">
         <Header
           withSecondHeader={showAssistanceInfo}
-          onExit={onExit}
+          onExit={() => onExit(customExitAction)}
           loggedUser={loggedUser}
           parties={[]}
         />
@@ -90,10 +118,9 @@ const Layout = ({ children }: Props) => {
         </Box>
       )}
       <Box gridArea="footer">
-        <Footer onExit={onExit} loggedUser={true} />
+        <Footer onExit={() => onExit(customExitAction)} loggedUser={true} />
       </Box>
     </Box>
   );
 };
-// export default withParties(Layout);
 export default Layout;
