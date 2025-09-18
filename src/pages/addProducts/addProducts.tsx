@@ -58,7 +58,6 @@ const AddProducts: React.FC = () => {
         />
       </Box>
 
-      {/* Sezione Carica i tuoi prodotti */}
       <Box sx={{ gridColumn: 'span 12' }}>
         <Paper
           sx={{
