@@ -230,6 +230,7 @@
       "countryOfProduction": "Paese di produzione",
       "capacity": "Capacità",
       "motivation": "Note interne",
+      "motivationFormal": "Notifica ufficiale",
       "restoreProductTitle": "Ripristina prodotto",
       "restoreProductMessage": "Vuoi ripristinare il prodotto segnalato in precedenza?"
     }
@@ -277,7 +278,9 @@
       "buttonText": "Escludi",
       "buttonTextConfirm": "Escludi",
       "buttonTextCancel": "Annulla",
-      "errorMessage": "Campo obbligatorio"
+      "errorMessage": "Campo obbligatorio",
+      "listTitleNoteUff": "Notifica ufficiale destinatata al Produttore",
+      "reasonPlaceholderNoteUff": "Notifica ufficiale"
     },
      "waitApproved": {
       "title": "Approva",

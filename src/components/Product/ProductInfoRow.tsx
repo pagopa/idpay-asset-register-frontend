@@ -4,7 +4,7 @@ import { ReactNode, forwardRef } from 'react';
 type ProductInfoRowProps = {
   label: string;
   value: ReactNode;
-  labelVariant?: 'body1' | 'body2'| 'overline';
+  labelVariant?: 'body1' | 'body2' | 'overline';
   valueVariant?: 'body1' | 'body2' | 'h6';
   sx?: object;
 };
@@ -16,7 +16,7 @@ const ProductInfoRow = forwardRef<HTMLLIElement, ProductInfoRowProps>(
         <Typography variant={labelVariant} color="text.secondary">
           {label}
         </Typography>
-        <Typography variant={valueVariant} fontWeight="fontWeightMedium">
+        <Typography variant={valueVariant} fontWeight="fontWeightMedium" component="span">
           {value}
         </Typography>
       </Box>

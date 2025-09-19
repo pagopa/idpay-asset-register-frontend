@@ -8,7 +8,7 @@ import {
     getInstitutionById, setSupervisionedStatusList, setApprovedStatusList, setRejectedStatusList, getBatchFilterList,
 } from '../registerService';
 import { RegisterApi } from '../../api/registerApiClient';
-import { UpdateResponseDTO} from "../../api/generated/register/UpdateResponseDTO";
+import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 
 jest.mock('../../api/registerApiClient', () => ({
     RegisterApi: {
@@ -190,6 +190,7 @@ describe('Register Service', () => {
     describe('getInstitutionsList', () => {
         it('returns data when API call succeeds', async () => {
             const mockData = { institutions: [] };
+            // @ts-ignore
             (RegisterApi.getInstitutionsList as jest.Mock).mockResolvedValue(mockData);
 
             const result = await getInstitutionsList();
@@ -204,6 +205,7 @@ describe('Register Service', () => {
                     data: mockErrorData
                 }
             };
+            // @ts-ignore
             (RegisterApi.getInstitutionsList as jest.Mock).mockRejectedValue(mockError);
 
             await expect(getInstitutionsList()).rejects.toEqual(mockErrorData);
@@ -211,6 +213,7 @@ describe('Register Service', () => {
 
         it('throws original error when no error.response.data', async () => {
             const mockError = new Error('Institutions network error');
+            // @ts-ignore
             (RegisterApi.getInstitutionsList as jest.Mock).mockRejectedValue(mockError);
 
             await expect(getInstitutionsList()).rejects.toThrow('Institutions network error');
@@ -220,6 +223,7 @@ describe('Register Service', () => {
             const mockError = {
                 response: {}
             };
+            // @ts-ignore
             (RegisterApi.getInstitutionsList as jest.Mock).mockRejectedValue(mockError);
 
             await expect(getInstitutionsList()).rejects.toEqual(mockError);
@@ -229,6 +233,7 @@ describe('Register Service', () => {
     describe('getInstitutionById', () => {
         it('returns data when API call succeeds', async () => {
             const mockData = { id: 'inst-1' };
+            // @ts-ignore
             (RegisterApi.getInstitutionById as jest.Mock).mockResolvedValue(mockData);
 
             const result = await getInstitutionById('inst-1');
@@ -243,6 +248,7 @@ describe('Register Service', () => {
                     data: mockErrorData
                 }
             };
+            // @ts-ignore
             (RegisterApi.getInstitutionById as jest.Mock).mockRejectedValue(mockError);
 
             await expect(getInstitutionById('inst-1')).rejects.toEqual(mockErrorData);
@@ -250,6 +256,7 @@ describe('Register Service', () => {
 
         it('throws original error when no error.response.data', async () => {
             const mockError = new Error('Institution network error');
+            // @ts-ignore
             (RegisterApi.getInstitutionById as jest.Mock).mockRejectedValue(mockError);
 
             await expect(getInstitutionById('inst-1')).rejects.toThrow('Institution network error');
@@ -259,6 +266,7 @@ describe('Register Service', () => {
             const mockError = {
                 response: {}
             };
+            // @ts-ignore
             (RegisterApi.getInstitutionById as jest.Mock).mockRejectedValue(mockError);
 
             await expect(getInstitutionById('inst-1')).rejects.toEqual(mockError);
@@ -267,19 +275,19 @@ describe('Register Service', () => {
 
     describe('setSupervisionedStatusList', () => {
         it('calls API and returns response', async () => {
-            const mockResponse: UpdateResponseDTO = { status: 'OK' };
+            const mockResponse = { status: 'OK' };
             (RegisterApi.setSupervisionedStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
-            const result = await setSupervisionedStatusList('xOrganization', ['CATEGORY'], 'motivation');
-            expect(RegisterApi.setSupervisionedStatusList).toHaveBeenCalledWith("xOrganization", ["CATEGORY"], "motivation");
+            const result = await setSupervisionedStatusList(['GTIN1'], ProductStatusEnum.APPROVED, 'motivation');
+            expect(RegisterApi.setSupervisionedStatusList).toHaveBeenCalledWith(['GTIN1'], ProductStatusEnum.APPROVED, 'motivation');
             expect(result).toEqual(mockResponse);
         });
 
         it('propagates API errors', async () => {
             const mockError = new Error('Upload failed');
-            (RegisterApi.setSupervisionedStatusList as jest.Mock).mockRejectedValue(mockError);
+            (RegisterApi.setSupervisionedStatusList as any).mockRejectedValue(mockError);
 
-            await expect(setSupervisionedStatusList('xOrganization', ['CATEGORY'], 'motivation')).rejects.toThrow('Upload failed');
+            await expect(setSupervisionedStatusList(['GTIN1'], ProductStatusEnum.APPROVED, 'motivation')).rejects.toThrow('Upload failed');
         });
 
         it('throws API error data when response has error.response.data', async () => {
@@ -289,27 +297,27 @@ describe('Register Service', () => {
                     data: mockErrorData
                 }
             };
-            (RegisterApi.setSupervisionedStatusList as jest.Mock).mockRejectedValue(mockError);
+            (RegisterApi.setSupervisionedStatusList as any).mockRejectedValue(mockError);
 
-            await expect(setSupervisionedStatusList("xOrganization", ["CATEGORY"], "motivation")).rejects.toEqual(mockErrorData);
+            await expect(setSupervisionedStatusList(['GTIN1'], ProductStatusEnum.APPROVED, 'motivation')).rejects.toEqual(mockErrorData);
         });
     });
 
     describe('setApprovedStatusList', () => {
         it('calls API and returns response', async () => {
-            const mockResponse: UpdateResponseDTO = { status: 'OK' };
-            (RegisterApi.setApprovedStatusList as jest.Mock).mockResolvedValue(mockResponse);
+            const mockResponse = { status: 'OK' };
+            (RegisterApi.setApprovedStatusList as any).mockResolvedValue(mockResponse);
 
-            const result = await setApprovedStatusList('xOrganization', ['CATEGORY'], 'motivation');
-            expect(RegisterApi.setApprovedStatusList).toHaveBeenCalledWith("xOrganization", ["CATEGORY"], "motivation");
+            const result = await setApprovedStatusList(['GTIN1'], ProductStatusEnum.APPROVED, 'motivation');
+            expect(RegisterApi.setApprovedStatusList).toHaveBeenCalledWith(['GTIN1'], ProductStatusEnum.APPROVED, 'motivation');
             expect(result).toEqual(mockResponse);
         });
 
         it('propagates API errors', async () => {
             const mockError = new Error('Upload failed');
-            (RegisterApi.setApprovedStatusList as jest.Mock).mockRejectedValue(mockError);
+            (RegisterApi.setApprovedStatusList as any).mockRejectedValue(mockError);
 
-            await expect(setApprovedStatusList('xOrganization', ['CATEGORY'], 'motivation')).rejects.toThrow('Upload failed');
+            await expect(setApprovedStatusList(['GTIN1'], ProductStatusEnum.APPROVED, 'motivation')).rejects.toThrow('Upload failed');
         });
 
         it('throws API error data when response has error.response.data', async () => {
@@ -319,27 +327,27 @@ describe('Register Service', () => {
                     data: mockErrorData
                 }
             };
-            (RegisterApi.setApprovedStatusList as jest.Mock).mockRejectedValue(mockError);
+            (RegisterApi.setApprovedStatusList as any).mockRejectedValue(mockError);
 
-            await expect(setApprovedStatusList("xOrganization", ["CATEGORY"], "motivation")).rejects.toEqual(mockErrorData);
+            await expect(setApprovedStatusList(['GTIN1'], ProductStatusEnum.APPROVED, 'motivation')).rejects.toEqual(mockErrorData);
         });
     });
 
     describe('setRejectedStatusList', () => {
         it('calls API and returns response', async () => {
-            const mockResponse: UpdateResponseDTO = { status: 'OK' };
-            (RegisterApi.setRejectedStatusList as jest.Mock).mockResolvedValue(mockResponse);
+            const mockResponse = { status: 'OK' };
+            (RegisterApi.setRejectedStatusList as any).mockResolvedValue(mockResponse);
 
-            const result = await setRejectedStatusList('xOrganization', ['CATEGORY'], 'motivation');
-            expect(RegisterApi.setRejectedStatusList).toHaveBeenCalledWith("xOrganization", ["CATEGORY"], "motivation");
-            expect(result).toEqual(mockResponse);
+        const result = await setRejectedStatusList(['GTIN1'], ProductStatusEnum.REJECTED, 'motivation', '');
+        expect(RegisterApi.setRejectedStatusList).toHaveBeenCalledWith(['GTIN1'], ProductStatusEnum.REJECTED, 'motivation', '');
+        expect(result).toEqual(mockResponse);
         });
 
         it('propagates API errors', async () => {
             const mockError = new Error('Upload failed');
-            (RegisterApi.setRejectedStatusList as jest.Mock).mockRejectedValue(mockError);
+            (RegisterApi.setRejectedStatusList as any).mockRejectedValue(mockError);
 
-            await expect(setRejectedStatusList('xOrganization', ['CATEGORY'], 'motivation')).rejects.toThrow('Upload failed');
+            await expect(setRejectedStatusList(['GTIN1'], ProductStatusEnum.REJECTED, 'motivation', '')).rejects.toThrow('Upload failed');
         });
 
         it('throws API error data when response has error.response.data', async () => {
@@ -349,15 +357,15 @@ describe('Register Service', () => {
                     data: mockErrorData
                 }
             };
-            (RegisterApi.setRejectedStatusList as jest.Mock).mockRejectedValue(mockError);
+            (RegisterApi.setRejectedStatusList as any).mockRejectedValue(mockError);
 
-            await expect(setRejectedStatusList("xOrganization", ["CATEGORY"], "motivation")).rejects.toEqual(mockErrorData);
+            await expect(setRejectedStatusList(['GTIN1'], ProductStatusEnum.REJECTED, 'motivation', '')).rejects.toEqual(mockErrorData);
         });
     });
 
     describe('getBatchFilterItems', () => {
         it('calls API and returns response', async () => {
-            const mockResponse: UpdateResponseDTO = { status: 'OK' };
+            const mockResponse = { status: 'OK' };
             (RegisterApi.getBatchFilterItems as jest.Mock).mockResolvedValue(mockResponse);
 
             const result = await getBatchFilterList('xOrganization');

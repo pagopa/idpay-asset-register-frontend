@@ -267,13 +267,14 @@ export const setSupervisionedStatusList = async (
   }
 };
 
- export const setRejectedStatusList = async (
-     gtinCodes: Array<string>,
-     currentStatus: ProductStatusEnum,
-     motivation: string
- ): Promise<UpdateResponseDTO> => {
+export const setRejectedStatusList = async (
+  gtinCodes: Array<string>,
+  currentStatus: ProductStatusEnum,
+  motivation: string,
+  formalMotivation: string
+): Promise<UpdateResponseDTO> => {
   try {
-   return await RegisterApi.setRejectedStatusList(gtinCodes, currentStatus, motivation);
+    return await RegisterApi.setRejectedStatusList(gtinCodes, currentStatus, motivation, formalMotivation);
   } catch (error: any) {
     logProductError(error);
     if (error.response && error.response.data) {
@@ -281,7 +282,7 @@ export const setSupervisionedStatusList = async (
     }
     throw error;
   }
- };
+};
 
   export const setRestoredStatusList = async (
       gtinCodes: Array<string>,

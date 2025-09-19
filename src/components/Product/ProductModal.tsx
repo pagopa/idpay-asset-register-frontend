@@ -26,6 +26,8 @@ import {
   // L2_MOTIVATION_OK,
   MIDDLE_STATES,
   PRODUCTS_STATES,
+  MIN_LENGTH_TEXTFIELD_POPUP,
+  MAX_LENGTH_TEXTFIELD_POPUP,
 } from '../../utils/constants';
 
 interface ProductModalProps {
@@ -132,15 +134,87 @@ const ProductModal: React.FC<ProductModalProps> = ({
   selectedProducts,
   onSuccess,
 }) => {
-  const [motivation, setReason] = useState('');
+  const [motivationInternal, setMotivationInternal] = useState('');
+  const [motivationOfficial, setMotivationOfficial] = useState('');
   const [motivationTouched, setMotivationTouched] = useState(false);
+  const [motivationOfficialTouched, setMotivationOfficialTouched] = useState(false);
+
   React.useEffect(() => {
     if (open) {
-      setReason('');
+      setMotivationInternal('');
+      setMotivationOfficial('');
       setMotivationTouched(false);
+      setMotivationOfficialTouched(false);
     }
   }, [open]);
   const { t } = useTranslation();
+
+  const renderMotivationField = (config: any) => (
+    <>
+      <TextField
+        required
+        label={config?.reasonLabel}
+        color="primary"
+        fullWidth
+        inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
+        value={motivationInternal}
+        onChange={(e) => {
+          setMotivationInternal(e.target.value);
+        }}
+        onBlur={() => setMotivationTouched(true)}
+        sx={modalStyles.textField}
+        error={motivationTouched && motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP}
+        id={
+          motivationTouched && motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+            ? 'outlined-error-helper-text'
+            : undefined
+        }
+        helperText={
+          motivationTouched && motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+            ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+            : undefined
+        }
+      />
+      <Box
+        sx={modalStyles.charCounter}
+      >{`${motivationInternal.length}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+    </>
+  );
+
+  const renderMotivationNoteUffField = () => (
+    <>
+      <Typography sx={modalStyles.listTitle}>{MODAL_CONFIG.REJECTED.listTitleNoteUff}</Typography>
+      <TextField
+        required
+        label={MODAL_CONFIG.REJECTED.reasonPlaceholderNoteUff}
+        color="primary"
+        fullWidth
+        inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
+        value={motivationOfficial}
+        onChange={(e) => {
+          setMotivationOfficial(e.target.value);
+        }}
+        onBlur={() => setMotivationOfficialTouched(true)}
+        sx={modalStyles.textField}
+        error={
+          motivationOfficialTouched && motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+        }
+        id={
+          motivationOfficialTouched && motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+            ? 'outlined-error-helper-text-note-uff'
+            : undefined
+        }
+        helperText={
+          motivationOfficialTouched && motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+            ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+            : undefined
+        }
+      />
+      <Box
+        sx={modalStyles.charCounter}
+      >{`${motivationOfficial.length}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+    </>
+  );
 
   const MODAL_CONFIG = {
     SUPERVISED: {
@@ -160,6 +234,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
       reasonLabel: t('invitaliaModal.rejected.reasonLabel'),
       reasonPlaceholder: t('invitaliaModal.rejected.reasonPlaceholder'),
       buttonText: t('invitaliaModal.rejected.buttonText'),
+      listTitleNoteUff: t('invitaliaModal.rejected.listTitleNoteUff'),
+      reasonPlaceholderNoteUff: t('invitaliaModal.rejected.reasonPlaceholderNoteUff'),
       buttonTextConfirm: t('invitaliaModal.rejected.buttonTextConfirm'),
       buttonTextCancel: t('invitaliaModal.rejected.buttonTextCancel'),
     },
@@ -194,13 +270,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const status: ProductStatusEnum = selectedProducts[0].status;
 
   const callSupervisionedApi = async () => {
-    if (!motivation.trim()) {
+    if (motivationInternal.trim().length < 2) {
       setMotivationTouched(true);
       return;
     }
     try {
       onClose(false);
-      await setSupervisionedStatusList(gtinCodes, status, motivation);
+      await setSupervisionedStatusList(gtinCodes, status, motivationInternal);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -216,13 +292,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   const callRejectedApi = async () => {
-    if (!motivation.trim()) {
+    if (motivationInternal.trim().length < 2) {
       setMotivationTouched(true);
       return;
     }
     try {
       onClose(false);
-      await setRejectedStatusList(gtinCodes, status, motivation);
+      await setRejectedStatusList(gtinCodes, status, motivationInternal, motivationOfficial);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -238,13 +314,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   const callRestoredApi = async () => {
-    if (!motivation.trim()) {
+    if (motivationInternal.trim().length < 2) {
       setMotivationTouched(true);
       return;
     }
     try {
       onClose(false);
-      await setRestoredStatusList(gtinCodes, status, motivation);
+      await setRestoredStatusList(gtinCodes, status, motivationInternal);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -298,27 +374,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
         <Typography sx={modalStyles.listTitle}>{config?.listTitle || ''}</Typography>
         {actionType !== MIDDLE_STATES.ACCEPT_APPROVATION && (
           <>
-            <TextField
-              required
-              label={config?.reasonLabel}
-              color="primary"
-              fullWidth
-              inputProps={{ maxLength: 200 }}
-              value={motivation}
-              onChange={(e) => {
-                setReason(e.target.value);
-              }}
-              onBlur={() => setMotivationTouched(true)}
-              sx={modalStyles.textField}
-              error={motivationTouched && !motivation.trim()}
-              id={
-                motivationTouched && !motivation.trim() ? 'outlined-error-helper-text' : undefined
-              }
-              helperText={
-                motivationTouched && !motivation.trim() ? 'Campo obbligatorio' : undefined
-              }
-            />
-            <Box sx={modalStyles.charCounter}>{motivation.length}/200</Box>
+            {renderMotivationField(config)}
+            {actionType === PRODUCTS_STATES.REJECTED && renderMotivationNoteUffField()}
           </>
         )}
       </DialogContent>

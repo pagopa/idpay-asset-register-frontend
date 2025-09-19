@@ -543,7 +543,14 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
       <ProductModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={(cancelled) => {
+          setModalOpen(false);
+          if (cancelled) {
+            setShowMsgRejected(false);
+            setShowMsgApproved(false);
+            setShowMsgWaitApproved(false);
+          }
+        }}
         actionType={modalAction}
         onUpdateTable={updaDataTable}
         selectedProducts={tableData

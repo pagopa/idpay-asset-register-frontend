@@ -415,10 +415,16 @@ export const RegisterApi = {
   setRejectedStatusList: async (
     gtinCodes: Array<string>,
     currentStatus: ProductStatusEnum,
-    motivation: string
+    motivation: string,
+    formalMotivation: string
   ): Promise<ProductsUpdateDTO> => {
     try {
-      const body = { gtinCodes, currentStatus, motivation };
+      const body = {
+        gtinCodes,
+        currentStatus,
+        motivation, 
+        formalMotivation
+      };
       const result = await registerClient.updateProductStatusRejected(
         { body }
       );

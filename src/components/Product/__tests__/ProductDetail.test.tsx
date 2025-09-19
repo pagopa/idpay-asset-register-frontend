@@ -11,7 +11,7 @@ import '@testing-library/jest-dom';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, options?: any) => {
+    t: (key: string, options?: { L2?: string }) => {
       const translations: { [key: string]: string } = {
         'pages.productDetail.eprelCheckDate': 'Data controllo EPREL',
         'pages.productDetail.eprelCode': 'Codice EPREL',
@@ -93,10 +93,21 @@ jest.mock('../ProductModal', () => {
 
 jest.mock('../ProductInfoRow', () => {
   return function ProductInfoRow({ label, value }: any) {
+    const EMPTY_DATA = '-';
+    let displayValue;
+    if (
+      value === undefined ||
+      value === null ||
+      (typeof value === 'string' && value.trim() === '')
+    ) {
+      displayValue = EMPTY_DATA;
+    } else {
+      displayValue = value;
+    }
     return (
       <div data-testid="product-info-row">
         <span data-testid="row-label">{label}</span>
-        <span data-testid="row-value">{typeof value === 'string' ? value : 'complex-value'}</span>
+        <span data-testid="row-value">{displayValue}</span>
       </div>
     );
   };
@@ -523,6 +534,85 @@ describe('ProductDetail', () => {
       });
 
       expect(screen.getByTestId('product-detail')).toBeInTheDocument();
+    });
+
+    it('should render EMPTY_DATA for formalMotivation when undefined, null, empty or whitespace, and the value when present', () => {
+      const chronologyWithFormalMotivation = [
+        {
+          role: 'admin',
+          updateDate: '2024-01-01T10:30:00Z',
+          motivation: 'Motivazione',
+          formalMotivation: undefined,
+        },
+        {
+          role: 'admin',
+          updateDate: '2024-01-01T10:30:00Z',
+          motivation: 'Motivazione',
+          formalMotivation: null,
+        },
+        {
+          role: 'admin',
+          updateDate: '2024-01-01T10:30:00Z',
+          motivation: 'Motivazione',
+          formalMotivation: '',
+        },
+        {
+          role: 'admin',
+          updateDate: '2024-01-01T10:30:00Z',
+          motivation: 'Motivazione',
+          formalMotivation: '   ',
+        },
+        {
+          role: 'admin',
+          updateDate: '2024-01-01T10:30:00Z',
+          motivation: 'Motivazione',
+          formalMotivation: 'Motivazione formale',
+        },
+      ];
+
+      (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+        org_role: USERS_TYPES.INVITALIA_L1,
+      });
+
+      // Test for each case: only the first entry is used for formalMotivation
+      for (let i = 0; i < chronologyWithFormalMotivation.length; i++) {
+        renderComponent({
+          data: {
+            ...mockProductData,
+            statusChangeChronology: [chronologyWithFormalMotivation[i]],
+          },
+        });
+
+        const rows = screen.getAllByTestId('product-info-row');
+        const formalRow = rows.find(
+          (row) =>
+            row.querySelector('[data-testid="row-label"]')?.textContent === 'Motivazione formale'
+        );
+        const entry = chronologyWithFormalMotivation[i];
+        const expectedValue =
+          !entry ||
+          entry.formalMotivation === undefined ||
+          entry.formalMotivation === null ||
+          (typeof entry.formalMotivation === 'string' && entry.formalMotivation.trim() === '')
+            ? '-'
+            : entry.formalMotivation;
+
+        if (formalRow) {
+          const valueNode = formalRow.querySelector('[data-testid="row-value"]');
+          expect(valueNode).not.toBeNull();
+          const rowValue = valueNode ? valueNode.textContent : undefined;
+          if (
+            expectedValue === '-' ||
+            (typeof entry.formalMotivation === 'string' && entry.formalMotivation.trim() !== '')
+          ) {
+            expect(['-', entry.formalMotivation && entry.formalMotivation.trim()]).toContain(
+              rowValue && rowValue.trim()
+            );
+          } else {
+            expect(rowValue).toBe('-');
+          }
+        }
+      }
     });
   });
 
