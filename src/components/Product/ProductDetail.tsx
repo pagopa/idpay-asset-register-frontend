@@ -16,6 +16,7 @@ import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
+import { DEBUG_CONSOLE } from '../../utils/constants';
 import { statusChangeMessage } from '../../model/Product';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
@@ -39,7 +40,9 @@ const callRejectedApi = async (
   try {
     await setRejectedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error) {
-    console.error(error);
+    if (DEBUG_CONSOLE) {
+      console.error(error);
+    }
   }
 };
 
@@ -51,7 +54,9 @@ const callWaitApprovedApi = async (
   try {
     await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error) {
-    console.error(error);
+    if (DEBUG_CONSOLE) {
+      console.error(error);
+    }
   }
 };
 

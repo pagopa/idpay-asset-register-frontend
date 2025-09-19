@@ -840,6 +840,10 @@ components:
           type: string
           maxLength: 50
           pattern: .*
+        formalMotivation:
+          type: string
+          maxLength: 200
+          pattern: .*
     InstitutionResponse:
       title: InstitutionResponse
       type: object
@@ -973,6 +977,10 @@ components:
         currentStatus:
           $ref: '#/components/schemas/ProductStatus'
         motivation:
+          type: string
+          maxLength: 200
+          pattern: .*
+        formalMotivation:
           type: string
           maxLength: 200
           pattern: .*
@@ -2016,14 +2024,14 @@ components:
           - gtinCode, desc
           - eprelCode, desc
           - status, desc
-          - organizationName, desc
+          - organizationName, asc
           - category, asc
           - batchName, asc
           - energyClass, asc
           - gtinCode, asc
           - eprelCode, asc
           - status, asc
-          - organizationName, asc
+          - organizationName, desc
     eprelCode_query:
       name: eprelCode
       in: query

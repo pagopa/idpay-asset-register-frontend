@@ -20,6 +20,7 @@ import {
   setApprovedStatusList,
 } from '../../services/registerService';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
+import { DEBUG_CONSOLE } from '../../utils/constants';
 import {
   EMPTY_DATA,
   // L2_MOTIVATION_OK,
@@ -207,7 +208,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      console.error(error);
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
       onClose(false);
     }
   };
@@ -227,7 +230,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      console.error(error);
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
       onClose(false);
     }
   };
@@ -247,7 +252,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      console.error(error);
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
       onClose(false);
     }
   };
@@ -263,7 +270,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      console.error(error);
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
       onClose(false);
     }
   };
