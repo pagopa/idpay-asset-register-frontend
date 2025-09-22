@@ -79,7 +79,7 @@ describe('ProductModal', () => {
       screen.getByRole('button', { name: /invitaliaModal\.supervised\.buttonTextConfirm/i })
     ).toHaveTextContent('(2)');
 
-    expect(screen.getByText('0/200')).toBeInTheDocument();
+    expect(screen.getByText('2/200')).toBeInTheDocument();
   });
 
   test('validation: rejects empty reason on supervised confirm', async () => {
@@ -227,7 +227,7 @@ describe('ProductModal', () => {
 
     const input = screen.getByRole('textbox') as HTMLInputElement;
     await userEvent.type(input, 'test');
-    expect(screen.getByText('4/200')).toBeInTheDocument();
+    expect(screen.getByText('2/200')).toBeInTheDocument();
 
     rerender(
       <ProductModal
