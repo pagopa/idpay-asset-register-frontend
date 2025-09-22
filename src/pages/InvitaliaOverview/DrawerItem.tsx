@@ -1,5 +1,5 @@
 import { ListItem, Box, Typography } from '@mui/material';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import {CopyToClipboardButton} from "@pagopa/mui-italia";
 
 type DrawerItemProps = {
   itemHeader: string;
@@ -35,11 +35,7 @@ const DrawerItem: React.FC<DrawerItemProps> = ({ itemHeader, itemValue, copyable
           </Box>
           {copyable && (
             <Box>
-              <ContentCopyIcon
-                onClick={handleCopyButtonClick}
-                color="primary"
-                sx={{ cursor: 'copy' }}
-              />
+                <CopyToClipboardButton onCopy={handleCopyButtonClick} value={itemValue} size="small"/>
             </Box>
           )}
         </Box>
