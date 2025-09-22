@@ -177,7 +177,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       />
       <Box
         sx={modalStyles.charCounter}
-      >{`${motivationInternal.length}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+      >{`${MIN_LENGTH_TEXTFIELD_POPUP}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
     </>
   );
 
@@ -212,7 +212,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       />
       <Box
         sx={modalStyles.charCounter}
-      >{`${motivationOfficial.length}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+      >{`${MIN_LENGTH_TEXTFIELD_POPUP}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
     </>
   );
 
