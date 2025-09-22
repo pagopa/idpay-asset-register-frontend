@@ -173,7 +173,9 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       if (type === 'category') {
         errorHandling.showCategoryError();
       } else {
-        errorHandling.showMissingFileError();
+        if(errorHandling.alertDescription === ''){
+          errorHandling.showMissingFileError();
+        }
       }
       fileState.setFileRejected(true);
       setFileAccepted(false);
