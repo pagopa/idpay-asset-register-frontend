@@ -170,14 +170,18 @@ const ProductModal: React.FC<ProductModalProps> = ({
             : undefined
         }
         helperText={
-          motivationTouched && motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
-            ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+          motivationTouched
+            ? motivationInternal.trim().length === 0
+              ? 'Campo obbligatorio'
+              : motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+              ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+              : undefined
             : undefined
         }
       />
-      <Box
-        sx={modalStyles.charCounter}
-      >{`${MIN_LENGTH_TEXTFIELD_POPUP}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+      <Box sx={modalStyles.charCounter}>{`${
+        motivationInternal.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationInternal.length
+      }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
     </>
   );
 
@@ -205,14 +209,18 @@ const ProductModal: React.FC<ProductModalProps> = ({
             : undefined
         }
         helperText={
-          motivationOfficialTouched && motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
-            ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+          motivationOfficialTouched
+            ? motivationOfficial.trim().length === 0
+              ? 'Campo obbligatorio'
+              : motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+              ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+              : undefined
             : undefined
         }
       />
-      <Box
-        sx={modalStyles.charCounter}
-      >{`${MIN_LENGTH_TEXTFIELD_POPUP}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+      <Box sx={modalStyles.charCounter}>{`${
+        motivationOfficial.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationOfficial.length
+      }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
     </>
   );
 
@@ -292,8 +300,17 @@ const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   const callRejectedApi = async () => {
-    if (motivationInternal.trim().length < 2) {
-      setMotivationTouched(true);
+    const isMotivationInternalInvalid =
+      motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP;
+    const isMotivationOfficialInvalid =
+      motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP;
+    if (isMotivationInternalInvalid || isMotivationOfficialInvalid) {
+      if (isMotivationInternalInvalid) {
+        setMotivationTouched(true);
+      }
+      if (isMotivationOfficialInvalid) {
+        setMotivationOfficialTouched(true);
+      }
       return;
     }
     try {
