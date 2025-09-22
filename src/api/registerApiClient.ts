@@ -7,6 +7,7 @@ import {storageTokenOps, storageUserOps} from '@pagopa/selfcare-common-frontend/
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
+import { DEBUG_CONSOLE } from '../utils/constants';
 import { createClient, WithDefaultsT } from './generated/register/client';
 import {PortalConsentDTO} from "./generated/register/PortalConsentDTO";
 import { UserPermissionDTO } from './generated/register/UserPermissionDTO';
@@ -24,19 +25,19 @@ const rawFetchApi = buildFetchApi(ENV.API_TIMEOUT_MS.OPERATION);
 
 const sanitizedFetchApi: typeof rawFetchApi = async (input, init) => {
   const headers = new Headers(init?.headers ?? {});
-  const toDelete: Array<string> = [];
+  const keysToDelete: Array<string> = [];
   headers.forEach((value, key) => {
     if (
-        value === null ||
-        value === '' ||
-        value === 'undefined' ||
-        value === 'null'
+      value === null ||
+      value === '' ||
+      value === 'undefined' ||
+      value === 'null'
     ) {
       // eslint-disable-next-line functional/immutable-data
-      toDelete.push(key);
+      keysToDelete.push(key);
     }
   });
-  toDelete.forEach((k) => headers.delete(k));
+  keysToDelete.forEach((k) => headers.delete(k));
   const res = await rawFetchApi(input, { ...init, headers });
 
   if (res?.status === 401) {
@@ -67,8 +68,8 @@ const onRedirectToLogin = () => {
         techDescription: 'token expired or not valid',
         toNotify: false,
         blocking: false,
-        displayableTitle: 'Ti stiamo reindirizzando alla pagina di accesso',
-        displayableDescription: 'La tua sessione è scaduta',
+        displayableTitle: 'Redirecting you to the login page',
+        displayableDescription: 'Your session has expired',
       })
   );
   
@@ -119,6 +120,79 @@ function buildProductParams(
   };
 }
 
+
+function logApiError(error: any, originalResponse?: any) {
+  if (DEBUG_CONSOLE) {
+    const pretty = (val: any) =>
+      typeof val === "string"
+        ? val
+        : val !== undefined
+          ? JSON.stringify(val, null, 2)
+          : "N/A";
+    console.groupCollapsed?.("[API ERROR] RegisterApi");
+    console.error("Message:", pretty(error?.message));
+    console.error("Error name:", error?.name ?? "N/A");
+    console.error("Stack:", pretty(error?.stack));
+    logIoTsValidationErrors(error, originalResponse);
+    console.error("Full error:", pretty(error));
+    console.groupEnd?.();
+  }
+}
+
+function logIoTsValidationErrors(error: any, originalResponse?: any) {
+  if (!DEBUG_CONSOLE) {
+    return;
+  }
+  if (error && error.errors && Array.isArray(error.errors)) {
+    console.error("io-ts validation details:");
+    error.errors.forEach((e: any, idx: number) => {
+      const pathArr = e.context?.map((c: any) => c.key) || [];
+      const pathStr = pathArr.join('.');
+      // eslint-disable-next-line functional/no-let
+      let productLog = '';
+      if (
+        pathArr[0] === 'content' &&
+        pathArr.length > 2 &&
+        originalResponse?.content
+      ) {
+        const index = parseInt(pathArr[1], 10);
+        const product = originalResponse.content[index];
+        if (product && typeof product === 'object') {
+          // Log dettagliato delle chiavi principali del prodotto
+          const mainKeys = [
+            'gtinCode',
+            'organizationId',
+            'registrationDate',
+            'status',
+            'model',
+            'productGroup',
+            'category',
+            'brand',
+            'eprelCode',
+            'productCode',
+            'countryOfProduction',
+            'energyClass',
+            'linkEprel',
+            'batchName',
+            'productName',
+            'capacity',
+            'organizationName'
+          ];
+          const productSummary = mainKeys.reduce((acc, key) => {
+            // eslint-disable-next-line functional/immutable-data
+            acc[key] = product[key];
+            return acc;
+          }, {} as Record<string, any>);
+          productLog = `\n  [PRODUCT ERROR CONTEXT] Product at index ${index}: ${JSON.stringify(productSummary, null, 2)}`;
+        }
+      }
+      console.error(
+        `  [${idx}] path: ${pathStr}, expected: ${e.context?.[e.context.length-1]?.type?.name}, actual: ${JSON.stringify(e.value)}${productLog}`
+      );
+    });
+  }
+}
+
 export const RegisterApi = {
     getProduct: async (
     xOrganizationSelected: string,
@@ -151,11 +225,11 @@ export const RegisterApi = {
       if (productList.content && productList.content.length > 0) {
         return productList.content[0];
       } else {
-        console.warn('Nessun prodotto trovato con i parametri specificati.');
+        console.warn('No product found with the specified parameters.');
         return undefined;
       }
     } catch (error) {
-      console.error('Errore durante il recupero del prodotto:', error);
+      logApiError(error);
       throw error;
     }
   },
@@ -187,9 +261,17 @@ export const RegisterApi = {
       );
 
       const result = await registerClient.getProducts(params);
-      return extractResponse(result, 200, onRedirectToLogin);
+      try {
+        return extractResponse(result, 200, onRedirectToLogin);
+      } catch (error) {
+        const responseObj = (result && typeof result === 'object' && 'body' in result)
+          ? (result as any).body
+          : undefined;
+        logApiError(error, responseObj);
+        throw error;
+      }
     } catch (error) {
-      console.error('Errore durante il recupero dei file prodotto:', error);
+      logApiError(error);
       throw error;
     }
   },
@@ -203,7 +285,7 @@ export const RegisterApi = {
       const result = await registerClient.getProductFilesList(params);
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      console.error('Errore durante il recupero dei file prodotto:', error);
+      logApiError(error);
       throw error;
     }
   },
@@ -221,7 +303,7 @@ export const RegisterApi = {
       const result = await registerClient.getBatchNameList(params);
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      console.error('Errore durante il recupero della lista filtri lotti:', error);
+      logApiError(error);
       throw error;
     }
   },
@@ -249,25 +331,23 @@ export const RegisterApi = {
       headers?.['content-disposition'] ||
       headers?.['Content-Disposition'];
 
-    // eslint-disable-next-line functional/no-let
-    let fileName: string = '';
     if (contentDisposition) {
       const match = contentDisposition.match(/filename="?([^"]+)"?/);
       if (match?.[1]) {
-        fileName = match[1];
+        const fileName = match[1];
+        const responseData = (await extractResponse(response, 200, onRedirectToLogin)) as CsvDTO;
+        return { data: responseData, filename: fileName };
       }
     }
-
     const responseData = (await extractResponse(response, 200, onRedirectToLogin)) as CsvDTO;
-
-    return { data: responseData, filename: fileName };
+    return { data: responseData, filename: '' };
   },
   getInstitutionsList: async (): Promise<InstitutionsResponse> => {
     try {
       const result = await registerClient.getInstitutionsList({});
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      console.error('Errore durante il recupero della lista delle istituzioni:', error);
+      logApiError(error);
       throw error;
     }
   },
@@ -276,7 +356,7 @@ export const RegisterApi = {
       const result = await registerClient.retrieveInstitutionById({ institutionId });
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      console.error(`Errore durante il recupero dell'istituzione con ID ${institutionId}:`, error);
+      logApiError(error);
       throw error;
     }
   },
@@ -293,10 +373,7 @@ export const RegisterApi = {
       });
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      console.error(
-        'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
-        error
-      );
+      logApiError(error);
       throw error;
     }
   },
@@ -313,10 +390,7 @@ export const RegisterApi = {
       );
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      console.error(
-          'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
-        error
-      );
+      logApiError(error);
       throw error;
     }
   },
@@ -333,10 +407,7 @@ export const RegisterApi = {
       );
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      console.error(
-          'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
-        error
-      );
+      logApiError(error);
       throw error;
     }
   },
@@ -344,19 +415,22 @@ export const RegisterApi = {
   setRejectedStatusList: async (
     gtinCodes: Array<string>,
     currentStatus: ProductStatusEnum,
-    motivation: string
+    motivation: string,
+    formalMotivation: string
   ): Promise<ProductsUpdateDTO> => {
     try {
-      const body = { gtinCodes, currentStatus, motivation };
+      const body = {
+        gtinCodes,
+        currentStatus,
+        motivation, 
+        formalMotivation
+      };
       const result = await registerClient.updateProductStatusRejected(
         { body }
       );
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      console.error(
-          'Errore durante l\'aggiornamento dello stato supervisionato per i prodotti: ', gtinCodes,
-        error
-      );
+      logApiError(error);
       throw error;
     }
   },
@@ -373,10 +447,7 @@ export const RegisterApi = {
       );
       return extractResponse(result, 200, onRedirectToLogin);
     } catch (error) {
-      console.error(
-          'Errore durante l\'aggiornamento dello stato restored per i prodotti: ', gtinCodes,
-          error
-      );
+      logApiError(error);
       throw error;
     }
   },
