@@ -139,6 +139,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const [motivationTouched, setMotivationTouched] = useState(false);
   const [motivationOfficialTouched, setMotivationOfficialTouched] = useState(false);
 
+  const isValidAlphanumeric = (value: string) => {
+    const matches = value.match(/[a-zA-Z0-9]/g);
+    return matches !== null && matches.length >= 2;
+  };
+
   React.useEffect(() => {
     if (open) {
       setMotivationInternal('');
@@ -149,80 +154,84 @@ const ProductModal: React.FC<ProductModalProps> = ({
   }, [open]);
   const { t } = useTranslation();
 
-  const renderMotivationField = (config: any) => (
-    <>
-      <TextField
-        required
-        label={config?.reasonLabel}
-        color="primary"
-        fullWidth
-        inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
-        value={motivationInternal}
-        onChange={(e) => {
-          setMotivationInternal(e.target.value);
-        }}
-        onBlur={() => setMotivationTouched(true)}
-        sx={modalStyles.textField}
-        error={motivationTouched && motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP}
-        id={
-          motivationTouched && motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
-            ? 'outlined-error-helper-text'
-            : undefined
-        }
-        helperText={
-          motivationTouched
-            ? motivationInternal.trim().length === 0
-              ? 'Campo obbligatorio'
-              : motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
-              ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
-              : undefined
-            : undefined
-        }
-      />
-      <Box sx={modalStyles.charCounter}>{`${
-        motivationInternal.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationInternal.length
-      }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
-    </>
-  );
+  const renderMotivationField = (config: any) => {
+    const showError =
+      motivationTouched &&
+      (motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+        !isValidAlphanumeric(motivationInternal));
+    const helper = motivationTouched
+      ? motivationInternal.trim().length === 0
+        ? 'Campo obbligatorio'
+        : motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+        ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+        : !isValidAlphanumeric(motivationInternal)
+        ? 'Inserire almeno 2 caratteri alfanumerici'
+        : undefined
+      : undefined;
+    return (
+      <>
+        <TextField
+          required
+          label={config?.reasonLabel}
+          color="primary"
+          fullWidth
+          inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
+          value={motivationInternal}
+          onChange={(e) => {
+            setMotivationInternal(e.target.value);
+          }}
+          onBlur={() => setMotivationTouched(true)}
+          sx={modalStyles.textField}
+          error={showError}
+          id={showError ? 'outlined-error-helper-text' : undefined}
+          helperText={helper}
+        />
+        <Box sx={modalStyles.charCounter}>{`${
+          motivationInternal.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationInternal.length
+        }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+      </>
+    );
+  };
 
-  const renderMotivationNoteUffField = () => (
-    <>
-      <Typography sx={modalStyles.listTitle}>{MODAL_CONFIG.REJECTED.listTitleNoteUff}</Typography>
-      <TextField
-        required
-        label={MODAL_CONFIG.REJECTED.reasonPlaceholderNoteUff}
-        color="primary"
-        fullWidth
-        inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
-        value={motivationOfficial}
-        onChange={(e) => {
-          setMotivationOfficial(e.target.value);
-        }}
-        onBlur={() => setMotivationOfficialTouched(true)}
-        sx={modalStyles.textField}
-        error={
-          motivationOfficialTouched && motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
-        }
-        id={
-          motivationOfficialTouched && motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
-            ? 'outlined-error-helper-text-note-uff'
-            : undefined
-        }
-        helperText={
-          motivationOfficialTouched
-            ? motivationOfficial.trim().length === 0
-              ? 'Campo obbligatorio'
-              : motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
-              ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
-              : undefined
-            : undefined
-        }
-      />
-      <Box sx={modalStyles.charCounter}>{`${
-        motivationOfficial.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationOfficial.length
-      }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
-    </>
-  );
+  const renderMotivationNoteUffField = () => {
+    const showError =
+      motivationOfficialTouched &&
+      (motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+        !isValidAlphanumeric(motivationOfficial));
+    const helper = motivationOfficialTouched
+      ? motivationOfficial.trim().length === 0
+        ? 'Campo obbligatorio'
+        : motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+        ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+        : !isValidAlphanumeric(motivationOfficial)
+        ? 'Inserire almeno 2 caratteri alfanumerici'
+        : undefined
+      : undefined;
+    return (
+      <>
+        <Typography sx={modalStyles.listTitle}>{MODAL_CONFIG.REJECTED.listTitleNoteUff}</Typography>
+        <TextField
+          required
+          label={MODAL_CONFIG.REJECTED.reasonPlaceholderNoteUff}
+          color="primary"
+          fullWidth
+          inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
+          value={motivationOfficial}
+          onChange={(e) => {
+            setMotivationOfficial(e.target.value);
+          }}
+          onBlur={() => setMotivationOfficialTouched(true)}
+          sx={modalStyles.textField}
+          error={showError}
+          id={showError ? 'outlined-error-helper-text-note-uff' : undefined}
+          helperText={helper}
+        />
+        <Box sx={modalStyles.charCounter}>{`${
+          motivationOfficial.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationOfficial.length
+        }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+      </>
+    );
+  };
 
   const MODAL_CONFIG = {
     SUPERVISED: {
@@ -278,7 +287,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const status: ProductStatusEnum = selectedProducts[0].status;
 
   const callSupervisionedApi = async () => {
-    if (motivationInternal.trim().length < 2) {
+    if (
+      motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+      !isValidAlphanumeric(motivationInternal)
+    ) {
       setMotivationTouched(true);
       return;
     }
@@ -301,9 +313,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const callRejectedApi = async () => {
     const isMotivationInternalInvalid =
-      motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP;
+      motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+      !isValidAlphanumeric(motivationInternal);
     const isMotivationOfficialInvalid =
-      motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP;
+      motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+      !isValidAlphanumeric(motivationOfficial);
     if (isMotivationInternalInvalid || isMotivationOfficialInvalid) {
       if (isMotivationInternalInvalid) {
         setMotivationTouched(true);
@@ -331,7 +345,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   const callRestoredApi = async () => {
-    if (motivationInternal.trim().length < 2) {
+    if (
+      motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+      !isValidAlphanumeric(motivationInternal)
+    ) {
       setMotivationTouched(true);
       return;
     }
