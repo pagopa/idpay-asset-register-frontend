@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
-import React, {Dispatch, SetStateAction, useEffect, useMemo, useState} from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
@@ -90,7 +90,7 @@ export default function FiltersDrawer({
   errorStatus,
   handleDeleteFiltersButtonClick,
   setFiltering,
-  setPage
+  setPage,
 }: Props) {
   const { t } = useTranslation();
   const [draftStatus, setDraftStatus] = useState(statusFilter);
@@ -102,20 +102,35 @@ export default function FiltersDrawer({
   const menuProps = useMemo(() => ({ PaperProps: { style: { maxHeight: 350 } } }), []);
   const selectSx = useMemo(() => ({ paddingRight: '38px !important' }), []);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isDirty = useMemo(() => (
+  const isDirty = useMemo(
+    () =>
       draftStatus !== statusFilter ||
       draftProducer !== producerFilter ||
       draftBatch !== batchFilter ||
       draftCategory !== categoryFilter ||
       draftEprel !== eprelCodeFilter ||
-      draftGtin !== gtinCodeFilter
-  ), [draftStatus, draftProducer, draftBatch, draftCategory, draftEprel, draftGtin,
-    statusFilter, producerFilter, batchFilter, categoryFilter, eprelCodeFilter, gtinCodeFilter]);
-  const appliedEmpty = useMemo(() =>
-          ![categoryFilter, producerFilter, statusFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
-              .filter(Boolean)
-              .some(v => v.trim()),
-      [categoryFilter, producerFilter, statusFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
+      draftGtin !== gtinCodeFilter,
+    [
+      draftStatus,
+      draftProducer,
+      draftBatch,
+      draftCategory,
+      draftEprel,
+      draftGtin,
+      statusFilter,
+      producerFilter,
+      batchFilter,
+      categoryFilter,
+      eprelCodeFilter,
+      gtinCodeFilter,
+    ]
+  );
+  const appliedEmpty = useMemo(
+    () =>
+      ![categoryFilter, producerFilter, statusFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
+        .filter(Boolean)
+        .some((v) => v.trim()),
+    [categoryFilter, producerFilter, statusFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
   );
   const institutionsList = useSelector(institutionListSelector);
   const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
@@ -131,7 +146,15 @@ export default function FiltersDrawer({
       setDraftEprel(eprelCodeFilter);
       setDraftGtin(gtinCodeFilter);
     }
-  }, [open, statusFilter, producerFilter, batchFilter, categoryFilter, eprelCodeFilter, gtinCodeFilter]);
+  }, [
+    open,
+    statusFilter,
+    producerFilter,
+    batchFilter,
+    categoryFilter,
+    eprelCodeFilter,
+    gtinCodeFilter,
+  ]);
 
   const handleFilter = () => {
     setStatusFilter(draftStatus);
@@ -158,15 +181,15 @@ export default function FiltersDrawer({
     toggleFiltersDrawer(false);
   };
 
-  const onDraftSelect = (setter: Dispatch<SetStateAction<string>>) =>
-      (event: SelectChangeEvent<string>) => {
-        setter(event.target.value as string);
-      };
+  const onDraftSelect =
+    (setter: Dispatch<SetStateAction<string>>) => (event: SelectChangeEvent<string>) => {
+      setter(event.target.value as string);
+    };
 
-  const onDraftInput = (setter: Dispatch<SetStateAction<string>>) =>
-      (event: React.ChangeEvent<HTMLInputElement>) => {
-        setter(event.target.value.trim());
-      };
+  const onDraftInput =
+    (setter: Dispatch<SetStateAction<string>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setter(event.target.value.trim());
+    };
 
   const resetDraftsToApplied = () => {
     setDraftStatus(statusFilter);
@@ -222,21 +245,19 @@ export default function FiltersDrawer({
             sx={selectSx}
           >
             {(Object.keys(PRODUCTS_STATES) as Array<PRODUCTS_STATES>)
-                .filter((status) =>
-                    isInvitaliaUser ||
-                    ![PRODUCTS_STATES.WAIT_APPROVED, PRODUCTS_STATES.SUPERVISED].includes(status)
-                )
-                .map((status) => (
-                    <MenuItem
-                        key={status}
-                        value={t(`pages.products.categories.${status}`)}
-                    >
-                      <Chip
-                          color={getChipColor(status)}
-                          label={t(`pages.products.categories.${status}`)}
-                      />
-                    </MenuItem>
-                ))}
+              .filter(
+                (status) =>
+                  isInvitaliaUser ||
+                  ![PRODUCTS_STATES.WAIT_APPROVED, PRODUCTS_STATES.SUPERVISED].includes(status)
+              )
+              .map((status) => (
+                <MenuItem key={status} value={t(`pages.products.categories.${status}`)}>
+                  <Chip
+                    color={getChipColor(status)}
+                    label={t(`pages.products.categories.${status}`)}
+                  />
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
 

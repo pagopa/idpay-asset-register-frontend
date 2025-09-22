@@ -1,4 +1,5 @@
 import { List, Divider, Box, Tooltip, Typography, Button, SxProps, Theme } from '@mui/material';
+import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -203,7 +204,7 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
     value: t('pages.productDetail.productSheet'),
     labelVariant: 'body2',
     valueVariant: 'body2',
-    sx: { mt: 4, mb: 2 },
+    sx: { mt: 4, mb: 2, fontWeight: 700 },
   };
 
   const remainingRows = baseRows.slice(4).map((row) => mapBaseRowToRowConfig(row, data));
@@ -230,7 +231,7 @@ function renderEntry(entry: any, idx: number) {
   }
 
   return (
-    <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
+    <Box key={`${header}-${idx}`} sx={{ mb: 2, width: '100%' }}>
       <Tooltip
         title={
           <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
@@ -239,13 +240,28 @@ function renderEntry(entry: any, idx: number) {
         }
         arrow
       >
-        <Box component="span">
+        <Box component="span" sx={{ width: '100%' }}>
           <Typography variant="body1" color="text.secondary">
             {truncateString(header, MAX_LENGTH_DETAILL_PR)}
           </Typography>
-          <Typography variant="body2" fontWeight="fontWeightMedium">
-            {truncateString(motivationText, MAX_LENGTH_DETAILL_PR)}
-          </Typography>
+          <TextareaAutosize
+            maxRows={10}
+            value={motivationText}
+            readOnly
+            aria-label="Motivazione"
+            name="motivation"
+            style={{
+              width: '374px',
+              boxSizing: 'border-box',
+              resize: 'none',
+              fontFamily: 'inherit',
+              fontSize: '1rem',
+              fontWeight: 500,
+              background: 'transparent',
+              border: 'none',
+              color: 'inherit',
+            }}
+          />
         </Box>
       </Tooltip>
     </Box>
@@ -278,6 +294,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                   label={t('pages.productDetail.motivation')}
                   labelVariant="overline"
                   sx={{ marginTop: 3, fontWeight: 700 }}
+                  labelColor="#17324D"
                   value={
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
                       {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
@@ -294,7 +311,6 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
               if (!chronology.length) {
                 return null;
               }
-              // Show only the first formalMotivation for L1 operator, not a list
               const entry = chronology[0];
               if (!entry) {
                 return null;
@@ -306,12 +322,11 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                 ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
                 : EMPTY_DATA;
               const formalMotivationText =
-                entry?.formalMotivation === undefined ||
-                entry?.formalMotivation === null ||
-                (typeof entry?.formalMotivation === 'string' &&
-                  entry?.formalMotivation.trim() === '')
+                data?.formalMotivation === undefined ||
+                data?.formalMotivation === null ||
+                (typeof data?.formalMotivation === 'string' && data?.formalMotivation.trim() === '')
                   ? EMPTY_DATA
-                  : entry?.formalMotivation;
+                  : data?.formalMotivation;
               const header = `${operator} · ${dateLabel}`;
 
               return (
@@ -319,9 +334,10 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                   label={t('pages.productDetail.motivationFormal')}
                   labelVariant="overline"
                   sx={{ marginTop: 3, fontWeight: 700 }}
+                  labelColor="#17324D"
                   value={
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                      <Box key={`${header}-formal`} sx={{ mb: 2 }}>
+                      <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
                         <Tooltip
                           title={
                             <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
@@ -330,13 +346,28 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                           }
                           arrow
                         >
-                          <Box component="span">
+                          <Box component="span" sx={{ width: '100%' }}>
                             <Typography variant="body1" color="text.secondary">
                               {truncateString(header, MAX_LENGTH_DETAILL_PR)}
                             </Typography>
-                            <Typography variant="body2" fontWeight="fontWeightMedium">
-                              {truncateString(formalMotivationText, MAX_LENGTH_DETAILL_PR)}
-                            </Typography>
+                            <TextareaAutosize
+                              maxRows={10}
+                              value={formalMotivationText}
+                              readOnly
+                              aria-label="Motivazione formale"
+                              name="formalMotivation"
+                              style={{
+                                width: '374px',
+                                boxSizing: 'border-box',
+                                resize: 'none',
+                                fontFamily: 'inherit',
+                                fontSize: '1rem',
+                                fontWeight: 500,
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'inherit',
+                              }}
+                            />
                           </Box>
                         </Tooltip>
                       </Box>
@@ -362,7 +393,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
             label={(row as RowConfig).label}
             value={
               <Tooltip title={(row as RowConfig).value} arrow>
-                <span>{truncateString((row as RowConfig).value, MAX_LENGTH_DETAILL_PR)}</span>
+                <span>{(row as RowConfig).value}</span>
               </Tooltip>
             }
             labelVariant={(row as RowConfig).labelVariant}
