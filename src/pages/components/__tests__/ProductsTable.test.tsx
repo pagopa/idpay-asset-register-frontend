@@ -4,16 +4,15 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import ProductsTable from '../ProductsTable';
 
-
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (k: string) => k }),
 }));
-
 
 const mockInstitutions = [
   { institutionId: 'org-1', description: 'ACME S.p.A.' },
   { institutionId: 'org-2', description: 'Beta Industries' },
 ];
+
 jest.mock('react-redux', () => ({
   useSelector: (sel: any) => sel({}),
 }));
@@ -135,8 +134,8 @@ const baseTableData = [
     category: 'Forno',
     energyClass: 'D',
     eprelCode: 'EP-444',
-    gtinCode: undefined,
-    batchName: null,
+    gtinCode: "GTIN-444",
+    batchName: "Batch-4",
     status: 'REJECTED',
     organizationId: 'org-999',
   },
@@ -196,7 +195,7 @@ describe('ProductsTable – vista INVITALIA', () => {
     expect(screen.getAllByTestId('eprel-link')[0]).toHaveTextContent('EPREL:EP-111');
   });
 
-  test('click su riga invitalia chiama handleListButtonClick; checkbox click non propaga', async () => {
+  test('click su icona nell’ultima cella chiama handleListButtonClick; click su riga/checkbox non propaga', async () => {
     const user = userEvent.setup();
     const handleList = jest.fn();
 
@@ -204,21 +203,29 @@ describe('ProductsTable – vista INVITALIA', () => {
         <WrapperInvitalia
             tableData={baseTableData}
             {...commonProps}
+            selected={[]}
             handleListButtonClick={handleList}
-            initialSelected={[]}
         />
     );
 
-    const allRows = screen.getAllByRole('row').slice(1);
-    const firstRow = allRows[0];
+    const firstRow = screen.getAllByRole('row').slice(1)[0];
 
     await user.click(firstRow);
-    expect(handleList).toHaveBeenCalledWith(expect.objectContaining({ category: 'Lavatrice' }));
+    expect(handleList).not.toHaveBeenCalled();
 
-    handleList.mockClear();
     const checkbox = within(firstRow).getByRole('checkbox');
     await user.click(checkbox);
     expect(handleList).not.toHaveBeenCalled();
+
+    const cells = within(firstRow).getAllByRole('cell');
+    const lastCell = cells[cells.length - 1];
+
+    const actionButton = within(lastCell).getByRole('button', { name: /apri dettagli prodotto/i });
+    await user.click(actionButton);
+
+    expect(handleList).toHaveBeenCalledWith(
+        expect.objectContaining({ category: 'Lavatrice' })
+    );
   });
 
   test('checkbox abilitata/disabilitata correttamente in base a ruolo L1 e stato; gestione gtin non stringa', () => {

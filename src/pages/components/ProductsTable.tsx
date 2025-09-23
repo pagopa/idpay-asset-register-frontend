@@ -7,7 +7,7 @@ import {
   Typography,
   Checkbox,
   TableRow,
-  Tooltip,
+  Tooltip, IconButton,
 } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useTranslation } from 'react-i18next';
@@ -226,13 +226,13 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <ProductStatusChip status={row?.status ?? emptyData ?? ''} />
       </TableCell>
       <TableCell sx={actionsCellSx}>
-        <ArrowForwardIosIcon
-          sx={{
-            cursor: 'pointer',
-            color: '#0073E6',
-          }}
-          onClick={() => handleListButtonClick(row)}
-        />
+        <IconButton
+            aria-label="Apri dettagli prodotto"
+            size="small"
+            onClick={() => handleListButtonClick(row)}
+        >
+          <ArrowForwardIosIcon sx={{ color: '#0073E6' }} />
+        </IconButton>
       </TableCell>
     </TableRow>
   );
