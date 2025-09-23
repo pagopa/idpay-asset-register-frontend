@@ -182,7 +182,7 @@
         "TUMBLEDRYERS": "Asciugatrici",
         "REFRIGERATINGAPPL": "Apparecchi di refrigerazione",
         "COOKINGHOBS": "Piani cottura",
-        "UPLOADED": "Da revisionare",
+        "UPLOADED": "Da Esaminare",
         "WAIT_APPROVED": "Da approvare",
         "SUPERVISED": "Da controllare",
         "APPROVED": "Approvato",
@@ -198,7 +198,7 @@
         "Approvato": "APPROVED",
         "Da controllare": "SUPERVISED",
         "Escluso": "REJECTED",
-        "Da revisionare": "UPLOADED",
+        "Da Esaminare": "UPLOADED",
         "Da approvare": "WAIT_APPROVED"
       },
       "tablePaginationFrom": "di",
@@ -306,7 +306,7 @@
     },
     "rejectApprovation": {
       "title": "Rifiuta approvazione",
-      "description": "Stai per rifiutare la richiesta di approvazione inviata da L1. Dopo questa operazione, i prodotti torneranno allo stato “Da revisionare”.",
+      "description": "Stai per rifiutare la richiesta di approvazione inviata da L1. Dopo questa operazione, i prodotti torneranno allo stato “Da Esaminare”.",
       "listTitle": "Perché stai rifiutando l’approvazione di questi prodotti?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
@@ -328,7 +328,7 @@
   },
   "chip": {
     "productStatusLabel":{
-      "uploaded": "Da revisionare",
+      "uploaded": "Da Esaminare",
       "waitApproved": "Da approvare",
       "approved": "Approvato",
       "supervised": "Da controllare",
