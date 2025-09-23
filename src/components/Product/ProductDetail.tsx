@@ -1,3 +1,4 @@
+import React from 'react';
 import { List, Divider, Box, Tooltip, Typography, Button, SxProps, Theme } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
@@ -386,10 +387,10 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
         'type' in row && row.type === 'divider' ? (
           <Divider key={`divider-${idx}`} sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
         ) : (row as any).renderCustom ? (
-          (row as any).renderCustom()
+          <React.Fragment key={`custom-${idx}`}>{(row as any).renderCustom()}</React.Fragment>
         ) : (
           <ProductInfoRow
-            key={`row-${(row as RowConfig).label || idx}`}
+            key={`row-${idx}-${(row as RowConfig).label}`}
             label={(row as RowConfig).label}
             value={
               <Tooltip title={(row as RowConfig).value} arrow>
