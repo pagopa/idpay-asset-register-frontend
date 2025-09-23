@@ -40,6 +40,18 @@ jest.mock('../ProductConfirmDialog', () => {
   };
 });
 
+it('should render action buttons with sticky style in the drawer', () => {
+  renderComponent();
+
+  const approvedBtn = screen.getByTestId('approvedBtn');
+  const stickyBox = approvedBtn.closest('div');
+  expect(stickyBox).toHaveStyle({
+    position: 'sticky',
+    bottom: '0px',
+    background: '#fff',
+  });
+});
+
 jest.mock('../ProductModal', () => {
   return function ProductModal({ open, onClose, onSuccess, actionType }: any) {
     return open ? (

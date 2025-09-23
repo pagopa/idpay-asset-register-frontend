@@ -546,7 +546,20 @@ export default function ProductDetail({
           <ProductInfoRows data={data} currentStatus={data.status as ProductStatusEnum}>
             {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
               <>
-                <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
+                <Box
+                  mt={2}
+                  display="flex"
+                  flexDirection="column"
+                  sx={{
+                    width: '100%',
+                    position: 'sticky',
+                    bottom: 0,
+                    background: '#fff',
+                    zIndex: 2,
+                    pt: 2,
+                    pb: 2,
+                  }}
+                >
                   <Button
                     data-testid="acceptApprovationBtn"
                     color="primary"
@@ -554,7 +567,7 @@ export default function ProductDetail({
                     className="btn-approve"
                     onClick={() => setRestoreDialogOpen(true)}
                   >
-                    {t('invitaliaModal.waitApproved.buttonTextConfirm')}1
+                    {t('invitaliaModal.waitApproved.buttonTextConfirm')}
                   </Button>
                   <Button
                     data-testid="rejectApprovationBtn"
@@ -563,14 +576,27 @@ export default function ProductDetail({
                     variant="outlined"
                     onClick={handleExcludeClick}
                   >
-                    {t('invitaliaModal.rejected.buttonTextConfirm')}2
+                    {t('invitaliaModal.rejected.buttonTextConfirm')}
                   </Button>
                 </Box>
               </>
             )}
             {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
               <>
-                <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
+                <Box
+                  mt={2}
+                  display="flex"
+                  flexDirection="column"
+                  sx={{
+                    width: '100%',
+                    position: 'sticky',
+                    bottom: 0,
+                    background: '#fff',
+                    zIndex: 2,
+                    pt: 2,
+                    pb: 2,
+                  }}
+                >
                   <Button
                     data-testid="approvedBtn"
                     color="primary"
@@ -578,7 +604,7 @@ export default function ProductDetail({
                     className="btn-approve"
                     onClick={() => setRestoreDialogOpen(true)}
                   >
-                    {t('invitaliaModal.waitApproved.buttonText')}3
+                    {t('invitaliaModal.waitApproved.buttonText')}
                   </Button>
                   <Button
                     data-testid="supervisedBtn"
@@ -589,7 +615,7 @@ export default function ProductDetail({
                       setSupervisionModalOpen(true);
                     }}
                   >
-                    <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}4
+                    <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}
                   </Button>
                   <Button
                     data-testid="rejectedBtn"
@@ -598,14 +624,28 @@ export default function ProductDetail({
                     variant="outlined"
                     onClick={handleExcludeClick}
                   >
-                    {t('invitaliaModal.rejected.buttonText')}5
+                    {t('invitaliaModal.rejected.buttonText')}
                   </Button>
                 </Box>
               </>
             )}
             {isInvitaliaAdmin && String(data.status) === PRODUCTS_STATES.WAIT_APPROVED && (
               <>
-                <Box mt={2} mr={2} display="flex" flexDirection="column">
+                <Box
+                  mt={2}
+                  mr={2}
+                  display="flex"
+                  flexDirection="column"
+                  sx={{
+                    width: '100%',
+                    position: 'sticky',
+                    bottom: 0,
+                    background: '#fff',
+                    zIndex: 2,
+                    pt: 2,
+                    pb: 2,
+                  }}
+                >
                   <Button
                     data-testid="supervisedBtn"
                     color="primary"
@@ -613,7 +653,7 @@ export default function ProductDetail({
                     className="btn-approve"
                     onClick={() => setSupervisionModalOpen(true)}
                   >
-                    {t('invitaliaModal.waitApproved.buttonText')}6
+                    {t('invitaliaModal.waitApproved.buttonText')}
                   </Button>
                   <Button
                     data-testid="rejectedBtn"
@@ -622,7 +662,7 @@ export default function ProductDetail({
                     variant="outlined"
                     onClick={handleExcludeClick}
                   >
-                    {t('invitaliaModal.rejectApprovation.buttonText')}7
+                    {t('invitaliaModal.rejectApprovation.buttonText')}
                   </Button>
                 </Box>
               </>
