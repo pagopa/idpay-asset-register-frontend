@@ -27,6 +27,7 @@ import { fetchUserFromLocalStorage } from './helpers';
 import {USERS_TYPES} from './utils/constants';
 import InvitaliaProductsList from './pages/InvitaliaProductsList/invitaliaProductsList';
 import { institutionSelector } from './redux/slices/invitaliaSlice';
+import UpcomingInitiative from "./pages/upcomingInitiative/upcomingInitiative";
 
 type StandardRoutesProps = {
   organizationId: string | undefined;
@@ -34,6 +35,7 @@ type StandardRoutesProps = {
 
 const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
   <Routes>
+    <Route path={routes.UPCOMING} element={<UpcomingInitiative />} />
     <Route path={routes.HOME} element={<Overview />} />
     <Route path={routes.ADD_PRODUCTS} element={<AddProducts />} />
     <Route
@@ -53,6 +55,7 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
 
 const InvitaliaRoutes = () => (
   <Routes>
+    <Route path={routes.UPCOMING} element={<UpcomingInitiative />} />
     <Route path={routes.HOME} element={<InvitaliaProductsList />} />
     <Route path={routes.PRODUCERS} element={<InvitaliaOverview />} />
     <Route path={routes.TOS} element={<TOS />} />
