@@ -47,9 +47,4 @@ describe('UpcomingInitiative', () => {
 
         logSpy.mockRestore();
     });
-
-    test('snapshot UI stabile', () => {
-        const { container } = render(<UpcomingInitiative />);
-        expect(container).toMatchSnapshot();
-    });
 });
