@@ -411,6 +411,9 @@ type ProductDetailProps = Props & {
   onShowApprovedMsg?: () => void;
   onShowRejectedMsg: () => void;
   onShowWaitApprovedMsg?: () => void;
+  onShowSupervisedMsg?: () => void;
+  onShowRejectedApprovationMsg?: () => void;
+  onShowAcceptApprovationMsg?: () => void;
 };
 
 export default function ProductDetail({
@@ -422,6 +425,9 @@ export default function ProductDetail({
   onShowApprovedMsg,
   onShowRejectedMsg,
   onShowWaitApprovedMsg,
+  onShowSupervisedMsg,
+  onShowRejectedApprovationMsg,
+  onShowAcceptApprovationMsg,
 }: ProductDetailProps) {
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
@@ -450,7 +456,11 @@ export default function ProductDetail({
     }
   };
 
-  const handleModalClose = (setModalOpen: (open: boolean) => void, showRejectedMsg?: boolean) => {
+  const handleModalClose = (
+    setModalOpen: (open: boolean) => void,
+    showRejectedMsg?: boolean,
+    confirmed?: boolean
+  ) => {
     setModalOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();
@@ -458,16 +468,55 @@ export default function ProductDetail({
     if (typeof onClose === 'function') {
       onClose();
     }
-    if (showRejectedMsg && typeof onShowRejectedMsg === 'function') {
+    if (showRejectedMsg && confirmed && typeof onShowRejectedMsg === 'function') {
       onShowRejectedMsg();
     }
   };
 
-  const handleSuccess = (actionType?: string) => {
-    if (actionType === PRODUCTS_STATES.SUPERVISED && typeof onShowWaitApprovedMsg === 'function') {
-      onShowWaitApprovedMsg();
-    } else if (actionType === PRODUCTS_STATES.REJECTED) {
+  const resetAllMsgs = () => {};
+
+  const setMsgByActionType = (actionType?: string) => {
+    if (actionType === PRODUCTS_STATES.SUPERVISED && typeof onShowSupervisedMsg === 'function') {
+      onShowSupervisedMsg();
+      return;
+    }
+    if (actionType === PRODUCTS_STATES.REJECTED && typeof onShowRejectedMsg === 'function') {
       onShowRejectedMsg();
+      return;
+    }
+    if (
+      actionType === PRODUCTS_STATES.WAIT_APPROVED &&
+      typeof onShowWaitApprovedMsg === 'function'
+    ) {
+      onShowWaitApprovedMsg();
+      return;
+    }
+    if (
+      actionType === MIDDLE_STATES.REJECT_APPROVATION &&
+      typeof onShowRejectedApprovationMsg === 'function'
+    ) {
+      onShowRejectedApprovationMsg();
+      return;
+    }
+    if (
+      actionType === MIDDLE_STATES.ACCEPT_APPROVATION &&
+      typeof onShowAcceptApprovationMsg === 'function'
+    ) {
+      onShowAcceptApprovationMsg();
+    }
+  };
+
+  const handleSuccess = (actionType?: string) => {
+    if (
+      typeof onShowApprovedMsg === 'function' ||
+      typeof onShowRejectedMsg === 'function' ||
+      typeof onShowWaitApprovedMsg === 'function' ||
+      typeof onShowSupervisedMsg === 'function' ||
+      typeof onShowRejectedApprovationMsg === 'function' ||
+      typeof onShowAcceptApprovationMsg === 'function'
+    ) {
+      resetAllMsgs();
+      setMsgByActionType(actionType);
     }
   };
 
@@ -499,22 +548,22 @@ export default function ProductDetail({
               <>
                 <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
                   <Button
+                    data-testid="acceptApprovationBtn"
                     color="primary"
                     variant="contained"
                     className="btn-approve"
-                    data-testid="request-approval-btn"
                     onClick={() => setRestoreDialogOpen(true)}
                   >
-                    {t('invitaliaModal.waitApproved.buttonTextConfirm')}
+                    {t('invitaliaModal.waitApproved.buttonTextConfirm')}1
                   </Button>
                   <Button
+                    data-testid="rejectApprovationBtn"
                     color="error"
                     className="btn-exclude"
-                    data-testid="exclude-btn"
                     variant="outlined"
                     onClick={handleExcludeClick}
                   >
-                    {t('invitaliaModal.rejected.buttonTextConfirm')}
+                    {t('invitaliaModal.rejected.buttonTextConfirm')}2
                   </Button>
                 </Box>
               </>
@@ -529,25 +578,27 @@ export default function ProductDetail({
                     className="btn-approve"
                     onClick={() => setRestoreDialogOpen(true)}
                   >
-                    {t('invitaliaModal.waitApproved.buttonText')}
+                    {t('invitaliaModal.waitApproved.buttonText')}3
                   </Button>
                   <Button
                     data-testid="supervisedBtn"
                     color="primary"
                     variant="outlined"
                     className="btn-exclude"
-                    onClick={() => setSupervisionModalOpen(true)}
+                    onClick={() => {
+                      setSupervisionModalOpen(true);
+                    }}
                   >
-                    <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}
+                    <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}4
                   </Button>
                   <Button
+                    data-testid="rejectedBtn"
                     color="error"
                     className="btn-exclude"
-                    data-testid="rejectedBtn"
                     variant="outlined"
                     onClick={handleExcludeClick}
                   >
-                    {t('invitaliaModal.rejected.buttonText')}
+                    {t('invitaliaModal.rejected.buttonText')}5
                   </Button>
                 </Box>
               </>
@@ -562,16 +613,16 @@ export default function ProductDetail({
                     className="btn-approve"
                     onClick={() => setSupervisionModalOpen(true)}
                   >
-                    {t('invitaliaModal.waitApproved.buttonText')}
+                    {t('invitaliaModal.waitApproved.buttonText')}6
                   </Button>
                   <Button
+                    data-testid="rejectedBtn"
                     color="error"
                     className="btn-exclude"
-                    data-testid="rejectedBtn"
                     variant="outlined"
                     onClick={handleExcludeClick}
                   >
-                    {t('invitaliaModal.rejectApprovation.buttonText')}
+                    {t('invitaliaModal.rejectApprovation.buttonText')}7
                   </Button>
                 </Box>
               </>

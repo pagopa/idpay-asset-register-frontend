@@ -49,7 +49,11 @@ const InvitaliaProductsList: React.FC = () => {
         <ProductDataGrid organizationId={institution?.institutionId || ''} />
       </Box>
       {showMsg && (
-        <MsgResult severity="success" message={t('msgResutlt.okButtonApproved')} bottom={80} />
+        <MsgResult
+          severity="success"
+          message={t('invitaliaModal.waitApproved.msgResultWaitApproved')}
+          bottom={80}
+        />
       )}
     </Box>
   );

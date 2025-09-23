@@ -243,6 +243,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       buttonText: t('invitaliaModal.supervised.buttonText'),
       buttonTextConfirm: t('invitaliaModal.supervised.buttonTextConfirm'),
       buttonTextCancel: t('invitaliaModal.supervised.buttonTextCancel'),
+      msgResult: t('invitaliaModal.supervised.msgResultSupervised'),
     },
     REJECTED: {
       title: t('invitaliaModal.rejected.title'),
@@ -255,6 +256,18 @@ const ProductModal: React.FC<ProductModalProps> = ({
       reasonPlaceholderNoteUff: t('invitaliaModal.rejected.reasonPlaceholderNoteUff'),
       buttonTextConfirm: t('invitaliaModal.rejected.buttonTextConfirm'),
       buttonTextCancel: t('invitaliaModal.rejected.buttonTextCancel'),
+      msgResult: t('invitaliaModal.rejected.msgResultRejected'),
+    },
+    WAIT_APPROVED: {
+      title: t('invitaliaModal.waitApproved.title'),
+      description: t('invitaliaModal.waitApproved.description'),
+      listTitle: t('invitaliaModal.waitApproved.listTitle'),
+      reasonLabel: t('invitaliaModal.waitApproved.reasonLabel'),
+      reasonPlaceholder: t('invitaliaModal.waitApproved.reasonPlaceholder'),
+      buttonText: t('invitaliaModal.waitApproved.buttonText'),
+      buttonTextConfirm: t('invitaliaModal.waitApproved.buttonTextConfirm'),
+      buttonTextCancel: t('invitaliaModal.waitApproved.buttonTextCancel'),
+      msgResult: t('invitaliaModal.waitApproved.msgResultWaitApproved'),
     },
     REJECT_APPROVATION: {
       title: t('invitaliaModal.rejectApprovation.title'),
@@ -265,6 +278,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       buttonText: t('invitaliaModal.rejectApprovation.buttonText'),
       buttonTextConfirm: t('invitaliaModal.rejectApprovation.buttonTextConfirm'),
       buttonTextCancel: t('invitaliaModal.rejectApprovation.buttonTextCancel'),
+      msgResult: t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation'),
     },
     ACCEPT_APPROVATION: {
       title: t('invitaliaModal.acceptApprovation.title'),
@@ -275,6 +289,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       buttonText: t('invitaliaModal.acceptApprovation.buttonText'),
       buttonTextConfirm: t('invitaliaModal.acceptApprovation.buttonTextConfirm'),
       buttonTextCancel: t('invitaliaModal.acceptApprovation.buttonTextCancel'),
+      msgResult: t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation'),
     },
   };
 

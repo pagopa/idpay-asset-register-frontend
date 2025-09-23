@@ -267,7 +267,8 @@
       "buttonText": "Da controllare",
       "buttonTextConfirm": "Richiedi controlli",
       "buttonTextCancel": "Annulla",
-      "errorMessage": "Campo obbligatorio"
+      "errorMessage": "Campo obbligatorio",
+      "msgResultSupervised": "I prodotti selezionati sono ora da controllare."
     },
     "rejected": {
       "title": "Richiedi esclusione",
@@ -280,7 +281,8 @@
       "buttonTextCancel": "Annulla",
       "errorMessage": "Campo obbligatorio",
       "listTitleNoteUff": "Notifica ufficiale destinatata al Produttore",
-      "reasonPlaceholderNoteUff": "Notifica ufficiale"
+      "reasonPlaceholderNoteUff": "Notifica ufficiale",
+      "msgResultRejected": "I prodotti selezionati sono stati esclusi."
     },
      "waitApproved": {
       "title": "Approva",
@@ -291,18 +293,8 @@
       "buttonText": "Approva",
       "buttonTextConfirm": "Richiedi approvazione",
       "buttonTextCancel": "Annulla",
-      "errorMessage": "Campo obbligatorio"
-    },
-    "approved": {
-      "title": "Approva",
-      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
-      "listTitle": "Richiedi approvazione",
-      "reasonLabel": "Richiedi approvazione",
-      "reasonPlaceholder": "Richiedi approvazione",
-      "buttonText": "Approva",
-      "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Annulla",
-      "errorMessage": "Campo obbligatorio"
+      "errorMessage": "Campo obbligatorio",
+      "msgResultWaitApproved": "Richiesta di approvazione inviata."
     },
     "rejectApprovation": {
       "title": "Rifiuta approvazione",
@@ -313,7 +305,8 @@
       "buttonText": "Rifiuta",
       "buttonTextConfirm": "Rifiuta",
       "buttonTextCancel": "Annulla",
-      "errorMessage": "Campo obbligatorio"
+      "errorMessage": "Campo obbligatorio",
+      "msgResultRejectedApprovation": "L'approvazione è stata rifiutata."
     },
     "acceptApprovation": {
       "title": "Approva prodotti",
@@ -323,7 +316,8 @@
       "reasonPlaceholder": "",
       "buttonText": "Approva",
       "buttonTextConfirm": "Approva",
-      "buttonTextCancel": "Annulla"
+      "buttonTextCancel": "Annulla",
+      "msgResultAcceptApprovation":"I prodotti sono stati approvati."
     }
   },
   "chip": {
@@ -337,11 +331,6 @@
   },
   "msgResutlt":{
     "errorMixSelected":"Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato.",
-    "errorYourselfApproved":"Non puoi inviare una richiesta di approvazione a te stesso.",
-    "okButtonApproved": "Richiesta di approvazione inviata.",
-    "okButtonRejected": "I prodotti selezionati sono stati esclusi.",
-    "okWaitApproved": "I prodotti selezionati sono ora da controllare.",
-    "okL2ButtonApproved":"I prodotti sono stati approvati.",
-    "okL2ButtonRejected":"L'approvazione è stata rifiutata."
+    "errorYourselfApproved":"Non puoi inviare una richiesta di approvazione a te stesso."
   }
 }

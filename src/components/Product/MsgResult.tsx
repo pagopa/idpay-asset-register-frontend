@@ -38,7 +38,8 @@ const MsgResult: React.FC<MsgResultProps> = ({
         width: '100%',
         display: 'flex',
         justifyContent: 'flex-end',
-        zIndex: 9999,
+        zIndex: 2000,
+        pointerEvents: 'auto',
       }}
     >
       <Box
