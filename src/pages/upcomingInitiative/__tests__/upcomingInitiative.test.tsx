@@ -13,7 +13,7 @@ jest.mock('react-i18next', () => ({
     }),
 }));
 
-import UpcomingInitiative from '../UpcomingInitiative';
+import UpcomingInitiative from '../upcomingInitiative';
 
 describe('UpcomingInitiative', () => {
     test('renderizza immagine 60x60, titolo, sottotitolo interpolato e bottone', () => {
