@@ -190,11 +190,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [batchName, batchId, batchFilterItems]);
 
   useEffect(() => {
-    if (isInvitaliaUser && institution?.institutionId) {
+    if ((isInvitaliaUser || isInvitaliaAdmin ) && institution?.institutionId) {
       setProducerFilter(institution.institutionId);
     }
     setReady(true);
-  }, [isInvitaliaUser, institution?.institutionId]);
+  }, [isInvitaliaUser, isInvitaliaAdmin, institution?.institutionId]);
 
   useEffect(() => {
     if (isInvitaliaAdmin && !adminDefaultApplied) {
