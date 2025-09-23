@@ -171,7 +171,6 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         }),
       }}
       hover
-      onClick={() => handleListButtonClick(row)}
     >
       <TableCell sx={checkboxCellSx}>
         {typeof row.gtinCode === 'string' ? (
@@ -232,6 +231,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
             cursor: 'pointer',
             color: '#0073E6',
           }}
+          onClick={() => handleListButtonClick(row)}
         />
       </TableCell>
     </TableRow>
