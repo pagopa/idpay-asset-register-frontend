@@ -35,7 +35,7 @@ import ProductsTable from '../../pages/components/ProductsTable';
 import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
 import {
   institutionListSelector,
-  institutionSelector,
+  institutionSelector, setInstitution,
   setInstitutionList,
 } from '../../redux/slices/invitaliaSlice';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
@@ -190,11 +190,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   }, [batchName, batchId, batchFilterItems]);
 
   useEffect(() => {
-    if (isInvitaliaUser && institution?.institutionId) {
+    if ((isInvitaliaUser || isInvitaliaAdmin ) && institution?.institutionId) {
       setProducerFilter(institution.institutionId);
     }
     setReady(true);
-  }, [isInvitaliaUser, institution?.institutionId]);
+  }, [isInvitaliaUser, isInvitaliaAdmin, institution?.institutionId]);
 
   useEffect(() => {
     if (isInvitaliaAdmin && !adminDefaultApplied) {
@@ -246,6 +246,12 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     setGtinCodeFilter('');
     setApiErrorOccurred(false);
     setFiltering(true);
+    dispatch(setInstitution({
+      institutionId: '',
+      createdAt: '',
+      updatedAt: '',
+      description: ''
+    }));
   };
 
   const handleToggleDrawer = (newOpen: boolean) => {
