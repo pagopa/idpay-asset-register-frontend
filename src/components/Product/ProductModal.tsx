@@ -186,9 +186,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
           id={showError ? 'outlined-error-helper-text' : undefined}
           helperText={helper}
         />
-        <Box sx={modalStyles.charCounter}>{`${
-          motivationInternal.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationInternal.length
-        }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+        <Box
+          sx={modalStyles.charCounter}
+        >{`${motivationInternal.length}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
       </>
     );
   };
@@ -226,9 +226,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
           id={showError ? 'outlined-error-helper-text-note-uff' : undefined}
           helperText={helper}
         />
-        <Box sx={modalStyles.charCounter}>{`${
-          motivationOfficial.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationOfficial.length
-        }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+        <Box
+          sx={modalStyles.charCounter}
+        >{`${motivationOfficial.length}/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
       </>
     );
   };
