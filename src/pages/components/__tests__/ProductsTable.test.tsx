@@ -190,7 +190,7 @@ describe('ProductsTable – vista INVITALIA', () => {
     const rows = screen.getAllByRole('row');
     expect(rows.length).toBeGreaterThanOrEqual(5);
 
-    expect(screen.getAllByText(/TRUNC\(GTIN-/)).toHaveLength(3);
+    expect(screen.getAllByText(/TRUNC\(GTIN-/)).toHaveLength(4);
     expect(screen.getAllByTestId('status-chip')).toHaveLength(4);
     expect(screen.getAllByTestId('eprel-link')[0]).toHaveTextContent('EPREL:EP-111');
   });
