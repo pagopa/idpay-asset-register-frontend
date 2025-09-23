@@ -65,6 +65,10 @@
       "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
       "title": "Elenco informatico elettrodomestici"
     },
+    "upcomingInitiative": {
+      "title": "Ci siamo quasi!",
+      "subTitle": "Torna il {{x}} per accedere alla piattaforma"
+    },
     "overview": {
       "overviewTitle": "Panoramica",
       "overviewTitleDescription": "Tieni sotto controllo tutte le tue attività da qui.",
