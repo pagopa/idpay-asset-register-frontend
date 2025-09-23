@@ -1,4 +1,5 @@
 import { List, Divider, Box, Tooltip, Typography, Button, SxProps, Theme } from '@mui/material';
+import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +17,7 @@ import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
+import { DEBUG_CONSOLE } from '../../utils/constants';
 import { statusChangeMessage } from '../../model/Product';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
@@ -34,12 +36,15 @@ type Props = {
 const callRejectedApi = async (
   gtinCodes: Array<string>,
   currentStatus: ProductStatusEnum,
-  motivation: string
+  motivation: string,
+  formalMotivation: string
 ) => {
   try {
-    await setRejectedStatusList(gtinCodes, currentStatus, motivation);
+    await setRejectedStatusList(gtinCodes, currentStatus, motivation, formalMotivation);
   } catch (error) {
-    console.error(error);
+    if (DEBUG_CONSOLE) {
+      console.error(error);
+    }
   }
 };
 
@@ -51,7 +56,9 @@ const callWaitApprovedApi = async (
   try {
     await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error) {
-    console.error(error);
+    if (DEBUG_CONSOLE) {
+      console.error(error);
+    }
   }
 };
 
@@ -59,10 +66,11 @@ const handleOpenModal = (
   action: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatusEnum,
-  motivation: string
+  motivation: string,
+  formalMotivation: string
 ) => {
   if (action === PRODUCTS_STATES.REJECTED) {
-    return callRejectedApi(gtinCodes, currentStatus, motivation);
+    return callRejectedApi(gtinCodes, currentStatus, motivation, formalMotivation);
   } else if (action === PRODUCTS_STATES.APPROVED) {
     return callWaitApprovedApi(gtinCodes, currentStatus, motivation);
   }
@@ -196,7 +204,7 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
     value: t('pages.productDetail.productSheet'),
     labelVariant: 'body2',
     valueVariant: 'body2',
-    sx: { mt: 4, mb: 2 },
+    sx: { mt: 4, mb: 2, fontWeight: 700 },
   };
 
   const remainingRows = baseRows.slice(4).map((row) => mapBaseRowToRowConfig(row, data));
@@ -223,7 +231,7 @@ function renderEntry(entry: any, idx: number) {
   }
 
   return (
-    <Box key={`${header}-${idx}`} sx={{ mb: 2 }}>
+    <Box key={`${header}-${idx}`} sx={{ mb: 2, width: '100%' }}>
       <Tooltip
         title={
           <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
@@ -232,13 +240,28 @@ function renderEntry(entry: any, idx: number) {
         }
         arrow
       >
-        <Box component="span">
+        <Box component="span" sx={{ width: '100%' }}>
           <Typography variant="body1" color="text.secondary">
             {truncateString(header, MAX_LENGTH_DETAILL_PR)}
           </Typography>
-          <Typography variant="body2" fontWeight="fontWeightMedium">
-            {truncateString(motivationText, MAX_LENGTH_DETAILL_PR)}
-          </Typography>
+          <TextareaAutosize
+            maxRows={10}
+            value={motivationText}
+            readOnly
+            aria-label="Motivazione"
+            name="motivation"
+            style={{
+              width: '374px',
+              boxSizing: 'border-box',
+              resize: 'none',
+              fontFamily: 'inherit',
+              fontSize: '1rem',
+              fontWeight: 500,
+              background: 'transparent',
+              border: 'none',
+              color: 'inherit',
+            }}
+          />
         </Box>
       </Tooltip>
     </Box>
@@ -270,10 +293,84 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                 <ProductInfoRow
                   label={t('pages.productDetail.motivation')}
                   labelVariant="overline"
-                  sx={{ marginTop: 3 }}
+                  sx={{ marginTop: 3, fontWeight: 700 }}
+                  labelColor="#17324D"
                   value={
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
                       {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
+                    </Box>
+                  }
+                />
+              );
+            },
+          } as RowConfig & { renderCustom?: () => JSX.Element },
+          {
+            renderCustom: () => {
+              const chronology =
+                ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
+              if (!chronology.length) {
+                return null;
+              }
+              const entry = chronology[0];
+              if (!entry) {
+                return null;
+              }
+              const operator = entry?.role
+                ? `${USERS_NAMES.OPERATORE} ${entry.role}`
+                : USERS_NAMES.OPERATORE;
+              const dateLabel = entry?.updateDate
+                ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
+                : EMPTY_DATA;
+              const formalMotivationText =
+                data?.formalMotivation === undefined ||
+                data?.formalMotivation === null ||
+                (typeof data?.formalMotivation === 'string' && data?.formalMotivation.trim() === '')
+                  ? EMPTY_DATA
+                  : data?.formalMotivation;
+              const header = `${operator} · ${dateLabel}`;
+
+              return (
+                <ProductInfoRow
+                  label={t('pages.productDetail.motivationFormal')}
+                  labelVariant="overline"
+                  sx={{ marginTop: 3, fontWeight: 700 }}
+                  labelColor="#17324D"
+                  value={
+                    <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                      <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
+                        <Tooltip
+                          title={
+                            <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
+                              {formalMotivationText}
+                            </Box>
+                          }
+                          arrow
+                        >
+                          <Box component="span" sx={{ width: '100%' }}>
+                            <Typography variant="body1" color="text.secondary">
+                              {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                            </Typography>
+                            <TextareaAutosize
+                              maxRows={10}
+                              value={formalMotivationText}
+                              readOnly
+                              aria-label="Motivazione formale"
+                              name="formalMotivation"
+                              style={{
+                                width: '374px',
+                                boxSizing: 'border-box',
+                                resize: 'none',
+                                fontFamily: 'inherit',
+                                fontSize: '1rem',
+                                fontWeight: 500,
+                                background: 'transparent',
+                                border: 'none',
+                                color: 'inherit',
+                              }}
+                            />
+                          </Box>
+                        </Tooltip>
+                      </Box>
                     </Box>
                   }
                 />
@@ -292,11 +389,11 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
           (row as any).renderCustom()
         ) : (
           <ProductInfoRow
-            key={idx}
+            key={`row-${(row as RowConfig).label || idx}`}
             label={(row as RowConfig).label}
             value={
               <Tooltip title={(row as RowConfig).value} arrow>
-                <span>{truncateString((row as RowConfig).value, MAX_LENGTH_DETAILL_PR)}</span>
+                <span>{(row as RowConfig).value}</span>
               </Tooltip>
             }
             labelVariant={(row as RowConfig).labelVariant}
@@ -336,6 +433,7 @@ export default function ProductDetail({
       PRODUCTS_STATES.APPROVED,
       [data.gtinCode],
       data.status as ProductStatusEnum,
+      EMPTY_DATA,
       EMPTY_DATA
     );
     setRestoreDialogOpen(false);

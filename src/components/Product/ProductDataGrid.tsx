@@ -19,6 +19,7 @@ import {
   USERS_NAMES,
   MIDDLE_STATES,
   // L1_MOTIVATION_OK,
+  DEBUG_CONSOLE,
 } from '../../utils/constants';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import {
@@ -121,7 +122,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       const institutionList = institutionsData.institutions;
       dispatch(setInstitutionList(institutionList as Array<Institution>));
     } catch (error) {
-      console.error('Errore nel recupero delle istituzioni:', error);
+      if (DEBUG_CONSOLE) {
+        console.error('Error fetching institutions:', error);
+      }
     } finally {
       setLoading(false);
     }
@@ -281,7 +284,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     try {
       await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
     } catch (error) {
-      console.error(error);
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
     }
   };
 
@@ -538,7 +543,14 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
       <ProductModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={(cancelled) => {
+          setModalOpen(false);
+          if (cancelled) {
+            setShowMsgRejected(false);
+            setShowMsgApproved(false);
+            setShowMsgWaitApproved(false);
+          }
+        }}
         actionType={modalAction}
         onUpdateTable={updaDataTable}
         selectedProducts={tableData
@@ -589,7 +601,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             updaDataTable();
             setRestoreDialogOpen(false);
           } catch (error) {
-            console.error('Errore durante il ripristino:', error);
+            if (DEBUG_CONSOLE) {
+              console.error('Error during restore:', error);
+            }
           }
         }}
         onSuccess={() => setShowMsgApproved(true)}

@@ -29,5 +29,6 @@ export type statusChangeMessage = {
   username?: string;
   role?: string;
   motivation?: string;
+  formalMotivation?: string;
   updateDate?: string;
 };

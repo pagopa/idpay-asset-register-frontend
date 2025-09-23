@@ -11,6 +11,7 @@ jest.mock('env-var', () => ({
             REACT_APP_URL_FE_LOGOUT: { required: () => ({ asString: () => '/logout' }) },
             REACT_APP_URL_FE_LANDING: { required: () => ({ asString: () => '/landing' }) },
             REACT_APP_URL_FE_ASSISTANCE_ASSET_REGISTER: { required: () => ({ asString: () => '/assistance' }) },
+            REACT_APP_URL_FE_EIE_MANUAL: { asString: () => '/manual' },
             REACT_APP_URL_API_REGISTER: { required: () => ({ asString: () => 'https://mock-api/register' }) },
             REACT_APP_API_ROLE_PERMISSION_TIMEOUT_MS: { required: () => ({ asInt: () => 5000 }) },
             REACT_APP_API_OPERATION_TIMEOUT_MS: { required: () => ({ asInt: () => 5000 }) },
@@ -43,11 +44,59 @@ describe('ENV config', () => {
 
     it('should fallback PUBLIC_URL to default if undefined', () => {
         getMock.mockImplementation((key: string) => {
+            if (key === 'PUBLIC_URL') {
+                return {
+                    asString: () => undefined,
+                    required: () => ({
+                        asString: () => undefined,
+                        asInt: () => 1234,
+                        asBool: () => true,
+                    }),
+                    default: () => ({
+                        asBool: () => true,
+                        asString: () => 'default_value',
+                    }),
+                };
+            }
+            if (key === 'REACT_APP_URL_API_REGISTER') {
+                return {
+                    asString: () => 'https://mock-api/register',
+                    required: () => ({
+                        asString: () => 'https://mock-api/register',
+                        asInt: () => 1234,
+                        asBool: () => true,
+                    }),
+                    default: () => ({
+                        asBool: () => true,
+                        asString: () => 'default_value',
+                    }),
+                };
+            }
+            if (key === 'REACT_APP_API_OPERATION_TIMEOUT_MS') {
+                return {
+                    asInt: () => 5000,
+                    required: () => ({
+                        asInt: () => 5000,
+                        asString: () => '5000',
+                        asBool: () => true,
+                    }),
+                    default: () => ({
+                        asBool: () => true,
+                        asString: () => 'default_value',
+                    }),
+                };
+            }
+            if (key === 'REACT_APP_ANALYTICS_ENABLE') {
+                return {
+                    asBool: () => true,
+                    default: () => ({
+                        asBool: () => true,
+                        asString: () => 'default_value',
+                    }),
+                };
+            }
             return {
-                asString: () => {
-                    if (key === 'PUBLIC_URL') return undefined;
-                    return `${key}_VALUE`;
-                },
+                asString: () => `${key}_VALUE`,
                 required: () => ({
                     asString: () => `${key}_VALUE`,
                     asInt: () => 1234,

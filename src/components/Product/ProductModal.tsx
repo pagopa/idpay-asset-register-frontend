@@ -20,11 +20,14 @@ import {
   setApprovedStatusList,
 } from '../../services/registerService';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
+import { DEBUG_CONSOLE } from '../../utils/constants';
 import {
   EMPTY_DATA,
   // L2_MOTIVATION_OK,
   MIDDLE_STATES,
   PRODUCTS_STATES,
+  MIN_LENGTH_TEXTFIELD_POPUP,
+  MAX_LENGTH_TEXTFIELD_POPUP,
 } from '../../utils/constants';
 
 interface ProductModalProps {
@@ -131,15 +134,104 @@ const ProductModal: React.FC<ProductModalProps> = ({
   selectedProducts,
   onSuccess,
 }) => {
-  const [motivation, setReason] = useState('');
+  const [motivationInternal, setMotivationInternal] = useState('');
+  const [motivationOfficial, setMotivationOfficial] = useState('');
   const [motivationTouched, setMotivationTouched] = useState(false);
+  const [motivationOfficialTouched, setMotivationOfficialTouched] = useState(false);
+
+  const isValidAlphanumeric = (value: string) => {
+    const matches = value.match(/[a-zA-Z0-9]/g);
+    return matches !== null && matches.length >= 2;
+  };
+
   React.useEffect(() => {
     if (open) {
-      setReason('');
+      setMotivationInternal('');
+      setMotivationOfficial('');
       setMotivationTouched(false);
+      setMotivationOfficialTouched(false);
     }
   }, [open]);
   const { t } = useTranslation();
+
+  const renderMotivationField = (config: any) => {
+    const showError =
+      motivationTouched &&
+      (motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+        !isValidAlphanumeric(motivationInternal));
+    const helper = motivationTouched
+      ? motivationInternal.trim().length === 0
+        ? 'Campo obbligatorio'
+        : motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+        ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+        : !isValidAlphanumeric(motivationInternal)
+        ? 'Inserire almeno 2 caratteri alfanumerici'
+        : undefined
+      : undefined;
+    return (
+      <>
+        <TextField
+          required
+          label={config?.reasonLabel}
+          color="primary"
+          fullWidth
+          inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
+          value={motivationInternal}
+          onChange={(e) => {
+            setMotivationInternal(e.target.value);
+          }}
+          onBlur={() => setMotivationTouched(true)}
+          sx={modalStyles.textField}
+          error={showError}
+          id={showError ? 'outlined-error-helper-text' : undefined}
+          helperText={helper}
+        />
+        <Box sx={modalStyles.charCounter}>{`${
+          motivationInternal.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationInternal.length
+        }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+      </>
+    );
+  };
+
+  const renderMotivationNoteUffField = () => {
+    const showError =
+      motivationOfficialTouched &&
+      (motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+        !isValidAlphanumeric(motivationOfficial));
+    const helper = motivationOfficialTouched
+      ? motivationOfficial.trim().length === 0
+        ? 'Campo obbligatorio'
+        : motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP
+        ? `Inserire minimo ${MIN_LENGTH_TEXTFIELD_POPUP} caratteri`
+        : !isValidAlphanumeric(motivationOfficial)
+        ? 'Inserire almeno 2 caratteri alfanumerici'
+        : undefined
+      : undefined;
+    return (
+      <>
+        <Typography sx={modalStyles.listTitle}>{MODAL_CONFIG.REJECTED.listTitleNoteUff}</Typography>
+        <TextField
+          required
+          label={MODAL_CONFIG.REJECTED.reasonPlaceholderNoteUff}
+          color="primary"
+          fullWidth
+          inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
+          value={motivationOfficial}
+          onChange={(e) => {
+            setMotivationOfficial(e.target.value);
+          }}
+          onBlur={() => setMotivationOfficialTouched(true)}
+          sx={modalStyles.textField}
+          error={showError}
+          id={showError ? 'outlined-error-helper-text-note-uff' : undefined}
+          helperText={helper}
+        />
+        <Box sx={modalStyles.charCounter}>{`${
+          motivationOfficial.length === 0 ? MIN_LENGTH_TEXTFIELD_POPUP : motivationOfficial.length
+        }/${MAX_LENGTH_TEXTFIELD_POPUP}`}</Box>
+      </>
+    );
+  };
 
   const MODAL_CONFIG = {
     SUPERVISED: {
@@ -159,6 +251,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
       reasonLabel: t('invitaliaModal.rejected.reasonLabel'),
       reasonPlaceholder: t('invitaliaModal.rejected.reasonPlaceholder'),
       buttonText: t('invitaliaModal.rejected.buttonText'),
+      listTitleNoteUff: t('invitaliaModal.rejected.listTitleNoteUff'),
+      reasonPlaceholderNoteUff: t('invitaliaModal.rejected.reasonPlaceholderNoteUff'),
       buttonTextConfirm: t('invitaliaModal.rejected.buttonTextConfirm'),
       buttonTextCancel: t('invitaliaModal.rejected.buttonTextCancel'),
     },
@@ -193,13 +287,16 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const status: ProductStatusEnum = selectedProducts[0].status;
 
   const callSupervisionedApi = async () => {
-    if (!motivation.trim()) {
+    if (
+      motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+      !isValidAlphanumeric(motivationInternal)
+    ) {
       setMotivationTouched(true);
       return;
     }
     try {
       onClose(false);
-      await setSupervisionedStatusList(gtinCodes, status, motivation);
+      await setSupervisionedStatusList(gtinCodes, status, motivationInternal);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -207,19 +304,32 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      console.error(error);
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
       onClose(false);
     }
   };
 
   const callRejectedApi = async () => {
-    if (!motivation.trim()) {
-      setMotivationTouched(true);
+    const isMotivationInternalInvalid =
+      motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+      !isValidAlphanumeric(motivationInternal);
+    const isMotivationOfficialInvalid =
+      motivationOfficial.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+      !isValidAlphanumeric(motivationOfficial);
+    if (isMotivationInternalInvalid || isMotivationOfficialInvalid) {
+      if (isMotivationInternalInvalid) {
+        setMotivationTouched(true);
+      }
+      if (isMotivationOfficialInvalid) {
+        setMotivationOfficialTouched(true);
+      }
       return;
     }
     try {
       onClose(false);
-      await setRejectedStatusList(gtinCodes, status, motivation);
+      await setRejectedStatusList(gtinCodes, status, motivationInternal, motivationOfficial);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -227,19 +337,24 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      console.error(error);
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
       onClose(false);
     }
   };
 
   const callRestoredApi = async () => {
-    if (!motivation.trim()) {
+    if (
+      motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
+      !isValidAlphanumeric(motivationInternal)
+    ) {
       setMotivationTouched(true);
       return;
     }
     try {
       onClose(false);
-      await setRestoredStatusList(gtinCodes, status, motivation);
+      await setRestoredStatusList(gtinCodes, status, motivationInternal);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -247,7 +362,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      console.error(error);
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
       onClose(false);
     }
   };
@@ -263,7 +380,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      console.error(error);
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
       onClose(false);
     }
   };
@@ -289,27 +408,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
         <Typography sx={modalStyles.listTitle}>{config?.listTitle || ''}</Typography>
         {actionType !== MIDDLE_STATES.ACCEPT_APPROVATION && (
           <>
-            <TextField
-              required
-              label={config?.reasonLabel}
-              color="primary"
-              fullWidth
-              inputProps={{ maxLength: 200 }}
-              value={motivation}
-              onChange={(e) => {
-                setReason(e.target.value);
-              }}
-              onBlur={() => setMotivationTouched(true)}
-              sx={modalStyles.textField}
-              error={motivationTouched && !motivation.trim()}
-              id={
-                motivationTouched && !motivation.trim() ? 'outlined-error-helper-text' : undefined
-              }
-              helperText={
-                motivationTouched && !motivation.trim() ? 'Campo obbligatorio' : undefined
-              }
-            />
-            <Box sx={modalStyles.charCounter}>{motivation.length}/200</Box>
+            {renderMotivationField(config)}
+            {actionType === PRODUCTS_STATES.REJECTED && renderMotivationNoteUffField()}
           </>
         )}
       </DialogContent>
