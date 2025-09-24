@@ -330,6 +330,10 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                   : data?.formalMotivation;
               const header = `${operator} · ${dateLabel}`;
 
+              if (formalMotivationText === EMPTY_DATA) {
+                return null;
+              }
+
               return (
                 <ProductInfoRow
                   label={t('pages.productDetail.motivationFormal')}
