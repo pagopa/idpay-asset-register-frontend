@@ -318,7 +318,6 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     </TableRow>
   );
 
-  // Componenti di rendering estratti per ridurre la complessità
   const RenderTooltipOrText = ({
     value,
     maxLength,
