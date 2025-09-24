@@ -1,5 +1,7 @@
 import { useTheme, useMediaQuery } from '@mui/material';
+import {storageTokenOps, storageUserOps} from "@pagopa/selfcare-common-frontend/lib/utils/storage";
 import {EMPTY_DATA, MAX_LENGTH_TABLE_PR, MAX_LENGTH_EMAIL, MIN_LENGTH_TABLE_PR, RESOLUTION_UPSCALING} from "./utils/constants";
+import {ENV} from "./utils/env";
 
 export const formattedCurrency = (
   number: number | undefined,
@@ -164,4 +166,41 @@ export const useResponsiveMaxLength = (): number => {
   if (isLg) {return 50;}
   if (isXl) {return 70;}
   return 70; 
+};
+
+export const isOnOrBeforeDate = (dmy?: string): boolean => {
+    if (!dmy) {return false;}
+    const [day, month, year] = dmy.split("/").map(Number);
+
+    const target = new Date(year, month - 1, day);
+
+    const todayParts = new Date().toLocaleDateString("it-IT", {
+        timeZone: "Europe/Rome",
+    }).split("/").map(Number);
+    const [dd, mm, yyyy] = todayParts;
+    const today = new Date(yyyy, mm - 1, dd);
+
+    return today < target;
+};
+
+export const customExitAction = () => {
+    storageTokenOps.delete();
+    storageUserOps.delete();
+    Object.keys(localStorage).forEach((key) => {
+        if (
+            key.toLowerCase().includes('filter') ||
+            key === 'user' ||
+            key === 'token' ||
+            key.startsWith('persist:')
+        ) {
+            localStorage.removeItem(key);
+        }
+    });
+    Object.keys(sessionStorage).forEach((key) => {
+        if (key.toLowerCase().includes('filter') || key === 'user' || key === 'token') {
+            sessionStorage.removeItem(key);
+        }
+    });
+
+    window.location.assign(ENV.URL_FE.LOGOUT);
 };

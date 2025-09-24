@@ -2,6 +2,17 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
+jest.mock('../../../utils/env', () => ({
+    __esModule: true,
+    ENV: {
+        UPCOMING_INITIATIVE_DAY: 'xx/xx/xx',
+        URL_API: {
+            OPERATION: 'https://mock-api/register',
+            LOGOUT: 'https://mock-api/logout',
+        },
+    },
+}));
+
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, opts?: Record<string, any>) => {
@@ -12,6 +23,22 @@ jest.mock('react-i18next', () => ({
         },
     }),
 }));
+
+jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor', () => ({
+    useUnloadEventOnExit: () => (fn?: () => void) => {
+        if (typeof fn === 'function') {
+            fn();
+        }
+    },
+}));
+
+jest.mock('../../../asset/images/hourglass.png', () => 'hourglass.png');
+
+jest.mock('../../../helpers', () => ({
+    __esModule: true,
+    customExitAction: () => console.log({ event: 'exit' }),
+}));
+
 
 import UpcomingInitiative from '../upcomingInitiative';
 
