@@ -73,7 +73,7 @@ const SecuredRoutes = withLogin(
     const organizationId = institution?.institutionId || '';
     const upcomingActive = useMemo(() => isOnOrBeforeDate(ENV.UPCOMING_INITIATIVE_DAY), []);
 
-    if (!upcomingActive) {
+    if (upcomingActive) {
         return(
             <Layout>
                 <Routes>
