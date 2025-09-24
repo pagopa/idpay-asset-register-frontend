@@ -213,7 +213,7 @@ const UploadsTable: React.FC<{
             onClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
             sx={{ paddingTop: 2 }}
           >
-            <b>Vedi i caricamenti</b>
+            <b>{t('pages.overview.allUploadsLink')}</b>
           </ButtonNaked>
         </>
       )}

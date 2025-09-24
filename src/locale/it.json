@@ -83,7 +83,8 @@
       "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
       "overviewTitleBoxProdBtn": "Carica .csv",
       "tableHeader": "stato caricamenti",
-      "warning": "Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e potrai consultare i dettagli nelle sezioni dedicate."
+      "warning": "Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e potrai consultare i dettagli nelle sezioni dedicate.",
+      "allUploadsLink": "Vedi i caricamenti"
     },
     "invitaliaOverview": {
       "overviewTitle": "Panoramica",
