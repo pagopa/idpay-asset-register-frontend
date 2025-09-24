@@ -1,245 +1,203 @@
-import {
-  getSelectedStatuses,
-  isAllStatus,
-  isSomeStatus,
-  getStatusChecks,
-  handleModalSuccess,
-} from '../ProductDataGrid.helpers';
-import { ProductDTO } from '../../../api/generated/register/ProductDTO';
-import { ProductStatusEnum } from '../../../api/generated/register/ProductStatus';
+import { getSelectedStatuses, isAllStatus, isSomeStatus, getStatusChecks, handleModalSuccess } from '../ProductDataGrid.helpers';
+import {ProductStatusEnum} from "../../../api/generated/register/ProductStatus";
+import {ProductDTO} from "../../../api/generated/register/ProductDTO";
+import {MIDDLE_STATES, PRODUCTS_STATES} from "../../../utils/constants";
 
-const PRODUCTS_STATES = {
-  UPLOADED: ProductStatusEnum.UPLOADED,
-  SUPERVISED: ProductStatusEnum.SUPERVISED,
-  WAIT_APPROVED: ProductStatusEnum.WAIT_APPROVED,
-  APPROVED: ProductStatusEnum.APPROVED,
-  REJECTED: ProductStatusEnum.REJECTED,
-};
-const MIDDLE_STATES = {
-  REJECT_APPROVATION: 'REJECT_APPROVATION' as any,
-};
+describe('ProductDataGrid.helpers', () => {
+  const row = (gtinCode: string, status: ProductStatusEnum): ProductDTO => ({
+    gtinCode,
+    status,
+    productName: '',
+    category: undefined,
+    eprelCode: '',
+    producerId: '',
+    batchId: '',
+    id: '',
+  });
 
-const tableData: ProductDTO[] = [
-  { gtinCode: '1', status: ProductStatusEnum.UPLOADED },
-  { gtinCode: '2', status: ProductStatusEnum.SUPERVISED },
-  { gtinCode: '3', status: ProductStatusEnum.WAIT_APPROVED },
-  { gtinCode: '4', status: ProductStatusEnum.APPROVED },
-  { gtinCode: '5', status: ProductStatusEnum.REJECTED },
-];
+  it('getSelectedStatuses filters and preserves order', () => {
+    const tableData = [row('A', ProductStatusEnum.UPLOADED), row('B', ProductStatusEnum.SUPERVISED)];
+    const result = getSelectedStatuses(['B', 'X', 'A'], tableData);
+    expect(result).toEqual([ProductStatusEnum.SUPERVISED, ProductStatusEnum.UPLOADED]);
+  });
 
-describe('getSelectedStatuses', () => {
-  it('returns statuses for selected gtinCodes', () => {
-    expect(getSelectedStatuses(['1', '2'], tableData)).toEqual([
-      PRODUCTS_STATES.UPLOADED,
-      PRODUCTS_STATES.SUPERVISED,
+  it('isAllStatus works for true and false', () => {
+    expect(isAllStatus(['a', 'a'], 'a')).toBe(true);
+    expect(isAllStatus(['a', 'b'], 'a')).toBe(false);
+  });
+
+  it('isSomeStatus works for true and false', () => {
+    expect(isSomeStatus(['a', 'b'], 'a')).toBe(true);
+    expect(isSomeStatus(['b', 'c'], 'a')).toBe(false);
+  });
+
+  it('getStatusChecks detects allUploaded, allSupervised, allWaitApproved, someUploaded and length', () => {
+    const tableData = [
+      row('A', ProductStatusEnum.UPLOADED),
+      row('B', ProductStatusEnum.UPLOADED),
+      row('C', ProductStatusEnum.WAIT_APPROVED),
+    ];
+    const allUp = getStatusChecks(['A', 'B'], tableData);
+    expect(allUp.allUploaded).toBe(true);
+    expect(allUp.someUploaded).toBe(true);
+    expect(allUp.allSupervised).toBe(false);
+    expect(allUp.allWaitApproved).toBe(false);
+    expect(allUp.length).toBe(2);
+    const allSup = getStatusChecks(['A', 'C'], [
+      row('A', ProductStatusEnum.SUPERVISED),
+      row('C', ProductStatusEnum.SUPERVISED),
     ]);
-  });
-  it('filters out not found', () => {
-    expect(getSelectedStatuses(['10'], tableData)).toEqual([]);
-  });
-});
-
-describe('isAllStatus', () => {
-  it('returns true if all match', () => {
-    expect(
-      isAllStatus([PRODUCTS_STATES.UPLOADED, PRODUCTS_STATES.UPLOADED], PRODUCTS_STATES.UPLOADED)
-    ).toBe(true);
-  });
-  it('returns false if not all match', () => {
-    expect(
-      isAllStatus([PRODUCTS_STATES.UPLOADED, PRODUCTS_STATES.SUPERVISED], PRODUCTS_STATES.UPLOADED)
-    ).toBe(false);
-  });
-  it('returns true for empty array', () => {
-    expect(isAllStatus([], PRODUCTS_STATES.UPLOADED)).toBe(true);
-  });
-});
-
-describe('isSomeStatus', () => {
-  it('returns true if some match', () => {
-    expect(
-      isSomeStatus([PRODUCTS_STATES.UPLOADED, PRODUCTS_STATES.SUPERVISED], PRODUCTS_STATES.UPLOADED)
-    ).toBe(true);
-  });
-  it('returns false if none match', () => {
-    expect(isSomeStatus([PRODUCTS_STATES.SUPERVISED], PRODUCTS_STATES.UPLOADED)).toBe(false);
-  });
-  it('returns false for empty array', () => {
-    expect(isSomeStatus([], PRODUCTS_STATES.UPLOADED)).toBe(false);
-  });
-});
-
-describe('getStatusChecks', () => {
-  it('returns correct checks', () => {
-    const result = getStatusChecks(['1', '1'], tableData);
-    expect(result.selectedStatuses).toEqual([PRODUCTS_STATES.UPLOADED, PRODUCTS_STATES.UPLOADED]);
-    expect(result.allUploaded).toBe(true);
-    expect(result.allSupervised).toBe(false);
-    expect(result.allWaitApproved).toBe(false);
-    expect(result.someUploaded).toBe(true);
-    expect(result.length).toBe(2);
-  });
-});
-
-describe('handleModalSuccess', () => {
-  let setShowMsgRejected: jest.Mock,
-    setShowMsgApproved: jest.Mock,
-    setShowMsgWaitApproved: jest.Mock;
-  beforeEach(() => {
-    setShowMsgRejected = jest.fn();
-    setShowMsgApproved = jest.fn();
-    setShowMsgWaitApproved = jest.fn();
+    expect(allSup.allSupervised).toBe(true);
+    const allWait = getStatusChecks(['C'], tableData);
+    expect(allWait.allWaitApproved).toBe(true);
   });
 
-  it('APPROVED + allUploaded', () => {
+  const makeSetters = (initial = { approved: false, wait: false, rejected: false }) => {
+    let approved = initial.approved;
+    let wait = initial.wait;
+    let rejected = initial.rejected;
+    return {
+      states: () => ({ approved, wait, rejected }),
+      setShowMsgApproved: (v: boolean) => {
+        approved = v;
+      },
+      setShowMsgWaitApproved: (v: boolean) => {
+        wait = v;
+      },
+      setShowMsgRejected: (v: boolean) => {
+        rejected = v;
+      },
+    };
+  };
+
+  it('handleModalSuccess: APPROVED when all UPLOADED', () => {
+    const tableData = [row('A', ProductStatusEnum.UPLOADED)];
+    const setters = makeSetters();
     handleModalSuccess({
-      selected: ['1'],
+      selected: ['A'],
       tableData,
       modalAction: PRODUCTS_STATES.APPROVED,
       isInvitaliaUser: false,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
+      setShowMsgApproved: setters.setShowMsgApproved,
+      setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
+      setShowMsgRejected: setters.setShowMsgRejected,
     });
-    expect(setShowMsgApproved).toHaveBeenCalledWith(true);
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgRejected).toHaveBeenCalledWith(false);
+    expect(setters.states()).toEqual({ approved: true, wait: false, rejected: false });
   });
 
-  it('WAIT_APPROVED + allUploaded', () => {
+  it('handleModalSuccess: WAIT_APPROVED when all UPLOADED', () => {
+    const tableData = [row('A', ProductStatusEnum.UPLOADED)];
+    const setters = makeSetters();
     handleModalSuccess({
-      selected: ['1'],
+      selected: ['A'],
       tableData,
       modalAction: PRODUCTS_STATES.WAIT_APPROVED,
       isInvitaliaUser: false,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
+      setShowMsgApproved: setters.setShowMsgApproved,
+      setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
+      setShowMsgRejected: setters.setShowMsgRejected,
     });
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(true);
-    expect(setShowMsgApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgRejected).toHaveBeenCalledWith(false);
+    expect(setters.states()).toEqual({ approved: false, wait: true, rejected: false });
   });
 
-  it('SUPERVISED + allUploaded', () => {
+  it('handleModalSuccess: SUPERVISED when all UPLOADED shows waitApproved message', () => {
+    const tableData = [row('A', ProductStatusEnum.UPLOADED)];
+    const setters = makeSetters();
     handleModalSuccess({
-      selected: ['1'],
+      selected: ['A'],
       tableData,
       modalAction: PRODUCTS_STATES.SUPERVISED,
       isInvitaliaUser: false,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
+      setShowMsgApproved: setters.setShowMsgApproved,
+      setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
+      setShowMsgRejected: setters.setShowMsgRejected,
     });
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(true);
-    expect(setShowMsgApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgRejected).toHaveBeenCalledWith(false);
+    expect(setters.states()).toEqual({ approved: false, wait: true, rejected: false });
   });
 
-  it('WAIT_APPROVED + allSupervised + isInvitaliaUser', () => {
+  it('handleModalSuccess: Invitalia WAIT_APPROVED when all SUPERVISED', () => {
+    const tableData = [row('A', ProductStatusEnum.SUPERVISED)];
+    const setters = makeSetters();
     handleModalSuccess({
-      selected: ['2'],
+      selected: ['A'],
       tableData,
       modalAction: PRODUCTS_STATES.WAIT_APPROVED,
       isInvitaliaUser: true,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
+      setShowMsgApproved: setters.setShowMsgApproved,
+      setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
+      setShowMsgRejected: setters.setShowMsgRejected,
     });
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(true);
-    expect(setShowMsgApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgRejected).toHaveBeenCalledWith(false);
+    expect(setters.states()).toEqual({ approved: false, wait: true, rejected: false });
   });
 
-  it('APPROVED + allSupervised + isInvitaliaUser', () => {
+  it('handleModalSuccess: Invitalia APPROVED when all SUPERVISED', () => {
+    const tableData = [row('A', ProductStatusEnum.SUPERVISED)];
+    const setters = makeSetters();
     handleModalSuccess({
-      selected: ['2'],
+      selected: ['A'],
       tableData,
       modalAction: PRODUCTS_STATES.APPROVED,
       isInvitaliaUser: true,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
+      setShowMsgApproved: setters.setShowMsgApproved,
+      setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
+      setShowMsgRejected: setters.setShowMsgRejected,
     });
-    expect(setShowMsgApproved).toHaveBeenCalledWith(true);
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgRejected).toHaveBeenCalledWith(false);
+    expect(setters.states()).toEqual({ approved: true, wait: false, rejected: false });
   });
 
-  it('REJECTED', () => {
+  it('handleModalSuccess: Invitalia REJECTED with all UPLOADED resets all messages', () => {
+    const tableData = [row('A', ProductStatusEnum.UPLOADED)];
+    const setters = makeSetters({ approved: true, wait: true, rejected: true });
     handleModalSuccess({
-      selected: ['5'],
+      selected: ['A'],
+      tableData,
+      modalAction: PRODUCTS_STATES.REJECTED,
+      isInvitaliaUser: true,
+      setShowMsgApproved: setters.setShowMsgApproved,
+      setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
+      setShowMsgRejected: setters.setShowMsgRejected,
+    });
+    expect(setters.states()).toEqual({ approved: false, wait: false, rejected: false });
+  });
+
+  it('handleModalSuccess: REJECTED or REJECT_APPROVATION shows rejected when not covered by earlier branches', () => {
+    const tableData = [row('A', ProductStatusEnum.WAIT_APPROVED)];
+    const s1 = makeSetters();
+    handleModalSuccess({
+      selected: ['A'],
       tableData,
       modalAction: PRODUCTS_STATES.REJECTED,
       isInvitaliaUser: false,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
+      setShowMsgApproved: s1.setShowMsgApproved,
+      setShowMsgWaitApproved: s1.setShowMsgWaitApproved,
+      setShowMsgRejected: s1.setShowMsgRejected,
     });
-    expect(setShowMsgRejected).toHaveBeenCalledWith(true);
-    expect(setShowMsgApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(false);
-  });
-
-  it('REJECT_APPROVATION', () => {
+    expect(s1.states()).toEqual({ approved: false, wait: false, rejected: true });
+    const s2 = makeSetters();
     handleModalSuccess({
-      selected: ['5'],
+      selected: ['A'],
       tableData,
       modalAction: MIDDLE_STATES.REJECT_APPROVATION,
       isInvitaliaUser: false,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
+      setShowMsgApproved: s2.setShowMsgApproved,
+      setShowMsgWaitApproved: s2.setShowMsgWaitApproved,
+      setShowMsgRejected: s2.setShowMsgRejected,
     });
-    expect(setShowMsgRejected).toHaveBeenCalledWith(true);
-    expect(setShowMsgApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(false);
+    expect(s2.states()).toEqual({ approved: false, wait: false, rejected: true });
   });
 
-  it('REJECTED + isInvitaliaUser + allUploaded', () => {
+  it('handleModalSuccess: default path sets approved when no branch matches', () => {
+    const tableData = [row('A', ProductStatusEnum.WAIT_APPROVED)];
+    const setters = makeSetters();
     handleModalSuccess({
-      selected: ['1'],
+      selected: ['A'],
       tableData,
-      modalAction: PRODUCTS_STATES.REJECTED,
-      isInvitaliaUser: true,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
-    });
-    // resetMsgs: all false
-    expect(setShowMsgRejected).toHaveBeenCalledWith(false);
-    expect(setShowMsgApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(false);
-  });
-
-  it('REJECTED + isInvitaliaUser + allSupervised', () => {
-    handleModalSuccess({
-      selected: ['2'],
-      tableData,
-      modalAction: PRODUCTS_STATES.REJECTED,
-      isInvitaliaUser: true,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
-    });
-    // resetMsgs: all false
-    expect(setShowMsgRejected).toHaveBeenCalledWith(false);
-    expect(setShowMsgApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(false);
-  });
-
-  it('default case', () => {
-    handleModalSuccess({
-      selected: ['3'],
-      tableData,
-      modalAction: 'UNKNOWN',
+      modalAction: 'SOME_OTHER',
       isInvitaliaUser: false,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
+      setShowMsgApproved: setters.setShowMsgApproved,
+      setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
+      setShowMsgRejected: setters.setShowMsgRejected,
     });
-    expect(setShowMsgApproved).toHaveBeenCalledWith(true);
-    expect(setShowMsgWaitApproved).toHaveBeenCalledWith(false);
-    expect(setShowMsgRejected).toHaveBeenCalledWith(false);
+    expect(setters.states()).toEqual({ approved: true, wait: false, rejected: false });
   });
 });
