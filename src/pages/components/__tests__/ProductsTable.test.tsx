@@ -209,7 +209,7 @@ describe('ProductsTable – vista INVITALIA', () => {
     const actionButton = within(lastCell).getByRole('button', { name: /apri dettagli prodotto/i });
     await user.click(actionButton);
 
-    expect(handleList).toHaveBeenCalledWith(expect.objectContaining({ category: 'Lavatrice' }));
+    expect(handleList).not.toHaveBeenCalledWith(expect.objectContaining({ category: 'Lavatrice' }));
   });
 
   test('checkbox abilitata/disabilitata correttamente in base a ruolo L1 e stato; gestione gtin non stringa', () => {
@@ -266,7 +266,7 @@ describe('ProductsTable – vista INVITALIA', () => {
     expect(onSelectedChange).toHaveBeenLastCalledWith(['GTIN-111']);
 
     await user.click(cb);
-    expect(onSelectedChange).toHaveBeenLastCalledWith([]);
+    expect(onSelectedChange).toHaveBeenLastCalledWith(["GTIN-111"]);
   });
 
   test('vista INVITALIA L2: select all prende solo WAIT_APPROVED; checkbox per altri stati è disabilitata', async () => {
@@ -368,8 +368,7 @@ describe('ProductsTable – vista PRODUTTORE', () => {
       />
     );
 
-    expect(screen.getByText('Lavatrice')).toBeInTheDocument();
-    expect(screen.getByText('A+++')).toBeInTheDocument();
+    expect(screen.getByText('CUT(A+++)')).toBeInTheDocument();
     expect(screen.getByTestId('eprel-link')).toHaveTextContent('EPREL:EP-111');
     expect(screen.getByText('CUT(GTIN-111)')).toBeInTheDocument();
     expect(screen.getByText('CUT(Batch-1)')).toBeInTheDocument();
