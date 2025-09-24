@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Divider, Box, Tooltip, Typography, Button, SxProps, Theme } from '@mui/material';
+import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
@@ -233,38 +233,19 @@ function renderEntry(entry: any, idx: number) {
 
   return (
     <Box key={`${header}-${idx}`} sx={{ mb: 2, width: '100%' }}>
-      <Tooltip
-        title={
-          <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
-            {motivationText}
-          </Box>
-        }
-        arrow
-      >
-        <Box component="span" sx={{ width: '100%' }}>
-          <Typography variant="body1" color="text.secondary">
-            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-          </Typography>
-          <TextareaAutosize
-            maxRows={10}
-            value={motivationText}
-            readOnly
-            aria-label="Motivazione"
-            name="motivation"
-            style={{
-              width: '374px',
-              boxSizing: 'border-box',
-              resize: 'none',
-              fontFamily: 'inherit',
-              fontSize: '1rem',
-              fontWeight: 500,
-              background: 'transparent',
-              border: 'none',
-              color: 'inherit',
-            }}
-          />
-        </Box>
-      </Tooltip>
+      <Box component="span" sx={{ width: '100%' }}>
+        <Typography variant="body1" color="textSecondary">
+          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+        </Typography>
+        <TextareaAutosize
+          maxRows={10}
+          value={motivationText}
+          readOnly
+          aria-label="Motivazione"
+          name="motivation"
+          className="product-detail-textarea"
+        />
+      </Box>
     </Box>
   );
 }
@@ -281,7 +262,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
       ? [
           ...baseRows,
           {
-            renderCustom: () => {
+            renderCustom(this: RowConfig) {
               const chronology =
                 ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
               const filteredChronology = chronology.filter(
@@ -306,7 +287,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
             },
           } as RowConfig & { renderCustom?: () => JSX.Element },
           {
-            renderCustom: () => {
+            renderCustom(this: RowConfig) {
               const chronology =
                 ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
               if (!chronology.length) {
@@ -343,38 +324,19 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                   value={
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
                       <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
-                        <Tooltip
-                          title={
-                            <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
-                              {formalMotivationText}
-                            </Box>
-                          }
-                          arrow
-                        >
-                          <Box component="span" sx={{ width: '100%' }}>
-                            <Typography variant="body1" color="text.secondary">
-                              {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-                            </Typography>
-                            <TextareaAutosize
-                              maxRows={10}
-                              value={formalMotivationText}
-                              readOnly
-                              aria-label="Motivazione formale"
-                              name="formalMotivation"
-                              style={{
-                                width: '374px',
-                                boxSizing: 'border-box',
-                                resize: 'none',
-                                fontFamily: 'inherit',
-                                fontSize: '1rem',
-                                fontWeight: 500,
-                                background: 'transparent',
-                                border: 'none',
-                                color: 'inherit',
-                              }}
-                            />
-                          </Box>
-                        </Tooltip>
+                        <Box component="span" sx={{ width: '100%' }}>
+                          <Typography variant="body1" color="textSecondary">
+                            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                          </Typography>
+                          <TextareaAutosize
+                            maxRows={10}
+                            value={formalMotivationText}
+                            readOnly
+                            aria-label="Motivazione formale"
+                            name="formalMotivation"
+                            className="product-detail-textarea"
+                          />
+                        </Box>
                       </Box>
                     </Box>
                   }
@@ -396,11 +358,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
           <ProductInfoRow
             key={`row-${idx}-${(row as RowConfig).label}`}
             label={(row as RowConfig).label}
-            value={
-              <Tooltip title={(row as RowConfig).value} arrow>
-                <span>{(row as RowConfig).value}</span>
-              </Tooltip>
-            }
+            value={<span>{(row as RowConfig).value}</span>}
             labelVariant={(row as RowConfig).labelVariant}
             valueVariant={(row as RowConfig).valueVariant}
             sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
@@ -544,6 +502,20 @@ export default function ProductDetail({
           width: 100% !important;
           margin-bottom: 16px !important;
         }
+        .product-detail-textarea {
+          width: 374px;
+          box-sizing: border-box;
+          resize: none;
+          font-family: 'Titillium Web';
+          font-weight: 600;
+          font-style: SemiBold;
+          font-size: 18px;
+          line-height: 24px;
+          letter-spacing: 0px;
+          background: transparent;
+          border: none;
+          color: inherit;
+        }
       `}</style>
       <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
         <List>
@@ -551,18 +523,18 @@ export default function ProductDetail({
           <ProductInfoRows data={data} currentStatus={data.status as ProductStatusEnum}>
             {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
               <>
-                <Box
-                  mt={2}
-                  display="flex"
-                  flexDirection="column"
+                <Paper
+                  elevation={3}
                   sx={{
+                    mt: 2,
                     width: '100%',
                     position: 'sticky',
                     bottom: 0,
-                    background: '#fff',
                     zIndex: 2,
                     pt: 2,
                     pb: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
                 >
                   <Button
@@ -583,23 +555,23 @@ export default function ProductDetail({
                   >
                     {t('invitaliaModal.rejected.buttonTextConfirm')}
                   </Button>
-                </Box>
+                </Paper>
               </>
             )}
             {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
               <>
-                <Box
-                  mt={2}
-                  display="flex"
-                  flexDirection="column"
+                <Paper
+                  elevation={3}
                   sx={{
+                    mt: 2,
                     width: '100%',
                     position: 'sticky',
                     bottom: 0,
-                    background: '#fff',
                     zIndex: 2,
                     pt: 2,
                     pb: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
                 >
                   <Button
@@ -631,24 +603,24 @@ export default function ProductDetail({
                   >
                     {t('invitaliaModal.rejected.buttonText')}
                   </Button>
-                </Box>
+                </Paper>
               </>
             )}
             {isInvitaliaAdmin && String(data.status) === PRODUCTS_STATES.WAIT_APPROVED && (
               <>
-                <Box
-                  mt={2}
-                  mr={2}
-                  display="flex"
-                  flexDirection="column"
+                <Paper
+                  elevation={3}
                   sx={{
+                    mt: 2,
+                    mr: 2,
                     width: '100%',
                     position: 'sticky',
                     bottom: 0,
-                    background: '#fff',
                     zIndex: 2,
                     pt: 2,
                     pb: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
                   }}
                 >
                   <Button
@@ -669,7 +641,7 @@ export default function ProductDetail({
                   >
                     {t('invitaliaModal.rejectApprovation.buttonText')}
                   </Button>
-                </Box>
+                </Paper>
               </>
             )}
           </ProductInfoRows>

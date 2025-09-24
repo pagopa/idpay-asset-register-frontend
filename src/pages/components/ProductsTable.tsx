@@ -1,4 +1,6 @@
 import React, { useMemo } from 'react';
+const isUpscaling = typeof window !== 'undefined' && window.innerWidth > RESOLUTION_UPSCALING;
+
 import {
   Table,
   TableBody,
@@ -7,14 +9,20 @@ import {
   Typography,
   Checkbox,
   TableRow,
-  Tooltip, IconButton,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import EprelLinks from '../../components/Product/EprelLinks';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import { PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
+import {
+  EMPTY_DATA,
+  PRODUCTS_STATES,
+  RESOLUTION_UPSCALING,
+  USERS_TYPES,
+} from '../../utils/constants';
 import { fetchUserFromLocalStorage, getTablePrLength, truncateString } from '../../helpers';
 import EnhancedTableHead from '../../components/Product/EnhancedTableHead';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
@@ -159,7 +167,27 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     );
   };
 
-  const renderInvitaliaRow = (row: any, index: number) => (
+  const InvitaliaRow: React.FC<{
+    row: any;
+    index: number;
+    selected: Array<string>;
+    user: any;
+    handleCheckboxClick: (gtinCode: string) => void;
+    handleListButtonClick: (row: any) => void;
+    getProducer: (organizationId: string) => string | null;
+    emptyData: string;
+    // eslint-disable-next-line complexity
+  }> = ({
+    row,
+    index,
+    selected,
+    user,
+    handleCheckboxClick,
+    handleListButtonClick,
+    getProducer,
+    emptyData,
+    // eslint-disable-next-line sonarjs/cognitive-complexity
+  }) => (
     <TableRow
       tabIndex={-1}
       key={index}
@@ -192,44 +220,76 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         )}
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <Typography variant="body2">{row?.category ?? emptyData}</Typography>
+        <Typography variant="body2">{String(row?.category ?? emptyData)}</Typography>
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <Tooltip title={getProducer(row?.organizationId) ?? emptyData} arrow>
+        {isUpscaling ? (
           <Typography variant="body2">
-            {truncateString(getProducer(row?.organizationId) ?? emptyData, getTablePrLength())}
+            {truncateString(
+              String(getProducer(row?.organizationId) ?? emptyData),
+              getTablePrLength()
+            )}
           </Typography>
-        </Tooltip>
+        ) : (
+          <Tooltip title={String(getProducer(row?.organizationId) ?? emptyData)} arrow>
+            <Typography variant="body2">
+              {truncateString(
+                String(getProducer(row?.organizationId) ?? emptyData),
+                getTablePrLength()
+              )}
+            </Typography>
+          </Tooltip>
+        )}
       </TableCell>
       <TableCell sx={cellCenterSx}>
-        <Tooltip title={row?.eprelCode ?? emptyData} arrow>
+        {isUpscaling ? (
           <span>
             <EprelLinks row={row} />
           </span>
-        </Tooltip>
+        ) : (
+          <Tooltip title={String(row?.eprelCode ?? emptyData)} arrow>
+            <span>
+              <EprelLinks row={row} />
+            </span>
+          </Tooltip>
+        )}
       </TableCell>
       <TableCell sx={cellCenterSx}>
-        <Tooltip title={row?.gtinCode ?? emptyData} arrow>
+        {isUpscaling ? (
           <Typography variant="body2">
-            {truncateString(row?.gtinCode ?? emptyData, getTablePrLength())}
+            {truncateString(String(row?.gtinCode ?? emptyData), getTablePrLength())}
           </Typography>
-        </Tooltip>
+        ) : (
+          <Tooltip title={String(row?.gtinCode ?? emptyData)} arrow>
+            <Typography variant="body2">
+              {truncateString(String(row?.gtinCode ?? emptyData), getTablePrLength())}
+            </Typography>
+          </Tooltip>
+        )}
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <Tooltip title={row?.batchName ?? emptyData} arrow>
+        {isUpscaling ? (
           <Typography variant="body2">
-            {truncateString(row?.batchName ?? emptyData, getTablePrLength())}
+            {truncateString(String(row?.batchName ?? emptyData), getTablePrLength())}
           </Typography>
-        </Tooltip>
+        ) : (
+          <Tooltip title={String(row?.batchName ?? emptyData)} arrow>
+            <Typography variant="body2">
+              {truncateString(String(row?.batchName ?? emptyData), getTablePrLength())}
+            </Typography>
+          </Tooltip>
+        )}
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <ProductStatusChip status={row?.status ?? emptyData ?? ''} />
+        <ProductStatusChip status={typeof row?.status === 'string' ? row.status : emptyData} />
       </TableCell>
       <TableCell sx={actionsCellSx}>
         <IconButton
-            aria-label="Apri dettagli prodotto"
-            size="small"
-            onClick={() => handleListButtonClick(row)}
+          sx={{ backgroundColor: 'transparent' }}
+          color="default"
+          aria-label="Apri dettagli prodotto"
+          size="small"
+          onClick={() => handleListButtonClick(row)}
         >
           <ArrowForwardIosIcon sx={{ color: '#0073E6' }} />
         </IconButton>
@@ -237,55 +297,82 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     </TableRow>
   );
 
-  const renderProduttoreRow = (row: ProductDTO, index: number) => (
+  const ProduttoreRow: React.FC<{
+    row: ProductDTO;
+    index: number;
+    headCellsProduttore: Array<any>;
+    getCellSx: (headCell: any) => any;
+    getCellContent: (headCell: any, row: ProductDTO) => React.ReactNode;
+    emptyData: string;
+  }> = ({ row, index, headCellsProduttore, getCellSx, getCellContent, emptyData }) => (
     <TableRow tabIndex={-1} key={index} sx={rowTableSx} hover>
       {headCellsProduttore.map((headCell) => (
         <TableCell key={headCell.id as string} sx={getCellSx(headCell)}>
-          {getCellContent(headCell, row)}
+          {headCell.id === 'status' ? (
+            <ProductStatusChip status={typeof row?.status === 'string' ? row.status : emptyData} />
+          ) : (
+            getCellContent(headCell, row)
+          )}
         </TableCell>
       ))}
     </TableRow>
   );
 
+  // Componenti di rendering estratti per ridurre la complessità
+  const RenderTooltipOrText = ({
+    value,
+    maxLength,
+    tooltip,
+  }: {
+    value: string;
+    maxLength?: number;
+    tooltip?: string;
+  }) =>
+    isUpscaling ? (
+      <Typography variant="body2">
+        {truncateString(value, maxLength ?? getTablePrLength())}
+      </Typography>
+    ) : (
+      <Tooltip title={tooltip ?? value} arrow>
+        <Typography variant="body2">
+          {truncateString(value, maxLength ?? getTablePrLength())}
+        </Typography>
+      </Tooltip>
+    );
+
+  const RenderEprelLinks = ({ row }: { row: ProductDTO }) =>
+    isUpscaling ? (
+      <span>
+        <EprelLinks row={row} />
+      </span>
+    ) : (
+      <Tooltip title={String(row?.eprelCode ?? emptyData)} arrow>
+        <span>
+          <EprelLinks row={row} />
+        </span>
+      </Tooltip>
+    );
+
+  const cellRenderers: Record<string, (row: ProductDTO) => React.ReactNode> = {
+    category: (row) => <RenderTooltipOrText value={String(row?.category ?? emptyData)} />,
+    energyClass: (row) => <RenderTooltipOrText value={String(row?.energyClass ?? emptyData)} />,
+    eprelCode: (row) => <RenderEprelLinks row={row} />,
+    gtinCode: (row) => <RenderTooltipOrText value={String(row?.gtinCode ?? emptyData)} />,
+    batchName: (row) => <RenderTooltipOrText value={String(row?.batchName ?? emptyData)} />,
+    actions: (row) => (
+      <ArrowForwardIosIcon
+        sx={{ cursor: 'pointer', color: '#0073E6' }}
+        onClick={() => handleListButtonClick(row)}
+      />
+    ),
+  };
+
   const getCellContent = (
     headCell: { id: keyof ProductDTO | 'actions'; label: string },
     row: ProductDTO
   ) => {
-    switch (headCell.id) {
-      case 'category':
-        return <Typography variant="body2">{row?.category ?? emptyData}</Typography>;
-      case 'energyClass':
-        return <Typography variant="body2">{row?.energyClass ?? emptyData}</Typography>;
-      case 'eprelCode':
-        return <EprelLinks row={row} />;
-      case 'gtinCode':
-        return (
-          <Tooltip title={row?.gtinCode ?? emptyData} arrow>
-            <Typography variant="body2">
-              {truncateString(row?.gtinCode ?? emptyData, getTablePrLength())}
-            </Typography>
-          </Tooltip>
-        );
-      case 'batchName':
-        return (
-          <Tooltip title={row?.batchName ?? emptyData} arrow>
-            <Typography variant="body2">
-              {truncateString(row?.batchName ?? emptyData, getTablePrLength())}
-            </Typography>
-          </Tooltip>
-        );
-      case 'status':
-        return <ProductStatusChip status={row?.status ?? emptyData ?? ''} />;
-      case 'actions':
-        return (
-          <ArrowForwardIosIcon
-            sx={{ cursor: 'pointer', color: '#0073E6' }}
-            onClick={() => handleListButtonClick(row)}
-          />
-        );
-      default:
-        return null;
-    }
+    const renderer = cellRenderers[headCell.id as string];
+    return renderer ? renderer(row) : null;
   };
 
   const getCellSx = (headCell: {
@@ -321,7 +408,29 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         />
         <TableBody>
           {tableData.map((row, index) =>
-            isInvitaliaUser ? renderInvitaliaRow(row, index) : renderProduttoreRow(row, index)
+            isInvitaliaUser ? (
+              <InvitaliaRow
+                key={index}
+                row={row}
+                index={index}
+                selected={selected}
+                user={user}
+                handleCheckboxClick={handleCheckboxClick}
+                handleListButtonClick={handleListButtonClick}
+                getProducer={getProducer}
+                emptyData={EMPTY_DATA}
+              />
+            ) : (
+              <ProduttoreRow
+                key={index}
+                row={row}
+                index={index}
+                headCellsProduttore={headCellsProduttore}
+                getCellSx={getCellSx}
+                getCellContent={getCellContent}
+                emptyData={EMPTY_DATA}
+              />
+            )
           )}
         </TableBody>
       </Table>
