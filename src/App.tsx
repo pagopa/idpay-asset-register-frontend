@@ -21,14 +21,13 @@ import PrivacyPolicy from './pages/privacyPolicy/PrivacyPolicy';
 import AddProducts from './pages/addProducts/addProducts';
 import UploadsHistory from './pages/uploadsHistory/uploadsHistory';
 import Products from './pages/components/Products';
-import ProductDataGrid from './components/Product/ProductDataGrid';
 import InvitaliaOverview from './pages/InvitaliaOverview/invitaliaOverview';
-import {fetchUserFromLocalStorage, isOnOrBeforeDate} from './helpers';
-import {USERS_TYPES} from './utils/constants';
+import { fetchUserFromLocalStorage, isOnOrBeforeDate } from './helpers';
+import { USERS_TYPES } from './utils/constants';
 import InvitaliaProductsList from './pages/InvitaliaProductsList/invitaliaProductsList';
 import { institutionSelector } from './redux/slices/invitaliaSlice';
-import UpcomingInitiative from "./pages/upcomingInitiative/upcomingInitiative";
-import {ENV} from "./utils/env";
+import UpcomingInitiative from './pages/upcomingInitiative/upcomingInitiative';
+import { ENV } from './utils/env';
 
 type StandardRoutesProps = {
   organizationId: string | undefined;
@@ -38,14 +37,7 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
   <Routes>
     <Route path={routes.HOME} element={<Overview />} />
     <Route path={routes.ADD_PRODUCTS} element={<AddProducts />} />
-    <Route
-      path={routes.PRODUCTS}
-      element={
-        <Products>
-          <ProductDataGrid organizationId={organizationId || ''} />
-        </Products>
-      }
-    />
+    <Route path={routes.PRODUCTS} element={<Products organizationId={organizationId || ''} />} />
     <Route path={routes.UPLOADS} element={<UploadsHistory />} />
     <Route path={routes.TOS} element={<TOS />} />
     <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
@@ -68,20 +60,22 @@ const SecuredRoutes = withLogin(
     const location = useLocation();
     const { isTOSAccepted, acceptTOS, firstAcceptance } = useTCAgreement();
     const user = useMemo(() => fetchUserFromLocalStorage(), []);
-    const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
+    const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
+      user?.org_role as USERS_TYPES
+    );
     const institution = useSelector(institutionSelector);
     const organizationId = institution?.institutionId || '';
     const upcomingActive = useMemo(() => isOnOrBeforeDate(ENV.UPCOMING_INITIATIVE_DAY), []);
 
     if (upcomingActive) {
-        return(
-            <Layout>
-                <Routes>
-                    <Route path="*" element={<Navigate to={routes.UPCOMING} />} />
-                    <Route path={routes.UPCOMING} element={<UpcomingInitiative />} />
-                </Routes>
-            </Layout>
-        );
+      return (
+        <Layout>
+          <Routes>
+            <Route path="*" element={<Navigate to={routes.UPCOMING} />} />
+            <Route path={routes.UPCOMING} element={<UpcomingInitiative />} />
+          </Routes>
+        </Layout>
+      );
     }
 
     if (

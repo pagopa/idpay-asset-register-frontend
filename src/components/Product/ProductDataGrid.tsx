@@ -559,7 +559,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         <Box flexGrow={1}>
           <TitleBox
             title={t('pages.products.title')}
-            subTitle={t('pages.products.subtitleL1L2')}
+            subTitle={
+              isInvitaliaUser || isInvitaliaAdmin
+                ? t('pages.products.subtitleL1L2')
+                : t('pages.products.subtitle')
+            }
             mtTitle={2}
             mbSubTitle={5}
             variantTitle="h4"
@@ -572,7 +576,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         </Box>
       </Box>
 
-      <Box display="flex" alignItems="end" justifyContent="flex-end" gap={2}>
+      <Box display="flex" alignItems="end" justifyContent="space-between" gap={2} mb={3}>
         {filtersLabel ? (
           <Chip
             size="medium"

@@ -3,8 +3,8 @@ import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
-import ProductDataGrid from '../../components/Product/ProductDataGrid';
 import MsgResult from '../../components/Product/MsgResult';
+import Products from '../components/Products';
 
 const InvitaliaProductsList: React.FC = () => {
   const { t } = useTranslation();
@@ -32,10 +32,8 @@ const InvitaliaProductsList: React.FC = () => {
   }, []);
 
   return (
-    <Box pt={'16px'} pl={'8px'}>
-      <Box pt={'16px'}>
-        <ProductDataGrid organizationId={institution?.institutionId || ''} />
-      </Box>
+    <Box ml={2}>
+      <Products organizationId={institution?.institutionId || ''} />
       {showMsg && (
         <MsgResult
           severity="success"
