@@ -9,6 +9,17 @@ import {
 } from '../helpers';
 import { EMPTY_DATA } from '../utils/constants';
 
+jest.mock('../utils/env', () => ({
+  __esModule: true,
+  ENV: {
+    UPCOMING_INITIATIVE_DAY: 'xx/xx/xx',
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+      LOGOUT: 'https://mock-api/logout',
+    },
+  },
+}));
+
 describe('Helper functions', () => {
   const date = new Date('2022-10-01T00:00:00.000Z');
 
