@@ -161,7 +161,7 @@ const UploadsTable: React.FC<{
                         mb: 2,
                       }}
                     >
-                      STATO CARICAMENTI
+                      {t('pages.overview.tableHeader')}
                     </Typography>
                     {!loading &&
                       data?.content?.[0]?.uploadStatus === 'UPLOADED' &&
@@ -170,9 +170,7 @@ const UploadsTable: React.FC<{
                           <Paper>
                             <Alert severity="warning" sx={{ mb: 2 }}>
                               <Typography variant="body2">
-                                Stiamo effettuando i controlli. Quando saranno completati, ti
-                                avviseremo via email e potrai consultare i dettagli nelle sezioni
-                                dedicate.
+                                {t('pages.overview.warning')}
                               </Typography>
                             </Alert>
                           </Paper>
