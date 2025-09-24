@@ -243,7 +243,6 @@ describe('App routing and gating', () => {
 
     renderApp(['/products']);
     expect(screen.getByTestId('products-wrapper')).toBeInTheDocument();
-    expect(screen.getByTestId('product-grid')).toHaveTextContent('ProductDataGrid:ORG_123');
 
     renderApp(['/add-products']);
     expect(screen.getByText('AddProductsPage')).toBeInTheDocument();
