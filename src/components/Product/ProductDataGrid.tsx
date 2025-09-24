@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
+import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import {
   getProducts,
   getBatchFilterList,
@@ -425,58 +426,60 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         PRODUCTS_STATES.SUPERVISED
     );
     return (
-      <Box mb={2} display="flex" flexDirection="row" justifyContent="flex-end">
-        <Button
-          data-testid="rejectedBtn"
-          variant="outlined"
-          color="error"
-          sx={{ ...buttonStyle }}
-          onClick={() => {
-            handleOpenModalWithStatusCheck(
-              isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION
-            );
-          }}
-        >
-          {isInvitaliaUser
-            ? `${t('invitaliaModal.rejected.buttonText')} (${selected.length})`
-            : `${t('invitaliaModal.rejectApprovation.buttonText')} (${selected.length})`}
-        </Button>
-        {isInvitaliaUser && !isSomeSupervised && (
+      <>
+        <Box display="flex" flexDirection="row" justifyContent="flex-end">
           <Button
-            data-testid="supervisedBtn"
-            color="primary"
+            data-testid="rejectedBtn"
             variant="outlined"
+            color="error"
             sx={{ ...buttonStyle }}
             onClick={() => {
-              handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED);
+              handleOpenModalWithStatusCheck(
+                isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION
+              );
             }}
           >
-            <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
+            {isInvitaliaUser
+              ? `${t('invitaliaModal.rejected.buttonText')} (${selected.length})`
+              : `${t('invitaliaModal.rejectApprovation.buttonText')} (${selected.length})`}
           </Button>
-        )}
-        <Button
-          data-testid="waitApprovedBtn"
-          color="primary"
-          variant="contained"
-          sx={{ ...buttonStyle }}
-          disabled={
-            selected.length === 0 ||
-            (selected.some(
-              (gtinCode) =>
-                String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
-                PRODUCTS_STATES.WAIT_APPROVED
-            ) &&
-              isInvitaliaUser)
-          }
-          onClick={() => {
-            handleOpenModalWithStatusCheck(
-              isInvitaliaUser ? PRODUCTS_STATES.WAIT_APPROVED : MIDDLE_STATES.ACCEPT_APPROVATION
-            );
-          }}
-        >
-          {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
-        </Button>
-      </Box>
+          {isInvitaliaUser && !isSomeSupervised && (
+            <Button
+              data-testid="supervisedBtn"
+              color="primary"
+              variant="outlined"
+              sx={{ ...buttonStyle }}
+              onClick={() => {
+                handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED);
+              }}
+            >
+              <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
+            </Button>
+          )}
+          <Button
+            data-testid="waitApprovedBtn"
+            color="primary"
+            variant="contained"
+            sx={{ ...buttonStyle }}
+            disabled={
+              selected.length === 0 ||
+              (selected.some(
+                (gtinCode) =>
+                  String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
+                  PRODUCTS_STATES.WAIT_APPROVED
+              ) &&
+                isInvitaliaUser)
+            }
+            onClick={() => {
+              handleOpenModalWithStatusCheck(
+                isInvitaliaUser ? PRODUCTS_STATES.WAIT_APPROVED : MIDDLE_STATES.ACCEPT_APPROVATION
+              );
+            }}
+          >
+            {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
+          </Button>
+        </Box>
+      </>
     );
   };
 
@@ -552,9 +555,24 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   return (
     <>
-      {renderActionButtons()}
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Box flexGrow={1}>
+          <TitleBox
+            title={t('pages.products.title')}
+            subTitle={t('pages.products.subtitleL1L2')}
+            mtTitle={2}
+            mbSubTitle={5}
+            variantTitle="h4"
+            variantSubTitle="body1"
+            data-testid="title"
+          />
+        </Box>
+        <Box flexShrink={0} ml={2}>
+          {renderActionButtons()}
+        </Box>
+      </Box>
 
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+      <Box display="flex" alignItems="end" justifyContent="flex-end" gap={2}>
         {filtersLabel ? (
           <Chip
             size="medium"
