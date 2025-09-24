@@ -7,6 +7,17 @@ import { BatchFilterItems } from '../helpers';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
+jest.mock('../../../utils/env', () => ({
+  __esModule: true,
+  ENV: {
+    UPCOMING_INITIATIVE_DAY: 'xx/xx/xx',
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+      LOGOUT: 'https://mock-api/logout',
+    },
+  },
+}));
+
 jest.mock('../../../utils/constants', () => ({
   INVITALIA: 'INVITALIA',
   USERS_TYPES: {
