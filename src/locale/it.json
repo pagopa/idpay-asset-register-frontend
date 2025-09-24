@@ -143,9 +143,9 @@
             "emptyDescription": "Assicurati che il file contenga almeno una riga di dati prima di caricarlo.",
             "wrongCategoryTitle": "Il file contiene una categoria errata",
             "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
-            "multipeErrorsTitle": "Il file contiene uno o più errori",
-            "multipleErrorDescription": " per verificare le informazioni e carica di nuovo il file.",
-            "eprelNotWorksTitle": "EPREL è giù ora non funziona",
+            "multipleErrorsTitle": "Il file contiene uno o più errori",
+            "multipleErrorDescription": "  per verificare le informazioni e carica di nuovo il file.",
+            "eprelNotWorksTitle": "EPREL è giù, ora non funziona",
             "eprelNotWorksDescription": "Riprova più tardi",
             "missingFileDescription": "Carica un file in formato .csv"
           }
@@ -156,6 +156,7 @@
       "sideMenuTitle": "Prodotti",
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
+      "subtitleL1L2": "Consulta l'elenco dei prodotti caricati e i dettagli.",
       "loading": "Caricamento dati ...",
       "filterLabels": {
         "category": "Categoria",
@@ -265,7 +266,7 @@
     "supervised": {
       "title": "Richiedi ulteriori controlli ai produttori",
       "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali controlli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'.",
-      "listTitle": "Perchè stai richiedendo ulteriori controlli?",
+"listTitle": "Perché stai richiedendo ulteriori controlli?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
       "buttonText": "Da controllare",
@@ -277,14 +278,14 @@
     "rejected": {
       "title": "Richiedi esclusione",
       "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori riceveranno la notifica dell'esclusione.",
-      "listTitle": "Perchè stai escludendo i prodotti?",
+"listTitle": "Perché stai escludendo i prodotti?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
       "buttonText": "Escludi",
       "buttonTextConfirm": "Escludi",
       "buttonTextCancel": "Annulla",
       "errorMessage": "Campo obbligatorio",
-      "listTitleNoteUff": "Notifica ufficiale destinatata al Produttore",
+"listTitleNoteUff": "Notifica ufficiale destinata al Produttore",
       "reasonPlaceholderNoteUff": "Notifica ufficiale",
       "msgResultRejected": "I prodotti selezionati sono stati esclusi."
     },
