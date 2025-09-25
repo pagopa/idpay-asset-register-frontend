@@ -33,7 +33,6 @@ const Overview: React.FC = () => {
           mb: 5,
         }}
       >
-        {/* Sezione Informazioni */}
         <Box sx={{ gridColumn: 'span 6' }}>
           <Paper
             sx={{
@@ -108,7 +107,6 @@ const Overview: React.FC = () => {
         <OverviewProductionSection />
       </Box>
 
-      {/* Sezione Footer */}
       <Paper
         sx={{
           width: '100%',

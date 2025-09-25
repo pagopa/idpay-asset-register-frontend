@@ -13,7 +13,7 @@ import {
   CircularProgress,
   Alert,
   Chip,
-  Divider,
+  Divider, Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
@@ -138,7 +138,12 @@ const UploadsTable: React.FC<{
         <>
           <Divider />
           <TableContainer component={Paper} elevation={0} sx={{ paddingTop: 3 }}>
-            <Table size="small">
+            <Table size="small" sx={{ tableLayout: 'fixed', width: '100%' }}>
+              <colgroup>
+                <col style={{ width: '50%' }} />
+                <col style={{ width: '25%' }} />
+                <col style={{ width: '25%' }} />
+              </colgroup>
               <TableHead>
                 <TableRow>
                   <TableCell
@@ -156,7 +161,7 @@ const UploadsTable: React.FC<{
                         mb: 2,
                       }}
                     >
-                      STATO CARICAMENTI
+                      {t('pages.overview.tableHeader')}
                     </Typography>
                     {!loading &&
                       data?.content?.[0]?.uploadStatus === 'UPLOADED' &&
@@ -165,9 +170,7 @@ const UploadsTable: React.FC<{
                           <Paper>
                             <Alert severity="warning" sx={{ mb: 2 }}>
                               <Typography variant="body2">
-                                Stiamo effettuando i controlli. Quando saranno completati, ti
-                                avviseremo via email e potrai consultare i dettagli nelle sezioni
-                                dedicate.
+                                {t('pages.overview.warning')}
                               </Typography>
                             </Alert>
                           </Paper>
@@ -180,11 +183,22 @@ const UploadsTable: React.FC<{
                 {data?.content &&
                   data.content.slice(0, rowsPerPage).map((row: UploadDTO) => (
                     <TableRow key={row.productFileId}>
-                      <TableCell sx={{ padding: 0 }}>{row.batchName}</TableCell>
-                      <TableCell>
+                      <TableCell sx={{
+                        padding: 0,
+                        width: '50%',
+                        maxWidth: '50%',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}>
+                        <Tooltip title={row.batchName}>
+                          {row.batchName}
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell align='right' sx={{ width: '25%' }}>
                         {renderUploadStatusChip(row.uploadStatus ?? EMPTY_DATA)}
                       </TableCell>
-                      <TableCell>
+                      <TableCell align='right' sx={{ width: '25%' }}>
                         {row.dateUpload ? formatDate(row.dateUpload) : EMPTY_DATA}
                       </TableCell>
                     </TableRow>
@@ -199,7 +213,7 @@ const UploadsTable: React.FC<{
             onClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
             sx={{ paddingTop: 2 }}
           >
-            <b>Vedi i caricamenti</b>
+            <b>{t('pages.overview.allUploadsLink')}</b>
           </ButtonNaked>
         </>
       )}

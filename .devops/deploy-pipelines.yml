@@ -10,8 +10,9 @@ variables:
 
   # global variables
   react_app_pagopa_help_email: '$(REACT_APP_ASSISTANCE_EMAIL)'
+  react_app_upcoming_initiative_day: '$(REACT_APP_UPCOMING_INITIATIVE_DAY)'
 
-  ${{ if or(startsWith(variables['Build.SourceBranch'], 'refs/heads/uat'), startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix')) }}:
+${{ if or(startsWith(variables['Build.SourceBranch'], 'refs/heads/uat'), startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix')) }}:
     environment: 'UAT'
     azure_subscription: $(UAT_AZURE_SUBSCRIPTION)
     cdn_endpoint: '$(UAT_CDN_ENDPOINT)'

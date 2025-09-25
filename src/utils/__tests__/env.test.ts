@@ -5,6 +5,7 @@ jest.mock('env-var', () => ({
         const mockValues: Record<string, any> = {
             PUBLIC_URL: { asString: () => undefined },
             REACT_APP_ENV: { required: () => ({ asString: () => 'test' }) },
+            REACT_APP_UPCOMING_INITIATIVE_DAY: {required: () => ({asString: () => "20/10/2025"})},
             REACT_APP_PAGOPA_HELP_EMAIL: { required: () => ({ asString: () => 'help@example.com' }) },
             REACT_APP_URL_FE_PRE_LOGIN: { required: () => ({ asString: () => '/pre-login' }) },
             REACT_APP_URL_FE_LOGIN: { required: () => ({ asString: () => '/login' }) },
@@ -57,6 +58,13 @@ describe('ENV config', () => {
                         asString: () => 'default_value',
                     }),
                 };
+            }
+            if (key === 'REACT_APP_UPCOMING_INITIATIVE_DAY') {
+                return {
+                    required: () => ({
+                        asString: () => '20/10/2025'
+                    })
+                }
             }
             if (key === 'REACT_APP_URL_API_REGISTER') {
                 return {

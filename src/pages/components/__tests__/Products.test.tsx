@@ -1,33 +1,31 @@
 import { render, screen } from '@testing-library/react';
-import Products from '../Products';
 import '@testing-library/jest-dom';
+import Products from '../Products';
 
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-  withTranslation: () => (Component: any) => {
-    Component.defaultProps = { ...(Component.defaultProps || {}), t: (k: string) => k };
-    return Component;
-  },
-}));
+jest.mock('../../../components/Product/ProductDataGrid', () => {
+  const Mock = ({ organizationId }: { organizationId: string }) => (
+      <div data-testid="product-grid">{organizationId}</div>
+  );
+  return { __esModule: true, default: Mock };
+});
 
-describe('Products component', () => {
-  it('renders title and subtitle correctly', () => {
-    render(<Products />);
+describe('Products', () => {
+  it('rende il ProductDataGrid con l’organizationId passato', () => {
+    render(<Products organizationId="org-123" />);
 
-    expect(screen.getByText('pages.products.title')).toBeInTheDocument();
-    expect(screen.getByText('pages.products.subtitle')).toBeInTheDocument();
+    const grid = screen.getByTestId('product-grid');
+    expect(grid).toBeInTheDocument();
+    expect(grid).toHaveTextContent('org-123');
   });
 
-  it('renders children correctly', () => {
+  it('non rende i children (il componente non li supporta)', () => {
     render(
-      <Products>
-        <div data-testid="child">Child content</div>
-      </Products>
+        <Products organizationId="org-123">
+          <div data-testid="child">Child content</div>
+        </Products>
     );
 
-    expect(screen.getByTestId('child')).toBeInTheDocument();
-    expect(screen.getByText('Child content')).toBeInTheDocument();
+    expect(screen.getByTestId('product-grid')).toBeInTheDocument();
+    expect(screen.queryByTestId('child')).not.toBeInTheDocument();
   });
 });

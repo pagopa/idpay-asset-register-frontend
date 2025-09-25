@@ -22,7 +22,12 @@ const ProductInfoRow = forwardRef<HTMLLIElement, ProductInfoRowProps>(
             variant={valueVariant}
             fontWeight="fontWeightMedium"
             component="div"
-            sx={{ width: '100%' }}
+            sx={{
+              width: '100%',
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
+              whiteSpace: 'pre-line',
+            }}
           >
             {value}
           </Typography>

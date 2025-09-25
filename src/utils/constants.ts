@@ -59,6 +59,8 @@ export const MAX_LENGTH_OVERVIEW_INVIT: number = 140;
 export const MAX_LENGTH_DETAILL_PR: number = 40;
 export const MIN_LENGTH_TABLE_PR: number = 15;
 export const MAX_LENGTH_TABLE_PR: number = 45;
+export const RESOLUTION_UPSCALING = 1440;
+
 
 export const MIN_LENGTH_TEXTFIELD_POPUP = 2;
 export const MAX_LENGTH_TEXTFIELD_POPUP = 200;

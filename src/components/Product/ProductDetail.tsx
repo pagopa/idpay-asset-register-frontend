@@ -1,4 +1,5 @@
-import { List, Divider, Box, Tooltip, Typography, Button, SxProps, Theme } from '@mui/material';
+import React from 'react';
+import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
@@ -232,38 +233,19 @@ function renderEntry(entry: any, idx: number) {
 
   return (
     <Box key={`${header}-${idx}`} sx={{ mb: 2, width: '100%' }}>
-      <Tooltip
-        title={
-          <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
-            {motivationText}
-          </Box>
-        }
-        arrow
-      >
-        <Box component="span" sx={{ width: '100%' }}>
-          <Typography variant="body1" color="text.secondary">
-            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-          </Typography>
-          <TextareaAutosize
-            maxRows={10}
-            value={motivationText}
-            readOnly
-            aria-label="Motivazione"
-            name="motivation"
-            style={{
-              width: '374px',
-              boxSizing: 'border-box',
-              resize: 'none',
-              fontFamily: 'inherit',
-              fontSize: '1rem',
-              fontWeight: 500,
-              background: 'transparent',
-              border: 'none',
-              color: 'inherit',
-            }}
-          />
-        </Box>
-      </Tooltip>
+      <Box component="span" sx={{ width: '100%' }}>
+        <Typography variant="body1" color="textSecondary">
+          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+        </Typography>
+        <TextareaAutosize
+          maxRows={10}
+          value={motivationText}
+          readOnly
+          aria-label="Motivazione"
+          name="motivation"
+          className="product-detail-textarea"
+        />
+      </Box>
     </Box>
   );
 }
@@ -280,7 +262,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
       ? [
           ...baseRows,
           {
-            renderCustom: () => {
+            renderCustom(this: RowConfig) {
               const chronology =
                 ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
               const filteredChronology = chronology.filter(
@@ -305,7 +287,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
             },
           } as RowConfig & { renderCustom?: () => JSX.Element },
           {
-            renderCustom: () => {
+            renderCustom(this: RowConfig) {
               const chronology =
                 ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
               if (!chronology.length) {
@@ -329,6 +311,10 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                   : data?.formalMotivation;
               const header = `${operator} · ${dateLabel}`;
 
+              if (formalMotivationText === EMPTY_DATA) {
+                return null;
+              }
+
               return (
                 <ProductInfoRow
                   label={t('pages.productDetail.motivationFormal')}
@@ -338,38 +324,19 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                   value={
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
                       <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
-                        <Tooltip
-                          title={
-                            <Box component="span" sx={{ whiteSpace: 'pre-line' }}>
-                              {formalMotivationText}
-                            </Box>
-                          }
-                          arrow
-                        >
-                          <Box component="span" sx={{ width: '100%' }}>
-                            <Typography variant="body1" color="text.secondary">
-                              {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-                            </Typography>
-                            <TextareaAutosize
-                              maxRows={10}
-                              value={formalMotivationText}
-                              readOnly
-                              aria-label="Motivazione formale"
-                              name="formalMotivation"
-                              style={{
-                                width: '374px',
-                                boxSizing: 'border-box',
-                                resize: 'none',
-                                fontFamily: 'inherit',
-                                fontSize: '1rem',
-                                fontWeight: 500,
-                                background: 'transparent',
-                                border: 'none',
-                                color: 'inherit',
-                              }}
-                            />
-                          </Box>
-                        </Tooltip>
+                        <Box component="span" sx={{ width: '100%' }}>
+                          <Typography variant="body1" color="textSecondary">
+                            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                          </Typography>
+                          <TextareaAutosize
+                            maxRows={10}
+                            value={formalMotivationText}
+                            readOnly
+                            aria-label="Motivazione formale"
+                            name="formalMotivation"
+                            className="product-detail-textarea"
+                          />
+                        </Box>
                       </Box>
                     </Box>
                   }
@@ -386,16 +353,12 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
         'type' in row && row.type === 'divider' ? (
           <Divider key={`divider-${idx}`} sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
         ) : (row as any).renderCustom ? (
-          (row as any).renderCustom()
+          <React.Fragment key={`custom-${idx}`}>{(row as any).renderCustom()}</React.Fragment>
         ) : (
           <ProductInfoRow
-            key={`row-${(row as RowConfig).label || idx}`}
+            key={`row-${idx}-${(row as RowConfig).label}`}
             label={(row as RowConfig).label}
-            value={
-              <Tooltip title={(row as RowConfig).value} arrow>
-                <span>{(row as RowConfig).value}</span>
-              </Tooltip>
-            }
+            value={<span>{(row as RowConfig).value}</span>}
             labelVariant={(row as RowConfig).labelVariant}
             valueVariant={(row as RowConfig).valueVariant}
             sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
@@ -411,6 +374,9 @@ type ProductDetailProps = Props & {
   onShowApprovedMsg?: () => void;
   onShowRejectedMsg: () => void;
   onShowWaitApprovedMsg?: () => void;
+  onShowSupervisedMsg?: () => void;
+  onShowRejectedApprovationMsg?: () => void;
+  onShowAcceptApprovationMsg?: () => void;
 };
 
 export default function ProductDetail({
@@ -422,6 +388,9 @@ export default function ProductDetail({
   onShowApprovedMsg,
   onShowRejectedMsg,
   onShowWaitApprovedMsg,
+  onShowSupervisedMsg,
+  onShowRejectedApprovationMsg,
+  onShowAcceptApprovationMsg,
 }: ProductDetailProps) {
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
@@ -450,7 +419,11 @@ export default function ProductDetail({
     }
   };
 
-  const handleModalClose = (setModalOpen: (open: boolean) => void, showRejectedMsg?: boolean) => {
+  const handleModalClose = (
+    setModalOpen: (open: boolean) => void,
+    showRejectedMsg?: boolean,
+    confirmed?: boolean
+  ) => {
     setModalOpen(false);
     if (typeof onUpdateTable === 'function') {
       onUpdateTable();
@@ -458,16 +431,55 @@ export default function ProductDetail({
     if (typeof onClose === 'function') {
       onClose();
     }
-    if (showRejectedMsg && typeof onShowRejectedMsg === 'function') {
+    if (showRejectedMsg && confirmed && typeof onShowRejectedMsg === 'function') {
       onShowRejectedMsg();
     }
   };
 
-  const handleSuccess = (actionType?: string) => {
-    if (actionType === PRODUCTS_STATES.SUPERVISED && typeof onShowWaitApprovedMsg === 'function') {
-      onShowWaitApprovedMsg();
-    } else if (actionType === PRODUCTS_STATES.REJECTED) {
+  const resetAllMsgs = () => {};
+
+  const setMsgByActionType = (actionType?: string) => {
+    if (actionType === PRODUCTS_STATES.SUPERVISED && typeof onShowSupervisedMsg === 'function') {
+      onShowSupervisedMsg();
+      return;
+    }
+    if (actionType === PRODUCTS_STATES.REJECTED && typeof onShowRejectedMsg === 'function') {
       onShowRejectedMsg();
+      return;
+    }
+    if (
+      actionType === PRODUCTS_STATES.WAIT_APPROVED &&
+      typeof onShowWaitApprovedMsg === 'function'
+    ) {
+      onShowWaitApprovedMsg();
+      return;
+    }
+    if (
+      actionType === MIDDLE_STATES.REJECT_APPROVATION &&
+      typeof onShowRejectedApprovationMsg === 'function'
+    ) {
+      onShowRejectedApprovationMsg();
+      return;
+    }
+    if (
+      actionType === MIDDLE_STATES.ACCEPT_APPROVATION &&
+      typeof onShowAcceptApprovationMsg === 'function'
+    ) {
+      onShowAcceptApprovationMsg();
+    }
+  };
+
+  const handleSuccess = (actionType?: string) => {
+    if (
+      typeof onShowApprovedMsg === 'function' ||
+      typeof onShowRejectedMsg === 'function' ||
+      typeof onShowWaitApprovedMsg === 'function' ||
+      typeof onShowSupervisedMsg === 'function' ||
+      typeof onShowRejectedApprovationMsg === 'function' ||
+      typeof onShowAcceptApprovationMsg === 'function'
+    ) {
+      resetAllMsgs();
+      setMsgByActionType(actionType);
     }
   };
 
@@ -490,6 +502,20 @@ export default function ProductDetail({
           width: 100% !important;
           margin-bottom: 16px !important;
         }
+        .product-detail-textarea {
+          width: 374px;
+          box-sizing: border-box;
+          resize: none;
+          font-family: 'Titillium Web';
+          font-weight: 600;
+          font-style: SemiBold;
+          font-size: 18px;
+          line-height: 24px;
+          letter-spacing: 0px;
+          background: transparent;
+          border: none;
+          color: inherit;
+        }
       `}</style>
       <Box sx={{ minWidth: 400, pl: 2 }} role="presentation" data-testid="product-detail">
         <List>
@@ -497,31 +523,57 @@ export default function ProductDetail({
           <ProductInfoRows data={data} currentStatus={data.status as ProductStatusEnum}>
             {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
               <>
-                <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    mt: 2,
+                    width: '100%',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 2,
+                    pt: 2,
+                    pb: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
                   <Button
+                    data-testid="acceptApprovationBtn"
                     color="primary"
                     variant="contained"
                     className="btn-approve"
-                    data-testid="request-approval-btn"
                     onClick={() => setRestoreDialogOpen(true)}
                   >
                     {t('invitaliaModal.waitApproved.buttonTextConfirm')}
                   </Button>
                   <Button
+                    data-testid="rejectApprovationBtn"
                     color="error"
                     className="btn-exclude"
-                    data-testid="exclude-btn"
                     variant="outlined"
                     onClick={handleExcludeClick}
                   >
                     {t('invitaliaModal.rejected.buttonTextConfirm')}
                   </Button>
-                </Box>
+                </Paper>
               </>
             )}
             {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
               <>
-                <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    mt: 2,
+                    width: '100%',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 2,
+                    pt: 2,
+                    pb: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
                   <Button
                     data-testid="approvedBtn"
                     color="primary"
@@ -536,25 +588,41 @@ export default function ProductDetail({
                     color="primary"
                     variant="outlined"
                     className="btn-exclude"
-                    onClick={() => setSupervisionModalOpen(true)}
+                    onClick={() => {
+                      setSupervisionModalOpen(true);
+                    }}
                   >
                     <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}
                   </Button>
                   <Button
+                    data-testid="rejectedBtn"
                     color="error"
                     className="btn-exclude"
-                    data-testid="rejectedBtn"
                     variant="outlined"
                     onClick={handleExcludeClick}
                   >
                     {t('invitaliaModal.rejected.buttonText')}
                   </Button>
-                </Box>
+                </Paper>
               </>
             )}
             {isInvitaliaAdmin && String(data.status) === PRODUCTS_STATES.WAIT_APPROVED && (
               <>
-                <Box mt={2} mr={2} display="flex" flexDirection="column">
+                <Paper
+                  elevation={3}
+                  sx={{
+                    mt: 2,
+                    mr: 2,
+                    width: '100%',
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 2,
+                    pt: 2,
+                    pb: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
                   <Button
                     data-testid="supervisedBtn"
                     color="primary"
@@ -565,15 +633,15 @@ export default function ProductDetail({
                     {t('invitaliaModal.waitApproved.buttonText')}
                   </Button>
                   <Button
+                    data-testid="rejectedBtn"
                     color="error"
                     className="btn-exclude"
-                    data-testid="rejectedBtn"
                     variant="outlined"
                     onClick={handleExcludeClick}
                   >
                     {t('invitaliaModal.rejectApprovation.buttonText')}
                   </Button>
-                </Box>
+                </Paper>
               </>
             )}
           </ProductInfoRows>

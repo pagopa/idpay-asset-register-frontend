@@ -12,7 +12,8 @@ const ROUTES = {
   PRODUCTS: `${BASE_ROUTE}/prodotti`,
   UPLOADS: `${BASE_ROUTE}/storico-caricamenti`,
   INVITALIA_PRODUCTS_LIST: `${BASE_ROUTE}/lista-prodotti`,
-  PRODUCERS: `${BASE_ROUTE}/produttori`
+  PRODUCERS: `${BASE_ROUTE}/produttori`,
+  UPCOMING: `${BASE_ROUTE}/iniziativa-in-arrivo`
 };
 
 export default ROUTES;

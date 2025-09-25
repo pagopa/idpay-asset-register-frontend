@@ -18,7 +18,11 @@ export default function DetailDrawer({ open, toggleDrawer, children }: Props) {
       data-testid="detail-drawer"
     >
       <Box sx={{ display: 'flex', flexDirection: 'row-reverse', padding: 1 }}>
-        <IconButton data-testid="open-detail-button" onClick={() => toggleDrawer(false)} sx={{ color: 'text.secondary' }}>
+        <IconButton
+          data-testid="open-detail-button"
+          onClick={() => toggleDrawer(false)}
+          sx={{ color: 'text.secondary' }}
+        >
           <CloseIcon />
         </IconButton>
       </Box>

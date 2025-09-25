@@ -167,7 +167,6 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
         {((data.institutions as Array<Institution>) ?? []).map((row: Institution) => (
           <TableRow
               key={row.institutionId}
-              onClick={() => onDetailRequest(row)}
           >
             <TableCell>
               <Link
@@ -183,10 +182,12 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
             </TableCell>
             <TableCell>{formatDateWithoutHours(row.createdAt.toString())}</TableCell>
             <TableCell>{formatDateWithoutHours(row.updatedAt.toString())}</TableCell>
-            <TableCell>
+            <TableCell align='right'>
               <ChevronRight
                 color="primary"
+                cursor='pointer'
                 sx={{ verticalAlign: 'middle' }}
+                onClick={() => onDetailRequest(row)}
               />
             </TableCell>
           </TableRow>
@@ -227,7 +228,6 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
         height: '70%',
         gap: '24px',
         borderRadius: '4px',
-        cursor: 'pointer',
       }}
       data-testid="uploads-table"
     >

@@ -39,9 +39,17 @@ const MsgResult: React.FC<MsgResultProps> = ({
         display: 'flex',
         justifyContent: 'flex-end',
         zIndex: 9999,
+        pointerEvents: 'auto',
       }}
     >
-      <Box sx={{ width: '395px', overflowX: 'auto' }}>
+      <Box
+        sx={{
+          width: '395px',
+          overflowX: 'auto',
+          boxShadow:
+            '0px 1px 10px 0px #002B551A, 0px 4px 5px 0px #002B550D, 0px 2px 4px -1px #002B551A',
+        }}
+      >
         <Alert severity={severity} variant={variant}>
           {message}
           {children}
