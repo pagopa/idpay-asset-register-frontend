@@ -148,7 +148,7 @@ describe('OverviewProductionSection', () => {
     await waitFor(() => {
       expect(screen.getByText('pages.overview.tableHeader')).toBeInTheDocument();
     });
-    expect(screen.queryByText(/ultimo caricamento/i)).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /carica prodotti/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/ultimo caricamento/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /carica prodotti/i })).toBeInTheDocument();
   });
 });

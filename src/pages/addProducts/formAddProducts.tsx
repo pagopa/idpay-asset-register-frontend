@@ -25,6 +25,7 @@ import {
 import ROUTES from '../../routes';
 import { useErrorHandling } from '../../hooks/useErrorHandling';
 import { useFileState } from '../../hooks/useFileState';
+import {delay} from "../../helpers";
 import { categoryList, downloadCsv } from './helpers';
 import FileUploadSection from './fileUploadSection';
 
@@ -200,6 +201,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       const res = await uploadProductList(fileState.currentFile, formik.values.category);
 
       if (res.status === 'OK') {
+        await delay(1000);
         onExit(() => navigate(ROUTES.HOME, { replace: true }));
       } else {
         handleUploadErrorAndRejectFile(res);
