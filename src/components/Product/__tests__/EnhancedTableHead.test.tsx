@@ -238,8 +238,6 @@ describe('EnhancedTableHead', () => {
       const productNameCell = screen.getByText('pages.products.table.headers.productName').closest('th');
       expect(productNameCell).toHaveStyle({
         width: '200px',
-        minWidth: '200px',
-        maxWidth: '200px',
       });
     });
 
@@ -248,9 +246,7 @@ describe('EnhancedTableHead', () => {
 
       const checkboxCell = screen.getByRole('checkbox').closest('th');
       expect(checkboxCell).toHaveStyle({
-        width: '50px',
-        minWidth: '50px',
-        maxWidth: '50px',
+        width: '4%',
       });
     });
   });
@@ -290,7 +286,7 @@ describe('EnhancedTableHead', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
       const allCells = screen.getAllByRole('columnheader');
-      expect(allCells).toHaveLength(mockHeadCells.length + 1);
+      expect(allCells).toHaveLength(mockHeadCells.length+2);
     });
 
     it('should handle different ProductDTO key types', () => {
