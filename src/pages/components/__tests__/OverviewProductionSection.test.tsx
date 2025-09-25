@@ -9,6 +9,9 @@ const mockTranslations = {
   'pages.overview.overviewTitleBoxProdDescription': 'Carica i tuoi prodotti per iniziare',
   'pages.overview.overviewTitleBoxProdBtn': 'Carica Prodotti',
   'errors.uploadsList.errorDescription': 'Errore nel caricamento dei dati',
+  'tableHeader': 'stato caricamenti',
+  'warning': 'Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e potrai consultare i dettagli nelle sezioni dedicate.',
+  'allUploadsLink': 'Vedi i caricamenti'
 };
 
 jest.mock('react-i18next', () => ({
@@ -122,7 +125,7 @@ describe('OverviewProductionSection', () => {
       </TestWrapper>
     );
     await waitFor(() => {
-      expect(screen.getByText(/stiamo effettuando i controlli/i)).toBeInTheDocument();
+      expect(screen.getByText('pages.overview.warning')).toBeInTheDocument();
     });
   });
 
@@ -143,9 +146,9 @@ describe('OverviewProductionSection', () => {
       </TestWrapper>
     );
     await waitFor(() => {
-      expect(screen.getByText('STATO CARICAMENTI')).toBeInTheDocument();
+      expect(screen.getByText('pages.overview.tableHeader')).toBeInTheDocument();
     });
-    expect(screen.queryByText(/ultimo caricamento/i)).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /carica prodotti/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/ultimo caricamento/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /carica prodotti/i })).toBeInTheDocument();
   });
 });

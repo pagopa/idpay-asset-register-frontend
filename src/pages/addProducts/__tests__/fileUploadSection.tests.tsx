@@ -2,6 +2,17 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import FileUploadSection from '../fileUploadSection';
 import '@testing-library/jest-dom';
 
+jest.mock('../../../utils/env', () => ({
+    __esModule: true,
+    ENV: {
+        UPCOMING_INITIATIVE_DAY: 'xx/xx/xx',
+        URL_API: {
+            OPERATION: 'https://mock-api/register',
+            LOGOUT: 'https://mock-api/logout',
+        },
+    },
+}));
+
 jest.mock('../../../components/LoadingFile/LoadingFile', () => () => <div data-testid="loading-file" />);
 jest.mock('../../../components/AcceptedFile/AcceptedFile', () => () => <div data-testid="accepted-file" />);
 jest.mock('../../../components/RejectedFile/RejectedFile', () => () => <div data-testid="rejected-file" />);

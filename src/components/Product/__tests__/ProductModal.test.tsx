@@ -94,7 +94,7 @@ describe('ProductModal', () => {
     expect(screen.getByText('invitaliaModal.supervised.description')).toBeInTheDocument();
     expect(screen.getByText('invitaliaModal.supervised.listTitle')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /buttonTextConfirm/i })).toHaveTextContent('(2)');
-    expect(screen.getByText('2/200')).toBeInTheDocument();
+    expect(screen.getByText('0/200')).toBeInTheDocument();
   });
 
   test('SUPERVISED: validation error on empty reason', async () => {

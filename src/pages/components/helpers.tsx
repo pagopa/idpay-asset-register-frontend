@@ -41,13 +41,12 @@ export const cellRightSx = {
 export const checkboxCellSx = {
   ...cellBaseSx,
   textAlign: 'left' as const,
-  width: '60px',
   padding: '16px',
 };
 
 export const actionsCellSx = {
   ...cellBaseSx,
-  textAlign: 'center' as const,
+  textAlign: 'right' as const,
   width: '60px',
   padding: '16px',
 };

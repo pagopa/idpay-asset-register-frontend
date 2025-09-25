@@ -65,6 +65,10 @@
       "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
       "title": "Elenco informatico elettrodomestici"
     },
+    "upcomingInitiative": {
+      "title": "Ci siamo quasi!",
+      "subTitle": "Torna il {{x}} per accedere alla piattaforma"
+    },
     "overview": {
       "overviewTitle": "Panoramica",
       "overviewTitleDescription": "Tieni sotto controllo tutte le tue attività da qui.",
@@ -77,7 +81,10 @@
       "overviewTitleBoxInfoTitleLblEmailOp": "E-mail operativa",
       "overviewTitleBoxProdTitle": "Prodotti",
       "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
-      "overviewTitleBoxProdBtn": "Carica .csv"
+      "overviewTitleBoxProdBtn": "Carica .csv",
+      "tableHeader": "stato caricamenti",
+      "warning": "Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e potrai consultare i dettagli nelle sezioni dedicate.",
+      "allUploadsLink": "Vedi i caricamenti"
     },
     "invitaliaOverview": {
       "overviewTitle": "Panoramica",
@@ -139,9 +146,9 @@
             "emptyDescription": "Assicurati che il file contenga almeno una riga di dati prima di caricarlo.",
             "wrongCategoryTitle": "Il file contiene una categoria errata",
             "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
-            "multipeErrorsTitle": "Il file contiene uno o più errori",
-            "multipleErrorDescription": " per verificare le informazioni e carica di nuovo il file.",
-            "eprelNotWorksTitle": "EPREL è giù ora non funziona",
+            "multipleErrorsTitle": "Il file contiene uno o più errori",
+            "multipleErrorDescription": "  per verificare le informazioni e carica di nuovo il file.",
+            "eprelNotWorksTitle": "EPREL è giù, ora non funziona",
             "eprelNotWorksDescription": "Riprova più tardi",
             "missingFileDescription": "Carica un file in formato .csv"
           }
@@ -152,6 +159,7 @@
       "sideMenuTitle": "Prodotti",
       "title": "Prodotti",
       "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
+      "subtitleL1L2": "Consulta l'elenco dei prodotti caricati e i dettagli.",
       "loading": "Caricamento dati ...",
       "filterLabels": {
         "category": "Categoria",
@@ -182,7 +190,7 @@
         "TUMBLEDRYERS": "Asciugatrici",
         "REFRIGERATINGAPPL": "Apparecchi di refrigerazione",
         "COOKINGHOBS": "Piani cottura",
-        "UPLOADED": "Da revisionare",
+        "UPLOADED": "Da Esaminare",
         "WAIT_APPROVED": "Da approvare",
         "SUPERVISED": "Da controllare",
         "APPROVED": "Approvato",
@@ -198,7 +206,7 @@
         "Approvato": "APPROVED",
         "Da controllare": "SUPERVISED",
         "Escluso": "REJECTED",
-        "Da revisionare": "UPLOADED",
+        "Da Esaminare": "UPLOADED",
         "Da approvare": "WAIT_APPROVED"
       },
       "tablePaginationFrom": "di",
@@ -261,26 +269,28 @@
     "supervised": {
       "title": "Richiedi ulteriori controlli ai produttori",
       "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali controlli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'.",
-      "listTitle": "Perchè stai richiedendo ulteriori controlli?",
+"listTitle": "Perché stai richiedendo ulteriori controlli?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
       "buttonText": "Da controllare",
       "buttonTextConfirm": "Richiedi controlli",
       "buttonTextCancel": "Annulla",
-      "errorMessage": "Campo obbligatorio"
+      "errorMessage": "Campo obbligatorio",
+      "msgResultSupervised": "I prodotti selezionati sono ora da controllare."
     },
     "rejected": {
       "title": "Richiedi esclusione",
       "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori riceveranno la notifica dell'esclusione.",
-      "listTitle": "Perchè stai escludendo i prodotti?",
+"listTitle": "Perché stai escludendo i prodotti?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
       "buttonText": "Escludi",
       "buttonTextConfirm": "Escludi",
       "buttonTextCancel": "Annulla",
       "errorMessage": "Campo obbligatorio",
-      "listTitleNoteUff": "Notifica ufficiale destinatata al Produttore",
-      "reasonPlaceholderNoteUff": "Notifica ufficiale"
+"listTitleNoteUff": "Notifica ufficiale destinata al Produttore",
+      "reasonPlaceholderNoteUff": "Notifica ufficiale",
+      "msgResultRejected": "I prodotti selezionati sono stati esclusi."
     },
      "waitApproved": {
       "title": "Approva",
@@ -291,29 +301,20 @@
       "buttonText": "Approva",
       "buttonTextConfirm": "Richiedi approvazione",
       "buttonTextCancel": "Annulla",
-      "errorMessage": "Campo obbligatorio"
-    },
-    "approved": {
-      "title": "Approva",
-      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
-      "listTitle": "Richiedi approvazione",
-      "reasonLabel": "Richiedi approvazione",
-      "reasonPlaceholder": "Richiedi approvazione",
-      "buttonText": "Approva",
-      "buttonTextConfirm": "Richiedi approvazione",
-      "buttonTextCancel": "Annulla",
-      "errorMessage": "Campo obbligatorio"
+      "errorMessage": "Campo obbligatorio",
+      "msgResultWaitApproved": "Richiesta di approvazione inviata."
     },
     "rejectApprovation": {
       "title": "Rifiuta approvazione",
-      "description": "Stai per rifiutare la richiesta di approvazione inviata da L1. Dopo questa operazione, i prodotti torneranno allo stato “Da revisionare”.",
+      "description": "Stai per rifiutare la richiesta di approvazione inviata da L1. Dopo questa operazione, i prodotti torneranno allo stato “Da Esaminare”.",
       "listTitle": "Perché stai rifiutando l’approvazione di questi prodotti?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
       "buttonText": "Rifiuta",
       "buttonTextConfirm": "Rifiuta",
       "buttonTextCancel": "Annulla",
-      "errorMessage": "Campo obbligatorio"
+      "errorMessage": "Campo obbligatorio",
+      "msgResultRejectedApprovation": "L'approvazione è stata rifiutata."
     },
     "acceptApprovation": {
       "title": "Approva prodotti",
@@ -323,12 +324,13 @@
       "reasonPlaceholder": "",
       "buttonText": "Approva",
       "buttonTextConfirm": "Approva",
-      "buttonTextCancel": "Annulla"
+      "buttonTextCancel": "Annulla",
+      "msgResultAcceptApprovation":"I prodotti sono stati approvati."
     }
   },
   "chip": {
     "productStatusLabel":{
-      "uploaded": "Da revisionare",
+      "uploaded": "Da Esaminare",
       "waitApproved": "Da approvare",
       "approved": "Approvato",
       "supervised": "Da controllare",
@@ -337,11 +339,6 @@
   },
   "msgResutlt":{
     "errorMixSelected":"Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato.",
-    "errorYourselfApproved":"Non puoi inviare una richiesta di approvazione a te stesso.",
-    "okButtonApproved": "Richiesta di approvazione inviata.",
-    "okButtonRejected": "I prodotti selezionati sono stati esclusi.",
-    "okWaitApproved": "I prodotti selezionati sono ora da controllare.",
-    "okL2ButtonApproved":"I prodotti sono stati approvati.",
-    "okL2ButtonRejected":"L'approvazione è stata rifiutata."
+    "errorYourselfApproved":"Non puoi inviare una richiesta di approvazione a te stesso."
   }
 }

@@ -6,6 +6,7 @@ export const ENV = {
   ENV: env.get('REACT_APP_ENV').required().asString(),
   PUBLIC_URL: PUBLIC_URL_INNER,
 
+  UPCOMING_INITIATIVE_DAY: env.get('REACT_APP_UPCOMING_INITIATIVE_DAY').required().asString(),
   ASSISTANCE: {
     EMAIL: env.get('REACT_APP_PAGOPA_HELP_EMAIL').required().asString(),
   },
