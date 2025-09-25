@@ -204,3 +204,6 @@ export const customExitAction = () => {
 
     window.location.assign(ENV.URL_FE.LOGOUT);
 };
+
+export const delay = (ms: number): Promise<void> =>
+    new Promise(resolve => setTimeout(resolve, ms));

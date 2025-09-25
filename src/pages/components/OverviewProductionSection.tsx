@@ -117,6 +117,31 @@ const UploadInfoBox: React.FC<{
       </Box>
     );
   }
+  if (
+      !loading &&
+      !error &&
+      data?.content &&
+      data.content.length > 0 &&
+      data.content[0].uploadStatus === 'IN_PROCESS'
+  ) {
+    return (
+        <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
+          <Typography variant="body2">
+            Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : EMPTY_DATA}</b>
+          </Typography>
+          <Button
+              disabled
+              variant="contained"
+              color="primary"
+              startIcon={<FileUploadIcon />}
+              sx={{ alignSelf: 'flex-start', mt: 2 }}
+              onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
+          >
+            {t('pages.overview.overviewTitleBoxProdBtn')}
+          </Button>
+        </Box>
+    );
+  }
   return null;
 };
 
@@ -192,7 +217,7 @@ const UploadsTable: React.FC<{
                         textOverflow: 'ellipsis',
                       }}>
                         <Tooltip title={row.batchName}>
-                          {row.batchName}
+                          <span>{row.batchName}</span>
                         </Tooltip>
                       </TableCell>
                       <TableCell align='right' sx={{ width: '25%' }}>

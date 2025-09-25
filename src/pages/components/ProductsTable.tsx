@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 const isUpscaling = typeof window !== 'undefined' && window.innerWidth > RESOLUTION_UPSCALING;
-
 import {
   Table,
   TableBody,
@@ -60,36 +59,43 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     id: keyof ProductDTO | 'producer';
     label: string;
     align: 'left' | 'center' | 'right';
+    width: string;
   }> = [
     {
       id: 'category',
       label: t('pages.products.listHeader.category'),
       align: 'left',
+      width: '10%'
     },
     {
       id: 'organizationName',
       label: t('pages.products.listHeader.producer'),
       align: 'left',
+      width: '17%'
     },
     {
       id: 'eprelCode',
       label: t('pages.products.listHeader.eprelCode'),
       align: 'center',
+      width: '10%'
     },
     {
       id: 'gtinCode',
       label: t('pages.products.listHeader.gtinCode'),
       align: 'center',
+      width: '15%'
     },
     {
       id: 'batchName',
       label: t('pages.products.listHeader.batch'),
       align: 'left',
+      width: '25%'
     },
     {
       id: 'status',
       label: t('pages.products.listHeader.status'),
       align: 'left',
+      width: '15%'
     },
   ];
 
@@ -267,25 +273,21 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           </Tooltip>
         )}
       </TableCell>
-      <TableCell sx={cellLeftSx}>
-        {isUpscaling ? (
-          <Typography variant="body2">
-            {truncateString(String(row?.batchName ?? emptyData), getTablePrLength())}
+      <TableCell sx={{...cellLeftSx}} >
+        <Tooltip title={String(row?.batchName ?? emptyData)} arrow>
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',}}>
+            {row?.batchName ?? emptyData}
           </Typography>
-        ) : (
-          <Tooltip title={String(row?.batchName ?? emptyData)} arrow>
-            <Typography variant="body2">
-              {truncateString(String(row?.batchName ?? emptyData), getTablePrLength())}
-            </Typography>
-          </Tooltip>
-        )}
+        </Tooltip>
       </TableCell>
       <TableCell sx={cellLeftSx}>
         <ProductStatusChip status={typeof row?.status === 'string' ? row.status : emptyData} />
       </TableCell>
-      <TableCell sx={actionsCellSx}>
+      <TableCell sx={{...actionsCellSx, pl: 0 }}>
         <IconButton
-          sx={{ backgroundColor: 'transparent' }}
+          sx={{ backgroundColor: 'transparent', p: 0 }}
           color="default"
           aria-label="Apri dettagli prodotto"
           size="small"
@@ -391,7 +393,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
 
   return (
     <TableContainer>
-      <Table size="small" sx={{ tableLayout: 'auto' }}>
+      <Table size="small" sx={{ tableLayout: 'fixed', width: '100%' }}>
         <EnhancedTableHead
           isInvitaliaUser={isInvitaliaUser}
           headCells={isInvitaliaUser ? headCellsInvitalia : headCellsProduttore}
@@ -402,7 +404,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           isIndeterminate={isIndeterminate}
           handleSelectAllClick={handleSelectAllClick}
           cellLeftSx={undefined}
-          cellCenterSx={undefined}
+          cellCenterSx={cellCenterSx}
           cellRightSx={undefined}
         />
         <TableBody>
