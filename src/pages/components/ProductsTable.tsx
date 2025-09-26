@@ -237,23 +237,16 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <Typography variant="body2">{String(row?.category ?? emptyData)}</Typography>
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        {isUpscaling ? (
-          <Typography variant="body2">
+        <Tooltip title={String(getProducer(row?.organizationId) ?? emptyData)} arrow>
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',}}>
             {truncateString(
               String(getProducer(row?.organizationId) ?? emptyData),
               getTablePrLength()
             )}
           </Typography>
-        ) : (
-          <Tooltip title={String(getProducer(row?.organizationId) ?? emptyData)} arrow>
-            <Typography variant="body2">
-              {truncateString(
-                String(getProducer(row?.organizationId) ?? emptyData),
-                getTablePrLength()
-              )}
-            </Typography>
-          </Tooltip>
-        )}
+        </Tooltip>
       </TableCell>
       <TableCell sx={cellCenterSx}>
         {isUpscaling ? (
