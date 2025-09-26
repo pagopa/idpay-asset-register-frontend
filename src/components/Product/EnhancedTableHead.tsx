@@ -95,7 +95,7 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
         ))}
         {
           isInvitaliaUser &&
-            <TableCell sx={{ width: '4%' }} />
+            <TableCell sx={{...cellRightSx }} />
         }
       </TableRow>
     </TableHead>
