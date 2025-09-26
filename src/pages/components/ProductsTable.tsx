@@ -103,41 +103,49 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     id: keyof ProductDTO | 'actions';
     label: string;
     align: 'left' | 'center' | 'right';
+    width: string;
   }> = [
     {
       id: 'category',
       label: t('pages.products.listHeader.category'),
       align: 'left',
+      width: '15%'
     },
     {
       id: 'energyClass',
       label: t('pages.products.listHeader.energeticClass'),
       align: 'center',
+      width: '15%'
     },
     {
       id: 'eprelCode',
       label: t('pages.products.listHeader.eprelCode'),
       align: 'center',
+      width: '15%'
     },
     {
       id: 'gtinCode',
       label: t('pages.products.listHeader.gtinCode'),
       align: 'center',
+      width: '15%'
     },
     {
       id: 'batchName',
       label: t('pages.products.listHeader.batch'),
       align: 'left',
+      width: '25%'
     },
     {
       id: 'status',
       label: t('pages.products.listHeader.status'),
       align: 'left',
+      width: '15%'
     },
     {
       id: 'actions',
       label: '',
       align: 'right',
+      width: '5%'
     },
   ];
 
@@ -330,12 +338,24 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     tooltip?: string;
   }) =>
     isUpscaling ? (
-      <Typography variant="body2">
+      <Typography variant="body2"
+        sx={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+      >
         {truncateString(value, maxLength ?? getTablePrLength())}
       </Typography>
     ) : (
       <Tooltip title={tooltip ?? value} arrow>
-        <Typography variant="body2">
+        <Typography variant="body2"
+          sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
           {truncateString(value, maxLength ?? getTablePrLength())}
         </Typography>
       </Tooltip>
@@ -403,9 +423,9 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           isAllSelected={isAllSelected}
           isIndeterminate={isIndeterminate}
           handleSelectAllClick={handleSelectAllClick}
-          cellLeftSx={undefined}
+          cellLeftSx={cellLeftSx}
           cellCenterSx={cellCenterSx}
-          cellRightSx={undefined}
+          cellRightSx={cellRightSx}
         />
         <TableBody>
           {tableData.map((row, index) =>
