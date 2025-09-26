@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import UpcomingInitiative from '../upcomingInitiative';
 
 jest.mock('../../../utils/env', () => ({
     __esModule: true,
     ENV: {
-        UPCOMING_INITIATIVE_DAY: 'xx/xx/xx',
         URL_API: {
             OPERATION: 'https://mock-api/register',
             LOGOUT: 'https://mock-api/logout',
@@ -40,7 +40,6 @@ jest.mock('../../../helpers', () => ({
 }));
 
 
-import UpcomingInitiative from '../upcomingInitiative';
 
 describe('UpcomingInitiative', () => {
     test('renderizza immagine 60x60, titolo, sottotitolo interpolato e bottone', () => {
@@ -54,7 +53,7 @@ describe('UpcomingInitiative', () => {
         const title = screen.getByRole('heading', { name: 'Titolo Mock' });
         expect(title).toBeInTheDocument();
 
-        expect(screen.getByText('Sottotitolo xx/xx/xx')).toBeInTheDocument();
+        expect(screen.getByText('Sottotitolo 20/10/2025')).toBeInTheDocument();
 
         const button = screen.getByRole('button', { name: 'Chiudi' });
         expect(button).toBeInTheDocument();

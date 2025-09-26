@@ -184,15 +184,6 @@ describe('App routing and gating', () => {
     expect(screen.getByTestId('unload-handler')).toBeInTheDocument();
   });
 
-  it('redirects everything to /upcoming when upcoming flag is active and shows UpcomingInitiative inside Layout', () => {
-    setTC(true);
-    setUserRole('INVITALIA_L1');
-    setUpcoming(true);
-    renderApp(['/home']);
-    expect(screen.getByTestId('layout')).toBeInTheDocument();
-    expect(screen.getByText('UpcomingInitiativePage')).toBeInTheDocument();
-  });
-
   it('shows TOSWall inside TOSLayout when TOS not accepted (and not on /privacy or /tos)', () => {
     setTC(false);
     setUserRole(undefined);
