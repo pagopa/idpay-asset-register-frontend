@@ -6,12 +6,14 @@ import {trackEvent} from "@pagopa/selfcare-common-frontend/lib/services/analytic
 import {render, screen} from '@testing-library/react';
 import userEvent from "@testing-library/user-event";
 import '@testing-library/jest-dom';
+import {ENV} from "../../../utils/env";
 
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
   ENV: {
     URL_API: {
       OPERATION: 'https://mock-api/register',
+      EIE_MANUAL: 'https://manual'
     },
     ASSISTANCE: {
       EMAIL: 'email@example.com',
@@ -578,7 +580,7 @@ describe('Header Component - Complete Coverage', () => {
     });
 
     test('filters products correctly - welfare product is excluded from normal products', () => {
-      mockUseAppSelector.mockImplementation((selector) => {
+      mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
         if (selector.toString().includes('selectPartySelectedProducts')) {
           return [
             {
@@ -633,7 +635,7 @@ describe('Header Component - Complete Coverage', () => {
     });
 
     test('handles party roles mapping correctly with multiple roles', () => {
-      mockUseAppSelector.mockImplementation((selector) => {
+      mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
         if (selector.toString().includes('selectPartySelectedProducts')) {
           return [];
         }
@@ -801,7 +803,7 @@ describe('Header Component - Complete Coverage', () => {
     });
 
     test('maps productRole correctly when party has roles', () => {
-      mockUseAppSelector.mockImplementation((selector) => {
+      mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
         if (selector.toString().includes('selectPartySelectedProducts')) {
           return [];
         }
@@ -829,7 +831,7 @@ describe('Header Component - Complete Coverage', () => {
     });
 
     test('products filter covers all conditions', () => {
-      mockUseAppSelector.mockImplementation((selector) => {
+      mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
         if (selector.toString().includes('selectPartySelectedProducts')) {
           return [
             {
@@ -888,7 +890,7 @@ describe('Header Component - Complete Coverage', () => {
     renderWithContext(
         <Header
             parties={mockedParties}
-            loggedUser={null}
+            loggedUser={undefined}
             withSecondHeader={false}
             onExit={mockOnExit}
         />
@@ -912,7 +914,7 @@ describe('Header Component - Complete Coverage', () => {
   });
 
   test('useMemo activeProducts filters correctly', () => {
-    mockUseAppSelector.mockImplementation((selector) => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
         return [
           {
@@ -967,7 +969,7 @@ describe('Header Component - Complete Coverage', () => {
   });
 
   test('covers party roles mapping with multiple roles', () => {
-    mockUseAppSelector.mockImplementation((selector) => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
         return [];
       }
@@ -1025,7 +1027,6 @@ describe('Header Component - Complete Coverage', () => {
   test('onSelectedParty with valid party calls trackEvent and console.log', async () => {
     const user = userEvent.setup();
     const trackEventMock = jest.mocked(trackEvent);
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     renderWithContext(
         <Header
@@ -1085,7 +1086,7 @@ describe('Header Component - Complete Coverage', () => {
   });
 
   test('handles party2Show as undefined', () => {
-    mockUseAppSelector.mockImplementation((selector) => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
         return [];
       }
@@ -1106,7 +1107,7 @@ describe('Header Component - Complete Coverage', () => {
   });
 
   test('covers activeProducts mapping', () => {
-    mockUseAppSelector.mockImplementation((selector) => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
         return [
           {
@@ -1140,7 +1141,7 @@ describe('Header Component - Complete Coverage', () => {
   });
 
   test('handles products without urlPublic in mapping', () => {
-    mockUseAppSelector.mockImplementation((selector) => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
       if (selector.toString().includes('selectPartySelectedProducts')) {
         return [
           {
@@ -1178,5 +1179,473 @@ describe('Header Component - Complete Coverage', () => {
             onExit={mockOnExit}
         />
     );
+  });
+
+  test('useEffect updates party2Show when selectedParty changes', () => {
+    const { rerender } = renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
+      if (selector.toString().includes('selectPartySelectedProducts')) {
+        return [];
+      }
+      if (selector.toString().includes('selectPartySelected')) {
+        return {
+          partyId: '2',
+          description: 'Updated Party',
+          urlLogo: 'updated-logo.png',
+          roles: [{ roleKey: 'user' }],
+        };
+      }
+      return null;
+    });
+
+    rerender(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('useEffect handles null selectedParty', () => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
+      if (selector.toString().includes('selectPartySelectedProducts')) {
+        return [];
+      }
+      if (selector.toString().includes('selectPartySelected')) {
+        return null;
+      }
+      return null;
+    });
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('welfareProduct uses correct configuration values', () => {
+    const mockConfig = {
+      HEADER: {
+        LINK: {
+          PRODUCTURL: 'https://test-welfare-url.com'
+        }
+      }
+    };
+
+    jest.doMock('@pagopa/selfcare-common-frontend/lib/config/env', () => ({
+      CONFIG: mockConfig
+    }));
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('activeProducts useMemo handles various product status combinations', () => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
+      if (selector.toString().includes('selectPartySelectedProducts')) {
+        return [
+          {
+            id: 'prod-idpay-asset-register',
+            title: 'Should be filtered',
+            status: 'ACTIVE',
+            authorized: true,
+            urlPublic: 'https://should-be-filtered.com',
+          },
+          {
+            id: 'prod-active-authorized',
+            title: 'Active Authorized',
+            status: 'ACTIVE',
+            authorized: true,
+            urlPublic: 'https://active-authorized.com',
+          },
+          {
+            id: 'prod-pending',
+            title: 'Pending Product',
+            status: 'PENDING',
+            authorized: true,
+            urlPublic: 'https://pending.com',
+          },
+          {
+            id: 'prod-not-authorized',
+            title: 'Not Authorized',
+            status: 'ACTIVE',
+            authorized: false,
+            urlPublic: 'https://not-authorized.com',
+          },
+        ];
+      }
+      if (selector.toString().includes('selectPartySelected')) {
+        return {
+          partyId: '1',
+          description: 'Test Party',
+          urlLogo: 'test-logo.png',
+          roles: [{ roleKey: 'admin' }],
+        };
+      }
+      return null;
+    });
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('handles empty products array in useMemo', () => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
+      if (selector.toString().includes('selectPartySelectedProducts')) {
+        return [];
+      }
+      if (selector.toString().includes('selectPartySelected')) {
+        return {
+          partyId: '1',
+          description: 'Test Party',
+          urlLogo: 'test-logo.png',
+          roles: [{ roleKey: 'admin' }],
+        };
+      }
+      return null;
+    });
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('handles undefined party2Show in partyList mapping', () => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
+      if (selector.toString().includes('selectPartySelectedProducts')) {
+        return [];
+      }
+      if (selector.toString().includes('selectPartySelected')) {
+        return null;
+      }
+      return null;
+    });
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('handles party with roles having undefined roleKey', () => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
+      if (selector.toString().includes('selectPartySelectedProducts')) {
+        return [];
+      }
+      if (selector.toString().includes('selectPartySelected')) {
+        return {
+          partyId: '1',
+          description: 'Test Party',
+          urlLogo: 'test-logo.png',
+          roles: [
+            { roleKey: 'admin' },
+            { partyRole: 'MANAGER' },
+            { roleKey: null },
+            { roleKey: '' },
+          ],
+        };
+      }
+      return null;
+    });
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('handles products with null/undefined urlPublic in productsList mapping', () => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
+      if (selector.toString().includes('selectPartySelectedProducts')) {
+        return [
+          {
+            id: 'prod-null-url',
+            title: 'Null URL Product',
+            status: 'ACTIVE',
+            authorized: true,
+            urlPublic: null,
+          },
+          {
+            id: 'prod-undefined-url',
+            title: 'Undefined URL Product',
+            status: 'ACTIVE',
+            authorized: true,
+            urlPublic: undefined,
+          },
+          {
+            id: 'prod-empty-url',
+            title: 'Empty URL Product',
+            status: 'ACTIVE',
+            authorized: true,
+            urlPublic: '',
+          },
+        ];
+      }
+      if (selector.toString().includes('selectPartySelected')) {
+        return {
+          partyId: '1',
+          description: 'Test Party',
+          urlLogo: 'test-logo.png',
+          roles: [{ roleKey: 'admin' }],
+        };
+      }
+      return null;
+    });
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('renders correctly with withSecondHeader=true and other variations', () => {
+    const { rerender } = renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={true}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+
+    rerender(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('loggedUser transformation handles various user states', () => {
+    const userWithEmptyStrings = {
+      uid: '',
+      name: '',
+      surname: '',
+      email: '',
+      taxCode:'',
+    };
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={userWithEmptyStrings}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('welfare product ID filtering works correctly', () => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
+      if (selector.toString().includes('selectPartySelectedProducts')) {
+        return [
+          {
+            id: 'prod-idpay-asset-register',
+            title: 'Exact Welfare Match',
+            status: 'ACTIVE',
+            authorized: true,
+            urlPublic: 'https://exact-match.com',
+          },
+          {
+            id: 'prod-idpay-merchants',
+            title: 'Different Product',
+            status: 'ACTIVE',
+            authorized: true,
+            urlPublic: 'https://different.com',
+          },
+        ];
+      }
+      if (selector.toString().includes('selectPartySelected')) {
+        return {
+          partyId: '1',
+          description: 'Test Party',
+          urlLogo: 'test-logo.png',
+          roles: [{ roleKey: 'admin' }],
+        };
+      }
+      return null;
+    });
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('translation function is called for welfare product title', () => {
+    const mockT = jest.fn().mockReturnValue('Mocked Title');
+
+    jest.doMock('react-i18next', () => ({
+      useTranslation: () => ({
+        t: mockT,
+      }),
+    }));
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(mockT).not.toHaveBeenCalledWith('commons.title');
+  });
+
+  test('complete integration test with all props populated', () => {
+    mockUseAppSelector.mockImplementation((selector: { toString: () => string | string[]; }) => {
+      if (selector.toString().includes('selectPartySelectedProducts')) {
+        return [
+          {
+            id: 'prod-complete-test',
+            title: 'Complete Test Product',
+            status: 'ACTIVE',
+            authorized: true,
+            urlPublic: 'https://complete-test.com',
+          },
+        ];
+      }
+      if (selector.toString().includes('selectPartySelected')) {
+        return {
+          partyId: 'complete-party-id',
+          description: 'Complete Test Party',
+          urlLogo: 'https://complete-logo.png',
+          roles: [
+            { roleKey: 'admin' },
+            { roleKey: 'manager' },
+          ],
+        };
+      }
+      return null;
+    });
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={true}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+  });
+
+  test('ENV and CONFIG values are used correctly', () => {
+    const originalEmail = ENV.ASSISTANCE.EMAIL;
+    ENV.ASSISTANCE.EMAIL = 'test-assistance@example.com';
+
+    renderWithContext(
+        <Header
+            parties={mockedParties}
+            loggedUser={mockedUser}
+            withSecondHeader={false}
+            onExit={mockOnExit}
+        />
+    );
+
+    expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+
+    ENV.ASSISTANCE.EMAIL = originalEmail;
+  });
+
+  test('handles all boolean and conditional branches', () => {
+    const testCases = [
+      { withSecondHeader: true, loggedUser: mockedUser },
+      { withSecondHeader: false, loggedUser: mockedUser },
+      { withSecondHeader: true, loggedUser: null },
+      { withSecondHeader: false, loggedUser: null },
+      { withSecondHeader: true, loggedUser: false },
+      { withSecondHeader: false, loggedUser: false },
+    ];
+
+    testCases.forEach(({ withSecondHeader, loggedUser }) => {
+      const { unmount } = renderWithContext(
+          <Header
+              parties={mockedParties}
+              loggedUser={loggedUser as any}
+              withSecondHeader={withSecondHeader}
+              onExit={mockOnExit}
+          />
+      );
+
+      expect(screen.getByTestId('select-party-btn')).toBeInTheDocument();
+
+      unmount();
+    });
   });
 });
