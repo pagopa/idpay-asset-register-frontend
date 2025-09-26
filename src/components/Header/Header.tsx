@@ -27,8 +27,7 @@ const Header = ({ withSecondHeader, onExit, loggedUser }: /* , parties */ Props)
   const title = t('commons.title');
 
   const welfareProduct: ProductEntity = {
-    // TODO check if correct
-    id: 'prod-idpay-merchants',
+    id: 'prod-idpay-asset-register',
     title,
     productUrl: CONFIG.HEADER.LINK.PRODUCTURL,
     linkType: 'internal',
