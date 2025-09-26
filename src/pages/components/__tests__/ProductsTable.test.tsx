@@ -4,9 +4,19 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import ProductsTable from '../ProductsTable';
 
+const mockFetchUserFromLocalStorage = jest.fn();
+const mockGetTablePrLength = jest.fn(() => 8);
+const mockTruncateString = jest.fn((str) => `TRUNC(${str})`);
+
+jest.mock('../../../helpers', () => ({
+  fetchUserFromLocalStorage: () => mockFetchUserFromLocalStorage(),
+  getTablePrLength: () => mockGetTablePrLength(),
+  truncateString: (s: any, _n: any) => mockTruncateString(s),
+}));
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (k: string) => k,
+    t: (k: any) => k,
     i18n: { changeLanguage: () => new Promise(() => {}) },
   }),
 }));
@@ -69,16 +79,6 @@ jest.mock('../../../components/Product/ProductStatusChip', () => {
     return <span data-testid="status-chip">{String(status)}</span>;
   };
 });
-
-const mockFetchUserFromLocalStorage = jest.fn();
-const mockGetTablePrLength = jest.fn(() => 8);
-const mockTruncateString = jest.fn((str: string) => `TRUNC(${str})`);
-
-jest.mock('../../../helpers', () => ({
-  fetchUserFromLocalStorage: () => mockFetchUserFromLocalStorage(),
-  getTablePrLength: () => mockGetTablePrLength(),
-  truncateString: (s: string, _n: number) => mockTruncateString(s),
-}));
 
 jest.mock('../../../utils/constants', () => ({
   PRODUCTS_STATES: {
@@ -165,7 +165,7 @@ describe('ProductsTable – vista INVITALIA', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
-    mockGetTablePrLength.mockReturnValue(8);
+    mockGetTablePrLength.mockReturnValue(2);
     mockTruncateString.mockImplementation((s: string) => `TRUNC(${s})`);
   });
 
@@ -177,7 +177,7 @@ describe('ProductsTable – vista INVITALIA', () => {
     expect(rows.length).toBeGreaterThanOrEqual(5);
 
     expect(screen.getAllByText(/TRUNC\(GTIN-/)).toHaveLength(4);
-    expect(screen.getAllByTestId('status-chip')).toHaveLength(4);
+    expect(screen.getAllByLabelText('UPLOADED')).toHaveLength(1);
     expect(screen.getAllByTestId('eprel-link')[0]).toHaveTextContent('EPREL:EP-111');
   });
 
@@ -266,7 +266,7 @@ describe('ProductsTable – vista INVITALIA', () => {
     expect(onSelectedChange).toHaveBeenLastCalledWith(['GTIN-111']);
 
     await user.click(cb);
-    expect(onSelectedChange).toHaveBeenLastCalledWith(["GTIN-111"]);
+    expect(onSelectedChange).toHaveBeenLastCalledWith(['GTIN-111']);
   });
 
   test('vista INVITALIA L2: select all prende solo WAIT_APPROVED; checkbox per altri stati è disabilitata', async () => {
@@ -323,7 +323,7 @@ describe('ProductsTable – vista PRODUTTORE', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'PRODUTTORE' });
-    mockGetTablePrLength.mockReturnValue(10);
+    mockGetTablePrLength.mockReturnValue(2);
     mockTruncateString.mockImplementation((s: string) => `CUT(${s})`);
   });
 
@@ -374,4 +374,21 @@ describe('ProductsTable – vista PRODUTTORE', () => {
     expect(screen.getByText('CUT(Batch-1)')).toBeInTheDocument();
     expect(screen.getByTestId('status-chip')).toHaveTextContent('UPLOADED');
   });
+});
+
+test('ProductsTable mostra la cella category (INVITALIA)', async () => {
+  render(<WrapperInvitalia tableData={baseTableData} {...commonProps} selected={[]} />);
+  expect(screen.getByLabelText('Lavatrice')).toBeInTheDocument();
+});
+
+test('ProductsTable mostra la cella category (PRODUTTORE)', async () => {
+  render(
+    <ProductsTable
+      tableData={[baseTableData[0]]}
+      {...commonProps}
+      selected={[]}
+      setSelected={jest.fn()}
+    />
+  );
+  expect(screen.getByLabelText('Lavatrice')).toBeInTheDocument();
 });

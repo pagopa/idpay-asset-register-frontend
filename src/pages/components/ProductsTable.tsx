@@ -289,7 +289,6 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     </TableRow>
   );
 
-  // Tooltip sempre visibile (eccetto isUpscaling)
   const RenderTooltipOrText: React.FC<{
     value: string;
     maxLength?: number;
