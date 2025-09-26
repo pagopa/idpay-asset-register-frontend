@@ -22,12 +22,10 @@ import AddProducts from './pages/addProducts/addProducts';
 import UploadsHistory from './pages/uploadsHistory/uploadsHistory';
 import Products from './pages/components/Products';
 import InvitaliaOverview from './pages/InvitaliaOverview/invitaliaOverview';
-import { fetchUserFromLocalStorage, isOnOrBeforeDate } from './helpers';
+import { fetchUserFromLocalStorage } from './helpers';
 import { USERS_TYPES } from './utils/constants';
 import InvitaliaProductsList from './pages/InvitaliaProductsList/invitaliaProductsList';
 import { institutionSelector } from './redux/slices/invitaliaSlice';
-import UpcomingInitiative from './pages/upcomingInitiative/upcomingInitiative';
-import { ENV } from './utils/env';
 
 type StandardRoutesProps = {
   organizationId: string | undefined;
@@ -65,18 +63,6 @@ const SecuredRoutes = withLogin(
     );
     const institution = useSelector(institutionSelector);
     const organizationId = institution?.institutionId || '';
-    const upcomingActive = useMemo(() => isOnOrBeforeDate(ENV.UPCOMING_INITIATIVE_DAY), []);
-
-    if (upcomingActive) {
-      return (
-        <Layout>
-          <Routes>
-            <Route path="*" element={<Navigate to={routes.UPCOMING} />} />
-            <Route path={routes.UPCOMING} element={<UpcomingInitiative />} />
-          </Routes>
-        </Layout>
-      );
-    }
 
     if (
       isTOSAccepted === false &&
