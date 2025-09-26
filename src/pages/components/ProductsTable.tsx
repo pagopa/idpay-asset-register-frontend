@@ -65,37 +65,37 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       id: 'category',
       label: t('pages.products.listHeader.category'),
       align: 'left',
-      width: '10%'
+      width: '10%',
     },
     {
       id: 'organizationName',
       label: t('pages.products.listHeader.producer'),
       align: 'left',
-      width: '17%'
+      width: '17%',
     },
     {
       id: 'eprelCode',
       label: t('pages.products.listHeader.eprelCode'),
       align: 'center',
-      width: '10%'
+      width: '10%',
     },
     {
       id: 'gtinCode',
       label: t('pages.products.listHeader.gtinCode'),
       align: 'center',
-      width: '15%'
+      width: '15%',
     },
     {
       id: 'batchName',
       label: t('pages.products.listHeader.batch'),
       align: 'left',
-      width: '25%'
+      width: '25%',
     },
     {
       id: 'status',
       label: t('pages.products.listHeader.status'),
       align: 'left',
-      width: '15%'
+      width: '15%',
     },
   ];
 
@@ -109,43 +109,43 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       id: 'category',
       label: t('pages.products.listHeader.category'),
       align: 'left',
-      width: '15%'
+      width: '15%',
     },
     {
       id: 'energyClass',
       label: t('pages.products.listHeader.energeticClass'),
       align: 'center',
-      width: '15%'
+      width: '15%',
     },
     {
       id: 'eprelCode',
       label: t('pages.products.listHeader.eprelCode'),
       align: 'center',
-      width: '15%'
+      width: '15%',
     },
     {
       id: 'gtinCode',
       label: t('pages.products.listHeader.gtinCode'),
       align: 'center',
-      width: '15%'
+      width: '15%',
     },
     {
       id: 'batchName',
       label: t('pages.products.listHeader.batch'),
       align: 'left',
-      width: '25%'
+      width: '25%',
     },
     {
       id: 'status',
       label: t('pages.products.listHeader.status'),
       align: 'left',
-      width: '15%'
+      width: '15%',
     },
     {
       id: 'actions',
       label: '',
       align: 'right',
-      width: '5%'
+      width: '5%',
     },
   ];
 
@@ -234,66 +234,27 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         )}
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <Typography variant="body2">{String(row?.category ?? emptyData)}</Typography>
+        <RenderTooltipOrText value={String(row?.category ?? emptyData)} />
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        {isUpscaling ? (
-          <Typography variant="body2">
-            {truncateString(
-              String(getProducer(row?.organizationId) ?? emptyData),
-              getTablePrLength()
-            )}
-          </Typography>
-        ) : (
-          <Tooltip title={String(getProducer(row?.organizationId) ?? emptyData)} arrow>
-            <Typography variant="body2">
-              {truncateString(
-                String(getProducer(row?.organizationId) ?? emptyData),
-                getTablePrLength()
-              )}
-            </Typography>
-          </Tooltip>
-        )}
+        <RenderTooltipOrText value={String(getProducer(row?.organizationId) ?? emptyData)} />
       </TableCell>
       <TableCell sx={cellCenterSx}>
-        {isUpscaling ? (
-          <span>
-            <EprelLinks row={row} />
-          </span>
-        ) : (
-          <Tooltip title={String(row?.eprelCode ?? emptyData)} arrow>
-            <span>
-              <EprelLinks row={row} />
-            </span>
-          </Tooltip>
-        )}
+        <RenderEprelLinks row={row} />
       </TableCell>
       <TableCell sx={cellCenterSx}>
-        {isUpscaling ? (
-          <Typography variant="body2">
-            {truncateString(String(row?.gtinCode ?? emptyData), getTablePrLength())}
-          </Typography>
-        ) : (
-          <Tooltip title={String(row?.gtinCode ?? emptyData)} arrow>
-            <Typography variant="body2">
-              {truncateString(String(row?.gtinCode ?? emptyData), getTablePrLength())}
-            </Typography>
-          </Tooltip>
-        )}
+        <RenderTooltipOrText value={String(row?.gtinCode ?? emptyData)} />
       </TableCell>
-      <TableCell sx={{...cellLeftSx}} >
-        <Tooltip title={String(row?.batchName ?? emptyData)} arrow>
-          <Typography variant="body2" sx={{ whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',}}>
-            {row?.batchName ?? emptyData}
-          </Typography>
-        </Tooltip>
+      <TableCell sx={{ ...cellLeftSx }}>
+        <RenderTooltipOrText value={String(row?.batchName ?? emptyData)} />
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <ProductStatusChip status={typeof row?.status === 'string' ? row.status : emptyData} />
+        <RenderTooltipOrText
+          value={String(row?.status ?? emptyData)}
+          tooltip={String(row?.status ?? emptyData)}
+        />
       </TableCell>
-      <TableCell sx={{...actionsCellSx, pl: 0 }}>
+      <TableCell sx={{ ...actionsCellSx, pl: 0 }}>
         <IconButton
           sx={{ backgroundColor: 'transparent', p: 0 }}
           color="default"
@@ -328,38 +289,30 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     </TableRow>
   );
 
-  const RenderTooltipOrText = ({
-    value,
-    maxLength,
-    tooltip,
-  }: {
+  const RenderTooltipOrText: React.FC<{
     value: string;
     maxLength?: number;
     tooltip?: string;
-  }) =>
-    isUpscaling ? (
-      <Typography variant="body2"
-        sx={{
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}
-      >
-        {truncateString(value, maxLength ?? getTablePrLength())}
-      </Typography>
-    ) : (
+  }> = ({ value, maxLength, tooltip }) => {
+    const displayValue = truncateString(value, maxLength ?? getTablePrLength());
+
+    return (
       <Tooltip title={tooltip ?? value} arrow>
-        <Typography variant="body2"
+        <Typography
+          variant="body2"
+          component="span"
           sx={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            display: 'block',
           }}
         >
-          {truncateString(value, maxLength ?? getTablePrLength())}
+          {displayValue}
         </Typography>
       </Tooltip>
     );
+  };
 
   const RenderEprelLinks = ({ row }: { row: ProductDTO }) =>
     isUpscaling ? (
