@@ -180,10 +180,12 @@ function logProductError(error: any) {
   }
 
   if (errorMsg.trim() !== "") {
+    console.groupCollapsed?.(
+      "[API ERROR] Product list retrieval"
+    );
     console.error(`***\n${errorMsg.trim()}\n***`);
+    console.groupEnd?.();
   }
-
-  console.groupEnd?.();
 }
 
 export const getProducts = async (
