@@ -122,13 +122,28 @@ function logProductError(error: any) {
   );
 
   // eslint-disable-next-line functional/no-let
-  let errorMsg = `Message: ${pretty(details.message)}
-Error name: ${details.name ?? "N/A"}
-Status: ${details.responseStatus ?? "N/A"}${details.responseStatusText ? ` (${details.responseStatusText})` : ""}
-Stack: ${pretty(details.stack)}
-Response Data: ${details.responseData ? pretty(details.responseData) : "N/A"}
-Config: ${details.config ? pretty(details.config) : "N/A"}
-`;
+  let errorMsg = "";
+
+  const addLine = (label: string, value: any) => {
+    if (
+      value !== undefined &&
+      value !== null &&
+      value !== "N/A" &&
+      !(typeof value === "string" && value.trim() === "") &&
+      !(typeof value === "object" && JSON.stringify(value) === "{}")
+    ) {
+      errorMsg += `${label}: ${pretty(value)}\n`;
+    }
+  };
+
+  addLine("Message", details.message);
+  addLine("Error name", details.name);
+  if (details.responseStatus || details.responseStatusText) {
+    errorMsg += `Status: ${details.responseStatus ?? ""}${details.responseStatusText ? ` (${details.responseStatusText})` : ""}\n`;
+  }
+  addLine("Stack", details.stack);
+  addLine("Response Data", details.responseData);
+  addLine("Config", details.config);
 
   if (
     details.responseData &&
@@ -144,17 +159,29 @@ Config: ${details.config ? pretty(details.config) : "N/A"}
   }
 
   if (typeof error === "object" && error !== null) {
-    errorMsg += Object.entries(error)
-      .map(
-        ([key, value]) =>
-          `Full error key: "${key}" value: ${pretty(value)}`
-      )
-      .join("\n");
+    const filteredEntries = Object.entries(error).filter(
+      ([, value]) =>
+        value !== undefined &&
+        value !== null &&
+        value !== "N/A" &&
+        !(typeof value === "string" && value.trim() === "") &&
+        !(typeof value === "object" && JSON.stringify(value) === "{}")
+    );
+    if (filteredEntries.length > 0) {
+      errorMsg += filteredEntries
+        .map(
+          ([key, value]) =>
+            `Full error key: "${key}" value: ${pretty(value)}`
+        )
+        .join("\n");
+    }
   } else {
     errorMsg += `Full error: ${pretty(error)}`;
   }
 
-  console.error(`***\n${errorMsg}\n***`);
+  if (errorMsg.trim() !== "") {
+    console.error(`***\n${errorMsg.trim()}\n***`);
+  }
 
   console.groupEnd?.();
 }
