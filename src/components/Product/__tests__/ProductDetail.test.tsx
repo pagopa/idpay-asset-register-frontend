@@ -28,20 +28,20 @@ jest.mock('../../../services/registerService', () => ({
 jest.mock('../ProductConfirmDialog', () => {
   return function ProductConfirmDialog({ open, onCancel, onConfirm, onSuccess }: any) {
     return open ? (
-        <div data-testid="confirm-dialog">
-          <button data-testid="dialog-cancel" onClick={onCancel}>
-            Cancel
-          </button>
-          <button
-              data-testid="dialog-confirm"
-              onClick={async () => {
-                await onConfirm?.();
-                onSuccess?.();
-              }}
-          >
-            Confirm
-          </button>
-        </div>
+      <div data-testid="confirm-dialog">
+        <button data-testid="dialog-cancel" onClick={onCancel}>
+          Cancel
+        </button>
+        <button
+          data-testid="dialog-confirm"
+          onClick={async () => {
+            await onConfirm?.();
+            onSuccess?.();
+          }}
+        >
+          Confirm
+        </button>
+      </div>
     ) : null;
   };
 });
@@ -49,11 +49,11 @@ jest.mock('../ProductConfirmDialog', () => {
 jest.mock('../ProductInfoRow', () => ({
   __esModule: true,
   default: ({ label, value }: any) => (
-      <div data-testid="product-info-row">
-        <span data-testid="row-label">{label}</span>
-        <span data-testid="row-value">{typeof value === 'string' ? value : 'node'}</span>
-        {typeof value !== 'string' ? value : null}
-      </div>
+    <div data-testid="product-info-row">
+      <span data-testid="row-label">{label}</span>
+      <span data-testid="row-value">{typeof value === 'string' ? value : 'node'}</span>
+      {typeof value !== 'string' ? value : null}
+    </div>
   ),
 }));
 
@@ -66,21 +66,21 @@ jest.mock('../ProductModal', () => {
   return function ProductModal({ open, onClose, onSuccess, actionType }: any) {
     if (!open) return null;
     return (
-        <div data-testid="product-modal">
-          <div data-testid="modal-action">{String(actionType)}</div>
-          <button
-              data-testid="modal-success"
-              onClick={() => {
-                onSuccess?.(actionType);
-                onClose?.();
-              }}
-          >
-            Success
-          </button>
-          <button data-testid="modal-close" onClick={() => onClose?.()}>
-            Close
-          </button>
-        </div>
+      <div data-testid="product-modal">
+        <div data-testid="modal-action">{String(actionType)}</div>
+        <button
+          data-testid="modal-success"
+          onClick={() => {
+            onSuccess?.(actionType);
+            onClose?.();
+          }}
+        >
+          Success
+        </button>
+        <button data-testid="modal-close" onClick={() => onClose?.()}>
+          Close
+        </button>
+      </div>
     );
   };
 });
@@ -91,7 +91,7 @@ const baseData = (over: Partial<ProductDTO> = {}): ProductDTO => ({
   gtinCode: 'GTIN-001',
   productName: 'Prod',
   batchName: 'Batch',
-  registrationDate: 1704067200000,
+  registrationDate: new Date('2024-01-01T00:00:00.000Z'),
   eprelCode: 'EPREL',
   productCode: 'P1',
   category: CategoryEnum.Lavatrice,
@@ -105,7 +105,10 @@ const baseData = (over: Partial<ProductDTO> = {}): ProductDTO => ({
   ...over,
 });
 
-const renderCmp = (props: Partial<React.ComponentProps<typeof ProductDetail>> = {}, data?: ProductDTO) => {
+const renderCmp = (
+  props: Partial<React.ComponentProps<typeof ProductDetail>> = {},
+  data?: ProductDTO
+) => {
   const allProps: React.ComponentProps<typeof ProductDetail> = {
     open: true,
     data: data ?? baseData(),
@@ -122,16 +125,18 @@ const renderCmp = (props: Partial<React.ComponentProps<typeof ProductDetail>> = 
     ...props,
   };
   return render(
-      <ThemeProvider theme={theme}>
-        <ProductDetail {...allProps} />
-      </ThemeProvider>
+    <ThemeProvider theme={theme}>
+      <ProductDetail {...allProps} />
+    </ThemeProvider>
   );
 };
 
 describe('ProductDetail.extra', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({ org_role: USERS_TYPES.INVITALIA_L1 });
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_role: USERS_TYPES.INVITALIA_L1,
+    });
   });
 
   it('renders chronology + formalMotivation blocks when present (non OPERATORE)', () => {
@@ -196,18 +201,20 @@ describe('ProductDetail.extra', () => {
   });
 
   it('Invitalia L2 + WAIT_APPROVED: shows AcceptApprovation and RejectApprovation flows', async () => {
-    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({ org_role: USERS_TYPES.INVITALIA_L2 });
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_role: USERS_TYPES.INVITALIA_L2,
+    });
 
     const onShowAccept = jest.fn();
     const onShowRejectApp = jest.fn();
     renderCmp(
-        {
-          isInvitaliaUser: false,
-          isInvitaliaAdmin: true,
-          onShowAcceptApprovationMsg: onShowAccept,
-          onShowRejectedApprovationMsg: onShowRejectApp,
-        },
-        baseData({ status: ProductStatusEnum.WAIT_APPROVED })
+      {
+        isInvitaliaUser: false,
+        isInvitaliaAdmin: true,
+        onShowAcceptApprovationMsg: onShowAccept,
+        onShowRejectedApprovationMsg: onShowRejectApp,
+      },
+      baseData({ status: ProductStatusEnum.WAIT_APPROVED })
     );
 
     fireEvent.click(screen.getByTestId('supervisedBtn'));
