@@ -249,10 +249,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <RenderTooltipOrText value={String(row?.batchName ?? emptyData)} />
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <RenderTooltipOrText
-          value={String(row?.status ?? emptyData)}
-          tooltip={String(row?.status ?? emptyData)}
-        />
+        <ProductStatusChip status={typeof row?.status === 'string' ? row.status : emptyData} />
       </TableCell>
       <TableCell sx={{ ...actionsCellSx, pl: 0 }}>
         <IconButton
