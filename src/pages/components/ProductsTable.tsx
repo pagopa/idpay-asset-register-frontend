@@ -154,22 +154,25 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       (institutions: { institutionId: string }) => institutions.institutionId === organizationId
     )?.description ?? null;
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = tableData
-        .filter(
-          (row: any) =>
-            (user?.org_role === USERS_TYPES.INVITALIA_L2 &&
-              row.status === PRODUCTS_STATES.WAIT_APPROVED) ||
-            (user?.org_role === USERS_TYPES.INVITALIA_L1 &&
-              (row.status === PRODUCTS_STATES.UPLOADED ||
-                row.status === PRODUCTS_STATES.SUPERVISED))
-        )
-        .map((row) => row.gtinCode)
-        .filter((code): code is string => code !== undefined);
-      setSelected(newSelected);
-    } else {
+  const handleSelectAllClick = () => {
+    const selectable = tableData
+      .filter(
+        (row: any) =>
+          (user?.org_role === USERS_TYPES.INVITALIA_L2 &&
+            row.status === PRODUCTS_STATES.WAIT_APPROVED) ||
+          (user?.org_role === USERS_TYPES.INVITALIA_L1 &&
+            (row.status === PRODUCTS_STATES.UPLOADED || row.status === PRODUCTS_STATES.SUPERVISED))
+      )
+      .map((row) => row.gtinCode)
+      .filter((code): code is string => code !== undefined);
+
+    if (
+      selected.length === selectable.length &&
+      selectable.every((code) => selected.includes(code))
+    ) {
       setSelected([]);
+    } else {
+      setSelected(selectable);
     }
   };
 
