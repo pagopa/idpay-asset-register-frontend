@@ -76,7 +76,6 @@ jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor'
   useUnloadEventOnExit: () => mockOnExit,
 }));
 
-// Crea i mock inline nel jest.mock
 jest.mock('@pagopa/selfcare-common-frontend/lib/utils/storage', () => ({
   storageTokenOps: {
     delete: jest.fn(),
@@ -86,7 +85,6 @@ jest.mock('@pagopa/selfcare-common-frontend/lib/utils/storage', () => ({
   },
 }));
 
-// Mock corretto del userSlice
 const mockLoggedUser = {
   uid: '123',
   name: 'Mario',
@@ -115,21 +113,17 @@ describe('Layout component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Importa i mock dopo che sono stati creati
     const { storageTokenOps, storageUserOps } = require('@pagopa/selfcare-common-frontend/lib/utils/storage');
     storageTokenOps.delete.mockClear();
     storageUserOps.delete.mockClear();
 
     mockOnExit.mockClear();
 
-    // Salva Object.keys originale
     originalObjectKeys = Object.keys;
 
-    // Reset window.location
     delete (window as any).location;
     (window as any).location = { assign: jest.fn() };
 
-    // Setup localStorage mock
     localStorageMock = {
       'filter_something': 'value',
       'user': 'userdata',
@@ -153,7 +147,6 @@ describe('Layout component', () => {
       delete sessionStorageMock[key];
     });
 
-    // Mock Object.keys per restituire le chiavi corrette
     global.Object.keys = jest.fn((obj: any) => {
       if (obj === localStorage) {
         return Object.keys(localStorageMock);
@@ -200,7 +193,6 @@ describe('Layout component', () => {
   });
 
   afterEach(() => {
-    // Ripristina Object.keys originale
     global.Object.keys = originalObjectKeys;
   });
 
