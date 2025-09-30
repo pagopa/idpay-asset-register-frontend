@@ -142,7 +142,7 @@ describe('ProductDetail.extra', () => {
   it('renders chronology + formalMotivation blocks when present (non OPERATORE)', () => {
     const data = baseData({
       statusChangeChronology: [
-        { role: 'L1', motivation: '   ', updateDate: '2024-05-05T10:00:00Z' }, // filtrata (vuota)
+        { role: 'L1', motivation: '   ', updateDate: '2024-05-05T10:00:00Z' },
         { role: 'L1', motivation: 'Reason OK', updateDate: '2024-05-06T11:00:00Z' },
       ] as any,
       formalMotivation: 'Formal OK',

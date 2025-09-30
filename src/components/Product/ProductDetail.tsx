@@ -256,67 +256,56 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
 
   const baseRows = getProductInfoRowsConfig(data, t);
 
-  const rows =
-    user?.org_role !== USERS_TYPES.OPERATORE.toLowerCase() &&
-    Boolean(data?.statusChangeChronology?.length)
-      ? [
-          ...baseRows,
-          {
+  const chronology = ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
+  const filteredChronology = chronology.filter(
+      (entry) => (entry?.motivation?.trim() || EMPTY_DATA) !== EMPTY_DATA
+  );
+  const hasMotivations = filteredChronology.length > 0;
+
+  const formalMotivationText =
+      data?.formalMotivation === undefined ||
+      data?.formalMotivation === null ||
+      (typeof data?.formalMotivation === 'string' && data?.formalMotivation.trim() === '')
+          ? EMPTY_DATA
+          : data?.formalMotivation;
+
+  const hasFormalMotivation = formalMotivationText !== EMPTY_DATA;
+
+  const motivationRow =
+      user?.org_role !== USERS_TYPES.OPERATORE.toLowerCase() && hasMotivations
+          ? {
             renderCustom(this: RowConfig) {
-              const chronology =
-                ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
-              const filteredChronology = chronology.filter(
-                (entry) => (entry?.motivation?.trim() || EMPTY_DATA) !== EMPTY_DATA
-              );
-              if (filteredChronology.length === 0) {
-                return null;
-              }
               return (
-                <ProductInfoRow
-                  label={t('pages.productDetail.motivation')}
-                  labelVariant="overline"
-                  sx={{ marginTop: 3, fontWeight: 700 }}
-                  labelColor="#17324D"
-                  value={
-                    <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                      {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
-                    </Box>
-                  }
-                />
+                  <ProductInfoRow
+                      label={t('pages.productDetail.motivation')}
+                      labelVariant="overline"
+                      sx={{ marginTop: 3, fontWeight: 700 }}
+                      labelColor="#17324D"
+                      value={
+                        <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                          {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
+                        </Box>
+                      }
+                  />
               );
             },
-          } as RowConfig & { renderCustom?: () => JSX.Element },
-          {
-            renderCustom(this: RowConfig) {
-              const chronology =
-                ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
-              if (!chronology.length) {
-                return null;
-              }
-              const entry = chronology[0];
-              if (!entry) {
-                return null;
-              }
-              const operator = entry?.role
-                ? `${USERS_NAMES.OPERATORE} ${entry.role}`
-                : USERS_NAMES.OPERATORE;
-              const dateLabel = entry?.updateDate
-                ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
-                : EMPTY_DATA;
-              const formalMotivationText =
-                data?.formalMotivation === undefined ||
-                data?.formalMotivation === null ||
-                (typeof data?.formalMotivation === 'string' && data?.formalMotivation.trim() === '')
-                  ? EMPTY_DATA
-                  : data?.formalMotivation;
-              const header = `${operator} · ${dateLabel}`;
+          } as RowConfig & { renderCustom?: () => JSX.Element }
+          : null;
 
-              if (formalMotivationText === EMPTY_DATA) {
-                return null;
-              }
+  const formalMotivationRow = hasFormalMotivation
+      ? {
+        renderCustom(this: RowConfig) {
+          const entry = chronology[0];
+          const operator = entry?.role
+              ? `${USERS_NAMES.OPERATORE} ${entry.role}`
+              : USERS_NAMES.OPERATORE;
+          const dateLabel = entry?.updateDate
+              ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
+              : EMPTY_DATA;
+          const header = dateLabel !== EMPTY_DATA ? `${operator} · ${dateLabel}` : operator;
 
-              return (
-                <ProductInfoRow
+          return (
+              <ProductInfoRow
                   label={t('pages.productDetail.motivationFormal')}
                   labelVariant="overline"
                   sx={{ marginTop: 3, fontWeight: 700 }}
@@ -325,48 +314,56 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
                       <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
                         <Box component="span" sx={{ width: '100%' }}>
-                          <Typography variant="body1" color="textSecondary">
-                            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-                          </Typography>
+                          {header && header.trim() !== '' && (
+                              <Typography variant="body1" color="textSecondary">
+                                {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                              </Typography>
+                          )}
                           <TextareaAutosize
-                            maxRows={10}
-                            value={formalMotivationText}
-                            readOnly
-                            aria-label="Motivazione formale"
-                            name="formalMotivation"
-                            className="product-detail-textarea"
+                              maxRows={10}
+                              value={formalMotivationText}
+                              readOnly
+                              aria-label="Motivazione formale"
+                              name="formalMotivation"
+                              className="product-detail-textarea"
                           />
                         </Box>
                       </Box>
                     </Box>
                   }
-                />
-              );
-            },
-          } as RowConfig & { renderCustom?: () => JSX.Element },
-        ]
-      : baseRows;
+              />
+          );
+        },
+      } as RowConfig & { renderCustom?: () => JSX.Element }
+      : null;
+
+  const extraRows = [
+    ...(motivationRow ? [motivationRow] : []),
+    ...(formalMotivationRow ? [formalMotivationRow] : []),
+  ];
+
+  const rows = [...baseRows, ...extraRows];
 
   return (
-    <>
-      {rows.map((row, idx) =>
-        'type' in row && row.type === 'divider' ? (
-          <Divider key={`divider-${idx}`} sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
-        ) : (row as any).renderCustom ? (
-          <React.Fragment key={`custom-${idx}`}>{(row as any).renderCustom()}</React.Fragment>
-        ) : (
-          <ProductInfoRow
-            key={`row-${idx}-${(row as RowConfig).label}`}
-            label={(row as RowConfig).label}
-            value={<span>{(row as RowConfig).value}</span>}
-            labelVariant={(row as RowConfig).labelVariant}
-            valueVariant={(row as RowConfig).valueVariant}
-            sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
-          />
-        )
-      )}
-      {children}
-    </>
+      <>
+        {rows.map((row, idx) =>
+            'type' in row && row.type === 'divider' ? (
+                <Divider key={`divider-${idx}`} sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
+            ) : (row as any).renderCustom ? (
+                <React.Fragment key={`custom-${idx}`}>{(row as any).renderCustom()}</React.Fragment>
+            ) : (
+                <ProductInfoRow
+                    key={`row-${idx}-${(row as RowConfig).label}`}
+                    label={(row as RowConfig).label}
+                    value={<span>{(row as RowConfig).value}</span>}
+                    labelVariant={(row as RowConfig).labelVariant}
+                    valueVariant={(row as RowConfig).valueVariant}
+                    sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
+                />
+            )
+        )}
+        {children}
+      </>
   );
 }
 
