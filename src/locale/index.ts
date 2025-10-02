@@ -1,0 +1,6 @@
+import i18n, { configureI18n } from '@pagopa/selfcare-common-frontend/lib/locale/locale-utils';
+import it from './it.json';
+
+configureI18n({ i18n, it });
+
+export default i18n;

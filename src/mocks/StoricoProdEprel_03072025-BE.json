@@ -1,0 +1,48 @@
+{
+    "content": [
+        {
+            "productFileId": "6865372538f784ef8d2f0c56",
+            "category": null,
+            "fileName": "eprel_test_ko.csv",
+            "batchName": "null-6865372538f784ef8d2f0c56",
+            "uploadStatus": "EPREL_ERROR",
+            "dateUpload": "2025-07-02T15:41:57.004",
+            "findedProductsNumber": null,
+            "addedProductNumber": null
+        },
+        {
+            "productFileId": "686536d438f784ef8d2f0c52",
+            "category": null,
+            "fileName": "eprel_test_ko.csv",
+            "batchName": "null-686536d438f784ef8d2f0c52",
+            "uploadStatus": "LOADED",
+            "dateUpload": "2025-07-02T15:40:36.727",
+            "findedProductsNumber": null,
+            "addedProductNumber": null
+        },
+        {
+            "productFileId": "6865367738f784ef8d2f0c4e",
+            "category": null,
+            "fileName": "eprel_test.csv",
+            "batchName": "null-6865367738f784ef8d2f0c4e",
+            "uploadStatus": "LOADED",
+            "dateUpload": "2025-07-02T15:39:03.309",
+            "findedProductsNumber": null,
+            "addedProductNumber": null
+        },
+        {
+            "productFileId": "686515d2956912ac412dfe96",
+            "category": null,
+            "fileName": "1234555447777.csv",
+            "batchName": "null-686515d2956912ac412dfe96",
+            "uploadStatus": "LOADED",
+            "dateUpload": "2025-07-02T13:19:46.364",
+            "findedProductsNumber": null,
+            "addedProductNumber": null
+        }
+    ],
+    "pageNo": 1,
+    "pageSize": 4,
+    "totalElements": 9,
+    "totalPages": 3
+}

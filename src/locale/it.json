@@ -1,0 +1,344 @@
+{
+  "breadcrumbs": {
+    "back": "Indietro",
+    "exit": "Esci",
+    "home": "Panoramica",
+    "aggiungiProdotti": "Aggiungi prodotti"
+  },
+  "commons": {
+    "backBtn": "Indietro",
+    "cancelBtn": "Torna indietro",
+    "closeBtn": "Chiudi",
+    "confirmBtn": "Continua",
+    "continueBtn": "Continua",
+    "copyCodeBtn": "Copia codice",
+    "copyLinkBtn": "Copia link",
+    "discountStatusEnum": {
+      "authorized": "Autorizzato",
+      "authorizationRequested": "Autorizzazione in corso",
+      "cancelled": "Annullato",
+      "identified": "Da autorizzare",
+      "invalidated": "Invalidato",
+      "rejected": "Rifiutato",
+      "rewarded": "Contabilizzato"
+    },
+    "downloadQrBtn": "Scarica codice QR",
+    "exitBtn": "Esci",
+    "filterBtn": "Filtra",
+    "initiativeStatusEnum": {
+      "closed": "Terminata",
+      "published": "In corso"
+    },
+    "removeFiltersBtn": "Rimuovi filtri",
+    "sendBtn": "Invia",
+    "title": "Elenco informatico degli elettrodomestici",
+    "categories": {
+      "washingmachines": "Lavatrici",
+      "tumbledryers": "Asciugatrici",
+      "ovens": "Forni",
+      "rangehoods": "Cappe da cucina",
+      "dishwashers": "Lavastoviglie",
+      "washerdriers": "Lavasciuga",
+      "refrigeratingappl": "Apparecchi di refrigerazione",
+      "cookinghobs": "Piani cottura"
+    },
+    "advancedFilters": "Filtri avanzati"
+  },
+  "errors": {
+    "contactAdmin": "Contatta l'assistenza",
+    "genericDescription": "Riprovare",
+    "genericTitle": "Si è verificato un errore",
+    "sessionExpiredMessage": "Ti stiamo reindirizzando alla pagina di accesso",
+    "sessionExpiredTitle": "La tua sessione è scaduta",
+    "tcDescription": "Non siamo riusciti a recuperare le informazioni sull’accettazione dei termini e condizioni d’uso. Riprova.",
+    "tcSave": "Non siamo riusciti a salvare l'accettazione dei Termini e condizioni d’uso. Riprova",
+    "validationDescription": "Verifica che i dati inseriti siano corretti"
+  },
+  "pages": {
+    "tos": {
+      "and": "e l’",
+      "backHome": "Torna alla home",
+      "linkPrivacy": "Informativa Privacy",
+      "linkTos": "Termini e condizioni d’uso",
+      "termsDescription": "Accedendo, accetti i",
+      "termsDescription2": "del servizio e confermi di aver letto l’",
+      "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
+      "title": "Elenco informatico elettrodomestici"
+    },
+    "upcomingInitiative": {
+      "title": "Ci siamo quasi!",
+      "subTitle": "Torna il {{x}} per accedere alla piattaforma"
+    },
+    "overview": {
+      "overviewTitle": "Panoramica",
+      "overviewTitleDescription": "Tieni sotto controllo tutte le tue attività da qui.",
+      "overviewTitleBoxInfo": "Informazioni",
+      "overviewTitleBoxInfoTitleLblRs": "Ragione sociale",
+      "overviewTitleBoxInfoTitleLblCf": "Codice Fiscale",
+      "overviewTitleBoxInfoTitleLblPiva": "Partita IVA",
+      "overviewTitleBoxInfoTitleLblSl": "Sede legale",
+      "overviewTitleBoxInfoTitleLblPec": "PEC",
+      "overviewTitleBoxInfoTitleLblEmailOp": "E-mail operativa",
+      "overviewTitleBoxProdTitle": "Prodotti",
+      "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
+      "overviewTitleBoxProdBtn": "Carica .csv",
+      "tableHeader": "stato caricamenti",
+      "warning": "Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e potrai consultare i dettagli nelle sezioni dedicate.",
+      "allUploadsLink": "Vedi i caricamenti"
+    },
+    "invitaliaOverview": {
+      "overviewTitle": "Panoramica",
+      "manufacturerMenuItem": "Produttori",
+      "manufacturerSheet": "Scheda produttore",
+      "overviewTitleDescription": "Consulta i prodotti caricati dai produttori con i relativi dettagli.",
+      "noInstitutionsFound": "Non ci sono produttori.",
+      "rowsPerPage": "Righe per pagina",
+      "tablePaginationFrom": "di",
+      "listHeader": {
+        "institutionName": "Nome produttore",
+        "createdAt": "Creata il",
+        "updatedAt": "Ultima modifica"
+      }
+    },
+    "invitaliaProductsList": {
+      "infoCardTitle": "Dati produttore",
+      "productsTitle": "Prodotti",
+      "ragioneSociale": "Ragione sociale",
+      "sedeLegale": "Sede legale",
+      "codiceFiscale": "Codice Fiscale",
+      "pec": "PEC",
+      "piva": "Partita IVA",
+      "state": "Stato",
+      "APPROVED": "Approvato",
+      "EXCLUDED": "Escluso",
+      "MARKED": "Contrassegnato"
+    },
+    "addProducts": {
+      "title": "Aggiungi prodotti",
+      "boxAddTitle": "Aggiungi i tuoi prodotti",
+      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
+      "boxAddTextProduct": "Prodotti.",
+      "goToManual": "Dubbi? Vai al manuale",
+      "form": {
+        "categoryLabel": "Seleziona la categoria",
+        "categoryPlaceholder": "Categoria",
+        "fileUpload": {
+          "dragAreaText": "Trascina qui il file csv con la lista dei prodotti o",
+          "dragAreaLink": "selezionalo dal tuo computer",
+          "fileUploadHelpText": "Non sai come preparare il file?",
+          "fileUploadHelpLinkLabel": "Scarica l’esempio",
+          "fileIsLoading": "Caricamento in corso",
+          "validFile": "File valido",
+          "changeFile": "Sostituisci",
+          "fileUploadError": {
+            "errorGenericTitle": "Errore durante il caricamento del file",
+            "errorDescription": "Si è verificato un errore. Riprova più tardi",
+            "errorTitle": "Il file contiene degli errori",
+            "invalidTypeTitle": "Il formato del file non è valido",
+            "invalidTypeDescription": "È possibile caricare solo file in formato .csv",
+            "fileTooLargeTitle": "Il file non è valido",
+            "fileTooLargeDescription": "La dimensione del file non deve superare i {{x}} mb",
+            "tooMuchProductsTitle": "Il file contiene troppi prodotti",
+            "tooMuchProductsDescription": "È possibile caricare al massimo 100 prodotti per lotto.",
+            "wrongHeaderTitle": "I titoli del file sono errati",
+            "wrongHeaderDescription": "I titoli presenti nel file devono corrispondere a quelli indicati nel template.",
+            "emptyTitle": "Il file caricato è vuoto",
+            "emptyDescription": "Assicurati che il file contenga almeno una riga di dati prima di caricarlo.",
+            "wrongCategoryTitle": "Il file contiene una categoria errata",
+            "wrongCategoryDescription": "La categoria deve corrispondere a quella indicata e essere uguale per tutti i prodotti.",
+            "multipleErrorsTitle": "Il file contiene uno o più errori",
+            "multipleErrorDescription": "  per verificare le informazioni e carica di nuovo il file.",
+            "eprelNotWorksTitle": "EPREL è giù, ora non funziona",
+            "eprelNotWorksDescription": "Riprova più tardi",
+            "missingFileDescription": "Carica un file in formato .csv"
+          }
+        }
+      }
+    },
+    "products": {
+      "sideMenuTitle": "Prodotti",
+      "title": "Prodotti",
+      "subtitle": "Visualizza tutti i prodotti caricati e i dettagli.",
+      "subtitleL1L2": "Consulta l'elenco dei prodotti caricati e i dettagli.",
+      "loading": "Caricamento dati ...",
+      "filterLabels": {
+        "category": "Categoria",
+        "status": "Stato",
+        "producer": "Produttore",
+        "batch": "Lotto",
+        "eprelCode": "Codice EPREL",
+        "gtinCode": "Codice GTIN/EAN",
+        "manufacturerCode": "Codice produttore",
+        "filter": "Filtra",
+        "deleteFilters": "Annulla filtri"
+      },
+      "listHeader": {
+        "category": "Categoria",
+        "producer": "Produttore",
+        "status": "Stato",
+        "energeticClass": "Classe energetica",
+        "eprelCode": "EPREL",
+        "gtinCode": "Codice GTIN/EAN",
+        "batch": "Lotto"
+      },
+      "categories": {
+        "WASHINGMACHINES": "Lavatrici",
+        "WASHERDRIERS": "Lavasciuga",
+        "OVENS": "Forni",
+        "RANGEHOODS": "Cappe",
+        "DISHWASHERS": "Lavastoviglie",
+        "TUMBLEDRYERS": "Asciugatrici",
+        "REFRIGERATINGAPPL": "Apparecchi di refrigerazione",
+        "COOKINGHOBS": "Piani cottura",
+        "UPLOADED": "Da Esaminare",
+        "WAIT_APPROVED": "Da approvare",
+        "SUPERVISED": "Da controllare",
+        "APPROVED": "Approvato",
+        "REJECTED": "Escluso",
+        "Lavatrici": "WASHINGMACHINES",
+        "Asciugatrici": "TUMBLEDRYERS",
+        "Forni": "OVENS",
+        "Cappe": "RANGEHOODS",
+        "Lavastoviglie": "DISHWASHERS",
+        "Lavasciuga": "WASHERDRIERS",
+        "Apparecchi di refrigerazione": "REFRIGERATINGAPPL",
+        "Piani cottura": "COOKINGHOBS",
+        "Approvato": "APPROVED",
+        "Da controllare": "SUPERVISED",
+        "Escluso": "REJECTED",
+        "Da Esaminare": "UPLOADED",
+        "Da approvare": "WAIT_APPROVED"
+      },
+      "tablePaginationFrom": "di",
+      "emptyList": "Nessun record corrisponde alla ricerca.",
+      "noFileLoaded": "Non ci sono prodotti caricati.",
+      "backToTable": "Torna alla tabella"
+    },
+    "uploadHistory": {
+      "sideMenuTitle": "Storico caricamenti",
+      "uploadHistorySubTitle": "Visualizza tutti i caricamenti e i dettagli.",
+      "uploadHistoryAlertMessage": "Stiamo elaborando il file. Ti avviseremo via e-mail quando l’elaborazione sarà completata e potrai consultare i dati direttamente in questa sezione.",
+      "uploadHistoryTitle": "Stato Caricamento",
+      "uploadHistoryFoundProducts": "prodotti trovati",
+      "uploadHistoryAddedProducts": "prodotti aggiunti",
+      "uploadHistoryRowsPerPage": "Righe per pagina",
+      "uploadHistoryEmptyState": "Non ci sono prodotti caricati",
+      "uploadHistoryNoFilesUploaded": "Non ci sono file caricati."
+    },
+    "productDetail": {
+      "eprelCheckDate": "Data verifica EPREL",
+      "productSheet": "SCHEDA PRODOTTO",
+      "eprelCode": "Codice EPREL",
+      "gtinCode": "Codice GTIN/EAN",
+      "productCode": "Codice prodotto",
+      "category": "Categoria",
+      "brand": "Marca",
+      "model": "Modello",
+      "energyClass": "Classe energetica",
+      "countryOfProduction": "Paese di produzione",
+      "capacity": "Capacità",
+      "motivation": "Note interne",
+      "motivationFormal": "Notifica ufficiale",
+      "restoreProductTitle": "Ripristina prodotto",
+      "restoreProductMessage": "Vuoi ripristinare il prodotto segnalato in precedenza?"
+    }
+  },
+  "roles": {
+    "admin": "Amministratore",
+    "operatore": "Operatore",
+    "invitalia": "Operatore",
+    "invitalia_admin": "Operatore"
+  },
+  "session": {
+    "expired": {
+      "message": "Ti stiamo reindirizzando alla pagina di accesso",
+      "title": "La tua sessione è scaduta"
+    }
+  },
+  "validation": {
+    "categoryRequired": "Seleziona una categoria",
+    "assistanceSubject": "Inserisci l’argomento della tua richiesta",
+    "exactChars": "Deve essere esattamente di {{x}} caratteri",
+    "maxChars": "Scrivi massimo {{x}} caratteri",
+    "minValue": "Inserisci un valore maggiore o uguale a {{x}}",
+    "positiveNumber": "Inserisci un valore positivo",
+    "requiredField": "Campo obbligatorio",
+    "number": "Inserisci un numero"
+  },
+  "invitaliaModal": {
+    "supervised": {
+      "title": "Richiedi ulteriori controlli ai produttori",
+      "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali controlli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'.",
+"listTitle": "Perché stai richiedendo ulteriori controlli?",
+      "reasonLabel": "Nota interna",
+      "reasonPlaceholder": "Nota interna",
+      "buttonText": "Da controllare",
+      "buttonTextConfirm": "Richiedi controlli",
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio",
+      "msgResultSupervised": "I prodotti selezionati sono ora da controllare."
+    },
+    "rejected": {
+      "title": "Richiedi esclusione",
+      "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori riceveranno la notifica dell'esclusione.",
+"listTitle": "Perché stai escludendo i prodotti?",
+      "reasonLabel": "Nota interna",
+      "reasonPlaceholder": "Nota interna",
+      "buttonText": "Escludi",
+      "buttonTextConfirm": "Escludi",
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio",
+"listTitleNoteUff": "Notifica ufficiale destinata al Produttore",
+      "reasonPlaceholderNoteUff": "Notifica ufficiale",
+      "msgResultRejected": "I prodotti selezionati sono stati esclusi."
+    },
+     "waitApproved": {
+      "title": "Approva",
+      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "listTitle": "Richiedi approvazione",
+      "reasonLabel": "Richiedi approvazione",
+      "reasonPlaceholder": "Richiedi approvazione",
+      "buttonText": "Approva",
+      "buttonTextConfirm": "Richiedi approvazione",
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio",
+      "msgResultWaitApproved": "Richiesta di approvazione inviata."
+    },
+    "rejectApprovation": {
+      "title": "Rifiuta approvazione",
+      "description": "Stai per rifiutare la richiesta di approvazione inviata da L1. Dopo questa operazione, i prodotti torneranno allo stato “Da Esaminare”.",
+      "listTitle": "Perché stai rifiutando l’approvazione di questi prodotti?",
+      "reasonLabel": "Nota interna",
+      "reasonPlaceholder": "Nota interna",
+      "buttonText": "Rifiuta",
+      "buttonTextConfirm": "Rifiuta",
+      "buttonTextCancel": "Annulla",
+      "errorMessage": "Campo obbligatorio",
+      "msgResultRejectedApprovation": "L'approvazione è stata rifiutata."
+    },
+    "acceptApprovation": {
+      "title": "Approva prodotti",
+      "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nell’elenco informatico degli elettrodomestici.",
+      "listTitle": "",
+      "reasonLabel": "",
+      "reasonPlaceholder": "",
+      "buttonText": "Approva",
+      "buttonTextConfirm": "Approva",
+      "buttonTextCancel": "Annulla",
+      "msgResultAcceptApprovation":"I prodotti sono stati approvati."
+    }
+  },
+  "chip": {
+    "productStatusLabel":{
+      "uploaded": "Da Esaminare",
+      "waitApproved": "Da approvare",
+      "approved": "Approvato",
+      "supervised": "Da controllare",
+      "rejected": "Escluso"
+    }
+  },
+  "msgResutlt":{
+    "errorMixSelected":"Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato.",
+    "errorYourselfApproved":"Non puoi inviare una richiesta di approvazione a te stesso."
+  }
+}
