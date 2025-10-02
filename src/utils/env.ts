@@ -11,7 +11,7 @@ export const ENV = {
   },
 
   URL_FE: {
-    PRE_LOGIN: env.get('REACT_APP_URL_FE_PRE_LOGIN').asString(),
+    PRE_LOGIN: env.get('REACT_APP_URL_FE_PRE_LOGIN').required().asString(),
     LOGIN: env.get('REACT_APP_URL_FE_LOGIN').required().asString(),
     LOGOUT: env.get('REACT_APP_URL_FE_LOGOUT').required().asString(),
     LANDING: env.get('REACT_APP_URL_FE_LANDING').asString(),
