@@ -58,8 +58,6 @@ jest.mock('../../Header/Header', () => {
   };
 });
 
-jest.mock('../../SideMenu/SideMenu', () => () => <div data-testid="mock-sidemenu" />);
-
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   __esModule: true,
   Footer: ({ onExit }: any) => (
@@ -227,73 +225,8 @@ describe('Layout component', () => {
     );
 
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
     expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
     expect(screen.getByTestId('layout-children')).toBeInTheDocument();
-  });
-
-  it('renders correctly with /products route', () => {
-    const store = createTestStore();
-
-    render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/products']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
-    );
-
-    expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
-  });
-
-  it('renders correctly with /invitalia-products route', () => {
-    const store = createTestStore();
-
-    render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/invitalia-products']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
-    );
-
-    expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
-  });
-
-  it('renders correctly with /producers route', () => {
-    const store = createTestStore();
-
-    render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/producers']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
-    );
-
-    expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
-  });
-
-  it('renders correctly with /uploads route', () => {
-    const store = createTestStore();
-
-    render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/uploads']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
-    );
-
-    expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
   });
 
   it('renders correctly with a non-matched route (e.g. /privacy-policy)', () => {
