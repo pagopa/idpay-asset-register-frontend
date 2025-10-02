@@ -9,10 +9,10 @@ import withSelectedPartyProducts from "./decorators/withSelectedPartyProducts";
 
 const SecuredRoutes = withLogin(
     withSelectedPartyProducts(() => (
-            <Routes>
-                <Route path="*" element={<Navigate to={routes.UPCOMING} />} />
-                <Route path={routes.UPCOMING} element={<UpcomingInitiative/>}/>
-            </Routes>
+        <Routes>
+            <Route path="*" element={<Navigate to={routes.UPCOMING} />} />
+            <Route path={routes.UPCOMING} element={<UpcomingInitiative/>}/>
+        </Routes>
     ))
 );
 
