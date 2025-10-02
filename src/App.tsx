@@ -64,6 +64,18 @@ const SecuredRoutes = withLogin(
     const institution = useSelector(institutionSelector);
     const organizationId = institution?.institutionId || '';
 
+    /*
+    if (UPCOMING_INITIATIVE_DAY) {
+      return (
+        <Layout>
+          <Routes>
+            <Route path={routes.UPCOMING} element={<UpcomingInitiative/>}/>
+          </Routes>
+        </Layout>
+      );
+    }
+    */
+
     if (
       isTOSAccepted === false &&
       location.pathname !== routes.PRIVACY_POLICY &&

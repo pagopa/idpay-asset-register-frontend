@@ -1,6 +1,6 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // usa localStorage
+import storage from 'redux-persist/lib/storage';
 import logger from 'redux-logger';
 import { appStateReducer } from '@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice';
 import { userReducer } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
