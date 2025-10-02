@@ -11,7 +11,6 @@ import Auth from "./pages/auth/Auth";
 const SecuredRoutes = withLogin(
     withSelectedPartyProducts(() => (
         <Routes>
-            <Route path={routes.AUTH} element={<Auth />} />
             <Route path={routes.UPCOMING} element={<UpcomingInitiative/>}/>
             <Route path="*" element={<Navigate to={routes.UPCOMING} />} />
         </Routes>
@@ -20,7 +19,10 @@ const SecuredRoutes = withLogin(
 
 const App = () => (
   <ErrorBoundary>
-      <SecuredRoutes />
+      <Routes>
+          <Route path={routes.AUTH} element={<Auth />} />
+          <Route path="*" element={<SecuredRoutes />} />
+      </Routes>
   </ErrorBoundary>
 );
 
