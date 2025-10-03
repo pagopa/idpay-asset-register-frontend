@@ -43,7 +43,6 @@ module.exports = {
     // Enable if we want to enforce the return type for all the functions
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-inferrable-types': 'off',
-    // TODO: added for compatibility. Removing this line we have to remove all the any usage in the code
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/array-type': [
       'error',

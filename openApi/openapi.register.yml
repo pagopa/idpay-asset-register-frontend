@@ -851,6 +851,7 @@ components:
               pattern: .*
             updateDate:
               type: string
+              maxLength: 200
               format: date-time
     InstitutionResponse:
       title: InstitutionResponse
@@ -997,6 +998,7 @@ components:
               pattern: .*
             updateDate:
               type: string
+              maxLength: 200
               format: date-time
   securitySchemes:
     Bearer:
