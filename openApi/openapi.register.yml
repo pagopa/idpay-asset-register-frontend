@@ -330,6 +330,8 @@ paths:
         - $ref: '#/components/parameters/size_query'
         - $ref: '#/components/parameters/sort_query'
         - $ref: '#/components/parameters/category_query'
+        - $ref: '#/components/parameters/brand_query'
+        - $ref: '#/components/parameters/model_query'
         - $ref: '#/components/parameters/eprelCode_query'
         - $ref: '#/components/parameters/gtinCode_query'
         - $ref: '#/components/parameters/productFileId_query'
@@ -841,9 +843,15 @@ components:
           maxLength: 50
           pattern: .*
         formalMotivation:
-          type: string
-          maxLength: 200
-          pattern: .*
+          type: object
+          properties:
+            formalMotivation:
+              type: string
+              maxLength: 200
+              pattern: .*
+            updateDate:
+              type: string
+              format: date-time
     InstitutionResponse:
       title: InstitutionResponse
       type: object
@@ -981,9 +989,15 @@ components:
           maxLength: 200
           pattern: .*
         formalMotivation:
-          type: string
-          maxLength: 200
-          pattern: .*
+          type: object
+          properties:
+            formalMotivation:
+              type: string
+              maxLength: 200
+              pattern: .*
+            updateDate:
+              type: string
+              format: date-time
   securitySchemes:
     Bearer:
       type: apiKey
@@ -2019,6 +2033,8 @@ components:
         type: string
         enum:
           - category, desc
+          - brand, desc
+          - model, desc
           - batchName, desc
           - energyClass, desc
           - gtinCode, desc
@@ -2026,6 +2042,8 @@ components:
           - status, desc
           - organizationName, asc
           - category, asc
+          - brand, asc
+          - model, asc
           - batchName, asc
           - energyClass, asc
           - gtinCode, asc
@@ -2034,6 +2052,22 @@ components:
           - organizationName, desc
     eprelCode_query:
       name: eprelCode
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 50
+        pattern: ^\d+$
+    brand_query:
+      name: brand
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 50
+        pattern: ^\d+$
+    model_query:
+      name: model
       in: query
       required: false
       schema:

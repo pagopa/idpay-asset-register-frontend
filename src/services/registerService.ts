@@ -139,7 +139,8 @@ function logProductError(error: any) {
   addLine("Message", details.message);
   addLine("Error name", details.name);
   if (details.responseStatus || details.responseStatusText) {
-    errorMsg += `Status: ${details.responseStatus ?? ""}${details.responseStatusText ? ` (${details.responseStatusText})` : ""}\n`;
+    const statusTextPart = details.responseStatusText ? ` (${details.responseStatusText})` : "";
+    errorMsg += `Status: ${details.responseStatus ?? ""}${statusTextPart}\n`;
   }
   addLine("Stack", details.stack);
   addLine("Response Data", details.responseData);

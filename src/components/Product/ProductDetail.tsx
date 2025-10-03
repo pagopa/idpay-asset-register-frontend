@@ -258,84 +258,84 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
 
   const chronology = ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
   const filteredChronology = chronology.filter(
-      (entry) => (entry?.motivation?.trim() || EMPTY_DATA) !== EMPTY_DATA
+    (entry) => (entry?.motivation?.trim() || EMPTY_DATA) !== EMPTY_DATA
   );
   const hasMotivations = filteredChronology.length > 0;
 
-  const formalMotivationText =
-      data?.formalMotivation === undefined ||
-      data?.formalMotivation === null ||
-      (typeof data?.formalMotivation === 'string' && data?.formalMotivation.trim() === '')
-          ? EMPTY_DATA
-          : data?.formalMotivation;
+  const isNonEmptyString = (value: unknown): value is string =>
+    typeof value === 'string' && value.trim() !== '';
+
+  const formalMotivationText = isNonEmptyString(data?.formalMotivation)
+    ? data.formalMotivation
+    : EMPTY_DATA;
 
   const hasFormalMotivation = formalMotivationText !== EMPTY_DATA;
 
   const motivationRow =
-      user?.org_role !== USERS_TYPES.OPERATORE.toLowerCase() && hasMotivations
-          ? {
-            renderCustom(this: RowConfig) {
-              return (
-                  <ProductInfoRow
-                      label={t('pages.productDetail.motivation')}
-                      labelVariant="overline"
-                      sx={{ marginTop: 3, fontWeight: 700 }}
-                      labelColor="#17324D"
-                      value={
-                        <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                          {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
-                        </Box>
-                      }
-                  />
-              );
-            },
-          } as RowConfig & { renderCustom?: () => JSX.Element }
-          : null;
+    user?.org_role !== USERS_TYPES.OPERATORE.toLowerCase() && hasMotivations
+      ? ({
+          renderCustom(this: RowConfig) {
+            return (
+              <ProductInfoRow
+                label={t('pages.productDetail.motivation')}
+                labelVariant="overline"
+                sx={{ marginTop: 3, fontWeight: 700 }}
+                labelColor="#17324D"
+                value={
+                  <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                    {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
+                  </Box>
+                }
+              />
+            );
+          },
+        } as RowConfig & { renderCustom?: () => JSX.Element })
+      : null;
 
   const formalMotivationRow = hasFormalMotivation
-      ? {
+    ? ({
         renderCustom(this: RowConfig) {
           const entry = chronology[0];
           const operator = entry?.role
-              ? `${USERS_NAMES.OPERATORE} ${entry.role}`
-              : USERS_NAMES.OPERATORE;
+            ? `${USERS_NAMES.OPERATORE} ${entry.role}`
+            : USERS_NAMES.OPERATORE;
           const dateLabel = entry?.updateDate
-              ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
-              : EMPTY_DATA;
+            ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
+            : EMPTY_DATA;
           const header = dateLabel !== EMPTY_DATA ? `${operator} · ${dateLabel}` : operator;
 
           return (
-              <ProductInfoRow
-                  label={t('pages.productDetail.motivationFormal')}
-                  labelVariant="overline"
-                  sx={{ marginTop: 3, fontWeight: 700 }}
-                  labelColor="#17324D"
-                  value={
-                    <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                      <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
-                        <Box component="span" sx={{ width: '100%' }}>
-                          {header && header.trim() !== '' && (
-                              <Typography variant="body1" color="textSecondary">
-                                {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-                              </Typography>
-                          )}
-                          <TextareaAutosize
-                              maxRows={10}
-                              value={formalMotivationText}
-                              readOnly
-                              aria-label="Motivazione formale"
-                              name="formalMotivation"
-                              className="product-detail-textarea"
-                          />
-                        </Box>
-                      </Box>
+            <ProductInfoRow
+              label={t('pages.productDetail.motivationFormal')}
+              labelVariant="overline"
+              sx={{ marginTop: 3, fontWeight: 700 }}
+              labelColor="#17324D"
+              value={
+                <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                  <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
+                    <Box component="span" sx={{ width: '100%' }}>
+                      {header && header.trim() !== '' && (
+                        <Typography variant="body1" color="textSecondary">
+                          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                        </Typography>
+                      )}
+                      <TextareaAutosize
+                        maxRows={10}
+                        value={formalMotivationText}
+                        readOnly
+                        aria-label="Motivazione formale"
+                        name="formalMotivation"
+                        className="product-detail-textarea"
+                      />
                     </Box>
-                  }
-              />
+                  </Box>
+                </Box>
+              }
+            />
           );
         },
-      } as RowConfig & { renderCustom?: () => JSX.Element }
-      : null;
+      } as RowConfig & { renderCustom?: () => JSX.Element })
+    : null;
 
   const extraRows = [
     ...(motivationRow ? [motivationRow] : []),
@@ -345,25 +345,25 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const rows = [...baseRows, ...extraRows];
 
   return (
-      <>
-        {rows.map((row, idx) =>
-            'type' in row && row.type === 'divider' ? (
-                <Divider key={`divider-${idx}`} sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
-            ) : (row as any).renderCustom ? (
-                <React.Fragment key={`custom-${idx}`}>{(row as any).renderCustom()}</React.Fragment>
-            ) : (
-                <ProductInfoRow
-                    key={`row-${idx}-${(row as RowConfig).label}`}
-                    label={(row as RowConfig).label}
-                    value={<span>{(row as RowConfig).value}</span>}
-                    labelVariant={(row as RowConfig).labelVariant}
-                    valueVariant={(row as RowConfig).valueVariant}
-                    sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
-                />
-            )
-        )}
-        {children}
-      </>
+    <>
+      {rows.map((row, idx) =>
+        'type' in row && row.type === 'divider' ? (
+          <Divider key={`divider-${idx}`} sx={{ mb: 2, fontWeight: '600', fontSize: '16px' }} />
+        ) : (row as any).renderCustom ? (
+          <React.Fragment key={`custom-${idx}`}>{(row as any).renderCustom()}</React.Fragment>
+        ) : (
+          <ProductInfoRow
+            key={`row-${idx}-${(row as RowConfig).label}`}
+            label={(row as RowConfig).label}
+            value={<span>{(row as RowConfig).value}</span>}
+            labelVariant={(row as RowConfig).labelVariant}
+            valueVariant={(row as RowConfig).valueVariant}
+            sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
+          />
+        )
+      )}
+      {children}
+    </>
   );
 }
 
