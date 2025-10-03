@@ -7,6 +7,7 @@ import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-fronten
 import { parseJwt } from '../utils/jwt-utils';
 import { JWTUser } from '../model/JwtUser';
 import { IDPayUser } from '../model/IDPayUser';
+import {ENV} from "../utils/env";
 
 export const userFromJwtToken: (token: string) => User = function (token: string) {
   const jwtUser: JWTUser = parseJwt(token);
@@ -56,19 +57,26 @@ export const useLogin = () => {
   const attemptSilentLogin = async () => {
     if (CONFIG.MOCKS.MOCK_USER) {
      //  setUser(mockedUser);
-       const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
-       setUser(mockedUserFromJWT);
-      storageTokenOps.write(CONFIG.TEST.JWT);
-    //  storageUserOps.write(mockedUser);
-      storageUserOps.write(mockedUserFromJWT);
+      if(!CONFIG.TEST.JWT){
+        window.location.assign(ENV.URL_FE.LOGIN);
+      } else {
+        const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
+        setUser(mockedUserFromJWT);
+        storageTokenOps.write(CONFIG.TEST.JWT);
+        //  storageUserOps.write(mockedUser);
+        storageUserOps.write(mockedUserFromJWT);
 
-      return;
+        return;
+      }
     }
 
     const token = storageTokenOps.read();
 
     const sessionStorageUser = storageUserOps.read();
 
+    if (!token) {
+      window.location.assign(ENV.URL_FE.LOGIN);
+    }
     if (isEmpty(sessionStorageUser)) {
       const user: User = userFromJwtToken(token);
       storageUserOps.write(user);
