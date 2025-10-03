@@ -30,22 +30,22 @@ export const userFromJwtToken: (token: string) => User = function (token: string
 
 // eslint-disable-next-line sonarjs/no-identical-functions
 export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function (token: string) {
-  const jwtUser: JWTUser = parseJwt(token);
+  const jwtUser = parseJwt(token);
   return {
     uid: jwtUser.uid,
-    taxCode: jwtUser.org_fc,
+    taxCode: jwtUser?.org_fc || '',
     name: jwtUser.name,
     surname: jwtUser.family_name,
-    email: jwtUser.email,
-    org_name: jwtUser.org_name,
-    org_party_role: jwtUser.org_party_role,
-    org_role: jwtUser.org_role,
-    org_address: jwtUser.org_address,
-    org_pec: jwtUser.org_pec,
-    org_taxcode: jwtUser.org_fc,
-    org_vat: jwtUser.org_vat,
-    org_email: jwtUser.org_email,
-    org_id: jwtUser.org_id
+    email: jwtUser?.email || '',
+    org_name: jwtUser?.org_name || jwtUser?.organization?.name,
+    org_party_role: jwtUser?.org_party_role || jwtUser?.organization?.roles[0]?.role,
+    org_role: jwtUser?.org_role || '',
+    org_address: jwtUser?.org_address || '',
+    org_pec: jwtUser?.org_pec || '',
+    org_taxcode: jwtUser?.org_fc || '',
+    org_vat: jwtUser?.org_vat || '',
+    org_email: jwtUser?.org_email || '',
+    org_id: jwtUser?.org_id || jwtUser?.organization?.id
   };
 };
 
