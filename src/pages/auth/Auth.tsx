@@ -37,7 +37,14 @@ const Auth = () => {
       };
 
       fetch(url, options)
-        .then((response) => response.text())
+        .then((response) => {
+          const location = response.headers.get('x-location-to');
+          if (location) {
+            window.location.assign(location);
+          }
+
+          return response.text();
+        })
         .then((innerToken) => {
           storageTokenOps.write(innerToken);
           const user = readUserFromToken(innerToken);
