@@ -1,7 +1,6 @@
 import * as env from 'env-var';
 
-const PUBLIC_URL_INNER: string | undefined =
-  env.get('PUBLIC_URL').asString() || '/elenco-informatico-elettrodomestici-in-arrivo';
+const PUBLIC_URL_INNER: string | undefined = '/elenco-informatico-elettrodomestici-in-arrivo';
 export const ENV = {
   ENV: env.get('REACT_APP_ENV').asString(),
   PUBLIC_URL: PUBLIC_URL_INNER,

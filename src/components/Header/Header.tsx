@@ -58,7 +58,7 @@ const Header = ({ withSecondHeader, onExit, loggedUser }: /* , parties */ Props)
       withSecondHeader={withSecondHeader}
       selectedPartyId={selectedParty?.partyId}
       selectedProductId={welfareProduct.id}
-      addSelfcareProduct={false} // TODO verify if returned from API
+      addSelfcareProduct={false}
       productsList={activeProducts.map((p) => ({
         id: p.id,
         title: p.title,

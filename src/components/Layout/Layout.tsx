@@ -45,7 +45,7 @@ const Layout = ({ children }: Props) => {
   const onExit = useUnloadEventOnExit();
   const loggedUser = useSelector(userSelectors.selectLoggedUser);
   const location = useLocation();
-  const [showAssistanceInfo, setShowAssistanceInfo] = useState(true);
+  const [, setShowAssistanceInfo] = useState(true);
 
   const match =
     matchPath({ path: ROUTES.HOME, end: true }, location.pathname) ||
@@ -70,10 +70,10 @@ const Layout = ({ children }: Props) => {
     >
       <Box gridArea="header">
         <Header
-          withSecondHeader={showAssistanceInfo}
-          onExit={() => onExit(customExitAction)}
-          loggedUser={loggedUser}
-          parties={[]}
+            onExit={() => onExit(customExitAction)}
+            loggedUser={loggedUser}
+            parties={[]}
+            withSecondHeader={false}
         />
       </Box>
       {match !== null ? (
