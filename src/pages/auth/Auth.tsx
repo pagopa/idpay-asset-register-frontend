@@ -37,14 +37,14 @@ const Auth = () => {
       };
 
       fetch(url, options)
-        .then((response) => {
+        .then(async (response) => {
           const location = response.headers.get('x-location-to');
+          const body = await response.text();
           if (location) {
             window.location.assign(location);
-            return Promise.reject('Redirected');
+            return;
           }
-
-          return response.text();
+          return body;
         })
         .then((innerToken) => {
           storageTokenOps.write(innerToken);
