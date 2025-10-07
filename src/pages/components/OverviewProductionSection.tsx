@@ -302,8 +302,8 @@ const OverviewProductionSection: React.FC = () => {
   }, [t]);
 
   const firstUploadDate =
-    !loading && !error && data?.content && data.content.length > 0
-      ? data.content[0].dateUpload
+    !loading && !error && data?.content && data.content.length > 0 && data.content[0].dateUpload
+      ? new Date(data.content[0].dateUpload)
       : undefined;
 
   useEffect(() => {

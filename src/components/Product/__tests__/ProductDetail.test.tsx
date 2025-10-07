@@ -91,7 +91,7 @@ const baseData = (over: Partial<ProductDTO> = {}): ProductDTO => ({
   gtinCode: 'GTIN-001',
   productName: 'Prod',
   batchName: 'Batch',
-  registrationDate: new Date('2024-01-01T00:00:00.000Z'),
+  registrationDate: '2024-01-01T00:00:00.000Z',
   eprelCode: 'EPREL',
   productCode: 'P1',
   category: CategoryEnum.Lavatrice,

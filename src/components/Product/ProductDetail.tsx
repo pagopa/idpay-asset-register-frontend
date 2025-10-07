@@ -196,7 +196,7 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
   const dateRow: RowConfig = {
     label: baseRows[2].label,
     value: data?.registrationDate
-      ? String(format(Number(data?.registrationDate), 'dd/MM/yyyy'))
+      ? String(format(new Date(data?.registrationDate), 'dd/MM/yyyy'))
       : EMPTY_DATA,
   };
 
@@ -272,7 +272,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const hasFormalMotivation = formalMotivationText !== EMPTY_DATA;
 
   const motivationRow =
-    user?.org_role !== USERS_TYPES.OPERATORE.toLowerCase() && hasMotivations
+    user?.org_role !== USERS_TYPES.OPERATORE && hasMotivations
       ? ({
           renderCustom(this: RowConfig) {
             return (
