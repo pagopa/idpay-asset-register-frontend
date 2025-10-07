@@ -47,7 +47,8 @@ const Auth = () => {
           return body;
         })
         .then((innerToken) => {
-          storageTokenOps.write(innerToken || '');
+          if (!innerToken)  { return;}
+          storageTokenOps.write(innerToken);
           const user = readUserFromToken(innerToken);
           if (user) {
             window.location.assign(ROUTES.HOME);
