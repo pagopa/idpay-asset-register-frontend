@@ -840,16 +840,9 @@ components:
           maxLength: 50
           pattern: .*
         formalMotivation:
-          type: object
-          properties:
-            formalMotivation:
-              type: string
-              maxLength: 200
-              pattern: .*
-            updateDate:
-              type: string
-              description: 'Example format: "2025-10-07T07:34:30.163+00:00" (ISO 8601 MongoDB string) / Esempio formato: "2025-10-07T07:34:30.163+00:00" (stringa ISO 8601 MongoDB)'
-              maxLength: 200
+          type: string
+          maxLength: 200
+          pattern: .*
     InstitutionResponse:
       title: InstitutionResponse
       type: object
@@ -987,16 +980,9 @@ components:
           maxLength: 200
           pattern: .*
         formalMotivation:
-          type: object
-          properties:
-            formalMotivation:
-              type: string
-              maxLength: 200
-              pattern: .*
-            updateDate:
-              type: string
-              description: 'Example format: "2025-10-07T07:34:30.163+00:00" (ISO 8601 MongoDB string) / Esempio formato: "2025-10-07T07:34:30.163+00:00" (stringa ISO 8601 MongoDB)'
-              maxLength: 200
+          type: string
+          maxLength: 200
+          pattern: .*
   securitySchemes:
     Bearer:
       type: apiKey
