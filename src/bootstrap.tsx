@@ -12,19 +12,12 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { persistor, store } from './redux/store';
 import { MOCK_USER, testToken } from './utils/constants';
-import { ENV } from './utils/env';
 import './consentAndAnalyticsConfiguration.ts';
 import './locale';
 import ROUTES from './routes';
 
 // eslint-disable-next-line functional/immutable-data
 CONFIG.MOCKS.MOCK_USER = MOCK_USER;
-// eslint-disable-next-line functional/immutable-data
-CONFIG.URL_FE.LOGIN = ENV.URL_FE.LOGIN;
-// eslint-disable-next-line functional/immutable-data
-CONFIG.URL_FE.LOGOUT = ENV.URL_FE.LOGOUT;
-// eslint-disable-next-line functional/immutable-data
-CONFIG.URL_FE.ASSISTANCE = ENV.URL_FE.ASSISTANCE_ASSET_REGISTER;
 // eslint-disable-next-line functional/immutable-data
 CONFIG.TEST.JWT = testToken;
 
