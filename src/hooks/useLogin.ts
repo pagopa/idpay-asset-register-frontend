@@ -1,4 +1,3 @@
-import isEmpty from 'lodash/isEmpty';
 import { useDispatch } from 'react-redux';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
@@ -68,23 +67,6 @@ export const useLogin = () => {
 
         return;
       }
-    }
-
-    const token = storageTokenOps.read();
-
-    const sessionStorageUser = storageUserOps.read();
-
-    if (!token) {
-      window.location.assign(ENV.URL_FE.LOGIN);
-    }
-    if (isEmpty(sessionStorageUser)) {
-      const user: User = userFromJwtToken(token);
-      storageUserOps.write(user);
-      setUser(user);
-
-    } else {
-      // Otherwise, set the user to the one stored in the storage
-      setUser(sessionStorageUser);
     }
   };
 

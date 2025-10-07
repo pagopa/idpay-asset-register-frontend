@@ -19,7 +19,7 @@ type Props = WithPartiesProps & {
   loggedUser?: User;
 };
 
-const Header = ({ withSecondHeader, onExit, loggedUser }: /* , parties */ Props) => {
+const Header = ({ withSecondHeader, onExit }: /* , parties */ Props) => {
   const { t } = useTranslation();
   const products = useAppSelector(partiesSelectors.selectPartySelectedProducts);
   const selectedParty = useAppSelector(partiesSelectors.selectPartySelected);
@@ -55,6 +55,8 @@ const Header = ({ withSecondHeader, onExit, loggedUser }: /* , parties */ Props)
   return (
     <CommonHeader
       onExit={onExit}
+      loggedUser={false}
+      enableLogin={false}
       withSecondHeader={withSecondHeader}
       selectedPartyId={selectedParty?.partyId}
       selectedProductId={welfareProduct.id}
@@ -74,19 +76,8 @@ const Header = ({ withSecondHeader, onExit, loggedUser }: /* , parties */ Props)
           logoUrl: party.urlLogo,
         }))
       }
-      loggedUser={
-        loggedUser
-          ? {
-              id: loggedUser ? loggedUser.uid : '',
-              name: loggedUser?.name,
-              surname: loggedUser?.surname,
-              email: loggedUser?.email,
-            }
-          : false
-      }
       onDocumentationClick={() => window.open(ENV.URL_FE.EIE_MANUAL || '', '_blank')}
       assistanceEmail={ENV.ASSISTANCE.EMAIL}
-      enableLogin={true}
       onSelectedProduct={(p) =>
         onExit(() => console.log(`TODO: perform token exchange to change Product and set ${p}`))
       }

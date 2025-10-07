@@ -2,8 +2,6 @@ import { Box } from '@mui/material';
 import { Footer } from '@pagopa/selfcare-common-frontend/lib';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { userSelectors } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
 import { useLocation } from 'react-router-dom';
 import { matchPath } from 'react-router';
 import {
@@ -43,7 +41,6 @@ const Layout = ({ children }: Props) => {
   };
 
   const onExit = useUnloadEventOnExit();
-  const loggedUser = useSelector(userSelectors.selectLoggedUser);
   const location = useLocation();
   const [, setShowAssistanceInfo] = useState(true);
 
@@ -71,7 +68,6 @@ const Layout = ({ children }: Props) => {
       <Box gridArea="header">
         <Header
             onExit={() => onExit(customExitAction)}
-            loggedUser={loggedUser}
             parties={[]}
             withSecondHeader={false}
         />
