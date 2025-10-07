@@ -41,6 +41,7 @@ const Auth = () => {
           const location = response.headers.get('x-location-to');
           if (location) {
             window.location.assign(location);
+            return Promise.reject('Redirected');
           }
 
           return response.text();
