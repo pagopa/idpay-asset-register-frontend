@@ -14,7 +14,6 @@ import {
 import { JSX } from 'react/jsx-runtime';
 import '@testing-library/jest-dom';
 
-// Mock locale per FormAddProducts
 const FormAddProducts = React.forwardRef((props: any, ref: any) => {
   React.useImperativeHandle(ref, () => ({
     validateForm: () => false,
@@ -75,7 +74,6 @@ jest.mock('../../../utils/constants', () => ({
   },
 }));
 
-// Rende disponibile la funzione mockata downloadCsv
 const downloadCsv = require('../../../helpers').downloadCsv;
 
 const mockNavigate = jest.fn();
