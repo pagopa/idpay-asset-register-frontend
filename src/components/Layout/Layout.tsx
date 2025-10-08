@@ -11,7 +11,6 @@ import {
   storageUserOps,
 } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import Header from '../Header/Header';
-import SideMenu from '../SideMenu/SideMenu';
 import ROUTES from '../../routes';
 
 type Props = {
@@ -79,9 +78,6 @@ const Layout = ({ children }: Props) => {
       </Box>
       {match !== null ? (
         <Box gridArea="body" display="grid" gridTemplateColumns="minmax(300px, 2fr) 10fr">
-          <Box gridColumn="auto" sx={{ backgroundColor: 'background.paper' }}>
-            <SideMenu />
-          </Box>
           <Box
             gridColumn="auto"
             sx={{ backgroundColor: '#F5F5F5' }}

@@ -58,8 +58,11 @@ jest.mock('../../Header/Header', () => {
   };
 });
 
+<<<<<<< HEAD
 jest.mock('../../SideMenu/SideMenu', () => () => <div data-testid="mock-sidemenu" />);
 
+=======
+>>>>>>> 4c12321044b288cf4f0285756856245dbd7cdb08
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   __esModule: true,
   Footer: ({ onExit }: any) => (
@@ -227,7 +230,6 @@ describe('Layout component', () => {
     );
 
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
     expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
     expect(screen.getByTestId('layout-children')).toBeInTheDocument();
   });

@@ -54,7 +54,7 @@ const withBearerAndPartyId: WithDefaultsT<'Bearer'> =
 };
 
 const registerClient = createClient({
-  baseUrl: ENV.URL_API.OPERATION,
+  baseUrl: ENV.URL_API.OPERATION ||'',
   basePath: '',
   fetchApi: sanitizedFetchApi,
   withDefaults: withBearerAndPartyId,
