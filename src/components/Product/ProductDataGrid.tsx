@@ -587,7 +587,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         ) : (
           <span />
         )}
-        <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />
+        {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
       </Box>
 
       {tableData?.length === 0 && !loading && (
