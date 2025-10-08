@@ -11,7 +11,6 @@ import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
 import { setInstitutionList } from '../../redux/slices/invitaliaSlice';
 import { useAppDispatch } from '../../redux/hooks';
-import { fetchUserFromLocalStorage } from '../../helpers';
 import InstitutionsTable from './institutionsTable';
 import { sortInstitutions } from './helpers';
 import ManufacturerDetail from './ManufacturerDetail';
@@ -31,7 +30,7 @@ const InvitaliaOverview: React.FC = () => {
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Institution>('description');
-  const user = useMemo(() => fetchUserFromLocalStorage(), []);
+  // const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   useEffect(() => {
     void fetchInstitutions();
@@ -40,11 +39,16 @@ const InvitaliaOverview: React.FC = () => {
   const fetchInstitutions = async () => {
     try {
       const institutionsData = await getInstitutionsList();
+      setInstitutions(institutionsData);
       // TO DO verify
+      {
+        /*
       const institutionsDataFilteredByUser = (
         (institutionsData.institutions as Array<Institution>) ?? []
       ).filter((institution) => institution.institutionId !== user?.uid);
       setInstitutions(institutionsDataFilteredByUser);
+      */
+      }
       const institutionList = institutionsData.institutions;
       dispatch(setInstitutionList(institutionList as Array<Institution>));
     } catch (error) {
