@@ -25,6 +25,43 @@ jest.mock('../../../services/registerService', () => ({
   setWaitApprovedStatusList: jest.fn(),
 }));
 
+jest.mock('../ProductConfirmDialog', () => {
+  return function ProductConfirmDialog({ open, onCancel, onConfirm, onSuccess }: any) {
+    return open ? (
+      <div data-testid="confirm-dialog">
+        <button data-testid="dialog-cancel" onClick={onCancel}>
+          Cancel
+        </button>
+        <button
+          data-testid="dialog-confirm"
+          onClick={async () => {
+            await onConfirm?.();
+            onSuccess?.();
+          }}
+        >
+          Confirm
+        </button>
+      </div>
+    ) : null;
+  };
+});
+
+jest.mock('../ProductInfoRow', () => ({
+  __esModule: true,
+  default: ({ label, value }: any) => (
+    <div data-testid="product-info-row">
+      <span data-testid="row-label">{label}</span>
+      <span data-testid="row-value">{typeof value === 'string' ? value : 'node'}</span>
+      {typeof value !== 'string' ? value : null}
+    </div>
+  ),
+}));
+
+jest.mock('../ProductStatusChip', () => ({
+  __esModule: true,
+  default: ({ status }: any) => <div data-testid="status-chip">{String(status)}</div>,
+}));
+
 jest.mock('../ProductModal', () => {
   return function ProductModal({ open, onClose, onSuccess, actionType }: any) {
     if (!open) return null;

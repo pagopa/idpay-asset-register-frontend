@@ -1,927 +1,939 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {render, screen, fireEvent, waitFor, act} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import FormAddProducts from '../formAddProducts';
 import { useFileState } from '../../../hooks/useFileState';
 import { useErrorHandling } from '../../../hooks/useErrorHandling';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
-import {
-  uploadProductListVerify,
-  downloadErrorReport,
-  uploadProductList,
-} from '../../../services/registerService';
+import { uploadProductListVerify, downloadErrorReport, uploadProductList } from '../../../services/registerService';
+import { downloadCsv } from '../helpers';
 import { JSX } from 'react/jsx-runtime';
 import '@testing-library/jest-dom';
 
-const FormAddProducts = React.forwardRef((props: any, ref: any) => {
-  React.useImperativeHandle(ref, () => ({
-    validateForm: () => false,
-  }));
-  return <div data-testid="mock-form-add-products" {...props} />;
-});
-
 jest.mock('react-i18next', () => ({
-  useTranslation: jest.fn(),
+    useTranslation: jest.fn(),
 }));
 
 jest.mock('../../../utils/env', () => ({
-  __esModule: true,
-  ENV: {
-    URL_API: {
-      OPERATION: 'https://mock-api/register',
+    __esModule: true,
+    ENV: {
+        URL_API: {
+            OPERATION: 'https://mock-api/register',
+        },
+        API_TIMEOUT_MS: {
+            OPERATION: 5000,
+        },
     },
-    API_TIMEOUT_MS: {
-      OPERATION: 5000,
-    },
-  },
 }));
 
 jest.mock('../../../routes', () => ({
-  __esModule: true,
-  default: {
-    HOME: '/home',
-    PRODUCTS: '/prodotti',
-  },
-  BASE_ROUTE: '/base',
+    __esModule: true,
+    default: {
+        HOME: '/home',
+        PRODUCTS: '/prodotti'
+    },
+    BASE_ROUTE: '/base'
 }));
 
 jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn(),
+    useNavigate: jest.fn(),
 }));
 
 jest.mock('../../../hooks/useFileState');
 jest.mock('../../../hooks/useErrorHandling');
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor');
 jest.mock('../../../services/registerService');
-jest.mock('../../../helpers');
+jest.mock('../helpers');
 
 jest.mock('react-dropzone', () => ({
-  useDropzone: jest.fn(),
+    useDropzone: jest.fn(),
 }));
 
-jest.mock('../../../helpers', () => ({
-  categoryList: [
-    { value: 'cookinghobs', label: 'pages.addProducts.categories.cookinghobs' },
-    { value: 'other', label: 'pages.addProducts.categories.other' },
-  ],
-  downloadCsv: jest.fn(),
+jest.mock('../fileUploadSection', () => {
+    return function MockFileUploadSection(props: {
+        getRootProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
+        getInputProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLInputElement> & React.InputHTMLAttributes<HTMLInputElement>;
+        onInputClick: React.MouseEventHandler<HTMLInputElement> | undefined;
+        onDownloadReport: React.MouseEventHandler<HTMLButtonElement> | undefined;
+        onDismissError: React.MouseEventHandler<HTMLButtonElement> | undefined;
+        onChangeFile: React.MouseEventHandler<HTMLButtonElement> | undefined;
+        formikCategory: string;
+        templateFileName: string;
+    }) {
+        return (
+            <div data-testid="file-upload-section">
+                <div {...props.getRootProps()}>
+                    <input {...props.getInputProps()} onClick={props.onInputClick} data-testid="file-input"/>
+                </div>
+                <button onClick={props.onDownloadReport} data-testid="download-report-btn">Download Report</button>
+                <button onClick={props.onDismissError} data-testid="dismiss-error-btn">Dismiss Error</button>
+                <button onClick={props.onChangeFile} data-testid="change-file-btn">Change File</button>
+                <div data-testid="template-filename">{props.templateFileName}</div>
+                <div data-testid="formik-category">{props.formikCategory}</div>
+            </div>
+        );
+    };
+});
+
+jest.mock('../helpers', () => ({
+    categoryList: [
+        { value: 'cookinghobs', label: 'pages.addProducts.categories.cookinghobs' },
+        { value: 'other', label: 'pages.addProducts.categories.other' },
+    ],
+    downloadCsv: jest.fn(),
 }));
 
 jest.mock('../../../utils/constants', () => ({
-  PRODUCTS_CATEGORIES: {
-    COOKINGHOBS: 'cookinghobs',
-  },
+    PRODUCTS_CATEGORIES: {
+        COOKINGHOBS: 'cookinghobs',
+    },
 }));
-
-const downloadCsv = require('../../../helpers').downloadCsv;
 
 const mockNavigate = jest.fn();
 const mockOnExit = jest.fn();
 
 const mockFileState = {
-  fileRejected: false,
-  fileIsLoading: false,
-  fileName: 'test.csv',
-  fileDate: '2024-01-01',
-  currentFile: null,
-  setFileIsLoading: jest.fn(),
-  setFileAcceptedState: jest.fn(),
-  setFileRejectedState: jest.fn(),
-  setFileRejected: jest.fn(),
-  resetFileState: jest.fn(),
+    fileRejected: false,
+    fileIsLoading: false,
+    fileName: 'test.csv',
+    fileDate: '2024-01-01',
+    currentFile: null,
+    setFileIsLoading: jest.fn(),
+    setFileAcceptedState: jest.fn(),
+    setFileRejectedState: jest.fn(),
+    setFileRejected: jest.fn(),
+    resetFileState: jest.fn(),
 };
 
 const mockErrorHandling = {
-  alertTitle: 'Error Title',
-  alertDescription: 'Error Description',
-  isReport: false,
-  idReport: 'report-123',
-  showCategoryError: jest.fn(),
-  clearErrors: jest.fn(),
-  handleUploadError: jest.fn(),
-  handleGenericError: jest.fn(),
-  showMissingFileError: jest.fn(),
-  handleDropRejectedError: jest.fn(),
+    alertTitle: 'Error Title',
+    alertDescription: 'Error Description',
+    isReport: false,
+    idReport: 'report-123',
+    showCategoryError: jest.fn(),
+    clearErrors: jest.fn(),
+    handleUploadError: jest.fn(),
+    handleGenericError: jest.fn(),
+    showMissingFileError: jest.fn(),
+    handleDropRejectedError: jest.fn(),
 };
 
 const mockDropzone = {
-  getRootProps: jest.fn(() => ({ 'data-testid': 'dropzone' })),
-  getInputProps: jest.fn(() => ({ 'data-testid': 'file-input' })),
+    getRootProps: jest.fn(() => ({'data-testid': 'dropzone'})),
+    getInputProps: jest.fn(() => ({'data-testid': 'file-input'})),
 };
 
 describe('FormAddProducts', () => {
-  const defaultProps = {
-    fileAccepted: false,
-    setFileAccepted: jest.fn(),
-  };
+    const defaultProps = {
+        fileAccepted: false,
+        setFileAccepted: jest.fn(),
+    };
 
-  const setupMocks = () => {
-    (useTranslation as jest.Mock).mockReturnValue({
-      t: (key: string | number) => {
-        const translations: { [key: string]: string } = {
-          'pages.addProducts.categories.cookinghobs': 'Cookinghobs',
-          'pages.addProducts.categories.other': 'Other',
-          'validation.categoryRequired': 'Category is required',
-          'pages.addProducts.form.categoryLabel': 'Select Category',
-          'pages.addProducts.form.categoryPlaceholder': 'Choose category',
-          'commons.backBtn': 'Back',
-          'commons.continueBtn': 'Continue',
-        };
-        return translations[key as string] || key;
-      },
-      i18n: {
-        changeLanguage: jest.fn(),
-        language: 'it',
-      },
-    });
+    const setupMocks = () => {
+        (useTranslation as jest.Mock).mockReturnValue({
+            t: (key: string | number) => {
+                const translations: { [key: string]: string } = {
+                    'pages.addProducts.categories.cookinghobs': 'Cookinghobs',
+                    'pages.addProducts.categories.other': 'Other',
+                    'validation.categoryRequired': 'Category is required',
+                    'pages.addProducts.form.categoryLabel': 'Select Category',
+                    'pages.addProducts.form.categoryPlaceholder': 'Choose category',
+                    'commons.backBtn': 'Back',
+                    'commons.continueBtn': 'Continue',
+                };
+                return translations[key as string] || key;
+            },
+            i18n: {
+                changeLanguage: jest.fn(),
+                language: 'it'
+            }
+        });
 
-    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
-    (useUnloadEventOnExit as jest.Mock).mockReturnValue(mockOnExit);
-    (useFileState as jest.Mock).mockReturnValue(mockFileState);
-    (useErrorHandling as jest.Mock).mockReturnValue(mockErrorHandling);
+        (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+        (useUnloadEventOnExit as jest.Mock).mockReturnValue(mockOnExit);
+        (useFileState as jest.Mock).mockReturnValue(mockFileState);
+        (useErrorHandling as jest.Mock).mockReturnValue(mockErrorHandling);
 
-    const { useDropzone } = require('react-dropzone');
-    useDropzone.mockReturnValue(mockDropzone);
-  };
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-    setupMocks();
-  });
-
-  describe('Rendering and Initial State', () => {
-    it('renders correctly with initial state', () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      expect(screen.getByText('Select Category')).toBeInTheDocument();
-      expect(screen.getByTestId('file-upload-section')).toBeInTheDocument();
-      expect(screen.getByTestId('cancel-button-test')).toBeInTheDocument();
-      expect(screen.getByTestId('continue-button-test')).toBeInTheDocument();
-    });
-
-    it('renders with all props passed to FileUploadSection', () => {
-      const fileStateWithData = {
-        ...mockFileState,
-        fileRejected: true,
-        fileIsLoading: true,
-        fileName: 'test.csv',
-        fileDate: '2024-01-01',
-      };
-      (useFileState as jest.Mock).mockReturnValue(fileStateWithData);
-
-      const errorHandlingWithData = {
-        ...mockErrorHandling,
-        alertTitle: 'Error Title',
-        alertDescription: 'Error Description',
-        isReport: true,
-      };
-      (useErrorHandling as jest.Mock).mockReturnValue(errorHandlingWithData);
-
-      render(<FormAddProducts {...defaultProps} />);
-
-      expect(screen.getByTestId('file-upload-section')).toBeInTheDocument();
-    });
-  });
-
-  describe('Template filename logic', () => {
-    it('shows cookinghobs template for cookinghobs category', async () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
-
-      expect(screen.getByTestId('template-filename')).toHaveTextContent('cookinghobs_template.csv');
-    });
-
-    it('shows eprel template for non-cookinghobs category', async () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-other');
-        fireEvent.click(option);
-      });
-
-      expect(screen.getByTestId('template-filename')).toHaveTextContent('eprel_template.csv');
-    });
-  });
-
-  describe('Category validation', () => {
-    it('validates category selection correctly', async () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
-
-      expect(screen.getByTestId('formik-category')).toHaveTextContent('cookinghobs');
-    });
-
-    it('shows validation error when category is touched but empty', async () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.focus(categorySelect);
-      fireEvent.blur(categorySelect);
-
-      await waitFor(() => {
-        expect(screen.getByText('Select Category')).toBeInTheDocument();
-      });
-    });
-
-    it('clears validation error when valid category is selected', async () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const categorySelect = screen.getByRole('combobox');
-
-      fireEvent.focus(categorySelect);
-      fireEvent.blur(categorySelect);
-
-      await waitFor(() => {
-        expect(screen.getByText('Select Category')).toBeInTheDocument();
-      });
-
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
-
-      await waitFor(() => {
-        expect(screen.queryByText('Category is required')).not.toBeInTheDocument();
-      });
-    });
-  });
-
-  describe('Ref and validateForm', () => {
-    it('exposes validateForm method via ref', () => {
-      const ref = React.createRef<any>();
-      render(<FormAddProducts {...defaultProps} ref={ref} />);
-
-      expect(ref.current).toHaveProperty('validateForm');
-      expect(typeof ref.current.validateForm).toBe('function');
-    });
-
-    it('validateForm returns false with invalid category', async () => {
-      const ref = React.createRef<any>();
-      render(<FormAddProducts {...defaultProps} ref={ref} />);
-
-      const result = await ref.current.validateForm();
-      expect(result).toBe(false);
-    });
-
-    it('validateForm returns false with valid category but no file accepted', async () => {
-      const ref = React.createRef<any>();
-      render(<FormAddProducts {...defaultProps} ref={ref} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
-
-      const result = await ref.current.validateForm();
-      expect(result).toBe(false);
-    });
-
-    it('validateForm returns true with valid category and accepted file', async () => {
-      const ref = React.createRef<any>();
-      const props = { ...defaultProps, fileAccepted: true };
-      render(<FormAddProducts {...props} ref={ref} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
-
-      const result = await ref.current.validateForm();
-      expect(result).toBe(true);
-    });
-  });
-
-  describe('File operations', () => {
-    it('handles download report successfully', async () => {
-      const mockReportData = { data: 'report data', filename: 'report.csv' };
-      (downloadErrorReport as jest.Mock).mockResolvedValue(mockReportData);
-
-      render(<FormAddProducts {...defaultProps} />);
-
-      const downloadBtn = screen.getByTestId('download-report-btn');
-      await userEvent.click(downloadBtn);
-
-      await waitFor(() => {
-        expect(downloadErrorReport).toHaveBeenCalledWith(mockErrorHandling.idReport);
-        expect(downloadCsv).toHaveBeenCalledWith(mockReportData.data, mockReportData.filename);
-      });
-    });
-
-    it('handles download report error', async () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      (downloadErrorReport as jest.Mock).mockRejectedValue(new Error('Download failed'));
-
-      render(<FormAddProducts {...defaultProps} />);
-
-      const downloadBtn = screen.getByTestId('download-report-btn');
-      await userEvent.click(downloadBtn);
-
-      await waitFor(() => {
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'Errore nel download del report:',
-          expect.any(Error)
-        );
-      });
-
-      consoleErrorSpy.mockRestore();
-    });
-
-    it('resets file status correctly', () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const changeFileBtn = screen.getByTestId('change-file-btn');
-      fireEvent.click(changeFileBtn);
-
-      expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
-      expect(mockFileState.resetFileState).toHaveBeenCalled();
-      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-    });
-
-    it('dismisses error correctly', () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const dismissBtn = screen.getByTestId('dismiss-error-btn');
-      fireEvent.click(dismissBtn);
-
-      expect(mockFileState.setFileRejected).toHaveBeenCalledWith(false);
-    });
-  });
-
-  describe('Dropzone callbacks', () => {
-    const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
+        const { useDropzone } = require('react-dropzone');
+        useDropzone.mockReturnValue(mockDropzone);
+    };
 
     beforeEach(() => {
-      const { useDropzone } = require('react-dropzone');
-      useDropzone.mockImplementation((options: any) => ({
-        ...mockDropzone,
-        ...options,
-      }));
+        jest.clearAllMocks();
+        setupMocks();
     });
 
-    it('handles onFileDialogOpen with invalid category', () => {
-      render(<FormAddProducts {...defaultProps} />);
+    describe('Rendering and Initial State', () => {
+        it('renders correctly with initial state', () => {
+            render(<FormAddProducts {...defaultProps} />);
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+            expect(screen.getByText('Select Category')).toBeInTheDocument();
+            expect(screen.getByTestId('file-upload-section')).toBeInTheDocument();
+            expect(screen.getByTestId('cancel-button-test')).toBeInTheDocument();
+            expect(screen.getByTestId('continue-button-test')).toBeInTheDocument();
+        });
 
-      act(() => {
-        dropzoneOptions.onFileDialogOpen();
-      });
+        it('renders with all props passed to FileUploadSection', () => {
+            const fileStateWithData = {
+                ...mockFileState,
+                fileRejected: true,
+                fileIsLoading: true,
+                fileName: 'test.csv',
+                fileDate: '2024-01-01',
+            };
+            (useFileState as jest.Mock).mockReturnValue(fileStateWithData);
 
-      expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
-      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-      expect(mockFileState.setFileRejected).toHaveBeenCalledWith(true);
+            const errorHandlingWithData = {
+                ...mockErrorHandling,
+                alertTitle: 'Error Title',
+                alertDescription: 'Error Description',
+                isReport: true,
+            };
+            (useErrorHandling as jest.Mock).mockReturnValue(errorHandlingWithData);
+
+            render(<FormAddProducts {...defaultProps} />);
+
+            expect(screen.getByTestId('file-upload-section')).toBeInTheDocument();
+        });
     });
 
-    it('handles onFileDialogOpen with valid category', async () => {
-      render(<FormAddProducts {...defaultProps} />);
+    describe('Template filename logic', () => {
+        it('shows cookinghobs template for cookinghobs category', async () => {
+            render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
 
-      act(() => {
-        dropzoneOptions.onFileDialogOpen();
-      });
+            expect(screen.getByTestId('template-filename')).toHaveTextContent('cookinghobs_template.csv');
+        });
 
-      expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
+        it('shows eprel template for non-cookinghobs category', async () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-other');
+                fireEvent.click(option);
+            });
+
+            expect(screen.getByTestId('template-filename')).toHaveTextContent('eprel_template.csv');
+        });
     });
 
-    it('handles onDrop callback', () => {
-      render(<FormAddProducts {...defaultProps} />);
+    describe('Category validation', () => {
+        it('validates category selection correctly', async () => {
+            render(<FormAddProducts {...defaultProps} />);
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
 
-      act(() => {
-        dropzoneOptions.onDrop();
-      });
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
 
-      expect(mockFileState.setFileRejected).toHaveBeenCalledWith(false);
+            expect(screen.getByTestId('formik-category')).toHaveTextContent('cookinghobs');
+        });
+
+        it('shows validation error when category is touched but empty', async () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.focus(categorySelect);
+            fireEvent.blur(categorySelect);
+
+            await waitFor(() => {
+                expect(screen.getByText('Select Category')).toBeInTheDocument();
+            });
+        });
+
+        it('clears validation error when valid category is selected', async () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const categorySelect = screen.getByRole('combobox');
+
+            fireEvent.focus(categorySelect);
+            fireEvent.blur(categorySelect);
+
+            await waitFor(() => {
+                expect(screen.getByText('Select Category')).toBeInTheDocument();
+            });
+
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
+
+            await waitFor(() => {
+                expect(screen.queryByText('Category is required')).not.toBeInTheDocument();
+            });
+        });
     });
 
-    it('handles onDropRejected callback', () => {
-      const rejectedFiles = [
-        {
-          file: mockFile,
-          errors: [{ code: 'file-invalid-type' }],
-        },
-      ];
+    describe('Ref and validateForm', () => {
+        it('exposes validateForm method via ref', () => {
+            const ref = React.createRef<any>();
+            render(<FormAddProducts {...defaultProps} ref={ref} />);
 
-      render(<FormAddProducts {...defaultProps} />);
+            expect(ref.current).toHaveProperty('validateForm');
+            expect(typeof ref.current.validateForm).toBe('function');
+        });
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+        it('validateForm returns false with invalid category', async () => {
+            const ref = React.createRef<any>();
+            render(<FormAddProducts {...defaultProps} ref={ref} />);
 
-      act(() => {
-        dropzoneOptions.onDropRejected(rejectedFiles);
-      });
+            const result = await ref.current.validateForm();
+            expect(result).toBe(false);
+        });
 
-      expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
-      expect(mockErrorHandling.handleDropRejectedError).toHaveBeenCalledWith('file-invalid-type');
-      expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
-      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+        it('validateForm returns false with valid category but no file accepted', async () => {
+            const ref = React.createRef<any>();
+            render(<FormAddProducts {...defaultProps} ref={ref} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
+
+            const result = await ref.current.validateForm();
+            expect(result).toBe(false);
+        });
+
+        it('validateForm returns true with valid category and accepted file', async () => {
+            const ref = React.createRef<any>();
+            const props = { ...defaultProps, fileAccepted: true };
+            render(<FormAddProducts {...props} ref={ref} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
+
+            const result = await ref.current.validateForm();
+            expect(result).toBe(true);
+        });
     });
 
-    it('handles onDropAccepted with valid category - success', async () => {
-      const mockResponse = { status: 'OK' };
-      (uploadProductListVerify as jest.Mock).mockResolvedValue(mockResponse);
+    describe('File operations', () => {
+        it('handles download report successfully', async () => {
+            const mockReportData = { data: 'report data', filename: 'report.csv' };
+            (downloadErrorReport as jest.Mock).mockResolvedValue(mockReportData);
 
-      render(<FormAddProducts {...defaultProps} />);
+            render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+            const downloadBtn = screen.getByTestId('download-report-btn');
+            await userEvent.click(downloadBtn);
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+            await waitFor(() => {
+                expect(downloadErrorReport).toHaveBeenCalledWith(mockErrorHandling.idReport);
+                expect(downloadCsv).toHaveBeenCalledWith(mockReportData.data, mockReportData.filename);
+            });
+        });
 
-      await act(async () => {
-        await dropzoneOptions.onDropAccepted([mockFile]);
-      });
+        it('handles download report error', async () => {
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+            (downloadErrorReport as jest.Mock).mockRejectedValue(new Error('Download failed'));
 
-      expect(mockFileState.setFileIsLoading).not.toHaveBeenCalledWith(true);
-      expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
+            render(<FormAddProducts {...defaultProps} />);
+
+            const downloadBtn = screen.getByTestId('download-report-btn');
+            await userEvent.click(downloadBtn);
+
+            await waitFor(() => {
+                expect(consoleErrorSpy).toHaveBeenCalledWith(
+                    'Errore nel download del report:',
+                    expect.any(Error)
+                );
+            });
+
+            consoleErrorSpy.mockRestore();
+        });
+
+        it('resets file status correctly', () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const changeFileBtn = screen.getByTestId('change-file-btn');
+            fireEvent.click(changeFileBtn);
+
+            expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
+            expect(mockFileState.resetFileState).toHaveBeenCalled();
+            expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+        });
+
+        it('dismisses error correctly', () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const dismissBtn = screen.getByTestId('dismiss-error-btn');
+            fireEvent.click(dismissBtn);
+
+            expect(mockFileState.setFileRejected).toHaveBeenCalledWith(false);
+        });
     });
 
-    it('handles onDropAccepted with valid category - error response', async () => {
-      const mockResponse = { status: 'ERROR', message: 'Upload failed' };
-      (uploadProductListVerify as jest.Mock).mockResolvedValue(mockResponse);
+    describe('Dropzone callbacks', () => {
+        const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
 
-      render(<FormAddProducts {...defaultProps} />);
+        beforeEach(() => {
+            const { useDropzone } = require('react-dropzone');
+            useDropzone.mockImplementation((options: any) => ({
+                ...mockDropzone,
+                ...options,
+            }));
+        });
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+        it('handles onFileDialogOpen with invalid category', () => {
+            render(<FormAddProducts {...defaultProps} />);
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneOptions = useDropzone.mock.calls[0][0];
 
-      await act(async () => {
-        await dropzoneOptions.onDropAccepted([mockFile]);
-      });
+            act(() => {
+                dropzoneOptions.onFileDialogOpen();
+            });
 
-      expect(mockErrorHandling.handleUploadError).not.toHaveBeenCalledWith(mockResponse);
-      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-      expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
+            expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
+            expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+            expect(mockFileState.setFileRejected).toHaveBeenCalledWith(true);
+        });
+
+        it('handles onFileDialogOpen with valid category', async () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
+
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneOptions = useDropzone.mock.calls[0][0];
+
+            act(() => {
+                dropzoneOptions.onFileDialogOpen();
+            });
+
+            expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
+        });
+
+        it('handles onDrop callback', () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneOptions = useDropzone.mock.calls[0][0];
+
+            act(() => {
+                dropzoneOptions.onDrop();
+            });
+
+            expect(mockFileState.setFileRejected).toHaveBeenCalledWith(false);
+        });
+
+        it('handles onDropRejected callback', () => {
+            const rejectedFiles = [
+                {
+                    file: mockFile,
+                    errors: [{ code: 'file-invalid-type' }],
+                },
+            ];
+
+            render(<FormAddProducts {...defaultProps} />);
+
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneOptions = useDropzone.mock.calls[0][0];
+
+            act(() => {
+                dropzoneOptions.onDropRejected(rejectedFiles);
+            });
+
+            expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
+            expect(mockErrorHandling.handleDropRejectedError).toHaveBeenCalledWith('file-invalid-type');
+            expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
+            expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+        });
+
+        it('handles onDropAccepted with valid category - success', async () => {
+            const mockResponse = { status: 'OK' };
+            (uploadProductListVerify as jest.Mock).mockResolvedValue(mockResponse);
+
+            render(<FormAddProducts {...defaultProps} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
+
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneOptions = useDropzone.mock.calls[0][0];
+
+            await act(async () => {
+                await dropzoneOptions.onDropAccepted([mockFile]);
+            });
+
+            expect(mockFileState.setFileIsLoading).not.toHaveBeenCalledWith(true);
+            expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
+        });
+
+        it('handles onDropAccepted with valid category - error response', async () => {
+            const mockResponse = { status: 'ERROR', message: 'Upload failed' };
+            (uploadProductListVerify as jest.Mock).mockResolvedValue(mockResponse);
+
+            render(<FormAddProducts {...defaultProps} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
+
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneOptions = useDropzone.mock.calls[0][0];
+
+            await act(async () => {
+                await dropzoneOptions.onDropAccepted([mockFile]);
+            });
+
+            expect(mockErrorHandling.handleUploadError).not.toHaveBeenCalledWith(mockResponse);
+            expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+            expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
+        });
+
+        it('handles onDropAccepted with valid category - network error', async () => {
+            (uploadProductListVerify as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+            render(<FormAddProducts {...defaultProps} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
+
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneOptions = useDropzone.mock.calls[0][0];
+
+            await act(async () => {
+                await dropzoneOptions.onDropAccepted([mockFile]);
+            });
+
+            expect(mockErrorHandling.handleGenericError).not.toHaveBeenCalled();
+            expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+            expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
+        });
     });
 
-    it('handles onDropAccepted with valid category - network error', async () => {
-      (uploadProductListVerify as jest.Mock).mockRejectedValue(new Error('Network error'));
+    describe('Input click handling', () => {
+        it('handles input click with invalid category', async () => {
+            render(<FormAddProducts {...defaultProps} />);
+            const input = screen.getByTestId('file-input');
+            fireEvent.click(input);
+            expect(mockErrorHandling.showCategoryError).toHaveBeenCalledTimes(1);
+        });
 
-      render(<FormAddProducts {...defaultProps} />);
+        it('handles input click with valid category', async () => {
+            render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+            const input = screen.getByTestId('file-input');
+            fireEvent.click(input);
 
-      await act(async () => {
-        await dropzoneOptions.onDropAccepted([mockFile]);
-      });
-
-      expect(mockErrorHandling.handleGenericError).not.toHaveBeenCalled();
-      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-      expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
-    });
-  });
-
-  describe('Input click handling', () => {
-    it('handles input click with invalid category', async () => {
-      render(<FormAddProducts {...defaultProps} />);
-      const input = screen.getByTestId('file-input');
-      fireEvent.click(input);
-      expect(mockErrorHandling.showCategoryError).toHaveBeenCalledTimes(1);
+            expect(mockErrorHandling.showCategoryError).not.toHaveBeenCalled();
+        });
     });
 
-    it('handles input click with valid category', async () => {
-      render(<FormAddProducts {...defaultProps} />);
+    describe('Continue button functionality', () => {
+        it('handles continue with no category selected', async () => {
+            render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+            const continueBtn = screen.getByTestId('continue-button-test');
+            await userEvent.click(continueBtn);
 
-      const input = screen.getByTestId('file-input');
-      fireEvent.click(input);
+            expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
+            expect(mockFileState.setFileRejected).toHaveBeenCalledWith(true);
+            expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+        });
 
-      expect(mockErrorHandling.showCategoryError).not.toHaveBeenCalled();
-    });
-  });
+        it('handles continue with valid category but no file', async () => {
+            (useErrorHandling as jest.Mock).mockReturnValue({...mockErrorHandling, alertDescription: ''});
+            render(<FormAddProducts {...defaultProps} />);
 
-  describe('Continue button functionality', () => {
-    it('handles continue with no category selected', async () => {
-      render(<FormAddProducts {...defaultProps} />);
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
 
-      const continueBtn = screen.getByTestId('continue-button-test');
-      await userEvent.click(continueBtn);
+            const continueBtn = screen.getByTestId('continue-button-test');
+            await userEvent.click(continueBtn);
 
-      expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
-      expect(mockFileState.setFileRejected).toHaveBeenCalledWith(true);
-      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-    });
+            expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
+            expect(mockErrorHandling.showMissingFileError).toHaveBeenCalled();
+            expect(mockFileState.setFileRejected).toHaveBeenCalledWith(true);
+            expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+        });
 
-    it('handles continue with valid category but no file', async () => {
-      (useErrorHandling as jest.Mock).mockReturnValue({
-        ...mockErrorHandling,
-        alertDescription: '',
-      });
-      render(<FormAddProducts {...defaultProps} />);
+        it('handles continue with valid form and file - success', async () => {
+            const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
+            const mockResponse = { status: 'OK' };
+            (uploadProductList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+            const fileStateWithFile = {
+                ...mockFileState,
+                currentFile: mockFile,
+            };
+            (useFileState as jest.Mock).mockReturnValue(fileStateWithFile);
 
-      const continueBtn = screen.getByTestId('continue-button-test');
-      await userEvent.click(continueBtn);
+            const props = { ...defaultProps, fileAccepted: true };
+            render(<FormAddProducts {...props} />);
 
-      expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
-      expect(mockErrorHandling.showMissingFileError).toHaveBeenCalled();
-      expect(mockFileState.setFileRejected).toHaveBeenCalledWith(true);
-      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-    });
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
 
-    it('handles continue with valid form and file - success', async () => {
-      const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
-      const mockResponse = { status: 'OK' };
-      (uploadProductList as jest.Mock).mockResolvedValue(mockResponse);
+            const continueBtn = screen.getByTestId('continue-button-test');
+            await userEvent.click(continueBtn);
 
-      const fileStateWithFile = {
-        ...mockFileState,
-        currentFile: mockFile,
-      };
-      (useFileState as jest.Mock).mockReturnValue(fileStateWithFile);
+            await waitFor(() => {
+                expect(mockFileState.setFileIsLoading).toHaveBeenCalledWith(true);
+                expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
+                expect(uploadProductList).toHaveBeenCalledWith(mockFile, 'cookinghobs');
+            });
+        });
 
-      const props = { ...defaultProps, fileAccepted: true };
-      render(<FormAddProducts {...props} />);
+        it('handles continue with valid form and file - upload error', async () => {
+            const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
+            const mockResponse = { status: 'ERROR', message: 'Upload failed' };
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+            (uploadProductList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const continueBtn = screen.getByTestId('continue-button-test');
-      await userEvent.click(continueBtn);
+            const fileStateWithFile = {
+                ...mockFileState,
+                currentFile: mockFile,
+            };
+            (useFileState as jest.Mock).mockReturnValue(fileStateWithFile);
 
-      await waitFor(() => {
-        expect(mockFileState.setFileIsLoading).toHaveBeenCalledWith(true);
-        expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
-        expect(uploadProductList).toHaveBeenCalledWith(mockFile, 'cookinghobs');
-      });
-    });
+            const props = { ...defaultProps, fileAccepted: true };
+            render(<FormAddProducts {...props} />);
 
-    it('handles continue with valid form and file - upload error', async () => {
-      const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
-      const mockResponse = { status: 'ERROR', message: 'Upload failed' };
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
 
-      (uploadProductList as jest.Mock).mockResolvedValue(mockResponse);
+            const continueBtn = screen.getByTestId('continue-button-test');
+            await userEvent.click(continueBtn);
 
-      const fileStateWithFile = {
-        ...mockFileState,
-        currentFile: mockFile,
-      };
-      (useFileState as jest.Mock).mockReturnValue(fileStateWithFile);
+            await waitFor(() => {
+                expect(mockErrorHandling.handleUploadError).toHaveBeenCalledWith(mockResponse);
+                expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+                expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
+            });
+        });
 
-      const props = { ...defaultProps, fileAccepted: true };
-      render(<FormAddProducts {...props} />);
+        it('handles continue with no current file error', async () => {
+            const fileStateWithoutFile = {
+                ...mockFileState,
+                currentFile: null,
+            };
+            (useFileState as jest.Mock).mockReturnValue(fileStateWithoutFile);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+            const props = { ...defaultProps, fileAccepted: true };
+            render(<FormAddProducts {...props} />);
 
-      const continueBtn = screen.getByTestId('continue-button-test');
-      await userEvent.click(continueBtn);
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
 
-      await waitFor(() => {
-        expect(mockErrorHandling.handleUploadError).toHaveBeenCalledWith(mockResponse);
-        expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-        expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
-      });
-    });
+            const continueBtn = screen.getByTestId('continue-button-test');
+            await userEvent.click(continueBtn);
 
-    it('handles continue with no current file error', async () => {
-      const fileStateWithoutFile = {
-        ...mockFileState,
-        currentFile: null,
-      };
-      (useFileState as jest.Mock).mockReturnValue(fileStateWithoutFile);
+            await waitFor(() => {
+                expect(mockErrorHandling.handleGenericError).toHaveBeenCalled();
+                expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+                expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
+            });
+        });
 
-      const props = { ...defaultProps, fileAccepted: true };
-      render(<FormAddProducts {...props} />);
+        it('handles continue with network error', async () => {
+            const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+            (uploadProductList as jest.Mock).mockRejectedValue(new Error('Network error'));
 
-      const continueBtn = screen.getByTestId('continue-button-test');
-      await userEvent.click(continueBtn);
+            const fileStateWithFile = {
+                ...mockFileState,
+                currentFile: mockFile,
+            };
+            (useFileState as jest.Mock).mockReturnValue(fileStateWithFile);
 
-      await waitFor(() => {
-        expect(mockErrorHandling.handleGenericError).toHaveBeenCalled();
-        expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-        expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
-      });
-    });
+            const props = { ...defaultProps, fileAccepted: true };
+            render(<FormAddProducts {...props} />);
 
-    it('handles continue with network error', async () => {
-      const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
 
-      (uploadProductList as jest.Mock).mockRejectedValue(new Error('Network error'));
+            const continueBtn = screen.getByTestId('continue-button-test');
+            await userEvent.click(continueBtn);
 
-      const fileStateWithFile = {
-        ...mockFileState,
-        currentFile: mockFile,
-      };
-      (useFileState as jest.Mock).mockReturnValue(fileStateWithFile);
-
-      const props = { ...defaultProps, fileAccepted: true };
-      render(<FormAddProducts {...props} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
-
-      const continueBtn = screen.getByTestId('continue-button-test');
-      await userEvent.click(continueBtn);
-
-      await waitFor(() => {
-        expect(mockErrorHandling.handleGenericError).toHaveBeenCalled();
-        expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-        expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
-      });
-    });
-  });
-
-  describe('Navigation', () => {
-    it('handles cancel button click', () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const cancelBtn = screen.getByTestId('cancel-button-test');
-      fireEvent.click(cancelBtn);
-
-      expect(mockOnExit).toHaveBeenCalled();
-      expect(mockNavigate).toHaveBeenCalledTimes(0);
-    });
-  });
-
-  describe('Edge cases and complete coverage', () => {
-    it('handles formik onSubmit (console.log)', () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
-      render(<FormAddProducts {...defaultProps} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-
-      expect(consoleSpy).not.toHaveBeenCalled();
-
-      consoleSpy.mockRestore();
+            await waitFor(() => {
+                expect(mockErrorHandling.handleGenericError).toHaveBeenCalled();
+                expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+                expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
+            });
+        });
     });
 
-    it('covers all dropzone configuration options', () => {
-      render(<FormAddProducts {...defaultProps} />);
+    describe('Navigation', () => {
+        it('handles cancel button click', () => {
+            render(<FormAddProducts {...defaultProps} />);
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneConfig = useDropzone.mock.calls[0][0];
+            const cancelBtn = screen.getByTestId('cancel-button-test');
+            fireEvent.click(cancelBtn);
 
-      expect(dropzoneConfig.maxFiles).toBe(1);
-      expect(dropzoneConfig.maxSize).toBe(2097152);
-      expect(dropzoneConfig.accept).toEqual({ 'text/csv': ['.csv'] });
-      expect(typeof dropzoneConfig.onFileDialogOpen).toBe('function');
-      expect(typeof dropzoneConfig.onDrop).toBe('function');
-      expect(typeof dropzoneConfig.onDropAccepted).toBe('function');
-      expect(typeof dropzoneConfig.onDropRejected).toBe('function');
+            expect(mockOnExit).toHaveBeenCalled();
+            expect(mockNavigate).toHaveBeenCalledTimes(0);
+        });
     });
 
-    it('handles multiple error scenarios in sequence', async () => {
-      render(<FormAddProducts {...defaultProps} />);
+    describe('Edge cases and complete coverage', () => {
+        it('handles formik onSubmit (console.log)', () => {
+            const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+            render(<FormAddProducts {...defaultProps} />);
 
-      act(() => {
-        dropzoneOptions.onFileDialogOpen();
-      });
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
 
-      expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
+            expect(consoleSpy).not.toHaveBeenCalled();
 
-      const rejectedFiles = [
-        {
-          file: new File(['content'], 'test.txt', { type: 'text/plain' }),
-          errors: [{ code: 'file-too-large' }],
-        },
-      ];
+            consoleSpy.mockRestore();
+        });
 
-      act(() => {
-        dropzoneOptions.onDropRejected(rejectedFiles);
-      });
+        it('covers all dropzone configuration options', () => {
+            render(<FormAddProducts {...defaultProps} />);
 
-      expect(mockErrorHandling.handleDropRejectedError).toHaveBeenCalledWith('file-too-large');
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneConfig = useDropzone.mock.calls[0][0];
+
+            expect(dropzoneConfig.maxFiles).toBe(1);
+            expect(dropzoneConfig.maxSize).toBe(2097152);
+            expect(dropzoneConfig.accept).toEqual({ 'text/csv': ['.csv'] });
+            expect(typeof dropzoneConfig.onFileDialogOpen).toBe('function');
+            expect(typeof dropzoneConfig.onDrop).toBe('function');
+            expect(typeof dropzoneConfig.onDropAccepted).toBe('function');
+            expect(typeof dropzoneConfig.onDropRejected).toBe('function');
+        });
+
+        it('handles multiple error scenarios in sequence', async () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneOptions = useDropzone.mock.calls[0][0];
+
+            act(() => {
+                dropzoneOptions.onFileDialogOpen();
+            });
+
+            expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
+
+            const rejectedFiles = [
+                {
+                    file: new File(['content'], 'test.txt', { type: 'text/plain' }),
+                    errors: [{ code: 'file-too-large' }],
+                },
+            ];
+
+            act(() => {
+                dropzoneOptions.onDropRejected(rejectedFiles);
+            });
+
+            expect(mockErrorHandling.handleDropRejectedError).toHaveBeenCalledWith('file-too-large');
+        });
+
+        it('covers isCategoryValid function branches', async () => {
+            const ref = React.createRef<any>();
+            render(<FormAddProducts {...defaultProps} ref={ref} />);
+
+            let result = await ref.current.validateForm();
+            expect(result).toBe(false);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-cookinghobs');
+                fireEvent.click(option);
+            });
+
+            result = await ref.current.validateForm();
+            expect(result).toBe(false);
+        });
+
+        it('handles formik validation states correctly', async () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const categorySelect = screen.getByRole('combobox');
+
+            expect(screen.queryByText('Category is required')).not.toBeInTheDocument();
+
+            fireEvent.focus(categorySelect);
+            fireEvent.blur(categorySelect);
+
+            await waitFor(() => {
+                expect(screen.getByText('Select Category')).toBeInTheDocument();
+            });
+
+            fireEvent.mouseDown(categorySelect);
+            await waitFor(() => {
+                const option = screen.getByTestId('category-option-other');
+                fireEvent.click(option);
+            });
+
+            await waitFor(() => {
+                expect(screen.queryByText('Category is required')).not.toBeInTheDocument();
+            });
+        });
+
+        it('covers all FileUploadSection props', () => {
+            const fileStateWithAllData = {
+                fileRejected: true,
+                fileIsLoading: true,
+                fileName: 'test-file.csv',
+                fileDate: '2024-01-15',
+                currentFile: new File(['content'], 'test.csv', { type: 'text/csv' }),
+                setFileIsLoading: jest.fn(),
+                setFileAcceptedState: jest.fn(),
+                setFileRejectedState: jest.fn(),
+                setFileRejected: jest.fn(),
+                resetFileState: jest.fn(),
+            };
+
+            const errorHandlingWithAllData = {
+                alertTitle: 'Upload Error',
+                alertDescription: 'The file could not be processed',
+                isReport: true,
+                idReport: 'error-report-456',
+                showCategoryError: jest.fn(),
+                clearErrors: jest.fn(),
+                handleUploadError: jest.fn(),
+                handleGenericError: jest.fn(),
+                showMissingFileError: jest.fn(),
+                handleDropRejectedError: jest.fn(),
+            };
+
+            (useFileState as jest.Mock).mockReturnValue(fileStateWithAllData);
+            (useErrorHandling as jest.Mock).mockReturnValue(errorHandlingWithAllData);
+
+            const props = { ...defaultProps, fileAccepted: true };
+            render(<FormAddProducts {...props} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+            const option = screen.getByTestId('category-option-cookinghobs');
+            fireEvent.click(option);
+
+            expect(screen.getByTestId('template-filename')).toHaveTextContent('cookinghobs_template.csv');
+            expect(screen.getByTestId('formik-category')).toHaveTextContent('cookinghobs');
+        });
+
+        it('ensures useImperativeHandle dependency array is covered', () => {
+            const ref1 = React.createRef<any>();
+            const props1 = { ...defaultProps, fileAccepted: false };
+            const { rerender } = render(<FormAddProducts {...props1} ref={ref1} />);
+
+            const validateForm1 = ref1.current.validateForm;
+
+            const ref2 = React.createRef<any>();
+            const props2 = { ...defaultProps, fileAccepted: true };
+            rerender(<FormAddProducts {...props2} ref={ref2} />);
+
+            const validateForm2 = ref2.current.validateForm;
+
+            expect(typeof validateForm1).toBe('function');
+            expect(typeof validateForm2).toBe('function');
+        });
+
+        it('covers handleInputClick preventDefault path', () => {
+            render(<FormAddProducts {...defaultProps} />);
+            const input = screen.getByTestId('file-input');
+            fireEvent.click(input);
+            expect(mockErrorHandling.showCategoryError).toHaveBeenCalledTimes(1);
+        });
+
+        it('tests all MenuItem rendering', () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const categorySelect = screen.getByRole('combobox');
+            fireEvent.mouseDown(categorySelect);
+
+            expect(screen.getByTestId('category-option-cookinghobs')).toBeInTheDocument();
+            expect(screen.getByTestId('category-option-other')).toBeInTheDocument();
+        });
+
+        it('covers formik enableReinitialize and validateOnMount', () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            expect(screen.getByRole('combobox')).toBeInTheDocument();
+        });
+
+        it('handles all error clearing scenarios', () => {
+            render(<FormAddProducts {...defaultProps} />);
+
+            const changeFileBtn = screen.getByTestId('change-file-btn');
+            fireEvent.click(changeFileBtn);
+            expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
+
+            const { useDropzone } = require('react-dropzone');
+            const dropzoneOptions = useDropzone.mock.calls[0][0];
+
+            const rejectedFiles = [
+                {
+                    file: new File(['content'], 'test.txt', { type: 'text/plain' }),
+                    errors: [{ code: 'file-invalid-type' }],
+                },
+            ];
+
+            act(() => {
+                dropzoneOptions.onDropRejected(rejectedFiles);
+            });
+
+            expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
+        });
     });
-
-    it('covers isCategoryValid function branches', async () => {
-      const ref = React.createRef<any>();
-      render(<FormAddProducts {...defaultProps} ref={ref} />);
-
-      let result = await ref.current.validateForm();
-      expect(result).toBe(false);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
-
-      result = await ref.current.validateForm();
-      expect(result).toBe(false);
-    });
-
-    it('handles formik validation states correctly', async () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const categorySelect = screen.getByRole('combobox');
-
-      expect(screen.queryByText('Category is required')).not.toBeInTheDocument();
-
-      fireEvent.focus(categorySelect);
-      fireEvent.blur(categorySelect);
-
-      await waitFor(() => {
-        expect(screen.getByText('Select Category')).toBeInTheDocument();
-      });
-
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-other');
-        fireEvent.click(option);
-      });
-
-      await waitFor(() => {
-        expect(screen.queryByText('Category is required')).not.toBeInTheDocument();
-      });
-    });
-
-    it('covers all FileUploadSection props', () => {
-      const fileStateWithAllData = {
-        fileRejected: true,
-        fileIsLoading: true,
-        fileName: 'test-file.csv',
-        fileDate: '2024-01-15',
-        currentFile: new File(['content'], 'test.csv', { type: 'text/csv' }),
-        setFileIsLoading: jest.fn(),
-        setFileAcceptedState: jest.fn(),
-        setFileRejectedState: jest.fn(),
-        setFileRejected: jest.fn(),
-        resetFileState: jest.fn(),
-      };
-
-      const errorHandlingWithAllData = {
-        alertTitle: 'Upload Error',
-        alertDescription: 'The file could not be processed',
-        isReport: true,
-        idReport: 'error-report-456',
-        showCategoryError: jest.fn(),
-        clearErrors: jest.fn(),
-        handleUploadError: jest.fn(),
-        handleGenericError: jest.fn(),
-        showMissingFileError: jest.fn(),
-        handleDropRejectedError: jest.fn(),
-      };
-
-      (useFileState as jest.Mock).mockReturnValue(fileStateWithAllData);
-      (useErrorHandling as jest.Mock).mockReturnValue(errorHandlingWithAllData);
-
-      const props = { ...defaultProps, fileAccepted: true };
-      render(<FormAddProducts {...props} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      const option = screen.getByTestId('category-option-cookinghobs');
-      fireEvent.click(option);
-
-      expect(screen.getByTestId('template-filename')).toHaveTextContent('cookinghobs_template.csv');
-      expect(screen.getByTestId('formik-category')).toHaveTextContent('cookinghobs');
-    });
-
-    it('ensures useImperativeHandle dependency array is covered', () => {
-      const ref1 = React.createRef<any>();
-      const props1 = { ...defaultProps, fileAccepted: false };
-      const { rerender } = render(<FormAddProducts {...props1} ref={ref1} />);
-
-      const validateForm1 = ref1.current.validateForm;
-
-      const ref2 = React.createRef<any>();
-      const props2 = { ...defaultProps, fileAccepted: true };
-      rerender(<FormAddProducts {...props2} ref={ref2} />);
-
-      const validateForm2 = ref2.current.validateForm;
-
-      expect(typeof validateForm1).toBe('function');
-      expect(typeof validateForm2).toBe('function');
-    });
-
-    it('covers handleInputClick preventDefault path', () => {
-      render(<FormAddProducts {...defaultProps} />);
-      const input = screen.getByTestId('file-input');
-      fireEvent.click(input);
-      expect(mockErrorHandling.showCategoryError).toHaveBeenCalledTimes(1);
-    });
-
-    it('tests all MenuItem rendering', () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-
-      expect(screen.getByTestId('category-option-cookinghobs')).toBeInTheDocument();
-      expect(screen.getByTestId('category-option-other')).toBeInTheDocument();
-    });
-
-    it('covers formik enableReinitialize and validateOnMount', () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      expect(screen.getByRole('combobox')).toBeInTheDocument();
-    });
-
-    it('handles all error clearing scenarios', () => {
-      render(<FormAddProducts {...defaultProps} />);
-
-      const changeFileBtn = screen.getByTestId('change-file-btn');
-      fireEvent.click(changeFileBtn);
-      expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
-
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
-
-      const rejectedFiles = [
-        {
-          file: new File(['content'], 'test.txt', { type: 'text/plain' }),
-          errors: [{ code: 'file-invalid-type' }],
-        },
-      ];
-
-      act(() => {
-        dropzoneOptions.onDropRejected(rejectedFiles);
-      });
-
-      expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
-    });
-  });
 });
