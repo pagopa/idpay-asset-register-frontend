@@ -269,10 +269,11 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
     ? (data as any).formalMotivation
     : EMPTY_DATA;
 
-  const formalMotivationDate =
-    chronology.length > 0 && chronology[chronology.length - 1]?.updateDate
-      ? chronology[chronology.length - 1].updateDate
-      : undefined;
+  const formalMotivationDate = (data as any)?.formalMotivationDate
+    ? (data as any).formalMotivationDate
+    : chronology.length > 0 && chronology[chronology.length - 1]?.updateDate
+    ? chronology[chronology.length - 1].updateDate
+    : undefined;
 
   const motivationRow =
     user?.org_role !== USERS_TYPES.OPERATORE && hasMotivations
@@ -302,8 +303,12 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
     if (formalMotivationDate) {
       return format(new Date(formalMotivationDate), 'dd/MM/yyyy, HH:mm');
     }
-    if (chronology.length > 0 && chronology[chronology.length - 1]?.updateDate) {
-      return format(new Date(chronology[chronology.length - 1].updateDate), 'dd/MM/yyyy, HH:mm');
+    // eslint-disable-next-line functional/no-let
+    for (let i = chronology.length - 1; i >= 0; i--) {
+      const entry: any = chronology[i];
+      if (entry && entry.updateDate) {
+        return format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm');
+      }
     }
     return EMPTY_DATA;
   }
