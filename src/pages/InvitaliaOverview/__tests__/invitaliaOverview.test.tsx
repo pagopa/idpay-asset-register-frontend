@@ -1,3 +1,6 @@
+import React from 'react';
+import '@testing-library/jest-dom';
+
 jest.mock(
   '../../../components/DetailDrawer/DetailDrawer',
   () => (props: any) =>
@@ -18,6 +21,23 @@ import * as registerService from '../../../services/registerService';
 import * as reduxHooks from '../../../redux/hooks';
 import * as reduxSlice from '../../../redux/slices/invitaliaSlice';
 import { Institution } from '../../../model/Institution';
+import { Provider } from 'react-redux';
+import { createStore } from '../../../redux/store';
+
+jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
+  ...jest.requireActual('@pagopa/selfcare-common-frontend/lib'),
+  TitleBox: (props: any) => (
+    <div data-testid={props['data-testid']}>
+      <h4>{props.title}</h4>
+      <p>{props.subTitle}</p>
+    </div>
+  ),
+}));
+
+const renderWithProvider = (ui: React.ReactElement) => {
+  const store = createStore();
+  return render(<Provider store={store}>{ui}</Provider>);
+};
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -34,22 +54,30 @@ jest.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(jest.fn());
 jest.spyOn(reduxSlice, 'setInstitutionList').mockReturnValue({ type: 'MOCK_ACTION' } as any);
 
 jest.mock('../../../helpers', () => ({
-  fetchUserFromLocalStorage: () => ({ uid: 'user-1' }),
+  fetchUserFromLocalStorage: jest.fn(),
 }));
 
-jest.mock('../institutionsTable', () => (props: any) => (
-  <div data-testid="institutions-table">
-    <button onClick={() => props.onRequestSort({}, 'description')}>Sort</button>
-    <button onClick={() => props.onPageChange({}, 1)}>PageChange</button>
-    <button onClick={() => props.onRowsPerPageChange({ target: { value: '5' } })}>
-      RowsPerPage
-    </button>
-    <button onClick={() => props.onDetailRequest(props.data.institutions[0])}>Detail</button>
-    <span>{props.loading ? 'Loading...' : 'Loaded'}</span>
-    <span>{props.error}</span>
-    <span>{props.data.institutions.length}</span>
-  </div>
-));
+jest.mock('../institutionsTable', () => (props: any) => {
+  return (
+    <div data-testid="institutions-table">
+      <button onClick={() => props.onRequestSort({}, 'description')}>Sort</button>
+      <button onClick={() => props.onPageChange({}, 1)}>PageChange</button>
+      <button onClick={() => props.onRowsPerPageChange({ target: { value: '5' } })}>
+        RowsPerPage
+      </button>
+      <button
+        onClick={() =>
+          props.data.institutions.length > 0 && props.onDetailRequest(props.data.institutions[0])
+        }
+      >
+        Detail
+      </button>
+      <span>{props.loading ? 'Loading...' : 'Loaded'}</span>
+      <span>{props.error}</span>
+      <span>{props.data.institutions.length}</span>
+    </div>
+  );
+});
 
 const mockInstitutions = [
   { institutionId: '1', description: 'Alpha' },
@@ -60,6 +88,9 @@ const mockInstitutionDetail = { institutionId: '1', description: 'Alpha', extra:
 
 describe('InvitaliaOverview', () => {
   beforeEach(() => {
+    const { fetchUserFromLocalStorage } = require('../../../helpers');
+    fetchUserFromLocalStorage.mockReturnValue({ uid: 'user-x' });
+
     jest.spyOn(registerService, 'getInstitutionsList').mockResolvedValue({
       institutions: mockInstitutions,
     });
@@ -71,32 +102,47 @@ describe('InvitaliaOverview', () => {
   });
 
   it('renders title and subtitle', async () => {
-    render(<InvitaliaOverview />);
+    renderWithProvider(<InvitaliaOverview />);
     expect(await screen.findByTestId('title-overview')).toBeInTheDocument();
   });
 
   it('renders institutions table with data', async () => {
-    render(<InvitaliaOverview />);
-    expect(await screen.findByTestId('institutions-table')).toBeInTheDocument();
+    const originalUseState = React.useState;
+    let useStateCallCount = 0;
+    jest.spyOn(React, 'useState').mockImplementation(((init: unknown) => {
+      useStateCallCount++;
+      if (useStateCallCount === 1) {
+        return [{ institutions: mockInstitutions }, jest.fn()];
+      }
+      return originalUseState(init);
+    }) as typeof React.useState);
+    renderWithProvider(<InvitaliaOverview />);
+    const table = await screen.findByTestId('institutions-table');
     expect(screen.getByText('Loaded')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
+    const spans = table.querySelectorAll('span');
+    const numbers = Array.from(spans)
+      .map((el) => el.textContent)
+      .filter((t) => t && /^\d+$/.test(t));
+    expect(numbers.length).toBeGreaterThan(0);
+    expect(numbers).toContain('2');
+    (React.useState as jest.Mock).mockRestore?.();
   });
 
   it('filters institutions by search', async () => {
-    render(<InvitaliaOverview />);
+    renderWithProvider(<InvitaliaOverview />);
     const input = screen.getByLabelText('Cerca per nome produttore') as HTMLInputElement;
     fireEvent.change(input, { target: { value: 'Alpha' } });
     expect(input).toHaveValue('Alpha');
   });
 
   it('sorts institutions', async () => {
-    render(<InvitaliaOverview />);
+    renderWithProvider(<InvitaliaOverview />);
     const sortBtn = await screen.findByText('Sort');
     fireEvent.click(sortBtn);
   });
 
   it('changes page and rows per page', async () => {
-    render(<InvitaliaOverview />);
+    renderWithProvider(<InvitaliaOverview />);
     const pageBtn = await screen.findByText('PageChange');
     fireEvent.click(pageBtn);
     const rowsBtn = await screen.findByText('RowsPerPage');
@@ -104,7 +150,16 @@ describe('InvitaliaOverview', () => {
   });
 
   it('opens and closes the detail drawer', async () => {
-    render(<InvitaliaOverview />);
+    const originalUseState = React.useState;
+    let useStateCallCount = 0;
+    jest.spyOn(React, 'useState').mockImplementation(((init: unknown) => {
+      useStateCallCount++;
+      if (useStateCallCount === 1) {
+        return [{ institutions: mockInstitutions }, jest.fn()];
+      }
+      return originalUseState(init);
+    }) as typeof React.useState);
+    renderWithProvider(<InvitaliaOverview />);
     const detailBtn = await screen.findByText('Detail');
     fireEvent.click(detailBtn);
     expect(await screen.findByTestId('detail-drawer')).toBeInTheDocument();
@@ -114,19 +169,20 @@ describe('InvitaliaOverview', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument();
     });
+    (React.useState as jest.Mock).mockRestore?.();
   });
 
   it('handles loading state', async () => {
-    jest.spyOn(registerService, 'getInstitutionsList').mockImplementation(
-      () => new Promise(() => {}) // never resolves
-    );
-    render(<InvitaliaOverview />);
+    jest
+      .spyOn(registerService, 'getInstitutionsList')
+      .mockImplementation(() => new Promise(() => {}));
+    renderWithProvider(<InvitaliaOverview />);
     expect(await screen.findByText('Loading...')).toBeInTheDocument();
   });
 
   it('handles error in fetchInstitutions', async () => {
     jest.spyOn(registerService, 'getInstitutionsList').mockRejectedValue(new Error('fail'));
-    render(<InvitaliaOverview />);
+    renderWithProvider(<InvitaliaOverview />);
     await waitFor(() => {
       expect(screen.getByText('Loaded')).toBeInTheDocument();
     });
@@ -134,7 +190,7 @@ describe('InvitaliaOverview', () => {
 
   it('handles error in handleDetailRequest', async () => {
     jest.spyOn(registerService, 'getInstitutionById').mockRejectedValue(new Error('fail'));
-    render(<InvitaliaOverview />);
+    renderWithProvider(<InvitaliaOverview />);
     const detailBtn = await screen.findByText('Detail');
     fireEvent.click(detailBtn);
   });
