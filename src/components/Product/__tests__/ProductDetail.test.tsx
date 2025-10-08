@@ -25,26 +25,26 @@ jest.mock('../../../services/registerService', () => ({
   setWaitApprovedStatusList: jest.fn(),
 }));
 
-jest.mock('../ProductConfirmDialog', () => {
-  return function ProductConfirmDialog({ open, onCancel, onConfirm, onSuccess }: any) {
-    return open ? (
-      <div data-testid="confirm-dialog">
-        <button data-testid="dialog-cancel" onClick={onCancel}>
-          Cancel
-        </button>
-        <button
-          data-testid="dialog-confirm"
-          onClick={async () => {
-            await onConfirm?.();
-            onSuccess?.();
-          }}
-        >
-          Confirm
-        </button>
-      </div>
-    ) : null;
-  };
-});
+const ProductConfirmDialog = ({ open, onCancel, onConfirm, onSuccess }: any) =>
+  open ? (
+    <div data-testid="confirm-dialog">
+      <button data-testid="dialog-cancel" onClick={onCancel}>
+        Cancel
+      </button>
+      <button
+        data-testid="dialog-confirm"
+        onClick={async () => {
+          await onConfirm?.();
+          onSuccess?.();
+        }}
+      >
+        Confirm
+      </button>
+    </div>
+  ) : null;
+
+// Se ProductDetail importa ProductConfirmDialog, si può fare:
+// jest.mock('../ProductConfirmDialog', () => ({ __esModule: true, default: ProductConfirmDialog }));
 
 jest.mock('../ProductInfoRow', () => ({
   __esModule: true,

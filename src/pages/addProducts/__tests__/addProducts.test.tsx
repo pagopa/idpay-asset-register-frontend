@@ -101,26 +101,6 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-const mockValidateForm = jest.fn();
-
-jest.mock('../formAddProducts', () => {
-  const React = require('react');
-  return {
-    __esModule: true,
-    default: React.forwardRef(({ fileAccepted, setFileAccepted }: any, ref: any) => {
-      React.useImperativeHandle(ref, () => ({
-        validateForm: mockValidateForm,
-      }));
-
-      return (
-          <div data-testid="form-add-products">
-            <input type="file" data-testid="file-input" onChange={() => setFileAccepted(true)} />
-            <div>File accepted: {fileAccepted ? 'Yes' : 'No'}</div>
-          </div>
-      );
-    }),
-  };
-});
 
 jest.mock('../../../routes', () => ({
   __esModule: true,
@@ -142,7 +122,6 @@ describe('AddProducts Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockOnExit.mockImplementation((callback) => callback());
-    mockValidateForm.mockResolvedValue(true);
   });
 
   test('renders component correctly', () => {
