@@ -48,29 +48,24 @@ jest.mock('../../../api/registerApiClient', () => ({
 jest.mock('../../Header/Header', () => {
   return function MockHeader({ onExit, withSecondHeader }: any) {
     return (
-        <div data-testid="mock-header">
-          <button data-testid="exit-button" onClick={onExit}>
-            Exit
-          </button>
-          <span data-testid="second-header-flag">{String(withSecondHeader)}</span>
-        </div>
+      <div data-testid="mock-header">
+        <button data-testid="exit-button" onClick={onExit}>
+          Exit
+        </button>
+        <span data-testid="second-header-flag">{String(withSecondHeader)}</span>
+      </div>
     );
   };
 });
 
-<<<<<<< HEAD
-jest.mock('../../SideMenu/SideMenu', () => () => <div data-testid="mock-sidemenu" />);
-
-=======
->>>>>>> 4c12321044b288cf4f0285756856245dbd7cdb08
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   __esModule: true,
   Footer: ({ onExit }: any) => (
-      <div data-testid="mock-footer">
-        <button data-testid="footer-exit-button" onClick={onExit}>
-          Footer Exit
-        </button>
-      </div>
+    <div data-testid="mock-footer">
+      <button data-testid="footer-exit-button" onClick={onExit}>
+        Footer Exit
+      </button>
+    </div>
   ),
 }));
 
@@ -115,6 +110,7 @@ jest.mock('@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice', () => {
 
 import Layout from '../Layout';
 
+jest.mock('../../SideMenu/SideMenu', () => () => <div data-testid="mock-sidemenu" />);
 
 const {
   __mocks__: { mockStorageTokenOpsDelete, mockStorageUserOpsDelete },
@@ -168,11 +164,11 @@ class StorageMock implements Storage {
 
 describe('Layout component', () => {
   const createTestStore = () =>
-      configureStore({
-        reducer: {
-          user: (state = { logged: mockLoggedUser }) => state,
-        },
-      });
+    configureStore({
+      reducer: {
+        user: (state = { logged: mockLoggedUser }) => state,
+      },
+    });
 
   let localStorageMock: StorageMock;
   let sessionStorageMock: StorageMock;
@@ -220,13 +216,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/home']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/home']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
@@ -238,13 +234,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/products']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/products']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
@@ -254,13 +250,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/invitalia-products']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/invitalia-products']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
@@ -270,13 +266,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/producers']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/producers']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
@@ -286,13 +282,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/uploads']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/uploads']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
@@ -302,13 +298,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/privacy-policy']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/privacy-policy']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
@@ -321,13 +317,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/tos']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/tos']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.queryByTestId('mock-sidemenu')).not.toBeInTheDocument();
@@ -337,13 +333,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/assistance']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/assistance']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByTestId('second-header-flag')).toHaveTextContent('false');
@@ -353,13 +349,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/home']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/home']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.getByTestId('second-header-flag')).toHaveTextContent('true');
@@ -369,13 +365,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/home']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/home']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     const exitButton = screen.getByTestId('exit-button');
@@ -410,13 +406,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/home']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/home']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     const footerExitButton = screen.getByTestId('footer-exit-button');
@@ -439,13 +435,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/home']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/home']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     const exitButton = screen.getByTestId('exit-button');
@@ -468,13 +464,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/home']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/home']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     const exitButton = screen.getByTestId('exit-button');
@@ -489,13 +485,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/home']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/home']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     const exitButton = screen.getByTestId('exit-button');
@@ -510,13 +506,13 @@ describe('Layout component', () => {
     const store = createTestStore();
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/home']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/home']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     const exitButton = screen.getByTestId('exit-button');
@@ -540,13 +536,13 @@ describe('Layout component', () => {
     localStorageMock.setItem('MixedFilter', 'value');
 
     render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={['/home']}>
-            <Layout>
-              <div data-testid="layout-children" />
-            </Layout>
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/home']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
     );
 
     const exitButton = screen.getByTestId('exit-button');
