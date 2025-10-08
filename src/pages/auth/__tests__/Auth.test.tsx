@@ -6,7 +6,6 @@ import * as useLogin from '../../../hooks/useLogin';
 import { ENV } from '../../../utils/env';
 import ROUTES from '../../../routes';
 
-
 jest.mock('../../../utils/env', () => ({
   ENV: {
     URL_API: {
@@ -25,9 +24,9 @@ jest.mock('../../../utils/env', () => ({
 jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
-    HOME: '/home'
+    HOME: '/home',
   },
-  BASE_ROUTE: '/base'
+  BASE_ROUTE: '/base',
 }));
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/services/analyticsService');
@@ -35,24 +34,61 @@ jest.mock('@pagopa/selfcare-common-frontend/lib/utils/storage');
 jest.mock('../../../hooks/useLogin');
 
 describe('Auth component', () => {
+  const originalAssign = window.location.assign;
+  const originalHash = window.location.hash;
   const originalLocation = window.location;
+  const originalFetch = global.fetch;
+
+  beforeAll(() => {
+    // Salva lo stato originale di fetch
+    // @ts-ignore
+    global.fetch = originalFetch;
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();
-    delete (window as any).location;
-    window.location = { assign: jest.fn(), hash: '#token=mock-token' } as any;
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: {
+        assign: jest.fn(),
+        hash: '#token=mock-token',
+      },
+    });
+  });
+
+  afterEach(() => {
+    // Ripristina window.location dopo ogni test
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    });
+    // Ripristina window.location.hash
+    window.location.hash = originalHash;
+    // Ripristina fetch
+    // @ts-ignore
+    global.fetch = originalFetch;
   });
 
   afterAll(() => {
-    window.location = originalLocation;
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: {
+        assign: originalAssign,
+        hash: originalHash,
+      },
+    });
+    // @ts-ignore
+    global.fetch = originalFetch;
   });
 
   it('should handle successful login and redirect to home', async () => {
     const mockUser = { name: 'Test User' };
     const mockInnerToken = 'inner-token';
 
-    (global.fetch as jest.Mock) = jest.fn().mockResolvedValue({
+    // @ts-ignore
+    global.fetch = jest.fn().mockResolvedValue({
       text: () => Promise.resolve(mockInnerToken),
+      headers: { get: () => null },
     });
 
     (useLogin.userFromJwtTokenAsJWTUser as jest.Mock).mockReturnValue(mockUser);
@@ -80,9 +116,9 @@ describe('Auth component', () => {
 
     await waitFor(() => {
       expect(trackAppErrorMock).toHaveBeenCalledWith(
-          expect.objectContaining({
-            id: 'INVALIDAUTHREQUEST',
-          })
+        expect.objectContaining({
+          id: 'INVALIDAUTHREQUEST',
+        })
       );
       expect(window.location.assign).toHaveBeenCalledWith(ENV.URL_FE.LOGIN);
     });
@@ -91,7 +127,8 @@ describe('Auth component', () => {
   it('should redirect to login on fetch error', async () => {
     window.location.hash = '#token=mock-token';
 
-    (global.fetch as jest.Mock) = jest.fn().mockRejectedValue(new Error('fetch failed'));
+    // @ts-ignore
+    global.fetch = jest.fn().mockRejectedValue(new Error('fetch failed'));
 
     render(<Auth />);
 
@@ -101,7 +138,12 @@ describe('Auth component', () => {
   });
 
   it('should redirect to login if window.location.hash is undefined', async () => {
-    delete window.location.hash;
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: {
+        assign: jest.fn(),
+      },
+    });
 
     const trackAppErrorMock = jest.spyOn(analyticsService, 'trackAppError');
 
@@ -109,9 +151,9 @@ describe('Auth component', () => {
 
     await waitFor(() => {
       expect(trackAppErrorMock).toHaveBeenCalledWith(
-          expect.objectContaining({
-            id: 'INVALIDAUTHREQUEST',
-          })
+        expect.objectContaining({
+          id: 'INVALIDAUTHREQUEST',
+        })
       );
       expect(window.location.assign).toHaveBeenCalledWith(ENV.URL_FE.LOGIN);
     });
