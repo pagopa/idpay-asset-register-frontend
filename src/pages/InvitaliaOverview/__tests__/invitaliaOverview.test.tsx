@@ -23,6 +23,10 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
+  withTranslation: () => (Component: any) => {
+    Component.defaultProps = { ...(Component.defaultProps || {}), t: (k: string) => k };
+    return Component;
+  },
 }));
 
 jest.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(jest.fn());
