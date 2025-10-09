@@ -359,10 +359,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   };
 
   const handleOpenModalWithStatusCheck = (action: string) => {
-    const { allUploaded, allSupervised, allWaitApproved, someUploaded, length } = getStatusChecks(
-      selected,
-      tableData
-    );
+    const { selectedStatuses, someUploaded, length } = getStatusChecks(selected, tableData);
 
     if (length === 0) {
       return;
@@ -374,12 +371,14 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       return;
     }
 
-    if (allUploaded || allSupervised || (isInvitaliaAdmin && allWaitApproved)) {
-      void handleOpenModal(action);
-    } else {
+    const uniqueStatuses = Array.from(new Set(selectedStatuses));
+    if (uniqueStatuses.length > 1) {
       setShowMixStatusError(true);
       setTimeout(() => setShowMixStatusError(false), 3000);
+      return;
     }
+
+    void handleOpenModal(action);
   };
 
   const filtersLabel = useMemo(() => {
@@ -588,7 +587,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         ) : (
           <span />
         )}
-        <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />
+        {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
       </Box>
 
       {tableData?.length === 0 && !loading && (

@@ -269,11 +269,6 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
     ? (data as any).formalMotivation
     : EMPTY_DATA;
 
-  const formalMotivationDate =
-    chronology.length > 0 && chronology[chronology.length - 1]?.updateDate
-      ? chronology[chronology.length - 1].updateDate
-      : undefined;
-
   const motivationRow =
     user?.org_role !== USERS_TYPES.OPERATORE && hasMotivations
       ? ({
@@ -295,15 +290,26 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
         } as RowConfig & { renderCustom?: () => JSX.Element })
       : null;
 
-  function getFormalMotivationDateLabel(
-    formalMotivationDate: string | undefined,
-    chronology: Array<any>
-  ) {
-    if (formalMotivationDate) {
-      return format(new Date(formalMotivationDate), 'dd/MM/yyyy, HH:mm');
+  function isValidDateString(date: string | undefined): boolean {
+    if (!date) {
+      return false;
     }
-    if (chronology.length > 0 && chronology[chronology.length - 1]?.updateDate) {
-      return format(new Date(chronology[chronology.length - 1].updateDate), 'dd/MM/yyyy, HH:mm');
+    const d = new Date(date);
+    return !isNaN(d.getTime());
+  }
+
+  function getFormalMotivationDateLabel(chronology: Array<any>) {
+    try {
+      const rejectedEntry = chronology.find(
+        (entry: any) => entry?.targetStatus === 'REJECTED' && isValidDateString(entry?.updateDate)
+      );
+      if (rejectedEntry) {
+        return format(new Date(rejectedEntry.updateDate), 'dd/MM/yyyy, HH:mm');
+      }
+    } catch (error) {
+      if (DEBUG_CONSOLE) {
+        console.log('getFormalMotivationDateLabel error:', error);
+      }
     }
     return EMPTY_DATA;
   }
@@ -321,7 +327,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
     if (user?.org_role !== USERS_TYPES.OPERATORE) {
       return dateLabel !== EMPTY_DATA ? `${operator} · ${dateLabel}` : operator;
     }
-    return dateLabel !== EMPTY_DATA ? `${dateLabel}` : '';
+    return dateLabel !== EMPTY_DATA ? `${dateLabel}` : EMPTY_DATA;
   }
 
   const formalMotivationRow =
@@ -329,7 +335,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
       ? null
       : ({
           renderCustom(this: RowConfig) {
-            const dateLabel = getFormalMotivationDateLabel(formalMotivationDate, chronology);
+            const dateLabel = getFormalMotivationDateLabel(chronology);
             const operator = getFormalMotivationOperator(user, chronology);
             const header = getFormalMotivationHeader(user, dateLabel, operator);
 
@@ -340,7 +346,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                 sx={{ marginTop: 3, fontWeight: 700 }}
                 labelColor="#17324D"
                 value={
-                  <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
                       <Box component="span" sx={{ width: '100%' }}>
                         {header && header.trim() !== '' && (
