@@ -86,7 +86,7 @@ describe('UploadsTable', () => {
       {
         productFileId: 'file123',
         batchName: 'Batch A',
-        dateUpload: new Date('2025-07-21T10:00:45Z'),
+        dateUpload: '2025-07-21T10:00:45Z',
         findedProductsNumber: 5,
         addedProductNumber: 3,
         uploadStatus: 'PARTIAL',

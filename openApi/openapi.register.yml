@@ -330,6 +330,8 @@ paths:
         - $ref: '#/components/parameters/size_query'
         - $ref: '#/components/parameters/sort_query'
         - $ref: '#/components/parameters/category_query'
+        - $ref: '#/components/parameters/brand_query'
+        - $ref: '#/components/parameters/model_query'
         - $ref: '#/components/parameters/eprelCode_query'
         - $ref: '#/components/parameters/gtinCode_query'
         - $ref: '#/components/parameters/productFileId_query'
@@ -646,9 +648,8 @@ components:
             - LOADED
         dateUpload:
           type: string
-          description: 'ENG: The date of upload <br> IT: La data di caricamento'
+          description: 'ENG: The date of upload. Example format: "2025-10-07T07:34:30.163+00:00" (ISO 8601 MongoDB string) <br> IT: La data di caricamento. Esempio formato: "2025-10-07T07:34:30.163+00:00" (stringa ISO 8601 MongoDB)'
           maxLength: 255
-          format: date-time
         findedProductsNumber:
           type: number
           description: 'ENG: The number of products found in the batch <br> IT: Il
@@ -724,9 +725,7 @@ components:
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
         registrationDate:
           type: string
-          format: date-time
-          description: 'ENG: Timestamps of insert (after EPREL checks) <br> IT: Data
-            caricamento prodotto (dopo la verifica EPREL)'
+          description: 'ENG: Timestamps of insert (after EPREL checks). Example format: "2025-10-07T07:34:30.163+00:00" (ISO 8601 MongoDB string) <br> IT: Data caricamento prodotto (dopo la verifica EPREL). Esempio formato: "2025-10-07T07:34:30.163+00:00" (stringa ISO 8601 MongoDB)'
           maxLength: 255
         status:
           $ref: '#/components/schemas/ProductStatus'
@@ -2019,6 +2018,8 @@ components:
         type: string
         enum:
           - category, desc
+          - brand, desc
+          - model, desc
           - batchName, desc
           - energyClass, desc
           - gtinCode, desc
@@ -2026,6 +2027,8 @@ components:
           - status, desc
           - organizationName, asc
           - category, asc
+          - brand, asc
+          - model, asc
           - batchName, asc
           - energyClass, asc
           - gtinCode, asc
@@ -2034,6 +2037,22 @@ components:
           - organizationName, desc
     eprelCode_query:
       name: eprelCode
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 50
+        pattern: ^\d+$
+    brand_query:
+      name: brand
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 50
+        pattern: ^\d+$
+    model_query:
+      name: model
       in: query
       required: false
       schema:

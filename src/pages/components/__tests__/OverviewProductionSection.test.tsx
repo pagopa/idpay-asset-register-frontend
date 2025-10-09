@@ -9,14 +9,15 @@ const mockTranslations = {
   'pages.overview.overviewTitleBoxProdDescription': 'Carica i tuoi prodotti per iniziare',
   'pages.overview.overviewTitleBoxProdBtn': 'Carica Prodotti',
   'errors.uploadsList.errorDescription': 'Errore nel caricamento dei dati',
-  'tableHeader': 'stato caricamenti',
-  'warning': 'Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e potrai consultare i dettagli nelle sezioni dedicate.',
-  'allUploadsLink': 'Vedi i caricamenti'
+  tableHeader: 'stato caricamenti',
+  warning:
+    'Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e potrai consultare i dettagli nelle sezioni dedicate.',
+  allUploadsLink: 'Vedi i caricamenti',
 };
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => mockTranslations[key] || key,
+    t: (key: string) => mockTranslations[key as keyof typeof mockTranslations] ?? key,
   }),
 }));
 
@@ -45,7 +46,7 @@ jest.mock('../../../routes', () => ({
 }));
 
 const theme = createTheme();
-const TestWrapper = ({ children }) => (
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
     <ThemeProvider theme={theme}>{children}</ThemeProvider>
   </BrowserRouter>
@@ -66,15 +67,6 @@ describe('OverviewProductionSection', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
 
-  /* it('renders error state', async () => {
-        mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
-        render(<TestWrapper><OverviewProductionSection /></TestWrapper>);
-        await waitFor(() => {
-            expect(screen.getByText('Carica i tuoi prodotti per iniziare')).toBeInTheDocument();
-        });
-    });
-    */
-
   it('renders empty data state', async () => {
     mockGetProductFilesList.mockResolvedValue({ content: [] });
     render(
@@ -94,7 +86,7 @@ describe('OverviewProductionSection', () => {
           productFileId: '1',
           batchName: 'Batch 1',
           uploadStatus: 'LOADED',
-          dateUpload: new Date('2023-07-15T10:30:45Z'),
+          dateUpload: '2023-07-15T10:30:45Z',
         },
       ],
     });
@@ -104,7 +96,7 @@ describe('OverviewProductionSection', () => {
       </TestWrapper>
     );
     await waitFor(() => {
-      expect(screen.getByText("Ultimo caricamento")).toBeInTheDocument();
+      expect(screen.getByText('Ultimo caricamento')).toBeInTheDocument();
     });
   });
 
@@ -115,7 +107,7 @@ describe('OverviewProductionSection', () => {
           productFileId: '1',
           batchName: 'Batch 1',
           uploadStatus: 'UPLOADED',
-          dateUpload: new Date('2023-07-15T10:30:00Z'),
+          dateUpload: '2023-07-15T10:30:00Z',
         },
       ],
     });
@@ -136,7 +128,7 @@ describe('OverviewProductionSection', () => {
           productFileId: '1',
           batchName: 'Batch 1',
           uploadStatus: 'IN_PROCESS',
-          dateUpload: new Date('2023-07-15T10:30:00Z'),
+          dateUpload: '2023-07-15T10:30:00Z',
         },
       ],
     });

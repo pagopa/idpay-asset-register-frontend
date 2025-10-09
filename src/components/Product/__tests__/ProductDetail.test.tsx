@@ -91,7 +91,7 @@ const baseData = (over: Partial<ProductDTO> = {}): ProductDTO => ({
   gtinCode: 'GTIN-001',
   productName: 'Prod',
   batchName: 'Batch',
-  registrationDate: new Date('2024-01-01T00:00:00.000Z'),
+  registrationDate: '2024-01-01T00:00:00.000Z',
   eprelCode: 'EPREL',
   productCode: 'P1',
   category: CategoryEnum.Lavatrice,
@@ -142,7 +142,7 @@ describe('ProductDetail.extra', () => {
   it('renders chronology + formalMotivation blocks when present (non OPERATORE)', () => {
     const data = baseData({
       statusChangeChronology: [
-        { role: 'L1', motivation: '   ', updateDate: '2024-05-05T10:00:00Z' }, // filtrata (vuota)
+        { role: 'L1', motivation: '   ', updateDate: '2024-05-05T10:00:00Z' },
         { role: 'L1', motivation: 'Reason OK', updateDate: '2024-05-06T11:00:00Z' },
       ] as any,
       formalMotivation: 'Formal OK',
