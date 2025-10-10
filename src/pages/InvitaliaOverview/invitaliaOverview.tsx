@@ -3,6 +3,7 @@ import { Box, InputAdornment, TextField } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { Search } from '@mui/icons-material';
+import { DEBUG_CONSOLE } from '../../utils/constants';
 import DetailDrawer from '../../components/DetailDrawer/DetailDrawer';
 import { getInstitutionsList, getInstitutionById } from '../../services/registerService';
 import { InstitutionsResponse } from '../../api/generated/register/InstitutionsResponse';
@@ -51,7 +52,9 @@ const InvitaliaOverview: React.FC = () => {
       const institutionList = institutionsData.institutions;
       dispatch(setInstitutionList(institutionList as Array<Institution>));
     } catch (error) {
-      console.error('Errore nel recupero delle istituzioni:', error);
+      if (DEBUG_CONSOLE) {
+        console.error('Error fetching institutions:', error);
+      }
     } finally {
       setLoading(false);
     }
@@ -111,7 +114,9 @@ const InvitaliaOverview: React.FC = () => {
       setInstitutionData(res);
       setDrawerOpened(true);
     } catch (error) {
-      console.error('Errore nel recupero del dettaglio della istituzione:', error);
+      if (DEBUG_CONSOLE) {
+        console.error('Error fetching institution detail:', error);
+      }
     }
   };
 

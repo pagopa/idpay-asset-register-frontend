@@ -6,7 +6,7 @@ import { truncateString } from '../../helpers';
 import { InstitutionResponse } from '../../api/generated/register/InstitutionResponse';
 import { getInstitutionById } from '../../services/registerService';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
-import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_INVIT } from '../../utils/constants';
+import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_INVIT, DEBUG_CONSOLE } from '../../utils/constants';
 
 const InstitutionInfoCard: React.FC = () => {
   const { t } = useTranslation();
@@ -18,7 +18,9 @@ const InstitutionInfoCard: React.FC = () => {
       const data = await getInstitutionById(institution?.institutionId || '');
       setInstitutionInfo(data);
     } catch (error) {
-      console.error("Errore nel recupero dei dati dell'istituzione:", error);
+      if (DEBUG_CONSOLE) {
+        console.error('Error fetching institution data:', error);
+      }
     }
   };
 
