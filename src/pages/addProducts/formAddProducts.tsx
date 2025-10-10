@@ -16,7 +16,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useNavigate } from 'react-router-dom';
-import { PRODUCTS_CATEGORIES } from '../../utils/constants';
+import { PRODUCTS_CATEGORIES, DEBUG_CONSOLE } from '../../utils/constants';
 import {
   downloadErrorReport,
   uploadProductList,
@@ -25,7 +25,7 @@ import {
 import ROUTES from '../../routes';
 import { useErrorHandling } from '../../hooks/useErrorHandling';
 import { useFileState } from '../../hooks/useFileState';
-import {delay} from "../../helpers";
+import { delay } from '../../helpers';
 import { categoryList, downloadCsv } from './helpers';
 import FileUploadSection from './fileUploadSection';
 
@@ -84,7 +84,9 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         const res = await downloadErrorReport(errorHandling.idReport);
         downloadCsv(res.data, res.filename);
       } catch (error) {
-        console.error('Errore nel download del report:', error);
+        if (DEBUG_CONSOLE) {
+          console.error('Error downloading the report:', error);
+        }
       }
     };
 
@@ -174,7 +176,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       if (type === 'category') {
         errorHandling.showCategoryError();
       } else {
-        if(errorHandling.alertDescription === ''){
+        if (errorHandling.alertDescription === '') {
           errorHandling.showMissingFileError();
         }
       }

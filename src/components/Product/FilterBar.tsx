@@ -13,9 +13,10 @@ import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ProductDTO } from '../../api/generated/register/ProductDTO';
-import {PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES} from '../../utils/constants';
+import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
+import { filterInputWithSpaceRule } from '../../helpers';
 import { BatchFilterItems } from './helpers';
 
 interface FilterProps {
@@ -69,7 +70,9 @@ export default function FilterBar({
 }: FilterProps) {
   const { t } = useTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
+  const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
+    user?.org_role as USERS_TYPES
+  );
   const [hasInteractedWithFilters, setHasInteractedWithFilters] = useState(false);
   const institutionsList = useSelector(institutionListSelector);
 
@@ -100,11 +103,11 @@ export default function FilterBar({
     setHasInteractedWithFilters(true);
   };
   const handleEprelCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEprelCodeFilter(event.target.value.trim());
+    setEprelCodeFilter(filterInputWithSpaceRule(event.target.value));
     setHasInteractedWithFilters(true);
   };
   const handleGtinCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setGtinCodeFilter(event.target.value.trim());
+    setGtinCodeFilter(filterInputWithSpaceRule(event.target.value));
     setHasInteractedWithFilters(true);
   };
 

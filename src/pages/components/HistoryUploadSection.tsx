@@ -26,7 +26,7 @@ import { formatDateWithHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { setBatchId, setBatchName } from '../../redux/slices/productsSlice';
 import ROUTES from '../../routes';
-import { EMPTY_DATA } from '../../utils/constants';
+import { EMPTY_DATA, DEBUG_CONSOLE } from '../../utils/constants';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { UploadDTO } from '../../api/generated/register/UploadDTO';
 import EmptyListTable from './EmptyListTable';
@@ -102,7 +102,9 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
       const res = await downloadErrorReport(idReport);
       downloadCsv(res.data, res.filename);
     } catch (error) {
-      console.error('Errore nel download del report:', error);
+      if (DEBUG_CONSOLE) {
+        console.error('Error downloading the report:', error);
+      }
     }
   };
 
