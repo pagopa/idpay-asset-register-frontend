@@ -158,7 +158,6 @@ function logIoTsValidationErrors(error: any, originalResponse?: any) {
         const index = parseInt(pathArr[1], 10);
         const product = originalResponse.content[index];
         if (product && typeof product === 'object') {
-          // Log dettagliato delle chiavi principali del prodotto
           const mainKeys = [
             'gtinCode',
             'organizationId',
@@ -221,16 +220,22 @@ export const RegisterApi = {
       );
 
       const result = await registerClient.getProducts(params);
-      const productList = await extractResponse(result, 200, onRedirectToLogin) as ProductListDTO;
-      if (productList.content && productList.content.length > 0) {
-        return productList.content[0];
-      } else {
-        console.warn('No product found with the specified parameters.');
+      if (!result || typeof result !== 'object') {
+        logApiError(new Error('Invalid response from backend'), result);
         return undefined;
       }
+      const productList = await extractResponse(result, 200, onRedirectToLogin) as ProductListDTO;
+      const content = productList?.content ?? [];
+      if (Array.isArray(content) && content.length > 0) {
+        return content[0];
+      }
+      if (DEBUG_CONSOLE) {
+        console.warn('No products found with the specified parameters.');
+      }
+      return undefined;
     } catch (error) {
       logApiError(error);
-      throw error;
+      return undefined;
     }
   },
 
@@ -245,7 +250,7 @@ export const RegisterApi = {
     gtinCode?: string,
     productCode?: string,
     productFileId?: string,
-  ): Promise<ProductListDTO> => {
+  ): Promise<ProductListDTO | undefined> => {
     try {
       const params = buildProductParams(
         xOrganizationSelected,
@@ -261,18 +266,27 @@ export const RegisterApi = {
       );
 
       const result = await registerClient.getProducts(params);
+      if (!result || typeof result !== 'object') {
+        logApiError(new Error('Risposta non valida dal backend'), result);
+        return undefined;
+      }
       try {
-        return extractResponse(result, 200, onRedirectToLogin);
+        const productList = await extractResponse(result, 200, onRedirectToLogin) as ProductListDTO;
+        if (!productList || typeof productList !== 'object') {
+          logApiError(new Error('Invalid ProductListDTO'), productList);
+          return undefined;
+        }
+        return productList;
       } catch (error) {
         const responseObj = (result && typeof result === 'object' && 'body' in result)
           ? (result as any).body
           : undefined;
         logApiError(error, responseObj);
-        throw error;
+        return undefined;
       }
     } catch (error) {
       logApiError(error);
-      throw error;
+      return undefined;
     }
   },
   getProductFiles: async (page?: number, size?: number): Promise<UploadsListDTO> => {
@@ -317,30 +331,50 @@ export const RegisterApi = {
   },
   downloadErrorReport: async (
     productFileId: string
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   ): Promise<{ data: CsvDTO; filename: string }> => {
     const response = await registerClient.downloadErrorReport({ productFileId });
 
-    const rawResponse =
-      (response as any).response || (response as any).data || (response as any).right;
+    function extractFileNameFromHeaders(headers: any): string {
+      const contentDisposition =
+        headers?.get?.('content-disposition') ??
+        headers?.get?.('Content-Disposition') ??
+        headers?.['content-disposition'] ??
+        headers?.['Content-Disposition'] ??
+        '';
+      if (typeof contentDisposition === 'string' && contentDisposition.length > 0) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match?.[1]) {
+          return match[1];
+        }
+      }
+      return '';
+    }
 
-    const headers = rawResponse?.headers || (response as any).headers;
-
-    const contentDisposition =
-      headers?.get?.('content-disposition') ||
-      headers?.get?.('Content-Disposition') ||
-      headers?.['content-disposition'] ||
-      headers?.['Content-Disposition'];
-
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename="?([^"]+)"?/);
-      if (match?.[1]) {
-        const fileName = match[1];
-        const responseData = (await extractResponse(response, 200, onRedirectToLogin)) as CsvDTO;
-        return { data: responseData, filename: fileName };
+    function extractCsvData(response: any): CsvDTO {
+      try {
+        const extracted = extractResponse(response, 200, onRedirectToLogin);
+        return extracted ?? {};
+      } catch (error) {
+        logApiError(error, response);
+        return {};
       }
     }
-    const responseData = (await extractResponse(response, 200, onRedirectToLogin)) as CsvDTO;
-    return { data: responseData, filename: '' };
+
+    const rawResponse =
+      (response as any)?.response || (response as any)?.data || (response as any)?.right;
+    const headers = rawResponse?.headers ?? (response as any)?.headers;
+    const fileName = extractFileNameFromHeaders(headers);
+    const responseData: CsvDTO = extractCsvData(response);
+
+    // eslint-disable-next-line sonarjs/no-collapsible-if
+    if (!responseData || Object.keys(responseData).length === 0) {
+      if (DEBUG_CONSOLE) {
+        console.warn('CSV data missing in the response');
+      }
+    }
+
+    return { data: responseData, filename: fileName };
   },
   getInstitutionsList: async (): Promise<InstitutionsResponse> => {
     try {
