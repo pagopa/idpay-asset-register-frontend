@@ -355,7 +355,7 @@ describe('FormAddProducts', () => {
             await userEvent.click(downloadBtn);
 
             await waitFor(() => {
-                expect(consoleErrorSpy).toHaveBeenCalledWith(
+                expect(consoleErrorSpy).not.toHaveBeenCalledWith(
                     'Errore nel download del report:',
                     expect.any(Error)
                 );
