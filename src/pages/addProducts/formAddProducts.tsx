@@ -82,7 +82,13 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
     const handleDownloadReport = async () => {
       try {
         const res = await downloadErrorReport(errorHandling.idReport);
-        downloadCsv(res.data, res.filename);
+        if (DEBUG_CONSOLE) {
+          console.debug('downloadErrorReport response:', res);
+        }
+        downloadCsv(
+          (res as any)?.data ?? (res as any) ?? '',
+          (res as any)?.filename ?? 'report.csv'
+        );
       } catch (error) {
         if (DEBUG_CONSOLE) {
           console.error('Error downloading the report:', error);
