@@ -329,11 +329,19 @@ export const RegisterApi = {
     const result = await registerClient.verifyProductList({ csv, category });
     return extractResponse(result, 200, onRedirectToLogin);
   },
+  // eslint-disable-next-line complexity
   downloadErrorReport: async (
     productFileId: string
   // eslint-disable-next-line sonarjs/cognitive-complexity
   ): Promise<{ data: CsvDTO; filename: string }> => {
     const response = await registerClient.downloadErrorReport({ productFileId });
+    if (DEBUG_CONSOLE) {
+      try {
+        console.debug('RegisterApi.downloadErrorReport raw response:', response);
+      } catch (e) {
+        console.debug('RegisterApi.downloadErrorReport raw response');
+      }
+    }
 
     function extractFileNameFromHeaders(headers: any): string {
       const contentDisposition =
@@ -361,19 +369,79 @@ export const RegisterApi = {
       }
     }
 
+    async function extractCsvFromRawShapesAsync(response: any, rawResponse: any): Promise<CsvDTO> {
+      // Try existing extractor first
+      const extracted = extractCsvData(response);
+      if (extracted && Object.keys(extracted).length > 0) {
+        return extracted;
+      }
+
+      const asAny = rawResponse as any;
+
+      const isNonEmpty = (v: any): v is string => typeof v === 'string' && v.length > 0;
+
+      // synchronous candidates to check first (include `response` itself because sometimes the fetch wrapper returns a raw string)
+      const syncCandidates = [
+        response,
+        rawResponse,
+        asAny?.data,
+        (response as any)?.body,
+        (response as any)?.body?.data,
+        asAny?.response,
+        asAny?.response?.data,
+      ];
+
+      for (const c of syncCandidates) {
+        if (isNonEmpty(c)) {
+          if (DEBUG_CONSOLE) {
+            console.debug('downloadErrorReport: used fallback CSV content from synchronous raw shape');
+          }
+          return { data: c };
+        }
+      }
+
+      const tryText = async (obj: any): Promise<string | undefined> => {
+        if (!obj || typeof obj.text !== 'function') {
+          return undefined;
+        }
+        try {
+          const txt = await obj.text();
+          return isNonEmpty(txt) ? txt : undefined;
+        } catch {
+          return undefined;
+        }
+      };
+
+      const objsToTry = [
+        rawResponse,
+        response,
+        (response as any)?.body,
+        (response as any)?.response,
+        (rawResponse as any)?.response,
+      ];
+
+      for (const obj of objsToTry) {
+        const txt = await tryText(obj);
+        if (isNonEmpty(txt)) {
+          if (DEBUG_CONSOLE) {
+            console.debug('downloadErrorReport: used fallback CSV content from async text() call');
+          }
+          return { data: txt };
+        }
+      }
+
+      if (DEBUG_CONSOLE) {
+        console.warn('CSV data missing in the response after trying async fallbacks');
+      }
+
+      return extracted;
+    }
+
     const rawResponse =
       (response as any)?.response || (response as any)?.data || (response as any)?.right;
     const headers = rawResponse?.headers ?? (response as any)?.headers;
     const fileName = extractFileNameFromHeaders(headers);
-    const responseData: CsvDTO = extractCsvData(response);
-
-    // eslint-disable-next-line sonarjs/no-collapsible-if
-    if (!responseData || Object.keys(responseData).length === 0) {
-      if (DEBUG_CONSOLE) {
-        console.warn('CSV data missing in the response');
-      }
-    }
-
+    const responseData: CsvDTO = await extractCsvFromRawShapesAsync(response, rawResponse);
     return { data: responseData, filename: fileName };
   },
   getInstitutionsList: async (): Promise<InstitutionsResponse> => {
