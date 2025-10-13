@@ -100,8 +100,10 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   const handleDownloadReport = async (idReport: string) => {
     try {
       const res = await downloadErrorReport(idReport);
-      if (DEBUG_CONSOLE) {
+      {
+        /*  if (DEBUG_CONSOLE) {
         console.debug('downloadErrorReport response (history):', res);
+      } */
       }
       downloadCsv((res as any)?.data ?? (res as any) ?? '', (res as any)?.filename ?? 'report.csv');
     } catch (error) {
