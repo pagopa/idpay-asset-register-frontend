@@ -226,8 +226,19 @@ function makeStatusUpdater(
   ): Promise<ProductsUpdateDTO> => {
     try {
       const body = needsFormalMotivation
-        ? { gtinCodes, currentStatus, motivation, ...(formalMotivation ? { formalMotivation } : {}) }
-        : { gtinCodes, currentStatus, motivation };
+        ? {
+            gtinCodes,
+            currentStatus,
+            motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
+            ...(formalMotivation
+              ? { formalMotivation: typeof formalMotivation === 'string' ? formalMotivation.trim() : formalMotivation }
+              : {})
+          }
+        : {
+            gtinCodes,
+            currentStatus,
+            motivation: typeof motivation === 'string' ? motivation.trim() : motivation
+          };
       const result = await apiMethod({ body });
       return (extractResponse(result, 200, onRedirectToLogin) as unknown as ProductsUpdateDTO) ?? {};
     } catch (error) {
