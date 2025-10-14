@@ -121,6 +121,10 @@ function logApiError(error: any, apiName?: string, originalResponse?: any) {
   if (!DEBUG_CONSOLE) {
     return;
   }
+  const errorKey = error?.response?.data?.errorKey;
+  if (errorKey) {
+    console.error(`Error Key: ${errorKey}`);
+  }
   const pretty = (val: any) =>
     typeof val === "string"
       ? val
