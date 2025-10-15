@@ -19,6 +19,10 @@ export const uploadProductList = async (
     return await RegisterApi.uploadProductList(csv, category);
   } catch (error: any) {
     if (DEBUG_CONSOLE) {
+      const errorKey = error?.response?.data?.errorKey;
+      if (errorKey) {
+        console.error(`Error Key: ${errorKey}`);
+      }
       console.error('Error in RegisterApi.uploadProductList:', error);
     }
     return {} as RegisterUploadResponseDTO;
@@ -33,6 +37,10 @@ export const uploadProductListVerify = async (
     return await RegisterApi.uploadProductListVerify(csv, category);
   } catch (error: any) {
     if (DEBUG_CONSOLE) {
+      const errorKey = error?.response?.data?.errorKey;
+      if (errorKey) {
+        console.error(`Error Key: ${errorKey}`);
+      }
       console.error('Error in RegisterApi.uploadProductListVerify:', error);
     }
     return {} as RegisterUploadResponseDTO;
@@ -46,6 +54,10 @@ export const downloadErrorReport = async (
     return await RegisterApi.downloadErrorReport(productFileId);
   } catch (error: any) {
     if (DEBUG_CONSOLE) {
+      const errorKey = error?.response?.data?.errorKey;
+      if (errorKey) {
+        console.error(`Error Key: ${errorKey}`);
+      }
       console.error('Error in RegisterApi.downloadErrorReport:', error);
     }
     return { data: {}, filename: '' };
@@ -114,6 +126,12 @@ function getErrorConfig(error: any) {
 function logProductError(nameService: string, error: any) {
   if (!DEBUG_CONSOLE) {
     return;
+  }
+
+  // Log errorKey if present
+  const errorKey = error?.response?.data?.errorKey;
+  if (errorKey) {
+    console.error(`Error Key: ${errorKey}`);
   }
 
   const details = {
