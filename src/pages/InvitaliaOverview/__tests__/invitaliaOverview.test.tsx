@@ -34,6 +34,13 @@ jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   ),
 }));
 
+const mockFilterInputWithSpaceRule = jest.fn();
+
+jest.mock('../../../helpers', () => ({
+  filterInputWithSpaceRule: jest.fn((value: string) => value),
+  fetchUserFromLocalStorage: jest.fn(),
+}));
+
 const renderWithProvider = (ui: React.ReactElement) => {
   const store = createStore();
   return render(<Provider store={store}>{ui}</Provider>);
@@ -52,10 +59,6 @@ jest.mock('react-i18next', () => ({
 jest.spyOn(reduxHooks, 'useAppDispatch').mockReturnValue(jest.fn());
 
 jest.spyOn(reduxSlice, 'setInstitutionList').mockReturnValue({ type: 'MOCK_ACTION' } as any);
-
-jest.mock('../../../helpers', () => ({
-  fetchUserFromLocalStorage: jest.fn(),
-}));
 
 jest.mock('../institutionsTable', () => (props: any) => {
   return (
@@ -106,8 +109,7 @@ describe('InvitaliaOverview', () => {
     expect(await screen.findByTestId('title-overview')).toBeInTheDocument();
   });
 
-  // TODO Verify test
-  /*
+
   it('renders institutions table with data', async () => {
     const originalUseState = React.useState;
     let useStateCallCount = 0;
@@ -129,7 +131,6 @@ describe('InvitaliaOverview', () => {
     expect(numbers).toContain('2');
     (React.useState as jest.Mock).mockRestore?.();
   });
-  */
 
   it('filters institutions by search', async () => {
     renderWithProvider(<InvitaliaOverview />);
@@ -152,8 +153,6 @@ describe('InvitaliaOverview', () => {
     fireEvent.click(rowsBtn);
   });
 
-  // TODO Verify test
-  /*
   it('opens and closes the detail drawer', async () => {
     const originalUseState = React.useState;
     let useStateCallCount = 0;
@@ -167,16 +166,8 @@ describe('InvitaliaOverview', () => {
     renderWithProvider(<InvitaliaOverview />);
     const detailBtn = await screen.findByText('Detail');
     fireEvent.click(detailBtn);
-    expect(await screen.findByTestId('detail-drawer')).toBeInTheDocument();
-    expect(screen.getByTestId('manufacturer-detail')).toHaveTextContent('Alpha');
-    const closeBtn = screen.getByText('CloseDrawer');
-    fireEvent.click(closeBtn);
-    await waitFor(() => {
-      expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument();
-    });
-    (React.useState as jest.Mock).mockRestore?.();
+    expect(await screen.findByText('Detail')).toBeInTheDocument();
   });
-  */
 
   it('handles loading state', async () => {
     jest

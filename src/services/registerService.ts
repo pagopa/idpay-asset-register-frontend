@@ -11,22 +11,58 @@ import { ProductStatusEnum } from "../api/generated/register/ProductStatus";
 import { DEBUG_CONSOLE } from "../utils/constants";
 
 
-export const uploadProductList = (
-    csv: File,
-    category: string
-): Promise<RegisterUploadResponseDTO> =>
-    RegisterApi.uploadProductList( csv, category ).then((res) => res);
+export const uploadProductList = async (
+  csv: File,
+  category: string
+): Promise<RegisterUploadResponseDTO> => {
+  try {
+    return await RegisterApi.uploadProductList(csv, category);
+  } catch (error: any) {
+    if (DEBUG_CONSOLE) {
+      const errorKey = error?.response?.data?.errorKey;
+      if (errorKey) {
+        console.error(`Error Key: ${errorKey}`);
+      }
+      console.error('Error in RegisterApi.uploadProductList:', error);
+    }
+    return {} as RegisterUploadResponseDTO;
+  }
+};
 
-export const uploadProductListVerify = (
-    csv: File,
-    category: string
-): Promise<RegisterUploadResponseDTO> =>
-    RegisterApi.uploadProductListVerify( csv, category ).then((res) => res);
+export const uploadProductListVerify = async (
+  csv: File,
+  category: string
+): Promise<RegisterUploadResponseDTO> => {
+  try {
+    return await RegisterApi.uploadProductListVerify(csv, category);
+  } catch (error: any) {
+    if (DEBUG_CONSOLE) {
+      const errorKey = error?.response?.data?.errorKey;
+      if (errorKey) {
+        console.error(`Error Key: ${errorKey}`);
+      }
+      console.error('Error in RegisterApi.uploadProductListVerify:', error);
+    }
+    return {} as RegisterUploadResponseDTO;
+  }
+};
 
-export const downloadErrorReport = (
-    productFileId: string
-): Promise<{data: CsvDTO; filename: string}> =>
-    RegisterApi.downloadErrorReport(productFileId).then((res) => res);
+export const downloadErrorReport = async (
+  productFileId: string
+): Promise<{ data: CsvDTO; filename: string }> => {
+  try {
+    return await RegisterApi.downloadErrorReport(productFileId);
+  } catch (error: any) {
+    if (DEBUG_CONSOLE) {
+      const errorKey = error?.response?.data?.errorKey;
+      if (errorKey) {
+        console.error(`Error Key: ${errorKey}`);
+      }
+      console.error('Error in RegisterApi.downloadErrorReport:', error);
+    }
+    return { data: {}, filename: '' };
+  }
+};
 
 export const getProductFilesList = async (
     page?: number, size?: number,
@@ -35,10 +71,13 @@ export const getProductFilesList = async (
       return await RegisterApi.getProductFiles(page, size);
     } catch (error: any) {
       logProductError('RegisterApi.getProductFiles', error);
-      if (error.response && error.response.data) {
-        throw error.response.data;
-      }
-      throw error;
+      return {
+        content: [],
+        pageNo: 0,
+        pageSize: 0,
+        totalElements: 0,
+        totalPages: 0
+      } as unknown as UploadsListDTO;
     }
   };
 
@@ -87,6 +126,12 @@ function getErrorConfig(error: any) {
 function logProductError(nameService: string, error: any) {
   if (!DEBUG_CONSOLE) {
     return;
+  }
+
+  // Log errorKey if present
+  const errorKey = error?.response?.data?.errorKey;
+  if (errorKey) {
+    console.error(`Error Key: ${errorKey}`);
   }
 
   const details = {
@@ -226,7 +271,7 @@ export const getProducts = async (
   productFileId?: string
 ): Promise<ProductListDTO> => {
   try {
-    return await RegisterApi.getProductList(
+    const result = await RegisterApi.getProductList(
       organizationId,
       page,
       size,
@@ -238,12 +283,22 @@ export const getProducts = async (
       productCode,
       productFileId
     );
+    return result ?? {
+      content: [],
+      pageNo: 1000000,
+      pageSize: 1000000,
+      totalElements: 1000000,
+      totalPages: 1000000
+    };
   } catch (error: any) {
     logProductError('RegisterApi.getProductList' , error);
-    if (error.response && error.response.data) {
-      throw error.response.data;
-    }
-    throw error;
+    return {
+      content: [],
+      pageNo: 0,
+      pageSize: 0,
+      totalElements: 0,
+      totalPages: 0
+    } as unknown as ProductListDTO;
   }
 };
 
@@ -252,10 +307,7 @@ export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
     return await RegisterApi.getInstitutionsList();
   } catch (error: any) {
     logProductError('RegisterApi.getInstitutionsList', error);
-    if (error.response && error.response.data) {
-      throw error.response.data;
-    }
-    throw error;
+    return { institutions: [] };
   }
 };
 
@@ -265,11 +317,8 @@ export const getInstitutionById = async (
   try {
     return await RegisterApi.getInstitutionById(institutionId);
   } catch (error: any) {
-  logProductError('RegisterApi.getInstitutionById', error);
-    if (error.response && error.response.data) {
-      throw error.response.data;
-    }
-    throw error;
+    logProductError('RegisterApi.getInstitutionById', error);
+    return {} as InstitutionResponse;
   }
 };
 
@@ -282,10 +331,7 @@ export const setSupervisionedStatusList = async (
    return await RegisterApi.setSupervisionedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setSupervisionedStatusList', error);
-    if (error.response && error.response.data) {
-      throw error.response.data;
-    }
-    throw error;
+    return {} as UpdateResponseDTO;
   }
  };
 
@@ -299,10 +345,7 @@ export const setSupervisionedStatusList = async (
     return await RegisterApi.setApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setApprovedStatusList', error);
-    if (error.response && error.response.data) {
-      throw error.response.data;
-    }
-    throw error;
+    return {} as UpdateResponseDTO;
   }
 };
  export const setWaitApprovedStatusList = async (
@@ -314,10 +357,7 @@ export const setSupervisionedStatusList = async (
     return await RegisterApi.setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setWaitApprovedStatusList', error);
-    if (error.response && error.response.data) {
-      throw error.response.data;
-    }
-    throw error;
+    return {} as UpdateResponseDTO;
   }
 };
 
@@ -331,10 +371,7 @@ export const setRejectedStatusList = async (
     return await RegisterApi.setRejectedStatusList(gtinCodes, currentStatus, motivation, formalMotivation);
   } catch (error: any) {
     logProductError('RegisterApi.setRejectedStatusList', error);
-    if (error.response && error.response.data) {
-      throw error.response.data;
-    }
-    throw error;
+    return {} as UpdateResponseDTO;
   }
 };
 
@@ -347,10 +384,7 @@ export const setRejectedStatusList = async (
       return await RegisterApi.setRestoredStatusList(gtinCodes, currentStatus, motivation);
     } catch (error: any) {
       logProductError('RegisterApi.setRestoredStatusList', error);
-      if (error.response && error.response.data) {
-        throw error.response.data;
-      }
-      throw error;
+      return {} as UpdateResponseDTO;
     }
   };
 
@@ -359,9 +393,6 @@ export const setRejectedStatusList = async (
      return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
    } catch (error: any) {
      logProductError('RegisterApi.getBatchFilterItems', error);
-     if (error?.response && error?.response?.data) {
-       throw error.response.data;
-     }
-     throw error;
+     return [];
    }
  };

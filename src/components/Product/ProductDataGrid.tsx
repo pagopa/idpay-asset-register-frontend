@@ -153,7 +153,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const fetchProductList = () => {
     setLoading(true);
-    callProductsApi(organizationId);
+    callProductsApi();
   };
 
   const fetchInstitutions = async () => {
@@ -175,11 +175,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
     fetchProductList();
   };
 
-  const callProductsApi = (organizationId: string) => {
+  const callProductsApi = () => {
     const sortKey = `${orderBy},${order}`;
     const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
 
-    console.log(organizationId);
     void getProducts(
       isInvitaliaUser || isInvitaliaAdmin ? producerFilter : user.org_id,
       page,
@@ -266,7 +265,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       return;
     }
     setLoading(true);
-    callProductsApi(organizationId);
+    callProductsApi();
   }, [ready, page, orderBy, order, rowsPerPage, organizationId]);
 
   useEffect(() => {
@@ -274,7 +273,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       return;
     }
     setLoading(true);
-    callProductsApi(organizationId);
+    callProductsApi();
   }, [ready, filtering, organizationId]);
 
   const handleDeleteFiltersButtonClick = () => {
