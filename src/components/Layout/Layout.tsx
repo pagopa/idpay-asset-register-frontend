@@ -13,7 +13,7 @@ import Header from '../Header/Header';
 import SideMenu from '../SideMenu/SideMenu';
 import ROUTES from '../../routes';
 import {ENV} from '../../utils/env';
-import Footer from "../Footer/Footer";
+import {CustomFooter} from "../Footer/CustomFooter";
 
 type Props = {
     children?: React.ReactNode;
@@ -118,10 +118,7 @@ const Layout = ({children}: Props) => {
                 </Box>
             )}
             <Box gridArea="footer">
-                <Footer
-                    onExit={() => onExit(customExitAction)}
-                    loggedUser={true}
-                />
+                <CustomFooter />
             </Box>
         </Box>
     );
