@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
-import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
@@ -100,6 +100,11 @@ export default function FiltersDrawer({
   const [draftCategory, setDraftCategory] = useState(categoryFilter);
   const [draftEprel, setDraftEprel] = useState(eprelCodeFilter);
   const [draftGtin, setDraftGtin] = useState(gtinCodeFilter);
+  const [showEprelError, setShowEprelError] = useState(false);
+  const [showGtinError, setShowGtinError] = useState(false);
+
+  const isValidNumeric = (value: string) => /^\d+$/.test(value);
+  const isValidGtin = (value: string) => /^[a-zA-Z0-9]{1,14}$/.test(value);
   const menuProps = useMemo(() => ({ PaperProps: { style: { maxHeight: 350 } } }), []);
   const selectSx = useMemo(() => ({ paddingRight: '38px !important' }), []);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
@@ -158,6 +163,16 @@ export default function FiltersDrawer({
   ]);
 
   const handleFilter = () => {
+    if (draftEprel.length > 0 && !isValidNumeric(draftEprel)) {
+      setShowEprelError(true);
+      return;
+    }
+    if (draftGtin.length > 0 && !isValidGtin(draftGtin)) {
+      setShowGtinError(true);
+      return;
+    }
+    setShowEprelError(false);
+    setShowGtinError(false);
     setStatusFilter(draftStatus);
     setProducerFilter(draftProducer);
     setBatchFilter(draftBatch);
@@ -185,11 +200,6 @@ export default function FiltersDrawer({
   const onDraftSelect =
     (setter: Dispatch<SetStateAction<string>>) => (event: SelectChangeEvent<string>) => {
       setter(event.target.value as string);
-    };
-
-  const onDraftInput =
-    (setter: Dispatch<SetStateAction<string>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setter(filterInputWithSpaceRule(event.target.value));
     };
 
   const resetDraftsToApplied = () => {
@@ -327,27 +337,76 @@ export default function FiltersDrawer({
           </Select>
         </FormControl>
 
-        <TextField
-          fullWidth
-          size="small"
-          id="eprel-code-text"
-          label={t('pages.products.filterLabels.eprelCode')}
-          variant="outlined"
-          margin="normal"
-          value={draftEprel}
-          onChange={onDraftInput(setDraftEprel)}
-        />
+        {(() => {
+          const showErrorEprel =
+            showEprelError && draftEprel.length > 0 && !isValidNumeric(draftEprel);
+          const helperEprel = showErrorEprel
+            ? 'Il codice EPREL deve contenere solo caratteri numerici.'
+            : undefined;
+          return (
+            <TextField
+              fullWidth
+              size="small"
+              id="eprel-code-text"
+              label={t('pages.products.filterLabels.eprelCode')}
+              variant="outlined"
+              margin="normal"
+              value={draftEprel}
+              onChange={(e) => {
+                setDraftEprel(filterInputWithSpaceRule(e.target.value));
+                if (showEprelError) {
+                  setShowEprelError(false);
+                }
+              }}
+              onPaste={(e) => {
+                e.preventDefault();
+                const text = e.clipboardData.getData('text').replace(/\s+/g, '');
+                setDraftEprel(filterInputWithSpaceRule(text));
+                if (showEprelError) {
+                  setShowEprelError(false);
+                }
+              }}
+              error={showErrorEprel}
+              helperText={helperEprel}
+              InputProps={{ inputProps: { inputMode: 'numeric', pattern: '[0-9]*' } }}
+            />
+          );
+        })()}
 
-        <TextField
-          fullWidth
-          size="small"
-          id="gtin-code-text"
-          label={t('pages.products.filterLabels.gtinCode')}
-          variant="outlined"
-          margin="normal"
-          value={draftGtin}
-          onChange={onDraftInput(setDraftGtin)}
-        />
+        {(() => {
+          const showErrorGtin = showGtinError && draftGtin.length > 0 && !isValidGtin(draftGtin);
+          const helperGtin = showErrorGtin
+            ? 'Il codice GTIN/EAN deve contenere al massimo 14 caratteri alfanumerici.'
+            : undefined;
+          return (
+            <TextField
+              fullWidth
+              size="small"
+              id="gtin-code-text"
+              label={t('pages.products.filterLabels.gtinCode')}
+              variant="outlined"
+              margin="normal"
+              value={draftGtin}
+              onChange={(e) => {
+                setDraftGtin(filterInputWithSpaceRule(e.target.value));
+                if (showGtinError) {
+                  setShowGtinError(false);
+                }
+              }}
+              onPaste={(e) => {
+                e.preventDefault();
+                const text = e.clipboardData.getData('text').replace(/\s+/g, '');
+                setDraftGtin(filterInputWithSpaceRule(text));
+                if (showGtinError) {
+                  setShowGtinError(false);
+                }
+              }}
+              error={showErrorGtin}
+              helperText={helperGtin}
+              InputProps={{ inputProps: { maxLength: 14 } }}
+            />
+          );
+        })()}
 
         <Button
           disabled={!isDirty}
