@@ -20,6 +20,7 @@ declare const window: any;
 export default function Footer({
                                    loggedUser,
                                    productsJsonUrl,
+                                   onExit = (exitAction) => exitAction(),
                                }: FooterProps) {
     const { t } = useTranslation();
 
@@ -202,7 +203,7 @@ export default function Footer({
             preLoginLinks={preLoginLinks}
             legalInfo={companyLegalInfo}
             loggedUser={loggedUser}
-            onExit={()=>{}}
+            onExit={onExit}
             languages={LANGUAGES as any}
             onLanguageChanged={async (language: LangCode) => {
                 await i18n.changeLanguage(language);
