@@ -31,10 +31,6 @@ export const useErrorHandling = (t: any) => {
         title: 'pages.addProducts.form.fileUpload.fileUploadError.wrongHeaderTitle',
         description: 'pages.addProducts.form.fileUpload.fileUploadError.wrongHeaderDescription',
       },
-      'product.invalid.file.size': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.fileTooLargeTitle',
-        description: 'pages.addProducts.form.fileUpload.fileUploadError.fileTooLargeDescription',
-      },
       'product.invalid.file.report': {
         title: 'pages.addProducts.form.fileUpload.fileUploadError.multipleErrorsTitle',
         description: 'pages.addProducts.form.fileUpload.fileUploadError.multipleErrorDescription',
@@ -42,46 +38,6 @@ export const useErrorHandling = (t: any) => {
       'product.invalid.file.empty': {
         title: 'pages.addProducts.form.fileUpload.fileUploadError.emptyTitle',
         description: 'pages.addProducts.form.fileUpload.fileUploadError.emptyDescription',
-      },
-      'product.invalid.file.vat.wrong': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.vatWrongTitle',
-        description: 'pages.addProducts.form.fileUpload.fileUploadError.vatWrongDescription',
-      },
-      'merchant.invalid.file.header': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.merchantWrongHeaderTitle',
-        description:
-          'pages.addProducts.form.fileUpload.fileUploadError.merchantWrongHeaderDescription',
-      },
-      'merchant.invalid.file.size': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.merchantFileTooLargeTitle',
-        description:
-          'pages.addProducts.form.fileUpload.fileUploadError.merchantFileTooLargeDescription',
-      },
-      'merchant.invalid.file.report': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.merchantMultipleErrorsTitle',
-        description:
-          'pages.addProducts.form.fileUpload.fileUploadError.merchantMultipleErrorDescription',
-      },
-      'product.update.error': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.updateErrorTitle',
-        description: 'pages.addProducts.form.fileUpload.fileUploadError.updateErrorDescription',
-      },
-      'product.invalid.update.mixedStatus': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.mixedStatusTitle',
-        description: 'pages.addProducts.form.fileUpload.fileUploadError.mixedStatusDescription',
-      },
-      'product.invalid.update.currentStatus': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.currentStatusTitle',
-        description: 'pages.addProducts.form.fileUpload.fileUploadError.currentStatusDescription',
-      },
-      'product.invalid.update.notFound': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.notFoundTitle',
-        description: 'pages.addProducts.form.fileUpload.fileUploadError.notFoundDescription',
-      },
-      'product.invalid.update.transitionNotAllowed': {
-        title: 'pages.addProducts.form.fileUpload.fileUploadError.transitionNotAllowedTitle',
-        description:
-          'pages.addProducts.form.fileUpload.fileUploadError.transitionNotAllowedDescription',
       },
     };
 

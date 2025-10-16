@@ -20,7 +20,6 @@ import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/c
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { BatchFilterItems } from '../Product/helpers';
-import { filterInputWithSpaceRule } from '../../helpers';
 
 type Props = {
   open: boolean;
@@ -189,7 +188,7 @@ export default function FiltersDrawer({
 
   const onDraftInput =
     (setter: Dispatch<SetStateAction<string>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setter(filterInputWithSpaceRule(event.target.value));
+      setter(event.target.value.trim());
     };
 
   const resetDraftsToApplied = () => {

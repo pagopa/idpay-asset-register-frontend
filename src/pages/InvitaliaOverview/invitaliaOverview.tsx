@@ -3,7 +3,6 @@ import { Box, InputAdornment, TextField } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { Search } from '@mui/icons-material';
-import { DEBUG_CONSOLE } from '../../utils/constants';
 import DetailDrawer from '../../components/DetailDrawer/DetailDrawer';
 import { getInstitutionsList, getInstitutionById } from '../../services/registerService';
 import { InstitutionsResponse } from '../../api/generated/register/InstitutionsResponse';
@@ -12,8 +11,7 @@ import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
 import { setInstitutionList } from '../../redux/slices/invitaliaSlice';
 import { useAppDispatch } from '../../redux/hooks';
-import { fetchUserFromLocalStorage } from '../../helpers';
-import { filterInputWithSpaceRule } from '../../helpers';
+import {fetchUserFromLocalStorage} from "../../helpers";
 import InstitutionsTable from './institutionsTable';
 import { sortInstitutions } from './helpers';
 import ManufacturerDetail from './ManufacturerDetail';
@@ -44,17 +42,14 @@ const InvitaliaOverview: React.FC = () => {
       const institutionsData = await getInstitutionsList();
       setInstitutions(institutionsData);
 
-      const institutionsDataFilteredByUser = (
-        (institutionsData.institutions as Array<Institution>) ?? []
-      ).filter((institution) => institution.institutionId !== user?.org_id);
-      setInstitutions({ institutions: institutionsDataFilteredByUser });
+      const institutionsDataFilteredByUser = ((institutionsData.institutions as Array<Institution>) ?? [])
+          .filter((institution) => institution.institutionId !== user?.org_id);
+      setInstitutions({institutions:institutionsDataFilteredByUser});
 
       const institutionList = institutionsData.institutions;
       dispatch(setInstitutionList(institutionList as Array<Institution>));
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error('Error fetching institutions:', error);
-      }
+      console.error('Errore nel recupero delle istituzioni:', error);
     } finally {
       setLoading(false);
     }
@@ -100,7 +95,7 @@ const InvitaliaOverview: React.FC = () => {
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(filterInputWithSpaceRule(event.target.value));
+    setSearchTerm(event.target.value);
     setPage(0);
   };
 
@@ -114,9 +109,7 @@ const InvitaliaOverview: React.FC = () => {
       setInstitutionData(res);
       setDrawerOpened(true);
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error('Error fetching institution detail:', error);
-      }
+      console.error('Errore nel recupero del dettaglio della istituzione:', error);
     }
   };
 

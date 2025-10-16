@@ -146,39 +146,6 @@ export const truncateStringResponsive = (str?: string, maxLength?: number): stri
   return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
 };
 
-export function filterInputWithSpaceRule(value: string): string {
-    const alnumCount = (value.match(/[a-zA-Z0-9]/g) || []).length;
-    if (alnumCount < 2) {
-        return value.replace(/\s/g, "");
-    }
-    return Array.from(value).reduce(
-        (acc, char) => {
-            if (char === " ") {
-                if (acc.result.length === 0) {
-                    return { ...acc, prevSpace: true };
-                }
-                if (acc.prevSpace) {
-                    return acc;
-                }
-                return {
-                    result: acc.result + " ",
-                    prevSpace: true
-                };
-            } else {
-                return {
-                    result: acc.result + char,
-                    prevSpace: false
-                };
-            }
-        },
-        { result: "", prevSpace: false }
-    ).result;
-}
-
-export function cleanTrailingSpace(value: string): string {
-    return value.endsWith(" ") ? value.slice(0, -1) : value;
-}
-
 export const getTablePrLength = () => typeof window !== 'undefined'
     ? window.innerWidth > RESOLUTION_UPSCALING
       ? MAX_LENGTH_TABLE_PR

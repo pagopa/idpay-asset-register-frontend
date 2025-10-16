@@ -30,11 +30,8 @@ jest.mock('../../../redux/slices/invitaliaSlice', () => ({
 }));
 
 const mockFetchUserFromLocalStorage = jest.fn();
-const mockFilterInputWithSpaceRule = jest.fn();
-
 jest.mock('../../../helpers', () => ({
   fetchUserFromLocalStorage: () => mockFetchUserFromLocalStorage(),
-  filterInputWithSpaceRule: () => mockFilterInputWithSpaceRule(),
 }));
 
 const theme = createTheme();
@@ -251,7 +248,7 @@ describe('FiltersDrawer', () => {
     fireEvent.change(gtinInput, { target: { value: '  ' } });
 
     const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
-    expect(filterBtn).not.toBeDisabled();
+    expect(filterBtn).toBeDisabled();
   });
 
   it('batch select renders all provided options', async () => {

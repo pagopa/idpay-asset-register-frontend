@@ -330,58 +330,46 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
     return dateLabel !== EMPTY_DATA ? `${dateLabel}` : EMPTY_DATA;
   }
 
-  function displayFormalMotivation(org_role?: string, status?: string) {
-    return (
-      !(
-        formalMotivationText === EMPTY_DATA ||
-        formalMotivationText === undefined ||
-        formalMotivationText === null ||
-        formalMotivationText === ''
-      ) &&
-      ((org_role === USERS_TYPES.OPERATORE && String(status) === PRODUCTS_STATES.REJECTED) ||
-        org_role !== USERS_TYPES.OPERATORE)
-    );
-  }
+  const formalMotivationRow =
+    formalMotivationText === EMPTY_DATA
+      ? null
+      : ({
+          renderCustom(this: RowConfig) {
+            const dateLabel = getFormalMotivationDateLabel(chronology);
+            const operator = getFormalMotivationOperator(user, chronology);
+            const header = getFormalMotivationHeader(user, dateLabel, operator);
 
-  const formalMotivationRow = !displayFormalMotivation(user?.org_role, data.status)
-    ? null
-    : ({
-        renderCustom(this: RowConfig) {
-          const dateLabel = getFormalMotivationDateLabel(chronology);
-          const operator = getFormalMotivationOperator(user, chronology);
-          const header = getFormalMotivationHeader(user, dateLabel, operator);
-
-          return (
-            <ProductInfoRow
-              label={t('pages.productDetail.motivationFormal')}
-              labelVariant="overline"
-              sx={{ marginTop: 3, fontWeight: 700 }}
-              labelColor="#17324D"
-              value={
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
-                    <Box component="span" sx={{ width: '100%' }}>
-                      {header && header.trim() !== '' && (
-                        <Typography variant="body1" color="textSecondary">
-                          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-                        </Typography>
-                      )}
-                      <TextareaAutosize
-                        maxRows={10}
-                        value={formalMotivationText}
-                        readOnly
-                        aria-label="Motivazione formale"
-                        name="formalMotivation"
-                        className="product-detail-textarea"
-                      />
+            return (
+              <ProductInfoRow
+                label={t('pages.productDetail.motivationFormal')}
+                labelVariant="overline"
+                sx={{ marginTop: 3, fontWeight: 700 }}
+                labelColor="#17324D"
+                value={
+                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
+                      <Box component="span" sx={{ width: '100%' }}>
+                        {header && header.trim() !== '' && (
+                          <Typography variant="body1" color="textSecondary">
+                            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                          </Typography>
+                        )}
+                        <TextareaAutosize
+                          maxRows={10}
+                          value={formalMotivationText}
+                          readOnly
+                          aria-label="Motivazione formale"
+                          name="formalMotivation"
+                          className="product-detail-textarea"
+                        />
+                      </Box>
                     </Box>
                   </Box>
-                </Box>
-              }
-            />
-          );
-        },
-      } as RowConfig & { renderCustom?: () => JSX.Element });
+                }
+              />
+            );
+          },
+        } as RowConfig & { renderCustom?: () => JSX.Element });
 
   const extraRows = [
     ...(motivationRow ? [motivationRow] : []),
