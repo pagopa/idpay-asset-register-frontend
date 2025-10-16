@@ -118,10 +118,7 @@ const Layout = ({children}: Props) => {
                 </Box>
             )}
             <Box gridArea="footer">
-                <Footer
-                    onExit={() => onExit(customExitAction)}
-                    loggedUser={true}
-                />
+                <Footer loggedUser={true} />
             </Box>
         </Box>
     );
