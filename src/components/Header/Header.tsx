@@ -1,6 +1,5 @@
 import { ProductEntity } from '@pagopa/mui-italia';
 import { PartySwitchItem } from '@pagopa/mui-italia/dist/components/PartySwitch';
-import { Header as CommonHeader } from '@pagopa/selfcare-common-frontend/lib';
 import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
 import { trackEvent } from '@pagopa/selfcare-common-frontend/lib/services/analyticsService';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
@@ -12,6 +11,7 @@ import { useAppSelector } from '../../redux/hooks';
 import { partiesSelectors } from '../../redux/slices/partiesSlice';
 import { Party } from '../../model/Party';
 import { ENV } from '../../utils/env';
+import CustomHeader from './CustomHeader';
 
 type Props = WithPartiesProps & {
   withSecondHeader: boolean;
@@ -53,7 +53,7 @@ const Header = ({ withSecondHeader, onExit, loggedUser }: /* , parties */ Props)
   );
 
   return (
-    <CommonHeader
+    <CustomHeader
       onExit={onExit}
       withSecondHeader={withSecondHeader}
       selectedPartyId={selectedParty?.partyId}
