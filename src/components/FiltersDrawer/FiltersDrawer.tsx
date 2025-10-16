@@ -340,7 +340,9 @@ export default function FiltersDrawer({
         {(() => {
           const showErrorEprel =
             showEprelError && draftEprel.length > 0 && !isValidNumeric(draftEprel);
-          const helperEprel = showErrorEprel ? 'Caratteri consentiti solo numeri' : undefined;
+          const helperEprel = showErrorEprel
+            ? 'Il codice EPREL deve contenere solo caratteri numerici.'
+            : undefined;
           return (
             <TextField
               fullWidth
@@ -356,6 +358,14 @@ export default function FiltersDrawer({
                   setShowEprelError(false);
                 }
               }}
+              onPaste={(e) => {
+                e.preventDefault();
+                const text = e.clipboardData.getData('text').replace(/\s+/g, '');
+                setDraftEprel(filterInputWithSpaceRule(text));
+                if (showEprelError) {
+                  setShowEprelError(false);
+                }
+              }}
               error={showErrorEprel}
               helperText={helperEprel}
               InputProps={{ inputProps: { inputMode: 'numeric', pattern: '[0-9]*' } }}
@@ -366,7 +376,7 @@ export default function FiltersDrawer({
         {(() => {
           const showErrorGtin = showGtinError && draftGtin.length > 0 && !isValidGtin(draftGtin);
           const helperGtin = showErrorGtin
-            ? 'Inserire massimo 14 caratteri alfanumerici'
+            ? 'Il codice GTIN/EAN deve contenere al massimo 14 caratteri alfanumerici.'
             : undefined;
           return (
             <TextField
@@ -379,6 +389,14 @@ export default function FiltersDrawer({
               value={draftGtin}
               onChange={(e) => {
                 setDraftGtin(filterInputWithSpaceRule(e.target.value));
+                if (showGtinError) {
+                  setShowGtinError(false);
+                }
+              }}
+              onPaste={(e) => {
+                e.preventDefault();
+                const text = e.clipboardData.getData('text').replace(/\s+/g, '');
+                setDraftGtin(filterInputWithSpaceRule(text));
                 if (showGtinError) {
                   setShowGtinError(false);
                 }
