@@ -162,25 +162,29 @@ export default function Footer({
             label: t('common.footer.postLoginLinks.privacyPolicy'),
             href: ENV.FOOTER.LINK.PRIVACYPOLICY,
             ariaLabel: 'Vai al link: Informativa Privacy',
-            linkType: 'external',
+            linkType: 'internal',
+            onClick: () => { window.open(ENV.FOOTER.LINK.PRIVACYPOLICY);},
         },
         {
             label: t('common.footer.postLoginLinks.protectionofpersonaldata'),
             href: ENV.FOOTER.LINK.PROTECTIONOFPERSONALDATA,
             ariaLabel: 'Vai al link: Diritto alla protezione dei dati personali',
             linkType: 'internal',
+            onClick: () => { window.open(ENV.FOOTER.LINK.PROTECTIONOFPERSONALDATA);},
         },
         {
             label: t('common.footer.postLoginLinks.termsandconditions'),
             href: ENV.FOOTER.LINK.TERMSANDCONDITIONS,
             ariaLabel: 'Vai al link: Termini e condizioni',
             linkType: 'internal',
+            onClick: () => { window.open(ENV.FOOTER.LINK.TERMSANDCONDITIONS);},
         },
         {
             label: t('common.footer.postLoginLinks.accessibility'),
             href: ENV.FOOTER.LINK.ACCESSIBILITY,
             ariaLabel: 'Vai al link: Accessibilità',
             linkType: 'internal',
+            onClick: () => { window.open(ENV.FOOTER.LINK.ACCESSIBILITY);},
         },
     ];
     const companyLegalInfo = (
