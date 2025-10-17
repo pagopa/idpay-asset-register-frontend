@@ -10,6 +10,7 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,7 +19,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
-import { fetchUserFromLocalStorage } from '../../helpers';
+import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { BatchFilterItems } from '../Product/helpers';
 import { filterInputWithSpaceRule } from '../../helpers';
 
@@ -310,7 +311,9 @@ export default function FiltersDrawer({
           >
             {batchFilterItems?.map((batch) => (
               <MenuItem key={batch?.productFileId} value={batch?.productFileId}>
-                {batch?.batchName}
+                <Tooltip title={batch?.batchName}>
+                  <span>{truncateString(batch?.batchName, 35)}</span>
+                </Tooltip>
               </MenuItem>
             ))}
           </Select>
