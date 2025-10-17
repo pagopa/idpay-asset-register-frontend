@@ -29,6 +29,9 @@ jest.mock('env-var', () => ({
             REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL_ASSET_REGISTER: { required: () => ({ asString: () => 'privacy-json' }) },
             REACT_APP_ONE_TRUST_TOS_ID_ASSET_REGISTER: { required: () => ({ asString: () => 'tos-id' }) },
             REACT_APP_ONE_TRUST_TOS_JSON_URL_ASSET_REGISTER: { required: () => ({ asString: () => 'tos-json' }) },
+            REACT_APP_ASSISTANCE_EMAIL: { required: () => ({ asString: () => 'tos-json' }) },
+            REACT_APP_URL_PRIVACY_DISCLAIMER: {asString: () => 'tos-json'  },
+            REACT_APP_URL_TERMS_AND_CONDITIONS: {asString: () => 'tos-json' },
         };
 
         return mockValues[key];

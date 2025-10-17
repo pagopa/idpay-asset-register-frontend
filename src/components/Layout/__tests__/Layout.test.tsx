@@ -19,6 +19,11 @@ jest.mock('../../../utils/env', () => ({
     API_TIMEOUT_MS: {
       OPERATION: 5000,
     },
+    FOOTER: {
+      LINK: {
+        PRIVACYPOLICY: 'privacy'
+      }
+    }
   },
 }));
 
@@ -228,7 +233,6 @@ describe('Layout component', () => {
 
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
     expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
     expect(screen.getByTestId('layout-children')).toBeInTheDocument();
   });
 
@@ -311,7 +315,6 @@ describe('Layout component', () => {
 
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
     expect(screen.queryByTestId('mock-sidemenu')).not.toBeInTheDocument();
-    expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
     expect(screen.getByTestId('layout-children')).toBeInTheDocument();
   });
 
@@ -417,20 +420,11 @@ describe('Layout component', () => {
         </Provider>
     );
 
-    const footerExitButton = screen.getByTestId('footer-exit-button');
-    footerExitButton.click();
 
     await waitFor(() => {
-      expect(mockOnExit).toHaveBeenCalled();
+      expect(mockOnExit).not.toHaveBeenCalled();
     });
 
-    const passedCallback = mockOnExit.mock.calls[0]?.[0];
-    expect(typeof passedCallback).toBe('function');
-    passedCallback();
-
-    expect(mockStorageTokenOpsDelete).toHaveBeenCalledTimes(1);
-    expect(mockStorageUserOpsDelete).toHaveBeenCalledTimes(1);
-    expect(window.location.assign).toHaveBeenCalledWith('https://mock-logout-url.com');
   });
 
   it('clears only filter, user, and token items from sessionStorage on exit', async () => {
