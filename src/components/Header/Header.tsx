@@ -1,6 +1,5 @@
 import { ProductEntity } from '@pagopa/mui-italia';
 import { PartySwitchItem } from '@pagopa/mui-italia/dist/components/PartySwitch';
-import { Header as CommonHeader } from '@pagopa/selfcare-common-frontend/lib';
 import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
 import { trackEvent } from '@pagopa/selfcare-common-frontend/lib/services/analyticsService';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
@@ -11,7 +10,7 @@ import { Product } from '../../model/Product';
 import { useAppSelector } from '../../redux/hooks';
 import { partiesSelectors } from '../../redux/slices/partiesSlice';
 import { Party } from '../../model/Party';
-import { ENV } from '../../utils/env';
+import CustomHeader from './CustomHeader';
 
 type Props = WithPartiesProps & {
   withSecondHeader: boolean;
@@ -53,7 +52,7 @@ const Header = ({ withSecondHeader, onExit }: /* , parties */ Props) => {
   );
 
   return (
-    <CommonHeader
+    <CustomHeader
       onExit={onExit}
       loggedUser={false}
       enableLogin={false}
@@ -76,8 +75,8 @@ const Header = ({ withSecondHeader, onExit }: /* , parties */ Props) => {
           logoUrl: party.urlLogo,
         }))
       }
-      onDocumentationClick={() => window.open(ENV.URL_FE.EIE_MANUAL || '', '_blank')}
-      assistanceEmail={ENV.ASSISTANCE.EMAIL}
+      onDocumentationClick={() => window.open('https://developer.pagopa.it/pari/guides/manuale-tecnico-produttori', '_blank')}
+      assistanceEmail={'https://developer.pagopa.it/pari/guides/manuale-tecnico-produttori/contatti'}
       onSelectedProduct={(p) =>
         onExit(() => console.log(`TODO: perform token exchange to change Product and set ${p}`))
       }
