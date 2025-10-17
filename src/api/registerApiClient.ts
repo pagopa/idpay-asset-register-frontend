@@ -338,9 +338,19 @@ export const RegisterApi = {
     }
     const batchListValidation = await safeApiCall(
       () => registerClient.getBatchNameList(params),
-      right({ status: 200, value: [] } as unknown as IResponseType<200, BatchList>)
+      right([] as BatchList)
     );
-    return (batchListValidation as any)?.right?.value ?? (batchListValidation as any)?.value ?? [];
+    // eslint-disable-next-line functional/no-let
+    const result: BatchList =
+      Array.isArray((batchListValidation as any)?.right)
+        ? (batchListValidation as any).right
+        : Array.isArray((batchListValidation as any)?.value)
+        ? (batchListValidation as any).value
+        : Array.isArray(batchListValidation)
+        ? (batchListValidation as BatchList)
+        : [];
+    console.log("[RegisterApi.getBatchFilterItems] returning:", result);
+    return result;
   },
   uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
     try {
