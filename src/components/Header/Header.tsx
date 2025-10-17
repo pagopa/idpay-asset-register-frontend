@@ -75,8 +75,8 @@ const Header = ({ withSecondHeader, onExit }: /* , parties */ Props) => {
           logoUrl: party.urlLogo,
         }))
       }
-      onDocumentationClick={() => window.open('https://developer.pagopa.it/pari/guides/manuale-tecnico-produttori', '_blank')}
-      assistanceEmail={'https://developer.pagopa.it/pari/guides/manuale-tecnico-produttori/contatti'}
+      onDocumentationClick={() => window.open('https://developer.pagopa.it/pari/guides/manuale-tecnico-produttore', '_blank')}
+      assistanceEmail={'https://developer.pagopa.it/pari/guides/manuale-tecnico-produttore/contatti'}
       onSelectedProduct={(p) =>
         onExit(() => console.log(`TODO: perform token exchange to change Product and set ${p}`))
       }
