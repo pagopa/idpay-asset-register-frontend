@@ -7,7 +7,7 @@ export const ENV = {
   PUBLIC_URL: PUBLIC_URL_INNER,
 
   ASSISTANCE: {
-    EMAIL: env.get('REACT_APP_PAGOPA_HELP_EMAIL').required().asString(),
+    EMAIL: env.get('REACT_APP_ASSISTANCE_EMAIL').required().asString(),
   },
 
   URL_FE: {
