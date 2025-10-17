@@ -343,9 +343,7 @@ export default function FiltersDrawer({
         {(() => {
           const showErrorEprel =
             showEprelError && draftEprel.length > 0 && !isValidNumeric(draftEprel);
-          const helperEprel = showErrorEprel
-            ? 'Il codice EPREL deve contenere solo caratteri numerici.'
-            : undefined;
+          const helperEprel = showErrorEprel ? 'Il codice deve essere numerico' : undefined;
           return (
             <TextField
               fullWidth
@@ -378,9 +376,7 @@ export default function FiltersDrawer({
 
         {(() => {
           const showErrorGtin = showGtinError && draftGtin.length > 0 && !isValidGtin(draftGtin);
-          const helperGtin = showErrorGtin
-            ? 'Il codice GTIN/EAN deve contenere al massimo 14 caratteri alfanumerici.'
-            : undefined;
+          const helperGtin = showErrorGtin ? 'Il codice deve avere 14 caratteri' : undefined;
           return (
             <TextField
               fullWidth
