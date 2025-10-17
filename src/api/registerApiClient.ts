@@ -349,7 +349,7 @@ export const RegisterApi = {
         : Array.isArray(batchListValidation)
         ? (batchListValidation as BatchList)
         : [];
-    console.log("[RegisterApi.getBatchFilterItems] returning:", result);
+    // console.log("[RegisterApi.getBatchFilterItems] returning:", result);
     return result;
   },
   uploadProductList: async (csv: File, category: string): Promise<RegisterUploadResponseDTO> => {
