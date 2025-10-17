@@ -365,7 +365,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   };
 
   return (
-    <TableContainer>
+    <TableContainer sx={{ overflowX: 'hidden' }}>
       <Table size="small" sx={{ tableLayout: 'fixed', width: '100%' }}>
         <EnhancedTableHead
           isInvitaliaUser={isInvitaliaUser}
