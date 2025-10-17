@@ -7,7 +7,7 @@ export const ENV = {
   PUBLIC_URL: PUBLIC_URL_INNER,
 
   ASSISTANCE: {
-    EMAIL: env.get('REACT_APP_PAGOPA_HELP_EMAIL').required().asString(),
+    EMAIL: env.get('REACT_APP_ASSISTANCE_EMAIL').required().asString(),
   },
 
   URL_FE: {
@@ -62,5 +62,35 @@ export const ENV = {
       .asString(),
     TOS_ID: env.get('REACT_APP_ONE_TRUST_TOS_ID_ASSET_REGISTER').required().asString(),
     TOS_JSON_URL: env.get('REACT_APP_ONE_TRUST_TOS_JSON_URL_ASSET_REGISTER').required().asString(),
+  },
+  FOOTER: {
+    LINK: {
+      PAGOPALINK: 'https://www.pagopa.it/',
+      PRIVACYPOLICY: env.get('REACT_APP_URL_PRIVACY_DISCLAIMER').asString(),
+      TERMSANDCONDITIONS: env.get('REACT_APP_URL_TERMS_AND_CONDITIONS').asString(),
+      PROTECTIONOFPERSONALDATA:
+          'https://privacyportal-de.onetrust.com/webform/77f17844-04c3-4969-a11d-462ee77acbe1/9ab6533d-be4a-482e-929a-0d8d2ab29df8',
+      ABOUTUS: 'https://www.pagopa.it/it/societa/chi-siamo/',
+      MEDIA: 'https://www.pagopa.it/it/',
+      WORKWITHUS: 'https://www.pagopa.it/it/lavora-con-noi/',
+      CERTIFICATIONS: 'https://www.pagopa.it/it/certificazioni/',
+      INFORMATIONSECURITY:
+          'https://www.pagopa.it/it/politiche-per-la-sicurezza-delle-informazioni/',
+      TRANSPARENTCOMPANY: 'https://pagopa.portaleamministrazionetrasparente.it/',
+      DISCLOSUREPOLICY: 'https://www.pagopa.it/it/responsible-disclosure-policy/',
+      MODEL231:
+          'https://pagopa.portaleamministrazionetrasparente.it/pagina746_altri-contenuti.html',
+      LINKEDIN: 'https://www.linkedin.com/company/pagopa/',
+      TWITTER: 'https://twitter.com/pagopa',
+      INSTAGRAM: 'https://www.instagram.com/pagopaspa/',
+      MEDIUM: 'https://medium.com/pagopa-spa',
+      ACCESSIBILITY: 'https://form.agid.gov.it/view/87f46790-9798-11f0-b583-8b5f76942354',
+    },
+  },
+  HEADER: {
+    LINK: {
+      ROOTLINK: 'https://www.pagopa.it/',
+      PRODUCTURL: '/dashboard',
+    },
   },
 };
