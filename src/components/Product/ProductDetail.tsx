@@ -196,7 +196,7 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
   const dateRow: RowConfig = {
     label: baseRows[2].label,
     value: data?.registrationDate
-      ? String(format(Number(data?.registrationDate), 'dd/MM/yyyy'))
+      ? String(format(new Date(data?.registrationDate), 'dd/MM/yyyy'))
       : EMPTY_DATA,
   };
 
@@ -256,96 +256,139 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
 
   const baseRows = getProductInfoRowsConfig(data, t);
 
-  const rows =
-    user?.org_role !== USERS_TYPES.OPERATORE.toLowerCase() &&
-    Boolean(data?.statusChangeChronology?.length)
-      ? [
-          ...baseRows,
-          {
-            renderCustom(this: RowConfig) {
-              const chronology =
-                ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
-              const filteredChronology = chronology.filter(
-                (entry) => (entry?.motivation?.trim() || EMPTY_DATA) !== EMPTY_DATA
-              );
-              if (filteredChronology.length === 0) {
-                return null;
-              }
-              return (
-                <ProductInfoRow
-                  label={t('pages.productDetail.motivation')}
-                  labelVariant="overline"
-                  sx={{ marginTop: 3, fontWeight: 700 }}
-                  labelColor="#17324D"
-                  value={
-                    <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                      {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
-                    </Box>
-                  }
-                />
-              );
-            },
-          } as RowConfig & { renderCustom?: () => JSX.Element },
-          {
-            renderCustom(this: RowConfig) {
-              const chronology =
-                ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
-              if (!chronology.length) {
-                return null;
-              }
-              const entry = chronology[0];
-              if (!entry) {
-                return null;
-              }
-              const operator = entry?.role
-                ? `${USERS_NAMES.OPERATORE} ${entry.role}`
-                : USERS_NAMES.OPERATORE;
-              const dateLabel = entry?.updateDate
-                ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
-                : EMPTY_DATA;
-              const formalMotivationText =
-                data?.formalMotivation === undefined ||
-                data?.formalMotivation === null ||
-                (typeof data?.formalMotivation === 'string' && data?.formalMotivation.trim() === '')
-                  ? EMPTY_DATA
-                  : data?.formalMotivation;
-              const header = `${operator} · ${dateLabel}`;
+  const chronology = ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
+  const filteredChronology = chronology.filter(
+    (entry) => (entry?.motivation?.trim() || EMPTY_DATA) !== EMPTY_DATA
+  );
+  const hasMotivations = filteredChronology.length > 0;
 
-              if (formalMotivationText === EMPTY_DATA) {
-                return null;
-              }
+  const isNonEmptyString = (value: unknown): value is string =>
+    typeof value === 'string' && value.trim() !== '';
 
-              return (
-                <ProductInfoRow
-                  label={t('pages.productDetail.motivationFormal')}
-                  labelVariant="overline"
-                  sx={{ marginTop: 3, fontWeight: 700 }}
-                  labelColor="#17324D"
-                  value={
-                    <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                      <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
-                        <Box component="span" sx={{ width: '100%' }}>
-                          <Typography variant="body1" color="textSecondary">
-                            {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-                          </Typography>
-                          <TextareaAutosize
-                            maxRows={10}
-                            value={formalMotivationText}
-                            readOnly
-                            aria-label="Motivazione formale"
-                            name="formalMotivation"
-                            className="product-detail-textarea"
-                          />
-                        </Box>
-                      </Box>
+  const formalMotivationText = isNonEmptyString((data as any)?.formalMotivation)
+    ? (data as any).formalMotivation
+    : EMPTY_DATA;
+
+  const motivationRow =
+    user?.org_role !== USERS_TYPES.OPERATORE && hasMotivations
+      ? ({
+          renderCustom(this: RowConfig) {
+            return (
+              <ProductInfoRow
+                label={t('pages.productDetail.motivation')}
+                labelVariant="overline"
+                sx={{ marginTop: 3, fontWeight: 700 }}
+                labelColor="#17324D"
+                value={
+                  <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                    {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
+                  </Box>
+                }
+              />
+            );
+          },
+        } as RowConfig & { renderCustom?: () => JSX.Element })
+      : null;
+
+  function isValidDateString(date: string | undefined): boolean {
+    if (!date) {
+      return false;
+    }
+    const d = new Date(date);
+    return !isNaN(d.getTime());
+  }
+
+  function getFormalMotivationDateLabel(chronology: Array<any>) {
+    try {
+      const rejectedEntry = chronology.find(
+        (entry: any) => entry?.targetStatus === 'REJECTED' && isValidDateString(entry?.updateDate)
+      );
+      if (rejectedEntry) {
+        return format(new Date(rejectedEntry.updateDate), 'dd/MM/yyyy, HH:mm');
+      }
+    } catch (error) {
+      if (DEBUG_CONSOLE) {
+        console.log('getFormalMotivationDateLabel error:', error);
+      }
+    }
+    return EMPTY_DATA;
+  }
+
+  function getFormalMotivationOperator(user: any, chronology: Array<any>) {
+    if (user?.org_role !== USERS_TYPES.OPERATORE) {
+      return chronology[0]?.role
+        ? `${USERS_NAMES.OPERATORE} ${chronology[0].role}`
+        : USERS_NAMES.OPERATORE;
+    }
+    return '';
+  }
+
+  function getFormalMotivationHeader(user: any, dateLabel: string, operator: string) {
+    if (user?.org_role !== USERS_TYPES.OPERATORE) {
+      return dateLabel !== EMPTY_DATA ? `${operator} · ${dateLabel}` : operator;
+    }
+    return dateLabel !== EMPTY_DATA ? `${dateLabel}` : EMPTY_DATA;
+  }
+
+  function displayFormalMotivation(org_role?: string, status?: string) {
+    return (
+      !(
+        formalMotivationText === EMPTY_DATA ||
+        formalMotivationText === undefined ||
+        formalMotivationText === null ||
+        formalMotivationText === ''
+      ) &&
+      ((org_role === USERS_TYPES.OPERATORE && String(status) === PRODUCTS_STATES.REJECTED) ||
+        org_role !== USERS_TYPES.OPERATORE)
+    );
+  }
+
+  const formalMotivationRow = !displayFormalMotivation(user?.org_role, data.status)
+    ? null
+    : ({
+        renderCustom(this: RowConfig) {
+          const dateLabel = getFormalMotivationDateLabel(chronology);
+          const operator = getFormalMotivationOperator(user, chronology);
+          const header = getFormalMotivationHeader(user, dateLabel, operator);
+
+          return (
+            <ProductInfoRow
+              label={t('pages.productDetail.motivationFormal')}
+              labelVariant="overline"
+              sx={{ marginTop: 3, fontWeight: 700 }}
+              labelColor="#17324D"
+              value={
+                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                  <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
+                    <Box component="span" sx={{ width: '100%' }}>
+                      {header && header.trim() !== '' && (
+                        <Typography variant="body1" color="textSecondary">
+                          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                        </Typography>
+                      )}
+                      <TextareaAutosize
+                        maxRows={10}
+                        value={formalMotivationText}
+                        readOnly
+                        aria-label="Motivazione formale"
+                        name="formalMotivation"
+                        className="product-detail-textarea"
+                      />
                     </Box>
-                  }
-                />
-              );
-            },
-          } as RowConfig & { renderCustom?: () => JSX.Element },
-        ]
-      : baseRows;
+                  </Box>
+                </Box>
+              }
+            />
+          );
+        },
+      } as RowConfig & { renderCustom?: () => JSX.Element });
+
+  const extraRows = [
+    ...(motivationRow ? [motivationRow] : []),
+    ...(formalMotivationRow ? [formalMotivationRow] : []),
+  ];
+
+  const rows = [...baseRows, ...extraRows];
 
   return (
     <>

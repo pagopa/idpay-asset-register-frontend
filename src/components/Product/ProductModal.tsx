@@ -19,6 +19,7 @@ import {
   setRestoredStatusList,
   setApprovedStatusList,
 } from '../../services/registerService';
+import { filterInputWithSpaceRule } from '../../helpers';
 import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import {
@@ -178,7 +179,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
           value={motivationInternal}
           onChange={(e) => {
-            setMotivationInternal(e.target.value);
+            setMotivationInternal(filterInputWithSpaceRule(e.target.value));
           }}
           onBlur={() => setMotivationTouched(true)}
           sx={modalStyles.textField}
@@ -218,7 +219,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
           value={motivationOfficial}
           onChange={(e) => {
-            setMotivationOfficial(e.target.value);
+            setMotivationOfficial(filterInputWithSpaceRule(e.target.value));
           }}
           onBlur={() => setMotivationOfficialTouched(true)}
           sx={modalStyles.textField}

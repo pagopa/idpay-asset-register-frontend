@@ -42,7 +42,53 @@
       "refrigeratingappl": "Apparecchi di refrigerazione",
       "cookinghobs": "Piani cottura"
     },
-    "advancedFilters": "Filtri avanzati"
+    "advancedFilters": "Filtri avanzati",
+    "footer": {
+      "a11y": "Accessibilità",
+      "PagoPA": "PagoPA S.p.A",
+      "legalInfo": "Società per azioni con socio unico - capitale sociale di euro 1,000,000 interamente versato - sede legale in Roma, Piazza Colonna 370,\n CAP 00187 - N. di iscrizione a Registro Imprese di Roma, CF e P.IVA 15376371009",
+      "privacy": "Informativa Privacy",
+      "personalData": "Diritto alla protezione dei dati personali",
+      "termsAndConditions": "Termini e condizioni d'uso",
+      "legalInfoText": "<0>PagoPA S.p.A.</0> - Società per azioni con socio unico - Capitale sociale di euro 1,000,000 interamente versato - Sede legale in Roma, Piazza Colonna 370, <2/> CAP 00187 - N. di iscrizione a Registro Imprese di Roma, CF e P.IVA 15376371009",
+      "privacyPolicyLink": "Informativa Privacy",
+      "termsAndConditionLink": "Termini e condizioni d’uso del sito ",
+      "informationSecurityLink": "Sicurezza delle informazioni ",
+      "assistanceLink": "Assistenza ",
+      "preLoginLinks": {
+        "aboutUs": {
+          "links": {
+            "aboutUs": "PagoPA S.p.A.",
+            "media": "Media",
+            "workwithud": "Lavora con noi"
+          }
+        },
+        "resources": {
+          "title": "Risorse",
+          "links": {
+            "privacyPolicy": "Informativa Privacy",
+            "certifications": "Certificazioni",
+            "informationsecurity": "Sicurezza delle informazioni",
+            "protectionofpersonaldata": "Diritto alla protezione dei dati personali",
+            "cookies": "Preferenze Cookie",
+            "termsandconditions": "Termini e Condizioni",
+            "transparentcompany": "Società trasparente",
+            "disclosurePolicy": "Responsible Disclosure Policy",
+            "model231": "Modello 231"
+          }
+        },
+        "followUs": {
+          "title": "Seguici su"
+        },
+        "accessibility": "Accessibilità"
+      },
+      "postLoginLinks": {
+        "privacyPolicy": "Informativa Privacy",
+        "protectionofpersonaldata": "Diritto alla protezione dei dati personali",
+        "termsandconditions": "Termini e Condizioni",
+        "accessibility": "Accessibilità"
+      }
+    }
   },
   "errors": {
     "contactAdmin": "Contatta l'assistenza",
@@ -63,7 +109,7 @@
       "termsDescription": "Accedendo, accetti i",
       "termsDescription2": "del servizio e confermi di aver letto l’",
       "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
-      "title": "Elenco informatico elettrodomestici"
+      "title": "Elenco informatico degli elettrodomestici"
     },
     "upcomingInitiative": {
       "title": "Ci siamo quasi!",
@@ -269,7 +315,7 @@
     "supervised": {
       "title": "Richiedi ulteriori controlli ai produttori",
       "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali controlli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'.",
-"listTitle": "Perché stai richiedendo ulteriori controlli?",
+      "listTitle": "Perché stai richiedendo ulteriori controlli?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
       "buttonText": "Da controllare",
@@ -281,18 +327,18 @@
     "rejected": {
       "title": "Richiedi esclusione",
       "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori riceveranno la notifica dell'esclusione.",
-"listTitle": "Perché stai escludendo i prodotti?",
+      "listTitle": "Perché stai escludendo i prodotti?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
       "buttonText": "Escludi",
       "buttonTextConfirm": "Escludi",
       "buttonTextCancel": "Annulla",
       "errorMessage": "Campo obbligatorio",
-"listTitleNoteUff": "Notifica ufficiale destinata al Produttore",
+      "listTitleNoteUff": "Notifica ufficiale destinata al Produttore",
       "reasonPlaceholderNoteUff": "Notifica ufficiale",
       "msgResultRejected": "I prodotti selezionati sono stati esclusi."
     },
-     "waitApproved": {
+    "waitApproved": {
       "title": "Approva",
       "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
       "listTitle": "Richiedi approvazione",
@@ -325,11 +371,11 @@
       "buttonText": "Approva",
       "buttonTextConfirm": "Approva",
       "buttonTextCancel": "Annulla",
-      "msgResultAcceptApprovation":"I prodotti sono stati approvati."
+      "msgResultAcceptApprovation": "I prodotti sono stati approvati."
     }
   },
   "chip": {
-    "productStatusLabel":{
+    "productStatusLabel": {
       "uploaded": "Da Esaminare",
       "waitApproved": "Da approvare",
       "approved": "Approvato",
@@ -337,8 +383,8 @@
       "rejected": "Escluso"
     }
   },
-  "msgResutlt":{
-    "errorMixSelected":"Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato.",
-    "errorYourselfApproved":"Non puoi inviare una richiesta di approvazione a te stesso."
+  "msgResutlt": {
+    "errorMixSelected": "Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato.",
+    "errorYourselfApproved": "Non puoi inviare una richiesta di approvazione a te stesso."
   }
 }

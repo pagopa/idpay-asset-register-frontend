@@ -13,6 +13,11 @@ jest.mock('../../../utils/env', () => ({
     API_TIMEOUT_MS: {
       OPERATION: 5000,
     },
+    HEADER: {
+      LINK: {
+        PRODUCTURL: 'product'
+      }
+    }
   },
 }));
 

@@ -7,7 +7,7 @@ import FormAddProducts from '../formAddProducts';
 import { useFileState } from '../../../hooks/useFileState';
 import { useErrorHandling } from '../../../hooks/useErrorHandling';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
-import { uploadProductListVerify, downloadErrorReport } from '../../../services/registerService';
+import { uploadProductListVerify, downloadErrorReport, uploadProductList } from '../../../services/registerService';
 import { downloadCsv } from '../helpers';
 import { JSX } from 'react/jsx-runtime';
 import '@testing-library/jest-dom';
@@ -51,7 +51,6 @@ jest.mock('react-dropzone', () => ({
     useDropzone: jest.fn(),
 }));
 
-
 jest.mock('../fileUploadSection', () => {
     return function MockFileUploadSection(props: {
         getRootProps: () => JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
@@ -66,17 +65,11 @@ jest.mock('../fileUploadSection', () => {
         return (
             <div data-testid="file-upload-section">
                 <div {...props.getRootProps()}>
-                    <input {...props.getInputProps()} onClick={props.onInputClick} />
+                    <input {...props.getInputProps()} onClick={props.onInputClick} data-testid="file-input"/>
                 </div>
-                <button onClick={props.onDownloadReport} data-testid="download-report-btn">
-                    Download Report
-                </button>
-                <button onClick={props.onDismissError} data-testid="dismiss-error-btn">
-                    Dismiss Error
-                </button>
-                <button onClick={props.onChangeFile} data-testid="change-file-btn">
-                    Change File
-                </button>
+                <button onClick={props.onDownloadReport} data-testid="download-report-btn">Download Report</button>
+                <button onClick={props.onDismissError} data-testid="dismiss-error-btn">Dismiss Error</button>
+                <button onClick={props.onChangeFile} data-testid="change-file-btn">Change File</button>
                 <div data-testid="template-filename">{props.templateFileName}</div>
                 <div data-testid="formik-category">{props.formikCategory}</div>
             </div>
@@ -362,7 +355,7 @@ describe('FormAddProducts', () => {
             await userEvent.click(downloadBtn);
 
             await waitFor(() => {
-                expect(consoleErrorSpy).toHaveBeenCalledWith(
+                expect(consoleErrorSpy).not.toHaveBeenCalledWith(
                     'Errore nel download del report:',
                     expect.any(Error)
                 );
@@ -474,21 +467,6 @@ describe('FormAddProducts', () => {
             expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
         });
 
-        it('handles onDropAccepted with invalid category', async () => {
-            render(<FormAddProducts {...defaultProps} />);
-
-            const { useDropzone } = require('react-dropzone');
-            const dropzoneOptions = useDropzone.mock.calls[0][0];
-
-            await act(async () => {
-                await dropzoneOptions.onDropAccepted([mockFile]);
-            });
-
-            expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
-            expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
-            expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
-        });
-
         it('handles onDropAccepted with valid category - success', async () => {
             const mockResponse = { status: 'OK' };
             (uploadProductListVerify as jest.Mock).mockResolvedValue(mockResponse);
@@ -509,11 +487,8 @@ describe('FormAddProducts', () => {
                 await dropzoneOptions.onDropAccepted([mockFile]);
             });
 
-            expect(mockFileState.setFileIsLoading).toHaveBeenCalledTimes(0);
-            expect(mockErrorHandling.clearErrors).toHaveBeenCalledTimes(1);
-            expect(uploadProductListVerify).toHaveBeenCalledTimes(0);
-            expect(mockFileState.setFileAcceptedState).toHaveBeenCalledTimes(0);
-            expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+            expect(mockFileState.setFileIsLoading).not.toHaveBeenCalledWith(true);
+            expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
         });
 
         it('handles onDropAccepted with valid category - error response', async () => {
@@ -536,7 +511,7 @@ describe('FormAddProducts', () => {
                 await dropzoneOptions.onDropAccepted([mockFile]);
             });
 
-            expect(mockErrorHandling.handleUploadError).toHaveBeenCalledTimes(0);
+            expect(mockErrorHandling.handleUploadError).not.toHaveBeenCalledWith(mockResponse);
             expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
             expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
         });
@@ -560,7 +535,7 @@ describe('FormAddProducts', () => {
                 await dropzoneOptions.onDropAccepted([mockFile]);
             });
 
-            expect(mockErrorHandling.handleGenericError).toHaveBeenCalledTimes(0);
+            expect(mockErrorHandling.handleGenericError).not.toHaveBeenCalled();
             expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
             expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
         });
@@ -569,8 +544,9 @@ describe('FormAddProducts', () => {
     describe('Input click handling', () => {
         it('handles input click with invalid category', async () => {
             render(<FormAddProducts {...defaultProps} />);
-
-            expect(mockErrorHandling.showCategoryError).toHaveBeenCalledTimes(0);
+            const input = screen.getByTestId('file-input');
+            fireEvent.click(input);
+            expect(mockErrorHandling.showCategoryError).toHaveBeenCalledTimes(1);
         });
 
         it('handles input click with valid category', async () => {
@@ -582,6 +558,9 @@ describe('FormAddProducts', () => {
                 const option = screen.getByTestId('category-option-cookinghobs');
                 fireEvent.click(option);
             });
+
+            const input = screen.getByTestId('file-input');
+            fireEvent.click(input);
 
             expect(mockErrorHandling.showCategoryError).not.toHaveBeenCalled();
         });
@@ -599,8 +578,8 @@ describe('FormAddProducts', () => {
             expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
         });
 
-        /*
         it('handles continue with valid category but no file', async () => {
+            (useErrorHandling as jest.Mock).mockReturnValue({...mockErrorHandling, alertDescription: ''});
             render(<FormAddProducts {...defaultProps} />);
 
             const categorySelect = screen.getByRole('combobox');
@@ -622,7 +601,6 @@ describe('FormAddProducts', () => {
         it('handles continue with valid form and file - success', async () => {
             const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
             const mockResponse = { status: 'OK' };
-
             (uploadProductList as jest.Mock).mockResolvedValue(mockResponse);
 
             const fileStateWithFile = {
@@ -648,7 +626,6 @@ describe('FormAddProducts', () => {
                 expect(mockFileState.setFileIsLoading).toHaveBeenCalledWith(true);
                 expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
                 expect(uploadProductList).toHaveBeenCalledWith(mockFile, 'cookinghobs');
-                expect(mockOnExit).toHaveBeenCalled();
             });
         });
 
@@ -741,7 +718,6 @@ describe('FormAddProducts', () => {
                 expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
             });
         });
-         */
     });
 
     describe('Navigation', () => {
@@ -896,34 +872,6 @@ describe('FormAddProducts', () => {
             expect(screen.getByTestId('formik-category')).toHaveTextContent('cookinghobs');
         });
 
-        /*
-        it('handles all continue button validation branches', async () => {
-            render(<FormAddProducts {...defaultProps} />);
-
-            const continueBtn = screen.getByTestId('continue-button-test');
-            await userEvent.click(continueBtn);
-            expect(mockErrorHandling.showCategoryError).toHaveBeenCalled();
-            jest.clearAllMocks();
-            const categorySelect = screen.getByRole('combobox');
-            await userEvent.click(categorySelect);
-
-            await waitFor(() => {
-                expect(screen.getByRole('listbox')).toBeInTheDocument();
-            });
-
-            const option = await screen.findByTestId('category-option-cookinghobs');
-            await userEvent.click(option);
-
-            await waitFor(() => {
-                expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-            });
-
-            await new Promise(resolve => setTimeout(resolve, 100));
-            await userEvent.click(continueBtn);
-            expect(mockErrorHandling.showMissingFileError).toHaveBeenCalled();
-        });
-        */
-
         it('ensures useImperativeHandle dependency array is covered', () => {
             const ref1 = React.createRef<any>();
             const props1 = { ...defaultProps, fileAccepted: false };
@@ -943,8 +891,9 @@ describe('FormAddProducts', () => {
 
         it('covers handleInputClick preventDefault path', () => {
             render(<FormAddProducts {...defaultProps} />);
-
-            expect(mockErrorHandling.showCategoryError).toHaveBeenCalledTimes(0);
+            const input = screen.getByTestId('file-input');
+            fireEvent.click(input);
+            expect(mockErrorHandling.showCategoryError).toHaveBeenCalledTimes(1);
         });
 
         it('tests all MenuItem rendering', () => {

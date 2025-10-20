@@ -13,7 +13,8 @@ import {
   CircularProgress,
   Alert,
   Chip,
-  Divider, Tooltip,
+  Divider,
+  Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
@@ -42,7 +43,14 @@ function renderUploadStatusChip(status: string) {
   }
 }
 
-const formatDateTime = (date: Date): string => {
+const formatDateTime = (input: Date | string | undefined): string => {
+  if (!input) {
+    return EMPTY_DATA;
+  }
+  const date = input instanceof Date ? input : new Date(input);
+  if (isNaN(date.getTime())) {
+    return EMPTY_DATA;
+  }
   const options: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     month: 'long',
@@ -52,14 +60,20 @@ const formatDateTime = (date: Date): string => {
     second: '2-digit',
     hour12: false,
   };
-
   return new Intl.DateTimeFormat('it-IT', options).format(date);
 };
 
-const formatDate = (isoDate: Date): string => {
-  const day = String(isoDate.getDate()).padStart(2, '0');
-  const month = String(isoDate.getMonth() + 1).padStart(2, '0');
-  const year = isoDate.getFullYear();
+const formatDate = (input: Date | string | undefined): string => {
+  if (!input) {
+    return EMPTY_DATA;
+  }
+  const date = input instanceof Date ? input : new Date(input);
+  if (isNaN(date.getTime())) {
+    return EMPTY_DATA;
+  }
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 };
 
@@ -118,28 +132,28 @@ const UploadInfoBox: React.FC<{
     );
   }
   if (
-      !loading &&
-      !error &&
-      data?.content &&
-      data.content.length > 0 &&
-      data.content[0].uploadStatus === 'IN_PROCESS'
+    !loading &&
+    !error &&
+    data?.content &&
+    data.content.length > 0 &&
+    data.content[0].uploadStatus === 'IN_PROCESS'
   ) {
     return (
-        <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
-          <Typography variant="body2">
-            Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : EMPTY_DATA}</b>
-          </Typography>
-          <Button
-              disabled
-              variant="contained"
-              color="primary"
-              startIcon={<FileUploadIcon />}
-              sx={{ alignSelf: 'flex-start', mt: 2 }}
-              onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
-          >
-            {t('pages.overview.overviewTitleBoxProdBtn')}
-          </Button>
-        </Box>
+      <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
+        <Typography variant="body2">
+          Ultimo caricamento <b>{firstUploadDate ? formatDateTime(firstUploadDate) : EMPTY_DATA}</b>
+        </Typography>
+        <Button
+          disabled
+          variant="contained"
+          color="primary"
+          startIcon={<FileUploadIcon />}
+          sx={{ alignSelf: 'flex-start', mt: 2 }}
+          onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
+        >
+          {t('pages.overview.overviewTitleBoxProdBtn')}
+        </Button>
+      </Box>
     );
   }
   return null;
@@ -194,9 +208,7 @@ const UploadsTable: React.FC<{
                         <Box sx={{ mb: 2 }}>
                           <Paper>
                             <Alert severity="warning" sx={{ mb: 2 }}>
-                              <Typography variant="body2">
-                                {t('pages.overview.warning')}
-                              </Typography>
+                              <Typography variant="body2">{t('pages.overview.warning')}</Typography>
                             </Alert>
                           </Paper>
                         </Box>
@@ -208,22 +220,24 @@ const UploadsTable: React.FC<{
                 {data?.content &&
                   data.content.slice(0, rowsPerPage).map((row: UploadDTO) => (
                     <TableRow key={row.productFileId}>
-                      <TableCell sx={{
-                        padding: 0,
-                        width: '50%',
-                        maxWidth: '50%',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}>
+                      <TableCell
+                        sx={{
+                          padding: 0,
+                          width: '50%',
+                          maxWidth: '50%',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
                         <Tooltip title={row.batchName}>
                           <span>{row.batchName}</span>
                         </Tooltip>
                       </TableCell>
-                      <TableCell align='right' sx={{ width: '25%' }}>
+                      <TableCell align="right" sx={{ width: '25%' }}>
                         {renderUploadStatusChip(row.uploadStatus ?? EMPTY_DATA)}
                       </TableCell>
-                      <TableCell align='right' sx={{ width: '25%' }}>
+                      <TableCell align="right" sx={{ width: '25%' }}>
                         {row.dateUpload ? formatDate(row.dateUpload) : EMPTY_DATA}
                       </TableCell>
                     </TableRow>
@@ -288,8 +302,8 @@ const OverviewProductionSection: React.FC = () => {
   }, [t]);
 
   const firstUploadDate =
-    !loading && !error && data?.content && data.content.length > 0
-      ? data.content[0].dateUpload
+    !loading && !error && data?.content && data.content.length > 0 && data.content[0].dateUpload
+      ? new Date(data.content[0].dateUpload)
       : undefined;
 
   useEffect(() => {

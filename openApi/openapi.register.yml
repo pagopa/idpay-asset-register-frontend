@@ -330,10 +330,13 @@ paths:
         - $ref: '#/components/parameters/size_query'
         - $ref: '#/components/parameters/sort_query'
         - $ref: '#/components/parameters/category_query'
+        - $ref: '#/components/parameters/brand_query'
+        - $ref: '#/components/parameters/model_query'
         - $ref: '#/components/parameters/eprelCode_query'
         - $ref: '#/components/parameters/gtinCode_query'
         - $ref: '#/components/parameters/productFileId_query'
         - $ref: '#/components/parameters/productName_query'
+        - $ref: '#/components/parameters/fullProductName_query'
         - $ref: '#/components/parameters/status_query'
         - $ref: '#/components/parameters/organizationId_query'
       responses:
@@ -506,17 +509,25 @@ components:
             - KO
         errorKey:
           type: string
-          description: 'ENG: Error Key: <ul><li>product.invalid.file.maxrow: too many
-            records</li><li>product.invalid.file.header: wrong headers</li><li>product.invalid.file.size:
-            file size exceeds limit</li><li>product.invalid.file.report: error report
-            generated</li><li>product.invalid.file.extension: file extension not valid
-            (must be csv)</li></ul><br>IT: Chiave di errore: <ul><li>product.invalid.file.maxrow:
-            numero di record non consentito</li><li>merchant.invalid.file.header:
-            headers non validi</li><li>merchant.invalid.file.size: la dimensione del
-            file supera il limite consentito<li>merchant.invalid.file.report: il file
-            caricato ha generato un report file di errori</li></li><li>product.invalid.file.vat.wrong:
-            partita IVA o CF non valido</li><li>product.invalid.file.extension: estensione
-            file non valita (deve essere un csv)</li></ul>'
+          description: 'ENG: Error Key:
+          <ul>
+            <li>product.invalid.file.maxrow: too many records</li>
+            <li>product.invalid.file.header: wrong headers</li>
+            <li>product.invalid.file.size: file size exceeds limit</li>
+            <li>product.invalid.file.report: error report generated</li>
+            <li>product.invalid.file.extension: file extension not valid (must be csv)</li>
+          </ul>
+          <br>IT: Chiave di errore:
+          <ul>
+            <li>product.invalid.file.maxrow: numero di record non consentito</li>
+            <li>merchant.invalid.file.header: headers non validi</li>
+            <li>merchant.invalid.file.size: la dimensione del file supera il limite consentito</li>
+            <li>merchant.invalid.file.report: il file caricato ha generato un report di errori</li>
+            <li>product.invalid.file.vat.wrong: partita IVA o CF non valido</li>
+            <li>product.invalid.file.extension: estensione file non valida (deve essere un csv)</li>
+          </ul>
+          <hr/>'
+
           enum:
             - product.invalid.file.extension
             - product.invalid.file.maxrow
@@ -646,9 +657,8 @@ components:
             - LOADED
         dateUpload:
           type: string
-          description: 'ENG: The date of upload <br> IT: La data di caricamento'
+          description: 'ENG: The date of upload. Example format: "2025-10-07T07:34:30.163+00:00" (ISO 8601 MongoDB string) <br> IT: La data di caricamento. Esempio formato: "2025-10-07T07:34:30.163+00:00" (stringa ISO 8601 MongoDB)'
           maxLength: 255
-          format: date-time
         findedProductsNumber:
           type: number
           description: 'ENG: The number of products found in the batch <br> IT: Il
@@ -724,9 +734,7 @@ components:
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
         registrationDate:
           type: string
-          format: date-time
-          description: 'ENG: Timestamps of insert (after EPREL checks) <br> IT: Data
-            caricamento prodotto (dopo la verifica EPREL)'
+          description: 'ENG: Timestamps of insert (after EPREL checks). Example format: "2025-10-07T07:34:30.163+00:00" (ISO 8601 MongoDB string) <br> IT: Data caricamento prodotto (dopo la verifica EPREL). Esempio formato: "2025-10-07T07:34:30.163+00:00" (stringa ISO 8601 MongoDB)'
           maxLength: 255
         status:
           $ref: '#/components/schemas/ProductStatus'
@@ -809,6 +817,11 @@ components:
         productName:
           type: string
           description: 'ENG: The name of the product  <br> IT: Nome del prodotto'
+          maxLength: 255
+          pattern: .*
+        fullProductName:
+          type: string
+          description: 'ENG: The name of the product with GTIN (for merchant)  <br> IT: Nome del prodotto con GTIN (per esercenti)'
           maxLength: 255
           pattern: .*
         statusChangeChronology:
@@ -950,8 +963,29 @@ components:
         errorKey:
           type: string
           nullable: true
+          description: >
+            ENG: Error Key for product status update:
+            <ul>
+              <li><b>product.update.error</b>: generic update error</li>
+              <li><b>product.invalid.update.mixedStatus</b>: different current statuses in the same request are not allowed</li>
+              <li><b>product.invalid.update.currentStatus</b>: provided currentStatus does not match the actual product status</li>
+              <li><b>product.invalid.update.notFound</b>: one or more provided products (e.g. GTIN codes) were not found</li>
+              <li><b>product.invalid.update.transitionNotAllowed</b>: transition from current to target status is not allowed</li>
+            </ul>
+            IT: Chiave di errore per l’aggiornamento stato prodotto:
+            <ul>
+              <li><b>product.update.error</b>: errore generico di aggiornamento</li>
+              <li><b>product.invalid.update.mixedStatus</b>: nella stessa richiesta non sono consentiti prodotti con stati correnti diversi</li>
+              <li><b>product.invalid.update.currentStatus</b>: il currentStatus fornito non coincide con lo stato reale del prodotto</li>
+              <li><b>product.invalid.update.notFound</b>: uno o più prodotti (es. GTIN) non sono stati trovati</li>
+              <li><b>product.invalid.update.transitionNotAllowed</b>: la transizione dallo stato corrente a quello di destinazione non è consentita</li>
+            </ul>
           enum:
             - product.update.error
+            - product.invalid.update.mixedStatus
+            - product.invalid.update.currentStatus
+            - product.invalid.update.notFound
+            - product.invalid.update.transitionNotAllowed
     ProductFileDTO:
       required:
         - csv
@@ -2019,6 +2053,8 @@ components:
         type: string
         enum:
           - category, desc
+          - brand, desc
+          - model, desc
           - batchName, desc
           - energyClass, desc
           - gtinCode, desc
@@ -2026,6 +2062,8 @@ components:
           - status, desc
           - organizationName, asc
           - category, asc
+          - brand, asc
+          - model, asc
           - batchName, asc
           - energyClass, asc
           - gtinCode, asc
@@ -2034,6 +2072,22 @@ components:
           - organizationName, desc
     eprelCode_query:
       name: eprelCode
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 50
+        pattern: ^\d+$
+    brand_query:
+      name: brand
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 50
+        pattern: ^\d+$
+    model_query:
+      name: model
       in: query
       required: false
       schema:
@@ -2065,6 +2119,14 @@ components:
         $ref: '#/components/schemas/ProductStatus'
     productName_query:
       name: productName
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 255
+        pattern: .*
+    fullProductName_query:
+      name: fullProductName
       in: query
       required: false
       schema:

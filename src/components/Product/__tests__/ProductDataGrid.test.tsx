@@ -266,7 +266,7 @@ describe('ProductDataGrid', () => {
     it('renders loading state initially', async () => {
       mockGetProducts.mockImplementation(() => new Promise(() => {}));
       renderComponent();
-      expect(screen.getByTestId('new-filter-btn')).toBeInTheDocument();
+      expect(screen.getByText('pages.products.title')).toBeInTheDocument();
     });
 
     it('renders products table when data is loaded', async () => {
@@ -678,10 +678,9 @@ describe('ProductDataGrid – extra coverage', () => {
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('checkbox-1'));
-
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
-    expect(screen.getByTestId('msg-result-error')).toBeInTheDocument();
+    expect(screen.getByText('invitaliaModal.rejected.buttonText (2)')).toBeInTheDocument();
 
     act(() => {
       jest.advanceTimersByTime(3000);
