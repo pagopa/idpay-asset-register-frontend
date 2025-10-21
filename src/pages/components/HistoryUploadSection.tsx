@@ -62,7 +62,7 @@ function renderUploadStatusIcon(status: string) {
     case 'IN_PROCESS':
     case 'UPLOADED':
       return <CachedIcon color="disabled" />;
-    case 'EPREL_ERROR':
+    case 'PARTIAL':
       return <WarningIcon color="warning" />;
     case 'LOADED':
       return <CheckCircleIcon color="success" />;
