@@ -53,15 +53,15 @@ export const ENV = {
       .required()
       .asString(),
     PRIVACY_POLICY_ID: env
-      .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID_ASSET_REGISTER')
+      .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID')
       .required()
       .asString(),
     PRIVACY_POLICY_JSON_URL: env
-      .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL_ASSET_REGISTER')
+      .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL')
       .required()
       .asString(),
-    TOS_ID: env.get('REACT_APP_ONE_TRUST_TOS_ID_ASSET_REGISTER').required().asString(),
-    TOS_JSON_URL: env.get('REACT_APP_ONE_TRUST_TOS_JSON_URL_ASSET_REGISTER').required().asString(),
+    TOS_ID: env.get('REACT_APP_ONE_TRUST_TOS_ID').required().asString(),
+    TOS_JSON_URL: env.get('REACT_APP_ONE_TRUST_TOS_JSON_URL').required().asString(),
   },
   FOOTER: {
     LINK: {
