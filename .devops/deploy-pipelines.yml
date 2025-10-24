@@ -31,11 +31,11 @@ variables:
 
     react_app_url_storage: '$(UAT_REACT_APP_URL_STORAGE)'
 
-    # react_app_one_trust_base_url: '$(UAT_REACT_APP_URL_CDN)/ot'
+    react_app_one_trust_base_url: '$(UAT_ONE_TRUST_BASE_URL)'
     # react_app_analytics_enabled: '$(UAT_ANALYTICS_ENABLED)'
     # react_app_analytics_mocked: '$(UAT_ANALYTICS_MOCKED)'
     # react_app_mixpanel_token: '$(UAT_MIXPANEL_TOKEN)'
-    # react_app_onetrust_domain_id: '$(UAT_ONETRUST_DOMAIN_ID)'
+    react_app_onetrust_domain_id: '$(UAT_ONETRUST_DOMAIN_ID)'
 
     react_app_one_trust_otnotice_cdn_url: $(UAT_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
     react_app_one_trust_otnotice_cdn_settings: $(UAT_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
@@ -66,11 +66,11 @@ variables:
 
     react_app_url_storage: '$(PROD_REACT_APP_URL_STORAGE)'
 
-    # react_app_one_trust_base_url: '$(PROD_REACT_APP_URL_CDN)/ot'
+    react_app_one_trust_base_url: '$(PROD_ONE_TRUST_BASE_URL)'
     # react_app_analytics_enabled: '$(PROD_ANALYTICS_ENABLED)'
     # react_app_analytics_mocked: '$(PROD_ANALYTICS_MOCKED)'
     # react_app_mixpanel_token: '$(PROD_MIXPANEL_TOKEN)'
-    # react_app_onetrust_domain_id: '$(PROD_ONETRUST_DOMAIN_ID)'
+    react_app_onetrust_domain_id: '$(PROD_ONETRUST_DOMAIN_ID)'
 
     react_app_one_trust_otnotice_cdn_url: $(PROD_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
     react_app_one_trust_otnotice_cdn_settings: $(PROD_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
@@ -104,11 +104,11 @@ variables:
     react_app_url_privacy_disclaimer: '$(DEV_REACT_APP_URL_PRIVACY_DISCLAIMER)'
     react_app_url_terms_and_conditions: '$(DEV_REACT_APP_URL_TERMS_AND_CONDITIONS)'
 
-    # react_app_one_trust_base_url: '$(DEV_REACT_APP_URL_CDN)/ot/test'
+    react_app_one_trust_base_url: '$(DEV_ONE_TRUST_BASE_URL)'
     # react_app_analytics_enabled: '$(DEV_ANALYTICS_ENABLED)'
     # react_app_analytics_mocked: '$(DEV_ANALYTICS_MOCKED)'
     # react_app_mixpanel_token: '$(DEV_MIXPANEL_TOKEN)'
-    # react_app_onetrust_domain_id: '$(DEV_ONETRUST_DOMAIN_ID)'
+    react_app_onetrust_domain_id: '$(DEV_ONETRUST_DOMAIN_ID)'
 
     react_app_one_trust_otnotice_cdn_url: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_URL)
     react_app_one_trust_otnotice_cdn_settings: $(DEV_REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS)
