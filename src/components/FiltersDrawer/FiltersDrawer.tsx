@@ -164,11 +164,11 @@ export default function FiltersDrawer({
   ]);
 
   const handleFilter = () => {
-    if (draftEprel.length > 0 && !isValidNumeric(draftEprel)) {
+    if (draftEprel?.length > 0 && !isValidNumeric(draftEprel)) {
       setShowEprelError(true);
       return;
     }
-    if (draftGtin.length > 0 && !isValidGtin(draftGtin)) {
+    if (draftGtin?.length > 0 && !isValidGtin(draftGtin)) {
       setShowGtinError(true);
       return;
     }
