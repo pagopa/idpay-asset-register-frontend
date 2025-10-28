@@ -88,6 +88,24 @@ jest.mock('@pagopa/mui-italia/dist/components/Footer/Footer', () => {
                         post0
                     </button>
                     <button
+                        data-testid="trigger-post-1"
+                        onClick={() => {
+                            const l = props.postLoginLinks[1];
+                            l.onClick();
+                        }}
+                    >
+                        PROTECTIONOFPERSONALDATA
+                    </button>
+                    <button
+                        data-testid="trigger-post-2"
+                        onClick={() => {
+                            const l = props.postLoginLinks[2];
+                            l.onClick();
+                        }}
+                    >
+                        TERMSANDCONDITIONS
+                    </button>
+                    <button
                         data-testid="trigger-post-acc"
                         onClick={() => {
                             const l = props.postLoginLinks[3];
@@ -172,6 +190,20 @@ test('postLoginLinks aprono finestre esterne con focus dove previsto', async () 
     const secondCall = (window.open as jest.Mock).mock.calls[1];
     expect(secondCall[0]).toBe(LINKS.ACCESSIBILITY);
     expect(secondCall[1]).toBeUndefined();
+
+    await act(async () => {
+        screen.getByTestId('trigger-post-1').click();
+    });
+    const thirdCall = (window.open as jest.Mock).mock.calls[2];
+    expect(thirdCall[0]).toBe(LINKS.PROTECTIONOFPERSONALDATA);
+    expect(thirdCall[1]).toBeUndefined();
+
+    await act(async () => {
+        screen.getByTestId('trigger-post-2').click();
+    });
+    const forthCall = (window.open as jest.Mock).mock.calls[3];
+    expect(forthCall[0]).toBe(LINKS.TERMSANDCONDITIONS);
+    expect(forthCall[1]).toBeUndefined();
 });
 
 test('onExit di default esegue la exitAction', async () => {
