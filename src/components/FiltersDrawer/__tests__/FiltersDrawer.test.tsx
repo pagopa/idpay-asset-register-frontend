@@ -4,7 +4,6 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import '@testing-library/jest-dom';
 import FiltersDrawer from '../FiltersDrawer';
-import {truncateString} from "../../../helpers";
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
