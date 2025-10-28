@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import '@testing-library/jest-dom';
 import FiltersDrawer from '../FiltersDrawer';
+import {truncateString} from "../../../helpers";
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -31,10 +32,12 @@ jest.mock('../../../redux/slices/invitaliaSlice', () => ({
 
 const mockFetchUserFromLocalStorage = jest.fn();
 const mockFilterInputWithSpaceRule = jest.fn();
+const mockTruncateString = jest.fn();
 
 jest.mock('../../../helpers', () => ({
   fetchUserFromLocalStorage: () => mockFetchUserFromLocalStorage(),
   filterInputWithSpaceRule: () => mockFilterInputWithSpaceRule(),
+  truncateString: () => mockTruncateString(),
 }));
 
 const theme = createTheme();
