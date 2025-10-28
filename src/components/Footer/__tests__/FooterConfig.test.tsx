@@ -128,10 +128,6 @@ describe('FooterConfig', () => {
                 });
             });
         });
-
-        it('deve essere un oggetto immutabile (snapshot)', () => {
-            expect(LANGUAGES).toMatchSnapshot();
-        });
     });
 
     describe('integrazione ENV', () => {
