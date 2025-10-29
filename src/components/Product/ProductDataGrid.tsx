@@ -606,7 +606,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               }}
             />
           ) : (
-            <Box sx={{ width: '100%', overflowX: 'auto' }}>
+            <Box sx={{ width: '100%' }}>
               <ProductsTable
                 key={refreshKey}
                 tableData={tableData}
@@ -639,6 +639,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               )} ${itemsQty}`
             }
             sx={{
+              width: '100%',
+              overflowX: 'hidden',
               '& .MuiTablePagination-actions button': {
                 backgroundColor: 'transparent',
                 '&:hover': { backgroundColor: 'transparent' },
