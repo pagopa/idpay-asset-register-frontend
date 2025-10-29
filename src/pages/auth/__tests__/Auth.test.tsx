@@ -40,8 +40,6 @@ describe('Auth component', () => {
   const originalFetch = global.fetch;
 
   beforeAll(() => {
-    // Salva lo stato originale di fetch
-    // @ts-ignore
     global.fetch = originalFetch;
   });
 
@@ -57,15 +55,11 @@ describe('Auth component', () => {
   });
 
   afterEach(() => {
-    // Ripristina window.location dopo ogni test
     Object.defineProperty(window, 'location', {
       configurable: true,
       value: originalLocation,
     });
-    // Ripristina window.location.hash
     window.location.hash = originalHash;
-    // Ripristina fetch
-    // @ts-ignore
     global.fetch = originalFetch;
   });
 
@@ -77,7 +71,6 @@ describe('Auth component', () => {
         hash: originalHash,
       },
     });
-    // @ts-ignore
     global.fetch = originalFetch;
   });
 
@@ -85,7 +78,6 @@ describe('Auth component', () => {
     const mockUser = { name: 'Test User' };
     const mockInnerToken = 'inner-token';
 
-    // @ts-ignore
     global.fetch = jest.fn().mockResolvedValue({
       text: () => Promise.resolve(mockInnerToken),
       headers: { get: () => null },
@@ -127,7 +119,6 @@ describe('Auth component', () => {
   it('should redirect to login on fetch error', async () => {
     window.location.hash = '#token=mock-token';
 
-    // @ts-ignore
     global.fetch = jest.fn().mockRejectedValue(new Error('fetch failed'));
 
     render(<Auth />);
