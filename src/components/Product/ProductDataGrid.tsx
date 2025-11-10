@@ -107,6 +107,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [showMsgSupervised, setShowMsgSupervised] = useState(false);
   const [showMixStatusError, setShowMixStatusError] = useState(false);
   const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
+  const MSG_RESULT_BT = 80;
 
   const resetAllMsgResults = () => {
     setShowMsgRejected(false);
@@ -504,49 +505,57 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(PRODUCTS_STATES.WAIT_APPROVED)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgSupervised && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(PRODUCTS_STATES.SUPERVISED)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgApproved && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(PRODUCTS_STATES.WAIT_APPROVED)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgAcceptApprovation && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(MIDDLE_STATES.ACCEPT_APPROVATION)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgRejected && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(PRODUCTS_STATES.REJECTED)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgRejectedApprovation && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(MIDDLE_STATES.REJECT_APPROVATION)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMixStatusError && (
-        <MsgResult severity="error" message={t('msgResutlt.errorMixSelected')} bottom={80} />
+        <MsgResult
+          severity="error"
+          message={t('msgResutlt.errorMixSelected')}
+          bottom={MSG_RESULT_BT}
+        />
       )}
       {showYourselfApprovedError && (
-        <MsgResult severity="error" message={t('msgResutlt.errorYourselfApproved')} bottom={80} />
+        <MsgResult
+          severity="error"
+          message={t('msgResutlt.errorYourselfApproved')}
+          bottom={MSG_RESULT_BT}
+        />
       )}
     </>
   );
