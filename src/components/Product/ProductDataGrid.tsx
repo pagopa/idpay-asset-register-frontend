@@ -90,7 +90,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(PAGINATION_ROWS_PRODUCTS);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
@@ -632,7 +632,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[rowsPerPage]}
+            rowsPerPageOptions={PAGINATION_ROWS_PRODUCTS}
+            labelRowsPerPage={t('pages.products.elementsPerPage')}
             labelDisplayedRows={() =>
               `${paginatorFrom} - ${paginatorTo} ${t(
                 'pages.products.tablePaginationFrom'

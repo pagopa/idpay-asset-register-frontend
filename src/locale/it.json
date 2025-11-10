@@ -258,7 +258,8 @@
       "tablePaginationFrom": "di",
       "emptyList": "Nessun record corrisponde alla ricerca.",
       "noFileLoaded": "Non ci sono prodotti caricati.",
-      "backToTable": "Torna alla tabella"
+      "backToTable": "Torna alla tabella",
+      "elementsPerPage": "Elementi per pagina"
     },
     "uploadHistory": {
       "sideMenuTitle": "Storico caricamenti",
