@@ -12,6 +12,7 @@ import {
   IconButton,
 } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import Box from '@mui/material/Box';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import EprelLinks from '../../components/Product/EprelLinks';
@@ -252,7 +253,9 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <RenderTooltipOrText value={String(row?.batchName ?? emptyData)} />
       </TableCell>
       <TableCell sx={cellLeftSx}>
-        <ProductStatusChip status={typeof row?.status === 'string' ? row.status : emptyData} />
+        <Box sx={{ mt: 1 }}>
+          <ProductStatusChip status={typeof row?.status === 'string' ? row.status : emptyData} />
+        </Box>
       </TableCell>
       <TableCell sx={{ ...actionsCellSx, pl: 0 }}>
         <IconButton
@@ -365,7 +368,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   };
 
   return (
-    <TableContainer>
+    <TableContainer sx={{ overflowX: 'hidden' }}>
       <Table size="small" sx={{ tableLayout: 'fixed', width: '100%' }}>
         <EnhancedTableHead
           isInvitaliaUser={isInvitaliaUser}

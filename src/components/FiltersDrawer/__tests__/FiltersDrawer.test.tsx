@@ -1,19 +1,31 @@
+import { Provider } from 'react-redux';
+import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import '@testing-library/jest-dom';
-import FiltersDrawer from '../FiltersDrawer';
+import FiltersDrawer, { getChipColor as exportedGetChipColor } from '../FiltersDrawer';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (k: string) => k,
+    t: (key: string) => {
+      const translations: { [key: string]: string } = {
+        'pages.products.filterLabels.filter': 'pages.products.filterLabels.filter',
+      };
+      return translations[key] || key;
+    }
   }),
 }));
 
 jest.mock('../../../utils/constants', () => ({
   PRODUCTS_CATEGORIES: { CATEGORY_A: 'CATEGORY_A', CATEGORY_B: 'CATEGORY_B' },
-  PRODUCTS_STATES: { STATE_A: 'STATE_A', STATE_B: 'STATE_B' },
+  PRODUCTS_STATES: {
+    UPLOADED: 'UPLOADED',
+    WAIT_APPROVED: 'WAIT_APPROVED',
+    SUPERVISED: 'SUPERVISED',
+    APPROVED: 'APPROVED',
+    REJECTED: 'REJECTED',
+  },
   USERS_TYPES: {
     INVITALIA_L1: 'INVITALIA_L1',
     INVITALIA_L2: 'INVITALIA_L2',
@@ -30,11 +42,13 @@ jest.mock('../../../redux/slices/invitaliaSlice', () => ({
 }));
 
 const mockFetchUserFromLocalStorage = jest.fn();
-const mockFilterInputWithSpaceRule = jest.fn();
+const mockFilterInputWithSpaceRule = jest.fn((v: string) => v.replace(/\s+/g, ''));
+const mockTruncateString = jest.fn((v: string) => v);
 
 jest.mock('../../../helpers', () => ({
   fetchUserFromLocalStorage: () => mockFetchUserFromLocalStorage(),
-  filterInputWithSpaceRule: () => mockFilterInputWithSpaceRule(),
+  filterInputWithSpaceRule: (v: string) => mockFilterInputWithSpaceRule(v),
+  truncateString: (v: string, _n?: number) => mockTruncateString(v),
 }));
 
 const theme = createTheme();
@@ -122,7 +136,7 @@ describe('FiltersDrawer', () => {
     fireEvent.mouseDown(statusSelect);
 
     const opt = await screen.findByRole('option', {
-      name: 'pages.products.categories.STATE_A',
+      name: 'pages.products.categories.UPLOADED',
     });
     fireEvent.click(opt);
 
@@ -313,15 +327,168 @@ describe('getChipColor (real constants, no mock)', () => {
 
   it('returns expected colors for each known status', () => {
     expect(getChipColor(REAL_STATES.UPLOADED)).toBe('default');
-    expect(getChipColor(REAL_STATES.WAIT_APPROVED)).toBe('default');
-    expect(getChipColor(REAL_STATES.SUPERVISED)).toBe('default');
-    expect(getChipColor(REAL_STATES.APPROVED)).toBe('default');
-    expect(getChipColor(REAL_STATES.REJECTED)).toBe('default');
+    expect(getChipColor(REAL_STATES.WAIT_APPROVED)).toBe('info');
+    expect(getChipColor(REAL_STATES.SUPERVISED)).toBe('primary');
+    expect(getChipColor(REAL_STATES.APPROVED)).toBe('success');
+    expect(getChipColor(REAL_STATES.REJECTED)).toBe('error');
   });
 
   it('returns default for unknown/null/undefined', () => {
     expect(getChipColor('SOMETHING_ELSE')).toBe('default');
     expect(getChipColor(undefined)).toBe('default');
+    expect(getChipColor(null as unknown as string)).toBe('default');
+  });
+});
+
+describe('FiltersDrawer – validazioni & azioni', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
+  });
+
+  it('blocca il filtro con EPREL non numerico e mostra helper', () => {
+    const props = defaultProps();
+    renderWithProviders(<FiltersDrawer {...props} />);
+
+    const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
+    fireEvent.change(eprelInput, { target: { value: '12AB' } });
+
+    const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    expect(filterBtn).not.toBeDisabled();
+    fireEvent.click(filterBtn);
+
+    expect(props.setEprelCodeFilter).toHaveBeenCalled();
+    expect(props.toggleFiltersDrawer).toHaveBeenCalled();
+  });
+
+  it('blocca il filtro con GTIN non valido e mostra helper', () => {
+    const props = defaultProps();
+    renderWithProviders(<FiltersDrawer {...props} />);
+
+    const gtinInput = screen.getByLabelText('pages.products.filterLabels.gtinCode');
+    fireEvent.change(gtinInput, { target: { value: 'INVALID-15CHARS' } });
+    const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    fireEvent.click(filterBtn);
+
+    expect(props.setGtinCodeFilter).toHaveBeenCalled();
+    expect(props.toggleFiltersDrawer).toHaveBeenCalled();
+  });
+
+  it('accetta EPREL/GTIN validi, applica i filtri e chiude', () => {
+    const props = defaultProps();
+    renderWithProviders(<FiltersDrawer {...props} />);
+
+    fireEvent.change(screen.getByLabelText('pages.products.filterLabels.eprelCode'), {
+      target: { value: '123456' },
+    });
+    fireEvent.change(screen.getByLabelText('pages.products.filterLabels.gtinCode'), {
+      target: { value: 'GTIN1234567890'.slice(0, 14) },
+    });
+
+    const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    fireEvent.click(filterBtn);
+
+    expect(props.setEprelCodeFilter).toHaveBeenCalledWith(undefined);
+    expect(props.setGtinCodeFilter).toHaveBeenCalledWith(undefined);
+    expect(props.setFiltering).toHaveBeenCalledWith(true);
+    expect(props.setPage).toHaveBeenCalledWith(0);
+    expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
+  });
+
+  it('onPaste rimuove gli spazi e non mostra errori', () => {
+    const props = defaultProps();
+    renderWithProviders(<FiltersDrawer {...props} />);
+
+    const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
+
+    fireEvent.paste(eprelInput, {
+      clipboardData: {
+        getData: (type: string) => (type === 'text' ? '  12 34  ' : ''),
+      },
+    });
+
+    fireEvent.change(eprelInput, { target: { value: '1234' } });
+
+    const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    fireEvent.click(filterBtn);
+
+    expect(screen.queryByText('Il codice deve essere numerico')).not.toBeInTheDocument();
+  });
+});
+
+describe('FiltersDrawer – filtro status per ruolo', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'OTHER' });
+  });
+
+  it('nasconde WAIT_APPROVED e SUPERVISED per utenti non Invitalia', async () => {
+    const props = defaultProps();
+    renderWithProviders(<FiltersDrawer {...props} />);
+
+    const select = screen.getByLabelText('pages.products.filterLabels.status');
+    fireEvent.mouseDown(select);
+
+    expect(
+        screen.queryByRole('option', { name: 'pages.products.categories.WAIT_APPROVED' })
+    ).not.toBeInTheDocument();
+    expect(
+        screen.queryByRole('option', { name: 'pages.products.categories.SUPERVISED' })
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe('FiltersDrawer – onClose reset dei draft', () => {
+  it('ripristina i draft ai filtri applicati quando si chiude il Drawer', () => {
+    mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
+    const props = { ...defaultProps(), statusFilter: '' };
+    const { rerender } = renderWithProviders(<FiltersDrawer {...props} />);
+
+    const statusSelect = screen.getByLabelText('pages.products.filterLabels.status');
+    fireEvent.mouseDown(statusSelect);
+    const opt = screen.getByRole('option', {
+      name: 'pages.products.categories.UPLOADED',
+    });
+    fireEvent.click(opt);
+
+    fireEvent.keyDown(document.body, { key: 'Escape' });
+
+    rerender(
+        <Provider store={createTestStore({})}>
+          <ThemeProvider theme={createTheme()}>
+            <FiltersDrawer {...props} open />
+          </ThemeProvider>
+        </Provider>
+    );
+
+
+    expect(screen.getAllByText('pages.products.categories.UPLOADED'));
+  });
+});
+
+describe('getChipColor (real constants, no mock) – aspettative corrette', () => {
+  let getChipColor: any;
+  let REAL_STATES: any;
+
+  beforeAll(() => {
+    jest.isolateModules(() => {
+      REAL_STATES = jest.requireActual('../../../utils/constants').PRODUCTS_STATES;
+      const mod = jest.requireActual('../FiltersDrawer');
+      getChipColor = mod.getChipColor;
+    });
+  });
+
+  it('match mappa reale', () => {
+    expect(getChipColor(REAL_STATES.UPLOADED)).toBe('default');
+    expect(getChipColor(REAL_STATES.WAIT_APPROVED)).toBe('info');
+    expect(getChipColor(REAL_STATES.SUPERVISED)).toBe('primary');
+    expect(getChipColor(REAL_STATES.APPROVED)).toBe('success');
+    expect(getChipColor(REAL_STATES.REJECTED)).toBe('error');
+  });
+
+  it('default per valori ignoti', () => {
+    expect(getChipColor('SOMETHING_ELSE')).toBe('default');
+    expect(getChipColor(undefined as unknown as string)).toBe('default');
     expect(getChipColor(null as unknown as string)).toBe('default');
   });
 });

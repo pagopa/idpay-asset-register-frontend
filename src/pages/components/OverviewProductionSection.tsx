@@ -176,7 +176,11 @@ const UploadsTable: React.FC<{
       {!loading && !error && data?.content && data.content.length > 0 && (
         <>
           <Divider />
-          <TableContainer component={Paper} elevation={0} sx={{ paddingTop: 3 }}>
+          <TableContainer
+            component={Paper}
+            elevation={0}
+            sx={{ overflowX: 'hidden', paddingTop: 3 }}
+          >
             <Table size="small" sx={{ tableLayout: 'fixed', width: '100%' }}>
               <colgroup>
                 <col style={{ width: '50%' }} />

@@ -10,6 +10,7 @@ import {
   Select,
   SelectChangeEvent,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,7 +19,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
-import { fetchUserFromLocalStorage } from '../../helpers';
+import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { BatchFilterItems } from '../Product/helpers';
 import { filterInputWithSpaceRule } from '../../helpers';
 
@@ -163,11 +164,11 @@ export default function FiltersDrawer({
   ]);
 
   const handleFilter = () => {
-    if (draftEprel.length > 0 && !isValidNumeric(draftEprel)) {
+    if (draftEprel?.length > 0 && !isValidNumeric(draftEprel)) {
       setShowEprelError(true);
       return;
     }
-    if (draftGtin.length > 0 && !isValidGtin(draftGtin)) {
+    if (draftGtin?.length > 0 && !isValidGtin(draftGtin)) {
       setShowGtinError(true);
       return;
     }
@@ -310,7 +311,9 @@ export default function FiltersDrawer({
           >
             {batchFilterItems?.map((batch) => (
               <MenuItem key={batch?.productFileId} value={batch?.productFileId}>
-                {batch?.batchName}
+                <Tooltip title={batch?.batchName}>
+                  <span>{truncateString(batch?.batchName, 35)}</span>
+                </Tooltip>
               </MenuItem>
             ))}
           </Select>
@@ -340,9 +343,7 @@ export default function FiltersDrawer({
         {(() => {
           const showErrorEprel =
             showEprelError && draftEprel.length > 0 && !isValidNumeric(draftEprel);
-          const helperEprel = showErrorEprel
-            ? 'Il codice EPREL deve contenere solo caratteri numerici.'
-            : undefined;
+          const helperEprel = showErrorEprel ? 'Il codice deve essere numerico' : undefined;
           return (
             <TextField
               fullWidth
@@ -375,9 +376,7 @@ export default function FiltersDrawer({
 
         {(() => {
           const showErrorGtin = showGtinError && draftGtin.length > 0 && !isValidGtin(draftGtin);
-          const helperGtin = showErrorGtin
-            ? 'Il codice GTIN/EAN deve contenere al massimo 14 caratteri alfanumerici.'
-            : undefined;
+          const helperGtin = showErrorGtin ? 'Il codice deve avere 14 caratteri' : undefined;
           return (
             <TextField
               fullWidth

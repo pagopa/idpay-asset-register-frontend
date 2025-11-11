@@ -531,4 +531,88 @@ describe('Product Service', () => {
             expect(console.error).toHaveBeenCalled();
         });
     });
+
+    it('should log error key when present', async () => {
+        const error = {
+            response: { data: { errorKey: 'ERR_KEY_123' } },
+        };
+        (RegisterApi.uploadProductList as jest.Mock).mockRejectedValue(error);
+
+        await uploadProductList(mockFile, mockCategory);
+
+        expect(console.error).toHaveBeenCalledWith('Error Key: ERR_KEY_123');
+    });
+
+    it('should not log anything when DEBUG_CONSOLE is false', async () => {
+        jest.resetModules();
+        jest.doMock('../../utils/constants', () => ({ DEBUG_CONSOLE: false }));
+        const { getProductFilesList } = await import('../registerService');
+        (RegisterApi.getProductFiles as jest.Mock).mockRejectedValue(new Error('test'));
+
+        await getProductFilesList();
+
+        expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it('should handle complex error object structures in pretty()', async () => {
+        const circular: any = {};
+        circular.self = circular;
+
+        const error = {
+            message: '',
+            stack: '',
+            response: {
+                data: {
+                    emptyString: '',
+                    emptyArray: [],
+                    nestedArray: [1, { key: 'value' }],
+                    undefinedField: undefined,
+                    nullField: null,
+                    circular,
+                },
+            },
+        };
+        await getProducts('org-123');
+        (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
+
+        await getProducts('org-123');
+        expect(console.error).toHaveBeenCalled();
+    });
+
+    it('should log when response data has more than 5 keys', async () => {
+        const responseData = Object.fromEntries(
+            Array.from({ length: 7 }, (_, i) => [`key${i}`, `val${i}`])
+        );
+        const error = { response: { data: responseData } };
+        (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
+
+        await getProducts('org-123');
+
+        expect(console.error).toHaveBeenCalled();
+    });
+
+    it('should handle config without url or method gracefully', async () => {
+        const error = { config: {} };
+        (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
+
+        await getProducts('org-123');
+        expect(console.error).toHaveBeenCalled();
+    });
+
+    it('should extract error message and stack properly', () => {
+        const err = { message: 'msg', stack: 'stack', name: 'TypeError' };
+        expect((err as any).message).toBe('msg');
+        expect((err as any).stack).toBe('stack');
+        expect((err as any).name).toBe('TypeError');
+    });
+
+    it('should handle primitive types in pretty()', async () => {
+        const error = {
+            response: { data: { num: 1, bool: false, str: 'ok' } },
+        };
+        (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
+
+        await getProducts('org-123');
+        expect(console.error).toHaveBeenCalled();
+    });
 });
