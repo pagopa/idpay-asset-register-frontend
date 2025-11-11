@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
+import Slide from '@mui/material/Slide';
+import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 
 type MsgResultProps = {
   severity?: 'error' | 'warning' | 'info' | 'success';
@@ -15,7 +16,7 @@ const MsgResult: React.FC<MsgResultProps> = ({
   severity = 'success',
   variant = 'outlined',
   message,
-  bottom = 32,
+  bottom,
   children,
 }) => {
   const [visible, setVisible] = useState(true);
@@ -30,32 +31,31 @@ const MsgResult: React.FC<MsgResultProps> = ({
   }
 
   const content = (
-    <Box
-      sx={{
-        position: 'fixed',
-        right: 12,
-        bottom,
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'flex-end',
-        zIndex: 9999,
-        pointerEvents: 'auto',
-      }}
-    >
-      <Box
+    <Slide direction="left" in={visible} mountOnEnter unmountOnExit>
+      <Alert
+        severity={severity}
+        variant={variant}
+        icon={severity === 'success' ? <CheckCircleOutline /> : undefined}
         sx={{
-          width: '395px',
-          overflowX: 'auto',
-          boxShadow:
-            '0px 1px 10px 0px #002B551A, 0px 4px 5px 0px #002B550D, 0px 2px 4px -1px #002B551A',
+          position: 'fixed',
+          bottom: bottom ?? 40,
+          right: 20,
+          backgroundColor: 'white',
+          width: 'auto',
+          maxWidth: '400px',
+          minWidth: '300px',
+          zIndex: 9999,
+          boxShadow: 3,
+          borderRadius: 1,
+          '& .MuiAlert-icon': {
+            color: severity === 'success' ? '#6CC66A' : undefined,
+          },
         }}
       >
-        <Alert severity={severity} variant={variant}>
-          {message}
-          {children}
-        </Alert>
-      </Box>
-    </Box>
+        {message}
+        {children}
+      </Alert>
+    </Slide>
   );
 
   return typeof window !== 'undefined' && document.body

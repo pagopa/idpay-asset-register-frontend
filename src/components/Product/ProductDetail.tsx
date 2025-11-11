@@ -755,7 +755,11 @@ export default function ProductDetail({
               category: data.category,
             },
           ]}
-          onSuccess={handleSuccess}
+          onSuccess={() =>
+            handleSuccess(
+              isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION
+            )
+          }
         />
       </Box>
     </>
