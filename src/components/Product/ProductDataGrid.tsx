@@ -90,7 +90,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [filtering, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(PAGINATION_ROWS_PRODUCTS);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
@@ -107,6 +107,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const [showMsgSupervised, setShowMsgSupervised] = useState(false);
   const [showMixStatusError, setShowMixStatusError] = useState(false);
   const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
+  const MSG_RESULT_BT = 80;
 
   const resetAllMsgResults = () => {
     setShowMsgRejected(false);
@@ -504,49 +505,57 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(PRODUCTS_STATES.WAIT_APPROVED)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgSupervised && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(PRODUCTS_STATES.SUPERVISED)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgApproved && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(PRODUCTS_STATES.WAIT_APPROVED)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgAcceptApprovation && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(MIDDLE_STATES.ACCEPT_APPROVATION)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgRejected && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(PRODUCTS_STATES.REJECTED)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgRejectedApprovation && (
         <MsgResult
           severity="success"
           message={getMsgResultByActionType(MIDDLE_STATES.REJECT_APPROVATION)}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
       {showMixStatusError && (
-        <MsgResult severity="error" message={t('msgResutlt.errorMixSelected')} bottom={80} />
+        <MsgResult
+          severity="error"
+          message={t('msgResutlt.errorMixSelected')}
+          bottom={MSG_RESULT_BT}
+        />
       )}
       {showYourselfApprovedError && (
-        <MsgResult severity="error" message={t('msgResutlt.errorYourselfApproved')} bottom={80} />
+        <MsgResult
+          severity="error"
+          message={t('msgResutlt.errorYourselfApproved')}
+          bottom={MSG_RESULT_BT}
+        />
       )}
     </>
   );
@@ -606,7 +615,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
               }}
             />
           ) : (
-            <Box sx={{ width: '100%', overflowX: 'auto' }}>
+            <Box sx={{ width: '100%' }}>
               <ProductsTable
                 key={refreshKey}
                 tableData={tableData}
@@ -632,13 +641,16 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[rowsPerPage]}
+            rowsPerPageOptions={PAGINATION_ROWS_PRODUCTS}
+            labelRowsPerPage={t('pages.products.elementsPerPage')}
             labelDisplayedRows={() =>
               `${paginatorFrom} - ${paginatorTo} ${t(
                 'pages.products.tablePaginationFrom'
               )} ${itemsQty}`
             }
             sx={{
+              width: '100%',
+              overflowX: 'hidden',
               '& .MuiTablePagination-actions button': {
                 backgroundColor: 'transparent',
                 '&:hover': { backgroundColor: 'transparent' },

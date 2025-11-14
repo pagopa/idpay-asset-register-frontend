@@ -10,6 +10,7 @@ const InvitaliaProductsList: React.FC = () => {
   const { t } = useTranslation();
   const institution = useSelector(institutionSelector);
   const [showMsg, setShowMsg] = useState(false);
+  const MSG_RESULT_BT = 80;
 
   useEffect(() => {
     const timeout = setTimeout(() => setShowMsg(false), 10000);
@@ -38,7 +39,7 @@ const InvitaliaProductsList: React.FC = () => {
         <MsgResult
           severity="success"
           message={t('invitaliaModal.waitApproved.msgResultWaitApproved')}
-          bottom={80}
+          bottom={MSG_RESULT_BT}
         />
       )}
     </Box>
