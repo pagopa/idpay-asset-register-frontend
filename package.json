@@ -133,10 +133,14 @@
       "src/hooks/*"
     ],
     "moduleNameMapper": {
+      "^@pagopa/selfcare-common-frontend(.*)$": "<rootDir>/src/__mocks__/selfcare-common-frontend.js",
       "next/router": "<rootDir>/__mocks__/next/router.js",
       "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
       "^.+\\.(jpg|jpeg|png|gif|webp|avif|svg)$": "<rootDir>/src/__mocks__/file-mock.js",
       "react-markdown": "<rootDir>/node_modules/react-markdown/react-markdown.min.js"
-    }
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(?:@pagopa/selfcare-common-frontend)/)"
+    ]
   }
 }
