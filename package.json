@@ -48,7 +48,7 @@
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "lint": "eslint -f json -o eslint-report.json . -c .eslintrc.js --ext .ts,.tsx --cache",
     "prettify": "prettier --write \"./**/*.{ts,tsx}\"",
-    "prepare:fix-swagger-helper": "node -e \"const fs=require('fs'); const content=fs.readFileSync('node_modules/@pagopa/selfcare-common-frontend/utils/fixSwagger20ArraySchemaDef.js','utf8'); const transformed=content.replace(/import fs from 'node:fs\\/promises';/,\"const fs = require('fs').promises;\"); fs.mkdirSync('openApi/scripts',{recursive:true}); fs.writeFileSync('openApi/scripts/fixSwagger20ArraySchemaDef.cjs',transformed);\"",
+    "prepare:fix-swagger-helper": "node openApi/scripts/prepareFixSwaggerHelper.cjs",
     "generate": "npm-run-all generate:*",
     "clean:api-register": "rimraf src/api/generated/register && rimraf openApi/generated",
     "generate:api-register": "yarn run clean:api-register && yarn run prepare:fix-swagger-helper && mkdirp openApi/generated && api-spec-converter --from=openapi_3 --to=swagger_2 openApi/openapi.register.yml > openApi/generated/register-swagger20.json && node ./openApi/scripts/fixSwagger20ArraySchemaDef.cjs openApi/generated/register-swagger20.json && node ./openApi/scripts/api-register_fixPreGen.js && gen-api-models --api-spec openApi/generated/register-swagger20.json --out-dir src/api/generated/register --no-strict --request-types --response-decoders --client && node openApi/scripts/api-register_fixPostGen.js"
