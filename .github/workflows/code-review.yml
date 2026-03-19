@@ -21,11 +21,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js 20.12.2
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.12.2'
-
       - name: Install dependencies
         run: |
           corepack enable
