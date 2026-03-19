@@ -21,6 +21,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js 22.20.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.20.0'
+          cache: 'yarn'
+
       - name: Install dependencies
         run: |
           corepack enable
