@@ -9,7 +9,6 @@ import { theme } from '@pagopa/mui-italia';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { PersistGate } from 'redux-persist/integration/react';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 import { persistor, store } from './redux/store';
 import { MOCK_USER, testToken } from './utils/constants';
 import { ENV } from './utils/env';
@@ -46,8 +45,3 @@ root.render(
     </Provider>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
