@@ -25,13 +25,14 @@ import { Provider } from 'react-redux';
 import { createStore } from '../../../redux/store';
 
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
-  ...jest.requireActual('@pagopa/selfcare-common-frontend/lib'),
   TitleBox: (props: any) => (
     <div data-testid={props['data-testid']}>
       <h4>{props.title}</h4>
       <p>{props.subTitle}</p>
     </div>
   ),
+  CustomAlert: () => null,
+  UserNotifyHandle: () => null,
 }));
 
 const mockFilterInputWithSpaceRule = jest.fn();
