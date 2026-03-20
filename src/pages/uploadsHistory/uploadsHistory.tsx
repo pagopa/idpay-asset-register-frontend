@@ -6,6 +6,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Alert, Typography } f
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
+import { UploadDTO } from '../../api/generated/register/UploadDTO';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { getProductFilesList } from '../../services/registerService';
 import UploadsTable from '../components/HistoryUploadSection';
@@ -58,6 +59,9 @@ const OverviewHistoryUpload: React.FC = () => {
     setPage(0);
   };
 
+  const content = (data?.content ?? []) as unknown as Array<UploadDTO>;
+  const firstUpload = content.length > 0 ? content[0] : undefined;
+
   return (
     <>
       {!loading && !error && (
@@ -74,7 +78,7 @@ const OverviewHistoryUpload: React.FC = () => {
           />
 
           <Box>
-            {!loading && data?.content?.[0]?.uploadStatus === 'UPLOADED' && (
+            {!loading && firstUpload?.uploadStatus === 'UPLOADED' && (
               <InfoUpload
                 description={t('pages.uploadHistory.uploadHistoryAlertMessage')}
                 dismissFn={() => {}}
