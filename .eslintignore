@@ -7,3 +7,4 @@ Dangerfile.ts
 src/reportWebVitals.ts
 **/generated/**
 openApi/scripts/**
+src/__mocks__/*.js
