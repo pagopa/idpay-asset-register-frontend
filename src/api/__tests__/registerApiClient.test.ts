@@ -30,8 +30,12 @@ jest.mock('../generated/register/client', () => {
 import { RegisterApi, RolePermissionApi } from '../registerApiClient';
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/utils/api-utils', () => ({
-  buildFetchApi: jest.fn(() => jest.fn()),
-  extractResponse: jest.fn((_res: any) => _res),
+  buildFetchApi: jest.fn(() =>
+    jest.fn(async () => ({
+      status: 200,
+    }))
+  ),
+  extractResponse: jest.fn((res: any) => res?.right?.value ?? res?.value ?? res),
 }));
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/utils/storage', () => ({
@@ -65,6 +69,11 @@ describe('registerApiClient', () => {
     jest.spyOn(console, 'error').mockImplementation();
     jest.spyOn(console, 'groupCollapsed').mockImplementation();
     jest.spyOn(console, 'groupEnd').mockImplementation();
+
+    Object.defineProperty(window, 'location', {
+      value: { assign: jest.fn() },
+      writable: true,
+    });
   });
 
   afterEach(() => {
@@ -77,7 +86,6 @@ describe('registerApiClient', () => {
       (mockClient.userPermission as jest.Mock).mockResolvedValue({ role: 'admin' });
 
       const res = await RolePermissionApi.userPermission();
-      // current implementation returns undefined when extractResponse doesn't unwrap
       expect(res).toBeUndefined();
       expect(mockClient.userPermission).toHaveBeenCalledWith({});
     });
@@ -101,6 +109,77 @@ describe('registerApiClient', () => {
   });
 
   describe('RegisterApi', () => {
+    it('downloadErrorReport returns inline csv string as CsvDTO', async () => {
+      const { mockClient } = (await import('../generated/register/client')) as any;
+
+      (mockClient.downloadErrorReport as jest.Mock).mockResolvedValue({ data: 'a,b\n1,2\n' });
+
+      const res = await RegisterApi.downloadErrorReport('file-1');
+
+      expect(res).toEqual({ data: { data: 'a,b\n1,2\n' }, filename: '', warning: undefined });
+      expect(mockClient.downloadErrorReport).toHaveBeenCalledWith({ productFileId: 'file-1' });
+    });
+
+    it('downloadErrorReport extracts filename from content-disposition header', async () => {
+      const { mockClient } = (await import('../generated/register/client')) as any;
+
+      const headers = {
+        get: (k: string) => (k.toLowerCase() === 'content-disposition' ? 'attachment; filename="err.csv"' : ''),
+      };
+
+      (mockClient.downloadErrorReport as jest.Mock).mockResolvedValue({
+        response: { headers },
+        data: { data: '' },
+      });
+
+      const res = await RegisterApi.downloadErrorReport('file-2');
+      expect(res.filename).toBe('err.csv');
+    });
+
+    it('downloadErrorReport falls back to raw response.data when extractResponse yields empty object', async () => {
+      const { mockClient } = (await import('../generated/register/client')) as any;
+
+      const { extractResponse } = (await import('@pagopa/selfcare-common-frontend/lib/utils/api-utils')) as any;
+      (extractResponse as jest.Mock).mockImplementationOnce(() => ({}));
+
+      (mockClient.downloadErrorReport as jest.Mock).mockResolvedValue({
+        data: 'csv-from-raw',
+        headers: { get: () => '' },
+      });
+
+      const res = await RegisterApi.downloadErrorReport('file-3');
+      expect(res.data).toEqual({ data: 'csv-from-raw' });
+    });
+
+    it('downloadErrorReport uses .text() when raw response is a Response-like object', async () => {
+      const { mockClient } = (await import('../generated/register/client')) as any;
+
+      const responseLike = {
+        headers: { get: () => 'attachment; filename="t.csv"' },
+        text: async () => 'csv-from-text',
+      };
+
+      const { extractResponse } = (await import('@pagopa/selfcare-common-frontend/lib/utils/api-utils')) as any;
+      (extractResponse as jest.Mock).mockImplementationOnce(() => ({}));
+
+      (mockClient.downloadErrorReport as jest.Mock).mockResolvedValue({
+        response: responseLike,
+      });
+
+      const res = await RegisterApi.downloadErrorReport('file-4');
+      expect(res).toEqual({ data: { data: 'csv-from-text' }, filename: 't.csv' });
+    });
+
+    it('getProduct returns undefined when extractResponse does not unwrap Either', async () => {
+      const { mockClient } = (await import('../generated/register/client')) as any;
+
+      (mockClient.getProducts as jest.Mock).mockResolvedValue(
+        right({ status: 200, value: { content: [{ gtinCode: 'G1' }] } } as any)
+      );
+
+      const res = await RegisterApi.getProduct('org-1');
+      expect(res).toBeUndefined();
+    });
     it('getProductList passes only defined params', async () => {
       const { mockClient } = (await import('../generated/register/client')) as any;
       (mockClient.getProducts as jest.Mock).mockResolvedValue(
@@ -109,7 +188,6 @@ describe('registerApiClient', () => {
 
       await RegisterApi.getProductList('org-1', 1, undefined, 'name');
 
-      // size is undefined -> should not be passed
       expect(mockClient.getProducts).toHaveBeenCalledWith({
         organizationId: 'org-1',
         page: 1,
@@ -124,7 +202,6 @@ describe('registerApiClient', () => {
       );
 
       const res = await RegisterApi.getProduct('org-1');
-      // current implementation returns undefined when extractResponse doesn't unwrap Either
       expect(res).toBeUndefined();
     });
 
@@ -133,7 +210,6 @@ describe('registerApiClient', () => {
       (mockClient.getBatchNameList as jest.Mock).mockResolvedValue(right([{ id: '1', name: 'B1' }] as any));
 
       const res = await RegisterApi.getBatchFilterItems('  org-1  ');
-      // current implementation returns [] when extractResponse doesn't unwrap Either
       expect(res).toEqual([]);
       expect(mockClient.getBatchNameList).toHaveBeenCalledWith({ 'x-organization-selected': 'org-1' });
     });
