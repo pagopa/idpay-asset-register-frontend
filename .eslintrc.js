@@ -53,7 +53,9 @@ module.exports = {
     ],
     '@typescript-eslint/await-thenable': 'error',
     '@typescript-eslint/consistent-type-assertions': 'error',
-    '@typescript-eslint/dot-notation': 'error',
+    // Temporarily disabled: crashes with current eslint/@typescript-eslint versions
+    // Error while loading rule '@typescript-eslint/dot-notation': Cannot read properties of undefined (reading 'allowKeywords')
+    '@typescript-eslint/dot-notation': 'off',
     '@typescript-eslint/member-delimiter-style': [
       'error',
       {
@@ -69,7 +71,9 @@ module.exports = {
     ],
     '@typescript-eslint/no-floating-promises': 'error',
     'no-unused-expressions': 'off',
-    '@typescript-eslint/no-unused-expressions': ['error'],
+    // Temporarily disabled: crashes with current eslint/@typescript-eslint versions
+    // Error while loading rule '@typescript-eslint/no-unused-expressions': Cannot read properties of undefined (reading 'allowShortCircuit')
+    '@typescript-eslint/no-unused-expressions': 'off',
     '@typescript-eslint/prefer-function-type': 'error',
     '@typescript-eslint/restrict-plus-operands': 'error',
     semi: 'off',
