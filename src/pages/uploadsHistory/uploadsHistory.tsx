@@ -106,8 +106,8 @@ const OverviewHistoryUpload: React.FC = () => {
       {error && (
         <Box width="100%" px={2} data-testid="title-overview">
           <TitleBox
-              title={t('pages.uploadHistory.sideMenuTitle')}
-              subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
+            title={t('pages.uploadHistory.sideMenuTitle')}
+            subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
             mbTitle={2}
             mtTitle={2}
             mbSubTitle={5}
