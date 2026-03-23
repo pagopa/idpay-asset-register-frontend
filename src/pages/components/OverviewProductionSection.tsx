@@ -88,13 +88,17 @@ const UploadInfoBox: React.FC<{
 }> = ({ loading, error, data, firstUploadDate, onExit, t, stopNavigation }) => {
   const navigate = useNavigate();
 
+  // Workaround: generated UploadsListDTO.content is typed too loosely (object[]).
+  // We know runtime items are UploadDTO.
+  const content = (data?.content ?? []) as unknown as Array<UploadDTO>;
+  const firstUpload = content.length > 0 ? content[0] : undefined;
+
   if (
     !loading &&
     !error &&
-    data?.content &&
-    data.content.length > 0 &&
-    data.content[0].uploadStatus !== 'IN_PROCESS' &&
-    data.content[0].uploadStatus !== 'UPLOADED'
+    firstUpload &&
+    firstUpload.uploadStatus !== 'IN_PROCESS' &&
+    firstUpload.uploadStatus !== 'UPLOADED'
   ) {
     return (
       <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
@@ -113,7 +117,7 @@ const UploadInfoBox: React.FC<{
       </Box>
     );
   }
-  if (!loading && !error && data?.content && data.content.length === 0 && !stopNavigation) {
+  if (!loading && !error && content.length === 0 && !stopNavigation) {
     return (
       <Box sx={{ gridColumn: 'span 12' }}>
         <Typography variant="body2">
@@ -131,13 +135,7 @@ const UploadInfoBox: React.FC<{
       </Box>
     );
   }
-  if (
-    !loading &&
-    !error &&
-    data?.content &&
-    data.content.length > 0 &&
-    data.content[0].uploadStatus === 'IN_PROCESS'
-  ) {
+  if (!loading && !error && firstUpload && firstUpload.uploadStatus === 'IN_PROCESS') {
     return (
       <Box sx={{ gridColumn: 'span 12', mb: 3 }}>
         <Typography variant="body2">
@@ -170,10 +168,14 @@ const UploadsTable: React.FC<{
   const { t } = useTranslation();
   const [rowsPerPage] = useState<number>(4);
 
+  // Workaround: generated UploadsListDTO.content is typed too loosely (object[]).
+  // We know runtime items are UploadDTO.
+  const content = (data?.content ?? []) as unknown as Array<UploadDTO>;
+
   return (
     <Box sx={{ gridColumn: 'span 12', mt: 2 }}>
       {loading && <CircularProgress />}
-      {!loading && !error && data?.content && data.content.length > 0 && (
+      {!loading && !error && content.length > 0 && (
         <>
           <Divider />
           <TableContainer
@@ -206,46 +208,43 @@ const UploadsTable: React.FC<{
                     >
                       {t('pages.overview.tableHeader')}
                     </Typography>
-                    {!loading &&
-                      data?.content?.[0]?.uploadStatus === 'UPLOADED' &&
-                      !stopNavigation && (
-                        <Box sx={{ mb: 2 }}>
-                          <Paper>
-                            <Alert severity="warning" sx={{ mb: 2 }}>
-                              <Typography variant="body2">{t('pages.overview.warning')}</Typography>
-                            </Alert>
-                          </Paper>
-                        </Box>
-                      )}
+                    {!loading && content[0]?.uploadStatus === 'UPLOADED' && !stopNavigation && (
+                      <Box sx={{ mb: 2 }}>
+                        <Paper>
+                          <Alert severity="warning" sx={{ mb: 2 }}>
+                            <Typography variant="body2">{t('pages.overview.warning')}</Typography>
+                          </Alert>
+                        </Paper>
+                      </Box>
+                    )}
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.content &&
-                  data.content.slice(0, rowsPerPage).map((row: UploadDTO) => (
-                    <TableRow key={row.productFileId}>
-                      <TableCell
-                        sx={{
-                          padding: 0,
-                          width: '50%',
-                          maxWidth: '50%',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        <Tooltip title={row.batchName}>
-                          <span>{row.batchName}</span>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell align="right" sx={{ width: '25%' }}>
-                        {renderUploadStatusChip(row.uploadStatus ?? EMPTY_DATA)}
-                      </TableCell>
-                      <TableCell align="right" sx={{ width: '25%' }}>
-                        {row.dateUpload ? formatDate(row.dateUpload) : EMPTY_DATA}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                {content.slice(0, rowsPerPage).map((row: UploadDTO) => (
+                  <TableRow key={row.productFileId}>
+                    <TableCell
+                      sx={{
+                        padding: 0,
+                        width: '50%',
+                        maxWidth: '50%',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      <Tooltip title={row.batchName}>
+                        <span>{row.batchName}</span>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell align="right" sx={{ width: '25%' }}>
+                      {renderUploadStatusChip(row.uploadStatus ?? EMPTY_DATA)}
+                    </TableCell>
+                    <TableCell align="right" sx={{ width: '25%' }}>
+                      {row.dateUpload ? formatDate(row.dateUpload) : EMPTY_DATA}
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </TableContainer>
@@ -290,6 +289,11 @@ const OverviewProductionSection: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [rowsPerPage] = useState<number>(4);
 
+  // Workaround: generated UploadsListDTO.content is typed too loosely (object[]).
+  // We know runtime items are UploadDTO.
+  const content = (data?.content ?? []) as unknown as Array<UploadDTO>;
+  const firstUpload = content.length > 0 ? content[0] : undefined;
+
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -306,17 +310,13 @@ const OverviewProductionSection: React.FC = () => {
   }, [t]);
 
   const firstUploadDate =
-    !loading && !error && data?.content && data.content.length > 0 && data.content[0].dateUpload
-      ? new Date(data.content[0].dateUpload)
-      : undefined;
+    !loading && !error && firstUpload?.dateUpload ? new Date(firstUpload.dateUpload) : undefined;
 
   useEffect(() => {
     setStopNavigation(
-      !loading && !error && data?.content && data.content.length > 0
-        ? data.content[0].uploadStatus === 'UPLOADED'
-        : false
+      !loading && !error && firstUpload ? firstUpload.uploadStatus === 'UPLOADED' : false
     );
-  }, [loading, error, data]);
+  }, [loading, error, firstUpload]);
 
   return (
     <Box sx={{ gridColumn: 'span 6' }}>
