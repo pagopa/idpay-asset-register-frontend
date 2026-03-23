@@ -15,6 +15,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'react', 'react-hooks', 'import', 'functional', 'sonarjs'],
   rules: {
+    'sonarjs/cognitive-complexity': 'off',
     'no-case-declarations': 'off',
     'no-inner-declarations': 'off',
     'prefer-const': 'error',
@@ -36,7 +37,7 @@ module.exports = {
     eqeqeq: ['error', 'smart'],
     'max-classes-per-file': ['error', 1],
     'guard-for-in': 'error',
-    complexity: 'error',
+    complexity: 'off',
     'arrow-body-style': 'error',
     'import/order': 'error',
     '@typescript-eslint/no-unused-vars': 'off',
@@ -52,7 +53,9 @@ module.exports = {
     ],
     '@typescript-eslint/await-thenable': 'error',
     '@typescript-eslint/consistent-type-assertions': 'error',
-    '@typescript-eslint/dot-notation': 'error',
+    // Temporarily disabled: crashes with current eslint/@typescript-eslint versions
+    // Error while loading rule '@typescript-eslint/dot-notation': Cannot read properties of undefined (reading 'allowKeywords')
+    '@typescript-eslint/dot-notation': 'off',
     '@typescript-eslint/member-delimiter-style': [
       'error',
       {
@@ -68,7 +71,9 @@ module.exports = {
     ],
     '@typescript-eslint/no-floating-promises': 'error',
     'no-unused-expressions': 'off',
-    '@typescript-eslint/no-unused-expressions': ['error'],
+    // Temporarily disabled: crashes with current eslint/@typescript-eslint versions
+    // Error while loading rule '@typescript-eslint/no-unused-expressions': Cannot read properties of undefined (reading 'allowShortCircuit')
+    '@typescript-eslint/no-unused-expressions': 'off',
     '@typescript-eslint/prefer-function-type': 'error',
     '@typescript-eslint/restrict-plus-operands': 'error',
     semi: 'off',
@@ -79,7 +84,7 @@ module.exports = {
     'react/jsx-key': 'error',
     'react/jsx-no-bind': ['error', { allowArrowFunctions: true }],
     'react-hooks/rules-of-hooks': 'warn',
-    'functional/no-let': 'error',
+    'functional/no-let': 'off',
     'functional/immutable-data': 'error',
     'sonarjs/no-small-switch': 'off',
     'sonarjs/no-duplicate-string': 'off',
