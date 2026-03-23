@@ -6,7 +6,6 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Alert, Typography } f
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
-import { UploadDTO } from '../../api/generated/register/UploadDTO';
 import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
 import { getProductFilesList } from '../../services/registerService';
 import UploadsTable from '../components/HistoryUploadSection';
@@ -59,9 +58,6 @@ const OverviewHistoryUpload: React.FC = () => {
     setPage(0);
   };
 
-  const content = (data?.content ?? []) as unknown as Array<UploadDTO>;
-  const firstUpload = content.length > 0 ? content[0] : undefined;
-
   return (
     <>
       {!loading && !error && (
@@ -78,7 +74,7 @@ const OverviewHistoryUpload: React.FC = () => {
           />
 
           <Box>
-            {!loading && firstUpload?.uploadStatus === 'UPLOADED' && (
+            {!loading && data?.content?.[0]?.uploadStatus === 'UPLOADED' && (
               <InfoUpload
                 description={t('pages.uploadHistory.uploadHistoryAlertMessage')}
                 dismissFn={() => {}}
@@ -110,8 +106,8 @@ const OverviewHistoryUpload: React.FC = () => {
       {error && (
         <Box width="100%" px={2} data-testid="title-overview">
           <TitleBox
-              title={t('pages.uploadHistory.sideMenuTitle')}
-              subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
+            title={t('pages.uploadHistory.sideMenuTitle')}
+            subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
             mbTitle={2}
             mtTitle={2}
             mbSubTitle={5}
