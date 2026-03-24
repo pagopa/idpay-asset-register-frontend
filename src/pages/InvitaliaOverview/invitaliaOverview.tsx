@@ -146,14 +146,12 @@ const InvitaliaOverview: React.FC = () => {
             size="small"
             value={searchTerm}
             onChange={handleSearchChange}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Search />
-                  </InputAdornment>
-                ),
-              },
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Search />
+                </InputAdornment>
+              ),
             }}
           />
         </Box>

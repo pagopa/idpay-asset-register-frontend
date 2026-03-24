@@ -178,7 +178,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           fullWidth
           inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
           value={motivationInternal}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setMotivationInternal(filterInputWithSpaceRule(e.target.value));
           }}
           onBlur={() => setMotivationTouched(true)}
@@ -218,7 +218,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           fullWidth
           inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
           value={motivationOfficial}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setMotivationOfficial(filterInputWithSpaceRule(e.target.value));
           }}
           onBlur={() => setMotivationOfficialTouched(true)}
@@ -411,10 +411,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
     <Dialog
       open={open}
       onClose={() => onClose(true)}
-      slotProps={{
-        paper: {
-          sx: modalStyles.dialogPaper,
-        },
+      PaperProps={{
+        sx: modalStyles.dialogPaper,
       }}
     >
       <DialogTitle sx={modalStyles.dialogTitle}>{config?.title || ''}</DialogTitle>
