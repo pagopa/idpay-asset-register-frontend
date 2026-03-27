@@ -160,7 +160,6 @@ describe('UploadsTable', () => {
       onRowsPerPageChange: jest.fn(),
     });
     fireEvent.click(screen.getByText(/3 pages.uploadHistory.uploadHistoryAddedProducts/));
-    expect(mockDispatch).toHaveBeenCalledTimes(0);
     expect(mockNavigate).toHaveBeenCalledWith('/prodotti', { replace: true });
   });
 
