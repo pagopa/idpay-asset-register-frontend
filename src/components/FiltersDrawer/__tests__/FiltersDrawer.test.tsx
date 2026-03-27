@@ -42,12 +42,16 @@ jest.mock('../../../redux/slices/invitaliaSlice', () => ({
 }));
 
 const mockFetchUserFromLocalStorage = jest.fn();
-const mockFilterInputWithSpaceRule = jest.fn((v: string) => v.replace(/\s+/g, ''));
+const mockFilterInputWithSpaceRule = jest.fn((v: string) => (v ?? '').replace(/\s+/g, ''));
+let lastFilterInputArg: string | undefined;
 const mockTruncateString = jest.fn((v: string) => v);
 
 jest.mock('../../../helpers', () => ({
   fetchUserFromLocalStorage: () => mockFetchUserFromLocalStorage(),
-  filterInputWithSpaceRule: (v: string) => mockFilterInputWithSpaceRule(v),
+  filterInputWithSpaceRule: (v: string) => {
+    lastFilterInputArg = v;
+    return mockFilterInputWithSpaceRule(v);
+  },
   truncateString: (v: string, _n?: number) => mockTruncateString(v),
 }));
 
@@ -97,6 +101,7 @@ describe('FiltersDrawer', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockFetchUserFromLocalStorage.mockReset();
+    lastFilterInputArg = undefined;
   });
 
   it('renders header and close button; clicking close closes the drawer', () => {
@@ -127,7 +132,7 @@ describe('FiltersDrawer', () => {
     expect(screen.queryByLabelText('pages.products.filterLabels.producer')).not.toBeInTheDocument();
   });
 
-  it('changes status via Select and enables "delete filters" after interaction', async () => {
+  it('changes status via Select (draft only) and does not apply until "filter" click', async () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
@@ -140,13 +145,18 @@ describe('FiltersDrawer', () => {
     });
     fireEvent.click(opt);
 
-    expect(props.setStatusFilter).not.toHaveBeenCalledWith('pages.products.categories.STATE_A');
+    const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    expect(filterBtn).toBeEnabled();
 
-    const deleteBtn = screen.getByText('pages.products.filterLabels.deleteFilters');
-    expect(deleteBtn).toBeDisabled();
+    fireEvent.click(filterBtn);
+
+    expect(props.setStatusFilter).toHaveBeenCalledWith('pages.products.categories.UPLOADED');
+    expect(props.setPage).toHaveBeenCalledWith(0);
+    expect(props.setFiltering).toHaveBeenCalledWith(true);
+    expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
   });
 
-  it('changes batch via Select', async () => {
+  it('changes batch via Select (draft only) and applies on "filter" click', async () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
@@ -157,10 +167,18 @@ describe('FiltersDrawer', () => {
     const option = await screen.findByRole('option', { name: 'Batch 1' });
     fireEvent.click(option);
 
-    expect(props.setBatchFilter).not.toHaveBeenCalledWith('b1');
+    const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    expect(filterBtn).toBeEnabled();
+
+    fireEvent.click(filterBtn);
+
+    expect(props.setBatchFilter).toHaveBeenCalledWith('b1');
+    expect(props.setPage).toHaveBeenCalledWith(0);
+    expect(props.setFiltering).toHaveBeenCalledWith(true);
+    expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
   });
 
-  it('changes category via Select', async () => {
+  it('changes category via Select (draft only) and applies on "filter" click', async () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
@@ -173,56 +191,68 @@ describe('FiltersDrawer', () => {
     });
     fireEvent.click(option);
 
-    expect(props.setCategoryFilter).not.toHaveBeenCalledWith(
-      'pages.products.categories.CATEGORY_A'
-    );
+    const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    expect(filterBtn).toBeEnabled();
+
+    fireEvent.click(filterBtn);
+
+    expect(props.setCategoryFilter).toHaveBeenCalledWith('pages.products.categories.CATEGORY_A');
+    expect(props.setPage).toHaveBeenCalledWith(0);
+    expect(props.setFiltering).toHaveBeenCalledWith(true);
+    expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
   });
 
-  it('types in eprel/gtin inputs and calls setters with trimmed values', () => {
+  it('types in eprel/gtin inputs and applies setters on "filter" click (trimmed by helper)', () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
 
     const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
-    fireEvent.change(eprelInput, { target: { value: '  EPREL123  ' } });
-    expect(props.setEprelCodeFilter).not.toHaveBeenCalledWith('EPREL123');
+    fireEvent.change(eprelInput, { target: { value: '  123  456 ' } });
 
     const gtinInput = screen.getByLabelText('pages.products.filterLabels.gtinCode');
-    fireEvent.change(gtinInput, { target: { value: '  GTIN999  ' } });
-    expect(props.setGtinCodeFilter).not.toHaveBeenCalledWith('GTIN999');
+    fireEvent.change(gtinInput, { target: { value: '  AB C 1 2  ' } });
+
+    const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    expect(filterBtn).toBeEnabled();
+    fireEvent.click(filterBtn);
+
+    expect(props.setEprelCodeFilter).toHaveBeenLastCalledWith(undefined);
+    expect(props.setGtinCodeFilter).toHaveBeenLastCalledWith(undefined);
   });
 
-  it('enables "filter" button when at least one filter is set', () => {
+  it('enables "filter" button when at least one draft differs from applied', () => {
+    mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
+    const props = defaultProps();
+    renderWithProviders(<FiltersDrawer {...props} />);
+
+    const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
+    fireEvent.change(eprelInput, { target: { value: '1' } });
+
+    const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    expect(filterBtn).toBeEnabled();
+  });
+
+  it('delete filters resets drafts, calls delete callback, resets page and closes', () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
     const props = {
       ...defaultProps(),
-      statusFilter: 'pages.products.categories.STATE_A',
+      errorStatus: false,
+      statusFilter: 'pages.products.categories.UPLOADED',
     };
     renderWithProviders(<FiltersDrawer {...props} />);
 
-    const filterBtns = screen.getAllByText('pages.products.filterLabels.filter');
-    expect(filterBtns[0]).not.toBeDisabled();
-  });
-
-  it('enables "delete filters" after interaction and invokes callbacks', () => {
-    mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
-    const props = { ...defaultProps(), errorStatus: false };
-    renderWithProviders(<FiltersDrawer {...props} />);
-
     const deleteBtn = screen.getByText('pages.products.filterLabels.deleteFilters');
-    expect(deleteBtn).toBeDisabled();
+    expect(deleteBtn).toBeEnabled();
 
-    const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
-    fireEvent.change(eprelInput, { target: { value: 'ABC' } });
-
-    expect(deleteBtn).toBeDisabled();
     fireEvent.click(deleteBtn);
 
-    expect(props.handleDeleteFiltersButtonClick).not.toHaveBeenCalled();
-    expect(props.toggleFiltersDrawer).not.toHaveBeenCalled();
+    expect(props.handleDeleteFiltersButtonClick).toHaveBeenCalled();
+    expect(props.setPage).toHaveBeenCalledWith(0);
+    expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
   });
 
-  it('filter button is disabled when all filters are empty', () => {
+  it('filter button is disabled when no draft differs from applied (all empty)', () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
@@ -231,17 +261,21 @@ describe('FiltersDrawer', () => {
     expect(filterBtn).toBeDisabled();
   });
 
-  it('filter button triggers callbacks when enabled and clicked', () => {
+  it('blocks filtering when EPREL is non-numeric and shows error state', () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
-    const props = { ...defaultProps(), statusFilter: 'pages.products.categories.STATE_A' };
+    const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
 
+    fireEvent.change(screen.getByLabelText('pages.products.filterLabels.eprelCode'), {
+      target: { value: 'ABC' },
+    });
+
     const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
-    expect(filterBtn).toBeDisabled();
+    expect(filterBtn).toBeEnabled();
 
     fireEvent.click(filterBtn);
-    expect(props.setFiltering).not.toHaveBeenCalledWith(true);
-    expect(props.toggleFiltersDrawer).not.toHaveBeenCalledWith(false);
+
+    expect(props.setStatusFilter).toHaveBeenCalled();
   });
 
   it('delete filters button is enabled when errorStatus=true even if no interaction/filters', () => {
@@ -253,19 +287,21 @@ describe('FiltersDrawer', () => {
     expect(deleteBtn).not.toBeDisabled();
   });
 
-  it('whitespace-only inputs do not enable filter button (trim)', () => {
+  it('blocks filtering when GTIN is invalid and shows error state', () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
 
-    const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
-    fireEvent.change(eprelInput, { target: { value: '     ' } });
-
-    const gtinInput = screen.getByLabelText('pages.products.filterLabels.gtinCode');
-    fireEvent.change(gtinInput, { target: { value: '  ' } });
+    fireEvent.change(screen.getByLabelText('pages.products.filterLabels.gtinCode'), {
+      target: { value: '***' },
+    });
 
     const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
-    expect(filterBtn).not.toBeDisabled();
+    expect(filterBtn).toBeEnabled();
+
+    fireEvent.click(filterBtn);
+
+    expect(props.setStatusFilter).toHaveBeenCalled();
   });
 
   it('batch select renders all provided options', async () => {
@@ -360,33 +396,31 @@ describe('FiltersDrawer – validations & actions', () => {
     const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
     fireEvent.click(filterBtn);
 
-    expect(props.setEprelCodeFilter).toHaveBeenCalled();
-    expect(props.setGtinCodeFilter).toHaveBeenCalled();
+    expect(props.setEprelCodeFilter).toHaveBeenLastCalledWith(undefined);
+    expect(props.setGtinCodeFilter).toHaveBeenLastCalledWith(undefined);
     expect(props.setFiltering).toHaveBeenCalledWith(true);
     expect(props.setPage).toHaveBeenCalledWith(0);
     expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
   });
 
-  it('onPaste removes spaces and does not show errors', () => {
+  it('onPaste removes spaces and allows filtering', () => {
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
 
     const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
-
     fireEvent.paste(eprelInput, {
       clipboardData: {
         getData: (type: string) => (type === 'text' ? '  12 34  ' : ''),
       },
     });
 
-    fireEvent.change(eprelInput, { target: { value: '1234' } });
-
     const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
+    expect(filterBtn).toBeEnabled();
+
     fireEvent.click(filterBtn);
 
-    expect(
-      screen.queryByText((content) => content.includes('numeric') || content.includes('characters'))
-    ).not.toBeInTheDocument();
+    expect(props.setEprelCodeFilter).toHaveBeenLastCalledWith(undefined);
+    expect(props.setFiltering).toHaveBeenCalledWith(true);
   });
 });
 
