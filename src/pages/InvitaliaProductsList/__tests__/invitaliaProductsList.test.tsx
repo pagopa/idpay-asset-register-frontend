@@ -27,7 +27,7 @@ jest.mock('../../../api/registerApiClient', () => ({
   },
 }));
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -141,10 +141,14 @@ describe('InvitaliaProductsList', () => {
   it('hides MsgResult when INVITALIA_MSG_DISMISS event is dispatched', async () => {
     renderComponent();
 
-    window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
+    await act(async () => {
+      window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
+    });
     await screen.findByTestId('msg-result');
 
-    window.dispatchEvent(new Event('INVITALIA_MSG_DISMISS'));
+    await act(async () => {
+      window.dispatchEvent(new Event('INVITALIA_MSG_DISMISS'));
+    });
 
     expect(screen.queryByTestId('msg-result')).not.toBeInTheDocument();
   });
@@ -152,10 +156,14 @@ describe('InvitaliaProductsList', () => {
   it('auto hides MsgResult after 10 seconds timeout', async () => {
     renderComponent();
 
-    window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
+    await act(async () => {
+      window.dispatchEvent(new Event('INVITALIA_MSG_SHOW'));
+    });
     await screen.findByTestId('msg-result');
 
-    jest.advanceTimersByTime(10000);
+    act(() => {
+      jest.advanceTimersByTime(10000);
+    });
 
     expect(screen.queryByTestId('msg-result')).not.toBeInTheDocument();
   });
