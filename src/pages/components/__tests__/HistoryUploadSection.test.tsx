@@ -58,7 +58,11 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const mockDispatch = jest.fn();
-jest.spyOn(redux, 'useDispatch').mockReturnValue(mockDispatch);
+
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: () => mockDispatch,
+}));
 
 jest.spyOn(registerService, 'downloadErrorReport').mockResolvedValue({
   data: 'csv content',

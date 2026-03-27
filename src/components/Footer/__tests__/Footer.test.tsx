@@ -141,12 +141,12 @@ afterAll(() => {
 });
 
 test('usa la lingua dalla querystring e chiama i18n.changeLanguage', async () => {
-  window.history.pushState({}, '', '?lang=en');
+  window.history.pushState({}, '', '?lang=it');
   await act(async () => {
     render(<Footer loggedUser={false} productsJsonUrl="p.json" />);
   });
-  expect(captured.props.currentLangCode).toBe('en');
-  expect(mockChangeLanguage).toHaveBeenCalledWith('en');
+  expect(captured.props.currentLangCode).toBe('it');
+  expect(mockChangeLanguage).toHaveBeenCalledWith('it');
   expect(captured.props.productsJsonUrl).toBe('p.json');
   expect(captured.props.loggedUser).toBe(false);
   expect(captured.props.languages).toEqual(LANGUAGES as any);
