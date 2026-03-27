@@ -237,7 +237,7 @@ export default function FiltersDrawer({
           data-testid="open-detail-button"
           onClick={() => toggleFiltersDrawer(false)}
           sx={{ color: 'text.secondary', ml: 'auto' }}
-          aria-label="Chiudi filtri"
+          aria-label="Close filters"
         >
           <CloseIcon />
         </IconButton>
@@ -369,6 +369,7 @@ export default function FiltersDrawer({
               }}
               error={showErrorEprel}
               helperText={helperEprel}
+              FormHelperTextProps={{ 'data-testid': showErrorEprel ? 'eprel-error' : undefined }}
               InputProps={{ inputProps: { inputMode: 'numeric', pattern: '[0-9]*' } }}
             />
           );
@@ -402,6 +403,7 @@ export default function FiltersDrawer({
               }}
               error={showErrorGtin}
               helperText={helperGtin}
+              FormHelperTextProps={{ 'data-testid': showErrorGtin ? 'gtin-error' : undefined }}
               InputProps={{ inputProps: { maxLength: 14 } }}
             />
           );

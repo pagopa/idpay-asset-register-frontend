@@ -819,8 +819,7 @@ describe('ProductDataGrid – extra coverage', () => {
     renderGrid();
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
 
-    fireEvent.click(screen.getByTestId('rejectedBtn') || document.body);
-
+    expect(screen.queryByTestId('rejectedBtn')).not.toBeInTheDocument();
     expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
   });
 
