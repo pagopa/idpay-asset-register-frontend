@@ -6,8 +6,6 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (k: string) => k }),
 }));
 
-const changeLanguageMock = jest.fn();
-
 const mockChangeLanguage = jest.fn();
 
 jest.mock('../../../locale/index', () => ({
@@ -128,7 +126,7 @@ const originalOneTrust = (window as any).OneTrust;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  changeLanguageMock.mockClear();
+  mockChangeLanguage.mockClear();
   (window as any).OneTrust = { ToggleInfoDisplay: jest.fn() };
   window.open = jest.fn(() => ({ focus: jest.fn() } as any)) as any;
   Object.defineProperty(window, 'location', {
@@ -147,8 +145,8 @@ test('usa la lingua dalla querystring e chiama i18n.changeLanguage', async () =>
   await act(async () => {
     render(<Footer loggedUser={false} productsJsonUrl="p.json" />);
   });
-  expect(captured.props.currentLangCode).not.toBe('en');
-  expect(changeLanguageMock).not.toHaveBeenCalledWith('en');
+  expect(captured.props.currentLangCode).toBe('en');
+  expect(mockChangeLanguage).toHaveBeenCalledWith('en');
   expect(captured.props.productsJsonUrl).toBe('p.json');
   expect(captured.props.loggedUser).toBe(false);
   expect(captured.props.languages).toEqual(LANGUAGES as any);

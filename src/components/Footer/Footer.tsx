@@ -6,6 +6,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { LangCode } from '@pagopa/mui-italia';
+import type { i18n as I18nType } from 'i18next';
 import i18n from '../../locale/index';
 import { ENV } from '../../utils/env';
 import { LANGUAGES, pagoPALink } from './FooterConfig';
@@ -24,13 +25,15 @@ export default function Footer({
 }: FooterProps) {
   const { t } = useTranslation();
 
+  const i18nInstance = i18n as unknown as I18nType;
+
   const currentLangByUrl = new URLSearchParams(window.location.search).get('lang') as LangCode;
-  const lang = (currentLangByUrl ? currentLangByUrl : i18n.language) as LangCode;
+  const lang = (currentLangByUrl ? currentLangByUrl : i18nInstance.language) as LangCode;
   const openExternalLink = (url: string | undefined) => window.open(url, '_blank')?.focus();
 
   useEffect(() => {
     if (lang) {
-      void i18n.changeLanguage(lang);
+      void i18nInstance.changeLanguage(lang);
     }
   }, [lang]);
 
@@ -206,7 +209,7 @@ export default function Footer({
       onExit={onExit}
       languages={LANGUAGES as any}
       onLanguageChanged={async (language: LangCode) => {
-        await i18n.changeLanguage(language);
+        await i18nInstance.changeLanguage(language);
       }}
       currentLangCode={lang}
       productsJsonUrl={productsJsonUrl}
