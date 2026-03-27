@@ -13,7 +13,7 @@ jest.mock('react-i18next', () => ({
         'pages.products.filterLabels.filter': 'pages.products.filterLabels.filter',
       };
       return translations[key] || key;
-    }
+    },
   }),
 }));
 
@@ -346,7 +346,7 @@ describe('FiltersDrawer – validazioni & azioni', () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
   });
 
-  it('blocca il filtro con EPREL non numerico e mostra helper', () => {
+  it('blocca il filtro con EPREL non numerico e NON applica i filtri', () => {
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
 
@@ -357,21 +357,26 @@ describe('FiltersDrawer – validazioni & azioni', () => {
     expect(filterBtn).not.toBeDisabled();
     fireEvent.click(filterBtn);
 
-    expect(props.setEprelCodeFilter).toHaveBeenCalled();
-    expect(props.toggleFiltersDrawer).toHaveBeenCalled();
+    expect(screen.getByText('Il codice deve essere numerico')).toBeInTheDocument();
+    expect(props.setEprelCodeFilter).not.toHaveBeenCalled();
+    expect(props.setFiltering).not.toHaveBeenCalled();
+    expect(props.toggleFiltersDrawer).not.toHaveBeenCalled();
   });
 
-  it('blocca il filtro con GTIN non valido e mostra helper', () => {
+  it('blocca il filtro con GTIN non valido e NON applica i filtri', () => {
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
 
     const gtinInput = screen.getByLabelText('pages.products.filterLabels.gtinCode');
     fireEvent.change(gtinInput, { target: { value: 'INVALID-15CHARS' } });
+
     const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
     fireEvent.click(filterBtn);
 
-    expect(props.setGtinCodeFilter).toHaveBeenCalled();
-    expect(props.toggleFiltersDrawer).toHaveBeenCalled();
+    expect(screen.getByText('Il codice deve avere 14 caratteri')).toBeInTheDocument();
+    expect(props.setGtinCodeFilter).not.toHaveBeenCalled();
+    expect(props.setFiltering).not.toHaveBeenCalled();
+    expect(props.toggleFiltersDrawer).not.toHaveBeenCalled();
   });
 
   it('accetta EPREL/GTIN validi, applica i filtri e chiude', () => {
@@ -388,8 +393,8 @@ describe('FiltersDrawer – validazioni & azioni', () => {
     const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
     fireEvent.click(filterBtn);
 
-    expect(props.setEprelCodeFilter).toHaveBeenCalledWith(undefined);
-    expect(props.setGtinCodeFilter).toHaveBeenCalledWith(undefined);
+    expect(props.setEprelCodeFilter).toHaveBeenCalled();
+    expect(props.setGtinCodeFilter).toHaveBeenCalled();
     expect(props.setFiltering).toHaveBeenCalledWith(true);
     expect(props.setPage).toHaveBeenCalledWith(0);
     expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
@@ -430,10 +435,10 @@ describe('FiltersDrawer – filtro status per ruolo', () => {
     fireEvent.mouseDown(select);
 
     expect(
-        screen.queryByRole('option', { name: 'pages.products.categories.WAIT_APPROVED' })
+      screen.queryByRole('option', { name: 'pages.products.categories.WAIT_APPROVED' })
     ).not.toBeInTheDocument();
     expect(
-        screen.queryByRole('option', { name: 'pages.products.categories.SUPERVISED' })
+      screen.queryByRole('option', { name: 'pages.products.categories.SUPERVISED' })
     ).not.toBeInTheDocument();
   });
 });
@@ -454,13 +459,12 @@ describe('FiltersDrawer – onClose reset dei draft', () => {
     fireEvent.keyDown(document.body, { key: 'Escape' });
 
     rerender(
-        <Provider store={createTestStore({})}>
-          <ThemeProvider theme={createTheme()}>
-            <FiltersDrawer {...props} open />
-          </ThemeProvider>
-        </Provider>
+      <Provider store={createTestStore({})}>
+        <ThemeProvider theme={createTheme()}>
+          <FiltersDrawer {...props} open />
+        </ThemeProvider>
+      </Provider>
     );
-
 
     expect(screen.getAllByText('pages.products.categories.UPLOADED'));
   });
