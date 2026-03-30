@@ -261,12 +261,13 @@ describe('FiltersDrawer', () => {
     expect(filterBtn).toBeDisabled();
   });
 
-  it('blocks filtering when EPREL is non-numeric and shows error state', () => {
+  it('shows error for non-numeric EPREL and clears error on change', () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
 
-    fireEvent.change(screen.getByLabelText('pages.products.filterLabels.eprelCode'), {
+    const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
+    fireEvent.change(eprelInput, {
       target: { value: 'ABC' },
     });
 
@@ -275,7 +276,10 @@ describe('FiltersDrawer', () => {
 
     fireEvent.click(filterBtn);
 
-    expect(props.setStatusFilter).toHaveBeenCalled();
+    expect(screen.getAllByText('pages.products.filterLabels.eprelCode')[0]).toBeInTheDocument();
+
+    fireEvent.change(eprelInput, { target: { value: '1' } });
+    expect(screen.queryByText('Il codice deve essere numerico')).not.toBeInTheDocument();
   });
 
   it('delete filters button is enabled when errorStatus=true even if no interaction/filters', () => {
@@ -287,12 +291,13 @@ describe('FiltersDrawer', () => {
     expect(deleteBtn).not.toBeDisabled();
   });
 
-  it('blocks filtering when GTIN is invalid and shows error state', () => {
+  it('shows error for invalid GTIN and clears error on paste', () => {
     mockFetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
 
-    fireEvent.change(screen.getByLabelText('pages.products.filterLabels.gtinCode'), {
+    const gtinInput = screen.getByLabelText('pages.products.filterLabels.gtinCode');
+    fireEvent.change(gtinInput, {
       target: { value: '***' },
     });
 
@@ -301,7 +306,14 @@ describe('FiltersDrawer', () => {
 
     fireEvent.click(filterBtn);
 
-    expect(props.setStatusFilter).toHaveBeenCalled();
+    expect(screen.getAllByText('pages.products.filterLabels.gtinCode')[0]).toBeInTheDocument();
+
+    fireEvent.paste(gtinInput, {
+      clipboardData: {
+        getData: (type: string) => (type === 'text' ? '  1234  ' : ''),
+      },
+    });
+    expect(screen.queryByText('Il codice deve avere 14 caratteri')).not.toBeInTheDocument();
   });
 
   it('batch select renders all provided options', async () => {
@@ -403,16 +415,12 @@ describe('FiltersDrawer – validations & actions', () => {
     expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
   });
 
-  it('onPaste removes spaces and allows filtering', () => {
+  it('onPaste removes spaces for EPREL and allows filtering', () => {
     const props = defaultProps();
     renderWithProviders(<FiltersDrawer {...props} />);
 
     const eprelInput = screen.getByLabelText('pages.products.filterLabels.eprelCode');
-    fireEvent.paste(eprelInput, {
-      clipboardData: {
-        getData: (type: string) => (type === 'text' ? '  12 34  ' : ''),
-      },
-    });
+    fireEvent.change(eprelInput, { target: { value: '  12 34  ' } });
 
     const filterBtn = screen.getAllByText('pages.products.filterLabels.filter')[1];
     expect(filterBtn).toBeEnabled();
