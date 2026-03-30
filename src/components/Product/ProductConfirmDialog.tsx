@@ -61,10 +61,8 @@ const ProductConfirmDialog: React.FC<ConfirmDialogProps> = ({
   <Dialog
     open={open}
     onClose={onCancel}
-    slotProps={{
-      paper: {
-        sx: dialogStyles.dialogPaper,
-      },
+    PaperProps={{
+      sx: dialogStyles.dialogPaper,
     }}
   >
     <DialogTitle sx={dialogStyles.dialogTitle}>{title}</DialogTitle>

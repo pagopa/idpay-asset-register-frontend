@@ -5,9 +5,8 @@ import {
   RootLinkType,
   UserAction,
 } from '@pagopa/mui-italia';
-import { HeaderAccount } from '@pagopa/mui-italia/dist/components/HeaderAccount/HeaderAccount';
-import { HeaderProduct } from '@pagopa/mui-italia/dist/components/HeaderProduct/HeaderProduct';
-import { PartySwitchItem } from '@pagopa/mui-italia/dist/components/PartySwitch';
+import { HeaderAccount, HeaderProduct } from '@pagopa/mui-italia';
+import { PartySwitchItem } from '@pagopa/mui-italia/components/PartySwitch';
 import { Fragment } from 'react';
 import { ENV } from '../../utils/env';
 
@@ -93,9 +92,7 @@ const CustomHeader = ({
       <HeaderAccount
         rootLink={rootLink}
         loggedUser={loggedUser}
-        onAssistanceClick={() =>
-          window.open(assistanceEmail || '')
-        }
+        onAssistanceClick={() => window.open(assistanceEmail || '')}
         onLogin={() => onExit(() => window.location.assign(ENV.URL_FE.LOGIN))}
         onLogout={onLogoutClick ?? (() => onExit(() => window.location.assign(ENV.URL_FE.LOGOUT)))}
         enableLogin={enableLogin}
