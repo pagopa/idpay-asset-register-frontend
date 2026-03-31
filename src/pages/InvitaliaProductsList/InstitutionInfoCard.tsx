@@ -34,12 +34,31 @@ const InstitutionInfoCard: React.FC = () => {
     { label: 'piva', value: institutionInfo?.vatNumber, truncate: true },
   ];
 
+  const buildAddress = () => {
+    if (!institutionInfo) {
+      return '';
+    }
+
+    const { address, zipCode, city, county } = institutionInfo;
+
+    if (!address && !zipCode && !city && !county) {
+      return '';
+    }
+
+    const parts = [
+      address ?? '',
+      zipCode ? `, ${zipCode}` : '',
+      city ? ` ${city}` : '',
+      county ? ` (${county})` : '',
+    ];
+
+    return parts.join('').trim();
+  };
+
   const rightColumn = [
     {
       label: 'sedeLegale',
-      value: `${institutionInfo?.address ?? ''}, ${institutionInfo?.zipCode ?? ''} ${
-        institutionInfo?.city ?? ''
-      } (${institutionInfo?.county ?? ''})`,
+      value: buildAddress(),
       truncate: true,
     },
     { label: 'pec', value: institutionInfo?.digitalAddress, truncate: true },

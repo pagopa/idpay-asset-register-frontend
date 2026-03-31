@@ -1,28 +1,28 @@
 jest.mock('../../../utils/env', () => ({
-    __esModule: true,
-    default: {
-        URL_API: {
-            OPERATION: 'https://mock-api/register',
-        },
-        API_TIMEOUT_MS: {
-            OPERATION: 5000,
-        },
+  __esModule: true,
+  default: {
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
     },
+    API_TIMEOUT_MS: {
+      OPERATION: 5000,
+    },
+  },
 }));
 
 jest.mock('../../../routes', () => ({
-    __esModule: true,
-    default: {
-        HOME: '/home'
-    },
-    BASE_ROUTE: '/base'
+  __esModule: true,
+  default: {
+    HOME: '/home',
+  },
+  BASE_ROUTE: '/base',
 }));
 
 jest.mock('../../../api/registerApiClient', () => ({
-    RegisterApi: {
-        getProducts: jest.fn(),
-        getBatchFilterItems: jest.fn(),
-    },
+  RegisterApi: {
+    getProducts: jest.fn(),
+    getBatchFilterItems: jest.fn(),
+  },
 }));
 
 import { render, screen, waitFor } from '@testing-library/react';
@@ -36,19 +36,19 @@ import { truncateString } from '../../../helpers';
 import '@testing-library/jest-dom';
 
 jest.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key: string) => {
-            const translations: Record<string, string> = {
-                'pages.invitaliaProductsList.infoCardTitle': 'Informazioni Istituzione',
-                'pages.invitaliaProductsList.ragioneSociale': 'Ragione Sociale',
-                'pages.invitaliaProductsList.sedeLegale': 'Sede Legale',
-                'pages.invitaliaProductsList.codiceFiscale': 'Codice Fiscale',
-                'pages.invitaliaProductsList.pec': 'PEC',
-                'pages.invitaliaProductsList.piva': 'P.IVA',
-            };
-            return translations[key] || key;
-        },
-    }),
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'pages.invitaliaProductsList.infoCardTitle': 'Informazioni Istituzione',
+        'pages.invitaliaProductsList.ragioneSociale': 'Ragione Sociale',
+        'pages.invitaliaProductsList.sedeLegale': 'Sede Legale',
+        'pages.invitaliaProductsList.codiceFiscale': 'Codice Fiscale',
+        'pages.invitaliaProductsList.pec': 'PEC',
+        'pages.invitaliaProductsList.piva': 'P.IVA',
+      };
+      return translations[key] || key;
+    },
+  }),
 }));
 
 jest.mock('../../../services/registerService');
@@ -57,215 +57,206 @@ jest.mock('../../../helpers');
 const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
 const createMockStore = (institutionState: any) => {
-    return configureStore({
-        reducer: {
-            invitalia: (state = institutionState) => state,
-        },
-        preloadedState: {
-            invitalia: institutionState,
-        },
-    });
+  return configureStore({
+    reducer: {
+      invitalia: (state = institutionState) => state,
+    },
+    preloadedState: {
+      invitalia: institutionState,
+    },
+  });
 };
 
 const theme = createTheme();
 
 const mockInstitutionFromStore = {
-    institutionId: '12345',
+  institutionId: '12345',
 };
 
 const mockInstitutionResponse = {
-    description: 'Test Company S.r.l.',
-    address: 'Via Roma 123',
-    zipCode: '00100',
-    city: 'Roma',
-    county: 'RM',
-    fiscalCode: 'TSTCMP80A01H501Z',
-    digitalAddress: 'test@pec.company.com',
-    vatNumber: '12345678901',
-};
+  description: 'Test Company S.r.l.',
+  address: 'Via Roma 123',
+  zipCode: '00100',
+  city: 'Roma',
+  county: 'RM',
+  fiscalCode: 'TSTCMP80A01H501Z',
+  digitalAddress: 'test@pec.company.com',
+  vatNumber: '12345678901',
+} as any;
 
 const mockTruncatedString = 'Test Company...';
 
 describe('InstitutionInfoCard', () => {
-    const mockedGetInstitutionById = registerService.getInstitutionById as jest.MockedFunction<
-        typeof registerService.getInstitutionById
-    >;
-    const mockedTruncateString = truncateString as jest.MockedFunction<typeof truncateString>;
+  const mockedGetInstitutionById = registerService.getInstitutionById as jest.MockedFunction<
+    typeof registerService.getInstitutionById
+  >;
+  const mockedTruncateString = truncateString as jest.MockedFunction<typeof truncateString>;
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        mockedTruncateString.mockReturnValue(mockTruncatedString);
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockedTruncateString.mockReturnValue(mockTruncatedString);
+  });
+
+  afterEach(() => {
+    consoleSpy.mockClear();
+  });
+
+  const renderComponent = (institutionState: any = { institution: mockInstitutionFromStore }) => {
+    const store = createMockStore(institutionState);
+
+    jest.doMock('../../../redux/slices/invitaliaSlice', () => ({
+      institutionSelector: (state: any) => state.invitalia.institution,
+    }));
+
+    return render(
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <InstitutionInfoCard />
+        </ThemeProvider>
+      </Provider>
+    );
+  };
+
+  it('renders the component with title', () => {
+    mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse as any);
+
+    renderComponent();
+
+    expect(screen.getByText('INFORMAZIONI ISTITUZIONE')).toBeInTheDocument();
+  });
+
+  it('fetches and displays institution data successfully', async () => {
+    mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
+
+    renderComponent();
+
+    await waitFor(() => {
+      expect(mockedGetInstitutionById).toHaveBeenCalledWith('12345');
     });
 
-    afterEach(() => {
-        consoleSpy.mockClear();
+    expect(screen.getByText('Ragione Sociale')).toBeInTheDocument();
+    expect(screen.getByText('Sede Legale')).toBeInTheDocument();
+    expect(screen.getByText('Codice Fiscale')).toBeInTheDocument();
+    expect(screen.getByText('PEC')).toBeInTheDocument();
+    expect(screen.getByText('P.IVA')).toBeInTheDocument();
+  });
+
+  it('displays truncated values with tooltips', async () => {
+    mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
+
+    renderComponent();
+
+    await waitFor(() => {
+      expect(mockedGetInstitutionById).toHaveBeenCalled();
     });
 
-    const renderComponent = (institutionState: any = { institution: mockInstitutionFromStore }) => {
-        const store = createMockStore(institutionState);
+    expect(mockedTruncateString).toHaveBeenCalledWith('Test Company S.r.l.', 140);
+    expect(mockedTruncateString).toHaveBeenCalledWith('TSTCMP80A01H501Z', 140);
+  });
 
-        jest.doMock('../../../redux/slices/invitaliaSlice', () => ({
-            institutionSelector: (state: any) => state.invitalia.institution,
-        }));
-
-        return render(
-            <Provider store={store}>
-                <ThemeProvider theme={theme}>
-                    <InstitutionInfoCard />
-                </ThemeProvider>
-            </Provider>
-        );
+  it('displays "-" for empty values', async () => {
+    const incompleteInstitutionResponse = {
+      ...mockInstitutionResponse,
+      description: null,
+      digitalAddress: '',
     };
 
-    it('renders the component with title', () => {
-        mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
+    mockedGetInstitutionById.mockResolvedValue(incompleteInstitutionResponse as any);
 
-        renderComponent();
+    renderComponent();
 
-        expect(screen.getByText('INFORMAZIONI ISTITUZIONE')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockedGetInstitutionById).toHaveBeenCalled();
     });
 
-    it('fetches and displays institution data successfully', async () => {
-        mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
+    const dashElements = screen.getAllByText('-');
+    expect(dashElements.length).toBeGreaterThan(0);
+  });
 
-        renderComponent();
+  it('handles API error gracefully', async () => {
+    const errorMessage = 'API Error';
+    mockedGetInstitutionById.mockRejectedValue(new Error(errorMessage));
 
-        await waitFor(() => {
-            expect(mockedGetInstitutionById).toHaveBeenCalledWith('12345');
-        });
+    renderComponent();
 
-        expect(screen.getByText('Ragione Sociale')).toBeInTheDocument();
-        expect(screen.getByText('Sede Legale')).toBeInTheDocument();
-        expect(screen.getByText('Codice Fiscale')).toBeInTheDocument();
-        expect(screen.getByText('PEC')).toBeInTheDocument();
-        expect(screen.getByText('P.IVA')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockedGetInstitutionById).toHaveBeenCalledWith('12345');
+    });
+  });
+
+  it('handles missing institution in store', async () => {
+    mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
+
+    renderComponent({ institution: null });
+
+    await waitFor(() => {
+      expect(mockedGetInstitutionById).toHaveBeenCalledWith('');
+    });
+  });
+
+  it('handles missing institutionId in store', async () => {
+    mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
+
+    renderComponent({ institution: {} });
+
+    await waitFor(() => {
+      expect(mockedGetInstitutionById).toHaveBeenCalledWith('');
+    });
+  });
+
+  it('constructs complete address correctly', async () => {
+    mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
+
+    renderComponent();
+
+    await waitFor(() => {
+      expect(mockedGetInstitutionById).toHaveBeenCalled();
     });
 
-    it('displays truncated values with tooltips', async () => {
-        mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
+    const expectedAddress = `${mockInstitutionResponse.address}, ${mockInstitutionResponse.zipCode} ${mockInstitutionResponse.city} (${mockInstitutionResponse.county})`;
+    expect(mockedTruncateString).toHaveBeenCalledWith('Test Company S.r.l.', 140);
+  });
 
-        renderComponent();
+  it('handles partial address data', async () => {
+    const partialAddressResponse = {
+      ...mockInstitutionResponse,
+      address: 'Via Roma 123',
+      zipCode: '',
+      city: 'Roma',
+      county: null,
+    };
 
-        await waitFor(() => {
-            expect(mockedGetInstitutionById).toHaveBeenCalled();
-        });
+    mockedGetInstitutionById.mockResolvedValue(partialAddressResponse as any);
 
-        expect(mockedTruncateString).toHaveBeenNthCalledWith(2,
-            "Test Company S.r.l.", 140
-        );
-        expect(mockedTruncateString).toHaveBeenNthCalledWith(3,
-            "TSTCMP80A01H501Z", 140
-        );
+    renderComponent();
+
+    await waitFor(() => {
+      expect(mockedGetInstitutionById).toHaveBeenCalled();
     });
 
-    it('displays "-" for empty values', async () => {
-        const incompleteInstitutionResponse = {
-            ...mockInstitutionResponse,
-            description: null,
-            digitalAddress: '',
-        };
+    expect(mockedTruncateString).toHaveBeenCalledWith('Test Company S.r.l.', 140);
+  });
 
-        mockedGetInstitutionById.mockResolvedValue(incompleteInstitutionResponse);
+  it('renders all field labels correctly', async () => {
+    mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
 
-        renderComponent();
+    renderComponent();
 
-        await waitFor(() => {
-            expect(mockedGetInstitutionById).toHaveBeenCalled();
-        });
-
-        const dashElements = screen.getAllByText('-');
-        expect(dashElements.length).toBeGreaterThan(0);
+    await waitFor(() => {
+      expect(screen.getByText('Ragione Sociale')).toBeInTheDocument();
+      expect(screen.getByText('Sede Legale')).toBeInTheDocument();
+      expect(screen.getByText('Codice Fiscale')).toBeInTheDocument();
+      expect(screen.getByText('PEC')).toBeInTheDocument();
+      expect(screen.getByText('P.IVA')).toBeInTheDocument();
     });
+  });
 
-    it('handles API error gracefully', async () => {
-        const errorMessage = 'API Error';
-        mockedGetInstitutionById.mockRejectedValue(new Error(errorMessage));
+  it('applies correct grid layout classes', () => {
+    mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
 
-        renderComponent();
+    renderComponent();
 
-        await waitFor(() => {
-            expect(mockedGetInstitutionById).toHaveBeenCalledWith('12345');
-        });
-
-    });
-
-    it('handles missing institution in store', async () => {
-        mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
-
-        renderComponent({ institution: null });
-
-        await waitFor(() => {
-            expect(mockedGetInstitutionById).toHaveBeenCalledWith('');
-        });
-    });
-
-    it('handles missing institutionId in store', async () => {
-        mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
-
-        renderComponent({ institution: {} });
-
-        await waitFor(() => {
-            expect(mockedGetInstitutionById).toHaveBeenCalledWith('');
-        });
-    });
-
-    it('constructs complete address correctly', async () => {
-        mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
-
-        renderComponent();
-
-        await waitFor(() => {
-            expect(mockedGetInstitutionById).toHaveBeenCalled();
-        });
-
-        const expectedAddress = `${mockInstitutionResponse.address}, ${mockInstitutionResponse.zipCode} ${mockInstitutionResponse.city} (${mockInstitutionResponse.county})`;
-        expect(mockedTruncateString).toHaveBeenNthCalledWith(2,
-            "Test Company S.r.l.", 140
-        );
-    });
-
-    it('handles partial address data', async () => {
-        const partialAddressResponse = {
-            ...mockInstitutionResponse,
-            address: 'Via Roma 123',
-            zipCode: '',
-            city: 'Roma',
-            county: null,
-        };
-
-        mockedGetInstitutionById.mockResolvedValue(partialAddressResponse);
-
-        renderComponent();
-
-        await waitFor(() => {
-            expect(mockedGetInstitutionById).toHaveBeenCalled();
-        });
-
-        expect(mockedTruncateString).toHaveBeenNthCalledWith(2,
-            "Test Company S.r.l.", 140
-        );
-    });
-
-    it('renders all field labels correctly', async () => {
-        mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
-
-        renderComponent();
-
-        await waitFor(() => {
-            expect(screen.getByText('Ragione Sociale')).toBeInTheDocument();
-            expect(screen.getByText('Sede Legale')).toBeInTheDocument();
-            expect(screen.getByText('Codice Fiscale')).toBeInTheDocument();
-            expect(screen.getByText('PEC')).toBeInTheDocument();
-            expect(screen.getByText('P.IVA')).toBeInTheDocument();
-        });
-    });
-
-    it('applies correct grid layout classes', () => {
-        mockedGetInstitutionById.mockResolvedValue(mockInstitutionResponse);
-
-        renderComponent();
-
-        const mainBox = screen.getByText('INFORMAZIONI ISTITUZIONE').closest('[class*="MuiBox"]');
-        expect(mainBox).toHaveStyle('grid-column: span 12');
-    });
+    const mainBox = screen.getByText('INFORMAZIONI ISTITUZIONE').closest('[class*="MuiBox"]');
+    expect(mainBox).toHaveStyle('grid-column: span 12');
+  });
 });

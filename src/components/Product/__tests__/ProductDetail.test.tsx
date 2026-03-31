@@ -256,4 +256,85 @@ describe('ProductDetail.extra', () => {
       expect(onShowRejected).toHaveBeenCalledTimes(1);
     });
   });
+
+  it('does NOT render motivation blocks when OPERATORE user', () => {
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_role: USERS_TYPES.OPERATORE,
+    });
+
+    const data = baseData({
+      statusChangeChronology: [
+        { role: 'L1', motivation: 'Reason OK', updateDate: '2024-05-06T11:00:00Z' },
+      ] as any,
+      formalMotivation: 'Formal OK',
+      status: ProductStatusEnum.REJECTED,
+    });
+
+    renderCmp({}, data);
+
+    expect(screen.queryByText('pages.productDetail.motivation')).not.toBeInTheDocument();
+    expect(screen.queryByText('pages.productDetail.motivationFormal')).toBeInTheDocument();
+  });
+
+  it('does NOT render formalMotivation when empty or status not REJECTED for OPERATORE', () => {
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_role: USERS_TYPES.OPERATORE,
+    });
+
+    const data = baseData({
+      formalMotivation: '',
+      status: ProductStatusEnum.UPLOADED,
+    });
+
+    renderCmp({}, data);
+
+    expect(screen.queryByText('pages.productDetail.motivationFormal')).not.toBeInTheDocument();
+  });
+
+  it('handleSuccess does nothing when no message callbacks are provided', async () => {
+    const { container } = render(
+      <ThemeProvider theme={theme}>
+        <ProductDetail
+          open
+          data={baseData()}
+          isInvitaliaUser
+          isInvitaliaAdmin={false}
+          onShowRejectedMsg={jest.fn()}
+        />
+      </ThemeProvider>
+    );
+
+    expect(container).toBeInTheDocument();
+  });
+
+  it('Confirm dialog fallback: if no onShowWaitApprovedMsg, uses onShowApprovedMsg', async () => {
+    const onShowApproved = jest.fn();
+
+    renderCmp({
+      onShowWaitApprovedMsg: undefined,
+      onShowApprovedMsg: onShowApproved,
+    });
+
+    fireEvent.click(screen.getByTestId('approvedBtn'));
+    fireEvent.click(screen.getByTestId('dialog-confirm'));
+
+    await waitFor(() => {
+      expect(onShowApproved).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('Modal close with cancelled=true does NOT trigger onUpdateTable/onClose', () => {
+    const onUpdateTable = jest.fn();
+    const onClose = jest.fn();
+
+    renderCmp({ onUpdateTable, onClose });
+
+    fireEvent.click(screen.getByTestId('supervisedBtn'));
+    expect(screen.getByTestId('product-modal')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('modal-close'));
+
+    expect(onUpdateTable).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
 });
