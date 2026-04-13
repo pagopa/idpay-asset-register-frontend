@@ -94,10 +94,10 @@ describe('InvitaliaOverview', () => {
     const { fetchUserFromLocalStorage } = require('../../../helpers');
     fetchUserFromLocalStorage.mockReturnValue({ uid: 'user-x' });
 
-    jest.spyOn(registerService, 'getInstitutionsList').mockResolvedValue({
+    jest.spyOn(registerService, 'getInstitutionsList').mockResolvedValue({data: {
       institutions: mockInstitutions,
-    });
-    jest.spyOn(registerService, 'getInstitutionById').mockResolvedValue(mockInstitutionDetail);
+    }});
+    jest.spyOn(registerService, 'getInstitutionById').mockResolvedValue({data: mockInstitutionDetail});
   });
 
   afterEach(() => {

@@ -8,6 +8,7 @@ import useLoading from '@pagopa/selfcare-common-frontend/lib/hooks/useLoading';
 import { userReducer } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
 import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
 import { LOADING_TASK_LOGIN_CHECK } from '../../utils/constants';
+import axios from 'axios'
 
 jest.mock('../../hooks/useLogin');
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useLoading');

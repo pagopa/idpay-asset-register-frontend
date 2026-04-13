@@ -68,7 +68,7 @@ describe('OverviewProductionSection', () => {
   });
 
   it('renders empty data state', async () => {
-    mockGetProductFilesList.mockResolvedValue({ content: [] });
+    mockGetProductFilesList.mockResolvedValue({data: { content: [] }});
     render(
       <TestWrapper>
         <OverviewProductionSection />
@@ -81,14 +81,14 @@ describe('OverviewProductionSection', () => {
 
   it('renders completed uploads', async () => {
     mockGetProductFilesList.mockResolvedValue({
-      content: [
+      data: {content: [
         {
           productFileId: '1',
           batchName: 'Batch 1',
           uploadStatus: 'LOADED',
           dateUpload: '2023-07-15T10:30:45Z',
         },
-      ],
+      ],}
     });
     render(
       <TestWrapper>
@@ -102,14 +102,14 @@ describe('OverviewProductionSection', () => {
 
   it('renders in-progress uploads with warning', async () => {
     mockGetProductFilesList.mockResolvedValue({
-      content: [
+      data: {content: [
         {
           productFileId: '1',
           batchName: 'Batch 1',
           uploadStatus: 'UPLOADED',
           dateUpload: '2023-07-15T10:30:00Z',
         },
-      ],
+      ],}
     });
     render(
       <TestWrapper>
@@ -123,14 +123,14 @@ describe('OverviewProductionSection', () => {
 
   it('does not show upload button when status is IN_PROCESS', async () => {
     mockGetProductFilesList.mockResolvedValue({
-      content: [
+      data:{content: [
         {
           productFileId: '1',
           batchName: 'Batch 1',
           uploadStatus: 'IN_PROCESS',
           dateUpload: '2023-07-15T10:30:00Z',
         },
-      ],
+      ],}
     });
     render(
       <TestWrapper>

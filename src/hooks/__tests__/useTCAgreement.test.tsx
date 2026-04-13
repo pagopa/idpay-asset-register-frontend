@@ -82,16 +82,16 @@ describe('test suite for useTCAgreement hook', () => {
         firstAcceptance: true
       };
 
-      mockGetPortalConsent.mockResolvedValue(mockResponse);
+      mockGetPortalConsent.mockResolvedValue({data: mockResponse});
 
       renderWithContext(<HookWrapper />);
+      expect(mockGetPortalConsent).toHaveBeenCalledTimes(1);
 
       await waitFor(() => {
         expect(testHookValues.isTOSAccepted).toBe(false);
       });
 
       expect(testHookValues.firstAcceptance).toBe(true);
-      expect(mockGetPortalConsent).toHaveBeenCalledTimes(1);
     });
 
     it('should set acceptedTOS to true when getPortalConsent returns empty object', async () => {
@@ -131,7 +131,7 @@ describe('test suite for useTCAgreement hook', () => {
         firstAcceptance: true
       };
 
-      mockGetPortalConsent.mockResolvedValue(mockInitialResponse);
+      mockGetPortalConsent.mockResolvedValue({data: mockInitialResponse});
       mockSavePortalConsent.mockResolvedValue({});
 
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
@@ -157,7 +157,7 @@ describe('test suite for useTCAgreement hook', () => {
         firstAcceptance: true
       };
 
-      mockGetPortalConsent.mockResolvedValue(mockInitialResponse);
+      mockGetPortalConsent.mockResolvedValue({data: mockInitialResponse});
       mockSavePortalConsent.mockRejectedValue(new Error('Save error'));
 
       Object.keys(testHookValues).forEach(key => delete testHookValues[key]);

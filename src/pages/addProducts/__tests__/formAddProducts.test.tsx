@@ -633,7 +633,7 @@ describe('FormAddProducts', () => {
             const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
             const mockResponse = { status: 'ERROR', message: 'Upload failed' };
 
-            (uploadProductList as jest.Mock).mockResolvedValue(mockResponse);
+            (uploadProductList as jest.Mock).mockResolvedValue({data: mockResponse});
 
             const fileStateWithFile = {
                 ...mockFileState,

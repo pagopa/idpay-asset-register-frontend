@@ -138,7 +138,6 @@ jest.mock('./../../../components/Product/MsgResult', () => ({
   ),
 }));
 
-import { CategoryEnum } from '../../../api/generated/register';
 import { ProductStatus } from '../../../api/generated/register';
 
 const mockProductData = [
@@ -146,7 +145,7 @@ const mockProductData = [
     id: '1',
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
-    category: CategoryEnum.Lavatrice,
+    category: "Lavatrice",
     status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
@@ -156,7 +155,7 @@ const mockProductData = [
     id: '2',
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
-    category: CategoryEnum.Forno,
+    category: "Forno",
     status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
@@ -234,12 +233,12 @@ describe('ProductDataGrid', () => {
       },
       writable: true,
     });
-    mockGetProducts.mockResolvedValue({
+    mockGetProducts.mockResolvedValue({data: {
       content: mockProductData,
       pageNo: 0 as any,
       totalElements: 2 as any,
-    });
-    mockGetBatchFilterList.mockResolvedValue(mockBatchFilterItems);
+    }});
+    mockGetBatchFilterList.mockResolvedValue({data: mockBatchFilterItems});
     mockUserFromJwtToken.mockReturnValue({
       org_id: 'test-org-id',
       org_role: 'USER',
@@ -466,7 +465,7 @@ const baseProducts = [
     id: '1',
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
-    category: CategoryEnum.Lavatrice,
+    category: "Lavatrice",
     status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
@@ -476,7 +475,7 @@ const baseProducts = [
     id: '2',
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
-    category: CategoryEnum.Forno,
+    category: "Forno",
     status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
@@ -518,16 +517,16 @@ describe('ProductDataGrid – extra coverage', () => {
       writable: true,
     });
 
-    mockGetProducts.mockResolvedValue({
+    mockGetProducts.mockResolvedValue({data: {
       content: baseProducts,
       pageNo: 0 as any,
       totalElements: 2 as any,
-    });
-    mockGetBatchFilterList.mockResolvedValue([
+    }});
+    mockGetBatchFilterList.mockResolvedValue({data: [
       { productFileId: 'BATCH1', batchName: 'Batch 1' },
       { productFileId: 'BATCH2', batchName: 'Batch 2' },
-    ]);
-    mockUserFromJwtToken.mockReturnValue({
+    ]});
+    mockUserFromJwtToken.mockReturnValue({data: {
       org_id: 'test-org-id',
       org_role: 'USER',
       uid: '',
@@ -542,7 +541,7 @@ describe('ProductDataGrid – extra coverage', () => {
       org_taxcode: '',
       org_vat: '',
       org_email: '',
-    });
+    }});
     mockFetchUserFromLocalStorage.mockReturnValue({
       org_id: 'test-org-id',
       org_role: 'USER',
@@ -573,7 +572,7 @@ describe('ProductDataGrid – extra coverage', () => {
       org_role: USERS_TYPES.INVITALIA_L1,
     });
 
-    mockGetProducts.mockResolvedValue({
+    mockGetProducts.mockResolvedValue({data: {
       content: [
         {
           ...baseProducts[0],
@@ -584,7 +583,7 @@ describe('ProductDataGrid – extra coverage', () => {
       ],
       pageNo: 0 as any,
       totalElements: 1 as any,
-    });
+    }});
 
     renderGrid();
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());

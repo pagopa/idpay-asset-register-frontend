@@ -271,7 +271,7 @@ describe('useLogin hook', () => {
     it('should handle getUserPermission success in mock scenario', async () => {
       CONFIG.MOCKS.MOCK_USER = true;
       parseJwt.mockReturnValue(mockJwtUser);
-      getUserPermission.mockResolvedValue(mockPermissions);
+      getUserPermission.mockResolvedValue({data: mockPermissions});
 
       const { result } = renderHookWithProvider(() => useLogin());
 
