@@ -58,8 +58,8 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
 const saveUserPermissions = (dispatch: Dispatch<any>, addError: any, t: any) => {
   getUserPermission()
     .then((res) => {
-      dispatch(setUserRole(res.role as string));
-      dispatch(setPermissionsList(res.permissions as Array<Permission>));
+      dispatch(setUserRole(res.data.role as string));
+      dispatch(setPermissionsList(res.data.permissions as Array<Permission>));
     })
     .catch((error) => {
       addError({

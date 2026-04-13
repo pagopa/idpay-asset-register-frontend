@@ -23,7 +23,7 @@ import { formatDateWithoutHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
-import { InstitutionsResponse } from '../../api/generated/register/InstitutionsResponse';
+import { InstitutionsResponse } from '../../api/generated/register';
 import ROUTES from '../../routes';
 import { setInstitution } from '../../redux/slices/invitaliaSlice';
 import EmptyListTable from '../components/EmptyListTable';

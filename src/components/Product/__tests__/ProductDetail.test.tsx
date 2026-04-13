@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ProductDetail from '../ProductDetail';
-import { ProductDTO, CategoryEnum } from '../../../api/generated/register/ProductDTO';
-import { ProductStatusEnum } from '../../../api/generated/register/ProductStatus';
+import { ProductDTO, CategoryEnum } from '../../../api/generated/register';
+import { ProductStatus } from '../../../api/generated/register';
 import { MIDDLE_STATES, PRODUCTS_STATES, USERS_TYPES } from '../../../utils/constants';
 import * as helpers from '../../../helpers';
 import * as registerService from '../../../services/registerService';
@@ -100,7 +100,7 @@ const baseData = (over: Partial<ProductDTO> = {}): ProductDTO => ({
   energyClass: 'A',
   countryOfProduction: 'IT',
   capacity: '10',
-  status: ProductStatusEnum.UPLOADED,
+  status: ProductStatus.UPLOADED,
   statusChangeChronology: [],
   ...over,
 });
@@ -160,7 +160,7 @@ describe('ProductDetail.extra', () => {
   });
 
   it('Invitalia L1 + SUPERVISED: shows accept/reject buttons; confirm approve calls waitApproved API and waitApproved message', async () => {
-    const data = baseData({ status: ProductStatusEnum.SUPERVISED });
+    const data = baseData({ status: ProductStatus.SUPERVISED });
 
     renderCmp({}, data);
 
@@ -214,7 +214,7 @@ describe('ProductDetail.extra', () => {
         onShowAcceptApprovationMsg: onShowAccept,
         onShowRejectedApprovationMsg: onShowRejectApp,
       },
-      baseData({ status: ProductStatusEnum.WAIT_APPROVED })
+      baseData({ status: ProductStatus.WAIT_APPROVED })
     );
 
     fireEvent.click(screen.getByTestId('supervisedBtn'));
@@ -267,7 +267,7 @@ describe('ProductDetail.extra', () => {
         { role: 'L1', motivation: 'Reason OK', updateDate: '2024-05-06T11:00:00Z' },
       ] as any,
       formalMotivation: 'Formal OK',
-      status: ProductStatusEnum.REJECTED,
+      status: ProductStatus.REJECTED,
     });
 
     renderCmp({}, data);
@@ -283,7 +283,7 @@ describe('ProductDetail.extra', () => {
 
     const data = baseData({
       formalMotivation: '',
-      status: ProductStatusEnum.UPLOADED,
+      status: ProductStatus.UPLOADED,
     });
 
     renderCmp({}, data);

@@ -27,8 +27,8 @@ import { usePagination } from '../../hooks/usePagination';
 import { setBatchId, setBatchName } from '../../redux/slices/productsSlice';
 import ROUTES from '../../routes';
 import { EMPTY_DATA, DEBUG_CONSOLE } from '../../utils/constants';
-import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
-import { UploadDTO } from '../../api/generated/register/UploadDTO';
+import { UploadsListDTO } from '../../api/generated/register';
+import { UploadDTO } from '../../api/generated/register';
 import EmptyListTable from './EmptyListTable';
 
 const rowTableStyle = {

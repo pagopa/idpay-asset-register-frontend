@@ -2,7 +2,7 @@ import React from 'react';
 import { TableHead, TableRow, TableCell, TableSortLabel, Checkbox, Box } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
-import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { ProductDTO } from '../../api/generated/register';
 
 interface HeadCell {
   id: keyof ProductDTO | 'selectedStatus' | 'actions' | 'producer';

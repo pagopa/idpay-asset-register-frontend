@@ -1,6 +1,6 @@
 import { paginateInstitutions, sortInstitutions } from '../helpers';
 import { Institution } from '../../../model/Institution';
-import { InstitutionsResponse } from '../../../api/generated/register/InstitutionsResponse';
+import { InstitutionsResponse } from '../../../api/generated/register';
 
 const mockInstitutions: Institution[] = [
     {

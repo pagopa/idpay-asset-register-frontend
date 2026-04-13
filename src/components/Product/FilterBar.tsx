@@ -12,12 +12,12 @@ import {
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { filterInputWithSpaceRule } from '../../helpers';
 import { BatchFilterItems } from './helpers';
+import { ProductDTO } from '../../api/generated/register';
 
 interface FilterProps {
   categoryFilter: string;

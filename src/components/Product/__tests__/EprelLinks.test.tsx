@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import EprelLinks from '../EprelLinks'
-import { ProductDTO } from '../../../api/generated/register/ProductDTO';
+import { ProductDTO } from '../../../api/generated/register';
 import '@testing-library/jest-dom';
 import {EMPTY_DATA} from "../../../utils/constants";
 

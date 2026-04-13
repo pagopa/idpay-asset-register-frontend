@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import InstitutionsTable from '../institutionsTable';
 import { Institution } from '../../../model/Institution';
-import { InstitutionsResponse } from '../../../api/generated/register/InstitutionsResponse';
+import { InstitutionsResponse } from '../../../api/generated/register';
 import '@testing-library/jest-dom';
 import {createStore} from "../../../redux/store";
 import {Provider} from "react-redux";

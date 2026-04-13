@@ -14,8 +14,8 @@ const useTCAgreement = () => {
     getPortalConsent()
       .then((res) => {
         if (Object.keys(res).length) {
-          setAcceptedTOSVersion(res.versionId);
-          setFirstAcceptance(res.firstAcceptance);
+          setAcceptedTOSVersion(res.data.versionId);
+          setFirstAcceptance(res.data.firstAcceptance);
           setAcceptedTOS(false);
         } else {
           setAcceptedTOS(true);

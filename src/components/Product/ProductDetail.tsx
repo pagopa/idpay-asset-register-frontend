@@ -15,11 +15,10 @@ import {
   USERS_TYPES,
 } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
-import { ProductDTO } from '../../api/generated/register/ProductDTO';
 import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
-import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import { statusChangeMessage } from '../../model/Product';
+import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -36,7 +35,7 @@ type Props = {
 };
 const callRejectedApi = async (
   gtinCodes: Array<string>,
-  currentStatus: ProductStatusEnum,
+  currentStatus: ProductStatus,
   motivation: string,
   formalMotivation: string
 ) => {
@@ -51,7 +50,7 @@ const callRejectedApi = async (
 
 const callWaitApprovedApi = async (
   gtinCodes: Array<string>,
-  currentStatus: ProductStatusEnum,
+  currentStatus: ProductStatus,
   motivation: string
 ) => {
   try {
@@ -66,7 +65,7 @@ const callWaitApprovedApi = async (
 const handleOpenModal = (
   action: string,
   gtinCodes: Array<string>,
-  currentStatus: ProductStatusEnum,
+  currentStatus: ProductStatus,
   motivation: string,
   formalMotivation: string
 ) => {
@@ -215,7 +214,7 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
 
 type ProductInfoRowsProps = {
   data: ProductDTO;
-  currentStatus: ProductStatusEnum;
+  currentStatus: ProductStatus;
   children?: React.ReactNode;
 };
 
@@ -443,8 +442,8 @@ export default function ProductDetail({
   const handleConfirmRestore = async () => {
     await handleOpenModal(
       PRODUCTS_STATES.APPROVED,
-      [data.gtinCode],
-      data.status as ProductStatusEnum,
+      [data.gtinCode ?? ""],
+      data.status as ProductStatus,
       EMPTY_DATA,
       EMPTY_DATA
     );
@@ -575,7 +574,7 @@ export default function ProductDetail({
         <Box sx={{ flex: '1 1 0', overflowY: 'auto' }}>
           <List>
             <ProductStatusChip status={data.status} />
-            <ProductInfoRows data={data} currentStatus={data.status as ProductStatusEnum} />
+            <ProductInfoRows data={data} currentStatus={data.status as ProductStatus} />
           </List>
         </Box>
         {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
@@ -730,9 +729,9 @@ export default function ProductDetail({
           onUpdateTable={onUpdateTable}
           selectedProducts={[
             {
-              status: data.status as ProductStatusEnum,
+              status: data.status as ProductStatus,
               productName: data.productName,
-              gtinCode: data.gtinCode,
+              gtinCode: data.gtinCode ?? "",
               category: data.category,
             },
           ]}
@@ -749,9 +748,9 @@ export default function ProductDetail({
           onUpdateTable={onUpdateTable}
           selectedProducts={[
             {
-              status: data.status as ProductStatusEnum,
+              status: data.status as ProductStatus,
               productName: data.productName,
-              gtinCode: data.gtinCode,
+              gtinCode: data.gtinCode ?? "",
               category: data.category,
             },
           ]}

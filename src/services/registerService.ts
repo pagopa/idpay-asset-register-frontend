@@ -1,20 +1,20 @@
+import { AxiosResponse } from "axios";
 import {RegisterApi} from "../api/registerApiClient";
-import { BatchList } from "../api/generated/register/BatchList";
-import {RegisterUploadResponseDTO} from "../api/generated/register/RegisterUploadResponseDTO";
-import {CsvDTO} from "../api/generated/register/CsvDTO";
-import {UploadsListDTO} from "../api/generated/register/UploadsListDTO";
-import {InstitutionsResponse} from "../api/generated/register/InstitutionsResponse";
-import {InstitutionResponse} from "../api/generated/register/InstitutionResponse";
-import {UpdateResponseDTO} from "../api/generated/register/UpdateResponseDTO";
-import {ProductListDTO} from "../api/generated/register/ProductListDTO";
-import { ProductStatusEnum } from "../api/generated/register/ProductStatus";
+import { BatchList, ProductsUpdateDTO, UploadProductListParams } from "../api/generated/register";
+import {RegisterUploadResponseDTO} from "../api/generated/register";
+import {CsvDTO} from "../api/generated/register";
+import {UploadsListDTO} from "../api/generated/register";
+import {InstitutionsResponse} from "../api/generated/register";
+import {InstitutionResponse} from "../api/generated/register";
+import {ProductListDTO} from "../api/generated/register";
+import { ProductStatus } from "../api/generated/register";
 import { DEBUG_CONSOLE } from "../utils/constants";
 
 
 export const uploadProductList = async (
   csv: File,
-  category: string
-): Promise<RegisterUploadResponseDTO> => {
+  category: UploadProductListParams["category"]
+): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
   try {
     return await RegisterApi.uploadProductList(csv, category);
   } catch (error: any) {
@@ -25,14 +25,14 @@ export const uploadProductList = async (
       }
       console.error('Error in RegisterApi.uploadProductList:', error);
     }
-    return {} as RegisterUploadResponseDTO;
+    return {} as AxiosResponse<RegisterUploadResponseDTO>;
   }
 };
 
 export const uploadProductListVerify = async (
   csv: File,
-  category: string
-): Promise<RegisterUploadResponseDTO> => {
+  category: UploadProductListParams["category"]
+): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
   try {
     return await RegisterApi.uploadProductListVerify(csv, category);
   } catch (error: any) {
@@ -43,7 +43,7 @@ export const uploadProductListVerify = async (
       }
       console.error('Error in RegisterApi.uploadProductListVerify:', error);
     }
-    return {} as RegisterUploadResponseDTO;
+    return {} as AxiosResponse<RegisterUploadResponseDTO>;
   }
 };
 
@@ -66,7 +66,7 @@ export const downloadErrorReport = async (
 
 export const getProductFilesList = async (
     page?: number, size?: number,
-  ): Promise<UploadsListDTO> => {
+  ): Promise<AxiosResponse<UploadsListDTO>> => {
     try {
       return await RegisterApi.getProductFiles(page, size);
     } catch (error: any) {
@@ -77,7 +77,7 @@ export const getProductFilesList = async (
         pageSize: 0,
         totalElements: 0,
         totalPages: 0
-      } as unknown as UploadsListDTO;
+      } as unknown as AxiosResponse<UploadsListDTO>;
     }
   };
 
@@ -269,7 +269,7 @@ export const getProducts = async (
   gtinCode?: string,
   productCode?: string,
   productFileId?: string
-): Promise<ProductListDTO> => {
+): Promise<AxiosResponse<ProductListDTO>> => {
   try {
     const result = await RegisterApi.getProductList(
       organizationId,
@@ -298,93 +298,93 @@ export const getProducts = async (
       pageSize: 0,
       totalElements: 0,
       totalPages: 0
-    } as unknown as ProductListDTO;
+    } as unknown as AxiosResponse<ProductListDTO>;
   }
 };
 
-export const getInstitutionsList = async (): Promise<InstitutionsResponse> => {
+export const getInstitutionsList = async (): Promise<AxiosResponse<InstitutionsResponse>> => {
   try {
     return await RegisterApi.getInstitutionsList();
   } catch (error: any) {
     logProductError('RegisterApi.getInstitutionsList', error);
-    return { institutions: [] };
+    return { institutions: [] } as unknown as AxiosResponse<InstitutionsResponse>;
   }
 };
 
 export const getInstitutionById = async (
     institutionId: string
-): Promise<InstitutionResponse> => {
+): Promise<AxiosResponse<InstitutionResponse>> => {
   try {
     return await RegisterApi.getInstitutionById(institutionId);
   } catch (error: any) {
     logProductError('RegisterApi.getInstitutionById', error);
-    return {} as InstitutionResponse;
+    return {} as AxiosResponse<InstitutionResponse>;
   }
 };
 
 export const setSupervisionedStatusList = async (
   gtinCodes: Array<string>,
-  currentStatus: ProductStatusEnum,
+  currentStatus: ProductStatus,
   motivation: string
-): Promise<UpdateResponseDTO> => {
+): Promise<ProductsUpdateDTO> => {
   try {
    return await RegisterApi.setSupervisionedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setSupervisionedStatusList', error);
-    return {} as UpdateResponseDTO;
+    return {} as ProductsUpdateDTO;
   }
  };
 
  
  export const setApprovedStatusList = async (
      gtinCodes: Array<string>,
-     currentStatus: ProductStatusEnum,
+     currentStatus: ProductStatus,
      motivation: string
-): Promise<UpdateResponseDTO> => {
+): Promise<ProductsUpdateDTO> => {
   try {
     return await RegisterApi.setApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setApprovedStatusList', error);
-    return {} as UpdateResponseDTO;
+    return {} as ProductsUpdateDTO;
   }
 };
  export const setWaitApprovedStatusList = async (
      gtinCodes: Array<string>,
-     currentStatus: ProductStatusEnum,
+     currentStatus: ProductStatus,
      motivation: string
-): Promise<UpdateResponseDTO> => {
+): Promise<ProductsUpdateDTO> => {
   try {
     return await RegisterApi.setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setWaitApprovedStatusList', error);
-    return {} as UpdateResponseDTO;
+    return {} as ProductsUpdateDTO;
   }
 };
 
 export const setRejectedStatusList = async (
   gtinCodes: Array<string>,
-  currentStatus: ProductStatusEnum,
+  currentStatus: ProductStatus,
   motivation: string,
   formalMotivation: string
-): Promise<UpdateResponseDTO> => {
+): Promise<ProductsUpdateDTO> => {
   try {
     return await RegisterApi.setRejectedStatusList(gtinCodes, currentStatus, motivation, formalMotivation);
   } catch (error: any) {
     logProductError('RegisterApi.setRejectedStatusList', error);
-    return {} as UpdateResponseDTO;
+    return {} as ProductsUpdateDTO;
   }
 };
 
   export const setRestoredStatusList = async (
       gtinCodes: Array<string>,
-      currentStatus: ProductStatusEnum,
+      currentStatus: ProductStatus,
       motivation: string
-  ): Promise<UpdateResponseDTO> => {
+  ): Promise<ProductsUpdateDTO> => {
     try {
       return await RegisterApi.setRestoredStatusList(gtinCodes, currentStatus, motivation);
     } catch (error: any) {
       logProductError('RegisterApi.setRestoredStatusList', error);
-      return {} as UpdateResponseDTO;
+      return {} as ProductsUpdateDTO;
     }
   };
 

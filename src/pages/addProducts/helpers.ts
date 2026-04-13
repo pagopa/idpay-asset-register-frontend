@@ -1,5 +1,5 @@
 import {PRODUCTS_CATEGORIES, DEBUG_CONSOLE} from "../../utils/constants";
-import {CsvDTO} from "../../api/generated/register/CsvDTO";
+import {CsvDTO} from "../../api/generated/register";
 
 export const categoryList = [
      {

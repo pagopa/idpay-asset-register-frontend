@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Table } from '@mui/material';
 import '@testing-library/jest-dom';
 import EnhancedTableHead, {EnhancedTableHeadProps} from "../EnhancedTableHead";
-import {ProductDTO} from "../../../api/generated/register/ProductDTO";
+import {ProductDTO} from "../../../api/generated/register";
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({

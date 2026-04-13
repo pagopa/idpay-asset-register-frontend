@@ -65,12 +65,12 @@ jest.mock('../ProductDetail', () => ({
 jest.mock('../ProductModal', () => ({
   __esModule: true,
   default: ({ open, onClose, onUpdateTable, onSuccess }: any) => {
-    const { ProductStatusEnum } = require('../../../api/generated/register/ProductStatus');
+    const { ProductStatus } = require('../../../api/generated/register');
     return open ? (
       <div data-testid="product-modal">
         <button onClick={onClose}>Close Modal</button>
         <button onClick={onUpdateTable}>Update Table</button>
-        <button onClick={() => onSuccess && onSuccess(ProductStatusEnum.REJECTED)}>Success</button>
+        <button onClick={() => onSuccess && onSuccess(ProductStatus.REJECTED)}>Success</button>
       </div>
     ) : null;
   },
@@ -138,8 +138,8 @@ jest.mock('./../../../components/Product/MsgResult', () => ({
   ),
 }));
 
-import { CategoryEnum } from '../../../api/generated/register/ProductDTO';
-import { ProductStatusEnum } from '../../../api/generated/register/ProductStatus';
+import { CategoryEnum } from '../../../api/generated/register';
+import { ProductStatus } from '../../../api/generated/register';
 
 const mockProductData = [
   {
@@ -147,7 +147,7 @@ const mockProductData = [
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
     category: CategoryEnum.Lavatrice,
-    status: ProductStatusEnum.SUPERVISED,
+    status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
     batchId: 'BATCH1',
@@ -157,7 +157,7 @@ const mockProductData = [
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
     category: CategoryEnum.Forno,
-    status: ProductStatusEnum.REJECTED,
+    status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
     batchId: 'BATCH2',
@@ -418,12 +418,12 @@ jest.mock('../ProductDetail', () => ({
 jest.mock('../ProductModal', () => ({
   __esModule: true,
   default: ({ open, onClose, onUpdateTable, onSuccess }: any) => {
-    const { ProductStatusEnum } = require('../../../api/generated/register/ProductStatus');
+    const { ProductStatus } = require('../../../api/generated/register');
     return open ? (
       <div data-testid="product-modal">
         <button onClick={onClose}>Close Modal</button>
         <button onClick={onUpdateTable}>Update Table</button>
-        <button onClick={() => onSuccess && onSuccess(ProductStatusEnum.SUPERVISED)}>
+        <button onClick={() => onSuccess && onSuccess(ProductStatus.SUPERVISED)}>
           Success
         </button>
       </div>
@@ -467,7 +467,7 @@ const baseProducts = [
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
     category: CategoryEnum.Lavatrice,
-    status: ProductStatusEnum.SUPERVISED,
+    status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
     batchId: 'BATCH1',
@@ -477,7 +477,7 @@ const baseProducts = [
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
     category: CategoryEnum.Forno,
-    status: ProductStatusEnum.REJECTED,
+    status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
     batchId: 'BATCH2',
@@ -579,7 +579,7 @@ describe('ProductDataGrid – extra coverage', () => {
           ...baseProducts[0],
           gtinCode: 'GTIN003',
           productName: 'Already Waiting',
-          status: ProductStatusEnum.WAIT_APPROVED,
+          status: ProductStatus.WAIT_APPROVED,
         },
       ],
       pageNo: 0 as any,

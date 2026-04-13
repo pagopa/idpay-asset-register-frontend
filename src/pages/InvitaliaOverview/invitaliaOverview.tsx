@@ -6,8 +6,8 @@ import { Search } from '@mui/icons-material';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import DetailDrawer from '../../components/DetailDrawer/DetailDrawer';
 import { getInstitutionsList, getInstitutionById } from '../../services/registerService';
-import { InstitutionsResponse } from '../../api/generated/register/InstitutionsResponse';
-import { InstitutionResponse } from '../../api/generated/register/InstitutionResponse';
+import { InstitutionsResponse } from '../../api/generated/register';
+import { InstitutionResponse } from '../../api/generated/register';
 import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
 import { setInstitutionList } from '../../redux/slices/invitaliaSlice';
@@ -42,14 +42,14 @@ const InvitaliaOverview: React.FC = () => {
   const fetchInstitutions = async () => {
     try {
       const institutionsData = await getInstitutionsList();
-      setInstitutions(institutionsData);
+      setInstitutions(institutionsData.data);
 
       const institutionsDataFilteredByUser = (
-        (institutionsData.institutions as Array<Institution>) ?? []
+        (institutionsData.data.institutions as Array<Institution>) ?? []
       ).filter((institution) => institution.institutionId !== user?.org_id);
       setInstitutions({ institutions: institutionsDataFilteredByUser });
 
-      const institutionList = institutionsData.institutions;
+      const institutionList = institutionsData.data.institutions;
       dispatch(setInstitutionList(institutionList as Array<Institution>));
     } catch (error) {
       if (DEBUG_CONSOLE) {
@@ -111,7 +111,7 @@ const InvitaliaOverview: React.FC = () => {
   const handleDetailRequest = async (institution: Institution) => {
     try {
       const res = await getInstitutionById(institution.institutionId);
-      setInstitutionData(res);
+      setInstitutionData(res.data);
       setDrawerOpened(true);
     } catch (error) {
       if (DEBUG_CONSOLE) {

@@ -20,7 +20,7 @@ import {
   setApprovedStatusList,
 } from '../../services/registerService';
 import { filterInputWithSpaceRule } from '../../helpers';
-import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
+import { ProductStatus } from '../../api/generated/register';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import {
   EMPTY_DATA,
@@ -38,7 +38,7 @@ interface ProductModalProps {
   actionType?: string;
   onUpdateTable?: () => void;
   selectedProducts?: Array<{
-    status: ProductStatusEnum;
+    status: ProductStatus;
     productName?: string;
     gtinCode: string;
     category?: string;
@@ -300,7 +300,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
     return null;
   }
   const gtinCodes = selectedProducts.map((p) => p.gtinCode);
-  const status: ProductStatusEnum = selectedProducts[0].status;
+  const status: ProductStatus = selectedProducts[0].status;
 
   const callSupervisionedApi = async () => {
     if (
