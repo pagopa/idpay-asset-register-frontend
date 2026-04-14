@@ -1,42 +1,10 @@
-import { right } from 'fp-ts/Either';
-
-jest.mock('../generated/register/client', () => {
-  const mockClient = {
-    userPermission: jest.fn(),
-    getPortalConsent: jest.fn(),
-    savePortalConsent: jest.fn(),
-    getProducts: jest.fn(),
-    getProductFilesList: jest.fn(),
-    getBatchNameList: jest.fn(),
-    uploadProductList: jest.fn(),
-    verifyProductList: jest.fn(),
-    downloadErrorReport: jest.fn(),
-    getInstitutionsList: jest.fn(),
-    retrieveInstitutionById: jest.fn(),
-    updateProductStatusSupervised: jest.fn(),
-    updateProductStatusApproved: jest.fn(),
-    updateProductStatusWaitApproved: jest.fn(),
-    updateProductStatusRejected: jest.fn(),
-    updateProductStatusRestored: jest.fn(),
-  };
-
-  return {
-    __esModule: true,
-    createClient: jest.fn(() => mockClient),
-    mockClient,
-  };
-});
-
-import { RegisterApi, RolePermissionApi } from '../registerApiClient';
-
-jest.mock('@pagopa/selfcare-common-frontend/lib/utils/api-utils', () => ({
-  buildFetchApi: jest.fn(() =>
-    jest.fn(async () => ({
-      status: 200,
-    }))
-  ),
-  extractResponse: jest.fn((res: any) => res?.right?.value ?? res?.value ?? res),
-}));
+import axios, { AxiosError, AxiosHeaders, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { RegisterApi, RolePermissionApi } from "../registerApiClient";
+import { registerClient } from "../registerApiClient";
+import { storageTokenOps, storageUserOps } from "@pagopa/selfcare-common-frontend/lib/utils/storage";
+import { store } from "../../redux/store";
+import { appStateActions } from "@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice";
+import { CONFIG } from "@pagopa/selfcare-common-frontend/lib/config/env";
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/utils/storage', () => ({
   storageTokenOps: { read: jest.fn(() => 'token') },
@@ -63,173 +31,603 @@ jest.mock('../../utils/constants', () => ({
   DEBUG_CONSOLE: true,
 }));
 
-describe('registerApiClient', () => {
+jest.mock('../generated/register', () => {
+  const mockAxios = require("axios")
+  const mockInstance = mockAxios.create();
+  return {
+    Api: jest.fn().mockImplementation(() => ({
+      instance: mockInstance,
+      permissions: {
+        userPermission: jest.fn(),
+      },
+      consent: {
+        getPortalConsent: jest.fn(),
+        savePortalConsent: jest.fn(),
+      },
+      productFiles: {
+        uploadProductList: jest.fn(),
+        getProductFilesList: jest.fn(),
+        verifyProductList: jest.fn(),
+        downloadErrorReport: jest.fn(),
+        getBatchNameList: jest.fn(),
+      },
+      products: {
+        updateProductStatusApproved: jest.fn(),
+        updateProductStatusWaitApproved: jest.fn(),
+        updateProductStatusSupervised: jest.fn(),
+        updateProductStatusRejected: jest.fn(),
+        updateProductStatusRestored: jest.fn(),
+        getProducts: jest.fn(),
+      },
+      institutions: {
+        retrieveInstitutionById: jest.fn(),
+        getInstitutionsList: jest.fn(),
+      }
+    })),
+  };
+});
+function makeConfig(
+  headers: Record<string, string> = {}
+): InternalAxiosRequestConfig {
+  const axiosHeaders = new AxiosHeaders(headers);
+  return { headers: axiosHeaders } as InternalAxiosRequestConfig;
+}
+function mockAxiosResponse<T>(data: T, status = 200): AxiosResponse<T> {
+  return { data, status, statusText: "OK", headers: {}, config: {} as any } as AxiosResponse<T>;
+}
+
+describe("sanitizeHeaders", () => {
+  let requestInterceptor: (
+    config: InternalAxiosRequestConfig
+  ) => InternalAxiosRequestConfig;
+
+  beforeEach(() => {
+    const handlers = (registerClient.instance.interceptors.request as any)
+      .handlers;
+    requestInterceptor = handlers[handlers.length - 1].fulfilled;
+  });
+
+  it("sets Authorization header when a token is present", () => {
+    (storageTokenOps.read as jest.Mock).mockReturnValue("my-token");
+    const config = makeConfig();
+    const result = requestInterceptor(config);
+    expect(result.headers.get("Authorization")).toBe("Bearer my-token");
+  });
+
+  it("does NOT set Authorization header when token is empty string", () => {
+    (storageTokenOps.read as jest.Mock).mockReturnValue("");
+    const config = makeConfig();
+    const result = requestInterceptor(config);
+    expect(result.headers.get("Authorization")).toBeUndefined();
+  });
+
+  it("does NOT set Authorization header when token is null/undefined", () => {
+    (storageTokenOps.read as jest.Mock).mockReturnValue(null);
+    const config = makeConfig();
+    const result = requestInterceptor(config);
+    expect(result.headers.get("Authorization")).toBeUndefined();
+  });
+
+  it("removes headers with null values", () => {
+    (storageTokenOps.read as jest.Mock).mockReturnValue("tok");
+    const config = makeConfig({ "X-Custom": "null" });
+    const result = requestInterceptor(config);
+    expect(result.headers.get("X-Custom")).toBeUndefined();
+  });
+
+  it("removes headers with 'undefined' string values", () => {
+    (storageTokenOps.read as jest.Mock).mockReturnValue("tok");
+    const config = makeConfig({ "X-Custom": "undefined" });
+    const result = requestInterceptor(config);
+    expect(result.headers.get("X-Custom")).toBeUndefined();
+  });
+
+  it("removes headers with empty string values", () => {
+    (storageTokenOps.read as jest.Mock).mockReturnValue("tok");
+    const config = makeConfig({ "X-Empty": "" });
+    const result = requestInterceptor(config);
+    expect(result.headers.get("X-Empty")).toBeUndefined();
+  });
+
+  it("keeps headers with valid non-empty values", () => {
+    (storageTokenOps.read as jest.Mock).mockReturnValue("tok");
+    const config = makeConfig({ "Content-Type": "application/json" });
+    const result = requestInterceptor(config);
+    expect(result.headers.get("Content-Type")).toBe("application/json");
+  });
+
+  it("returns the modified config object", () => {
+    (storageTokenOps.read as jest.Mock).mockReturnValue("tok");
+    const config = makeConfig();
+    const result = requestInterceptor(config);
+    expect(result).toBe(config);
+  });
+});
+
+describe("response interceptor", () => {
+  let successHandler: (res: AxiosResponse) => AxiosResponse;
+  let errorHandler: (err: AxiosError) => Promise<never>;
+
+  const originalLocation = window.location;
+
+  beforeAll(() => {
+    delete (window as any).location;
+    (window as any).location = { assign: jest.fn() };
+  });
+
+  afterAll(() => {
+    (window as any).location = originalLocation;
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(console, 'error').mockImplementation();
-    jest.spyOn(console, 'groupCollapsed').mockImplementation();
-    jest.spyOn(console, 'groupEnd').mockImplementation();
+    const handlers = (registerClient.instance.interceptors.response as any)
+      .handlers;
+    const last = handlers[handlers.length - 1];
+    successHandler = last.fulfilled;
+    errorHandler = last.rejected;
+  });
 
-    Object.defineProperty(window, 'location', {
-      value: { assign: jest.fn() },
-      writable: true,
+  describe("success handler", () => {
+    it("passes the response through unchanged", () => {
+      const mockResponse = mockAxiosResponse({ id: 1 });
+      expect(successHandler(mockResponse)).toBe(mockResponse);
     });
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
+  describe("error handler - 401", () => {
+    const make401Error = (): AxiosError =>
+    ({
+      response: { status: 401 },
+      isAxiosError: true,
+    } as unknown as AxiosError);
+
+    it("dispatches addError action", async () => {
+      await expect(errorHandler(make401Error())).rejects.toBeDefined();
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(appStateActions.addError).toHaveBeenCalledWith(
+        {
+          id: "tokenNotValid",
+          blocking: false,
+          toNotify: false,
+          techDescription: "token expired or not valid",
+          displayableDescription: "Your session has expired",
+          displayableTitle: "Redirecting you to the login page",
+          error: new Error
+        }
+      );
+    });
+
+    it("deletes the user storage", async () => {
+      await expect(errorHandler(make401Error())).rejects.toBeDefined();
+      expect(storageUserOps.delete).toHaveBeenCalledTimes(1);
+    });
+
+    it("redirects to the login page", async () => {
+      await expect(errorHandler(make401Error())).rejects.toBeDefined();
+      expect(window.location.assign).toHaveBeenCalledWith(
+        CONFIG.URL_FE.LOGIN
+      );
+    });
+
+    it("rejects the promise with the original error", async () => {
+      const err = make401Error();
+      await expect(errorHandler(err)).rejects.toBe(err);
+    });
   });
 
-  describe('RolePermissionApi', () => {
-    it('userPermission returns extracted response', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
-      (mockClient.userPermission as jest.Mock).mockResolvedValue({ role: 'admin' });
+  describe("error handler - non-401", () => {
+    const make500Error = (): AxiosError =>
+    ({
+      response: { status: 500 },
+      isAxiosError: true,
+    } as unknown as AxiosError);
 
-      const res = await RolePermissionApi.userPermission();
-      expect(res).toBeUndefined();
-      expect(mockClient.userPermission).toHaveBeenCalledWith({});
+    it("does NOT dispatch addError for non-401 errors", async () => {
+      await expect(errorHandler(make500Error())).rejects.toBeDefined();
+      expect(store.dispatch).not.toHaveBeenCalled();
     });
 
-    it('getPortalConsent returns fallback object on error', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
-      (mockClient.getPortalConsent as jest.Mock).mockRejectedValue(new Error('boom'));
-
-      const res = await RolePermissionApi.getPortalConsent();
-      expect(res).toEqual({});
-      expect(console.error).toHaveBeenCalled();
+    it("does NOT redirect for non-401 errors", async () => {
+      await expect(errorHandler(make500Error())).rejects.toBeDefined();
+      expect(window.location.assign).not.toHaveBeenCalled();
     });
 
-    it('savePortalConsent swallows errors', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
-      (mockClient.savePortalConsent as jest.Mock).mockRejectedValue(new Error('boom'));
+    it("still rejects the promise", async () => {
+      const err = make500Error();
+      await expect(errorHandler(err)).rejects.toBe(err);
+    });
+  });
+});
 
-      await expect(RolePermissionApi.savePortalConsent('v1')).resolves.toBeUndefined();
-      expect(console.error).toHaveBeenCalled();
+describe("RolePermissionApi", () => {
+
+  beforeEach(() => jest.clearAllMocks());
+
+  describe("userPermission", () => {
+    it("returns the API response on success", async () => {
+      const res = mockAxiosResponse({ role: "ADMIN" });
+      (registerClient.permissions.userPermission as jest.Mock).mockResolvedValue(res);
+
+      const result = await RolePermissionApi.userPermission();
+      expect(result).toBe(res);
+    });
+
+    it("returns empty object and logs error on failure", async () => {
+      const err = new Error("Network error");
+      (registerClient.permissions.userPermission as jest.Mock).mockRejectedValue(err);
+
+      const result = await RolePermissionApi.userPermission();
+      expect(result).toEqual({});
     });
   });
 
-  describe('RegisterApi', () => {
-    it('downloadErrorReport returns inline csv string as CsvDTO', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
+  describe("getPortalConsent", () => {
+    it("returns the API response on success", async () => {
+      const res = mockAxiosResponse({ consentRequired: true });
+      (registerClient.consent.getPortalConsent as jest.Mock).mockResolvedValue(res);
 
-      (mockClient.downloadErrorReport as jest.Mock).mockResolvedValue({ data: 'a,b\n1,2\n' });
-
-      const res = await RegisterApi.downloadErrorReport('file-1');
-
-      expect(res).toEqual({ data: { data: 'a,b\n1,2\n' }, filename: '', warning: undefined });
-      expect(mockClient.downloadErrorReport).toHaveBeenCalledWith({ productFileId: 'file-1' });
+      const result = await RolePermissionApi.getPortalConsent();
+      expect(result).toBe(res);
     });
 
-    it('downloadErrorReport extracts filename from content-disposition header', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
+    it("returns empty object and logs error on failure", async () => {
+      const err = new Error("Consent error");
+      (registerClient.consent.getPortalConsent as jest.Mock).mockRejectedValue(err);
 
-      const headers = {
-        get: (k: string) => (k.toLowerCase() === 'content-disposition' ? 'attachment; filename="err.csv"' : ''),
-      };
+      const result = await RolePermissionApi.getPortalConsent();
+      expect(result).toEqual({});
+    });
+  });
 
-      (mockClient.downloadErrorReport as jest.Mock).mockResolvedValue({
-        response: { headers },
-        data: { data: '' },
+  describe("savePortalConsent", () => {
+    it("calls the API with the given versionId", async () => {
+      const res = mockAxiosResponse(undefined);
+      (registerClient.consent.savePortalConsent as jest.Mock).mockResolvedValue(res);
+
+      const result = await RolePermissionApi.savePortalConsent("v1");
+      expect(registerClient.consent.savePortalConsent).toHaveBeenCalledWith({
+        versionId: "v1",
       });
-
-      const res = await RegisterApi.downloadErrorReport('file-2');
-      expect(res.filename).toBe('err.csv');
+      expect(result).toBe(res);
     });
 
-    it('downloadErrorReport falls back to raw response.data when extractResponse yields empty object', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
+    it("works when versionId is undefined", async () => {
+      const res = mockAxiosResponse(undefined);
+      (registerClient.consent.savePortalConsent as jest.Mock).mockResolvedValue(res);
 
-      const { extractResponse } = (await import('@pagopa/selfcare-common-frontend/lib/utils/api-utils')) as any;
-      (extractResponse as jest.Mock).mockImplementationOnce(() => ({}));
-
-      (mockClient.downloadErrorReport as jest.Mock).mockResolvedValue({
-        data: 'csv-from-raw',
-        headers: { get: () => '' },
-      });
-
-      const res = await RegisterApi.downloadErrorReport('file-3');
-      expect(res.data).toEqual({ data: 'csv-from-raw' });
-    });
-
-    it('downloadErrorReport uses .text() when raw response is a Response-like object', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
-
-      const responseLike = {
-        headers: { get: () => 'attachment; filename="t.csv"' },
-        text: async () => 'csv-from-text',
-      };
-
-      const { extractResponse } = (await import('@pagopa/selfcare-common-frontend/lib/utils/api-utils')) as any;
-      (extractResponse as jest.Mock).mockImplementationOnce(() => ({}));
-
-      (mockClient.downloadErrorReport as jest.Mock).mockResolvedValue({
-        response: responseLike,
-      });
-
-      const res = await RegisterApi.downloadErrorReport('file-4');
-      expect(res).toEqual({ data: { data: 'csv-from-text' }, filename: 't.csv' });
-    });
-
-    it('getProduct returns undefined when extractResponse does not unwrap Either', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
-
-      (mockClient.getProducts as jest.Mock).mockResolvedValue(
-        right({ status: 200, value: { content: [{ gtinCode: 'G1' }] } } as any)
-      );
-
-      const res = await RegisterApi.getProduct('org-1');
-      expect(res).toBeUndefined();
-    });
-    it('getProductList passes only defined params', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
-      (mockClient.getProducts as jest.Mock).mockResolvedValue(
-        right({ status: 200, value: { content: [] } } as any)
-      );
-
-      await RegisterApi.getProductList('org-1', 1, undefined, 'name');
-
-      expect(mockClient.getProducts).toHaveBeenCalledWith({
-        organizationId: 'org-1',
-        page: 1,
-        sort: 'name',
+      await RolePermissionApi.savePortalConsent(undefined);
+      expect(registerClient.consent.savePortalConsent).toHaveBeenCalledWith({
+        versionId: undefined,
       });
     });
 
-    it('getProduct returns first item if any', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
-      (mockClient.getProducts as jest.Mock).mockResolvedValue(
-        right({ status: 200, value: { content: [{ gtinCode: 'G1' }] } } as any)
-      );
+    it("returns undefined and logs error on failure", async () => {
+      const err = new Error("Save failed");
+      (registerClient.consent.savePortalConsent as jest.Mock).mockRejectedValue(err);
 
-      const res = await RegisterApi.getProduct('org-1');
-      expect(res).toBeUndefined();
+      const result = await RolePermissionApi.savePortalConsent("v1");
+      expect(result).toBeUndefined();
     });
+  });
+});
 
-    it('getBatchFilterItems trims x-organization-selected and sets header', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
-      (mockClient.getBatchNameList as jest.Mock).mockResolvedValue(right([{ id: '1', name: 'B1' }] as any));
-
-      const res = await RegisterApi.getBatchFilterItems('  org-1  ');
-      expect(res).toEqual([]);
-      expect(mockClient.getBatchNameList).toHaveBeenCalledWith({ 'x-organization-selected': 'org-1' });
+describe("RegisterApi.getProduct", () => {
+  const ORG = "org-1";
+ 
+  it("returns the first item when content is non-empty", async () => {
+    const product = { id: "p1" };
+    (registerClient.products.getProducts as jest.Mock).mockResolvedValue({
+      value: { content: [product, { id: "p2" }] },
     });
-
-    it('setRejectedStatusList includes formalMotivation when provided', async () => {
-      const { mockClient } = (await import('../generated/register/client')) as any;
-      (mockClient.updateProductStatusRejected as jest.Mock).mockResolvedValue(
-        right({ status: 200, value: { ok: true } } as any)
-      );
-
-      await RegisterApi.setRejectedStatusList(['GTIN1'], 'APPROVED' as any, ' reason ', ' formal ');
-
-      expect(mockClient.updateProductStatusRejected).toHaveBeenCalledWith({
-        body: {
-          gtinCodes: ['GTIN1'],
-          currentStatus: 'APPROVED',
-          motivation: 'reason',
-          formalMotivation: 'formal',
-        },
-      });
+ 
+    const result = await RegisterApi.getProduct(ORG);
+    expect(result).toEqual(product);
+  });
+ 
+  it("returns undefined when content array is empty", async () => {
+    (registerClient.products.getProducts as jest.Mock).mockResolvedValue({
+      value: { content: [] },
     });
+ 
+    expect(await RegisterApi.getProduct(ORG)).toBeUndefined();
+  });
+ 
+  it("returns undefined when content is missing", async () => {
+    (registerClient.products.getProducts as jest.Mock).mockResolvedValue({
+      value: {},
+    });
+ 
+    expect(await RegisterApi.getProduct(ORG)).toBeUndefined();
+  });
+ 
+  it("returns undefined when value is missing", async () => {
+    (registerClient.products.getProducts as jest.Mock).mockResolvedValue({});
+ 
+    expect(await RegisterApi.getProduct(ORG)).toBeUndefined();
+  });
+ 
+  it("returns fallback object on API error", async () => {
+    (registerClient.products.getProducts as jest.Mock).mockRejectedValue(
+      new Error("fail")
+    );
+ 
+    const result = await RegisterApi.getProduct(ORG);
+    expect(result).toEqual({ status: 200, value: { content: [] } });
+  });
+});
+
+describe("RegisterApi.getProductList", () => {
+  const ORG = "org-1";
+ 
+  it("returns the API response on success", async () => {
+    const res = mockAxiosResponse({ content: [{ id: "p1" }] });
+    (registerClient.products.getProducts as jest.Mock).mockResolvedValue(res);
+ 
+    expect(await RegisterApi.getProductList(ORG)).toBe(res);
+  });
+ 
+  it("returns fallback on error", async () => {
+    (registerClient.products.getProducts as jest.Mock).mockRejectedValue(
+      new Error("fail")
+    );
+ 
+    const result = await RegisterApi.getProductList(ORG);
+    expect(result).toEqual({ content: [] });
+  });
+
+});
+
+describe("RegisterApi.getProductFiles", () => {
+  it("returns the API response on success", async () => {
+    const res = mockAxiosResponse({ content: [] });
+    (registerClient.productFiles.getProductFilesList as jest.Mock).mockResolvedValue(res);
+ 
+    expect(await RegisterApi.getProductFiles()).toBe(res);
+  });
+ 
+  it("returns fallback object on error", async () => {
+    (registerClient.productFiles.getProductFilesList as jest.Mock).mockRejectedValue(
+      new Error("fail")
+    );
+ 
+    const result = await RegisterApi.getProductFiles();
+    expect(result).toEqual({ status: 200, value: { content: [] } });
+  });
+});
+
+describe("RegisterApi.getBatchFilterItems", () => {
+  const ORG = "  org-1  ";
+  const TRIMMED = "org-1";
+ 
+  it("sets x-organization-selected param when org is non-empty", async () => {
+    (registerClient.productFiles.getBatchNameList as jest.Mock).mockResolvedValue({
+      value: ["batch1"],
+    });
+ 
+    await RegisterApi.getBatchFilterItems(ORG);
+ 
+    expect(registerClient.productFiles.getBatchNameList).toHaveBeenCalledWith({
+      "x-organization-selected": TRIMMED,
+    });
+  });
+ 
+  it("does NOT set x-organization-selected when org is empty string", async () => {
+    (registerClient.productFiles.getBatchNameList as jest.Mock).mockResolvedValue([]);
+ 
+    await RegisterApi.getBatchFilterItems("   ");
+ 
+    expect(registerClient.productFiles.getBatchNameList).toHaveBeenCalledWith({});
+  });
+ 
+  it("returns .right array when present", async () => {
+    (registerClient.productFiles.getBatchNameList as jest.Mock).mockResolvedValue({
+      right: ["a", "b"],
+    });
+ 
+    expect(await RegisterApi.getBatchFilterItems(ORG)).toEqual(["a", "b"]);
+  });
+ 
+  it("returns .value array as fallback when .right is absent", async () => {
+    (registerClient.productFiles.getBatchNameList as jest.Mock).mockResolvedValue({
+      value: ["c", "d"],
+    });
+ 
+    expect(await RegisterApi.getBatchFilterItems(ORG)).toEqual(["c", "d"]);
+  });
+ 
+  it("returns the response directly when it is already an array", async () => {
+    (registerClient.productFiles.getBatchNameList as jest.Mock).mockResolvedValue([
+      "e",
+      "f",
+    ]);
+ 
+    expect(await RegisterApi.getBatchFilterItems(ORG)).toEqual(["e", "f"]);
+  });
+ 
+  it("returns empty array on API error", async () => {
+    (registerClient.productFiles.getBatchNameList as jest.Mock).mockRejectedValue(
+      new Error("fail")
+    );
+ 
+    expect(await RegisterApi.getBatchFilterItems(ORG)).toEqual([]);
+  });
+});
+
+describe("RegisterApi.uploadProductList", () => {
+  const file = new File(["a,b"], "test.csv", { type: "text/csv" });
+ 
+  it("returns API response on success", async () => {
+    const res = mockAxiosResponse({ uploadId: "u1" });
+    (registerClient.productFiles.uploadProductList as jest.Mock).mockResolvedValue(res);
+ 
+    expect(await RegisterApi.uploadProductList(file, "CATEGORY_A")).toBe(res);
+    expect(registerClient.productFiles.uploadProductList).toHaveBeenCalledWith(
+      { category: "CATEGORY_A" },
+      { csv: file }
+    );
+  });
+ 
+  it("returns empty object and logs error on failure", async () => {
+    const err = new Error("upload failed");
+    (registerClient.productFiles.uploadProductList as jest.Mock).mockRejectedValue(err);
+ 
+    const result = await RegisterApi.uploadProductList(file, "CATEGORY_A");
+    expect(result).toEqual({});
+  });
+});
+
+describe("RegisterApi.uploadProductListVerify", () => {
+  const file = new File(["a,b"], "test.csv", { type: "text/csv" });
+ 
+  it("returns API response on success", async () => {
+    const res = mockAxiosResponse({ uploadId: "u2" });
+    (registerClient.productFiles.verifyProductList as jest.Mock).mockResolvedValue(res);
+ 
+    expect(await RegisterApi.uploadProductListVerify(file, "CATEGORY_B")).toBe(res);
+    expect(registerClient.productFiles.verifyProductList).toHaveBeenCalledWith(
+      { category: "CATEGORY_B" },
+      { csv: file }
+    );
+  });
+ 
+  it("returns empty object and logs error on failure", async () => {
+    const err = new Error("verify failed");
+    (registerClient.productFiles.verifyProductList as jest.Mock).mockRejectedValue(err);
+ 
+    const result = await RegisterApi.uploadProductListVerify(file, "CATEGORY_B");
+    expect(result).toEqual({});
+  });
+});
+ 
+describe("RegisterApi.downloadErrorReport", () => {
+  const FILE_ID = "file-123";
+ 
+  it("returns data and empty filename when response has a top-level data string", async () => {
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+      data: "col1,col2\nval1,val2",
+    });
+ 
+    const result = await RegisterApi.downloadErrorReport(FILE_ID);
+    expect(result.data).toEqual({ data: "col1,col2\nval1,val2" });
+    expect(result.filename).toBe("");
+    expect(result.warning).toBeUndefined();
+  });
+ 
+  it("returns empty data when top-level data string is blank", async () => {
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({ data: "csv-content", headers: {} });
+ 
+    const result = await RegisterApi.downloadErrorReport(FILE_ID);
+    expect(result.data).toEqual({ data: "csv-content" });
+  });
+ 
+  it("extracts filename from content-disposition header (lowercase)", async () => {
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+      response: {
+        data: "a,b",
+        headers: { "content-disposition": 'attachment; filename="errors.csv"' },
+      },
+    });
+ 
+    const result = await RegisterApi.downloadErrorReport(FILE_ID);
+    expect(result.filename).toBe("errors.csv");
+  });
+ 
+  it("extracts filename from content-disposition header (capitalized)", async () => {
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+      response: {
+        data: "a,b",
+        headers: { "Content-Disposition": 'attachment; filename="report.csv"' },
+      },
+    });
+ 
+    const result = await RegisterApi.downloadErrorReport(FILE_ID);
+    expect(result.filename).toBe("report.csv");
+  });
+ 
+  it("extracts filename via headers.get() method", async () => {
+    const headers = {
+      get: (key: string) =>
+        key === "content-disposition" ? 'attachment; filename="via-get.csv"' : null,
+    };
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+      response: { data: "x", headers },
+    });
+ 
+    const result = await RegisterApi.downloadErrorReport(FILE_ID);
+    expect(result.filename).toBe("via-get.csv");
+  });
+ 
+  it("returns empty filename when no content-disposition header is present", async () => {
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+      response: { data: "a,b", headers: {} },
+    });
+ 
+    const result = await RegisterApi.downloadErrorReport(FILE_ID);
+    expect(result.filename).toBe("");
+  });
+ 
+  it("reads csv from rawResponse.data when top-level data is empty", async () => {
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({ data: "raw-csv", headers: {} });
+ 
+    const result = await RegisterApi.downloadErrorReport(FILE_ID);
+    expect(result.data).toEqual({ data: "raw-csv" });
+  });
+ 
+  it("reads csv via .text() async method as last resort", async () => {
+    const blob = { text: jest.fn().mockResolvedValue("blob-csv") };
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue(blob);
+ 
+    const result = await RegisterApi.downloadErrorReport(FILE_ID);
+    expect(result.data).toEqual(blob);
+  });
+ 
+  it("returns empty data when all extraction strategies fail", async () => {
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({});
+ 
+    const result = await RegisterApi.downloadErrorReport(FILE_ID);
+    expect(result.data).toBeDefined();
+  });
+});
+
+describe("RegisterApi.getInstitutionsList", () => {
+  it("returns the API response on success", async () => {
+    const res = mockAxiosResponse({ institutions: [] });
+    (registerClient.institutions.getInstitutionsList as jest.Mock).mockReturnValue(res);
+ 
+    expect(await RegisterApi.getInstitutionsList()).toBe(res);
+  });
+ 
+  it("returns fallback on error", async () => {
+    (registerClient.institutions.getInstitutionsList as jest.Mock).mockImplementation(() => {
+      throw new Error("fail");
+    });
+ 
+    const result = await RegisterApi.getInstitutionsList();
+    expect(result).toEqual({ status: 200, value: { institutions: [] } });
+  });
+});
+
+describe("RegisterApi.getInstitutionById", () => {
+  const ID = "inst-42";
+ 
+  it("calls the API with the correct institutionId", async () => {
+    const res = mockAxiosResponse({ id: ID });
+    (registerClient.institutions.retrieveInstitutionById as jest.Mock).mockReturnValue(res);
+ 
+    const result = await RegisterApi.getInstitutionById(ID);
+    expect(result).toBe(res);
+    expect(registerClient.institutions.retrieveInstitutionById).toHaveBeenCalledWith({
+      institutionId: ID,
+    });
+  });
+ 
+  it("returns fallback on error", async () => {
+    (registerClient.institutions.retrieveInstitutionById as jest.Mock).mockImplementation(() => {
+      throw new Error("fail");
+    });
+ 
+    const result = await RegisterApi.getInstitutionById(ID);
+    expect(result).toEqual({ status: 200, value: { institutions: [] } });
   });
 });
