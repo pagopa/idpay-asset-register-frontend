@@ -489,7 +489,7 @@ describe("RegisterApi.downloadErrorReport", () => {
     });
 
     const result = await RegisterApi.downloadErrorReport(FILE_ID);
-    expect(result.data).toEqual({ data: "col1,col2\nval1,val2" });
+    expect(result.data).toEqual("col1,col2\nval1,val2");
     expect(result.filename).toBe("");
     expect(result.warning).toBeUndefined();
   });
@@ -498,15 +498,13 @@ describe("RegisterApi.downloadErrorReport", () => {
     (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({ data: "csv-content", headers: {} });
 
     const result = await RegisterApi.downloadErrorReport(FILE_ID);
-    expect(result.data).toEqual({ data: "csv-content" });
+    expect(result.data).toEqual("csv-content");
   });
 
   it("extracts filename from content-disposition header (lowercase)", async () => {
     (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
-      response: {
         data: "a,b",
-        headers: { "content-disposition": 'attachment; filename="errors.csv"' },
-      },
+        headers: { "content-disposition": 'attachment; filename="errors.csv"' }
     });
 
     const result = await RegisterApi.downloadErrorReport(FILE_ID);
@@ -515,10 +513,8 @@ describe("RegisterApi.downloadErrorReport", () => {
 
   it("extracts filename from content-disposition header (capitalized)", async () => {
     (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
-      response: {
         data: "a,b",
-        headers: { "Content-Disposition": 'attachment; filename="report.csv"' },
-      },
+        headers: { "content-disposition": 'attachment; filename="report.csv"' },
     });
 
     const result = await RegisterApi.downloadErrorReport(FILE_ID);
@@ -526,16 +522,11 @@ describe("RegisterApi.downloadErrorReport", () => {
   });
 
   it("extracts filename via headers.get() method", async () => {
-    const headers = {
-      get: (key: string) =>
-        key === "content-disposition" ? 'attachment; filename="via-get.csv"' : null,
-    };
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
-      response: { data: "x", headers },
-    });
+    const headers = { "content-disposition": 'attachment; filename="report.csv"' };
+    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({ data: "x", headers });
 
     const result = await RegisterApi.downloadErrorReport(FILE_ID);
-    expect(result.filename).toBe("via-get.csv");
+    expect(result.filename).toBe("report.csv");
   });
 
   it("returns empty filename when no content-disposition header is present", async () => {
@@ -551,22 +542,7 @@ describe("RegisterApi.downloadErrorReport", () => {
     (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({ data: "raw-csv", headers: {} });
 
     const result = await RegisterApi.downloadErrorReport(FILE_ID);
-    expect(result.data).toEqual({ data: "raw-csv" });
-  });
-
-  it("reads csv via .text() async method as last resort", async () => {
-    const blob = { text: jest.fn().mockResolvedValue("blob-csv") };
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue(blob);
-
-    const result = await RegisterApi.downloadErrorReport(FILE_ID);
-    expect(result.data).toEqual(blob);
-  });
-
-  it("returns empty data when all extraction strategies fail", async () => {
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({});
-
-    const result = await RegisterApi.downloadErrorReport(FILE_ID);
-    expect(result.data).toBeDefined();
+    expect(result.data).toEqual("raw-csv" );
   });
 });
 

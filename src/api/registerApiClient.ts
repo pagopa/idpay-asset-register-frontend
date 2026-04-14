@@ -8,17 +8,17 @@ import { DEBUG_CONSOLE } from '../utils/constants';
 import { Api, BatchList, CsvDTO, InstitutionResponse, InstitutionsResponse, PortalConsentDTO, ProductDTO, ProductListDTO, ProductStatus, ProductsUpdateDTO, RegisterUploadResponseDTO, RequestParams, UploadProductListParams, UploadsListDTO, UserPermissionDTO, VerifyProductListParams } from "./generated/register";
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
-  if(token) {
+  if (token) {
     config.headers.set("Authorization", `Bearer ${token}`);
   }
   const headerKeys = Object.keys(config.headers.toJSON());
   headerKeys.forEach((key) => {
     const value = config.headers.get(key);
-    const isInvalid = 
-      value === null || 
-      value === undefined || 
-      value === '' || 
-      value === 'undefined' || 
+    const isInvalid =
+      value === null ||
+      value === undefined ||
+      value === '' ||
+      value === 'undefined' ||
       value === 'null';
 
     if (isInvalid) {
@@ -129,6 +129,13 @@ function logApiError(error: any, apiName?: string, originalResponse?: any) {
   if (console.groupEnd) {
     console.groupEnd();
   }
+}
+
+
+function extractFileNameFromHeaders(headers: any): string {
+  const contentDisposition = headers?.['content-disposition'] ?? "";
+  const match = contentDisposition.match(/filename="?([^"]+)"?/);
+  return match?.[1] ?? "";
 }
 
 function logIoTsValidationErrors(error: any, originalResponse?: any) {
@@ -333,117 +340,19 @@ export const RegisterApi = {
       return {} as AxiosResponse<RegisterUploadResponseDTO>;
     }
   },
-  // eslint-disable-next-line complexity
   downloadErrorReport: async (
     productFileId: string
-    // eslint-disable-next-line sonarjs/cognitive-complexity
   ): Promise<{ data: CsvDTO; filename: string; warning?: string }> => {
-    const response = await registerClient.productFiles.downloadErrorReport({ productFileId });
-    if (
-      response &&
-      typeof response === 'object' &&
-      'data' in response &&
-      typeof (response as any).data === 'string' &&
-      ((response as any).data as string).trim() !== ''
-    ) {
+    try {
+      const response = await registerClient.productFiles.downloadErrorReport({ productFileId });
       return {
-        data: { data: (response as any).data },
-        filename: '',
-        warning: undefined
+        data: response.data,
+        filename: extractFileNameFromHeaders(response?.headers)
       };
+    } catch (error) {
+      logApiError(error);
+      throw error;
     }
-
-    function extractFileNameFromHeaders(headers: any): string {
-      const contentDisposition =
-        headers?.get?.('content-disposition') ??
-        headers?.get?.('Content-Disposition') ??
-        headers?.['content-disposition'] ??
-        headers?.['Content-Disposition'] ??
-        '';
-      if (typeof contentDisposition === 'string' && contentDisposition.length > 0) {
-        const match = contentDisposition.match(/filename="?([^"]+)"?/);
-        if (match?.[1]) {
-          return match[1];
-        }
-      }
-      return '';
-    }
-
-    function extractCsvData(response: any): CsvDTO {
-      try {
-        const extracted = response;
-        return (extracted ?? {}) as CsvDTO;
-      } catch (error) {
-        logApiError(error, response);
-        return {} as unknown as CsvDTO;
-      }
-    }
-
-    async function extractCsvFromRawShapesAsync(response: any, rawResponse: any): Promise<CsvDTO> {
-      if (response && typeof response.data === 'string' && response.data.trim() !== '') {
-        return { data: response.data };
-      }
-
-      const extracted = extractCsvData(response);
-      if (extracted && Object.keys(extracted).length > 0) {
-        return extracted;
-      }
-
-      const asAny = rawResponse as any;
-      const isNonEmpty = (v: any): v is string => typeof v === 'string' && v.length > 0;
-
-      const syncCandidates = [
-        response,
-        rawResponse,
-        asAny?.data,
-        (response as any)?.body,
-        (response as any)?.body?.data,
-        asAny?.response,
-        asAny?.response?.data,
-      ];
-
-      for (const c of syncCandidates) {
-        if (isNonEmpty(c)) {
-          return { data: c };
-        }
-      }
-
-      const tryText = async (obj: any): Promise<string | undefined> => {
-        if (!obj || typeof obj.text !== 'function') {
-          return undefined;
-        }
-        try {
-          const txt = await obj.text();
-          return isNonEmpty(txt) ? txt : undefined;
-        } catch {
-          return undefined;
-        }
-      };
-
-      const objsToTry = [
-        rawResponse,
-        response,
-        (response as any)?.body,
-        (response as any)?.response,
-        (rawResponse as any)?.response,
-      ];
-
-      for (const obj of objsToTry) {
-        const txt = await tryText(obj);
-        if (isNonEmpty(txt)) {
-          return { data: txt };
-        }
-      }
-
-      return extracted;
-    }
-
-    const rawResponse =
-      (response as any)?.response || (response as any)?.data || (response as any)?.right;
-    const headers = rawResponse?.headers ?? (response as any)?.headers;
-    const fileName = extractFileNameFromHeaders(headers);
-    const responseData: CsvDTO = await extractCsvFromRawShapesAsync(response, rawResponse);
-    return { data: responseData, filename: fileName };
   },
 
   getInstitutionsList: async (): Promise<AxiosResponse<InstitutionsResponse>> => {
