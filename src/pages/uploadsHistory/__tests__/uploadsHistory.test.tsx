@@ -77,7 +77,7 @@ describe('OverviewHistoryUpload', () => {
   });
 
   test('shows data correctly when API succeeds', async () => {
-    mockGetProductFilesList.mockResolvedValue(mockData);
+    mockGetProductFilesList.mockResolvedValue({data: mockData});
     render(<OverviewHistoryUpload />);
 
     await waitFor(() => {
@@ -105,7 +105,7 @@ describe('OverviewHistoryUpload', () => {
            ...mockData,
            content: [{ uploadStatus: 'UPLOADED', id: 1 }]
        };
-       mockGetProductFilesList.mockResolvedValue(dataWithUploaded);
+       mockGetProductFilesList.mockResolvedValue({data: dataWithUploaded});
        act(() => {
            render(<OverviewHistoryUpload/>);
        });
@@ -122,7 +122,7 @@ describe('OverviewHistoryUpload', () => {
       ...mockData,
       content: [{ uploadStatus: 'SUPERVISIONED', id: 1 }],
     };
-    mockGetProductFilesList.mockResolvedValue(dataWithoutUploaded);
+    mockGetProductFilesList.mockResolvedValue({data: dataWithoutUploaded});
     render(<OverviewHistoryUpload />);
 
     expect(
@@ -131,7 +131,7 @@ describe('OverviewHistoryUpload', () => {
   });
 
   test('calls getProductFilesList with correct initial parameters', async () => {
-    mockGetProductFilesList.mockResolvedValue(mockData);
+    mockGetProductFilesList.mockResolvedValue({data: mockData});
     render(<OverviewHistoryUpload />);
 
     await waitFor(() => {
@@ -145,7 +145,7 @@ describe('OverviewHistoryUpload', () => {
       totalElements: 0,
       content: []
     };
-    mockGetProductFilesList.mockResolvedValue(emptyData);
+    mockGetProductFilesList.mockResolvedValue({data: emptyData});
 
     render(<OverviewHistoryUpload />);
 
@@ -163,7 +163,7 @@ describe('OverviewHistoryUpload', () => {
       totalElements: 0,
       content: null
     };
-    mockGetProductFilesList.mockResolvedValue(nullContentData);
+    mockGetProductFilesList.mockResolvedValue({data: nullContentData});
 
     render(<OverviewHistoryUpload />);
 
@@ -178,7 +178,7 @@ describe('OverviewHistoryUpload', () => {
     const undefinedContentData = {
       totalElements: 0
     };
-    mockGetProductFilesList.mockResolvedValue(undefinedContentData);
+    mockGetProductFilesList.mockResolvedValue({data: undefinedContentData});
 
     render(<OverviewHistoryUpload />);
 
@@ -195,7 +195,7 @@ describe('OverviewHistoryUpload', () => {
       totalElements: 1,
       content: [{ uploadStatus: 'UPLOADED', id: 1 }]
     };
-    mockGetProductFilesList.mockResolvedValue(dataWithUploaded);
+    mockGetProductFilesList.mockResolvedValue({data: dataWithUploaded});
 
     render(<OverviewHistoryUpload />);
 
@@ -223,7 +223,7 @@ describe('OverviewHistoryUpload', () => {
 
 
   test('useEffect dependency array works correctly', async () => {
-    mockGetProductFilesList.mockResolvedValue(mockData);
+    mockGetProductFilesList.mockResolvedValue({data: mockData});
     const { rerender } = render(<OverviewHistoryUpload />);
 
     await waitFor(() => {

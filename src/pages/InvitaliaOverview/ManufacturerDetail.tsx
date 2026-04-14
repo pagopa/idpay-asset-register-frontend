@@ -16,26 +16,26 @@ const ManufacturerDetail: React.FC<ManufacturerDetailProps> = ({ data }) => {
 
   return (
     <Box sx={{ width: 400, pl: 2 }} role="presentation" data-testid="manufacturer-detail">
-      <DrawerHeader label={data.description ?? ""} />
+      <DrawerHeader label={data?.description ?? ""} />
       <Divider />
       <List>
         <DrawerSubHeader label={t('pages.invitaliaOverview.manufacturerSheet')} />
         <DrawerItem
           itemHeader={t('pages.invitaliaProductsList.ragioneSociale')}
-          itemValue={data.description ?? ""}
+          itemValue={data?.description ?? ""}
         />
         <DrawerItem
           itemHeader={t('pages.invitaliaProductsList.codiceFiscale')}
-          itemValue={data.fiscalCode ?? ""}
+          itemValue={data?.fiscalCode ?? ""}
         />
-        <DrawerItem itemHeader={t('pages.invitaliaProductsList.piva')} itemValue={data.vatNumber ?? ""} />
+        <DrawerItem itemHeader={t('pages.invitaliaProductsList.piva')} itemValue={data?.vatNumber ?? ""} />
         <DrawerItem
           itemHeader={t('pages.invitaliaProductsList.sedeLegale')}
-          itemValue={data.address ?? ""}
+          itemValue={data?.address ?? ""}
         />
         <DrawerItem
           itemHeader={t('pages.invitaliaProductsList.pec')}
-          itemValue={String(data.digitalAddress)}
+          itemValue={String(data?.digitalAddress ?? "")}
           copyable={true}
         />
       </List>

@@ -40,7 +40,7 @@ const OverviewHistoryUpload: React.FC = () => {
     getProductFilesList(page, rowsPerPage)
       .then((res: AxiosResponse<UploadsListDTO>) => {
         setData({
-          ...res,
+          ...res.data,
           totalElements: res.data.totalElements,
           content: res.data.content ?? [],
         });

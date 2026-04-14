@@ -23,6 +23,13 @@ describe('EprelLinks', () => {
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
+  it('renderizza stringa vuota se linkEprel è null', () => {
+    render(<EprelLinks row={{...baseRow, linkEprel: null}}/>);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('href', '');
+    expect(link).toHaveTextContent(baseRow.eprelCode as string);
+  });
+
   it('renderizza solo Typography con emptyData se eprelCode è undefined', () => {
     render(<EprelLinks row={{...baseRow, eprelCode: undefined}}/>);
     expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
