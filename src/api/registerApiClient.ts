@@ -302,7 +302,7 @@ export const RegisterApi = {
     }
   },
 
-  getBatchFilterItems: async (xOrganizationSelected: string): Promise<BatchList> => {
+  getBatchFilterItems: async (xOrganizationSelected: string): Promise<AxiosResponse<BatchList>> => {
     const trimmed = (xOrganizationSelected ?? '').trim();
     const params: Record<string, string> = {};
     if (trimmed) {
@@ -311,18 +311,9 @@ export const RegisterApi = {
       params['x-organization-selected'] = trimmed;
     }
     try {
-      const batchListValidation = await registerClient.productFiles.getBatchNameList(params);
-      const result: BatchList =
-        Array.isArray((batchListValidation as any)?.right)
-          ? (batchListValidation as any).right
-          : Array.isArray((batchListValidation as any)?.value)
-            ? (batchListValidation as any).value
-            : Array.isArray(batchListValidation)
-              ? (batchListValidation as BatchList)
-              : [];
-      return result;
+      return await registerClient.productFiles.getBatchNameList(params);
     } catch (error) {
-      return [] as BatchList;
+      return [] as unknown as AxiosResponse<BatchList>;
     }
   },
 

@@ -252,14 +252,13 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
     void getBatchFilterList(targetId)
       .then((res) => {
-        setBatchFilterItems(res as Array<BatchFilterItems> | []);
+        setBatchFilterItems(res.data as unknown as Array<BatchFilterItems>);
       })
       .catch(() => {
         setBatchFilterItems([]);
       })
       .finally(() => setLoading(false));
   }, [ready, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
-
   useEffect(() => {
     if (!ready) {
       return;

@@ -388,11 +388,11 @@ export const setRejectedStatusList = async (
     }
   };
 
- export const getBatchFilterList = async (xOrganizationSelected: string): Promise<BatchList> => {
+ export const getBatchFilterList = async (xOrganizationSelected: string): Promise<AxiosResponse<BatchList>> => {
    try {
      return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
    } catch (error: any) {
      logProductError('RegisterApi.getBatchFilterItems', error);
-     return [];
+     return [] as unknown as AxiosResponse<BatchList>;
    }
  };
