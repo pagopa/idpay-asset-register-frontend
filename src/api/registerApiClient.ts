@@ -8,19 +8,31 @@ import { DEBUG_CONSOLE } from '../utils/constants';
 import { Api, BatchList, CsvDTO, InstitutionResponse, InstitutionsResponse, PortalConsentDTO, ProductDTO, ProductListDTO, ProductStatus, ProductsUpdateDTO, RegisterUploadResponseDTO, RequestParams, UploadProductListParams, UploadsListDTO, UserPermissionDTO, VerifyProductListParams } from "./generated/register";
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
-  const headers = { ...config.headers, Authorization: `Bearer ${token}`};
-  const finalHeaders = Object.entries(headers).reduce((acc, [key, value]) => {
-    const isValid = value === null || value === '' || value === 'undefined' || value === 'null';
-    return !isValid ? { ...acc, [key]: value} : acc;
-  }, {});
-  return { ...config, headers: finalHeaders};
+  if(token) {
+    config.headers.set("Authorization", `Bearer ${token}`);
+  }
+  const headerKeys = Object.keys(config.headers.toJSON());
+  headerKeys.forEach((key) => {
+    const value = config.headers.get(key);
+    const isInvalid = 
+      value === null || 
+      value === undefined || 
+      value === '' || 
+      value === 'undefined' || 
+      value === 'null';
+
+    if (isInvalid) {
+      config.headers.delete(key);
+    }
+  });
+  return config;
 };
 
 export const registerClient = new Api({
   baseURL: ENV.URL_API.OPERATION,
 });
 
-const internalAxios = (registerClient as any).instance || registerClient;
+const internalAxios = registerClient.instance;
 
 internalAxios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = storageTokenOps.read();
