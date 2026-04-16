@@ -3,6 +3,7 @@ import { Box, InputAdornment, TextField } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { Search } from '@mui/icons-material';
+import { AxiosResponse } from 'axios';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import DetailDrawer from '../../components/DetailDrawer/DetailDrawer';
 import { getInstitutionsList, getInstitutionById } from '../../services/registerService';
@@ -41,13 +42,13 @@ const InvitaliaOverview: React.FC = () => {
 
   const fetchInstitutions = async () => {
     try {
-      const institutionsData = await getInstitutionsList();
-      setInstitutions(institutionsData.data);
+      const institutionsData: AxiosResponse<InstitutionsResponse> = await getInstitutionsList();
+      setInstitutions({ institutions: institutionsData.data.institutions || []});
 
       const institutionsDataFilteredByUser = (
-        (institutionsData.data.institutions as Array<Institution>) ?? []
-      ).filter((institution) => institution.institutionId !== user?.org_id);
-      setInstitutions({ institutions: institutionsDataFilteredByUser });
+        institutionsData.data.institutions || []
+      ).filter((institution) => institution.instituionId !== user?.org_id);
+      setInstitutions({institutions: institutionsDataFilteredByUser});
 
       const institutionList = institutionsData.data.institutions;
       dispatch(setInstitutionList(institutionList as Array<Institution>));
@@ -66,9 +67,9 @@ const InvitaliaOverview: React.FC = () => {
       return list;
     }
     return list.filter((institution) =>
-      institution.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      institution?.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [institutions.institutions, searchTerm]);
+  }, [institutions, searchTerm]);
 
   const sortedInstitutions = useMemo(
     () => sortInstitutions([...(filteredInstitutions as Array<Institution>)], order, orderBy),
