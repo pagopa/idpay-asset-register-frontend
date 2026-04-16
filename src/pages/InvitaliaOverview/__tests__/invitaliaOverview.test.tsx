@@ -94,10 +94,14 @@ describe('InvitaliaOverview', () => {
     const { fetchUserFromLocalStorage } = require('../../../helpers');
     fetchUserFromLocalStorage.mockReturnValue({ uid: 'user-x' });
 
-    jest.spyOn(registerService, 'getInstitutionsList').mockResolvedValue({data: {
-      institutions: mockInstitutions,
-    }});
-    jest.spyOn(registerService, 'getInstitutionById').mockResolvedValue({data: mockInstitutionDetail});
+    jest.spyOn(registerService, 'getInstitutionsList').mockResolvedValue({
+      data: {
+        institutions: mockInstitutions,
+      },
+    });
+    jest
+      .spyOn(registerService, 'getInstitutionById')
+      .mockResolvedValue({ data: mockInstitutionDetail });
   });
 
   afterEach(() => {
@@ -108,7 +112,6 @@ describe('InvitaliaOverview', () => {
     renderWithProvider(<InvitaliaOverview />);
     expect(await screen.findByTestId('title-overview')).toBeInTheDocument();
   });
-
 
   it('renders institutions table with data', async () => {
     const originalUseState = React.useState;

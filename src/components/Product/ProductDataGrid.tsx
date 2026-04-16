@@ -384,12 +384,12 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
     const producer = producerFilter?.trim()
       ? institutions?.find((p: any) => p.institutionId === producerFilter)?.description ||
-      producerFilter.trim()
+        producerFilter.trim()
       : '';
 
     const batch = batchFilter?.trim()
       ? batchFilterItems?.find((b) => b?.productFileId === batchFilter)?.batchName ||
-      batchFilter.trim()
+        batchFilter.trim()
       : '';
 
     return [
@@ -668,19 +668,21 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         }}
         actionType={modalAction}
         onUpdateTable={updaDataTable}
-        selectedProducts={tableData
-          .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
-          .map((row) => ({
-            status: row.status as ProductStatus,
-            productName: row.productName,
-            gtinCode: row.gtinCode,
-            category: row.category,
-          })) as Array<{
+        selectedProducts={
+          tableData
+            .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
+            .map((row) => ({
+              status: row.status as ProductStatus,
+              productName: row.productName,
+              gtinCode: row.gtinCode,
+              category: row.category,
+            })) as Array<{
             status: ProductStatus;
             productName?: string;
             gtinCode: string;
             category?: string;
-          }>}
+          }>
+        }
         onSuccess={(actionType) => {
           setMsgResultByAction(actionType, isInvitaliaUser, isInvitaliaAdmin);
         }}
@@ -689,8 +691,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       <ProductConfirmDialog
         open={restoreDialogOpen}
         cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
-        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${selected.length
-          })`}
+        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${
+          selected.length
+        })`}
         title={t('invitaliaModal.waitApproved.listTitle')}
         message={t('invitaliaModal.waitApproved.description', { L2: USERS_NAMES.INVITALIA_L2 })}
         onCancel={() => setRestoreDialogOpen(false)}

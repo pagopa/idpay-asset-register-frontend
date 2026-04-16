@@ -1,4 +1,3 @@
-
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 
@@ -100,8 +99,8 @@ export const handleModalSuccess = ({
   }
 
   if (
-      modalAction === PRODUCTS_STATES.REJECTED ||
-      modalAction === MIDDLE_STATES.REJECT_APPROVATION
+    modalAction === PRODUCTS_STATES.REJECTED ||
+    modalAction === MIDDLE_STATES.REJECT_APPROVATION
   ) {
     setShowMsgRejected(true);
     setShowMsgApproved(false);

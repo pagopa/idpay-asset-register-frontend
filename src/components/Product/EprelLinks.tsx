@@ -10,7 +10,7 @@ const EprelLinks: React.FC<EprelLinkProps> = ({ row }) => {
   const { linkEprel, eprelCode } = row;
 
   return eprelCode?.trim() !== '' && typeof eprelCode === 'string' ? (
-    <Link underline="hover" href={linkEprel ?? ""} target="_blank" rel="noopener">
+    <Link underline="hover" href={linkEprel ?? ''} target="_blank" rel="noopener">
       <Typography variant="body2" sx={{ fontWeight: 'fontWeightBold', color: '#0062C3' }}>
         {eprelCode}
       </Typography>

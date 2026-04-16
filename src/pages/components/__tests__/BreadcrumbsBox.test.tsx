@@ -12,9 +12,9 @@ jest.mock('../../../utils/env', () => ({
 jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
-    HOME: '/home'
+    HOME: '/home',
   },
-  BASE_ROUTE: '/base'
+  BASE_ROUTE: '/base',
 }));
 import ROUTES from '../../../routes';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';

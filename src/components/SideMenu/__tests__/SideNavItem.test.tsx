@@ -19,13 +19,7 @@ describe('Test suite for SideNavItem component', (injectedStore?: ReturnType<
     await act(async () => {
       render(
         <Provider store={store}>
-          <SidenavItem
-            handleClick={function (): void {
-            }}
-            title={''}
-            icon={SvgIcon}
-            level={0}
-          />
+          <SidenavItem handleClick={function (): void {}} title={''} icon={SvgIcon} level={0} />
         </Provider>
       );
     });

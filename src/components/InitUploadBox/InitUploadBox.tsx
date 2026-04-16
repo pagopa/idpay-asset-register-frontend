@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import {CloudUpload} from "@mui/icons-material";
+import { CloudUpload } from '@mui/icons-material';
 
 interface Props {
   text: string;

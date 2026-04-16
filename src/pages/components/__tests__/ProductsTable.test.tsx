@@ -13,7 +13,7 @@ jest.mock('../../../helpers');
 jest.mock('../../../utils/env', () => ({
   ENV: {
     PUBLIC_URL: '/base',
-    REACT_APP_URL_API_REGISTER: 'https://mock-api/register'
+    REACT_APP_URL_API_REGISTER: 'https://mock-api/register',
   },
 }));
 

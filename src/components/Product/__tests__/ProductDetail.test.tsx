@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ProductDetail from '../ProductDetail';
-import { ProductDTO} from '../../../api/generated/register';
+import { ProductDTO } from '../../../api/generated/register';
 import { ProductStatus } from '../../../api/generated/register';
 import { MIDDLE_STATES, PRODUCTS_STATES, USERS_TYPES } from '../../../utils/constants';
 import * as helpers from '../../../helpers';
@@ -94,7 +94,7 @@ const baseData = (over: Partial<ProductDTO> = {}): ProductDTO => ({
   registrationDate: '2024-01-01T00:00:00.000Z',
   eprelCode: 'EPREL',
   productCode: 'P1',
-  category: "Lavatrice",
+  category: 'Lavatrice',
   brand: 'B',
   model: 'M',
   energyClass: 'A',

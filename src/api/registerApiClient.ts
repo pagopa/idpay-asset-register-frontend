@@ -1,15 +1,35 @@
 import { appStateActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice';
-import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+import {
+  storageTokenOps,
+  storageUserOps,
+} from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { store } from '../redux/store';
 import { ENV } from '../utils/env';
 import { DEBUG_CONSOLE } from '../utils/constants';
-import { Api, BatchList, CsvDTO, InstitutionResponse, InstitutionsResponse, PortalConsentDTO, ProductDTO, ProductListDTO, ProductStatus, ProductsUpdateDTO, RegisterUploadResponseDTO, RequestParams, UploadProductListParams, UploadsListDTO, UserPermissionDTO, VerifyProductListParams } from "./generated/register";
+import {
+  Api,
+  BatchList,
+  CsvDTO,
+  InstitutionResponse,
+  InstitutionsResponse,
+  PortalConsentDTO,
+  ProductDTO,
+  ProductListDTO,
+  ProductStatus,
+  ProductsUpdateDTO,
+  RegisterUploadResponseDTO,
+  RequestParams,
+  UploadProductListParams,
+  UploadsListDTO,
+  UserPermissionDTO,
+  VerifyProductListParams,
+} from './generated/register';
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
   if (token) {
-    config.headers.set("Authorization", `Bearer ${token}`);
+    config.headers.set('Authorization', `Bearer ${token}`);
   }
   const headerKeys = Object.keys(config.headers.toJSON());
   headerKeys.forEach((key) => {
@@ -71,7 +91,7 @@ export const RolePermissionApi = {
     try {
       return await registerClient.permissions.userPermission({});
     } catch (error) {
-      logApiError(error, "userPermission");
+      logApiError(error, 'userPermission');
       return {} as AxiosResponse<UserPermissionDTO>;
     }
   },
@@ -80,25 +100,25 @@ export const RolePermissionApi = {
     try {
       return await registerClient.consent.getPortalConsent({});
     } catch (error) {
-      logApiError(error, "getPortalConsent");
+      logApiError(error, 'getPortalConsent');
       return {} as AxiosResponse<PortalConsentDTO>;
     }
   },
 
-  savePortalConsent: async (versionId: string | undefined): Promise<AxiosResponse<void> | undefined> => {
+  savePortalConsent: async (
+    versionId: string | undefined
+  ): Promise<AxiosResponse<void> | undefined> => {
     try {
       return await registerClient.consent.savePortalConsent({ versionId });
     } catch (error) {
-      logApiError(error, "savePortalConsent");
+      logApiError(error, 'savePortalConsent');
       return;
     }
   },
 };
 
 function buildParams(params: Record<string, any>) {
-  return Object.fromEntries(
-    Object.entries(params).filter(([_, v]) => v !== undefined && v !== '')
-  );
+  return Object.fromEntries(Object.entries(params).filter(([_, v]) => v !== undefined && v !== ''));
 }
 
 function logApiError(error: any, apiName?: string, originalResponse?: any) {
@@ -110,32 +130,27 @@ function logApiError(error: any, apiName?: string, originalResponse?: any) {
     console.error(`Error Key: ${errorKey}`);
   }
   const pretty = (val: any) =>
-    typeof val === "string"
-      ? val
-      : val !== undefined
-        ? JSON.stringify(val, null, 2)
-        : "N/A";
-  const apiLabel = apiName ? `[API ERROR] RegisterApi.${apiName}` : "[API ERROR] RegisterApi";
+    typeof val === 'string' ? val : val !== undefined ? JSON.stringify(val, null, 2) : 'N/A';
+  const apiLabel = apiName ? `[API ERROR] RegisterApi.${apiName}` : '[API ERROR] RegisterApi';
   if (console.groupCollapsed) {
     console.groupCollapsed(apiLabel);
   } else {
     console.error(apiLabel);
   }
-  console.error("Message:", pretty(error?.message));
-  console.error("Error name:", error?.name ?? "N/A");
-  console.error("Stack:", pretty(error?.stack));
+  console.error('Message:', pretty(error?.message));
+  console.error('Error name:', error?.name ?? 'N/A');
+  console.error('Stack:', pretty(error?.stack));
   logIoTsValidationErrors(error, originalResponse);
-  console.error("Full error object:", pretty(error));
+  console.error('Full error object:', pretty(error));
   if (console.groupEnd) {
     console.groupEnd();
   }
 }
 
-
 function extractFileNameFromHeaders(headers: any): string {
-  const contentDisposition = headers?.['content-disposition'] ?? "";
+  const contentDisposition = headers?.['content-disposition'] ?? '';
   const match = contentDisposition.match(/filename="?([^"]+)"?/);
-  return match?.[1] ?? "";
+  return match?.[1] ?? '';
 }
 
 function logIoTsValidationErrors(error: any, originalResponse?: any) {
@@ -143,48 +158,52 @@ function logIoTsValidationErrors(error: any, originalResponse?: any) {
     return;
   }
   if (error && error.errors && Array.isArray(error.errors)) {
-    console.error("io-ts validation details:");
+    console.error('io-ts validation details:');
     error.errors.forEach((e: any, idx: number) => {
       const pathArr = e.context?.map((c: any) => c.key) || [];
       const pathStr = pathArr.join('.');
       const productLog =
-        pathArr[0] === 'content' &&
-          pathArr.length > 2 &&
-          originalResponse?.content
+        pathArr[0] === 'content' && pathArr.length > 2 && originalResponse?.content
           ? (() => {
-            const index = parseInt(pathArr[1], 10);
-            const product = originalResponse.content[index];
-            if (product && typeof product === 'object') {
-              const mainKeys = [
-                'gtinCode',
-                'organizationId',
-                'registrationDate',
-                'status',
-                'model',
-                'productGroup',
-                'category',
-                'brand',
-                'eprelCode',
-                'productCode',
-                'countryOfProduction',
-                'energyClass',
-                'linkEprel',
-                'batchName',
-                'productName',
-                'capacity',
-                'organizationName'
-              ];
-              const productSummary = mainKeys.reduce(
-                (acc, key) => ({ ...acc, [key]: product[key] }),
-                {} as Record<string, any>
-              );
-              return `\n  [PRODUCT ERROR CONTEXT] Product at index ${index}: ${JSON.stringify(productSummary, null, 2)}`;
-            }
-            return '';
-          })()
+              const index = parseInt(pathArr[1], 10);
+              const product = originalResponse.content[index];
+              if (product && typeof product === 'object') {
+                const mainKeys = [
+                  'gtinCode',
+                  'organizationId',
+                  'registrationDate',
+                  'status',
+                  'model',
+                  'productGroup',
+                  'category',
+                  'brand',
+                  'eprelCode',
+                  'productCode',
+                  'countryOfProduction',
+                  'energyClass',
+                  'linkEprel',
+                  'batchName',
+                  'productName',
+                  'capacity',
+                  'organizationName',
+                ];
+                const productSummary = mainKeys.reduce(
+                  (acc, key) => ({ ...acc, [key]: product[key] }),
+                  {} as Record<string, any>
+                );
+                return `\n  [PRODUCT ERROR CONTEXT] Product at index ${index}: ${JSON.stringify(
+                  productSummary,
+                  null,
+                  2
+                )}`;
+              }
+              return '';
+            })()
           : '';
       console.error(
-        `  [${idx}] path: ${pathStr}, expected: ${e.context?.[e.context.length - 1]?.type?.name}, actual: ${JSON.stringify(e.value)}${productLog}`
+        `  [${idx}] path: ${pathStr}, expected: ${
+          e.context?.[e.context.length - 1]?.type?.name
+        }, actual: ${JSON.stringify(e.value)}${productLog}`
       );
     });
   }
@@ -210,22 +229,27 @@ function makeStatusUpdater(
     try {
       const body = needsFormalMotivation
         ? {
-          gtinCodes,
-          currentStatus,
-          motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
-          ...(formalMotivation
-            ? { formalMotivation: typeof formalMotivation === 'string' ? formalMotivation.trim() : formalMotivation }
-            : {})
-        }
+            gtinCodes,
+            currentStatus,
+            motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
+            ...(formalMotivation
+              ? {
+                  formalMotivation:
+                    typeof formalMotivation === 'string'
+                      ? formalMotivation.trim()
+                      : formalMotivation,
+                }
+              : {}),
+          }
         : {
-          gtinCodes,
-          currentStatus,
-          motivation: typeof motivation === 'string' ? motivation.trim() : motivation
-        };
+            gtinCodes,
+            currentStatus,
+            motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
+          };
       const result = await apiMethod(body);
       return result ?? {};
     } catch (error) {
-      logApiError(error, "makeStatusUpdater");
+      logApiError(error, 'makeStatusUpdater');
       return {} as ProductsUpdateDTO;
     }
   };
@@ -242,7 +266,7 @@ export const RegisterApi = {
     eprelCode?: string,
     gtinCode?: string,
     productCode?: string,
-    productFileId?: string,
+    productFileId?: string
   ): Promise<ProductDTO | undefined> => {
     const params = buildParams({
       organizationId: xOrganizationSelected,
@@ -279,7 +303,7 @@ export const RegisterApi = {
     eprelCode?: string,
     gtinCode?: string,
     productCode?: string,
-    productFileId?: string,
+    productFileId?: string
   ): Promise<AxiosResponse<ProductListDTO>> => {
     const params = buildParams({
       organizationId: xOrganizationSelected,
@@ -313,7 +337,6 @@ export const RegisterApi = {
     const trimmed = (xOrganizationSelected ?? '').trim();
     const params: Record<string, string> = {};
     if (trimmed) {
-
       // eslint-disable-next-line functional/immutable-data
       params['x-organization-selected'] = trimmed;
     }
@@ -324,19 +347,25 @@ export const RegisterApi = {
     }
   },
 
-  uploadProductList: async (csv: File, category: UploadProductListParams["category"]): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
+  uploadProductList: async (
+    csv: File,
+    category: UploadProductListParams['category']
+  ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
     try {
       return await registerClient.productFiles.uploadProductList({ category }, { csv });
     } catch (error) {
-      logApiError(error, "uploadProductList");
+      logApiError(error, 'uploadProductList');
       return {} as AxiosResponse<RegisterUploadResponseDTO>;
     }
   },
-  uploadProductListVerify: async (csv: File, category: VerifyProductListParams["category"]): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
+  uploadProductListVerify: async (
+    csv: File,
+    category: VerifyProductListParams['category']
+  ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
     try {
       return await registerClient.productFiles.verifyProductList({ category }, { csv });
     } catch (error) {
-      logApiError(error, "uploadProductListVerify");
+      logApiError(error, 'uploadProductListVerify');
       return {} as AxiosResponse<RegisterUploadResponseDTO>;
     }
   },
@@ -347,7 +376,7 @@ export const RegisterApi = {
       const response = await registerClient.productFiles.downloadErrorReport({ productFileId });
       return {
         data: response.data,
-        filename: extractFileNameFromHeaders(response?.headers)
+        filename: extractFileNameFromHeaders(response?.headers),
       };
     } catch (error) {
       logApiError(error);
@@ -359,21 +388,36 @@ export const RegisterApi = {
     try {
       return registerClient.institutions.getInstitutionsList({});
     } catch (error) {
-      return { status: 200, value: { institutions: [] } } as unknown as AxiosResponse<InstitutionsResponse>;
+      return {
+        status: 200,
+        value: { institutions: [] },
+      } as unknown as AxiosResponse<InstitutionsResponse>;
     }
   },
 
-  getInstitutionById: async (institutionId: string): Promise<AxiosResponse<InstitutionResponse>> => {
+  getInstitutionById: async (
+    institutionId: string
+  ): Promise<AxiosResponse<InstitutionResponse>> => {
     try {
       return registerClient.institutions.retrieveInstitutionById({ institutionId });
     } catch (error) {
-      return { status: 200, value: { institutions: [] } } as unknown as AxiosResponse<InstitutionResponse>;
+      return {
+        status: 200,
+        value: { institutions: [] },
+      } as unknown as AxiosResponse<InstitutionResponse>;
     }
   },
 
-  setSupervisionedStatusList: makeStatusUpdater(registerClient.products.updateProductStatusSupervised),
+  setSupervisionedStatusList: makeStatusUpdater(
+    registerClient.products.updateProductStatusSupervised
+  ),
   setApprovedStatusList: makeStatusUpdater(registerClient.products.updateProductStatusApproved),
-  setWaitApprovedStatusList: makeStatusUpdater(registerClient.products.updateProductStatusWaitApproved),
-  setRejectedStatusList: makeStatusUpdater(registerClient.products.updateProductStatusRejected, true),
+  setWaitApprovedStatusList: makeStatusUpdater(
+    registerClient.products.updateProductStatusWaitApproved
+  ),
+  setRejectedStatusList: makeStatusUpdater(
+    registerClient.products.updateProductStatusRejected,
+    true
+  ),
   setRestoredStatusList: makeStatusUpdater(registerClient.products.updateProductStatusRestored),
 };

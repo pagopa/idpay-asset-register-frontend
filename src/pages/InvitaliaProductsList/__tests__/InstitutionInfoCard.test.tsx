@@ -118,7 +118,7 @@ describe('InstitutionInfoCard', () => {
   };
 
   it('renders the component with title', () => {
-    mockedGetInstitutionById.mockResolvedValue({data: mockInstitutionResponse as any});
+    mockedGetInstitutionById.mockResolvedValue({ data: mockInstitutionResponse as any });
 
     renderComponent();
 
@@ -126,7 +126,7 @@ describe('InstitutionInfoCard', () => {
   });
 
   it('fetches and displays institution data successfully', async () => {
-    mockedGetInstitutionById.mockResolvedValue({data: mockInstitutionResponse});
+    mockedGetInstitutionById.mockResolvedValue({ data: mockInstitutionResponse });
 
     renderComponent();
 
@@ -142,7 +142,7 @@ describe('InstitutionInfoCard', () => {
   });
 
   it('displays truncated values with tooltips', async () => {
-    mockedGetInstitutionById.mockResolvedValue({data: mockInstitutionResponse});
+    mockedGetInstitutionById.mockResolvedValue({ data: mockInstitutionResponse });
 
     renderComponent();
 
@@ -161,7 +161,7 @@ describe('InstitutionInfoCard', () => {
       digitalAddress: '',
     };
 
-    mockedGetInstitutionById.mockResolvedValue({data: incompleteInstitutionResponse as any});
+    mockedGetInstitutionById.mockResolvedValue({ data: incompleteInstitutionResponse as any });
 
     renderComponent();
 
@@ -185,7 +185,7 @@ describe('InstitutionInfoCard', () => {
   });
 
   it('handles missing institution in store', async () => {
-    mockedGetInstitutionById.mockResolvedValue({data: mockInstitutionResponse});
+    mockedGetInstitutionById.mockResolvedValue({ data: mockInstitutionResponse });
 
     renderComponent({ institution: null });
 
@@ -195,7 +195,7 @@ describe('InstitutionInfoCard', () => {
   });
 
   it('handles missing institutionId in store', async () => {
-    mockedGetInstitutionById.mockResolvedValue({data: mockInstitutionResponse});
+    mockedGetInstitutionById.mockResolvedValue({ data: mockInstitutionResponse });
 
     renderComponent({ institution: {} });
 
@@ -205,7 +205,7 @@ describe('InstitutionInfoCard', () => {
   });
 
   it('constructs complete address correctly', async () => {
-    mockedGetInstitutionById.mockResolvedValue({data: mockInstitutionResponse});
+    mockedGetInstitutionById.mockResolvedValue({ data: mockInstitutionResponse });
 
     renderComponent();
 
@@ -226,7 +226,7 @@ describe('InstitutionInfoCard', () => {
       county: null,
     };
 
-    mockedGetInstitutionById.mockResolvedValue({data: partialAddressResponse as any});
+    mockedGetInstitutionById.mockResolvedValue({ data: partialAddressResponse as any });
 
     renderComponent();
 
@@ -238,7 +238,7 @@ describe('InstitutionInfoCard', () => {
   });
 
   it('renders all field labels correctly', async () => {
-    mockedGetInstitutionById.mockResolvedValue({data: mockInstitutionResponse});
+    mockedGetInstitutionById.mockResolvedValue({ data: mockInstitutionResponse });
 
     renderComponent();
 
@@ -252,7 +252,7 @@ describe('InstitutionInfoCard', () => {
   });
 
   it('applies correct grid layout classes', () => {
-    mockedGetInstitutionById.mockResolvedValue({data: mockInstitutionResponse});
+    mockedGetInstitutionById.mockResolvedValue({ data: mockInstitutionResponse });
 
     renderComponent();
 

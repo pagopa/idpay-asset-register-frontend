@@ -3,8 +3,8 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Table } from '@mui/material';
 import '@testing-library/jest-dom';
-import EnhancedTableHead, {EnhancedTableHeadProps} from "../EnhancedTableHead";
-import {ProductDTO} from "../../../api/generated/register";
+import EnhancedTableHead, { EnhancedTableHeadProps } from '../EnhancedTableHead';
+import { ProductDTO } from '../../../api/generated/register';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -29,21 +29,44 @@ jest.mock('@mui/utils', () => ({
 const renderWithTheme = (component: React.ReactElement) => {
   const theme = createTheme();
   return render(
-      <ThemeProvider theme={theme}>
-        <Table>
-          {component}
-        </Table>
-      </ThemeProvider>
+    <ThemeProvider theme={theme}>
+      <Table>{component}</Table>
+    </ThemeProvider>
   );
 };
 
 describe('EnhancedTableHead', () => {
   const mockHeadCells = [
-    { id: 'selectedStatus' as const, label: 'pages.products.table.headers.selected', align: 'left' as const, width: 50 },
-    { id: 'productName' as keyof ProductDTO, label: 'pages.products.table.headers.productName', align: 'left' as const, width: 200 },
-    { id: 'category' as keyof ProductDTO, label: 'pages.products.table.headers.category', align: 'center' as const, width: 150 },
-    { id: 'status' as keyof ProductDTO, label: 'pages.products.table.headers.status', align: 'right' as const, width: 100 },
-    { id: 'actions' as const, label: 'pages.products.table.headers.actions', align: 'right' as const, width: 120 },
+    {
+      id: 'selectedStatus' as const,
+      label: 'pages.products.table.headers.selected',
+      align: 'left' as const,
+      width: 50,
+    },
+    {
+      id: 'productName' as keyof ProductDTO,
+      label: 'pages.products.table.headers.productName',
+      align: 'left' as const,
+      width: 200,
+    },
+    {
+      id: 'category' as keyof ProductDTO,
+      label: 'pages.products.table.headers.category',
+      align: 'center' as const,
+      width: 150,
+    },
+    {
+      id: 'status' as keyof ProductDTO,
+      label: 'pages.products.table.headers.status',
+      align: 'right' as const,
+      width: 100,
+    },
+    {
+      id: 'actions' as const,
+      label: 'pages.products.table.headers.actions',
+      align: 'right' as const,
+      width: 120,
+    },
   ];
 
   const defaultProps: EnhancedTableHeadProps = {
@@ -149,32 +172,45 @@ describe('EnhancedTableHead', () => {
     it('should call onRequestSort when sort label is clicked', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
-      const productNameSort = screen.getByText('pages.products.table.headers.productName').closest('[role="button"]');
+      const productNameSort = screen
+        .getByText('pages.products.table.headers.productName')
+        .closest('[role="button"]');
       fireEvent.click(productNameSort!);
 
-      expect(defaultProps.onRequestSort).toHaveBeenCalledWith(
-          expect.any(Object),
-          'productName'
-      );
+      expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'productName');
     });
 
     it('should show active sort state for current orderBy column', () => {
-      const props = { ...defaultProps, orderBy: 'category' as keyof ProductDTO, order: 'desc' as const };
+      const props = {
+        ...defaultProps,
+        orderBy: 'category' as keyof ProductDTO,
+        order: 'desc' as const,
+      };
       renderWithTheme(<EnhancedTableHead {...props} />);
 
-      const categoryHeader = screen.getByText('pages.products.table.headers.category').closest('th');
+      const categoryHeader = screen
+        .getByText('pages.products.table.headers.category')
+        .closest('th');
       expect(categoryHeader).toHaveAttribute('aria-sort', 'descending');
     });
 
     it('should render visually hidden sort direction text for active column - descending', () => {
-      const props = { ...defaultProps, orderBy: 'productName' as keyof ProductDTO, order: 'desc' as const };
+      const props = {
+        ...defaultProps,
+        orderBy: 'productName' as keyof ProductDTO,
+        order: 'desc' as const,
+      };
       renderWithTheme(<EnhancedTableHead {...props} />);
 
       expect(screen.getByText('sorted descending')).toBeInTheDocument();
     });
 
     it('should render visually hidden sort direction text for active column - ascending', () => {
-      const props = { ...defaultProps, orderBy: 'productName' as keyof ProductDTO, order: 'asc' as const };
+      const props = {
+        ...defaultProps,
+        orderBy: 'productName' as keyof ProductDTO,
+        order: 'asc' as const,
+      };
       renderWithTheme(<EnhancedTableHead {...props} />);
 
       expect(screen.getByText('sorted ascending')).toBeInTheDocument();
@@ -235,7 +271,9 @@ describe('EnhancedTableHead', () => {
     it('should apply width styles to cells', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
-      const productNameCell = screen.getByText('pages.products.table.headers.productName').closest('th');
+      const productNameCell = screen
+        .getByText('pages.products.table.headers.productName')
+        .closest('th');
       expect(productNameCell).toHaveStyle({
         width: '200px',
       });
@@ -264,7 +302,7 @@ describe('EnhancedTableHead', () => {
     });
 
     it('should handle headCells without width property', () => {
-      const headCellsWithoutWidth = mockHeadCells.map(cell => {
+      const headCellsWithoutWidth = mockHeadCells.map((cell) => {
         const { width, ...cellWithoutWidth } = cell;
         return cellWithoutWidth;
       });
@@ -286,7 +324,7 @@ describe('EnhancedTableHead', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
       const allCells = screen.getAllByRole('columnheader');
-      expect(allCells).toHaveLength(mockHeadCells.length+2);
+      expect(allCells).toHaveLength(mockHeadCells.length + 2);
     });
 
     it('should handle different ProductDTO key types', () => {
@@ -295,7 +333,11 @@ describe('EnhancedTableHead', () => {
         { id: 'createdAt' as keyof ProductDTO, label: 'Created', align: 'center' as const },
       ];
 
-      const props = { ...defaultProps, headCells: headCellsWithDifferentKeys, orderBy: 'id' as keyof ProductDTO };
+      const props = {
+        ...defaultProps,
+        headCells: headCellsWithDifferentKeys,
+        orderBy: 'id' as keyof ProductDTO,
+      };
 
       expect(() => renderWithTheme(<EnhancedTableHead {...props} />)).not.toThrow();
 
@@ -306,15 +348,21 @@ describe('EnhancedTableHead', () => {
     it('should handle click on different sortable columns', () => {
       renderWithTheme(<EnhancedTableHead {...defaultProps} />);
 
-      const categorySort = screen.getByText('pages.products.table.headers.category').closest('[role="button"]');
+      const categorySort = screen
+        .getByText('pages.products.table.headers.category')
+        .closest('[role="button"]');
       fireEvent.click(categorySort!);
       expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'category');
 
-      const statusSort = screen.getByText('pages.products.table.headers.status').closest('[role="button"]');
+      const statusSort = screen
+        .getByText('pages.products.table.headers.status')
+        .closest('[role="button"]');
       fireEvent.click(statusSort!);
       expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'status');
 
-      const actionsSort = screen.getByText('pages.products.table.headers.actions').closest('[role="button"]');
+      const actionsSort = screen
+        .getByText('pages.products.table.headers.actions')
+        .closest('[role="button"]');
       fireEvent.click(actionsSort!);
       expect(defaultProps.onRequestSort).toHaveBeenCalledWith(expect.any(Object), 'actions');
     });

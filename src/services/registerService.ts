@@ -1,19 +1,18 @@
-import { AxiosResponse } from "axios";
-import {RegisterApi} from "../api/registerApiClient";
-import { BatchList, ProductsUpdateDTO, UploadProductListParams } from "../api/generated/register";
-import {RegisterUploadResponseDTO} from "../api/generated/register";
-import {CsvDTO} from "../api/generated/register";
-import {UploadsListDTO} from "../api/generated/register";
-import {InstitutionsResponse} from "../api/generated/register";
-import {InstitutionResponse} from "../api/generated/register";
-import {ProductListDTO} from "../api/generated/register";
-import { ProductStatus } from "../api/generated/register";
-import { DEBUG_CONSOLE } from "../utils/constants";
-
+import { AxiosResponse } from 'axios';
+import { RegisterApi } from '../api/registerApiClient';
+import { BatchList, ProductsUpdateDTO, UploadProductListParams } from '../api/generated/register';
+import { RegisterUploadResponseDTO } from '../api/generated/register';
+import { CsvDTO } from '../api/generated/register';
+import { UploadsListDTO } from '../api/generated/register';
+import { InstitutionsResponse } from '../api/generated/register';
+import { InstitutionResponse } from '../api/generated/register';
+import { ProductListDTO } from '../api/generated/register';
+import { ProductStatus } from '../api/generated/register';
+import { DEBUG_CONSOLE } from '../utils/constants';
 
 export const uploadProductList = async (
   csv: File,
-  category: UploadProductListParams["category"]
+  category: UploadProductListParams['category']
 ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
   try {
     return await RegisterApi.uploadProductList(csv, category);
@@ -31,7 +30,7 @@ export const uploadProductList = async (
 
 export const uploadProductListVerify = async (
   csv: File,
-  category: UploadProductListParams["category"]
+  category: UploadProductListParams['category']
 ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
   try {
     return await RegisterApi.uploadProductListVerify(csv, category);
@@ -65,22 +64,22 @@ export const downloadErrorReport = async (
 };
 
 export const getProductFilesList = async (
-    page?: number, size?: number,
-  ): Promise<AxiosResponse<UploadsListDTO>> => {
-    try {
-      return await RegisterApi.getProductFiles(page, size);
-    } catch (error: any) {
-      logProductError('RegisterApi.getProductFiles', error);
-      return {
-        content: [],
-        pageNo: 0,
-        pageSize: 0,
-        totalElements: 0,
-        totalPages: 0
-      } as unknown as AxiosResponse<UploadsListDTO>;
-    }
-  };
-
+  page?: number,
+  size?: number
+): Promise<AxiosResponse<UploadsListDTO>> => {
+  try {
+    return await RegisterApi.getProductFiles(page, size);
+  } catch (error: any) {
+    logProductError('RegisterApi.getProductFiles', error);
+    return {
+      content: [],
+      pageNo: 0,
+      pageSize: 0,
+      totalElements: 0,
+      totalPages: 0,
+    } as unknown as AxiosResponse<UploadsListDTO>;
+  }
+};
 
 function getErrorMessage(error: any) {
   return typeof error === 'object' && error !== null && 'message' in error
@@ -120,8 +119,6 @@ function getErrorConfig(error: any) {
     : undefined;
 }
 
-
-
 // eslint-disable-next-line sonarjs/cognitive-complexity
 function logProductError(nameService: string, error: any) {
   if (!DEBUG_CONSOLE) {
@@ -145,51 +142,51 @@ function logProductError(nameService: string, error: any) {
     config: getErrorConfig(error),
   };
 
- 
   const pretty = (val: any, depth: number = 2): string => {
-    if (val === undefined) { return "N/A"; }
-    if (val === null) { return "null"; }
-    if (typeof val === "string") {
-      if (val.trim() === "") { return '""'; }
+    if (val === undefined) {
+      return 'N/A';
+    }
+    if (val === null) {
+      return 'null';
+    }
+    if (typeof val === 'string') {
+      if (val.trim() === '') {
+        return '""';
+      }
       return val;
     }
-    if (typeof val === "number" || typeof val === "boolean") {
+    if (typeof val === 'number' || typeof val === 'boolean') {
       return String(val);
     }
     if (Array.isArray(val)) {
-      if (val.length === 0) { return "[]"; }
-      if (depth <= 0) { return "[Array]"; }
-      return (
-        "[\n" +
-        val
-          .map((item) => "  " + pretty(item, depth - 1))
-          .join(",\n") +
-        "\n]"
-      );
+      if (val.length === 0) {
+        return '[]';
+      }
+      if (depth <= 0) {
+        return '[Array]';
+      }
+      return '[\n' + val.map((item) => '  ' + pretty(item, depth - 1)).join(',\n') + '\n]';
     }
-    if (typeof val === "object") {
+    if (typeof val === 'object') {
       try {
         return JSON.stringify(val, null, 2);
       } catch {
-        if (depth <= 0) { return "[Object]"; }
+        if (depth <= 0) {
+          return '[Object]';
+        }
         return (
-          "{\n" +
+          '{\n' +
           Object.entries(val)
-            .map(
-              ([k, v]) =>
-                `  "${k}": ${pretty(v, depth - 1)}`
-            )
-            .join(",\n") +
-          "\n}"
+            .map(([k, v]) => `  "${k}": ${pretty(v, depth - 1)}`)
+            .join(',\n') +
+          '\n}'
         );
       }
     }
     return String(val);
   };
 
-  console.groupCollapsed?.(
-    "[API ERROR] Product list retrieval"
-  );
+  console.groupCollapsed?.('[API ERROR] Product list retrieval');
 
   // eslint-disable-next-line functional/no-let
   let errorMsg = nameService;
@@ -198,39 +195,36 @@ function logProductError(nameService: string, error: any) {
     if (
       value !== undefined &&
       value !== null &&
-      value !== "N/A" &&
-      !(typeof value === "string" && value.trim() === "") &&
-      !(typeof value === "object" && JSON.stringify(value) === "{}")
+      value !== 'N/A' &&
+      !(typeof value === 'string' && value.trim() === '') &&
+      !(typeof value === 'object' && JSON.stringify(value) === '{}')
     ) {
       errorMsg += `${label}: ${pretty(value)}\n`;
     }
   };
 
-  addLine("Message", details.message);
-  addLine("Error name", details.name);
+  addLine('Message', details.message);
+  addLine('Error name', details.name);
 
   if (details.responseStatus || details.responseStatusText) {
-    const statusTextPart = details.responseStatusText ? ` (${details.responseStatusText})` : "";
-    errorMsg += `Status: ${details.responseStatus ?? ""}${statusTextPart}\n`;
+    const statusTextPart = details.responseStatusText ? ` (${details.responseStatusText})` : '';
+    errorMsg += `Status: ${details.responseStatus ?? ''}${statusTextPart}\n`;
   }
 
-  if (details.stack && typeof details.stack === "string") {
-    const stackLines = details.stack.split("\n").slice(0, 5).join("\n");
+  if (details.stack && typeof details.stack === 'string') {
+    const stackLines = details.stack.split('\n').slice(0, 5).join('\n');
     errorMsg += `Stack (top 5):\n${stackLines}\n`;
   }
 
   if (details.responseData !== undefined) {
-    if (
-      typeof details.responseData === "object" &&
-      details.responseData !== null
-    ) {
+    if (typeof details.responseData === 'object' && details.responseData !== null) {
       const keys = Object.keys(details.responseData);
       const shownKeys = keys.slice(0, 5);
-      errorMsg += `Response Data keys: [${shownKeys.join(", ")}]`;
+      errorMsg += `Response Data keys: [${shownKeys.join(', ')}]`;
       if (keys.length > 5) {
         errorMsg += ` (+${keys.length - 5} more)\n`;
       } else {
-        errorMsg += "\n";
+        errorMsg += '\n';
       }
       shownKeys.forEach((k) => {
         errorMsg += `  ${k}: ${pretty(details.responseData[k], 1)}\n`;
@@ -240,7 +234,7 @@ function logProductError(nameService: string, error: any) {
     }
   }
 
-  if (details.config && typeof details.config === "object") {
+  if (details.config && typeof details.config === 'object') {
     if (details.config.url) {
       errorMsg += `Config.url: ${details.config.url}\n`;
     }
@@ -249,10 +243,8 @@ function logProductError(nameService: string, error: any) {
     }
   }
 
-  if (errorMsg.trim() !== "") {
-    console.groupCollapsed?.(
-      "[API ERROR] Product list retrieval"
-    );
+  if (errorMsg.trim() !== '') {
+    console.groupCollapsed?.('[API ERROR] Product list retrieval');
     console.error(`***\n${errorMsg.trim()}\n***`);
     console.groupEnd?.();
   }
@@ -283,21 +275,23 @@ export const getProducts = async (
       productCode,
       productFileId
     );
-    return result ?? {
-      content: [],
-      pageNo: 1000000,
-      pageSize: 1000000,
-      totalElements: 1000000,
-      totalPages: 1000000
-    };
+    return (
+      result ?? {
+        content: [],
+        pageNo: 1000000,
+        pageSize: 1000000,
+        totalElements: 1000000,
+        totalPages: 1000000,
+      }
+    );
   } catch (error: any) {
-    logProductError('RegisterApi.getProductList' , error);
+    logProductError('RegisterApi.getProductList', error);
     return {
       content: [],
       pageNo: 0,
       pageSize: 0,
       totalElements: 0,
-      totalPages: 0
+      totalPages: 0,
     } as unknown as AxiosResponse<ProductListDTO>;
   }
 };
@@ -312,7 +306,7 @@ export const getInstitutionsList = async (): Promise<AxiosResponse<InstitutionsR
 };
 
 export const getInstitutionById = async (
-    institutionId: string
+  institutionId: string
 ): Promise<AxiosResponse<InstitutionResponse>> => {
   try {
     return await RegisterApi.getInstitutionById(institutionId);
@@ -328,18 +322,17 @@ export const setSupervisionedStatusList = async (
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-   return await RegisterApi.setSupervisionedStatusList(gtinCodes, currentStatus, motivation);
+    return await RegisterApi.setSupervisionedStatusList(gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setSupervisionedStatusList', error);
     return {} as ProductsUpdateDTO;
   }
- };
+};
 
- 
- export const setApprovedStatusList = async (
-     gtinCodes: Array<string>,
-     currentStatus: ProductStatus,
-     motivation: string
+export const setApprovedStatusList = async (
+  gtinCodes: Array<string>,
+  currentStatus: ProductStatus,
+  motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
     return await RegisterApi.setApprovedStatusList(gtinCodes, currentStatus, motivation);
@@ -348,10 +341,10 @@ export const setSupervisionedStatusList = async (
     return {} as ProductsUpdateDTO;
   }
 };
- export const setWaitApprovedStatusList = async (
-     gtinCodes: Array<string>,
-     currentStatus: ProductStatus,
-     motivation: string
+export const setWaitApprovedStatusList = async (
+  gtinCodes: Array<string>,
+  currentStatus: ProductStatus,
+  motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
     return await RegisterApi.setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
@@ -368,31 +361,38 @@ export const setRejectedStatusList = async (
   formalMotivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    return await RegisterApi.setRejectedStatusList(gtinCodes, currentStatus, motivation, formalMotivation);
+    return await RegisterApi.setRejectedStatusList(
+      gtinCodes,
+      currentStatus,
+      motivation,
+      formalMotivation
+    );
   } catch (error: any) {
     logProductError('RegisterApi.setRejectedStatusList', error);
     return {} as ProductsUpdateDTO;
   }
 };
 
-  export const setRestoredStatusList = async (
-      gtinCodes: Array<string>,
-      currentStatus: ProductStatus,
-      motivation: string
-  ): Promise<ProductsUpdateDTO> => {
-    try {
-      return await RegisterApi.setRestoredStatusList(gtinCodes, currentStatus, motivation);
-    } catch (error: any) {
-      logProductError('RegisterApi.setRestoredStatusList', error);
-      return {} as ProductsUpdateDTO;
-    }
-  };
+export const setRestoredStatusList = async (
+  gtinCodes: Array<string>,
+  currentStatus: ProductStatus,
+  motivation: string
+): Promise<ProductsUpdateDTO> => {
+  try {
+    return await RegisterApi.setRestoredStatusList(gtinCodes, currentStatus, motivation);
+  } catch (error: any) {
+    logProductError('RegisterApi.setRestoredStatusList', error);
+    return {} as ProductsUpdateDTO;
+  }
+};
 
- export const getBatchFilterList = async (xOrganizationSelected: string): Promise<AxiosResponse<BatchList>> => {
-   try {
-     return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
-   } catch (error: any) {
-     logProductError('RegisterApi.getBatchFilterItems', error);
-     return [] as unknown as AxiosResponse<BatchList>;
-   }
- };
+export const getBatchFilterList = async (
+  xOrganizationSelected: string
+): Promise<AxiosResponse<BatchList>> => {
+  try {
+    return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
+  } catch (error: any) {
+    logProductError('RegisterApi.getBatchFilterItems', error);
+    return [] as unknown as AxiosResponse<BatchList>;
+  }
+};

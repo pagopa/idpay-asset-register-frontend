@@ -48,7 +48,7 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
             sx={{
               ...cellLeftSx,
               width: '4%',
-              maxWidth:'4%'
+              maxWidth: '4%',
             }}
           >
             <Checkbox
@@ -93,10 +93,7 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
             )}
           </TableCell>
         ))}
-        {
-          isInvitaliaUser &&
-            <TableCell sx={{...cellRightSx }} />
-        }
+        {isInvitaliaUser && <TableCell sx={{ ...cellRightSx }} />}
       </TableRow>
     </TableHead>
   );

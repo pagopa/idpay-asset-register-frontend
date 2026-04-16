@@ -15,7 +15,7 @@ describe('partyService', () => {
     status: 'PENDING',
     roles: [],
     registeredOffice: '',
-    typology: ''
+    typology: '',
   };
 
   it('should return party from provided list', async () => {

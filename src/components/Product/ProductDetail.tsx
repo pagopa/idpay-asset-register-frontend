@@ -442,7 +442,7 @@ export default function ProductDetail({
   const handleConfirmRestore = async () => {
     await handleOpenModal(
       PRODUCTS_STATES.APPROVED,
-      [data.gtinCode ?? ""],
+      [data.gtinCode ?? ''],
       data.status as ProductStatus,
       EMPTY_DATA,
       EMPTY_DATA
@@ -731,7 +731,7 @@ export default function ProductDetail({
             {
               status: data.status as ProductStatus,
               productName: data.productName,
-              gtinCode: data.gtinCode ?? "",
+              gtinCode: data.gtinCode ?? '',
               category: data.category,
             },
           ]}
@@ -750,7 +750,7 @@ export default function ProductDetail({
             {
               status: data.status as ProductStatus,
               productName: data.productName,
-              gtinCode: data.gtinCode ?? "",
+              gtinCode: data.gtinCode ?? '',
               category: data.category,
             },
           ]}

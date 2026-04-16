@@ -1,6 +1,5 @@
 // import { PartyRole } from './Party';
 
-
 /* export type JWTUser = {
   uid: string;
   // fiscal_number: string;
@@ -30,7 +29,7 @@ export type JWTUser = {
   // ORG - Ragione Sociale
   org_name: string;
   // ORG - Codice fiscale
-  org_fc:string;
+  org_fc: string;
   // ORG - PIVA
   org_vat: string;
   org_party_role: string;
@@ -40,7 +39,6 @@ export type JWTUser = {
   // ORG -  PEC
   org_pec: string;
   org_email: string;
-  
 };
 
 export const jwt2JWTUser = (resources: JWTUser) => ({
@@ -53,5 +51,5 @@ export const jwt2JWTUser = (resources: JWTUser) => ({
   org_vat: resources.org_vat,
   org_party_role: resources.org_party_role,
   org_role: resources.org_role,
-  org_email: resources.org_email
+  org_email: resources.org_email,
 });

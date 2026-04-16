@@ -145,7 +145,7 @@ const mockProductData = [
     id: '1',
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
-    category: "Lavatrice",
+    category: 'Lavatrice',
     status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
@@ -155,7 +155,7 @@ const mockProductData = [
     id: '2',
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
-    category: "Forno",
+    category: 'Forno',
     status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
@@ -233,12 +233,14 @@ describe('ProductDataGrid', () => {
       },
       writable: true,
     });
-    mockGetProducts.mockResolvedValue({data: {
-      content: mockProductData,
-      pageNo: 0 as any,
-      totalElements: 2 as any,
-    }});
-    mockGetBatchFilterList.mockResolvedValue({data: mockBatchFilterItems});
+    mockGetProducts.mockResolvedValue({
+      data: {
+        content: mockProductData,
+        pageNo: 0 as any,
+        totalElements: 2 as any,
+      },
+    });
+    mockGetBatchFilterList.mockResolvedValue({ data: mockBatchFilterItems });
     mockUserFromJwtToken.mockReturnValue({
       org_id: 'test-org-id',
       org_role: 'USER',
@@ -422,9 +424,7 @@ jest.mock('../ProductModal', () => ({
       <div data-testid="product-modal">
         <button onClick={onClose}>Close Modal</button>
         <button onClick={onUpdateTable}>Update Table</button>
-        <button onClick={() => onSuccess && onSuccess(ProductStatus.SUPERVISED)}>
-          Success
-        </button>
+        <button onClick={() => onSuccess && onSuccess(ProductStatus.SUPERVISED)}>Success</button>
       </div>
     ) : null;
   },
@@ -465,7 +465,7 @@ const baseProducts = [
     id: '1',
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
-    category: "Lavatrice",
+    category: 'Lavatrice',
     status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
@@ -475,7 +475,7 @@ const baseProducts = [
     id: '2',
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
-    category: "Forno",
+    category: 'Forno',
     status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
@@ -517,31 +517,37 @@ describe('ProductDataGrid – extra coverage', () => {
       writable: true,
     });
 
-    mockGetProducts.mockResolvedValue({data: {
-      content: baseProducts,
-      pageNo: 0 as any,
-      totalElements: 2 as any,
-    }});
-    mockGetBatchFilterList.mockResolvedValue({data: [
-      { productFileId: 'BATCH1', batchName: 'Batch 1' },
-      { productFileId: 'BATCH2', batchName: 'Batch 2' },
-    ]});
-    mockUserFromJwtToken.mockReturnValue({data: {
-      org_id: 'test-org-id',
-      org_role: 'USER',
-      uid: '',
-      taxCode: '',
-      name: '',
-      surname: '',
-      email: '',
-      org_name: '',
-      org_party_role: '',
-      org_address: '',
-      org_pec: '',
-      org_taxcode: '',
-      org_vat: '',
-      org_email: '',
-    }});
+    mockGetProducts.mockResolvedValue({
+      data: {
+        content: baseProducts,
+        pageNo: 0 as any,
+        totalElements: 2 as any,
+      },
+    });
+    mockGetBatchFilterList.mockResolvedValue({
+      data: [
+        { productFileId: 'BATCH1', batchName: 'Batch 1' },
+        { productFileId: 'BATCH2', batchName: 'Batch 2' },
+      ],
+    });
+    mockUserFromJwtToken.mockReturnValue({
+      data: {
+        org_id: 'test-org-id',
+        org_role: 'USER',
+        uid: '',
+        taxCode: '',
+        name: '',
+        surname: '',
+        email: '',
+        org_name: '',
+        org_party_role: '',
+        org_address: '',
+        org_pec: '',
+        org_taxcode: '',
+        org_vat: '',
+        org_email: '',
+      },
+    });
     mockFetchUserFromLocalStorage.mockReturnValue({
       org_id: 'test-org-id',
       org_role: 'USER',
@@ -572,18 +578,20 @@ describe('ProductDataGrid – extra coverage', () => {
       org_role: USERS_TYPES.INVITALIA_L1,
     });
 
-    mockGetProducts.mockResolvedValue({data: {
-      content: [
-        {
-          ...baseProducts[0],
-          gtinCode: 'GTIN003',
-          productName: 'Already Waiting',
-          status: ProductStatus.WAIT_APPROVED,
-        },
-      ],
-      pageNo: 0 as any,
-      totalElements: 1 as any,
-    }});
+    mockGetProducts.mockResolvedValue({
+      data: {
+        content: [
+          {
+            ...baseProducts[0],
+            gtinCode: 'GTIN003',
+            productName: 'Already Waiting',
+            status: ProductStatus.WAIT_APPROVED,
+          },
+        ],
+        pageNo: 0 as any,
+        totalElements: 1 as any,
+      },
+    });
 
     renderGrid();
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());

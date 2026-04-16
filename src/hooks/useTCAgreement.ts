@@ -1,7 +1,7 @@
-import {useEffect, useState} from 'react';
-import {useErrorDispatcher} from "@pagopa/selfcare-common-frontend/lib";
-import {useTranslation} from "react-i18next";
-import {getPortalConsent, savePortalConsent} from "../services/rolePermissionService";
+import { useEffect, useState } from 'react';
+import { useErrorDispatcher } from '@pagopa/selfcare-common-frontend/lib';
+import { useTranslation } from 'react-i18next';
+import { getPortalConsent, savePortalConsent } from '../services/rolePermissionService';
 
 const useTCAgreement = () => {
   const addError = useErrorDispatcher();

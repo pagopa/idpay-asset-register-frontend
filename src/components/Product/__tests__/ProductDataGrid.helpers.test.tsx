@@ -1,7 +1,13 @@
-import { getSelectedStatuses, isAllStatus, isSomeStatus, getStatusChecks, handleModalSuccess } from '../ProductDataGrid.helpers';
-import {ProductStatus} from "../../../api/generated/register";
-import {ProductDTO} from "../../../api/generated/register";
-import {MIDDLE_STATES, PRODUCTS_STATES} from "../../../utils/constants";
+import {
+  getSelectedStatuses,
+  isAllStatus,
+  isSomeStatus,
+  getStatusChecks,
+  handleModalSuccess,
+} from '../ProductDataGrid.helpers';
+import { ProductStatus } from '../../../api/generated/register';
+import { ProductDTO } from '../../../api/generated/register';
+import { MIDDLE_STATES, PRODUCTS_STATES } from '../../../utils/constants';
 
 describe('ProductDataGrid.helpers', () => {
   const row = (gtinCode: string, status: ProductStatus): ProductDTO => ({
@@ -43,10 +49,10 @@ describe('ProductDataGrid.helpers', () => {
     expect(allUp.allSupervised).toBe(false);
     expect(allUp.allWaitApproved).toBe(false);
     expect(allUp.length).toBe(2);
-    const allSup = getStatusChecks(['A', 'C'], [
-      row('A', ProductStatus.SUPERVISED),
-      row('C', ProductStatus.SUPERVISED),
-    ]);
+    const allSup = getStatusChecks(
+      ['A', 'C'],
+      [row('A', ProductStatus.SUPERVISED), row('C', ProductStatus.SUPERVISED)]
+    );
     expect(allSup.allSupervised).toBe(true);
     const allWait = getStatusChecks(['C'], tableData);
     expect(allWait.allWaitApproved).toBe(true);
