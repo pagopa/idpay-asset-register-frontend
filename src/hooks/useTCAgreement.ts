@@ -13,7 +13,7 @@ const useTCAgreement = () => {
   useEffect(() => {
     getPortalConsent()
       .then((res) => {
-        if (Object.keys(res).length) {
+        if (Object.keys(res.data).length) {
           setAcceptedTOSVersion(res.data.versionId);
           setFirstAcceptance(res.data.firstAcceptance);
           setAcceptedTOS(false);
