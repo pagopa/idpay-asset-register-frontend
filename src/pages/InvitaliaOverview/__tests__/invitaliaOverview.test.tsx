@@ -23,6 +23,7 @@ import * as reduxSlice from '../../../redux/slices/invitaliaSlice';
 import { Institution } from '../../../model/Institution';
 import { Provider } from 'react-redux';
 import { createStore } from '../../../redux/store';
+import { InstitutionsResponse } from '../../../api/generated/register';
 
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   ...jest.requireActual('@pagopa/selfcare-common-frontend/lib'),
@@ -83,9 +84,9 @@ jest.mock('../institutionsTable', () => (props: any) => {
 });
 
 const mockInstitutions = [
-  { institutionId: '1', description: 'Alpha' },
-  { institutionId: '2', description: 'Beta' },
-] as Institution[];
+  { instituionId: '1', description: 'Alpha' },
+  { instituionId: '2', description: 'Beta' },
+] as InstitutionsResponse["institutions"];
 
 const mockInstitutionDetail = { institutionId: '1', description: 'Alpha', extra: 'detail' };
 
