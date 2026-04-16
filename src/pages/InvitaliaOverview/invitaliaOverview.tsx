@@ -47,7 +47,7 @@ const InvitaliaOverview: React.FC = () => {
 
       const institutionsDataFilteredByUser = (
         institutionsData.data.institutions || []
-      ).filter((institution) => institution.instituionId !== user?.org_id);
+      ).filter((institution) => institution.institutionId !== user?.org_id);
       setInstitutions({institutions: institutionsDataFilteredByUser});
 
       const institutionList = institutionsData.data.institutions;
