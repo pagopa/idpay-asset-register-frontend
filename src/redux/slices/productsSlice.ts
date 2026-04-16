@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type {RootState} from "../store";
+import type { RootState } from '../store';
 
 export interface ProductsState {
   batchName: string;
@@ -28,7 +28,5 @@ export const productsSlice = createSlice({
 
 export const { setBatchName, setBatchId } = productsSlice.actions;
 export const productsReducer = productsSlice.reducer;
-export const batchNameSelector = (state: RootState): string | undefined =>
-    state.products.batchName;
-export const batchIdSelector = (state: RootState): string | undefined =>
-    state.products.batchId;
+export const batchNameSelector = (state: RootState): string | undefined => state.products.batchName;
+export const batchIdSelector = (state: RootState): string | undefined => state.products.batchId;

@@ -49,13 +49,13 @@ jest.mock('react-router-dom', () => ({
 jest.mock('../SidenavItem', () => ({
   __esModule: true,
   default: (props: any) => (
-      <div
-          data-testid={`sidenav-${props.title}`}
-          data-selected={props.isSelected ? 'true' : 'false'}
-          onClick={props.handleClick}
-      >
-        {props.title}
-      </div>
+    <div
+      data-testid={`sidenav-${props.title}`}
+      data-selected={props.isSelected ? 'true' : 'false'}
+      onClick={props.handleClick}
+    >
+      {props.title}
+    </div>
   ),
 }));
 
@@ -83,10 +83,10 @@ jest.mock('react-i18next', () => ({
       }
 
       if (
-          lower.includes('producer') ||
-          lower.includes('producers') ||
-          lower.includes('manufacturer') ||
-          lower.includes('manufacturers')
+        lower.includes('producer') ||
+        lower.includes('producers') ||
+        lower.includes('manufacturer') ||
+        lower.includes('manufacturers')
       ) {
         return 'Produttori';
       }
@@ -95,7 +95,6 @@ jest.mock('react-i18next', () => ({
     },
   }),
 }));
-
 
 jest.mock('../../../helpers');
 
@@ -163,7 +162,6 @@ describe('Test suite for SideMenu component', () => {
     expect(screen.queryByTestId('sidenav-Prodotti Invitalia')).not.toBeInTheDocument();
   });
 
-
   test('Invitalia L1: mostra voci dedicate e click su "Produttori" porta a /producers', async () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'INVITALIA_L1' });
     mockOnExit.mockImplementation((cb: () => void) => cb());
@@ -188,7 +186,10 @@ describe('Test suite for SideMenu component', () => {
 
     renderWithContext(<SideMenu />);
 
-    expect(screen.getByTestId('sidenav-Prodotti Invitalia')).toHaveAttribute('data-selected', 'true');
+    expect(screen.getByTestId('sidenav-Prodotti Invitalia')).toHaveAttribute(
+      'data-selected',
+      'true'
+    );
   });
 
   test('Invitalia: isSelected true su /home/', () => {
@@ -197,16 +198,24 @@ describe('Test suite for SideMenu component', () => {
 
     renderWithContext(<SideMenu />);
 
-    expect(screen.getByTestId('sidenav-Prodotti Invitalia')).toHaveAttribute('data-selected', 'true');
+    expect(screen.getByTestId('sidenav-Prodotti Invitalia')).toHaveAttribute(
+      'data-selected',
+      'true'
+    );
   });
 
   test('Non-Invitalia: isSelected corretto su /uploads', () => {
-    jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'SOMETHING_ELSE' });
+    jest
+      .spyOn(helpers, 'fetchUserFromLocalStorage')
+      .mockReturnValue({ org_role: 'SOMETHING_ELSE' });
     mockUseLocation.mockReturnValue({ pathname: '/uploads' });
 
     renderWithContext(<SideMenu />);
 
-    expect(screen.getByTestId('sidenav-Storico caricamenti')).toHaveAttribute('data-selected', 'true');
+    expect(screen.getByTestId('sidenav-Storico caricamenti')).toHaveAttribute(
+      'data-selected',
+      'true'
+    );
     expect(screen.getByTestId('sidenav-Panoramica')).toHaveAttribute('data-selected', 'false');
     expect(screen.getByTestId('sidenav-Prodotti')).toHaveAttribute('data-selected', 'false');
   });
@@ -219,7 +228,10 @@ describe('Test suite for SideMenu component', () => {
 
     expect(screen.getByTestId('sidenav-Prodotti')).toHaveAttribute('data-selected', 'true');
     expect(screen.getByTestId('sidenav-Panoramica')).toHaveAttribute('data-selected', 'false');
-    expect(screen.getByTestId('sidenav-Storico caricamenti')).toHaveAttribute('data-selected', 'false');
+    expect(screen.getByTestId('sidenav-Storico caricamenti')).toHaveAttribute(
+      'data-selected',
+      'false'
+    );
   });
 
   test('Non-Invitalia: isSelected corretto su /home', () => {
@@ -229,7 +241,10 @@ describe('Test suite for SideMenu component', () => {
     renderWithContext(<SideMenu />);
 
     expect(screen.getByTestId('sidenav-Panoramica')).toHaveAttribute('data-selected', 'true');
-    expect(screen.getByTestId('sidenav-Storico caricamenti')).toHaveAttribute('data-selected', 'false');
+    expect(screen.getByTestId('sidenav-Storico caricamenti')).toHaveAttribute(
+      'data-selected',
+      'false'
+    );
     expect(screen.getByTestId('sidenav-Prodotti')).toHaveAttribute('data-selected', 'false');
   });
 

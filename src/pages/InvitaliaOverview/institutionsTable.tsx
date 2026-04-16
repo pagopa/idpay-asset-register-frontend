@@ -16,18 +16,18 @@ import {
 import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { visuallyHidden } from '@mui/utils';
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from '@mui/icons-material';
 import { formatDateWithoutHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
-import { InstitutionsResponse } from '../../api/generated/register/InstitutionsResponse';
+import { InstitutionsResponse } from '../../api/generated/register';
 import ROUTES from '../../routes';
 import { setInstitution } from '../../redux/slices/invitaliaSlice';
 import EmptyListTable from '../components/EmptyListTable';
-import {useAppDispatch} from "../../redux/hooks";
+import { useAppDispatch } from '../../redux/hooks';
 import { EnhancedTableProps, HeadCell } from './helpers';
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -165,9 +165,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
     return (
       <TableBody>
         {((data.institutions as Array<Institution>) ?? []).map((row: Institution) => (
-          <TableRow
-              key={row.institutionId}
-          >
+          <TableRow key={row.institutionId}>
             <TableCell>
               <Link
                 underline="hover"
@@ -182,10 +180,10 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
             </TableCell>
             <TableCell>{formatDateWithoutHours(row.createdAt.toString())}</TableCell>
             <TableCell>{formatDateWithoutHours(row.updatedAt.toString())}</TableCell>
-            <TableCell align='right'>
+            <TableCell align="right">
               <ChevronRight
                 color="primary"
-                cursor='pointer'
+                cursor="pointer"
                 sx={{ verticalAlign: 'middle' }}
                 onClick={() => onDetailRequest(row)}
               />

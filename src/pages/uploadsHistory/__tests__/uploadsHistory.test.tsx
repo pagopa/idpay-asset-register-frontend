@@ -1,4 +1,4 @@
-import {act, render, screen, waitFor} from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import OverviewHistoryUpload from '../uploadsHistory';
 import { getProductFilesList } from '../../../services/registerService';
 import '@testing-library/jest-dom';
@@ -11,7 +11,7 @@ jest.mock('react-i18next', () => ({
         'pages.uploadHistory.uploadHistorySubTitle': 'Visualizza tutti i caricamenti e i dettagli.',
         'pages.uploadHistory.uploadHistoryAlertMessage': 'Alert message for uploaded status',
         'pages.uploadHistory.uploadHistoryNoFilesUploaded': 'Nessun file caricato',
-        'errors.uploadsList.errorDescription': 'Errore nel caricamento dei dati'
+        'errors.uploadsList.errorDescription': 'Errore nel caricamento dei dati',
       };
       return translations[key] || key;
     },
@@ -30,22 +30,19 @@ jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
 jest.mock('../../components/HistoryUploadSection', () => ({
   __esModule: true,
   default: ({ loading, error, data, onPageChange, onRowsPerPageChange }: any) => (
-      <div data-testid="uploads-table">
-        {loading && <div>Loading...</div>}
-        {error && <div>Error loading data</div>}
-        {data && <div>Data loaded</div>}
-        <button
-            data-testid="page-change-btn"
-            onClick={() => onPageChange(null, 1)}
-        >
-          Change Page
-        </button>
-        <input
-            data-testid="rows-per-page-input"
-            onChange={(e) => onRowsPerPageChange(e)}
-            value="10"
-        />
-      </div>
+    <div data-testid="uploads-table">
+      {loading && <div>Loading...</div>}
+      {error && <div>Error loading data</div>}
+      {data && <div>Data loaded</div>}
+      <button data-testid="page-change-btn" onClick={() => onPageChange(null, 1)}>
+        Change Page
+      </button>
+      <input
+        data-testid="rows-per-page-input"
+        onChange={(e) => onRowsPerPageChange(e)}
+        value="10"
+      />
+    </div>
   ),
 }));
 
@@ -77,7 +74,7 @@ describe('OverviewHistoryUpload', () => {
   });
 
   test('shows data correctly when API succeeds', async () => {
-    mockGetProductFilesList.mockResolvedValue(mockData);
+    mockGetProductFilesList.mockResolvedValue({ data: mockData });
     render(<OverviewHistoryUpload />);
 
     await waitFor(() => {
@@ -85,53 +82,51 @@ describe('OverviewHistoryUpload', () => {
     });
   });
 
+  test('shows error message when API fails', async () => {
+    mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
+    act(() => {
+      render(<OverviewHistoryUpload />);
+    });
 
-    test('shows error message when API fails', async () => {
-        mockGetProductFilesList.mockRejectedValue(new Error('API Error'));
-        act(() => {
-            render(<OverviewHistoryUpload />);
-
-        });
-
-        /*
+    /*
         await waitFor(() => {
             expect(screen.getByTestId('title-overview')).toBeInTheDocument();
         });
         */
+  });
+
+  test('shows InfoUpload when uploadStatus is UPLOADED', async () => {
+    const dataWithUploaded = {
+      ...mockData,
+      content: [{ uploadStatus: 'UPLOADED', id: 1 }],
+    };
+    mockGetProductFilesList.mockResolvedValue({ data: dataWithUploaded });
+    act(() => {
+      render(<OverviewHistoryUpload />);
     });
 
-   test('shows InfoUpload when uploadStatus is UPLOADED', async () => {
-       const dataWithUploaded = {
-           ...mockData,
-           content: [{ uploadStatus: 'UPLOADED', id: 1 }]
-       };
-       mockGetProductFilesList.mockResolvedValue(dataWithUploaded);
-       act(() => {
-           render(<OverviewHistoryUpload/>);
-       });
-
-       /*
+    /*
        await waitFor(() => {
            expect(screen.getByTestId('title-overview')).toBeInTheDocument();
        });
         */
-   });
+  });
 
   test('does not show InfoUpload when uploadStatus is not UPLOADED', async () => {
     const dataWithoutUploaded = {
       ...mockData,
       content: [{ uploadStatus: 'SUPERVISIONED', id: 1 }],
     };
-    mockGetProductFilesList.mockResolvedValue(dataWithoutUploaded);
+    mockGetProductFilesList.mockResolvedValue({ data: dataWithoutUploaded });
     render(<OverviewHistoryUpload />);
 
     expect(
-        screen.queryByText('pages.uploadHistory.uploadHistoryAlertMessage')
+      screen.queryByText('pages.uploadHistory.uploadHistoryAlertMessage')
     ).not.toBeInTheDocument();
   });
 
   test('calls getProductFilesList with correct initial parameters', async () => {
-    mockGetProductFilesList.mockResolvedValue(mockData);
+    mockGetProductFilesList.mockResolvedValue({ data: mockData });
     render(<OverviewHistoryUpload />);
 
     await waitFor(() => {
@@ -139,13 +134,12 @@ describe('OverviewHistoryUpload', () => {
     });
   });
 
-
   test('handles empty content array correctly', async () => {
     const emptyData = {
       totalElements: 0,
-      content: []
+      content: [],
     };
-    mockGetProductFilesList.mockResolvedValue(emptyData);
+    mockGetProductFilesList.mockResolvedValue({ data: emptyData });
 
     render(<OverviewHistoryUpload />);
 
@@ -157,13 +151,12 @@ describe('OverviewHistoryUpload', () => {
     */
   });
 
-
   test('handles null content correctly', async () => {
     const nullContentData = {
       totalElements: 0,
-      content: null
+      content: null,
     };
-    mockGetProductFilesList.mockResolvedValue(nullContentData);
+    mockGetProductFilesList.mockResolvedValue({ data: nullContentData });
 
     render(<OverviewHistoryUpload />);
 
@@ -176,9 +169,9 @@ describe('OverviewHistoryUpload', () => {
 
   test('handles undefined content correctly', async () => {
     const undefinedContentData = {
-      totalElements: 0
+      totalElements: 0,
     };
-    mockGetProductFilesList.mockResolvedValue(undefinedContentData);
+    mockGetProductFilesList.mockResolvedValue({ data: undefinedContentData });
 
     render(<OverviewHistoryUpload />);
 
@@ -189,13 +182,12 @@ describe('OverviewHistoryUpload', () => {
     */
   });
 
-
   test('InfoUpload component renders with correct props', async () => {
     const dataWithUploaded = {
       totalElements: 1,
-      content: [{ uploadStatus: 'UPLOADED', id: 1 }]
+      content: [{ uploadStatus: 'UPLOADED', id: 1 }],
     };
-    mockGetProductFilesList.mockResolvedValue(dataWithUploaded);
+    mockGetProductFilesList.mockResolvedValue({ data: dataWithUploaded });
 
     render(<OverviewHistoryUpload />);
 
@@ -205,7 +197,6 @@ describe('OverviewHistoryUpload', () => {
     });
      */
   });
-
 
   test('renders error state with empty table', async () => {
     mockGetProductFilesList.mockRejectedValue(new Error('Network error'));
@@ -221,9 +212,8 @@ describe('OverviewHistoryUpload', () => {
      */
   });
 
-
   test('useEffect dependency array works correctly', async () => {
-    mockGetProductFilesList.mockResolvedValue(mockData);
+    mockGetProductFilesList.mockResolvedValue({ data: mockData });
     const { rerender } = render(<OverviewHistoryUpload />);
 
     await waitFor(() => {

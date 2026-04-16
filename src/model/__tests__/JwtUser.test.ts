@@ -11,9 +11,9 @@ const mockedJwtUser = {
   org_party_role: 'OPERATOR',
   org_role: 'ope_base',
   org_fc: 'fc',
-  org_address:'address',
+  org_address: 'address',
   org_pec: 'pec',
-  org_email: 'email'
+  org_email: 'email',
 };
 
 test('test jwt2JWTUser', () => {
@@ -28,6 +28,6 @@ test('test jwt2JWTUser', () => {
     org_vat: '11122233344',
     org_party_role: 'OPERATOR',
     org_role: 'ope_base',
-    org_email: 'email'
+    org_email: 'email',
   });
 });

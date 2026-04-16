@@ -19,9 +19,9 @@ jest.mock('../../utils/env', () => ({
 jest.mock('../../routes', () => ({
   __esModule: true,
   default: {
-    HOME: '/home'
+    HOME: '/home',
   },
-  BASE_ROUTE: '/base'
+  BASE_ROUTE: '/base',
 }));
 
 jest.mock('../../api/registerApiClient', () => ({
@@ -46,8 +46,12 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-const mockGetPortalConsent = rolePermissionService.getPortalConsent as jest.MockedFunction<typeof rolePermissionService.getPortalConsent>;
-const mockSavePortalConsent = rolePermissionService.savePortalConsent as jest.MockedFunction<typeof rolePermissionService.savePortalConsent>;
+const mockGetPortalConsent = rolePermissionService.getPortalConsent as jest.MockedFunction<
+  typeof rolePermissionService.getPortalConsent
+>;
+const mockSavePortalConsent = rolePermissionService.savePortalConsent as jest.MockedFunction<
+  typeof rolePermissionService.savePortalConsent
+>;
 
 beforeEach(() => {
   jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -60,7 +64,6 @@ afterEach(() => {
 });
 
 describe('test suite for useTCAgreement hook', () => {
-
   const createWrapper = () => {
     return ({ children }: { children: React.ReactNode }) => {
       const TestComponent = () => <div>{children}</div>;
@@ -79,25 +82,25 @@ describe('test suite for useTCAgreement hook', () => {
     it('should set acceptedTOS to false when getPortalConsent returns data', async () => {
       const mockResponse = {
         versionId: '1.0.0',
-        firstAcceptance: true
+        firstAcceptance: true,
       };
 
-      mockGetPortalConsent.mockResolvedValue(mockResponse);
+      mockGetPortalConsent.mockResolvedValue({ data: mockResponse });
 
       renderWithContext(<HookWrapper />);
+      expect(mockGetPortalConsent).toHaveBeenCalledTimes(1);
 
       await waitFor(() => {
         expect(testHookValues.isTOSAccepted).toBe(false);
       });
 
       expect(testHookValues.firstAcceptance).toBe(true);
-      expect(mockGetPortalConsent).toHaveBeenCalledTimes(1);
     });
 
     it('should set acceptedTOS to true when getPortalConsent returns empty object', async () => {
-      mockGetPortalConsent.mockResolvedValue({});
+      mockGetPortalConsent.mockResolvedValue({data: {}});
 
-      Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
+      Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
@@ -112,7 +115,7 @@ describe('test suite for useTCAgreement hook', () => {
       const mockError = new Error('API Error');
       mockGetPortalConsent.mockRejectedValue(mockError);
 
-      Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
+      Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
@@ -128,13 +131,13 @@ describe('test suite for useTCAgreement hook', () => {
     it('should successfully accept TOS', async () => {
       const mockInitialResponse = {
         versionId: '1.0.0',
-        firstAcceptance: true
+        firstAcceptance: true,
       };
 
-      mockGetPortalConsent.mockResolvedValue(mockInitialResponse);
+      mockGetPortalConsent.mockResolvedValue({ data: mockInitialResponse });
       mockSavePortalConsent.mockResolvedValue({});
 
-      Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
+      Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
@@ -154,13 +157,13 @@ describe('test suite for useTCAgreement hook', () => {
     it('should handle acceptTOS error', async () => {
       const mockInitialResponse = {
         versionId: '1.0.0',
-        firstAcceptance: true
+        firstAcceptance: true,
       };
 
-      mockGetPortalConsent.mockResolvedValue(mockInitialResponse);
+      mockGetPortalConsent.mockResolvedValue({ data: mockInitialResponse });
       mockSavePortalConsent.mockRejectedValue(new Error('Save error'));
 
-      Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
+      Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
@@ -178,10 +181,10 @@ describe('test suite for useTCAgreement hook', () => {
     });
 
     it('should handle acceptTOS when acceptedTOSVersion is undefined', async () => {
-      mockGetPortalConsent.mockResolvedValue({});
+      mockGetPortalConsent.mockResolvedValue({data: {}});
       mockSavePortalConsent.mockResolvedValue({});
 
-      Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
+      Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
@@ -201,7 +204,7 @@ describe('test suite for useTCAgreement hook', () => {
     it('should return correct initial values', async () => {
       mockGetPortalConsent.mockResolvedValue({});
 
-      Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
+      Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
@@ -219,7 +222,7 @@ describe('test suite for useTCAgreement hook', () => {
     it('should handle null response from getPortalConsent', async () => {
       mockGetPortalConsent.mockResolvedValue(null as any);
 
-      Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
+      Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
@@ -231,7 +234,7 @@ describe('test suite for useTCAgreement hook', () => {
     it('should handle undefined response from getPortalConsent', async () => {
       mockGetPortalConsent.mockResolvedValue(undefined as any);
 
-      Object.keys(testHookValues).forEach(key => delete testHookValues[key]);
+      Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);
 
       renderWithContext(<HookWrapper />);
 
@@ -250,7 +253,7 @@ describe('Alternative test approach with HookWrapper', () => {
   };
 
   beforeEach(() => {
-    Object.keys(returnVal).forEach(key => delete returnVal[key]);
+    Object.keys(returnVal).forEach((key) => delete returnVal[key]);
   });
 
   it('should initialize hook without errors', async () => {
@@ -268,7 +271,7 @@ describe('Alternative test approach with HookWrapper', () => {
   it('should handle successful getPortalConsent', async () => {
     const mockResponse = {
       versionId: '2.0.0',
-      firstAcceptance: false
+      firstAcceptance: false,
     };
 
     mockGetPortalConsent.mockResolvedValue(mockResponse);

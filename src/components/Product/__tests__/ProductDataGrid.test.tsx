@@ -65,12 +65,12 @@ jest.mock('../ProductDetail', () => ({
 jest.mock('../ProductModal', () => ({
   __esModule: true,
   default: ({ open, onClose, onUpdateTable, onSuccess }: any) => {
-    const { ProductStatusEnum } = require('../../../api/generated/register/ProductStatus');
+    const { ProductStatus } = require('../../../api/generated/register');
     return open ? (
       <div data-testid="product-modal">
         <button onClick={onClose}>Close Modal</button>
         <button onClick={onUpdateTable}>Update Table</button>
-        <button onClick={() => onSuccess && onSuccess(ProductStatusEnum.REJECTED)}>Success</button>
+        <button onClick={() => onSuccess && onSuccess(ProductStatus.REJECTED)}>Success</button>
       </div>
     ) : null;
   },
@@ -138,16 +138,15 @@ jest.mock('./../../../components/Product/MsgResult', () => ({
   ),
 }));
 
-import { CategoryEnum } from '../../../api/generated/register/ProductDTO';
-import { ProductStatusEnum } from '../../../api/generated/register/ProductStatus';
+import { ProductStatus } from '../../../api/generated/register';
 
 const mockProductData = [
   {
     id: '1',
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
-    category: CategoryEnum.Lavatrice,
-    status: ProductStatusEnum.SUPERVISED,
+    category: 'Lavatrice',
+    status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
     batchId: 'BATCH1',
@@ -156,8 +155,8 @@ const mockProductData = [
     id: '2',
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
-    category: CategoryEnum.Forno,
-    status: ProductStatusEnum.REJECTED,
+    category: 'Forno',
+    status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
     batchId: 'BATCH2',
@@ -235,11 +234,13 @@ describe('ProductDataGrid', () => {
       writable: true,
     });
     mockGetProducts.mockResolvedValue({
-      content: mockProductData,
-      pageNo: 0 as any,
-      totalElements: 2 as any,
+      data: {
+        content: mockProductData,
+        pageNo: 0 as any,
+        totalElements: 2 as any,
+      },
     });
-    mockGetBatchFilterList.mockResolvedValue(mockBatchFilterItems);
+    mockGetBatchFilterList.mockResolvedValue({ data: mockBatchFilterItems });
     mockUserFromJwtToken.mockReturnValue({
       org_id: 'test-org-id',
       org_role: 'USER',
@@ -418,14 +419,12 @@ jest.mock('../ProductDetail', () => ({
 jest.mock('../ProductModal', () => ({
   __esModule: true,
   default: ({ open, onClose, onUpdateTable, onSuccess }: any) => {
-    const { ProductStatusEnum } = require('../../../api/generated/register/ProductStatus');
+    const { ProductStatus } = require('../../../api/generated/register');
     return open ? (
       <div data-testid="product-modal">
         <button onClick={onClose}>Close Modal</button>
         <button onClick={onUpdateTable}>Update Table</button>
-        <button onClick={() => onSuccess && onSuccess(ProductStatusEnum.SUPERVISED)}>
-          Success
-        </button>
+        <button onClick={() => onSuccess && onSuccess(ProductStatus.SUPERVISED)}>Success</button>
       </div>
     ) : null;
   },
@@ -466,8 +465,8 @@ const baseProducts = [
     id: '1',
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
-    category: CategoryEnum.Lavatrice,
-    status: ProductStatusEnum.SUPERVISED,
+    category: 'Lavatrice',
+    status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
     batchId: 'BATCH1',
@@ -476,8 +475,8 @@ const baseProducts = [
     id: '2',
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
-    category: CategoryEnum.Forno,
-    status: ProductStatusEnum.REJECTED,
+    category: 'Forno',
+    status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
     batchId: 'BATCH2',
@@ -519,29 +518,35 @@ describe('ProductDataGrid – extra coverage', () => {
     });
 
     mockGetProducts.mockResolvedValue({
-      content: baseProducts,
-      pageNo: 0 as any,
-      totalElements: 2 as any,
+      data: {
+        content: baseProducts,
+        pageNo: 0 as any,
+        totalElements: 2 as any,
+      },
     });
-    mockGetBatchFilterList.mockResolvedValue([
-      { productFileId: 'BATCH1', batchName: 'Batch 1' },
-      { productFileId: 'BATCH2', batchName: 'Batch 2' },
-    ]);
+    mockGetBatchFilterList.mockResolvedValue({
+      data: [
+        { productFileId: 'BATCH1', batchName: 'Batch 1' },
+        { productFileId: 'BATCH2', batchName: 'Batch 2' },
+      ],
+    });
     mockUserFromJwtToken.mockReturnValue({
-      org_id: 'test-org-id',
-      org_role: 'USER',
-      uid: '',
-      taxCode: '',
-      name: '',
-      surname: '',
-      email: '',
-      org_name: '',
-      org_party_role: '',
-      org_address: '',
-      org_pec: '',
-      org_taxcode: '',
-      org_vat: '',
-      org_email: '',
+      data: {
+        org_id: 'test-org-id',
+        org_role: 'USER',
+        uid: '',
+        taxCode: '',
+        name: '',
+        surname: '',
+        email: '',
+        org_name: '',
+        org_party_role: '',
+        org_address: '',
+        org_pec: '',
+        org_taxcode: '',
+        org_vat: '',
+        org_email: '',
+      },
     });
     mockFetchUserFromLocalStorage.mockReturnValue({
       org_id: 'test-org-id',
@@ -574,16 +579,18 @@ describe('ProductDataGrid – extra coverage', () => {
     });
 
     mockGetProducts.mockResolvedValue({
-      content: [
-        {
-          ...baseProducts[0],
-          gtinCode: 'GTIN003',
-          productName: 'Already Waiting',
-          status: ProductStatusEnum.WAIT_APPROVED,
-        },
-      ],
-      pageNo: 0 as any,
-      totalElements: 1 as any,
+      data: {
+        content: [
+          {
+            ...baseProducts[0],
+            gtinCode: 'GTIN003',
+            productName: 'Already Waiting',
+            status: ProductStatus.WAIT_APPROVED,
+          },
+        ],
+        pageNo: 0 as any,
+        totalElements: 1 as any,
+      },
     });
 
     renderGrid();

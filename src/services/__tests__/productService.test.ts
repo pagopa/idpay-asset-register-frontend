@@ -18,7 +18,6 @@ describe('fetchProducts Service', () => {
   });
 });
 
-
 test('Test fetchProducts', async () => {
   // const products = await fetchProducts('1');
   // expect(products).toMatchObject(mockedProductResources.map(productResource2Product));

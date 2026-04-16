@@ -1,19 +1,22 @@
 import isEmpty from 'lodash/isEmpty';
-import {useErrorDispatcher} from "@pagopa/selfcare-common-frontend/lib";
-import {useTranslation} from "react-i18next";
-import {Dispatch} from "react";
+import { useErrorDispatcher } from '@pagopa/selfcare-common-frontend/lib';
+import { useTranslation } from 'react-i18next';
+import { Dispatch } from 'react';
 import { useDispatch } from 'react-redux';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { User } from '@pagopa/selfcare-common-frontend/lib/model/User';
 import { userActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
-import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+import {
+  storageTokenOps,
+  storageUserOps,
+} from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { parseJwt } from '../utils/jwt-utils';
 import { JWTUser } from '../model/JwtUser';
 import { IDPayUser } from '../model/IDPayUser';
-import {getUserPermission} from "../services/rolePermissionService";
-import {setPermissionsList, setUserRole} from "../redux/slices/permissionsSlice";
-import {Permission} from "../model/Permission";
-import {ENV} from "../utils/env";
+import { getUserPermission } from '../services/rolePermissionService';
+import { setPermissionsList, setUserRole } from '../redux/slices/permissionsSlice';
+import { Permission } from '../model/Permission';
+import { ENV } from '../utils/env';
 
 export const userFromJwtToken: (token: string) => User = function (token: string) {
   const jwtUser: JWTUser = parseJwt(token);
@@ -23,14 +26,14 @@ export const userFromJwtToken: (token: string) => User = function (token: string
     name: jwtUser.name,
     surname: jwtUser.family_name,
     email: jwtUser.email,
-    org_name:jwtUser.org_name,
+    org_name: jwtUser.org_name,
     org_party_role: jwtUser.org_party_role,
     org_role: jwtUser.org_role,
     org_address: jwtUser.org_address,
     org_pec: jwtUser.org_pec,
     org_taxcode: jwtUser.org_fc,
     org_vat: jwtUser.org_vat,
-    org_email: jwtUser.org_email
+    org_email: jwtUser.org_email,
   };
 };
 
@@ -51,15 +54,15 @@ export const userFromJwtTokenAsJWTUser: (token: string) => IDPayUser = function 
     org_taxcode: jwtUser.org_fc,
     org_vat: jwtUser.org_vat,
     org_email: jwtUser.org_email,
-    org_id: jwtUser.org_id
+    org_id: jwtUser.org_id,
   };
 };
 
 const saveUserPermissions = (dispatch: Dispatch<any>, addError: any, t: any) => {
   getUserPermission()
     .then((res) => {
-      dispatch(setUserRole(res.role as string));
-      dispatch(setPermissionsList(res.permissions as Array<Permission>));
+      dispatch(setUserRole(res.data.role as string));
+      dispatch(setPermissionsList(res.data.permissions as Array<Permission>));
     })
     .catch((error) => {
       addError({
@@ -85,14 +88,13 @@ export const useLogin = () => {
   const addError = useErrorDispatcher();
   const { t } = useTranslation();
 
-
   const attemptSilentLogin = async () => {
     if (CONFIG.MOCKS.MOCK_USER) {
-     //  setUser(mockedUser);
-       const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
-       setUser(mockedUserFromJWT);
+      //  setUser(mockedUser);
+      const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
+      setUser(mockedUserFromJWT);
       storageTokenOps.write(CONFIG.TEST.JWT);
-    //  storageUserOps.write(mockedUser);
+      //  storageUserOps.write(mockedUser);
       storageUserOps.write(mockedUserFromJWT);
 
       saveUserPermissions(dispatch, addError, t);

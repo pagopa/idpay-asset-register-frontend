@@ -77,18 +77,18 @@ jest.mock('react-i18next', () => ({
 
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   TitleBox: ({ title, 'data-testid': testId, ...props }: any) => (
-      <div data-testid={testId} {...props}>
-        <h1>{title}</h1>
-      </div>
+    <div data-testid={testId} {...props}>
+      <h1>{title}</h1>
+    </div>
   ),
 }));
 
 jest.mock('@pagopa/mui-italia', () => ({
   ButtonNaked: ({ children, onClick, startIcon, 'data-testid': testId, ...props }: any) => (
-      <button data-testid={testId} onClick={onClick} {...props}>
-        {startIcon}
-        {children}
-      </button>
+    <button data-testid={testId} onClick={onClick} {...props}>
+      {startIcon}
+      {children}
+    </button>
   ),
 }));
 
@@ -113,10 +113,10 @@ jest.mock('../formAddProducts', () => {
       }));
 
       return (
-          <div data-testid="form-add-products">
-            <input type="file" data-testid="file-input" onChange={() => setFileAccepted(true)} />
-            <div>File accepted: {fileAccepted ? 'Yes' : 'No'}</div>
-          </div>
+        <div data-testid="form-add-products">
+          <input type="file" data-testid="file-input" onChange={() => setFileAccepted(true)} />
+          <div>File accepted: {fileAccepted ? 'Yes' : 'No'}</div>
+        </div>
       );
     }),
   };
@@ -133,9 +133,9 @@ jest.mock('../../../routes', () => ({
 const theme = createTheme();
 
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
-    </BrowserRouter>
+  <BrowserRouter>
+    <ThemeProvider theme={theme}>{children}</ThemeProvider>
+  </BrowserRouter>
 );
 
 describe('AddProducts Component', () => {
@@ -147,9 +147,9 @@ describe('AddProducts Component', () => {
 
   test('renders component correctly', () => {
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     expect(screen.getByTestId('title')).toBeInTheDocument();
@@ -160,9 +160,9 @@ describe('AddProducts Component', () => {
 
   test('renders form section correctly', () => {
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     expect(screen.getByTestId('title-box-info')).toBeInTheDocument();
@@ -176,9 +176,9 @@ describe('AddProducts Component', () => {
     const user = userEvent.setup();
 
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     expect(screen.getByText('File accepted: No')).toBeInTheDocument();
@@ -191,9 +191,9 @@ describe('AddProducts Component', () => {
 
   test('displays correct breadcrumb structure', () => {
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     const breadcrumbContainer = screen.getByRole('navigation');
@@ -203,9 +203,9 @@ describe('AddProducts Component', () => {
 
   test('component handles theme correctly', () => {
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     const mainContainer = screen.getByTestId('title');
@@ -214,9 +214,9 @@ describe('AddProducts Component', () => {
 
   test('accessibility attributes are present', () => {
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'breadcrumb');
@@ -227,9 +227,9 @@ describe('AddProducts Component', () => {
     const user = userEvent.setup();
 
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     const backButton = screen.getByTestId('back-button-test');
@@ -246,9 +246,9 @@ describe('AddProducts Component', () => {
     mockOnExit.mockImplementation(() => {});
 
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     const backButton = screen.getByTestId('back-button-test');
@@ -261,9 +261,9 @@ describe('AddProducts Component', () => {
 
   test('formRef is properly connected to FormAddProducts', () => {
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     expect(screen.getByTestId('form-add-products')).toBeInTheDocument();
@@ -271,9 +271,9 @@ describe('AddProducts Component', () => {
 
   test('passes correct props to FormAddProducts', () => {
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     expect(screen.getByText('File accepted: No')).toBeInTheDocument();
@@ -281,9 +281,9 @@ describe('AddProducts Component', () => {
 
   test('renders main container with correct data-testid', () => {
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     expect(screen.getByTestId('add-products-container')).toBeInTheDocument();
@@ -291,9 +291,9 @@ describe('AddProducts Component', () => {
 
   test('manual link has correct href when EIE_MANUAL is defined', () => {
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
@@ -306,9 +306,9 @@ describe('AddProducts Component', () => {
     const user = userEvent.setup();
 
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
@@ -322,9 +322,9 @@ describe('AddProducts Component', () => {
     const user = userEvent.setup();
 
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
@@ -349,9 +349,9 @@ describe('AddProducts Component', () => {
     const user = userEvent.setup();
 
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
@@ -376,9 +376,9 @@ describe('AddProducts Component', () => {
     const user = userEvent.setup();
 
     render(
-        <TestWrapper>
-          <AddProducts />
-        </TestWrapper>
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
     );
 
     expect(screen.getByText('File accepted: No')).toBeInTheDocument();
