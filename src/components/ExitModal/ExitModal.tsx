@@ -12,8 +12,8 @@ type Props = {
 };
 
 const ExitModal = ({ title, subtitle, openExitModal, handleCloseExitModal, backRoute }: Props) => {
-    const navigate = useNavigate();
-    const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const closeWithoutSaving = (e: any) => {
     navigate(backRoute, { replace: true });
     handleCloseExitModal(e);

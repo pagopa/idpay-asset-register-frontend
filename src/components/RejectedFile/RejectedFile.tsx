@@ -1,4 +1,4 @@
-import {Alert, AlertTitle, Typography} from '@mui/material';
+import { Alert, AlertTitle, Typography } from '@mui/material';
 
 interface Props {
   title: string;
@@ -9,28 +9,27 @@ interface Props {
 }
 
 const RejectedFile = ({ title, description, isReport = false, onDownloadReport }: Props) => (
-    <Alert severity="error">
-      <AlertTitle>{title}</AlertTitle>
-      {isReport ? (
-          <Typography variant="body2">
-            <span
-                onClick={onDownloadReport}
-                style={{
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  color: 'inherit',
-                  fontWeight: 'normal'
-                }}
-            >
-              Scarica il report
-            </span>{' '}
-            {description}
-          </Typography>
-      ) : (
-          <Typography variant="body2">{description}</Typography>
-      )}
-    </Alert>
-
+  <Alert severity="error">
+    <AlertTitle>{title}</AlertTitle>
+    {isReport ? (
+      <Typography variant="body2">
+        <span
+          onClick={onDownloadReport}
+          style={{
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            color: 'inherit',
+            fontWeight: 'normal',
+          }}
+        >
+          Scarica il report
+        </span>{' '}
+        {description}
+      </Typography>
+    ) : (
+      <Typography variant="body2">{description}</Typography>
+    )}
+  </Alert>
 );
 
 export default RejectedFile;

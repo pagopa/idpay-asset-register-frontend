@@ -26,8 +26,8 @@ import { ArrowForward } from '@mui/icons-material';
 import ROUTES from '../../routes';
 import { getProductFilesList } from '../../services/registerService';
 import { EMPTY_DATA } from '../../utils/constants';
-import { UploadDTO } from '../../api/generated/register/UploadDTO';
-import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
+import { UploadDTO } from '../../api/generated/register';
+import { UploadsListDTO } from '../../api/generated/register';
 
 function renderUploadStatusChip(status: string) {
   switch (status) {
@@ -295,7 +295,7 @@ const OverviewProductionSection: React.FC = () => {
     setError(null);
     getProductFilesList(0, rowsPerPage)
       .then((res) => {
-        setData(res);
+        setData(res.data);
         setLoading(false);
       })
       .catch(() => {

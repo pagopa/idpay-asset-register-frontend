@@ -24,8 +24,8 @@ jest.mock('../../../utils/constants', () => ({
   EMPTY_DATA: '',
 }));
 
-jest.mock('../../../api/generated/register/ProductStatus', () => ({
-  ProductStatusEnum: { DRAFT: 'DRAFT' },
+jest.mock('../../../api/generated/register', () => ({
+  ProductStatus: { DRAFT: 'DRAFT' },
 }));
 
 jest.mock('../../../services/registerService', () => ({

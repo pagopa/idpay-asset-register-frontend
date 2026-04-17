@@ -7,10 +7,8 @@ export interface Data {
   id: number;
 }
 
-
 export type Order = 'asc' | 'desc';
 export type Value = string;
-
 
 export interface HeadCell {
   disablePadding: boolean;

@@ -28,7 +28,7 @@ describe('tests for TOSWall', () => {
 
   test('test render of TOSWall component with tos not accepted yet', async () => {
     renderWithContext(
-        <TOSWall acceptTOS={jest.fn()} tosRoute={''} privacyRoute={''} firstAcceptance={false} />
+      <TOSWall acceptTOS={jest.fn()} tosRoute={''} privacyRoute={''} firstAcceptance={false} />
     );
   });
 });

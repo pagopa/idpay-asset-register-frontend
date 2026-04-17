@@ -9,7 +9,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import { useMemo } from 'react';
 import ROUTES from '../../routes';
 import { fetchUserFromLocalStorage } from '../../helpers';
-import {USERS_TYPES} from '../../utils/constants';
+import { USERS_TYPES } from '../../utils/constants';
 import SidenavItem from './SidenavItem';
 
 /** The side menu of the application */
@@ -19,7 +19,9 @@ export default function SideMenu() {
   const onExit = useUnloadEventOnExit();
   const location = useLocation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = [ USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2 ].includes(user?.org_role as USERS_TYPES);
+  const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
+    user?.org_role as USERS_TYPES
+  );
 
   return (
     <Box display="grid" mt={1}>
@@ -29,9 +31,7 @@ export default function SideMenu() {
             <>
               <SidenavItem
                 title={t('pages.invitaliaProductsList.productsTitle')}
-                handleClick={() =>
-                  onExit(() => navigate(ROUTES.HOME, { replace: true }))
-                }
+                handleClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
                 isSelected={[`${ROUTES.HOME}/`, ROUTES.HOME].includes(location.pathname)}
                 icon={InventoryIcon}
                 level={0}
@@ -45,7 +45,11 @@ export default function SideMenu() {
                 ? 'pages.invitaliaOverview.manufacturerMenuItem'
                 : 'pages.overview.overviewTitle'
             )}
-            handleClick={() => onExit(() => navigate(isInvitaliaUser ? ROUTES.PRODUCERS : ROUTES.HOME, { replace: true }))}
+            handleClick={() =>
+              onExit(() =>
+                navigate(isInvitaliaUser ? ROUTES.PRODUCERS : ROUTES.HOME, { replace: true })
+              )
+            }
             isSelected={location.pathname === (isInvitaliaUser ? ROUTES.PRODUCERS : ROUTES.HOME)}
             icon={isInvitaliaUser ? BuildIcon : ListAltIcon}
             level={0}
