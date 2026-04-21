@@ -282,12 +282,6 @@ describe('ProductDataGrid', () => {
       renderComponent();
       await waitFor(() => expect(screen.getByTestId('empty-list')).toBeInTheDocument());
     });
-
-    it('renders children when provided and no data', async () => {
-      mockGetProducts.mockResolvedValue({ content: [], pageNo: 0 as any, totalElements: 0 as any });
-      renderComponent({ children: <div data-testid="custom-children">Custom Content</div> });
-      await waitFor(() => expect(screen.getByTestId('custom-children')).toBeInTheDocument());
-    });
   });
 
   describe('User Types and Roles', () => {
@@ -830,25 +824,4 @@ describe('ProductDataGrid – extra coverage', () => {
     expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
   });
 
-  it('renders children when tableData length is zero and loading false', async () => {
-    mockGetProducts.mockResolvedValueOnce({
-      content: [],
-      pageNo: 0 as any,
-      totalElements: 0 as any,
-    });
-
-    render(
-      <Provider store={createMockStore()}>
-        <I18nextProvider i18n={i18n}>
-          <ThemeProvider theme={theme}>
-            <ProductDataGrid organizationId="test-org-id">
-              <div data-testid="grid-children">Grid Children</div>
-            </ProductDataGrid>
-          </ThemeProvider>
-        </I18nextProvider>
-      </Provider>
-    );
-
-    await waitFor(() => expect(screen.getByTestId('grid-children')).toBeInTheDocument());
-  });
 });

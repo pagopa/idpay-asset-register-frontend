@@ -63,7 +63,7 @@ const buttonStyle = {
   marginRight: 2,
 };
 
-const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, children }) => {
+const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [showMsgRejected, setShowMsgRejected] = useState(false);
@@ -165,8 +165,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       if (DEBUG_CONSOLE) {
         console.error('Error fetching institutions:', error);
       }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -218,7 +216,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const handleStateForError = () => {
     setApiErrorOccurred(true);
     setTableData([]);
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -245,7 +242,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       void fetchInstitutions();
     }
 
-    setLoading(true);
     const targetId = isInvitaliaUser
       ? producerFilter || institution?.institutionId || ''
       : organizationId;
@@ -256,8 +252,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       })
       .catch(() => {
         setBatchFilterItems([]);
-      })
-      .finally(() => setLoading(false));
+      });
   }, [ready, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
   useEffect(() => {
     if (!ready) {
@@ -559,7 +554,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   );
 
   return (
-    <>
+    <Box width="100%" px={2}>
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box flexGrow={1}>
           <TitleBox
@@ -596,22 +591,14 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
       </Box>
 
-      {tableData?.length === 0 && !loading && (
-        <EmptyListTable message="pages.products.noFileLoaded" />
-      )}
-
       <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
-        {tableData?.length > 0 ? (
-          loading ? (
-            <CircularProgress
-              size={36}
-              sx={{
-                color: '#0055AA',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-              }}
-            />
+        {loading ? (
+          <Box sx={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+            <CircularProgress />
+          </Box>
+          ) : 
+          tableData?.length === 0 ? (
+            <EmptyListTable message="pages.products.noFileLoaded" />
           ) : (
             <Box sx={{ width: '100%' }}>
               <ProductsTable
@@ -626,10 +613,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
                 setSelected={setSelected}
               />
             </Box>
-          )
-        ) : (
-          children || null
-        )}
+          )}
 
         {tableData?.length > 0 && !loading && (
           <TablePagination
@@ -795,7 +779,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         setPage={setPage}
       />
       {renderResultMessages()}
-    </>
+    </Box>
   );
 };
 
