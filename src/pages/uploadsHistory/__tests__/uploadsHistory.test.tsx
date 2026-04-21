@@ -70,7 +70,7 @@ describe('OverviewHistoryUpload', () => {
     mockGetProductFilesList.mockImplementation(() => new Promise(() => {}));
     render(<OverviewHistoryUpload />);
 
-    expect(screen.queryByTestId('title-overview')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('title-overview')).toBeInTheDocument();
   });
 
   test('shows data correctly when API succeeds', async () => {

@@ -44,12 +44,12 @@ const OverviewHistoryUpload: React.FC = () => {
           totalElements: res.data.totalElements,
           content: res.data.content ?? [],
         });
-        setLoading(false);
       })
       .catch(() => {
         setData(null);
-        setLoading(false);
         setError(t('errors.uploadsList.errorDescription'));
+      }).finally(() => {
+        setLoading(false);
       });
   }, [page, rowsPerPage, t]);
 
@@ -61,7 +61,7 @@ const OverviewHistoryUpload: React.FC = () => {
 
   return (
     <>
-      {!loading && !error && (
+      {!error ? (
         <Box width="100%" px={2} data-testid="title-overview">
           <TitleBox
             title={t('pages.uploadHistory.sideMenuTitle')}
@@ -103,8 +103,7 @@ const OverviewHistoryUpload: React.FC = () => {
             }}
           />
         </Box>
-      )}
-      {error && (
+      ) : (
         <Box width="100%" px={2} data-testid="title-overview">
           <TitleBox
             title={t('pages.uploadHistory.sideMenuTitle')}
