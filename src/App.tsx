@@ -94,7 +94,7 @@ const SecuredRoutes = withLogin(
     const institution = useSelector(institutionSelector);
     const organizationId = institution?.institutionId || '';
 
-    useGetInitiativesQuery();
+    const { isError: isInitiativesError } = useGetInitiativesQuery();
 
     /*
     if (UPCOMING_INITIATIVE_DAY) {
@@ -133,6 +133,11 @@ const SecuredRoutes = withLogin(
 
     return (
       <Layout>
+        {isInitiativesError && (
+          <div style={{ padding: '1rem 2rem', textAlign: 'center' }}>
+            <div style={{ marginBottom: '0.5rem' }}>Errore nel caricamento iniziative</div>
+          </div>
+        )}
         <Routes>
           <Route
             path={`${routes.INITIATIVE_BASE}/*`}
