@@ -8,6 +8,8 @@ export type UseInitiativeGuardStateResult = {
   initiatives: Array<InitiativeDTO>;
   isListLoaded: boolean;
   isValid: boolean;
+  isError: boolean;
+  refetch: () => unknown;
 };
 
 /**
@@ -22,7 +24,7 @@ export type UseInitiativeGuardStateResult = {
  */
 export const useInitiativeGuardState = (): UseInitiativeGuardStateResult => {
   const initiativeId = useCurrentInitiativeId();
-  const { initiatives, isLoading } = useInitiativesQuery();
+  const { initiatives, isLoading, isError, refetch } = useInitiativesQuery();
 
   const isValid = useMemo(() => {
     if (!initiativeId) {
@@ -36,5 +38,7 @@ export const useInitiativeGuardState = (): UseInitiativeGuardStateResult => {
     initiatives,
     isListLoaded: !isLoading,
     isValid,
+    isError,
+    refetch,
   };
 };

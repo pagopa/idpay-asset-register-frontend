@@ -23,14 +23,23 @@ export type WithInitiativeGuardProps = {
  * - No global "selectedInitiative" state
  */
 const WithInitiativeGuard: React.FC<WithInitiativeGuardProps> = ({ children }) => {
-  const { initiativeId, isValid, isListLoaded, initiatives } = useInitiativeGuardState();
+  const { initiativeId, isValid, isListLoaded, initiatives, isError } = useInitiativeGuardState();
 
   // 1️⃣ Loading state (never blank screen)
   if (!isListLoaded) {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Caricamento iniziative...</div>;
   }
 
-  // 2️⃣ Empty list
+  // 2️⃣ Error state (do not treat as "empty list")
+  if (isError) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <div style={{ marginBottom: '1rem' }}>Errore nel caricamento iniziative</div>
+      </div>
+    );
+  }
+
+  // 3️⃣ Empty list
   if (Array.isArray(initiatives) && initiatives.length === 0) {
     return <Navigate to={ROUTES.HOME} replace />;
   }
