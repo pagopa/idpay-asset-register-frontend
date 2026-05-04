@@ -48,7 +48,7 @@ const Layout = ({ children }: Props) => {
   const [showAssistanceInfo, setShowAssistanceInfo] = useState(true);
 
   const match =
-    matchPath({ path: ROUTES.HOME, end: true }, location.pathname) ||
+    matchPath({ path: ROUTES.INITIATIVE_BASE, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.PRODUCTS, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.INVITALIA_PRODUCTS_LIST, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.PRODUCERS, end: true }, location.pathname) ||
