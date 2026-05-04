@@ -33,9 +33,18 @@ type StandardRoutesProps = {
   organizationId: string | undefined;
 };
 
+const FIRST_MOCKED_INITIATIVE_ID = '68dd003ccce8c534d1da22bc';
+const buildInitiativeRoute = (initiativeId: string) =>
+  routes.INITIATIVE_BASE.replace(':initiativeId', initiativeId);
+
+const HomeRedirect = () => (
+  <Navigate to={buildInitiativeRoute(FIRST_MOCKED_INITIATIVE_ID)} replace />
+);
+
 const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
   <Routes>
-    <Route path={routes.HOME} element={<Overview />} />
+    <Route path={routes.HOME} element={<HomeRedirect />} />
+    <Route path={routes.INITIATIVE_BASE} element={<Overview />} />
     <Route
       path={routes.ADD_PRODUCTS}
       element={
@@ -62,13 +71,15 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
     />
     <Route path={routes.TOS} element={<TOS />} />
     <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
-    <Route path="*" element={<Navigate to={routes.HOME} />} />
+    <Route path="*" element={<HomeRedirect />} />
   </Routes>
 );
 
 const InvitaliaRoutes = () => (
   <Routes>
-    <Route path={routes.HOME} element={<InvitaliaProductsList />} />
+    <Route path={routes.HOME} element={<HomeRedirect />} />
+    <Route path={routes.INITIATIVE_BASE} element={<InvitaliaProductsList />} />
+    <Route path={routes.INVITALIA_PRODUCTS_LIST} element={<InvitaliaProductsList />} />
     <Route
       path={routes.PRODUCERS}
       element={
@@ -79,7 +90,7 @@ const InvitaliaRoutes = () => (
     />
     <Route path={routes.TOS} element={<TOS />} />
     <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
-    <Route path="*" element={<Navigate to={routes.HOME} />} />
+    <Route path="*" element={<HomeRedirect />} />
   </Routes>
 );
 
@@ -133,19 +144,7 @@ const SecuredRoutes = withLogin(
 
     return (
       <Layout>
-        <Routes>
-          <Route
-            path={`${routes.INITIATIVE_BASE}/*`}
-            element={
-              isInvitaliaUser ? (
-                <InvitaliaRoutes />
-              ) : (
-                <StandardRoutes organizationId={organizationId} />
-              )
-            }
-          />
-          <Route path="*" element={<Navigate to={routes.HOME} />} />
-        </Routes>
+        {isInvitaliaUser ? <InvitaliaRoutes /> : <StandardRoutes organizationId={organizationId} />}
       </Layout>
     );
   })

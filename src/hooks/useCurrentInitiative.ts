@@ -20,6 +20,6 @@ export const useCurrentInitiative = (): InitiativeDTO | undefined => {
       return undefined;
     }
 
-    return initiatives.find((i) => i.initiativeId === initiativeId);
+    return initiatives.find((initiative) => initiative.initiativeId === initiativeId);
   }, [initiativeId, initiatives]);
 };
