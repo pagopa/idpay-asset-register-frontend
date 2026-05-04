@@ -1,7 +1,16 @@
 import { useTheme, useMediaQuery } from '@mui/material';
-import {storageTokenOps, storageUserOps} from "@pagopa/selfcare-common-frontend/lib/utils/storage";
-import {EMPTY_DATA, MAX_LENGTH_TABLE_PR, MAX_LENGTH_EMAIL, MIN_LENGTH_TABLE_PR, RESOLUTION_UPSCALING} from "./utils/constants";
-import {ENV} from "./utils/env";
+import {
+  storageTokenOps,
+  storageUserOps,
+} from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+import {
+  EMPTY_DATA,
+  MAX_LENGTH_TABLE_PR,
+  MAX_LENGTH_EMAIL,
+  MIN_LENGTH_TABLE_PR,
+  RESOLUTION_UPSCALING,
+} from './utils/constants';
+import { ENV } from './utils/env';
 
 export const formattedCurrency = (
   number: number | undefined,
@@ -45,146 +54,151 @@ export const formatDate = (date: Date | undefined) => {
 };
 
 export const formatDateWithHours = (isoDate: Date | string | null | undefined): string => {
-    if (!isoDate || (typeof isoDate === 'string' && isoDate.trim() === '')) {
-        return EMPTY_DATA;
-    }
-    const dateObj: Date =
-        isoDate instanceof Date
-            ? isoDate
-            : typeof isoDate === 'string'
-            ? new Date(isoDate)
-            : null as any;
-    if (!dateObj || isNaN(dateObj.getTime())) {
-        return EMPTY_DATA;
-    }
-    if (isNaN(dateObj.getTime())) {
-        return EMPTY_DATA;
-    }
-    const options: Intl.DateTimeFormatOptions = {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-        timeZone: 'Europe/Rome'
-    };
-    const parts = new Intl.DateTimeFormat('it-IT', options).formatToParts(dateObj);
-    const day = parts.find(p => p.type === 'day')?.value ?? '';
-    const month = parts.find(p => p.type === 'month')?.value ?? '';
-    const year = parts.find(p => p.type === 'year')?.value ?? '';
-    const hour = parts.find(p => p.type === 'hour')?.value ?? '';
-    const minute = parts.find(p => p.type === 'minute')?.value ?? '';
-    const second = parts.find(p => p.type === 'second')?.value ?? '';
-    return `${day}/${month}/${year}, ${hour}:${minute}:${second}`;
+  if (!isoDate || (typeof isoDate === 'string' && isoDate.trim() === '')) {
+    return EMPTY_DATA;
+  }
+  const dateObj: Date =
+    isoDate instanceof Date
+      ? isoDate
+      : typeof isoDate === 'string'
+      ? new Date(isoDate)
+      : (null as any);
+  if (!dateObj || isNaN(dateObj.getTime())) {
+    return EMPTY_DATA;
+  }
+  if (isNaN(dateObj.getTime())) {
+    return EMPTY_DATA;
+  }
+  const options: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'Europe/Rome',
+  };
+  const parts = new Intl.DateTimeFormat('it-IT', options).formatToParts(dateObj);
+  const day = parts.find((p) => p.type === 'day')?.value ?? '';
+  const month = parts.find((p) => p.type === 'month')?.value ?? '';
+  const year = parts.find((p) => p.type === 'year')?.value ?? '';
+  const hour = parts.find((p) => p.type === 'hour')?.value ?? '';
+  const minute = parts.find((p) => p.type === 'minute')?.value ?? '';
+  const second = parts.find((p) => p.type === 'second')?.value ?? '';
+  return `${day}/${month}/${year}, ${hour}:${minute}:${second}`;
 };
 
 export const formatDateWithoutHours = (isoDate: string): string => {
-    if (!isoDate) {
-        return EMPTY_DATA;
-    }
-    const date = new Date(isoDate);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+  if (!isoDate) {
+    return EMPTY_DATA;
+  }
+  const date = new Date(isoDate);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 };
 
 export const formatFileName = (name: string | undefined): string => {
-    if (typeof name === 'string' && name.length > 15) {
-        const nameArr = name.split('.');
-        const fileExtension = nameArr[nameArr.length - 1];
-        const truncatedName = name.substring(0, 10);
-        return `${truncatedName}... .${fileExtension}`;
-    } else if (typeof name === 'string' && name.length <= 15) {
-        return name;
-    }
-    return '';
+  if (typeof name === 'string' && name.length > 15) {
+    const nameArr = name.split('.');
+    const fileExtension = nameArr[nameArr.length - 1];
+    const truncatedName = name.substring(0, 10);
+    return `${truncatedName}... .${fileExtension}`;
+  } else if (typeof name === 'string' && name.length <= 15) {
+    return name;
+  }
+  return '';
 };
 
 export const initUploadBoxStyle = {
-    gridColumn: 'span 12',
-    alignItems: 'center',
-    justifyItems: 'center',
-    width: '100%',
-    border: '1px dashed #0073E6',
-    borderRadius: '10px',
-    backgroundColor: 'rgba(0, 115, 230, 0.08)',
-    p: 3,
+  gridColumn: 'span 12',
+  alignItems: 'center',
+  justifyItems: 'center',
+  width: '100%',
+  border: '1px dashed #0073E6',
+  borderRadius: '10px',
+  backgroundColor: 'rgba(0, 115, 230, 0.08)',
+  p: 3,
 };
 
 export const initUploadHelperBoxStyle = {
-    gridColumn: 'span 12',
-    alignItems: 'center',
-    justifyItems: 'start',
-    width: '100%',
-    py: 1,
-    px: 3,
+  gridColumn: 'span 12',
+  alignItems: 'center',
+  justifyItems: 'start',
+  width: '100%',
+  py: 1,
+  px: 3,
 };
 
 export const fetchUserFromLocalStorage = (): { [key: string]: string } | null => {
-    try {
-        const userString = localStorage.getItem('user');
-        return userString ? JSON.parse(userString) : null;
-    } catch (error) {
-        return null;
-    }
+  try {
+    const userString = localStorage.getItem('user');
+    return userString ? JSON.parse(userString) : null;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const truncateString = (str?: string, maxLength: number = MAX_LENGTH_EMAIL): string => {
-    if (!str) {
-        return EMPTY_DATA;
-    } else {
-        return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
-    }
+  if (!str) {
+    return EMPTY_DATA;
+  } else {
+    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+  }
 };
 
 export const truncateStringResponsive = (str?: string, maxLength?: number): string => {
-  if (!str) {return EMPTY_DATA;}
-  if (!maxLength) {return str;}
+  if (!str) {
+    return EMPTY_DATA;
+  }
+  if (!maxLength) {
+    return str;
+  }
   return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
 };
 
 export function filterInputWithSpaceRule(value: string): string {
-    const alnumCount = (value.match(/[a-zA-Z0-9]/g) || []).length;
-    if (alnumCount < 2) {
-        return value.replace(/\s/g, "");
-    }
-    return Array.from(value).reduce(
-        (acc, char) => {
-            if (char === " ") {
-                if (acc.result.length === 0) {
-                    return { ...acc, prevSpace: true };
-                }
-                if (acc.prevSpace) {
-                    return acc;
-                }
-                return {
-                    result: acc.result + " ",
-                    prevSpace: true
-                };
-            } else {
-                return {
-                    result: acc.result + char,
-                    prevSpace: false
-                };
-            }
-        },
-        { result: "", prevSpace: false }
-    ).result;
+  const alnumCount = (value.match(/[a-zA-Z0-9]/g) || []).length;
+  if (alnumCount < 2) {
+    return value.replace(/\s/g, '');
+  }
+  return Array.from(value).reduce(
+    (acc, char) => {
+      if (char === ' ') {
+        if (acc.result.length === 0) {
+          return { ...acc, prevSpace: true };
+        }
+        if (acc.prevSpace) {
+          return acc;
+        }
+        return {
+          result: acc.result + ' ',
+          prevSpace: true,
+        };
+      } else {
+        return {
+          result: acc.result + char,
+          prevSpace: false,
+        };
+      }
+    },
+    { result: '', prevSpace: false }
+  ).result;
 }
 
 export function cleanTrailingSpace(value: string): string {
-    return value.endsWith(" ") ? value.slice(0, -1) : value;
+  return value.endsWith(' ') ? value.slice(0, -1) : value;
 }
 
-export const getTablePrLength = () => typeof window !== 'undefined'
+export const getTablePrLength = () =>
+  typeof window !== 'undefined'
     ? window.innerWidth > RESOLUTION_UPSCALING
       ? MAX_LENGTH_TABLE_PR
       : MIN_LENGTH_TABLE_PR
     : MAX_LENGTH_TABLE_PR;
-    
+
 export const useResponsiveMaxLength = (): number => {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.only('xs'));
@@ -193,50 +207,65 @@ export const useResponsiveMaxLength = (): number => {
   const isLg = useMediaQuery(theme.breakpoints.only('lg'));
   const isXl = useMediaQuery(theme.breakpoints.only('xl'));
 
-  if (isXs) {return 15;}
-  if (isSm) {return 25;}
-  if (isMd) {return 35;}
-  if (isLg) {return 50;}
-  if (isXl) {return 70;}
-  return 70; 
+  if (isXs) {
+    return 15;
+  }
+  if (isSm) {
+    return 25;
+  }
+  if (isMd) {
+    return 35;
+  }
+  if (isLg) {
+    return 50;
+  }
+  if (isXl) {
+    return 70;
+  }
+  return 70;
 };
 
 export const isOnOrBeforeDate = (dmy?: string): boolean => {
-    if (!dmy) {return false;}
-    const [day, month, year] = dmy.split("/").map(Number);
+  if (!dmy) {
+    return false;
+  }
+  const [day, month, year] = dmy.split('/').map(Number);
 
-    const target = new Date(year, month - 1, day);
+  const target = new Date(year, month - 1, day);
 
-    const todayParts = new Date().toLocaleDateString("it-IT", {
-        timeZone: "Europe/Rome",
-    }).split("/").map(Number);
-    const [dd, mm, yyyy] = todayParts;
-    const today = new Date(yyyy, mm - 1, dd);
+  const todayParts = new Date()
+    .toLocaleDateString('it-IT', {
+      timeZone: 'Europe/Rome',
+    })
+    .split('/')
+    .map(Number);
+  const [dd, mm, yyyy] = todayParts;
+  const today = new Date(yyyy, mm - 1, dd);
 
-    return today < target;
+  return today < target;
 };
 
 export const customExitAction = () => {
-    storageTokenOps.delete();
-    storageUserOps.delete();
-    Object.keys(localStorage).forEach((key) => {
-        if (
-            key.toLowerCase().includes('filter') ||
-            key === 'user' ||
-            key === 'token' ||
-            key.startsWith('persist:')
-        ) {
-            localStorage.removeItem(key);
-        }
-    });
-    Object.keys(sessionStorage).forEach((key) => {
-        if (key.toLowerCase().includes('filter') || key === 'user' || key === 'token') {
-            sessionStorage.removeItem(key);
-        }
-    });
+  storageTokenOps.delete();
+  storageUserOps.delete();
+  Object.keys(localStorage).forEach((key) => {
+    if (
+      key.toLowerCase().includes('filter') ||
+      key === 'user' ||
+      key === 'token' ||
+      key.startsWith('persist:')
+    ) {
+      localStorage.removeItem(key);
+    }
+  });
+  Object.keys(sessionStorage).forEach((key) => {
+    if (key.toLowerCase().includes('filter') || key === 'user' || key === 'token') {
+      sessionStorage.removeItem(key);
+    }
+  });
 
-    window.location.assign(ENV.URL_FE.LOGOUT);
+  window.location.assign(ENV.URL_FE.LOGOUT);
 };
 
 export const delay = (ms: number): Promise<void> =>
-    new Promise(resolve => setTimeout(resolve, ms));
+  new Promise((resolve) => setTimeout(resolve, ms));

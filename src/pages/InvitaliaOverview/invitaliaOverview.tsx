@@ -3,11 +3,12 @@ import { Box, InputAdornment, TextField } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { Search } from '@mui/icons-material';
+import { AxiosResponse } from 'axios';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import DetailDrawer from '../../components/DetailDrawer/DetailDrawer';
 import { getInstitutionsList, getInstitutionById } from '../../services/registerService';
-import { InstitutionsResponse } from '../../api/generated/register/InstitutionsResponse';
-import { InstitutionResponse } from '../../api/generated/register/InstitutionResponse';
+import { InstitutionsResponse } from '../../api/generated/register';
+import { InstitutionResponse } from '../../api/generated/register';
 import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
 import { setInstitutionList } from '../../redux/slices/invitaliaSlice';
@@ -41,15 +42,15 @@ const InvitaliaOverview: React.FC = () => {
 
   const fetchInstitutions = async () => {
     try {
-      const institutionsData = await getInstitutionsList();
-      setInstitutions(institutionsData);
+      const institutionsData: AxiosResponse<InstitutionsResponse> = await getInstitutionsList();
+      setInstitutions({ institutions: institutionsData.data.institutions || []});
 
       const institutionsDataFilteredByUser = (
-        (institutionsData.institutions as Array<Institution>) ?? []
+        institutionsData.data.institutions || []
       ).filter((institution) => institution.institutionId !== user?.org_id);
-      setInstitutions({ institutions: institutionsDataFilteredByUser });
+      setInstitutions({institutions: institutionsDataFilteredByUser});
 
-      const institutionList = institutionsData.institutions;
+      const institutionList = institutionsData.data.institutions;
       dispatch(setInstitutionList(institutionList as Array<Institution>));
     } catch (error) {
       if (DEBUG_CONSOLE) {
@@ -66,9 +67,9 @@ const InvitaliaOverview: React.FC = () => {
       return list;
     }
     return list.filter((institution) =>
-      institution.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      institution?.description?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [institutions.institutions, searchTerm]);
+  }, [institutions, searchTerm]);
 
   const sortedInstitutions = useMemo(
     () => sortInstitutions([...(filteredInstitutions as Array<Institution>)], order, orderBy),
@@ -111,7 +112,7 @@ const InvitaliaOverview: React.FC = () => {
   const handleDetailRequest = async (institution: Institution) => {
     try {
       const res = await getInstitutionById(institution.institutionId);
-      setInstitutionData(res);
+      setInstitutionData(res.data);
       setDrawerOpened(true);
     } catch (error) {
       if (DEBUG_CONSOLE) {
@@ -146,14 +147,12 @@ const InvitaliaOverview: React.FC = () => {
             size="small"
             value={searchTerm}
             onChange={handleSearchChange}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Search />
-                  </InputAdornment>
-                ),
-              },
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Search />
+                </InputAdornment>
+              ),
             }}
           />
         </Box>

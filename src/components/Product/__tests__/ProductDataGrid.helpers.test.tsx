@@ -1,10 +1,16 @@
-import { getSelectedStatuses, isAllStatus, isSomeStatus, getStatusChecks, handleModalSuccess } from '../ProductDataGrid.helpers';
-import {ProductStatusEnum} from "../../../api/generated/register/ProductStatus";
-import {ProductDTO} from "../../../api/generated/register/ProductDTO";
-import {MIDDLE_STATES, PRODUCTS_STATES} from "../../../utils/constants";
+import {
+  getSelectedStatuses,
+  isAllStatus,
+  isSomeStatus,
+  getStatusChecks,
+  handleModalSuccess,
+} from '../ProductDataGrid.helpers';
+import { ProductStatus } from '../../../api/generated/register';
+import { ProductDTO } from '../../../api/generated/register';
+import { MIDDLE_STATES, PRODUCTS_STATES } from '../../../utils/constants';
 
 describe('ProductDataGrid.helpers', () => {
-  const row = (gtinCode: string, status: ProductStatusEnum): ProductDTO => ({
+  const row = (gtinCode: string, status: ProductStatus): ProductDTO => ({
     gtinCode,
     status,
     productName: '',
@@ -16,9 +22,9 @@ describe('ProductDataGrid.helpers', () => {
   });
 
   it('getSelectedStatuses filters and preserves order', () => {
-    const tableData = [row('A', ProductStatusEnum.UPLOADED), row('B', ProductStatusEnum.SUPERVISED)];
+    const tableData = [row('A', ProductStatus.UPLOADED), row('B', ProductStatus.SUPERVISED)];
     const result = getSelectedStatuses(['B', 'X', 'A'], tableData);
-    expect(result).toEqual([ProductStatusEnum.SUPERVISED, ProductStatusEnum.UPLOADED]);
+    expect(result).toEqual([ProductStatus.SUPERVISED, ProductStatus.UPLOADED]);
   });
 
   it('isAllStatus works for true and false', () => {
@@ -33,9 +39,9 @@ describe('ProductDataGrid.helpers', () => {
 
   it('getStatusChecks detects allUploaded, allSupervised, allWaitApproved, someUploaded and length', () => {
     const tableData = [
-      row('A', ProductStatusEnum.UPLOADED),
-      row('B', ProductStatusEnum.UPLOADED),
-      row('C', ProductStatusEnum.WAIT_APPROVED),
+      row('A', ProductStatus.UPLOADED),
+      row('B', ProductStatus.UPLOADED),
+      row('C', ProductStatus.WAIT_APPROVED),
     ];
     const allUp = getStatusChecks(['A', 'B'], tableData);
     expect(allUp.allUploaded).toBe(true);
@@ -43,10 +49,10 @@ describe('ProductDataGrid.helpers', () => {
     expect(allUp.allSupervised).toBe(false);
     expect(allUp.allWaitApproved).toBe(false);
     expect(allUp.length).toBe(2);
-    const allSup = getStatusChecks(['A', 'C'], [
-      row('A', ProductStatusEnum.SUPERVISED),
-      row('C', ProductStatusEnum.SUPERVISED),
-    ]);
+    const allSup = getStatusChecks(
+      ['A', 'C'],
+      [row('A', ProductStatus.SUPERVISED), row('C', ProductStatus.SUPERVISED)]
+    );
     expect(allSup.allSupervised).toBe(true);
     const allWait = getStatusChecks(['C'], tableData);
     expect(allWait.allWaitApproved).toBe(true);
@@ -71,7 +77,7 @@ describe('ProductDataGrid.helpers', () => {
   };
 
   it('handleModalSuccess: APPROVED when all UPLOADED', () => {
-    const tableData = [row('A', ProductStatusEnum.UPLOADED)];
+    const tableData = [row('A', ProductStatus.UPLOADED)];
     const setters = makeSetters();
     handleModalSuccess({
       selected: ['A'],
@@ -86,7 +92,7 @@ describe('ProductDataGrid.helpers', () => {
   });
 
   it('handleModalSuccess: WAIT_APPROVED when all UPLOADED', () => {
-    const tableData = [row('A', ProductStatusEnum.UPLOADED)];
+    const tableData = [row('A', ProductStatus.UPLOADED)];
     const setters = makeSetters();
     handleModalSuccess({
       selected: ['A'],
@@ -101,7 +107,7 @@ describe('ProductDataGrid.helpers', () => {
   });
 
   it('handleModalSuccess: SUPERVISED when all UPLOADED shows waitApproved message', () => {
-    const tableData = [row('A', ProductStatusEnum.UPLOADED)];
+    const tableData = [row('A', ProductStatus.UPLOADED)];
     const setters = makeSetters();
     handleModalSuccess({
       selected: ['A'],
@@ -116,7 +122,7 @@ describe('ProductDataGrid.helpers', () => {
   });
 
   it('handleModalSuccess: Invitalia WAIT_APPROVED when all SUPERVISED', () => {
-    const tableData = [row('A', ProductStatusEnum.SUPERVISED)];
+    const tableData = [row('A', ProductStatus.SUPERVISED)];
     const setters = makeSetters();
     handleModalSuccess({
       selected: ['A'],
@@ -131,7 +137,7 @@ describe('ProductDataGrid.helpers', () => {
   });
 
   it('handleModalSuccess: Invitalia APPROVED when all SUPERVISED', () => {
-    const tableData = [row('A', ProductStatusEnum.SUPERVISED)];
+    const tableData = [row('A', ProductStatus.SUPERVISED)];
     const setters = makeSetters();
     handleModalSuccess({
       selected: ['A'],
@@ -146,7 +152,7 @@ describe('ProductDataGrid.helpers', () => {
   });
 
   it('handleModalSuccess: Invitalia REJECTED with all UPLOADED resets all messages', () => {
-    const tableData = [row('A', ProductStatusEnum.UPLOADED)];
+    const tableData = [row('A', ProductStatus.UPLOADED)];
     const setters = makeSetters({ approved: true, wait: true, rejected: true });
     handleModalSuccess({
       selected: ['A'],
@@ -161,7 +167,7 @@ describe('ProductDataGrid.helpers', () => {
   });
 
   it('handleModalSuccess: REJECTED or REJECT_APPROVATION shows rejected when not covered by earlier branches', () => {
-    const tableData = [row('A', ProductStatusEnum.WAIT_APPROVED)];
+    const tableData = [row('A', ProductStatus.WAIT_APPROVED)];
     const s1 = makeSetters();
     handleModalSuccess({
       selected: ['A'],
@@ -187,7 +193,7 @@ describe('ProductDataGrid.helpers', () => {
   });
 
   it('handleModalSuccess: default path sets approved when no branch matches', () => {
-    const tableData = [row('A', ProductStatusEnum.WAIT_APPROVED)];
+    const tableData = [row('A', ProductStatus.WAIT_APPROVED)];
     const setters = makeSetters();
     handleModalSuccess({
       selected: ['A'],

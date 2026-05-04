@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { truncateString } from '../../helpers';
-import { InstitutionResponse } from '../../api/generated/register/InstitutionResponse';
+import { InstitutionResponse } from '../../api/generated/register';
 import { getInstitutionById } from '../../services/registerService';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
 import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_INVIT, DEBUG_CONSOLE } from '../../utils/constants';
@@ -15,8 +15,8 @@ const InstitutionInfoCard: React.FC = () => {
 
   const fetchInstitution = async () => {
     try {
-      const data = await getInstitutionById(institution?.institutionId || '');
-      setInstitutionInfo(data);
+      const res = await getInstitutionById(institution?.institutionId || '');
+      setInstitutionInfo(res.data);
     } catch (error) {
       if (DEBUG_CONSOLE) {
         console.error('Error fetching institution data:', error);
@@ -34,12 +34,31 @@ const InstitutionInfoCard: React.FC = () => {
     { label: 'piva', value: institutionInfo?.vatNumber, truncate: true },
   ];
 
+  const buildAddress = () => {
+    if (!institutionInfo) {
+      return '';
+    }
+
+    const { address, zipCode, city, county } = institutionInfo;
+
+    if (!address && !zipCode && !city && !county) {
+      return '';
+    }
+
+    const parts = [
+      address ?? '',
+      zipCode ? `, ${zipCode}` : '',
+      city ? ` ${city}` : '',
+      county ? ` (${county})` : '',
+    ];
+
+    return parts.join('').trim();
+  };
+
   const rightColumn = [
     {
       label: 'sedeLegale',
-      value: `${institutionInfo?.address ?? ''}, ${institutionInfo?.zipCode ?? ''} ${
-        institutionInfo?.city ?? ''
-      } (${institutionInfo?.county ?? ''})`,
+      value: buildAddress(),
       truncate: true,
     },
     { label: 'pec', value: institutionInfo?.digitalAddress, truncate: true },

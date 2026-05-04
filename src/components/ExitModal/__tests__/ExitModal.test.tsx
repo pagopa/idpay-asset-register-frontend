@@ -16,9 +16,9 @@ jest.mock('../../../utils/env', () => ({
 jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
-    HOME: '/home'
+    HOME: '/home',
   },
-  BASE_ROUTE: '/base'
+  BASE_ROUTE: '/base',
 }));
 
 jest.mock('react-i18next', () => ({

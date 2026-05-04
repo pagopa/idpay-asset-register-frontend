@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import EprelLinks from '../EprelLinks'
-import { ProductDTO } from '../../../api/generated/register/ProductDTO';
+import EprelLinks from '../EprelLinks';
+import { ProductDTO } from '../../../api/generated/register';
 import '@testing-library/jest-dom';
-import {EMPTY_DATA} from "../../../utils/constants";
+import { EMPTY_DATA } from '../../../utils/constants';
 
 describe('EprelLinks', () => {
   const baseRow: ProductDTO = {
@@ -11,27 +11,34 @@ describe('EprelLinks', () => {
   };
 
   it('renderizza il link se eprelCode è valido', () => {
-    render(<EprelLinks row={baseRow}/>);
+    render(<EprelLinks row={baseRow} />);
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', baseRow.linkEprel);
     expect(link).toHaveTextContent(baseRow.eprelCode as string);
   });
 
   it('renderizza solo Typography con emptyData se eprelCode è stringa vuota', () => {
-    render(<EprelLinks row={{...baseRow, eprelCode: ''}}/>);
+    render(<EprelLinks row={{ ...baseRow, eprelCode: '' }} />);
     expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
+  it('renderizza stringa vuota se linkEprel è null', () => {
+    render(<EprelLinks row={{ ...baseRow, linkEprel: null }} />);
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('href', '');
+    expect(link).toHaveTextContent(baseRow.eprelCode as string);
+  });
+
   it('renderizza solo Typography con emptyData se eprelCode è undefined', () => {
-    render(<EprelLinks row={{...baseRow, eprelCode: undefined}}/>);
+    render(<EprelLinks row={{ ...baseRow, eprelCode: undefined }} />);
     expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   it('renderizza solo Typography con emptyData se eprelCode è null', () => {
-    render(<EprelLinks row={{...baseRow, eprelCode: null as any}}/>);
+    render(<EprelLinks row={{ ...baseRow, eprelCode: null as any }} />);
     expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
-})
+});

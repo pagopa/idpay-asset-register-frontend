@@ -13,7 +13,7 @@ const ROUTES = {
   UPLOADS: `${BASE_ROUTE}/storico-caricamenti`,
   INVITALIA_PRODUCTS_LIST: `${BASE_ROUTE}/lista-prodotti`,
   PRODUCERS: `${BASE_ROUTE}/produttori`,
-  UPCOMING: `${BASE_ROUTE}/iniziativa-in-arrivo`
+  UPCOMING: `${BASE_ROUTE}/iniziativa-in-arrivo`,
 };
 
 export default ROUTES;

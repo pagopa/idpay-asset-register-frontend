@@ -65,12 +65,12 @@ jest.mock('../ProductDetail', () => ({
 jest.mock('../ProductModal', () => ({
   __esModule: true,
   default: ({ open, onClose, onUpdateTable, onSuccess }: any) => {
-    const { ProductStatusEnum } = require('../../../api/generated/register/ProductStatus');
+    const { ProductStatus } = require('../../../api/generated/register');
     return open ? (
       <div data-testid="product-modal">
         <button onClick={onClose}>Close Modal</button>
         <button onClick={onUpdateTable}>Update Table</button>
-        <button onClick={() => onSuccess && onSuccess(ProductStatusEnum.REJECTED)}>Success</button>
+        <button onClick={() => onSuccess && onSuccess(ProductStatus.REJECTED)}>Success</button>
       </div>
     ) : null;
   },
@@ -138,16 +138,15 @@ jest.mock('./../../../components/Product/MsgResult', () => ({
   ),
 }));
 
-import { CategoryEnum } from '../../../api/generated/register/ProductDTO';
-import { ProductStatusEnum } from '../../../api/generated/register/ProductStatus';
+import { ProductStatus } from '../../../api/generated/register';
 
 const mockProductData = [
   {
     id: '1',
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
-    category: CategoryEnum.Lavatrice,
-    status: ProductStatusEnum.SUPERVISED,
+    category: 'Lavatrice',
+    status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
     batchId: 'BATCH1',
@@ -156,8 +155,8 @@ const mockProductData = [
     id: '2',
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
-    category: CategoryEnum.Forno,
-    status: ProductStatusEnum.REJECTED,
+    category: 'Forno',
+    status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
     batchId: 'BATCH2',
@@ -235,11 +234,13 @@ describe('ProductDataGrid', () => {
       writable: true,
     });
     mockGetProducts.mockResolvedValue({
-      content: mockProductData,
-      pageNo: 0 as any,
-      totalElements: 2 as any,
+      data: {
+        content: mockProductData,
+        pageNo: 0 as any,
+        totalElements: 2 as any,
+      },
     });
-    mockGetBatchFilterList.mockResolvedValue(mockBatchFilterItems);
+    mockGetBatchFilterList.mockResolvedValue({ data: mockBatchFilterItems });
     mockUserFromJwtToken.mockReturnValue({
       org_id: 'test-org-id',
       org_role: 'USER',
@@ -280,12 +281,6 @@ describe('ProductDataGrid', () => {
       mockGetProducts.mockResolvedValue({ content: [], pageNo: 0 as any, totalElements: 0 as any });
       renderComponent();
       await waitFor(() => expect(screen.getByTestId('empty-list')).toBeInTheDocument());
-    });
-
-    it('renders children when provided and no data', async () => {
-      mockGetProducts.mockResolvedValue({ content: [], pageNo: 0 as any, totalElements: 0 as any });
-      renderComponent({ children: <div data-testid="custom-children">Custom Content</div> });
-      await waitFor(() => expect(screen.getByTestId('custom-children')).toBeInTheDocument());
     });
   });
 
@@ -398,33 +393,33 @@ describe('ProductDataGrid', () => {
 jest.mock('../../FiltersDrawer/FiltersDrawer', () => ({
   __esModule: true,
   default: ({ open, toggleFiltersDrawer, setFiltering }: any) =>
-      open ? (
-          <div data-testid="filters-drawer">
-            <button onClick={() => toggleFiltersDrawer(false)}>Close Filters</button>
-            <button onClick={() => setFiltering(true)}>Apply Filters</button>
-          </div>
-      ) : null,
+    open ? (
+      <div data-testid="filters-drawer">
+        <button onClick={() => toggleFiltersDrawer(false)}>Close Filters</button>
+        <button onClick={() => setFiltering(true)}>Apply Filters</button>
+      </div>
+    ) : null,
 }));
 
 jest.mock('../ProductDetail', () => ({
   __esModule: true,
   default: ({ onClose }: any) => (
-      <div data-testid="product-detail">
-        <button onClick={onClose}>Close Detail</button>
-      </div>
+    <div data-testid="product-detail">
+      <button onClick={onClose}>Close Detail</button>
+    </div>
   ),
 }));
 
 jest.mock('../ProductModal', () => ({
   __esModule: true,
   default: ({ open, onClose, onUpdateTable, onSuccess }: any) => {
-    const { ProductStatusEnum } = require('../../../api/generated/register/ProductStatus');
+    const { ProductStatus } = require('../../../api/generated/register');
     return open ? (
-        <div data-testid="product-modal">
-          <button onClick={onClose}>Close Modal</button>
-          <button onClick={onUpdateTable}>Update Table</button>
-          <button onClick={() => onSuccess && onSuccess(ProductStatusEnum.SUPERVISED)}>Success</button>
-        </div>
+      <div data-testid="product-modal">
+        <button onClick={onClose}>Close Modal</button>
+        <button onClick={onUpdateTable}>Update Table</button>
+        <button onClick={() => onSuccess && onSuccess(ProductStatus.SUPERVISED)}>Success</button>
+      </div>
     ) : null;
   },
 }));
@@ -437,7 +432,7 @@ jest.mock('../../../pages/components/EmptyListTable', () => ({
 jest.mock('./../../../components/Product/MsgResult', () => ({
   __esModule: true,
   default: ({ severity, message }: any) => (
-      <div data-testid={`msg-result-${severity}`}>{message}</div>
+    <div data-testid={`msg-result-${severity}`}>{message}</div>
   ),
 }));
 
@@ -449,13 +444,13 @@ jest.mock('../ProductDataGrid.helpers', () => ({
 const renderGrid = (props = {}, storeState = {}) => {
   const store = createMockStore(storeState);
   return render(
-      <Provider store={store}>
-        <I18nextProvider i18n={i18n}>
-          <ThemeProvider theme={theme}>
-            <ProductDataGrid organizationId="test-org-id" {...props} />
-          </ThemeProvider>
-        </I18nextProvider>
-      </Provider>
+    <Provider store={store}>
+      <I18nextProvider i18n={i18n}>
+        <ThemeProvider theme={theme}>
+          <ProductDataGrid organizationId="test-org-id" {...props} />
+        </ThemeProvider>
+      </I18nextProvider>
+    </Provider>
   );
 };
 
@@ -464,8 +459,8 @@ const baseProducts = [
     id: '1',
     productName: 'Test Product 1',
     gtinCode: 'GTIN001',
-    category: CategoryEnum.Lavatrice,
-    status: ProductStatusEnum.SUPERVISED,
+    category: 'Lavatrice',
+    status: ProductStatus.SUPERVISED,
     eprelCode: 'EPREL001',
     producerId: 'PRODUCER1',
     batchId: 'BATCH1',
@@ -474,8 +469,8 @@ const baseProducts = [
     id: '2',
     productName: 'Test Product 2',
     gtinCode: 'GTIN002',
-    category: CategoryEnum.Forno,
-    status: ProductStatusEnum.REJECTED,
+    category: 'Forno',
+    status: ProductStatus.REJECTED,
     eprelCode: 'EPREL002',
     producerId: 'PRODUCER2',
     batchId: 'BATCH2',
@@ -484,19 +479,19 @@ const baseProducts = [
 
 describe('ProductDataGrid – extra coverage', () => {
   const mockGetProducts = registerService.getProducts as jest.MockedFunction<
-      typeof registerService.getProducts
+    typeof registerService.getProducts
   >;
   const mockGetBatchFilterList = registerService.getBatchFilterList as jest.MockedFunction<
-      typeof registerService.getBatchFilterList
+    typeof registerService.getBatchFilterList
   >;
   const mockUserFromJwtToken = useLogin.userFromJwtTokenAsJWTUser as jest.MockedFunction<
-      typeof useLogin.userFromJwtTokenAsJWTUser
+    typeof useLogin.userFromJwtTokenAsJWTUser
   >;
   const mockFetchUserFromLocalStorage = helpers.fetchUserFromLocalStorage as jest.MockedFunction<
-      typeof helpers.fetchUserFromLocalStorage
+    typeof helpers.fetchUserFromLocalStorage
   >;
   const mockGetStatusChecks = require('../ProductDataGrid.helpers')
-      .getStatusChecks as jest.MockedFunction<any>;
+    .getStatusChecks as jest.MockedFunction<any>;
 
   beforeAll(() => {
     i18n.init({ resources: {}, lng: 'en', interpolation: { escapeValue: false } });
@@ -517,29 +512,35 @@ describe('ProductDataGrid – extra coverage', () => {
     });
 
     mockGetProducts.mockResolvedValue({
-      content: baseProducts,
-      pageNo: 0 as any,
-      totalElements: 2 as any,
+      data: {
+        content: baseProducts,
+        pageNo: 0 as any,
+        totalElements: 2 as any,
+      },
     });
-    mockGetBatchFilterList.mockResolvedValue([
-      { productFileId: 'BATCH1', batchName: 'Batch 1' },
-      { productFileId: 'BATCH2', batchName: 'Batch 2' },
-    ]);
+    mockGetBatchFilterList.mockResolvedValue({
+      data: [
+        { productFileId: 'BATCH1', batchName: 'Batch 1' },
+        { productFileId: 'BATCH2', batchName: 'Batch 2' },
+      ],
+    });
     mockUserFromJwtToken.mockReturnValue({
-      org_id: 'test-org-id',
-      org_role: 'USER',
-      uid: '',
-      taxCode: '',
-      name: '',
-      surname: '',
-      email: '',
-      org_name: '',
-      org_party_role: '',
-      org_address: '',
-      org_pec: '',
-      org_taxcode: '',
-      org_vat: '',
-      org_email: '',
+      data: {
+        org_id: 'test-org-id',
+        org_role: 'USER',
+        uid: '',
+        taxCode: '',
+        name: '',
+        surname: '',
+        email: '',
+        org_name: '',
+        org_party_role: '',
+        org_address: '',
+        org_pec: '',
+        org_taxcode: '',
+        org_vat: '',
+        org_email: '',
+      },
     });
     mockFetchUserFromLocalStorage.mockReturnValue({
       org_id: 'test-org-id',
@@ -572,16 +573,18 @@ describe('ProductDataGrid – extra coverage', () => {
     });
 
     mockGetProducts.mockResolvedValue({
-      content: [
-        {
-          ...baseProducts[0],
-          gtinCode: 'GTIN003',
-          productName: 'Already Waiting',
-          status: ProductStatusEnum.WAIT_APPROVED,
-        },
-      ],
-      pageNo: 0 as any,
-      totalElements: 1 as any,
+      data: {
+        content: [
+          {
+            ...baseProducts[0],
+            gtinCode: 'GTIN003',
+            productName: 'Already Waiting',
+            status: ProductStatus.WAIT_APPROVED,
+          },
+        ],
+        pageNo: 0 as any,
+        totalElements: 1 as any,
+      },
     });
 
     renderGrid();
@@ -619,9 +622,7 @@ describe('ProductDataGrid – extra coverage', () => {
     expect(screen.getByTestId('msg-result-success')).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('Close Modal'));
-    await waitFor(() =>
-        expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument());
   });
 
   it('opens Confirm dialog for WAIT_APPROVED flow and handles confirm + success messages', async () => {
@@ -644,14 +645,12 @@ describe('ProductDataGrid – extra coverage', () => {
     fireEvent.click(screen.getByTestId('checkbox-1'));
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
 
-    await waitFor(() =>
-        expect(screen.getByTestId('product-confirm-dialog')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByTestId('product-confirm-dialog')).toBeInTheDocument());
 
     fireEvent.click(screen.getByText('Confirm'));
 
     await waitFor(() =>
-        expect(screen.queryByTestId('product-confirm-dialog')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('product-confirm-dialog')).not.toBeInTheDocument()
     );
 
     expect(screen.getByTestId('msg-result-success')).toBeInTheDocument();
@@ -724,9 +723,7 @@ describe('ProductDataGrid – extra coverage', () => {
     renderGrid();
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
 
-    expect(
-        screen.getByText(/1 - 2 pages\.products\.tablePaginationFrom 2/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/1 - 2 pages\.products\.tablePaginationFrom 2/i)).toBeInTheDocument();
   });
 
   it('opens and closes the Filters drawer and applies filtering (setFiltering)', async () => {
@@ -739,9 +736,7 @@ describe('ProductDataGrid – extra coverage', () => {
     fireEvent.click(screen.getByText('Apply Filters'));
 
     fireEvent.click(screen.getByText('Close Filters'));
-    await waitFor(() =>
-        expect(screen.queryByTestId('filters-drawer')).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByTestId('filters-drawer')).not.toBeInTheDocument());
   });
 
   it('handles sorting and paginated label rendering', async () => {
@@ -750,9 +745,7 @@ describe('ProductDataGrid – extra coverage', () => {
 
     fireEvent.click(screen.getByTestId('sort-btn-0'));
 
-    expect(
-        screen.getByText('New Filter')
-    ).toBeInTheDocument();
+    expect(screen.getByText('New Filter')).toBeInTheDocument();
   });
 
   it('opens and closes the Detail drawer via ProductsTable callback', async () => {
@@ -764,17 +757,71 @@ describe('ProductDataGrid – extra coverage', () => {
     expect(screen.getByTestId('product-detail')).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('Close Detail'));
-    await waitFor(() =>
-        expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument());
   });
 
   it('gracefully handles getBatchFilterList API error path without breaking the table', async () => {
     (registerService.getBatchFilterList as jest.Mock).mockRejectedValueOnce(
-        new Error('Batch API Error (extra)')
+      new Error('Batch API Error (extra)')
     );
 
     renderGrid();
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
   });
+
+  it('does not render action buttons when no selection', async () => {
+    renderGrid();
+    await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
+
+    expect(screen.queryByTestId('rejectedBtn')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('waitApprovedBtn')).not.toBeInTheDocument();
+  });
+
+  it('renders WAIT_APPROVED message result when ProductModal success triggers WAIT_APPROVED for L1', async () => {
+    mockFetchUserFromLocalStorage.mockReturnValue({
+      org_id: 'test-org-id',
+      org_role: USERS_TYPES.INVITALIA_L1,
+    });
+
+    const mockGetStatusChecks = require('../ProductDataGrid.helpers').getStatusChecks as jest.Mock;
+
+    mockGetStatusChecks.mockReturnValue({
+      allUploaded: true,
+      allSupervised: false,
+      allWaitApproved: false,
+      someUploaded: false,
+      length: 1,
+    });
+
+    renderGrid();
+    await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
+
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
+
+    await waitFor(() => expect(screen.getByTestId('product-confirm-dialog')).toBeInTheDocument());
+
+    fireEvent.click(screen.getByText('Success'));
+
+    expect(screen.getByTestId('msg-result-success')).toBeInTheDocument();
+  });
+
+  it('handleOpenModalWithStatusCheck returns early when no selected rows', async () => {
+    const mockGetStatusChecks = require('../ProductDataGrid.helpers').getStatusChecks as jest.Mock;
+
+    mockGetStatusChecks.mockReturnValue({
+      allUploaded: false,
+      allSupervised: false,
+      allWaitApproved: false,
+      someUploaded: false,
+      length: 0,
+    });
+
+    renderGrid();
+    await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
+
+    expect(screen.queryByTestId('rejectedBtn')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
+  });
+
 });

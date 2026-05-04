@@ -1,4 +1,4 @@
-import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { ProductDTO } from '../../api/generated/register';
 
 export interface Data {
   category: string;

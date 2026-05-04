@@ -15,9 +15,9 @@ jest.mock('../../../utils/env', () => ({
     },
     HEADER: {
       LINK: {
-        PRODUCTURL: 'product'
-      }
-    }
+        PRODUCTURL: 'product',
+      },
+    },
   },
 }));
 

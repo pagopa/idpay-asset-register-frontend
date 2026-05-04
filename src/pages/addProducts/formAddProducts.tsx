@@ -25,6 +25,7 @@ import {
 import ROUTES from '../../routes';
 import { useErrorHandling } from '../../hooks/useErrorHandling';
 import { useFileState } from '../../hooks/useFileState';
+import { UploadProductListParams } from '../../api/generated/register';
 import { delay } from '../../helpers';
 import { categoryList, downloadCsv } from './helpers';
 import FileUploadSection from './fileUploadSection';
@@ -111,8 +112,11 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       errorHandling.clearErrors();
 
       try {
-        const res = await uploadProductListVerify(files[0], formik.values.category);
-        handleUploadResponse(res, files[0]);
+        const res = await uploadProductListVerify(
+          files[0],
+          formik.values.category as UploadProductListParams['category']
+        );
+        handleUploadResponse(res.data, files[0]);
       } catch (error) {
         handleUploadErrorAndRejectFile({ status: undefined });
       }
@@ -209,13 +213,16 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         throw new Error('No file available');
       }
 
-      const res = await uploadProductList(fileState.currentFile, formik.values.category);
+      const res = await uploadProductList(
+        fileState.currentFile,
+        formik.values.category as UploadProductListParams['category']
+      );
 
-      if (res.status === 'OK') {
+      if (res.status === 200) {
         await delay(1000);
         onExit(() => navigate(ROUTES.HOME, { replace: true }));
       } else {
-        handleUploadErrorAndRejectFile(res);
+        handleUploadErrorAndRejectFile(res.data);
       }
     };
 

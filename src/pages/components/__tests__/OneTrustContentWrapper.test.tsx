@@ -13,9 +13,9 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
-    PRODUCTS: '/prodotti'
+    PRODUCTS: '/prodotti',
   },
-  BASE_ROUTE: '/base'
+  BASE_ROUTE: '/base',
 }));
 jest.mock('../../../api/registerApiClient', () => ({
   RegisterApi: {

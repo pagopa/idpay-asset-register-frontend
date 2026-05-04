@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { AxiosResponse } from 'axios';
 import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/system';
 import Paper from '@mui/material/Paper';
@@ -6,7 +7,7 @@ import { Table, TableHead, TableBody, TableRow, TableCell, Alert, Typography } f
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
-import { UploadsListDTO } from '../../api/generated/register/UploadsListDTO';
+import { UploadsListDTO } from '../../api/generated/register';
 import { getProductFilesList } from '../../services/registerService';
 import UploadsTable from '../components/HistoryUploadSection';
 
@@ -37,18 +38,18 @@ const OverviewHistoryUpload: React.FC = () => {
     setLoading(true);
     setError(null);
     getProductFilesList(page, rowsPerPage)
-      .then((res: UploadsListDTO) => {
+      .then((res: AxiosResponse<UploadsListDTO>) => {
         setData({
-          ...res,
-          totalElements: res.totalElements,
-          content: res.content ?? [],
+          ...res.data,
+          totalElements: res.data.totalElements,
+          content: res.data.content ?? [],
         });
-        setLoading(false);
       })
       .catch(() => {
         setData(null);
-        setLoading(false);
         setError(t('errors.uploadsList.errorDescription'));
+      }).finally(() => {
+        setLoading(false);
       });
   }, [page, rowsPerPage, t]);
 
@@ -60,7 +61,7 @@ const OverviewHistoryUpload: React.FC = () => {
 
   return (
     <>
-      {!loading && !error && (
+      {!error ? (
         <Box width="100%" px={2} data-testid="title-overview">
           <TitleBox
             title={t('pages.uploadHistory.sideMenuTitle')}
@@ -102,12 +103,11 @@ const OverviewHistoryUpload: React.FC = () => {
             }}
           />
         </Box>
-      )}
-      {error && (
+      ) : (
         <Box width="100%" px={2} data-testid="title-overview">
           <TitleBox
-              title={t('pages.uploadHistory.sideMenuTitle')}
-              subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
+            title={t('pages.uploadHistory.sideMenuTitle')}
+            subTitle={t('pages.uploadHistory.uploadHistorySubTitle')}
             mbTitle={2}
             mtTitle={2}
             mbSubTitle={5}

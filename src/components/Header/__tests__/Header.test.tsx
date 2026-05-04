@@ -37,10 +37,7 @@ describe('Header Component', () => {
   const mockSelectedParty = {
     partyId: 'party-1',
     description: 'Party One',
-    roles: [
-      { roleKey: 'admin' },
-      { roleKey: 'user' },
-    ],
+    roles: [{ roleKey: 'admin' }, { roleKey: 'user' }],
     urlLogo: 'https://example.com/logo.png',
   };
 
@@ -96,36 +93,24 @@ describe('Header Component', () => {
   });
 
   it('should pass correct props to CustomHeader', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-            loggedUser={mockLoggedUser}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} loggedUser={mockLoggedUser} />);
 
     expect(CustomHeader).toHaveBeenCalledWith(
-        expect.objectContaining({
-          withSecondHeader: true,
-          onExit: mockOnExit,
-          selectedPartyId: 'party-1',
-          selectedProductId: 'prod-idpay-asset-register',
-          addSelfcareProduct: false,
-          assistanceEmail: 'support@example.com',
-          enableLogin: true,
-        }),
-        expect.anything()
+      expect.objectContaining({
+        withSecondHeader: true,
+        onExit: mockOnExit,
+        selectedPartyId: 'party-1',
+        selectedProductId: 'prod-idpay-asset-register',
+        addSelfcareProduct: false,
+        assistanceEmail: 'support@example.com',
+        enableLogin: true,
+      }),
+      expect.anything()
     );
   });
 
   it('should filter products correctly (active and authorized only)', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-            loggedUser={mockLoggedUser}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} loggedUser={mockLoggedUser} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.productsList).toHaveLength(3);
@@ -135,12 +120,7 @@ describe('Header Component', () => {
   });
 
   it('should include welfare product as first item in products list', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.productsList[0]).toEqual({
@@ -152,12 +132,7 @@ describe('Header Component', () => {
   });
 
   it('should exclude products with status INACTIVE', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     const productIds = call.productsList.map((p: any) => p.id);
@@ -165,12 +140,7 @@ describe('Header Component', () => {
   });
 
   it('should exclude products with authorized false', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     const productIds = call.productsList.map((p: any) => p.id);
@@ -178,25 +148,14 @@ describe('Header Component', () => {
   });
 
   it('should map party data correctly', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.partyList).toEqual(undefined);
   });
 
   it('should handle loggedUser mapping correctly', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-            loggedUser={mockLoggedUser}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} loggedUser={mockLoggedUser} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.loggedUser).toEqual({
@@ -208,12 +167,7 @@ describe('Header Component', () => {
   });
 
   it('should pass false for loggedUser when not provided', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.loggedUser).toBe(false);
@@ -223,12 +177,7 @@ describe('Header Component', () => {
     const mockOpen = jest.fn();
     global.window.open = mockOpen;
 
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     call.onDocumentationClick();
@@ -237,12 +186,7 @@ describe('Header Component', () => {
   });
 
   it('should handle onSelectedProduct callback', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     const mockProduct = { id: 'new-product' };
@@ -253,12 +197,7 @@ describe('Header Component', () => {
   });
 
   it('should handle onSelectedParty callback', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     const mockParty = { id: 'party-2', name: 'Party Two' };
@@ -272,12 +211,7 @@ describe('Header Component', () => {
   });
 
   it('should not call onExit if onSelectedParty receives falsy value', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
 
@@ -288,12 +222,7 @@ describe('Header Component', () => {
   });
 
   it('should update party2Show when selectedParty changes', async () => {
-    const { rerender } = render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    const { rerender } = render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const newSelectedParty = {
       partyId: 'party-2',
@@ -312,17 +241,12 @@ describe('Header Component', () => {
       return undefined;
     });
 
-    rerender(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    rerender(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     await waitFor(() => {
       const call = (CustomHeader as jest.Mock).mock.calls[
-      (CustomHeader as jest.Mock).mock.calls.length - 1
-          ][0];
+        (CustomHeader as jest.Mock).mock.calls.length - 1
+      ][0];
       expect(call.partyList[0].id).toBe('party-2');
     });
   });
@@ -338,12 +262,7 @@ describe('Header Component', () => {
       return undefined;
     });
 
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.productsList).toEqual([
@@ -367,12 +286,7 @@ describe('Header Component', () => {
       return undefined;
     });
 
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.productsList).toHaveLength(1);
@@ -380,36 +294,21 @@ describe('Header Component', () => {
   });
 
   it('should pass withSecondHeader prop correctly', () => {
-    const { rerender } = render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    const { rerender } = render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     let call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.withSecondHeader).toBe(true);
 
     (CustomHeader as jest.Mock).mockClear();
 
-    rerender(
-        <Header
-            withSecondHeader={false}
-            onExit={mockOnExit}
-        />
-    );
+    rerender(<Header withSecondHeader={false} onExit={mockOnExit} />);
 
     call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.withSecondHeader).toBe(false);
   });
 
   it('should have correct default prop values for CustomHeader', () => {
-    render(
-        <Header
-            withSecondHeader={true}
-            onExit={mockOnExit}
-        />
-    );
+    render(<Header withSecondHeader={true} onExit={mockOnExit} />);
 
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.addSelfcareProduct).toBe(false);

@@ -17,6 +17,14 @@ const mockData = {
   digitalAddress: 'acme@pec.it',
 };
 
+const emptyMockData = {
+  description: undefined,
+  fiscalCode: undefined,
+  vatNumber: undefined,
+  address: undefined,
+  digitalAddress: undefined,
+};
+
 describe('ManufacturerDetail', () => {
   it('renders all DrawerItems with correct values', () => {
     render(<ManufacturerDetail data={mockData as any} />);
@@ -25,6 +33,10 @@ describe('ManufacturerDetail', () => {
     expect(screen.getByText(mockData.vatNumber)).toBeInTheDocument();
     expect(screen.getByText(mockData.address)).toBeInTheDocument();
     expect(screen.getByText(String(mockData.digitalAddress))).toBeInTheDocument();
+  });
+
+  it('renders all DrawerItems with empty string value when data values are missing', () => {
+    render(<ManufacturerDetail data={emptyMockData as any} />);
   });
 
   it('renders DrawerItem with copyable for digitalAddress', () => {

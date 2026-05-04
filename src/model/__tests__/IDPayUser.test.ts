@@ -14,7 +14,7 @@ const mockedIdPayUser: IDPayUser = {
   org_taxcode: 'taxcode',
   org_vat: 'vat',
   org_email: 'email',
-  org_id: 'org_id'
+  org_id: 'org_id',
 };
 
 test('Test initiativeGeneral2GeneralInfo', () => {
@@ -32,6 +32,6 @@ test('Test initiativeGeneral2GeneralInfo', () => {
     org_taxcode: 'taxcode',
     org_vat: 'vat',
     org_email: 'email',
-    org_id: "org_id"
+    org_id: 'org_id',
   });
 });

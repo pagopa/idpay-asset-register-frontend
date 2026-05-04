@@ -237,7 +237,7 @@ export default function FiltersDrawer({
           data-testid="open-detail-button"
           onClick={() => toggleFiltersDrawer(false)}
           sx={{ color: 'text.secondary', ml: 'auto' }}
-          aria-label="Chiudi filtri"
+          aria-label="Close filters"
         >
           <CloseIcon />
         </IconButton>

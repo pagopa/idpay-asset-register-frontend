@@ -18,17 +18,11 @@ jest.mock('react-redux', () => ({
 
 jest.mock('../decorators/withLogin', () => ({
   __esModule: true,
-  default:
-      (Comp: any) =>
-          (props: any) =>
-              <Comp {...props} />,
+  default: (Comp: any) => (props: any) => <Comp {...props} />,
 }));
 jest.mock('../decorators/withSelectedPartyProducts', () => ({
   __esModule: true,
-  default:
-      (Comp: any) =>
-          (props: any) =>
-              <Comp {...props} />,
+  default: (Comp: any) => (props: any) => <Comp {...props} />,
 }));
 
 const mockUseTCAgreement = jest.fn();
@@ -122,7 +116,7 @@ jest.mock('../pages/components/Products', () => ({
 jest.mock('../components/Product/ProductDataGrid', () => ({
   __esModule: true,
   default: ({ organizationId }: any) => (
-      <div data-testid="product-grid">ProductDataGrid:{organizationId}</div>
+    <div data-testid="product-grid">ProductDataGrid:{organizationId}</div>
   ),
 }));
 jest.mock('../pages/InvitaliaOverview/invitaliaOverview', () => ({
@@ -161,11 +155,11 @@ const setUpcoming = (active: boolean) => {
 };
 
 const renderApp = (initialEntries: string[]) =>
-    render(
-        <MemoryRouter initialEntries={initialEntries}>
-          <App />
-        </MemoryRouter>
-    );
+  render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <App />
+    </MemoryRouter>
+  );
 
 describe('App routing and gating', () => {
   beforeEach(() => {
@@ -221,7 +215,6 @@ describe('App routing and gating', () => {
 
     renderApp(['/producers']);
     expect(screen.getByText('InvitaliaOverviewPage')).toBeInTheDocument();
-
   });
 
   it('renders Standard routes when user is standard; passes organizationId from store; covers * redirect', () => {

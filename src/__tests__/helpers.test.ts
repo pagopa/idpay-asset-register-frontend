@@ -10,7 +10,10 @@ import {
   fetchUserFromLocalStorage,
   initUploadBoxStyle,
   initUploadHelperBoxStyle,
-  getTablePrLength, useResponsiveMaxLength, isOnOrBeforeDate, customExitAction,
+  getTablePrLength,
+  useResponsiveMaxLength,
+  isOnOrBeforeDate,
+  customExitAction,
 } from '../helpers';
 import { EMPTY_DATA } from '../utils/constants';
 
@@ -23,8 +26,8 @@ jest.mock('../utils/env', () => ({
       LOGOUT: 'https://mock-api/logout',
     },
     URL_FE: {
-      LOGOUT: 'https://mock-logout-url.com'
-    }
+      LOGOUT: 'https://mock-logout-url.com',
+    },
   },
 }));
 
@@ -67,7 +70,6 @@ describe('Helper functions', () => {
     expect(result).toBe('01/10/2022, 16:05:00');
   });
 
-
   test('formatDateWithoutHours with valid ISO string', () => {
     const result = formatDateWithoutHours('2022-10-01T14:05:00.000Z');
     expect(result).toBe('01/10/2022');
@@ -80,7 +82,6 @@ describe('Helper functions', () => {
   test('formatFileName with long name', () => {
     const result = formatFileName('documento_molto_lungo.pdf');
     expect(result).toBe('documento_... .pdf');
-
   });
 
   test('formatFileName with short name', () => {
@@ -106,7 +107,6 @@ describe('Helper functions', () => {
 });
 
 describe('Additional tests for better coverage', () => {
-
   test('formattedCurrency with zero', () => {
     const result = formattedCurrency(0);
     expect(result).toContain('-');
@@ -179,9 +179,7 @@ describe('Additional tests for better coverage', () => {
   });
 });
 
-
 describe('Additional tests for 100% coverage', () => {
-
   test('formatDateWithHours with empty string', () => {
     expect(formatDateWithHours('')).toBe(EMPTY_DATA);
     expect(formatDateWithHours('   ')).toBe(EMPTY_DATA);
@@ -201,7 +199,7 @@ describe('Additional tests for 100% coverage', () => {
 
     Object.defineProperty(global, 'window', {
       value: { innerWidth: 1920 }, // assumendo RESOLUTION_UPSCALING sia < 1920
-      writable: true
+      writable: true,
     });
 
     const resultLarge = getTablePrLength();
@@ -209,7 +207,7 @@ describe('Additional tests for 100% coverage', () => {
 
     Object.defineProperty(global, 'window', {
       value: { innerWidth: 800 },
-      writable: true
+      writable: true,
     });
 
     const resultSmall = getTablePrLength();
@@ -231,8 +229,8 @@ describe('Additional tests for 100% coverage', () => {
   test('useResponsiveMaxLength with different breakpoints', () => {
     const mockTheme = {
       breakpoints: {
-        only: jest.fn()
-      }
+        only: jest.fn(),
+      },
     };
 
     const { useTheme, useMediaQuery } = require('@mui/material');
@@ -297,7 +295,10 @@ describe('Additional tests for 100% coverage', () => {
   });
 
   test('customExitAction clears storage and redirects', () => {
-    const { storageTokenOps, storageUserOps } = require('@pagopa/selfcare-common-frontend/lib/utils/storage');
+    const {
+      storageTokenOps,
+      storageUserOps,
+    } = require('@pagopa/selfcare-common-frontend/lib/utils/storage');
     const { ENV } = require('../utils/env');
 
     const mockTokenDelete = jest.fn();
@@ -319,7 +320,7 @@ describe('Additional tests for 100% coverage', () => {
     const mockAssign = jest.fn();
     Object.defineProperty(window, 'location', {
       value: { assign: mockAssign },
-      writable: true
+      writable: true,
     });
 
     customExitAction();
@@ -349,7 +350,6 @@ describe('Additional tests for 100% coverage', () => {
   test('formattedCurrency with custom symbol', () => {
     expect(formattedCurrency(undefined, 'N/A')).toBe('N/A');
   });
-
 });
 
 jest.mock('@mui/material', () => ({

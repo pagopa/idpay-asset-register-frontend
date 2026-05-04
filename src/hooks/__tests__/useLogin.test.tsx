@@ -6,7 +6,10 @@ import { useErrorDispatcher } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { userActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
-import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+import {
+  storageTokenOps,
+  storageUserOps,
+} from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { parseJwt } from '../../utils/jwt-utils';
 import { getUserPermission } from '../../services/rolePermissionService';
 import { setPermissionsList, setUserRole } from '../../redux/slices/permissionsSlice';
@@ -27,9 +30,9 @@ jest.mock('../../utils/env', () => ({
 
 jest.mock('../../api/registerApiClient', () => ({
   RolePermissionApi: {
-    userPermission: jest.fn().mockResolvedValue({data: 'mockedData'}),
+    userPermission: jest.fn().mockResolvedValue({ data: 'mockedData' }),
     getPortalConsent: jest.fn(),
-    savePortalConsent: jest.fn()
+    savePortalConsent: jest.fn(),
   },
 }));
 
@@ -156,8 +159,8 @@ describe('useLogin hook', () => {
 
     store = configureStore({
       reducer: {
-        user: (state = {}, ) => state,
-        permissions: (state = {}, ) => state,
+        user: (state = {}) => state,
+        permissions: (state = {}) => state,
       },
     });
 
@@ -271,7 +274,7 @@ describe('useLogin hook', () => {
     it('should handle getUserPermission success in mock scenario', async () => {
       CONFIG.MOCKS.MOCK_USER = true;
       parseJwt.mockReturnValue(mockJwtUser);
-      getUserPermission.mockResolvedValue(mockPermissions);
+      getUserPermission.mockResolvedValue({ data: mockPermissions });
 
       const { result } = renderHookWithProvider(() => useLogin());
 

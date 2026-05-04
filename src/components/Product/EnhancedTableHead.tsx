@@ -2,7 +2,7 @@ import React from 'react';
 import { TableHead, TableRow, TableCell, TableSortLabel, Checkbox, Box } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
-import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { ProductDTO } from '../../api/generated/register';
 
 interface HeadCell {
   id: keyof ProductDTO | 'selectedStatus' | 'actions' | 'producer';
@@ -48,7 +48,7 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
             sx={{
               ...cellLeftSx,
               width: '4%',
-              maxWidth:'4%'
+              maxWidth: '4%',
             }}
           >
             <Checkbox
@@ -93,10 +93,7 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
             )}
           </TableCell>
         ))}
-        {
-          isInvitaliaUser &&
-            <TableCell sx={{...cellRightSx }} />
-        }
+        {isInvitaliaUser && <TableCell sx={{ ...cellRightSx }} />}
       </TableRow>
     </TableHead>
   );

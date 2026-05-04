@@ -20,7 +20,7 @@ import {
   setApprovedStatusList,
 } from '../../services/registerService';
 import { filterInputWithSpaceRule } from '../../helpers';
-import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
+import { ProductStatus } from '../../api/generated/register';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import {
   EMPTY_DATA,
@@ -38,7 +38,7 @@ interface ProductModalProps {
   actionType?: string;
   onUpdateTable?: () => void;
   selectedProducts?: Array<{
-    status: ProductStatusEnum;
+    status: ProductStatus;
     productName?: string;
     gtinCode: string;
     category?: string;
@@ -178,7 +178,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           fullWidth
           inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
           value={motivationInternal}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setMotivationInternal(filterInputWithSpaceRule(e.target.value));
           }}
           onBlur={() => setMotivationTouched(true)}
@@ -218,7 +218,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           fullWidth
           inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
           value={motivationOfficial}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setMotivationOfficial(filterInputWithSpaceRule(e.target.value));
           }}
           onBlur={() => setMotivationOfficialTouched(true)}
@@ -300,7 +300,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
     return null;
   }
   const gtinCodes = selectedProducts.map((p) => p.gtinCode);
-  const status: ProductStatusEnum = selectedProducts[0].status;
+  const status: ProductStatus = selectedProducts[0].status;
 
   const callSupervisionedApi = async () => {
     if (
@@ -411,10 +411,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
     <Dialog
       open={open}
       onClose={() => onClose(true)}
-      slotProps={{
-        paper: {
-          sx: modalStyles.dialogPaper,
-        },
+      PaperProps={{
+        sx: modalStyles.dialogPaper,
       }}
     >
       <DialogTitle sx={modalStyles.dialogTitle}>{config?.title || ''}</DialogTitle>

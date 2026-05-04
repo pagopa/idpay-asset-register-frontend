@@ -22,7 +22,6 @@ import {
   // L1_MOTIVATION_OK,
   DEBUG_CONSOLE,
 } from '../../utils/constants';
-import { ProductStatusEnum } from '../../api/generated/register/ProductStatus';
 import {
   batchIdSelector,
   batchNameSelector,
@@ -30,7 +29,7 @@ import {
   setBatchName,
 } from '../../redux/slices/productsSlice';
 import EmptyListTable from '../../pages/components/EmptyListTable';
-import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
@@ -64,7 +63,7 @@ const buttonStyle = {
   marginRight: 2,
 };
 
-const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, children }) => {
+const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [showMsgRejected, setShowMsgRejected] = useState(false);
@@ -160,14 +159,12 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const fetchInstitutions = async () => {
     try {
       const institutionsData = await getInstitutionsList();
-      const institutionList = institutionsData.institutions;
+      const institutionList = institutionsData.data.institutions;
       dispatch(setInstitutionList(institutionList as Array<Institution>));
     } catch (error) {
       if (DEBUG_CONSOLE) {
         console.error('Error fetching institutions:', error);
       }
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -193,7 +190,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       batchFilter
     )
       .then((res) => {
-        const { content, pageNo, totalElements } = res;
+        const { content, pageNo, totalElements } = res.data;
         setTableData(content ? Array.from(content) : []);
         setItemsQty(totalElements);
         if (pageNo !== undefined && totalElements) {
@@ -219,7 +216,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   const handleStateForError = () => {
     setApiErrorOccurred(true);
     setTableData([]);
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -246,21 +242,18 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
       void fetchInstitutions();
     }
 
-    setLoading(true);
     const targetId = isInvitaliaUser
       ? producerFilter || institution?.institutionId || ''
       : organizationId;
 
     void getBatchFilterList(targetId)
       .then((res) => {
-        setBatchFilterItems(res as Array<BatchFilterItems> | []);
+        setBatchFilterItems(res.data as unknown as Array<BatchFilterItems>);
       })
       .catch(() => {
         setBatchFilterItems([]);
-      })
-      .finally(() => setLoading(false));
+      });
   }, [ready, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
-
   useEffect(() => {
     if (!ready) {
       return;
@@ -326,7 +319,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const callWaitApprovedApi = async (
     gtinCodes: Array<string>,
-    currentStatus: ProductStatusEnum,
+    currentStatus: ProductStatus,
     motivation: string
   ) => {
     try {
@@ -340,7 +333,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
 
   const handleConfirmRestore = async (
     gtinCodes: Array<string>,
-    currentStatus: ProductStatusEnum,
+    currentStatus: ProductStatus,
     motivation: string
   ) => {
     await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
@@ -561,7 +554,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
   );
 
   return (
-    <>
+    <Box width="100%" px={2}>
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box flexGrow={1}>
           <TitleBox
@@ -598,22 +591,14 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
       </Box>
 
-      {tableData?.length === 0 && !loading && (
-        <EmptyListTable message="pages.products.noFileLoaded" />
-      )}
-
       <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
-        {tableData?.length > 0 ? (
-          loading ? (
-            <CircularProgress
-              size={36}
-              sx={{
-                color: '#0055AA',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-              }}
-            />
+        {loading ? (
+          <Box sx={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+            <CircularProgress />
+          </Box>
+          ) : 
+          tableData?.length === 0 ? (
+            <EmptyListTable message="pages.products.noFileLoaded" />
           ) : (
             <Box sx={{ width: '100%' }}>
               <ProductsTable
@@ -628,10 +613,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
                 setSelected={setSelected}
               />
             </Box>
-          )
-        ) : (
-          children || null
-        )}
+          )}
 
         {tableData?.length > 0 && !loading && (
           <TablePagination
@@ -670,14 +652,21 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         }}
         actionType={modalAction}
         onUpdateTable={updaDataTable}
-        selectedProducts={tableData
-          .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
-          .map((row) => ({
-            status: row.status as ProductStatusEnum,
-            productName: row.productName,
-            gtinCode: row.gtinCode,
-            category: row.category,
-          }))}
+        selectedProducts={
+          tableData
+            .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
+            .map((row) => ({
+              status: row.status as ProductStatus,
+              productName: row.productName,
+              gtinCode: row.gtinCode,
+              category: row.category,
+            })) as Array<{
+            status: ProductStatus;
+            productName?: string;
+            gtinCode: string;
+            category?: string;
+          }>
+        }
         onSuccess={(actionType) => {
           setMsgResultByAction(actionType, isInvitaliaUser, isInvitaliaAdmin);
         }}
@@ -695,7 +684,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         onConfirm={async () => {
           const currentStatus =
             (tableData.find((row) => row.gtinCode === selected[0])
-              ?.status as unknown as ProductStatusEnum) || ProductStatusEnum.SUPERVISED;
+              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
           try {
             await handleConfirmRestore(selected, currentStatus, EMPTY_DATA);
             updaDataTable();
@@ -710,8 +699,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
           resetAllMsgResults();
           const currentStatus =
             (tableData.find((row) => row.gtinCode === selected[0])
-              ?.status as unknown as ProductStatusEnum) || ProductStatusEnum.SUPERVISED;
-          if (isInvitaliaUser && currentStatus === ProductStatusEnum.UPLOADED) {
+              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
+          if (isInvitaliaUser && currentStatus === ProductStatus.UPLOADED) {
             setShowMsgWaitApproved(true);
           } else {
             setShowMsgApproved(true);
@@ -790,7 +779,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId, child
         setPage={setPage}
       />
       {renderResultMessages()}
-    </>
+    </Box>
   );
 };
 

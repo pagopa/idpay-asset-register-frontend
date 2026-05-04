@@ -16,7 +16,7 @@ import Box from '@mui/material/Box';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import EprelLinks from '../../components/Product/EprelLinks';
-import { ProductDTO } from '../../api/generated/register/ProductDTO';
+import { ProductDTO } from '../../api/generated/register';
 import {
   EMPTY_DATA,
   PRODUCTS_STATES,

@@ -2,10 +2,8 @@ import { /* institutionResource2Party, */ Party } from '../model/Party';
 
 export const fetchParties = (): Promise<Array<Party>> => new Promise((resolve) => resolve([]));
 
-export const fetchPartyDetails = (
-  partyId: string,
-  parties?: Array<Party>
-): Promise<Party | null> => retrieveParty(partyId, parties);
+export const fetchPartyDetails = (partyId: string, parties?: Array<Party>): Promise<Party | null> =>
+  retrieveParty(partyId, parties);
 
 // check inside parties as first
 const retrieveParty = (
@@ -24,8 +22,9 @@ const retrieveParty = (
   }
 };
 
-const retrieveParty_fetch = (_partyId: string): Promise<Party | null> => new Promise((resolve) => resolve(null));
-  // TODO Implementation of call to selfcare to populate switch change entities
-  // PortalApi.getInstitution(partyId).then((institutionResource) =>
-  //   institutionResource ? institutionResource2Party(institutionResource) : null
-  // );
+const retrieveParty_fetch = (_partyId: string): Promise<Party | null> =>
+  new Promise((resolve) => resolve(null));
+// TODO Implementation of call to selfcare to populate switch change entities
+// PortalApi.getInstitution(partyId).then((institutionResource) =>
+//   institutionResource ? institutionResource2Party(institutionResource) : null
+// );
