@@ -7,8 +7,8 @@ const mockPersistStore = jest.fn();
 const mockLoggerMiddleware = jest.fn((_) => (next: any) => (action: AnyAction) => next(action));
 
 jest.mock('@reduxjs/toolkit', () => ({
-  configureStore: (...args: any[]) => mockConfigureStore(...args),
-  combineReducers: (...args: any[]) => mockCombineReducers(...args),
+  configureStore: (...args: any[]) => mockConfigureStore.apply(null, args as any),
+  combineReducers: (...args: any[]) => mockCombineReducers.apply(null, args as any),
 }));
 
 jest.mock('redux-persist', () => ({
@@ -18,7 +18,7 @@ jest.mock('redux-persist', () => ({
 
 jest.mock('redux-logger', () => ({
   __esModule: true,
-  default: (...args: any[]) => mockLoggerMiddleware(...args),
+  default: mockLoggerMiddleware,
 }));
 
 const makeDummyReducer = (name: string) => {
@@ -43,6 +43,10 @@ jest.mock('../slices/productsSlice', () => ({
 }));
 jest.mock('../slices/invitaliaSlice', () => ({
   invitaliaReducer: makeDummyReducer('invitalia'),
+}));
+jest.mock('../slices/initiativesSlice', () => ({
+  __esModule: true,
+  default: makeDummyReducer('initiatives'),
 }));
 
 const loadStoreModule = async (logReduxActions: boolean) => {
@@ -91,6 +95,7 @@ describe('store configuration', () => {
       'permissions',
       'products',
       'invitalia',
+      'initiatives',
     ]);
 
     expect(mockPersistReducer).toHaveBeenCalledTimes(1);

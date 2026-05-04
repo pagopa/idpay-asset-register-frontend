@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import withSelectedPartyProducts from './decorators/withSelectedPartyProducts';
 import withLogin from './decorators/withLogin';
+import WithInitiativeGuard from './decorators/withInitiativeGuard';
 import Layout from './components/Layout/Layout';
 import Auth from './pages/auth/Auth';
 import TOSWall from './components/TOS/TOSWall';
@@ -25,6 +26,7 @@ import InvitaliaOverview from './pages/InvitaliaOverview/invitaliaOverview';
 import { fetchUserFromLocalStorage } from './helpers';
 import { USERS_TYPES } from './utils/constants';
 import InvitaliaProductsList from './pages/InvitaliaProductsList/invitaliaProductsList';
+import { useGetInitiativesQuery } from './redux/api/initiativesApi';
 import { institutionSelector } from './redux/slices/invitaliaSlice';
 
 type StandardRoutesProps = {
@@ -34,9 +36,30 @@ type StandardRoutesProps = {
 const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
   <Routes>
     <Route path={routes.HOME} element={<Overview />} />
-    <Route path={routes.ADD_PRODUCTS} element={<AddProducts />} />
-    <Route path={routes.PRODUCTS} element={<Products organizationId={organizationId || ''} />} />
-    <Route path={routes.UPLOADS} element={<UploadsHistory />} />
+    <Route
+      path={routes.ADD_PRODUCTS}
+      element={
+        <WithInitiativeGuard>
+          <AddProducts />
+        </WithInitiativeGuard>
+      }
+    />
+    <Route
+      path={routes.PRODUCTS}
+      element={
+        <WithInitiativeGuard>
+          <Products organizationId={organizationId || ''} />
+        </WithInitiativeGuard>
+      }
+    />
+    <Route
+      path={routes.UPLOADS}
+      element={
+        <WithInitiativeGuard>
+          <UploadsHistory />
+        </WithInitiativeGuard>
+      }
+    />
     <Route path={routes.TOS} element={<TOS />} />
     <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
     <Route path="*" element={<Navigate to={routes.HOME} />} />
@@ -46,7 +69,14 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
 const InvitaliaRoutes = () => (
   <Routes>
     <Route path={routes.HOME} element={<InvitaliaProductsList />} />
-    <Route path={routes.PRODUCERS} element={<InvitaliaOverview />} />
+    <Route
+      path={routes.PRODUCERS}
+      element={
+        <WithInitiativeGuard>
+          <InvitaliaOverview />
+        </WithInitiativeGuard>
+      }
+    />
     <Route path={routes.TOS} element={<TOS />} />
     <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
     <Route path="*" element={<Navigate to={routes.HOME} />} />
@@ -63,6 +93,8 @@ const SecuredRoutes = withLogin(
     );
     const institution = useSelector(institutionSelector);
     const organizationId = institution?.institutionId || '';
+
+    useGetInitiativesQuery();
 
     /*
     if (UPCOMING_INITIATIVE_DAY) {
@@ -101,7 +133,19 @@ const SecuredRoutes = withLogin(
 
     return (
       <Layout>
-        {isInvitaliaUser ? <InvitaliaRoutes /> : <StandardRoutes organizationId={organizationId} />}
+        <Routes>
+          <Route
+            path={`${routes.INITIATIVE_BASE}/*`}
+            element={
+              isInvitaliaUser ? (
+                <InvitaliaRoutes />
+              ) : (
+                <StandardRoutes organizationId={organizationId} />
+              )
+            }
+          />
+          <Route path="*" element={<Navigate to={routes.HOME} />} />
+        </Routes>
       </Layout>
     );
   })
