@@ -22,7 +22,6 @@ import { fetchUserFromLocalStorage } from '../../helpers';
 import { USERS_TYPES, MOCKED_INITIATIVES_LIST } from '../../utils/constants';
 import SidenavItem from './SidenavItem';
 
-
 const buildRoute = (route: string, initiativeId: string) =>
   route.replace(':initiativeId', initiativeId);
 
@@ -69,6 +68,15 @@ export default function SideMenu() {
     <Box display="grid" mt={1}>
       <Box gridColumn="auto">
         <List data-testid="list-test">
+          <SidenavItem
+            title={t('pages.initiativesList.title')}
+            handleClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
+            isSelected={location.pathname === ROUTES.HOME}
+            icon={ListAltIcon}
+            level={0}
+            data-testid="initiativeList-click-test"
+          />
+
           {MOCKED_INITIATIVES_LIST.map((initiative) => {
             const { initiativeId, initiativeName } = initiative;
 
