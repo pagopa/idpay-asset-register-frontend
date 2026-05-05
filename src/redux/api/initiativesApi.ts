@@ -3,7 +3,7 @@ import { baseApi } from './baseApi';
 
 /**
  * Mock initiatives response (temporary).
- */
+
 const initiativesMock: Array<InitiativeDTO> = [
   {
     initiativeId: '68dd003ccce8c534d1da22bc',
@@ -22,11 +22,15 @@ const initiativesMock: Array<InitiativeDTO> = [
     enabled: true,
   },
 ];
-
+ */
 export const initiativesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getInitiatives: builder.query<Array<InitiativeDTO>, void>({
-      queryFn: async () => ({ data: initiativesMock }),
+      query: () => ({
+        url: '/initiatives',
+        method: 'GET',
+      }),
+      // queryFn: async () => ({ data: initiativesMock }),
 
       /**
        * REAL CALL (when backend is available)
