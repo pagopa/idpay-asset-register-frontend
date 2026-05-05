@@ -2,12 +2,7 @@ import { InitiativeDTO } from '../../api/generated/register';
 import { baseApi } from './baseApi';
 
 /**
- * Initiatives API slice.
- * This layer exposes initiative-related endpoints via RTK Query.
- */
-/**
  * Mock initiatives response (temporary).
- * NOTE: InitiativeDTO includes only a subset of fields, so we map/keep only those.
  */
 const initiativesMock: Array<InitiativeDTO> = [
   {
@@ -31,16 +26,10 @@ const initiativesMock: Array<InitiativeDTO> = [
 export const initiativesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getInitiatives: builder.query<Array<InitiativeDTO>, void>({
-      /**
-       * MOCK (current)
-       * - no HTTP call is performed
-       * - RTK Query returns initiativesMock as successful response
-       */
       queryFn: async () => ({ data: initiativesMock }),
 
       /**
-       * REAL CALL (when backend is available) - replace the MOCK above with this:
-       *
+       * REAL CALL (when backend is available)
        * query: () => ({
        *   url: '/initiatives',
        *   method: 'GET',
