@@ -1,6 +1,6 @@
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
-  default: {
+  ENV: {
     URL_API: {
       OPERATION: 'https://mock-api/register',
     },

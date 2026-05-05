@@ -7,9 +7,28 @@ import InitiativesList from '../initiativesList';
 // Tipi jest non sempre inclusi nel tsconfig del progetto: import esplicito per TS/IDE
 import { beforeEach, describe, expect, test, jest } from '@jest/globals';
 
+const mockUseGetInitiativesQuery = jest.fn();
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => mockUseGetInitiativesQuery(),
+}));
+
 beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
+  mockUseGetInitiativesQuery.mockReturnValue({
+    data: [
+      {
+        initiativeId: 'initiative-1',
+        initiativeName: 'Iniziativa mock 1234',
+        organizationName: 'PagoPA',
+        serviceId: 'SERVICE-1',
+        status: 'PUBLISHED',
+        startDate: '2025-10-01',
+        endDate: '2025-10-31',
+      },
+    ],
+  });
 });
 
 describe('Test suite for initiativeList page', () => {
@@ -43,12 +62,16 @@ describe('Test suite for initiativeList page', () => {
 
   test('User sorts initiatives by name', async () => {
     renderWithContext(<InitiativesList />, store);
-    const sortByName = screen.getByText('pages.initiativesList.initiativeName');
+    const sortByName = screen.getByText('Nome');
     fireEvent.click(sortByName);
   });
 
   test('Render empty state', () => {
+    mockUseGetInitiativesQuery.mockReturnValue({
+      data: [],
+    });
+
     renderWithContext(<InitiativesList />, store);
-    expect(screen.getByText('pages.initiativesList.emptyList')).toBeTruthy();
+    expect(screen.getByText('Nessuna iniziativa presente')).toBeTruthy();
   });
 });
