@@ -113,11 +113,11 @@ const InitiativesList = () => {
       const mappedInitativeList = initiativesListSel?.map((item, index) => ({
         initiativeId: item.initiativeId || '',
         initiativeName: item.initiativeName || '',
-        organizationName: '',
+        organizationName: item.organizationName || '',
         spendingPeriod: `${
           item.startDate ? new Date(item.startDate).toLocaleDateString('fr-FR') : ''
         } - ${item.endDate ? new Date(item.endDate).toLocaleDateString('fr-FR') : ''}`,
-        serviceId: '',
+        serviceId: item.serviceId || '',
         status: (item.status as StatusEnum) ?? '',
         id: index,
       }));

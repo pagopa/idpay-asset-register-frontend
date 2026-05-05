@@ -1060,6 +1060,16 @@ components:
           description: Initiative name
           maxLength: 255
           pattern: '.+'
+        organizationName:
+          type: string
+          description: Organization name
+          maxLength: 255
+          pattern: '.+'
+        serviceId:
+          type: string
+          description: Service id
+          maxLength: 255
+          pattern: '.+'
         status:
           type: string
           description: Initiative status
