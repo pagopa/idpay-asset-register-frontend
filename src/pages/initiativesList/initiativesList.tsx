@@ -28,6 +28,8 @@ import ROUTES from '../../routes';
 import { InitiativeDTO } from '../../api/generated/register';
 import { Data, EnhancedTableProps, HeadCell, Order, getComparator, stableSort } from './helpers';
 
+const EMPTY_INITIATIVES_LIST: Array<InitiativeDTO> = [];
+
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
   const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -104,7 +106,7 @@ const InitiativesList = () => {
   const [initiativeList, setInitiativeList] = useState<Array<Data>>([]);
   const [initiativeListFiltered, setInitiativeListFiltered] = useState<Array<Data>>([]);
   const navigate = useNavigate();
-  const { data: initiativesListSel = [] } = useGetInitiativesQuery();
+  const { data: initiativesListSel = EMPTY_INITIATIVES_LIST } = useGetInitiativesQuery();
 
   useEffect(() => {
     if (Array.isArray(initiativesListSel)) {
