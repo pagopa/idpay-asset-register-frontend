@@ -1,11 +1,11 @@
-import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { Route, Routes, Navigate, useLocation, matchPath } from 'react-router-dom';
 import {
   ErrorBoundary,
   LoadingOverlay,
   UnloadEventHandler,
   UserNotifyHandle,
 } from '@pagopa/selfcare-common-frontend/lib';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import withSelectedPartyProducts from './decorators/withSelectedPartyProducts';
 import withLogin from './decorators/withLogin';
@@ -27,8 +27,8 @@ import InvitaliaOverview from './pages/InvitaliaOverview/invitaliaOverview';
 import { fetchUserFromLocalStorage } from './helpers';
 import { USERS_TYPES } from './utils/constants';
 import InvitaliaProductsList from './pages/InvitaliaProductsList/invitaliaProductsList';
-import { useGetInitiativesQuery } from './redux/api/initiativesApi';
 import { institutionSelector } from './redux/slices/invitaliaSlice';
+import { useGetInitiativesQuery } from './redux/api/initiativesApi';
 
 type StandardRoutesProps = {
   organizationId: string | undefined;
@@ -101,13 +101,30 @@ const SecuredRoutes = withLogin(
     const location = useLocation();
     const { isTOSAccepted, acceptTOS, firstAcceptance } = useTCAgreement();
     const user = useMemo(() => fetchUserFromLocalStorage(), []);
+
+    const [match, setMatch] = useState<any>(null);
+
+    useEffect(() => {
+      const paths = [
+        routes.HOME,
+        routes.OVERVIEW,
+        routes.ADD_PRODUCTS,
+        routes.PRODUCTS,
+        routes.UPLOADS,
+        routes.INVITALIA_PRODUCTS_LIST,
+        routes.PRODUCERS,
+      ];
+
+      setMatch(paths.find((p) => matchPath(p, location.pathname)));
+    }, [location.pathname]);
+
+    // Bridge mode: preserve existing route-driven behavior
+    useGetInitiativesQuery(undefined, { skip: match === null });
     const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
       user?.org_role as USERS_TYPES
     );
     const institution = useSelector(institutionSelector);
     const organizationId = institution?.institutionId || '';
-
-    const { isError: isInitiativesError } = useGetInitiativesQuery();
 
     /*
     if (UPCOMING_INITIATIVE_DAY) {
@@ -146,11 +163,6 @@ const SecuredRoutes = withLogin(
 
     return (
       <Layout>
-        {isInitiativesError && (
-          <div style={{ padding: '1rem 2rem', textAlign: 'center' }}>
-            <div style={{ marginBottom: '0.5rem' }}>Errore nel caricamento iniziative</div>
-          </div>
-        )}
         <Routes>
           <Route path={routes.HOME} element={<HomeRedirect />} />
 

@@ -1,5 +1,7 @@
 /// <reference types="react-scripts" />
 
+declare module '*.css';
+
 declare namespace NodeJS {
   interface ProcessEnv {
     NODE_ENV: 'development' | 'uat' | 'production';

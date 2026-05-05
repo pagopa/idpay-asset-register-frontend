@@ -21,6 +21,13 @@ export const baseApi = createApi({
       return headers;
     },
   }),
+  /**
+   * Sensible defaults to improve UX & reduce unnecessary refetches.
+   * Note: `refetchOnFocus/refetchOnReconnect` require `setupListeners(store.dispatch)`.
+   */
+  keepUnusedDataFor: 300,
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   tagTypes: ['Initiatives'],
   endpoints: () => ({}),
 });
