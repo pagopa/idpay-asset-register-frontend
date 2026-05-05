@@ -17,6 +17,7 @@ import TOSLayout from './components/TOSLayout/TOSLayout';
 import routes from './routes';
 import useTCAgreement from './hooks/useTCAgreement';
 import Overview from './pages/overview/overview';
+import InitiativesList from './pages/initiativesList/initiativesList';
 import TOS from './pages/tos/TOS';
 import PrivacyPolicy from './pages/privacyPolicy/PrivacyPolicy';
 import AddProducts from './pages/addProducts/addProducts';
@@ -33,20 +34,21 @@ type StandardRoutesProps = {
   organizationId: string | undefined;
 };
 
-const FIRST_MOCKED_INITIATIVE_ID = '68dd003ccce8c534d1da22bc';
-const buildInitiativeRoute = (initiativeId: string) =>
-  routes.INITIATIVE_BASE.replace(':initiativeId', initiativeId);
-
-const HomeRedirect = () => (
-  <Navigate to={buildInitiativeRoute(FIRST_MOCKED_INITIATIVE_ID)} replace />
-);
+const HomeRedirect = () => <InitiativesList />;
 
 const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
   <Routes>
-    <Route path={routes.HOME} element={<HomeRedirect />} />
-    <Route path={routes.INITIATIVE_BASE} element={<Overview />} />
+    <Route path="/" element={<HomeRedirect />} />
     <Route
-      path={routes.ADD_PRODUCTS}
+      path=":initiativeId/panoramica"
+      element={
+        <WithInitiativeGuard>
+          <Overview />
+        </WithInitiativeGuard>
+      }
+    />
+    <Route
+      path=":initiativeId/aggiungi-prodotti"
       element={
         <WithInitiativeGuard>
           <AddProducts />
@@ -54,7 +56,7 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
       }
     />
     <Route
-      path={routes.PRODUCTS}
+      path=":initiativeId/prodotti"
       element={
         <WithInitiativeGuard>
           <Products organizationId={organizationId || ''} />
@@ -62,34 +64,34 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
       }
     />
     <Route
-      path={routes.UPLOADS}
+      path=":initiativeId/storico-caricamenti"
       element={
         <WithInitiativeGuard>
           <UploadsHistory />
         </WithInitiativeGuard>
       }
     />
-    <Route path={routes.TOS} element={<TOS />} />
-    <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
+    <Route path="terms-of-service" element={<TOS />} />
+    <Route path="privacy-policy" element={<PrivacyPolicy />} />
     <Route path="*" element={<HomeRedirect />} />
   </Routes>
 );
 
 const InvitaliaRoutes = () => (
   <Routes>
-    <Route path={routes.HOME} element={<HomeRedirect />} />
-    <Route path={routes.INITIATIVE_BASE} element={<InvitaliaProductsList />} />
-    <Route path={routes.INVITALIA_PRODUCTS_LIST} element={<InvitaliaProductsList />} />
+    <Route path="/" element={<HomeRedirect />} />
+    <Route path=":initiativeId/panoramica" element={<InvitaliaProductsList />} />
+    <Route path=":initiativeId/lista-prodotti" element={<InvitaliaProductsList />} />
     <Route
-      path={routes.PRODUCERS}
+      path=":initiativeId/produttori"
       element={
         <WithInitiativeGuard>
           <InvitaliaOverview />
         </WithInitiativeGuard>
       }
     />
-    <Route path={routes.TOS} element={<TOS />} />
-    <Route path={routes.PRIVACY_POLICY} element={<PrivacyPolicy />} />
+    <Route path="terms-of-service" element={<TOS />} />
+    <Route path="privacy-policy" element={<PrivacyPolicy />} />
     <Route path="*" element={<HomeRedirect />} />
   </Routes>
 );
@@ -150,8 +152,10 @@ const SecuredRoutes = withLogin(
           </div>
         )}
         <Routes>
+          <Route path={routes.HOME} element={<HomeRedirect />} />
+
           <Route
-            path={`${routes.INITIATIVE_BASE}/*`}
+            path={`${routes.HOME}/*`}
             element={
               isInvitaliaUser ? (
                 <InvitaliaRoutes />
@@ -160,6 +164,7 @@ const SecuredRoutes = withLogin(
               )
             }
           />
+
           <Route path="*" element={<Navigate to={routes.HOME} />} />
         </Routes>
       </Layout>

@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 import {
   Accordion,
   AccordionDetails,
@@ -7,24 +8,24 @@ import {
   ListItemText,
 } from '@mui/material';
 import { useMemo, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useTranslation } from 'react-i18next';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import BuildIcon from '@mui/icons-material/Build';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import HistoryIcon from '@mui/icons-material/History';
 
 import ROUTES from '../../routes';
 import { fetchUserFromLocalStorage } from '../../helpers';
-import { USERS_TYPES, MOCKED_INITIATIVES_LIST } from '../../utils/constants';
+import { USERS_TYPES } from '../../utils/constants';
+import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
 import SidenavItem from './SidenavItem';
+import { initiativeMenuConfig, invitaliaInitiativeMenuConfig } from './sideMenuConfig';
 
 const buildRoute = (route: string, initiativeId: string) =>
   route.replace(':initiativeId', initiativeId);
 
+/** The side menu of the application */
 export default function SideMenu() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -37,17 +38,36 @@ export default function SideMenu() {
     user?.org_role as USERS_TYPES
   );
 
+  const { data: initiatives = [] } = useGetInitiativesQuery();
+
   const [expanded, setExpanded] = useState<string | false>(false);
 
-  const initiativeIdFromUrl = MOCKED_INITIATIVES_LIST.find((initiative) =>
-    location.pathname.includes(initiative.initiativeId)
-  )?.initiativeId;
+  const [pathname, setPathname] = useState(location.pathname);
 
   useEffect(() => {
-    if (initiativeIdFromUrl) {
-      setExpanded(`panel-${initiativeIdFromUrl}`);
+    setPathname(location.pathname);
+  }, [location.pathname]);
+
+  const routeMatch =
+    matchPath(ROUTES.OVERVIEW, location.pathname) ??
+    matchPath(ROUTES.ADD_PRODUCTS, location.pathname) ??
+    matchPath(ROUTES.ASSISTANCE, location.pathname) ??
+    matchPath(ROUTES.PRODUCTS, location.pathname) ??
+    matchPath(ROUTES.UPLOADS, location.pathname) ??
+    matchPath(ROUTES.INVITALIA_PRODUCTS_LIST, location.pathname) ??
+    matchPath(ROUTES.PRODUCERS, location.pathname) ??
+    matchPath(ROUTES.UPCOMING, location.pathname);
+
+  const initiativeIdFromRoute =
+    routeMatch && typeof routeMatch.params?.initiativeId === 'string'
+      ? routeMatch.params.initiativeId
+      : undefined;
+
+  useEffect(() => {
+    if (initiativeIdFromRoute) {
+      setExpanded(`panel-${initiativeIdFromRoute}`);
     }
-  }, [initiativeIdFromUrl]);
+  }, [initiativeIdFromRoute]);
 
   const handleAccordionChange =
     (initiativeId: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -69,21 +89,26 @@ export default function SideMenu() {
       <Box gridColumn="auto">
         <List data-testid="list-test">
           <SidenavItem
-            title={t('pages.initiativesList.title')}
+            title="Iniziative"
             handleClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
-            isSelected={location.pathname === ROUTES.HOME}
+            isSelected={pathname === ROUTES.HOME}
             icon={ListAltIcon}
             level={0}
             data-testid="initiativeList-click-test"
           />
 
-          {MOCKED_INITIATIVES_LIST.map((initiative) => {
+          {initiatives.map((initiative) => {
             const { initiativeId, initiativeName } = initiative;
 
-            const initiativeOverviewRoute = buildRoute(ROUTES.INITIATIVE_BASE, initiativeId);
-            const producersRoute = buildRoute(ROUTES.PRODUCERS, initiativeId);
-            const uploadsRoute = buildRoute(ROUTES.UPLOADS, initiativeId);
-            const productsRoute = buildRoute(ROUTES.PRODUCTS, initiativeId);
+            if (!initiativeId || !initiativeName) {
+              return null;
+            }
+
+            const selectedConfig = isInvitaliaUser
+              ? invitaliaInitiativeMenuConfig
+              : initiativeMenuConfig;
+
+            const [firstInitiativePage] = selectedConfig;
 
             return (
               <Accordion
@@ -103,6 +128,16 @@ export default function SideMenu() {
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls={`panel-${initiativeId}-content`}
                   id={`panel-${initiativeId}-header`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+
+                    onExit(() => {
+                      if (firstInitiativePage?.route) {
+                        handleNavigate(firstInitiativePage.route, initiativeId);
+                      }
+                      setExpanded(`panel-${initiativeId}`);
+                    });
+                  }}
                 >
                   <ListItemText
                     primary={initiativeName}
@@ -114,59 +149,26 @@ export default function SideMenu() {
 
                 <AccordionDetails sx={{ p: 0 }}>
                   <List disablePadding>
-                    {isInvitaliaUser && (
-                      <SidenavItem
-                        title={t('pages.invitaliaProductsList.productsTitle')}
-                        handleClick={() => handleNavigate(ROUTES.INITIATIVE_BASE, initiativeId)}
-                        isSelected={location.pathname === initiativeOverviewRoute}
-                        icon={InventoryIcon}
-                        level={2}
-                        data-testid={`initiative-products-${initiativeId}`}
-                      />
-                    )}
+                    {selectedConfig.map((item) => {
+                      const itemRouteResolved = buildRoute(item.route, initiativeId);
 
-                    <SidenavItem
-                      title={t(
-                        isInvitaliaUser
-                          ? 'pages.invitaliaOverview.manufacturerMenuItem'
-                          : 'pages.overview.overviewTitle'
-                      )}
-                      handleClick={() =>
-                        handleNavigate(
-                          isInvitaliaUser ? ROUTES.PRODUCERS : ROUTES.INITIATIVE_BASE,
-                          initiativeId
-                        )
-                      }
-                      isSelected={
-                        location.pathname ===
-                        (isInvitaliaUser ? producersRoute : initiativeOverviewRoute)
-                      }
-                      icon={isInvitaliaUser ? BuildIcon : ListAltIcon}
-                      level={2}
-                      data-testid={`go-to-overview-${initiativeId}`}
-                    />
+                      const isSelected =
+                        pathname === itemRouteResolved ||
+                        (item.route === ROUTES.PRODUCERS &&
+                          pathname === buildRoute(ROUTES.PRODUCERS, initiativeId));
 
-                    {!isInvitaliaUser && (
-                      <>
+                      return (
                         <SidenavItem
-                          title={t('pages.uploadHistory.sideMenuTitle')}
-                          handleClick={() => handleNavigate(ROUTES.UPLOADS, initiativeId)}
-                          isSelected={location.pathname === uploadsRoute}
-                          icon={HistoryIcon}
+                          key={`${item.dataTestId}-${initiativeId}`}
+                          title={t(item.titleKey)}
+                          handleClick={() => handleNavigate(item.route, initiativeId)}
+                          isSelected={isSelected}
+                          icon={item.icon}
                           level={2}
-                          data-testid={`initiative-uploads-${initiativeId}`}
+                          data-testid={`${item.dataTestId}-${initiativeId}`}
                         />
-
-                        <SidenavItem
-                          title={t('pages.products.sideMenuTitle')}
-                          handleClick={() => handleNavigate(ROUTES.PRODUCTS, initiativeId)}
-                          isSelected={location.pathname === productsRoute}
-                          icon={InventoryIcon}
-                          level={2}
-                          data-testid={`initiative-products-list-${initiativeId}`}
-                        />
-                      </>
-                    )}
+                      );
+                    })}
                   </List>
                 </AccordionDetails>
               </Accordion>

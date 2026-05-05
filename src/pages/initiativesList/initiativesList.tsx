@@ -14,12 +14,11 @@ import {
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
-import { useTranslation } from 'react-i18next';
 import SearchIcon from '@mui/icons-material/Search';
 import { grey } from '@mui/material/colors';
 import { useEffect, useState } from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../redux/hooks';
+import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
 import EmptyListTable from '../components/EmptyListTable';
 
 type StatusEnum = InitiativeDTO['status'];
@@ -34,38 +33,37 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
-  const { t } = useTranslation();
 
   const headCells: ReadonlyArray<HeadCell> = [
     {
       id: 'initiativeName',
       numeric: false,
       disablePadding: false,
-      label: `${t('pages.initiativesList.initiativeName')}`,
+      label: 'Nome',
     },
     {
       id: 'organizationName',
       numeric: false,
       disablePadding: false,
-      label: `${t('pages.initiativesList.organizationName')}`,
+      label: 'Creata da',
     },
     {
       id: 'spendingPeriod',
       numeric: false,
       disablePadding: false,
-      label: `${t('pages.initiativesList.spendingPeriod')}`,
+      label: 'Periodo di spesa',
     },
     {
       id: 'serviceId',
       numeric: false,
       disablePadding: true,
-      label: `${t('pages.initiativesList.serviceId')}`,
+      label: 'Codice identificativo',
     },
     {
       id: 'status',
       numeric: false,
       disablePadding: false,
-      label: `${t('pages.initiativesList.initiativeStatus')}`,
+      label: 'Stato',
     },
   ];
 
@@ -106,10 +104,7 @@ const InitiativesList = () => {
   const [initiativeList, setInitiativeList] = useState<Array<Data>>([]);
   const [initiativeListFiltered, setInitiativeListFiltered] = useState<Array<Data>>([]);
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  // TODO: sostituire con il selector corretto quando disponibile nello slice
-  // Tipizziamo almeno il ritorno per evitare che TypeScript inferisca `never[]`
-  const initiativesListSel = useAppSelector(() => [] as Array<InitiativeDTO>);
+  const { data: initiativesListSel = [] } = useGetInitiativesQuery();
 
   useEffect(() => {
     if (Array.isArray(initiativesListSel)) {
@@ -156,21 +151,9 @@ const InitiativesList = () => {
   const renderInitiativeStatus = (status?: StatusEnum) => {
     switch (status) {
       case PUBLISHED:
-        return (
-          <Chip
-            sx={{ fontSize: '14px' }}
-            label={t('commons.initiativeStatusEnum.published')}
-            color="success"
-          />
-        );
+        return <Chip sx={{ fontSize: '14px' }} label="In corso" color="success" />;
       case CLOSED:
-        return (
-          <Chip
-            sx={{ fontSize: '14px' }}
-            label={t('commons.initiativeStatusEnum.closed')}
-            color="default"
-          />
-        );
+        return <Chip sx={{ fontSize: '14px' }} label="Chiusa" color="default" />;
       default:
         return null;
     }
@@ -179,8 +162,8 @@ const InitiativesList = () => {
   return (
     <Box width="100%" px={2}>
       <TitleBox
-        title={t('pages.initiativesList.title')}
-        subTitle={t('pages.initiativesList.subtitle')}
+        title="Iniziative"
+        subTitle="Visualizza e gestisci le iniziative di supporto alla spesa a cui hai aderito."
         mbTitle={2}
         mtTitle={2}
         mbSubTitle={5}
@@ -202,7 +185,7 @@ const InitiativesList = () => {
         <Box sx={{ display: 'grid', gridColumn: 'span 12' }}>
           <TextField
             id="search-initiative"
-            placeholder={t('pages.initiativesList.searchByInitiativeName')}
+            placeholder="Cerca per nome dell'iniziativa"
             variant="outlined"
             size="small"
             InputProps={{
@@ -258,7 +241,7 @@ const InitiativesList = () => {
                             }}
                             onClick={() => {
                               navigate(
-                                generatePath(ROUTES.INITIATIVE_BASE, {
+                                generatePath(ROUTES.OVERVIEW, {
                                   initiativeId: row.initiativeId,
                                 })
                               );
@@ -297,7 +280,7 @@ const InitiativesList = () => {
                   textAlign: 'center',
                 }}
               >
-                <EmptyListTable message="pages.initiativesList.emptyList" />
+                <EmptyListTable message="Nessuna iniziativa presente" />
               </Box>
             </Box>
           )}
