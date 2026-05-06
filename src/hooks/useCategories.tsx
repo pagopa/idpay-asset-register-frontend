@@ -7,10 +7,10 @@ type CategoryType = {
 
 export const useCategories = (selectedInitiative: string) => {
     const { t } = useTranslation();
-    const namespace = t("commons.categories", { returnObjects: true });
+    const namespace = t(`${selectedInitiative}.categories`, { returnObjects: true });
     const categories: Record<string, CategoryType> = Object.entries(namespace).reduce((acc, [key, value]) => {
-        const csvName = `${key === "cookinghobs" ? key : selectedInitiative}_template.csv`;
-        return { ...acc, [key]: { label: value, csv: csvName } };
+        const isNotCookinghobs = selectedInitiative === "bonusElettrodomestici" && key !== "cookinghobs";
+        return { ...acc, [key]: { label: value, csv: `${selectedInitiative}/${isNotCookinghobs ? "eprel" : key}_template.csv` } };
     }, {});
     return { categories };
 };
