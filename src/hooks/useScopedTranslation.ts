@@ -60,12 +60,6 @@ export const useScopedTranslation = (
     initiatives
   );
 
-  // DEBUG LOG
-  // eslint-disable-next-line no-console
-  console.log('[useScopedTranslation] initiativeId:', initiativeId);
-  // eslint-disable-next-line no-console
-  console.log('[useScopedTranslation] computed namespaceKey:', initiativeName);
-
   const namespaces = useMemo(
     () => buildScopedNamespaces(initiativeName ?? undefined),
     [initiativeName]
