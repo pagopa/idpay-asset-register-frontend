@@ -9,6 +9,10 @@ const mockTranslations = {
   'pages.overview.overviewTitleBoxProdTitle': 'Gestione Prodotti',
   'pages.overview.overviewTitleBoxProdDescription': 'Carica i tuoi prodotti per iniziare',
   'pages.overview.overviewTitleBoxProdBtn': 'Carica Prodotti',
+  'pages.overview.allUploadsLink': 'Vedi i caricamenti',
+  'pages.overview.tableHeader': 'stato caricamenti',
+  'pages.overview.warning':
+    'Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e potrai consultare i dettagli nelle sezioni dedicate.',
   'errors.uploadsList.errorDescription': 'Errore nel caricamento dei dati',
   tableHeader: 'stato caricamenti',
   warning:
@@ -16,9 +20,11 @@ const mockTranslations = {
   allUploadsLink: 'Vedi i caricamenti',
 };
 
+const mockT = (key: string) => mockTranslations[key as keyof typeof mockTranslations] ?? key;
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => mockTranslations[key as keyof typeof mockTranslations] ?? key,
+    t: mockT,
   }),
 }));
 
@@ -61,7 +67,9 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
 describe('OverviewProductionSection', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGetProductFilesList.mockReset();
     mockUseCurrentInitiativeId.mockReturnValue('initiative-1');
+    mockOnExit.mockImplementation((cb) => cb());
   });
 
   it('renders loading state', () => {
@@ -128,7 +136,11 @@ describe('OverviewProductionSection', () => {
       </TestWrapper>
     );
     await waitFor(() => {
-      expect(screen.getByText('pages.overview.warning')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Stiamo effettuando i controlli. Quando saranno completati, ti avviseremo via email e potrai consultare i dettagli nelle sezioni dedicate.'
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -151,7 +163,7 @@ describe('OverviewProductionSection', () => {
       </TestWrapper>
     );
     await waitFor(() => {
-      expect(screen.getByText('pages.overview.tableHeader')).toBeInTheDocument();
+      expect(screen.getByText('stato caricamenti')).toBeInTheDocument();
     });
     expect(screen.queryByText(/ultimo caricamento/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /carica prodotti/i })).toBeInTheDocument();
