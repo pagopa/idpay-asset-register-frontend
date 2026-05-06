@@ -319,7 +319,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
               getInputProps={getInputProps}
               onInputClick={handleInputClick}
               formikCategory={formik.values.category}
-              templateFileName={categories?.[formik.values.category]?.csv}
+              csvTemplate={categories?.[formik.values.category]?.csv}
               t={t}
             />
           </Box>
