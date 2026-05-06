@@ -3,10 +3,10 @@ import { Box, Button, Paper, TablePagination, CircularProgress } from '@mui/mate
 import Chip from '@mui/material/Chip';
 import FlagIcon from '@mui/icons-material/Flag';
 import CloseIcon from '@mui/icons-material/Close';
-import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import {
   getProducts,
   getBatchFilterList,
@@ -64,7 +64,7 @@ const buttonStyle = {
 };
 
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const dispatch = useDispatch();
   const [showMsgRejected, setShowMsgRejected] = useState(false);
   const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);

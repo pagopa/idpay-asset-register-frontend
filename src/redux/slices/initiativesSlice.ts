@@ -2,6 +2,7 @@ import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolki
 
 import type { InitiativeDTO } from '../../api/generated/register';
 import type { RootState } from '../store';
+import { buildNamespaceKey } from '../../utils/buildNamespaceKey';
 
 type InitiativeDTOArray = Array<InitiativeDTO>;
 
@@ -33,6 +34,7 @@ export const initiativesListSelector = (state: RootState): InitiativeDTOArray | 
 
 export type InitiativeExtended = InitiativeDTO & {
   spendingPeriod: string;
+  namespaceKey?: string;
 };
 
 export const currentInitiativeSelector = createSelector(
@@ -55,9 +57,15 @@ export const currentInitiativeSelector = createSelector(
           ).toLocaleDateString('it-IT')}`
         : '';
 
+    const namespaceKey =
+      initiative.initiativeName && initiative.startDate
+        ? buildNamespaceKey(initiative.initiativeName, initiative.startDate)
+        : undefined;
+
     return {
       ...initiative,
       spendingPeriod,
+      namespaceKey,
     };
   }
 );

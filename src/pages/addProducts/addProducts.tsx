@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { Box, Breadcrumbs, Link, Paper, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -8,10 +7,11 @@ import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks
 import { useNavigate } from 'react-router-dom';
 import { BASE_ROUTE } from '../../routes';
 import { ENV } from '../../utils/env';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import FormAddProducts, { FormAddProductsRef } from './formAddProducts';
 
 const AddProducts: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const navigate = useNavigate();
   const onExit = useUnloadEventOnExit();
   const [fileAccepted, setFileAccepted] = useState(false);

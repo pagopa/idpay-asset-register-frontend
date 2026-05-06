@@ -13,12 +13,12 @@ import {
   TableSortLabel,
   Typography,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { visuallyHidden } from '@mui/utils';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from '@mui/icons-material';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { formatDateWithoutHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { Order } from '../../components/Product/helpers';
@@ -35,7 +35,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const createSortHandler = (property: keyof Institution) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   const headCells: ReadonlyArray<HeadCell> = [
     {
@@ -119,7 +119,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   onDetailRequest,
 }) => {
   const paginationInfo = usePagination(page, rowsPerPage, totalElements);
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 

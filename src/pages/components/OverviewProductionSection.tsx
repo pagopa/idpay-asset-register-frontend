@@ -16,13 +16,13 @@ import {
   Divider,
   Tooltip,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { ArrowForward } from '@mui/icons-material';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import ROUTES from '../../routes';
 import { getProductFilesList } from '../../services/registerService';
 import { EMPTY_DATA } from '../../utils/constants';
@@ -87,6 +87,8 @@ const UploadInfoBox: React.FC<{
   stopNavigation: boolean;
 }> = ({ loading, error, data, firstUploadDate, onExit, t, stopNavigation }) => {
   const navigate = useNavigate();
+  const { initiativeId } = useParams();
+  const addProductsRoute = ROUTES.ADD_PRODUCTS.replace(':initiativeId', initiativeId ?? '');
 
   if (
     !loading &&
@@ -106,7 +108,7 @@ const UploadInfoBox: React.FC<{
           color="primary"
           startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
-          onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
+          onClick={() => onExit(() => navigate(addProductsRoute, { replace: true }))}
         >
           {t('pages.overview.overviewTitleBoxProdBtn')}
         </Button>
@@ -124,7 +126,7 @@ const UploadInfoBox: React.FC<{
           color="primary"
           startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
-          onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
+          onClick={() => onExit(() => navigate(addProductsRoute, { replace: true }))}
         >
           {t('pages.overview.overviewTitleBoxProdBtn')}
         </Button>
@@ -149,7 +151,7 @@ const UploadInfoBox: React.FC<{
           color="primary"
           startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
-          onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
+          onClick={() => onExit(() => navigate(addProductsRoute, { replace: true }))}
         >
           {t('pages.overview.overviewTitleBoxProdBtn')}
         </Button>
@@ -166,8 +168,9 @@ const UploadsTable: React.FC<{
   stopNavigation: boolean;
 }> = ({ loading, error, data, stopNavigation }) => {
   const navigate = useNavigate();
+  const { initiativeId } = useParams();
   const onExit = useUnloadEventOnExit();
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const [rowsPerPage] = useState<number>(4);
 
   return (
@@ -253,7 +256,14 @@ const UploadsTable: React.FC<{
             color="primary"
             endIcon={<ArrowForward />}
             size="medium"
-            onClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
+            onClick={() =>
+              onExit(() =>
+                navigate(
+                  ROUTES.UPLOADS.replace(':initiativeId', initiativeId ?? ''),
+                  { replace: true }
+                )
+              )
+            }
             sx={{ paddingTop: 2 }}
           >
             <b>{t('pages.overview.allUploadsLink')}</b>
@@ -281,7 +291,7 @@ const UploadsTable: React.FC<{
 };
 
 const OverviewProductionSection: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const onExit = useUnloadEventOnExit();
 
   const [data, setData] = useState<UploadsListDTO | null>(null);

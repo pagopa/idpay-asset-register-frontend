@@ -1,0 +1,10 @@
+{
+  "commons": {
+    "title": "Bonus Decoder"
+  },
+  "pages" : {
+    "overview": {
+      "currentInitiativeTest": "Bonus Decoder"
+    }
+  }
+}

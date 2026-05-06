@@ -11,7 +11,7 @@ import { DEBUG_CONSOLE } from '../utils/constants';
 import {
   Api,
   BatchList,
-  CsvDTO, InitiativeDTO,
+  CsvDTO,
   InstitutionResponse,
   InstitutionsResponse,
   PortalConsentDTO,

@@ -55,6 +55,12 @@ export const InitiativeProvider = ({ children }: InitiativeProviderProps) => {
     };
   }, []);
 
+  // DEBUG LOG
+  // eslint-disable-next-line no-console
+  console.log('[InitiativeContext] initiativeId:', initiativeId);
+  // eslint-disable-next-line no-console
+  console.log('[InitiativeContext] initiatives:', initiatives);
+
   const value = useMemo<InitiativeContextValue>(
     () => ({ initiativeId, initiatives, isLoadingInitiatives }),
     [initiativeId, initiatives, isLoadingInitiatives]

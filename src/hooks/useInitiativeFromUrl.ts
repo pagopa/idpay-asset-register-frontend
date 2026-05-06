@@ -17,7 +17,20 @@ export const useInitiativeFromUrl = (): { initiativeId: string } => {
   return useMemo(() => {
     // remove leading/trailing slashes and split
     const tokens = location.pathname.split('/').filter(Boolean);
-    const initiativeId = tokens[0] || DEFAULT_INITIATIVE_ID;
+
+    // URL structure:
+    // /elenco-informatico-elettrodomestici/:initiativeId/...
+    // tokens[0] = base route
+    // tokens[1] = real initiativeId
+    const initiativeId = tokens[1] || DEFAULT_INITIATIVE_ID;
+
+    // DEBUG LOG
+    // eslint-disable-next-line no-console
+    console.log('[useInitiativeFromUrl] pathname:', location.pathname);
+    // eslint-disable-next-line no-console
+    console.log('[useInitiativeFromUrl] tokens:', tokens);
+    // eslint-disable-next-line no-console
+    console.log('[useInitiativeFromUrl] resolved initiativeId:', initiativeId);
 
     return { initiativeId };
   }, [location.pathname]);

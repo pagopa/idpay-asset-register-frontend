@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Box, InputAdornment, TextField } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
-import { useTranslation } from 'react-i18next';
 import { Search } from '@mui/icons-material';
 import { AxiosResponse } from 'axios';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import DetailDrawer from '../../components/DetailDrawer/DetailDrawer';
 import { getInstitutionsList, getInstitutionById } from '../../services/registerService';
@@ -20,7 +20,7 @@ import { sortInstitutions } from './helpers';
 import ManufacturerDetail from './ManufacturerDetail';
 
 const InvitaliaOverview: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const dispatch = useAppDispatch();
   const [institutions, setInstitutions] = useState<InstitutionsResponse>({
     institutions: [],

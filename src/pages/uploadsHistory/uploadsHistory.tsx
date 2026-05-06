@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { AxiosResponse } from 'axios';
-import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/system';
 import Paper from '@mui/material/Paper';
 import { Table, TableHead, TableBody, TableRow, TableCell, Alert, Typography } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { UploadsListDTO } from '../../api/generated/register';
 import { getProductFilesList } from '../../services/registerService';
 import UploadsTable from '../components/HistoryUploadSection';
 
 const OverviewHistoryUpload: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const [data, setData] = useState<UploadsListDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

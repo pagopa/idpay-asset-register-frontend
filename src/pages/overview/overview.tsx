@@ -1,14 +1,14 @@
 import React, { useMemo } from 'react';
 import { Box, Paper, Typography, Tooltip } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
-import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import OverviewProductionSection from '../components/OverviewProductionSection';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_PROD } from '../../utils/constants';
 
 const Overview: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   return (

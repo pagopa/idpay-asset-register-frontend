@@ -3,7 +3,7 @@ export const testToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3NzgwN
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
 export const DEBUG_CONSOLE = true;
 export const MOCK_USER = IS_DEVELOP;
-export const LOG_REDUX_ACTIONS = IS_DEVELOP;
+export const LOG_REDUX_ACTIONS = false;
 
 export const LOADING_TASK_LOGIN_CHECK = 'LOGIN_CHECK';
 export const LOADING_TASK_SEARCH_PARTIES = 'SEARCH_PARTIES';
