@@ -593,27 +593,26 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
 
       <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
         {loading ? (
-          <Box sx={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CircularProgress />
           </Box>
-          ) : 
-          tableData?.length === 0 ? (
-            <EmptyListTable message="pages.products.noFileLoaded" />
-          ) : (
-            <Box sx={{ width: '100%' }}>
-              <ProductsTable
-                key={refreshKey}
-                tableData={tableData}
-                emptyData={EMPTY_DATA}
-                order={order}
-                orderBy={orderBy}
-                onRequestSort={handleRequestSort}
-                handleListButtonClick={handleListButtonClick}
-                selected={selected}
-                setSelected={setSelected}
-              />
-            </Box>
-          )}
+        ) : tableData?.length === 0 ? (
+          <EmptyListTable message="pages.products.noFileLoaded" />
+        ) : (
+          <Box sx={{ width: '100%' }}>
+            <ProductsTable
+              key={refreshKey}
+              tableData={tableData}
+              emptyData={EMPTY_DATA}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+              handleListButtonClick={handleListButtonClick}
+              selected={selected}
+              setSelected={setSelected}
+            />
+          </Box>
+        )}
 
         {tableData?.length > 0 && !loading && (
           <TablePagination

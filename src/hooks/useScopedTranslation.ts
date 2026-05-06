@@ -6,6 +6,8 @@ import { buildNamespaceKey } from '../utils/buildNamespaceKey';
 import { useInitiativeContext } from '../context/initiative/InitiativeContext';
 import i18n from '../locale';
 
+const failedNamespaceLoads = new Set<string>();
+
 export type UseScopedTranslationOptions = {
   initiativeName?: string;
   /**
@@ -29,9 +31,7 @@ const resolveInitiativeNamespace = (
     return initiativeNameProp;
   }
 
-  const currentInitiative = initiatives?.find(
-    (i) => i.initiativeId === initiativeId
-  );
+  const currentInitiative = initiatives?.find((i) => i.initiativeId === initiativeId);
 
   if (!currentInitiative) {
     return undefined;
@@ -53,11 +53,7 @@ export const useScopedTranslation = (
 
   const { initiativeId, initiatives } = useInitiativeContext();
 
-  const initiativeName = resolveInitiativeNamespace(
-    initiativeNameProp,
-    initiativeId,
-    initiatives
-  );
+  const initiativeName = resolveInitiativeNamespace(initiativeNameProp, initiativeId, initiatives);
 
   const namespaces = useMemo(
     () => buildScopedNamespaces(initiativeName ?? undefined),
@@ -66,14 +62,8 @@ export const useScopedTranslation = (
 
   const namespacesToLoad = useMemo(() => {
     const list = initiativeName
-      ? [
-          ...namespaces.common,
-          ...namespaces.initiative
-        ]
-      : [
-          ...namespaces.common,
-          ...namespaces.default
-        ];
+      ? [...namespaces.common, ...namespaces.initiative]
+      : [...namespaces.common, ...namespaces.default];
 
     return Array.from(new Set(list));
   }, [namespaces, initiativeName]);
@@ -84,7 +74,7 @@ export const useScopedTranslation = (
         'common',
         `${initiativeName}/copy`,
         `${initiativeName}/tos`,
-        `${initiativeName}/privacyPolicy`
+        `${initiativeName}/privacyPolicy`,
       ];
     }
 
@@ -97,23 +87,37 @@ export const useScopedTranslation = (
 
   const t = useMemo(
     () =>
-      (((key: any, options?: any) => {
+      ((key: any, options?: any) => {
         if (initiativeName) {
-          return rawT(key, {
-            ns: `${initiativeName}/copy`,
+          const initiativeNs = `${initiativeName}/copy`;
+
+          const initiativeValue = rawT(key, {
+            ns: initiativeNs,
             ...options,
           });
+
+          if (initiativeValue === key) {
+            return rawT(key, {
+              ns: 'default/copy',
+              ...options,
+            });
+          }
+
+          return initiativeValue;
         }
+
         return rawT(key, options);
-      }) as TFunction),
+      }) as TFunction,
     [rawT, initiativeName]
   );
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // removed cancellation ref to reduce complexity
-
   const loadNamespaceIfMissing = async (ns: string): Promise<void> => {
+    if (failedNamespaceLoads.has(ns)) {
+      return;
+    }
+
     const currentLang = (i18n as any).language;
     const existingBundle = (i18n as any).getResourceBundle(currentLang, ns);
 
@@ -125,31 +129,35 @@ export const useScopedTranslation = (
       const { loadItNamespace } = await import('../locale/multiInitiativeI18n');
       const res = await loadItNamespace(ns);
 
-      (i18n as any).addResourceBundle(
-        currentLang,
-        ns,
-        res,
-        true,
-        true
-      );
+      (i18n as any).addResourceBundle(currentLang, ns, res, true, true);
 
-      // Force i18next to notify React after dynamic bundle injection
       (i18n as any).reloadResources(currentLang, ns);
       (i18n as any).emit('loaded');
     } catch {
-      // eslint-disable-next-line no-console
-      console.warn('[useScopedTranslation] Failed loading namespace:', ns);
+      failedNamespaceLoads.add(ns);
+
+      try {
+        if (ns.endsWith('/copy')) {
+          const { loadItNamespace } = await import('../locale/multiInitiativeI18n');
+          const fallback = await loadItNamespace('default/copy');
+
+          const currentLang = (i18n as any).language;
+
+          (i18n as any).addResourceBundle(currentLang, ns, fallback, true, true);
+
+          (i18n as any).reloadResources(currentLang, ns);
+          (i18n as any).emit('loaded');
+        }
+      } catch {
+        /* empty */
+      }
     }
   };
 
-  const ensureNamespacesLoaded = async (
-    nsList: Array<string>
-  ): Promise<void> => {
+  const ensureNamespacesLoaded = async (nsList: Array<string>): Promise<void> => {
     await (i18n as any).loadNamespaces(nsList);
 
-    await Promise.all(
-      nsList.map((ns) => loadNamespaceIfMissing(ns))
-    );
+    await Promise.all(nsList.map((ns) => loadNamespaceIfMissing(ns)));
   };
 
   useEffect(() => {

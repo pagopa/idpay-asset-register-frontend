@@ -398,9 +398,7 @@ export const getBatchFilterList = async (
   }
 };
 
-export const getMerchantInitiativeList = async (): Promise<
-  AxiosResponse<Array<InitiativeDTO>>
-> => {
+export const getMerchantInitiativeList = async (): Promise<AxiosResponse<Array<InitiativeDTO>>> => {
   try {
     return await RegisterApi.getMerchantInitiativeList();
   } catch (error: any) {

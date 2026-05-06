@@ -4,16 +4,16 @@ import TOSWall from '../TOSWall';
 
 jest.mock('../../../hooks/useScopedTranslation', () => ({
   __esModule: true,
-  default: () => ({ t: (key: any) => key, isLoading: false })
+  default: () => ({ t: (key: any) => key, isLoading: false }),
 }));
 
 jest.mock('../../../utils/constants', () => ({
-  I18N_MULTI_INIT_ENABLED: false
+  I18N_MULTI_INIT_ENABLED: false,
 }));
 
 jest.mock('../../../context/initiative/InitiativeContext', () => ({
   __esModule: true,
-  useInitiativeContext: () => ({ initiativeId: 'bonusElettrodomestici2025' })
+  useInitiativeContext: () => ({ initiativeId: 'bonusElettrodomestici2025' }),
 }));
 
 describe('tests for TOSWall', () => {

@@ -16,7 +16,7 @@ import ROUTES from '../../routes';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { USERS_TYPES } from '../../utils/constants';
 import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
-import useScopedTranslation from "../../hooks/useScopedTranslation";
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import SidenavItem from './SidenavItem';
 import { initiativeMenuConfig, invitaliaInitiativeMenuConfig } from './sideMenuConfig';
 

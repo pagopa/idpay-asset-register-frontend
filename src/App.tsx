@@ -118,7 +118,6 @@ const SecuredRoutes = withLogin(
       setMatch(paths.find((p) => matchPath(p, location.pathname)));
     }, [location.pathname]);
 
-    // Bridge mode: preserve existing route-driven behavior
     useGetInitiativesQuery(undefined, { skip: match === null });
     const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
       user?.org_role as USERS_TYPES

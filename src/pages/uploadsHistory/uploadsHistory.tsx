@@ -48,7 +48,8 @@ const OverviewHistoryUpload: React.FC = () => {
       .catch(() => {
         setData(null);
         setError(t('errors.uploadsList.errorDescription'));
-      }).finally(() => {
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, [page, rowsPerPage, t]);

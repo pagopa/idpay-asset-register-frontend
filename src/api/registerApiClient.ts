@@ -50,8 +50,6 @@ const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
 };
 
 export const registerClient = new Api({
-  // In unit tests ENV may be undefined depending on the jest setup/mocks.
-  // Provide a safe fallback baseURL to avoid crashing at import-time.
   baseURL: ENV?.URL_API?.OPERATION ?? '',
 });
 

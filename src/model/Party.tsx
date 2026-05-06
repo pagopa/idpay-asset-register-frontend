@@ -1,6 +1,3 @@
-// import { InstitutionResource } from '../api/generated/portal/InstitutionResource';
-// import { ENV } from '../utils/env';
-
 export type SelfcareRole = 'ADMIN' | 'LIMITED';
 export type PartyRole = 'DELEGATE' | 'MANAGER' | 'OPERATOR' | 'SUB_DELEGATE';
 export type UserStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED';

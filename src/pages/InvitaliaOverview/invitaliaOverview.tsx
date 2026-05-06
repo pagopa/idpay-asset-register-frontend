@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import {Box, InputAdornment, TextField} from '@mui/material';
+import { Box, InputAdornment, TextField, Typography } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { Search } from '@mui/icons-material';
 import { AxiosResponse } from 'axios';
@@ -43,12 +43,12 @@ const InvitaliaOverview: React.FC = () => {
   const fetchInstitutions = async () => {
     try {
       const institutionsData: AxiosResponse<InstitutionsResponse> = await getInstitutionsList();
-      setInstitutions({ institutions: institutionsData.data.institutions || []});
+      setInstitutions({ institutions: institutionsData.data.institutions || [] });
 
-      const institutionsDataFilteredByUser = (
-        institutionsData.data.institutions || []
-      ).filter((institution) => institution.institutionId !== user?.org_id);
-      setInstitutions({institutions: institutionsDataFilteredByUser});
+      const institutionsDataFilteredByUser = (institutionsData.data.institutions || []).filter(
+        (institution) => institution.institutionId !== user?.org_id
+      );
+      setInstitutions({ institutions: institutionsDataFilteredByUser });
 
       const institutionList = institutionsData.data.institutions;
       dispatch(setInstitutionList(institutionList as Array<Institution>));
@@ -139,6 +139,10 @@ const InvitaliaOverview: React.FC = () => {
           data-testid="title-overview"
           titleFontSize="42px"
         />
+
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          {t('pages.overview.currentInitiativeTest')}
+        </Typography>
 
         <Box width="100%">
           <TextField

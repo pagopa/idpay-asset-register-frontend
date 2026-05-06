@@ -258,10 +258,9 @@ const UploadsTable: React.FC<{
             size="medium"
             onClick={() =>
               onExit(() =>
-                navigate(
-                  ROUTES.UPLOADS.replace(':initiativeId', initiativeId ?? ''),
-                  { replace: true }
-                )
+                navigate(ROUTES.UPLOADS.replace(':initiativeId', initiativeId ?? ''), {
+                  replace: true,
+                })
               )
             }
             sx={{ paddingTop: 2 }}
