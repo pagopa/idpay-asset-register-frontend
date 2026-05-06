@@ -22,7 +22,7 @@ import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
 import SidenavItem from './SidenavItem';
 import { initiativeMenuConfig, invitaliaInitiativeMenuConfig } from './sideMenuConfig';
 
-const buildRoute = (route: string, initiativeId: string) =>
+export const buildRoute = (route: string, initiativeId: string) =>
   route.replace(':initiativeId', initiativeId);
 
 /** The side menu of the application */

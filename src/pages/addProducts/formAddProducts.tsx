@@ -27,6 +27,8 @@ import { useErrorHandling } from '../../hooks/useErrorHandling';
 import { useFileState } from '../../hooks/useFileState';
 import { UploadProductListParams } from '../../api/generated/register';
 import { delay } from '../../helpers';
+import { buildRoute } from '../../components/SideMenu/SideMenu';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { categoryList, downloadCsv } from './helpers';
 import FileUploadSection from './fileUploadSection';
 
@@ -45,6 +47,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
     const { t } = useTranslation();
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();
+    const initiativeId = useCurrentInitiativeId();
 
     const fileState = useFileState();
     const errorHandling = useErrorHandling(t);
@@ -220,7 +223,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
       if (res.status === 200) {
         await delay(1000);
-        onExit(() => navigate(ROUTES.HOME, { replace: true }));
+        onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ""), { replace: true }));
       } else {
         handleUploadErrorAndRejectFile(res.data);
       }

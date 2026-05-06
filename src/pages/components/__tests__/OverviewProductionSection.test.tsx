@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import OverviewProductionSection from '../OverviewProductionSection';
 import { BrowserRouter } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -32,6 +33,11 @@ jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor'
   useUnloadEventOnExit: () => mockOnExit,
 }));
 
+const mockUseCurrentInitiativeId = jest.fn();
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => mockUseCurrentInitiativeId(),
+}));
+
 const mockGetProductFilesList = jest.fn();
 jest.mock('../../../services/registerService', () => ({
   getProductFilesList: (...args: any) => mockGetProductFilesList(...args),
@@ -40,8 +46,8 @@ jest.mock('../../../services/registerService', () => ({
 jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
-    ADD_PRODUCTS: '/add-products',
-    UPLOADS: '/uploads',
+    ADD_PRODUCTS: '/home/:initiativeId/aggiungi-prodotti',
+    UPLOADS: '/home/:initiativeId/storico-caricamenti',
   },
 }));
 
@@ -55,6 +61,7 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
 describe('OverviewProductionSection', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUseCurrentInitiativeId.mockReturnValue('initiative-1');
   });
 
   it('renders loading state', () => {
@@ -148,5 +155,50 @@ describe('OverviewProductionSection', () => {
     });
     expect(screen.queryByText(/ultimo caricamento/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /carica prodotti/i })).toBeInTheDocument();
+  });
+
+  it('navigates to add products with the current initiative id', async () => {
+    mockGetProductFilesList.mockResolvedValue({ data: { content: [] } });
+    const user = userEvent.setup();
+
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+
+    await user.click(await screen.findByRole('button', { name: /carica prodotti/i }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/home/initiative-1/aggiungi-prodotti', {
+      replace: true,
+    });
+  });
+
+  it('navigates to uploads history with the current initiative id', async () => {
+    mockGetProductFilesList.mockResolvedValue({
+      data: {
+        content: [
+          {
+            productFileId: '1',
+            batchName: 'Batch 1',
+            uploadStatus: 'LOADED',
+            dateUpload: '2023-07-15T10:30:45Z',
+          },
+        ],
+      },
+    });
+    const user = userEvent.setup();
+
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+
+    await user.click(await screen.findByRole('button', { name: /vedi i caricamenti/i }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/home/initiative-1/storico-caricamenti', {
+      replace: true,
+    });
   });
 });
