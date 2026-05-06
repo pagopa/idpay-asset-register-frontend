@@ -25,6 +25,7 @@ import {
   UploadsListDTO,
   UserPermissionDTO,
   VerifyProductListParams,
+  InitiativeDTO,
 } from './generated/register';
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {

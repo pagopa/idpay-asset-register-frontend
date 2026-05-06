@@ -21,16 +21,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version: '22'
+          cache: 'yarn'
 
       - name: Install dependencies
         run: |
           corepack enable
-          yarn install --immutable --check-cache || yarn install --force
+          yarn install --frozen-lockfile --check-files
 
       - name: Genera client API
         run: yarn generate
