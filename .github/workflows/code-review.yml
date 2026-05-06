@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn install --immutable --check-cache || yarn install --force
+          yarn install --frozen-lockfile --check-files
 
       - name: Genera client API
         run: yarn generate
