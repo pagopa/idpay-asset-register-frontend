@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { ArrowForward } from '@mui/icons-material';
@@ -180,7 +180,6 @@ const UploadsTable: React.FC<{
   stopNavigation: boolean;
 }> = ({ loading, error, data, stopNavigation }) => {
   const navigate = useNavigate();
-  const { initiativeId } = useParams();
   const onExit = useUnloadEventOnExit();
   const { t } = useScopedTranslation();
   const [rowsPerPage] = useState<number>(4);
