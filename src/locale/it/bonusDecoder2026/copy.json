@@ -5,6 +5,9 @@
   "pages" : {
     "overview": {
       "currentInitiativeTest": "Bonus Decoder"
+    },
+    "addProducts": {
+      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione "
     }
   }
 }
