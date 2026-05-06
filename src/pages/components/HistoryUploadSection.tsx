@@ -29,6 +29,8 @@ import ROUTES from '../../routes';
 import { EMPTY_DATA, DEBUG_CONSOLE } from '../../utils/constants';
 import { UploadsListDTO } from '../../api/generated/register';
 import { UploadDTO } from '../../api/generated/register';
+import { buildRoute } from '../../components/SideMenu/SideMenu';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import EmptyListTable from './EmptyListTable';
 
 const rowTableStyle = {
@@ -96,6 +98,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useScopedTranslation();
+  const initiativeId = useCurrentInitiativeId();
 
   const handleDownloadReport = async (idReport: string) => {
     try {
@@ -116,7 +119,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   const handleLinkProducts = (batchName: string, productFileId: string) => {
     dispatch(setBatchName(batchName));
     dispatch(setBatchId(productFileId));
-    navigate(ROUTES.PRODUCTS, { replace: true });
+    navigate(buildRoute(ROUTES.PRODUCTS, initiativeId ?? ""), { replace: true });
   };
 
   if (loading) {

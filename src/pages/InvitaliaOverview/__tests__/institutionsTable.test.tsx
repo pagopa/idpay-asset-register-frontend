@@ -24,8 +24,14 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn(),
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'initiative-1',
 }));
 
 jest.mock('../../../helpers', () => ({
@@ -36,6 +42,7 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
+    INVITALIA_PRODUCTS_LIST: '/home/:initiativeId/lista-prodotti',
   },
   BASE_ROUTE: '/base',
 }));
@@ -67,6 +74,7 @@ const defaultProps = {
   onPageChange: jest.fn(),
   onRowsPerPageChange: jest.fn(),
   onRequestSort: jest.fn(),
+  onDetailRequest: jest.fn(),
 };
 
 describe('InstitutionsTable', () => {
@@ -118,5 +126,17 @@ describe('InstitutionsTable', () => {
     });
     fireEvent.click(header);
     expect(defaultProps.onRequestSort).toHaveBeenCalled();
+  });
+
+  it('navigates to institution products when institution name is clicked', () => {
+    render(
+      <Provider store={store}>
+        <InstitutionsTable {...defaultProps} />
+      </Provider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Alpha Institution' }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/home/initiative-1/lista-prodotti');
   });
 });

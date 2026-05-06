@@ -1,7 +1,6 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import ROUTES from '../routes';
 import { useInitiativeGuardState } from '../hooks/useInitiativeGuardState';
+import RedirectHomeWithErrorAlert from '../pages/components/RedirectHomeWithErrorAlert';
 
 export type WithInitiativeGuardProps = {
   children: React.ReactNode;
@@ -30,28 +29,24 @@ const WithInitiativeGuard: React.FC<WithInitiativeGuardProps> = ({ children }) =
     return <div style={{ padding: '2rem', textAlign: 'center' }}>Caricamento iniziative...</div>;
   }
 
-  // 2️⃣ Error state (do not treat as "empty list")
+  // 2️⃣ Error state
   if (isError) {
-    return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <div style={{ marginBottom: '1rem' }}>Errore nel caricamento iniziative</div>
-      </div>
-    );
+    return <RedirectHomeWithErrorAlert />;
   }
 
   // 3️⃣ Empty list
   if (Array.isArray(initiatives) && initiatives.length === 0) {
-    return <Navigate to={ROUTES.HOME} replace />;
+    return <RedirectHomeWithErrorAlert />;
   }
 
-  // 3️⃣ initiativeId missing
+  // 4️⃣ initiativeId missing
   if (!initiativeId) {
-    return <Navigate to={ROUTES.HOME} replace />;
+    return <RedirectHomeWithErrorAlert />;
   }
 
-  // 4️⃣ initiativeId invalid
+  // 5️⃣ initiativeId invalid
   if (!isValid) {
-    return <Navigate to={ROUTES.HOME} replace />;
+    return <RedirectHomeWithErrorAlert />;
   }
 
   // 5️⃣ State OK

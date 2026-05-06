@@ -27,6 +27,8 @@ import { InstitutionsResponse } from '../../api/generated/register';
 import ROUTES from '../../routes';
 import { setInstitution } from '../../redux/slices/invitaliaSlice';
 import EmptyListTable from '../components/EmptyListTable';
+import { buildRoute } from '../../components/SideMenu/SideMenu';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { useAppDispatch } from '../../redux/hooks';
 import { EnhancedTableProps, HeadCell } from './helpers';
 
@@ -122,6 +124,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   const { t } = useScopedTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const initiativeId = useCurrentInitiativeId();
 
   useEffect(() => {
     dispatch(setInstitution({} as Institution));
@@ -129,7 +132,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
 
   const goToInstitutionPage = (institution: Institution) => {
     dispatch(setInstitution(institution));
-    navigate(ROUTES.INVITALIA_PRODUCTS_LIST);
+    navigate(buildRoute(ROUTES.INVITALIA_PRODUCTS_LIST, initiativeId ?? ""),);
   };
 
   if (loading) {
