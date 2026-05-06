@@ -3,6 +3,13 @@ import { describe, expect, it, jest } from '@jest/globals';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { render, screen, act } from '@testing-library/react';
 
+jest.mock('../../../routes', () => ({
+  __esModule: true,
+  default: {
+    HOME: '/home',
+  },
+}));
+
 import RedirectHomeWithErrorAlert from '../RedirectHomeWithErrorAlert';
 
 // Mock i18n: we don't need real translations here

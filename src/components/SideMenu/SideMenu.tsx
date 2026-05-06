@@ -69,6 +69,14 @@ export default function SideMenu() {
     }
   }, [initiativeIdFromRoute]);
 
+  useEffect(() => {
+    const firstInitiativeId = initiatives[0]?.initiativeId;
+
+    if (!initiativeIdFromRoute && !expanded && firstInitiativeId) {
+      setExpanded(`panel-${firstInitiativeId}`);
+    }
+  }, [expanded, initiativeIdFromRoute, initiatives]);
+
   const handleAccordionChange =
     (initiativeId: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? `panel-${initiativeId}` : false);

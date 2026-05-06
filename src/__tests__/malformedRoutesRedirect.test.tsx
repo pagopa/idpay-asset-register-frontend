@@ -4,7 +4,7 @@ import { jest, describe, test, expect } from '@jest/globals';
 
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 
 jest.mock('../utils/env', () => ({
   ENV: {
@@ -68,6 +68,8 @@ import App from '../App';
 
 describe('Malformed initiative-scoped routes', () => {
   test('"/panoramica" (missing initiativeId) redirects to HOME', async () => {
+    jest.useFakeTimers();
+
     render(
       <MemoryRouter initialEntries={['/base/panoramica']}>
         <App />
@@ -83,13 +85,16 @@ describe('Malformed initiative-scoped routes', () => {
     ).not.toBeNull();
 
     // Redirect happens after 2000ms in RedirectHomeWithErrorAlert
-    jest.useFakeTimers();
-    jest.advanceTimersByTime(2000);
+    await act(async () => {
+      jest.advanceTimersByTime(2000);
+    });
     expect(await screen.findByTestId('initiatives-list')).not.toBeNull();
     jest.useRealTimers();
   });
 
   test('URL with double slash redirects to HOME (error case)', async () => {
+    jest.useFakeTimers();
+
     render(
       <MemoryRouter initialEntries={['/base//storico-caricamenti']}>
         <App />
@@ -103,8 +108,9 @@ describe('Malformed initiative-scoped routes', () => {
       )
     ).not.toBeNull();
 
-    jest.useFakeTimers();
-    jest.advanceTimersByTime(2000);
+    await act(async () => {
+      jest.advanceTimersByTime(2000);
+    });
     expect(await screen.findByTestId('initiatives-list')).not.toBeNull();
     jest.useRealTimers();
   });
