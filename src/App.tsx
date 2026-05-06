@@ -24,6 +24,8 @@ import AddProducts from './pages/addProducts/addProducts';
 import UploadsHistory from './pages/uploadsHistory/uploadsHistory';
 import Products from './pages/components/Products';
 import InvitaliaOverview from './pages/InvitaliaOverview/invitaliaOverview';
+import RedirectHomeWithErrorAlert from './pages/components/RedirectHomeWithErrorAlert';
+import { isMalformedPathname } from './utils/pathnameValidation';
 import { fetchUserFromLocalStorage } from './helpers';
 import { USERS_TYPES } from './utils/constants';
 import InvitaliaProductsList from './pages/InvitaliaProductsList/invitaliaProductsList';
@@ -39,6 +41,12 @@ const HomeRedirect = () => <InitiativesList />;
 const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
   <Routes>
     <Route path="/" element={<HomeRedirect />} />
+
+    {/* Malformed initiative-scoped URLs (missing :initiativeId) */}
+    <Route path="panoramica" element={<RedirectHomeWithErrorAlert />} />
+    <Route path="aggiungi-prodotti" element={<RedirectHomeWithErrorAlert />} />
+    <Route path="prodotti" element={<RedirectHomeWithErrorAlert />} />
+    <Route path="storico-caricamenti" element={<RedirectHomeWithErrorAlert />} />
     <Route
       path=":initiativeId/panoramica"
       element={
@@ -80,6 +88,11 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
 const InvitaliaRoutes = () => (
   <Routes>
     <Route path="/" element={<HomeRedirect />} />
+
+    {/* Malformed initiative-scoped URLs (missing :initiativeId) */}
+    <Route path="panoramica" element={<RedirectHomeWithErrorAlert />} />
+    <Route path="lista-prodotti" element={<RedirectHomeWithErrorAlert />} />
+    <Route path="produttori" element={<RedirectHomeWithErrorAlert />} />
     <Route path=":initiativeId/panoramica" element={<InvitaliaProductsList />} />
     <Route path=":initiativeId/lista-prodotti" element={<InvitaliaProductsList />} />
     <Route
@@ -159,6 +172,18 @@ const SecuredRoutes = withLogin(
       location.pathname !== routes.TOS
     ) {
       return <></>;
+    }
+
+    // Handle malformed URLs (e.g. "...//storico-caricamenti") as an error case
+    // (show alert, then redirect HOME), matching the flow chart behavior.
+    if (isMalformedPathname(location.pathname, routes.HOME)) {
+      return (
+        <Layout>
+          <Routes>
+            <Route path="*" element={<RedirectHomeWithErrorAlert />} />
+          </Routes>
+        </Layout>
+      );
     }
 
     return (

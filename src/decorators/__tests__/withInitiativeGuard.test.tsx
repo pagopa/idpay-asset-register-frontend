@@ -11,9 +11,13 @@ jest.mock('../../hooks/useInitiativeGuardState', () => ({
 
 import { useInitiativeGuardState } from '../../hooks/useInitiativeGuardState';
 
-jest.mock('react-router-dom', () => ({
-  Navigate: ({ to }: { to: string }) => <div data-testid="navigate" data-to={to} />,
-}));
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    Navigate: ({ to }: any) => <div data-testid="navigate">{to}</div>,
+  };
+});
 
 describe('WithInitiativeGuard', () => {
   afterEach(() => {
