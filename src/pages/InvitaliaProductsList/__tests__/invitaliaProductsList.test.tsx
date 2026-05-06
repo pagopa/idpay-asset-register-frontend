@@ -37,7 +37,7 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
-        'breadcrumbs.back': 'Indietro',
+        'commons.backBtn': 'Indietro',
         'breadcrumbs.home': 'Home',
       };
       return translations[key] || key;

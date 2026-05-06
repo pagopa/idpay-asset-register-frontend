@@ -1,7 +1,6 @@
 import { List, Box } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
-import { useTranslation } from 'react-i18next';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import BuildIcon from '@mui/icons-material/Build';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -10,11 +9,11 @@ import { useMemo } from 'react';
 import ROUTES from '../../routes';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { USERS_TYPES } from '../../utils/constants';
+import useScopedTranslation from "../../hooks/useScopedTranslation";
 import SidenavItem from './SidenavItem';
 
-/** The side menu of the application */
 export default function SideMenu() {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const navigate = useNavigate();
   const onExit = useUnloadEventOnExit();
   const location = useLocation();
@@ -33,7 +32,7 @@ export default function SideMenu() {
                 title={t('pages.invitaliaProductsList.productsTitle')}
                 handleClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
                 isSelected={[`${ROUTES.HOME}/`, ROUTES.HOME].includes(location.pathname)}
-                icon={InventoryIcon}
+                icon={InventoryIcon as any}
                 level={0}
                 data-testid="initiativeList-click-test"
               />
@@ -51,7 +50,7 @@ export default function SideMenu() {
               )
             }
             isSelected={location.pathname === (isInvitaliaUser ? ROUTES.PRODUCERS : ROUTES.HOME)}
-            icon={isInvitaliaUser ? BuildIcon : ListAltIcon}
+            icon={(isInvitaliaUser ? BuildIcon : ListAltIcon) as any}
             level={0}
             data-testid="go-to-home"
           />
@@ -61,7 +60,7 @@ export default function SideMenu() {
                 title={t('pages.uploadHistory.sideMenuTitle')}
                 handleClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
                 isSelected={location.pathname === ROUTES.UPLOADS}
-                icon={HistoryIcon}
+                icon={HistoryIcon as any}
                 level={0}
                 data-testid="initiativeList-click-test"
               />
@@ -69,7 +68,7 @@ export default function SideMenu() {
                 title={t('pages.products.sideMenuTitle')}
                 handleClick={() => onExit(() => navigate(ROUTES.PRODUCTS, { replace: true }))}
                 isSelected={location.pathname === ROUTES.PRODUCTS}
-                icon={InventoryIcon}
+                icon={InventoryIcon as any}
                 level={0}
                 data-testid="initiativeList-click-test"
               />

@@ -1,28 +1,44 @@
-import i18n, { configureI18n } from '@pagopa/selfcare-common-frontend/lib/locale/locale-utils';
-import {I18N_MULTI_INIT_ENABLED} from "../utils/constants";
-import it from './it.json';
+import i18n from '@pagopa/selfcare-common-frontend/lib/locale/locale-utils';
+import { initReactI18next } from 'react-i18next';
+import common from './it/common.json';
 import { loadItNamespace } from './multiInitiativeI18n';
 
+const defaultLanguage = 'it';
+
 /**
- * Legacy init (default): single bundled JSON `it.json`.
- * Multi-initiative init (feature-flagged): enables dynamic namespaces loading.
+ * NOTE:
+ * selfcare-common-frontend's `configureI18n` initializes i18next using a single namespace ("translation").
+ * Since we need namespace support (common, default/*, <initiative>/*), we directly init the shared i18n instance.
+ * This keeps legacy behavior (all keys are still requested without explicit namespace) while enabling lazy-loading.
  */
-if (!I18N_MULTI_INIT_ENABLED) {
-  configureI18n({ i18n, it });
-} else {
-  configureI18n({
-    i18n,
-    it,
-    i18nextOptions: {
-      defaultNS: 'common',
-      ns: ['common'],
-      fallbackNS: ['default/copy', 'default/tos', 'default/privacyPolicy'],
-      react: {
-        useSuspense: true
-      }
+void (i18n as any)
+  .use(initReactI18next)
+  .init({
+    lng: defaultLanguage,
+    fallbackLng: defaultLanguage,
+    defaultNS: 'common',
+    ns: ['common'],
+    fallbackNS: ['default/copy', 'default/tos', 'default/privacyPolicy'],
+    interpolation: {
+      escapeValue: false
     },
-    loadNamespace: loadItNamespace
+    react: {
+      useSuspense: true
+    },
+    resources: {
+      [defaultLanguage]: {
+        common
+      }
+    }
   } as any);
-}
+
+// Preload fallback namespaces so `t()` resolves immediately on first render.
+// (no backend connector: we just add bundles programmatically)
+void Promise.all(
+  ['default/copy', 'default/tos', 'default/privacyPolicy'].map(async (ns) => {
+    const res = await loadItNamespace(ns);
+    (i18n as any).addResourceBundle(defaultLanguage, ns, res, true, true);
+  })
+);
 
 export default i18n;

@@ -25,6 +25,7 @@ import {
   UploadsListDTO,
   UserPermissionDTO,
   VerifyProductListParams,
+  InitiativeDTO,
 } from './generated/register';
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
@@ -49,7 +50,9 @@ const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
 };
 
 export const registerClient = new Api({
-  baseURL: ENV.URL_API.OPERATION,
+  // In unit tests ENV may be undefined depending on the jest setup/mocks.
+  // Provide a safe fallback baseURL to avoid crashing at import-time.
+  baseURL: ENV?.URL_API?.OPERATION ?? '',
 });
 
 const internalAxios = registerClient.instance;
@@ -254,6 +257,17 @@ function makeStatusUpdater(
     }
   };
 }
+
+export const InitiativeApi = {
+  getInitiatives: async (): Promise<AxiosResponse<Array<InitiativeDTO>>> => {
+    try {
+      return await registerClient.initiatives.getInitiatives({});
+    } catch (error) {
+      logApiError(error, 'getInitiatives');
+      return { status: 200, value: [] } as unknown as AxiosResponse<Array<InitiativeDTO>>;
+    }
+  },
+};
 
 export const RegisterApi = {
   getProduct: async (

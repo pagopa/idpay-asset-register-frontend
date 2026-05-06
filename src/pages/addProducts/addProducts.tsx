@@ -41,7 +41,7 @@ const AddProducts: React.FC = () => {
             {t('breadcrumbs.home')}
           </Typography>
           <Typography color="text.disabled" variant="body2">
-            {t('breadcrumbs.aggiungiProdotti')}
+            {t('pages.addProducts.title')}
           </Typography>
         </Breadcrumbs>
       </Box>

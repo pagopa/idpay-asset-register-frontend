@@ -9,6 +9,7 @@ import { theme } from '@pagopa/mui-italia';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { PersistGate } from 'redux-persist/integration/react';
 import App from './App';
+import { InitiativeProvider } from './context/initiative/InitiativeContext';
 import { persistor, store } from './redux/store';
 import { MOCK_USER, testToken } from './utils/constants';
 import { ENV } from './utils/env';
@@ -39,10 +40,12 @@ if (container) {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <BrowserRouter>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <App />
-            </ThemeProvider>
+            <InitiativeProvider>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <App />
+              </ThemeProvider>
+            </InitiativeProvider>
           </BrowserRouter>
         </PersistGate>
       </Provider>

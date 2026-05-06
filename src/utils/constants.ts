@@ -5,8 +5,6 @@ export const DEBUG_CONSOLE = true;
 export const MOCK_USER = IS_DEVELOP;
 export const LOG_REDUX_ACTIONS = IS_DEVELOP;
 
-export const I18N_MULTI_INIT_ENABLED = false;
-
 export const LOADING_TASK_LOGIN_CHECK = 'LOGIN_CHECK';
 export const LOADING_TASK_SEARCH_PARTIES = 'SEARCH_PARTIES';
 export const LOADING_TASK_SEARCH_PARTY = 'SEARCH_PARTY';
