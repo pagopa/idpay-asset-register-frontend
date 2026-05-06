@@ -22,7 +22,7 @@ import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
 import SidenavItem from './SidenavItem';
 import { initiativeMenuConfig, invitaliaInitiativeMenuConfig } from './sideMenuConfig';
 
-const buildRoute = (route: string, initiativeId: string) =>
+export const buildRoute = (route: string, initiativeId: string) =>
   route.replace(':initiativeId', initiativeId);
 
 /** The side menu of the application */
@@ -68,6 +68,14 @@ export default function SideMenu() {
       setExpanded(`panel-${initiativeIdFromRoute}`);
     }
   }, [initiativeIdFromRoute]);
+
+  useEffect(() => {
+    const firstInitiativeId = initiatives[0]?.initiativeId;
+
+    if (!initiativeIdFromRoute && !expanded && firstInitiativeId) {
+      setExpanded(`panel-${firstInitiativeId}`);
+    }
+  }, [expanded, initiativeIdFromRoute, initiatives]);
 
   const handleAccordionChange =
     (initiativeId: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {

@@ -28,6 +28,8 @@ import { getProductFilesList } from '../../services/registerService';
 import { EMPTY_DATA } from '../../utils/constants';
 import { UploadDTO } from '../../api/generated/register';
 import { UploadsListDTO } from '../../api/generated/register';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import { buildRoute } from '../../components/SideMenu/SideMenu';
 
 function renderUploadStatusChip(status: string) {
   switch (status) {
@@ -87,6 +89,18 @@ const UploadInfoBox: React.FC<{
   stopNavigation: boolean;
 }> = ({ loading, error, data, firstUploadDate, onExit, t, stopNavigation }) => {
   const navigate = useNavigate();
+  const initiativeId = useCurrentInitiativeId();
+
+  const onClick = () => {
+    if (!initiativeId) { return; };
+
+    onExit(() =>
+      navigate(
+        buildRoute(ROUTES.ADD_PRODUCTS, initiativeId),
+        { replace: true }
+      )
+    );
+  };
 
   if (
     !loading &&
@@ -106,7 +120,7 @@ const UploadInfoBox: React.FC<{
           color="primary"
           startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
-          onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
+          onClick={onClick}
         >
           {t('pages.overview.overviewTitleBoxProdBtn')}
         </Button>
@@ -124,7 +138,7 @@ const UploadInfoBox: React.FC<{
           color="primary"
           startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
-          onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
+          onClick={onClick}
         >
           {t('pages.overview.overviewTitleBoxProdBtn')}
         </Button>
@@ -149,7 +163,7 @@ const UploadInfoBox: React.FC<{
           color="primary"
           startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
-          onClick={() => onExit(() => navigate(ROUTES.ADD_PRODUCTS, { replace: true }))}
+          onClick={onClick}
         >
           {t('pages.overview.overviewTitleBoxProdBtn')}
         </Button>
@@ -169,6 +183,7 @@ const UploadsTable: React.FC<{
   const onExit = useUnloadEventOnExit();
   const { t } = useTranslation();
   const [rowsPerPage] = useState<number>(4);
+  const initiativeId = useCurrentInitiativeId();
 
   return (
     <Box sx={{ gridColumn: 'span 12', mt: 2 }}>
@@ -253,7 +268,16 @@ const UploadsTable: React.FC<{
             color="primary"
             endIcon={<ArrowForward />}
             size="medium"
-            onClick={() => onExit(() => navigate(ROUTES.UPLOADS, { replace: true }))}
+            onClick={() => {
+              if (!initiativeId) {return;};
+
+              onExit(() =>
+                navigate(
+                  buildRoute(ROUTES.UPLOADS, initiativeId),
+                  { replace: true }
+                )
+              );
+            }}
             sx={{ paddingTop: 2 }}
           >
             <b>{t('pages.overview.allUploadsLink')}</b>

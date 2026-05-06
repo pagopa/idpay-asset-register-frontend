@@ -9,11 +9,16 @@ jest.mock('../../hooks/useInitiativeGuardState', () => ({
   useInitiativeGuardState: jest.fn(),
 }));
 
-import { useInitiativeGuardState } from '../../hooks/useInitiativeGuardState';
-
-jest.mock('react-router-dom', () => ({
-  Navigate: ({ to }: { to: string }) => <div data-testid="navigate" data-to={to} />,
+jest.mock('../../pages/components/RedirectHomeWithErrorAlert', () => ({
+  __esModule: true,
+  default: () => (
+    <div data-testid="navigate" data-to="/">
+      /
+    </div>
+  ),
 }));
+
+import { useInitiativeGuardState } from '../../hooks/useInitiativeGuardState';
 
 describe('WithInitiativeGuard', () => {
   afterEach(() => {

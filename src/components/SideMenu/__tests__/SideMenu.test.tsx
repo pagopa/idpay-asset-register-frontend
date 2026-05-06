@@ -131,6 +131,20 @@ describe('Test suite for SideMenu component', () => {
     expect(screen.getByTestId('list-test')).toBeInTheDocument();
   });
 
+  test('opens the first initiative accordion by default on HOME', async () => {
+    jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
+    mockUseLocation.mockReturnValue({ pathname: '/home' });
+
+    renderWithContext(<SideMenu />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Initiative One/i })).toHaveAttribute(
+        'aria-expanded',
+        'true'
+      );
+    });
+  });
+
   test('user clicks the link to home page', async () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
     mockOnExit.mockImplementation((cb: () => void) => cb());
