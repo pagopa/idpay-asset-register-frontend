@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import useInitiativeFromUrl, { DEFAULT_INITIATIVE_ID } from '../../hooks/useInitiativeFromUrl';
 import type { InitiativeDTO } from '../../api/generated/register';
-import { fetchInitiatives } from '../../services/initiativeService';
+import { getMerchantInitiativeList } from '../../services/registerService';
 
 export type InitiativeContextValue = {
   /**
@@ -39,9 +39,9 @@ export const InitiativeProvider = ({ children }: InitiativeProviderProps) => {
     void (async () => {
       try {
         setIsLoadingInitiatives(true);
-        const list = await fetchInitiatives();
+        const response = await getMerchantInitiativeList();
         if (!controller.signal.aborted) {
-          setInitiatives(list);
+          setInitiatives(response?.data ?? []);
         }
       } finally {
         if (!controller.signal.aborted) {

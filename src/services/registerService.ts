@@ -8,6 +8,7 @@ import { InstitutionsResponse } from '../api/generated/register';
 import { InstitutionResponse } from '../api/generated/register';
 import { ProductListDTO } from '../api/generated/register';
 import { ProductStatus } from '../api/generated/register';
+import { InitiativeDTO } from '../api/generated/register';
 import { DEBUG_CONSOLE } from '../utils/constants';
 
 export const uploadProductList = async (
@@ -394,5 +395,22 @@ export const getBatchFilterList = async (
   } catch (error: any) {
     logProductError('RegisterApi.getBatchFilterItems', error);
     return [] as unknown as AxiosResponse<BatchList>;
+  }
+};
+
+export const getMerchantInitiativeList = async (): Promise<
+  AxiosResponse<Array<InitiativeDTO>>
+> => {
+  try {
+    return await RegisterApi.getMerchantInitiativeList();
+  } catch (error: any) {
+    logProductError('RegisterApi.getMerchantInitiativeList', error);
+    return {
+      data: [],
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {},
+    } as unknown as AxiosResponse<Array<InitiativeDTO>>;
   }
 };

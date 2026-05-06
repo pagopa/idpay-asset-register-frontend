@@ -11,7 +11,7 @@ import { DEBUG_CONSOLE } from '../utils/constants';
 import {
   Api,
   BatchList,
-  CsvDTO,
+  CsvDTO, InitiativeDTO,
   InstitutionResponse,
   InstitutionsResponse,
   PortalConsentDTO,
@@ -25,7 +25,6 @@ import {
   UploadsListDTO,
   UserPermissionDTO,
   VerifyProductListParams,
-  InitiativeDTO,
 } from './generated/register';
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
@@ -257,17 +256,6 @@ function makeStatusUpdater(
     }
   };
 }
-
-export const InitiativeApi = {
-  getInitiatives: async (): Promise<AxiosResponse<Array<InitiativeDTO>>> => {
-    try {
-      return await registerClient.initiatives.getInitiatives({});
-    } catch (error) {
-      logApiError(error, 'getInitiatives');
-      return { status: 200, value: [] } as unknown as AxiosResponse<Array<InitiativeDTO>>;
-    }
-  },
-};
 
 export const RegisterApi = {
   getProduct: async (
