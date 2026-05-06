@@ -6,6 +6,15 @@ import '@testing-library/jest-dom';
 import { createStore } from '../../../redux/store';
 import { Provider } from 'react-redux';
 
+jest.mock('../../../utils/env', () => ({
+  __esModule: true,
+  ENV: {
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+    },
+  },
+}));
+
 const reducer = (state = {}) => state;
 const store = createStore(reducer);
 
@@ -21,15 +30,6 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('../../../helpers', () => ({
   formatDateWithoutHours: (date: string) => date,
-}));
-
-jest.mock('../../../utils/env', () => ({
-  default: {
-    URL_API: {
-      OPERATION: 'https://mock-api/register',
-    },
-    API_TIMEOUT_MS: 5000,
-  },
 }));
 
 jest.mock('../../../routes', () => ({

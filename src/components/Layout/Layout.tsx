@@ -49,6 +49,7 @@ const Layout = ({ children }: Props) => {
 
   const match =
     matchPath({ path: ROUTES.HOME, end: true }, location.pathname) ||
+    matchPath({ path: ROUTES.OVERVIEW, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.PRODUCTS, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.INVITALIA_PRODUCTS_LIST, end: true }, location.pathname) ||
     matchPath({ path: ROUTES.PRODUCERS, end: true }, location.pathname) ||

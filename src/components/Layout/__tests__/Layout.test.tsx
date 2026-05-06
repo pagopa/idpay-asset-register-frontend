@@ -31,6 +31,7 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
+    OVERVIEW: '/overview',
     PRODUCTS: '/products',
     PRODUCERS: '/producers',
     INVITALIA_PRODUCTS_LIST: '/invitalia-products',
