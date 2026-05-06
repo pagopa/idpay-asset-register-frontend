@@ -434,4 +434,19 @@ export const RegisterApi = {
     true
   ),
   setRestoredStatusList: makeStatusUpdater(registerClient.products.updateProductStatusRestored),
+
+  getMerchantInitiativeList: async (): Promise<AxiosResponse<Array<InitiativeDTO>>> => {
+    try {
+      return await registerClient.initiatives.getInitiatives({});
+    } catch (error) {
+      logApiError(error, 'getMerchantInitiativeList');
+      return {
+        data: [],
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {},
+      } as unknown as AxiosResponse<Array<InitiativeDTO>>;
+    }
+  },
 };
