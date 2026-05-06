@@ -18,7 +18,7 @@ void (i18n as any)
     fallbackLng: defaultLanguage,
     defaultNS: 'common',
     ns: ['common'],
-    fallbackNS: ['default/copy', 'default/tos', 'default/privacyPolicy'],
+    fallbackNS: ['common'],
     interpolation: {
       escapeValue: false
     },

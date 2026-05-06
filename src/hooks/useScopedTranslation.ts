@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { buildScopedNamespaces } from '../locale/namespaces';
@@ -33,18 +33,17 @@ const resolveInitiativeNamespace = (
     (i) => i.initiativeId === initiativeId
   );
 
-  if (
-    currentInitiative &&
-    currentInitiative.initiativeName &&
-    currentInitiative.startDate
-  ) {
-    return buildNamespaceKey(
-      currentInitiative.initiativeName,
-      currentInitiative.startDate
-    );
+  if (!currentInitiative) {
+    return undefined;
   }
 
-  return undefined;
+  const { initiativeName, startDate } = currentInitiative;
+
+  if (!initiativeName || !startDate) {
+    return undefined;
+  }
+
+  return buildNamespaceKey(initiativeName, startDate);
 };
 
 export const useScopedTranslation = (
@@ -66,55 +65,108 @@ export const useScopedTranslation = (
   );
 
   const namespacesToLoad = useMemo(() => {
-    const list = [
-      ...namespaces.common,
-      ...namespaces.initiative,
-      ...namespaces.default
-    ] as Array<string>;
+    const list = initiativeName
+      ? [
+          ...namespaces.common,
+          ...namespaces.initiative
+        ]
+      : [
+          ...namespaces.common,
+          ...namespaces.default
+        ];
+
     return Array.from(new Set(list));
-  }, [namespaces]);
+  }, [namespaces, initiativeName]);
 
   const namespacesForHook = useMemo((): Array<string> => {
     if (initiativeName) {
-      return ['common', `${initiativeName}/copy`, 'default/copy'];
+      return [
+        'common',
+        `${initiativeName}/copy`,
+        `${initiativeName}/tos`,
+        `${initiativeName}/privacyPolicy`
+      ];
     }
 
     return ['common', 'default/copy'];
   }, [initiativeName]);
 
-  const { t } = (useTranslation as any)(namespacesForHook);
+  const translationHook = (useTranslation as any)(namespacesForHook);
+
+  const { t: rawT } = translationHook;
+
+  const t = useMemo(
+    () =>
+      (((key: any, options?: any) => {
+        if (initiativeName) {
+          return rawT(key, {
+            ns: `${initiativeName}/copy`,
+            ...options,
+          });
+        }
+        return rawT(key, options);
+      }) as TFunction),
+    [rawT, initiativeName]
+  );
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const cancelledRef = useRef(false);
+  // removed cancellation ref to reduce complexity
+
+  const loadNamespaceIfMissing = async (ns: string): Promise<void> => {
+    const currentLang = (i18n as any).language;
+    const existingBundle = (i18n as any).getResourceBundle(currentLang, ns);
+
+    if (existingBundle && Object.keys(existingBundle).length > 0) {
+      return;
+    }
+
+    try {
+      const { loadItNamespace } = await import('../locale/multiInitiativeI18n');
+      const res = await loadItNamespace(ns);
+
+      (i18n as any).addResourceBundle(
+        currentLang,
+        ns,
+        res,
+        true,
+        true
+      );
+
+      // Force i18next to notify React after dynamic bundle injection
+      (i18n as any).reloadResources(currentLang, ns);
+      (i18n as any).emit('loaded');
+    } catch {
+      // eslint-disable-next-line no-console
+      console.warn('[useScopedTranslation] Failed loading namespace:', ns);
+    }
+  };
+
+  const ensureNamespacesLoaded = async (
+    nsList: Array<string>
+  ): Promise<void> => {
+    await (i18n as any).loadNamespaces(nsList);
+
+    await Promise.all(
+      nsList.map((ns) => loadNamespaceIfMissing(ns))
+    );
+  };
 
   useEffect(() => {
     if (!enableNamespaceLoading) {
       return;
     }
 
-    void (async () => {
+    const load = async (): Promise<void> => {
+      setIsLoading(true);
       try {
-        if (!cancelledRef.current) {
-          setIsLoading(true);
-        }
-        // i18next typing doesn't always expose loadNamespaces depending on versions.
-        // At runtime, i18next has this API (with react-i18next), so we cast to avoid TS error.
-        // NOTE: importing the configured i18n instance from '../locale' breaks some unit tests
-        // (it triggers configureI18n() with plugins not available under Jest).
-        // Instead, we rely on the global i18next instance used by react-i18next.
-        await (i18n as any).loadNamespaces(namespacesToLoad);
+        await ensureNamespacesLoaded(namespacesToLoad);
       } finally {
-        if (!cancelledRef.current) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
-    })();
-
-    return () => {
-      // eslint-disable-next-line functional/immutable-data
-      cancelledRef.current = true;
     };
+
+    void load();
   }, [enableNamespaceLoading, namespacesToLoad]);
 
   return { t, isLoading };

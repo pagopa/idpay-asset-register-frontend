@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Box, InputAdornment, TextField } from '@mui/material';
+import {Box, InputAdornment, TextField} from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { Search } from '@mui/icons-material';
 import { AxiosResponse } from 'axios';
