@@ -341,7 +341,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         >
           <Button
             variant="outlined"
-            onClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
+            onClick={() => onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ""), { replace: true }))}
             data-testid="cancel-button-test"
           >
             {t('commons.backBtn')}
