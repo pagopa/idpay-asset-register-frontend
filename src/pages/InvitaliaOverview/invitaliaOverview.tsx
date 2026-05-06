@@ -140,10 +140,6 @@ const InvitaliaOverview: React.FC = () => {
           titleFontSize="42px"
         />
 
-        <Typography variant="body1" sx={{ mb: 3 }}>
-          {t('pages.overview.currentInitiativeTest')}
-        </Typography>
-
         <Box width="100%">
           <TextField
             label="Cerca per nome produttore"
