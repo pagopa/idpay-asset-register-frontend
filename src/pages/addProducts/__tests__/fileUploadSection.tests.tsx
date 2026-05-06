@@ -42,7 +42,7 @@ const defaultProps = {
   getInputProps: () => ({ type: 'file' }),
   onInputClick: jest.fn(),
   formikCategory: '',
-  templateFileName: 'template.csv',
+  csvTemplate: {name: "template.csv", file: "/"},
   t: (key: string) => key,
 };
 
@@ -80,7 +80,8 @@ describe('FileUploadSection', () => {
     expect(
       screen.getByText('pages.addProducts.form.fileUpload.fileUploadHelpText')
     ).toBeInTheDocument();
-    expect(screen.getByRole('link')).toHaveAttribute('href', 'template.csv');
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link')).toHaveAttribute('download', 'template.csv');
   });
 
   it('calls onInputClick when input is clicked', () => {

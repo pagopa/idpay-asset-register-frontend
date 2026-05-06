@@ -26,11 +26,11 @@ jest.mock('../../../hooks/useCategories', () => ({
     categories: {
       cookinghobs: {
         label: "Piani cottura",
-        csv: "cookinghobs_template.csv"
+        csv: {name: "cookinghobs_template.csv", file: "/"}
       },
       other: {
         label: "Altro",
-        csv: "other_template.csv"
+        csv: {name: "other_template.csv", file: "/"}
       }
     }
   }),
@@ -84,7 +84,7 @@ jest.mock('../fileUploadSection', () => {
     onDismissError: React.MouseEventHandler<HTMLButtonElement> | undefined;
     onChangeFile: React.MouseEventHandler<HTMLButtonElement> | undefined;
     formikCategory: string;
-    templateFileName: string;
+    csvTemplate: {name: string, file: string};
   }) {
     return (
       <div data-testid="file-upload-section">
@@ -100,7 +100,7 @@ jest.mock('../fileUploadSection', () => {
         <button onClick={props.onChangeFile} data-testid="change-file-btn">
           Change File
         </button>
-        <div data-testid="template-filename">{props.templateFileName}</div>
+        <div data-testid="template-filename">{props.csvTemplate?.name}</div>
         <div data-testid="formik-category">{props.formikCategory}</div>
       </div>
     );
