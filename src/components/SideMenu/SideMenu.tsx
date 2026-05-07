@@ -14,11 +14,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import ROUTES from '../../routes';
 import { fetchUserFromLocalStorage } from '../../helpers';
-import { USERS_TYPES } from '../../utils/constants';
 import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import SidenavItem from './SidenavItem';
-import { initiativeMenuConfig, invitaliaInitiativeMenuConfig } from './sideMenuConfig';
+import { getInitiativeMenuConfig } from './sideMenuConfig';
 
 export const buildRoute = (route: string, initiativeId: string) =>
   route.replace(':initiativeId', initiativeId);
@@ -30,9 +29,9 @@ export default function SideMenu() {
   const location = useLocation();
   const onExit = useUnloadEventOnExit();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
-    user?.org_role as USERS_TYPES
-  );
+
+  const selectedConfig = useMemo(() => getInitiativeMenuConfig(user?.org_role), [user?.org_role]);
+
   const { data: initiatives = [] } = useGetInitiativesQuery();
   const [expanded, setExpanded] = useState<string | false>(false);
   const [pathname, setPathname] = useState(location.pathname);
@@ -65,7 +64,7 @@ export default function SideMenu() {
   useEffect(() => {
     const firstInitiativeId = initiatives[0]?.initiativeId;
 
-    if (!initiativeIdFromRoute && !expanded && firstInitiativeId) {
+    if (!initiativeIdFromRoute && !expanded && firstInitiativeId && initiatives.length === 1) {
       setExpanded(`panel-${firstInitiativeId}`);
     }
   }, [expanded, initiativeIdFromRoute, initiatives]);
@@ -104,10 +103,6 @@ export default function SideMenu() {
             if (!initiativeId || !initiativeName) {
               return null;
             }
-
-            const selectedConfig = isInvitaliaUser
-              ? invitaliaInitiativeMenuConfig
-              : initiativeMenuConfig;
 
             const [firstInitiativePage] = selectedConfig;
 
