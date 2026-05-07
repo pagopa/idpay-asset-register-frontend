@@ -11,30 +11,34 @@ const defaultLanguage = 'it';
  * Since we need namespace support (common, default/*, <initiative>/*), we directly init the shared i18n instance.
  * This keeps legacy behavior (all keys are still requested without explicit namespace) while enabling lazy-loading.
  */
-void (i18n as any).use(initReactI18next).init({
-  lng: defaultLanguage,
-  fallbackLng: defaultLanguage,
-  defaultNS: 'common',
-  ns: ['common'],
-  fallbackNS: ['common'],
-  interpolation: {
-    escapeValue: false,
-  },
-  react: {
-    useSuspense: true,
-  },
-  resources: {
-    [defaultLanguage]: {
-      common,
+if (process.env.NODE_ENV !== 'test' && initReactI18next) {
+  void (i18n as any).use(initReactI18next).init({
+    lng: defaultLanguage,
+    fallbackLng: defaultLanguage,
+    defaultNS: 'common',
+    ns: ['common'],
+    fallbackNS: ['common'],
+    interpolation: {
+      escapeValue: false,
     },
-  },
-} as any);
+    react: {
+      useSuspense: true,
+    },
+    resources: {
+      [defaultLanguage]: {
+        common,
+      },
+    },
+  } as any);
+}
 
-void Promise.all(
-  ['default/copy', 'default/tos', 'default/privacyPolicy'].map(async (ns) => {
-    const res = await loadItNamespace(ns);
-    (i18n as any).addResourceBundle(defaultLanguage, ns, res, true, true);
-  })
-);
+if (process.env.NODE_ENV !== 'test' && typeof (i18n as any).addResourceBundle === 'function') {
+  void Promise.all(
+    ['default/copy', 'default/tos', 'default/privacyPolicy'].map(async (ns) => {
+      const res = await loadItNamespace(ns);
+      (i18n as any).addResourceBundle(defaultLanguage, ns, res, true, true);
+    })
+  );
+}
 
 export default i18n;

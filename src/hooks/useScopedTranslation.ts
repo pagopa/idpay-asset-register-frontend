@@ -119,6 +119,11 @@ export const useScopedTranslation = (
     }
 
     const currentLang = (i18n as any).language;
+
+    if (typeof (i18n as any).getResourceBundle !== 'function') {
+      return;
+    }
+
     const existingBundle = (i18n as any).getResourceBundle(currentLang, ns);
 
     if (existingBundle && Object.keys(existingBundle).length > 0) {

@@ -51,7 +51,9 @@ const InvitaliaOverview: React.FC = () => {
       setInstitutions({ institutions: institutionsDataFilteredByUser });
 
       const institutionList = institutionsData.data.institutions;
-      dispatch(setInstitutionList(institutionList as Array<Institution>));
+      if (dispatch) {
+        dispatch(setInstitutionList(institutionList as Array<Institution>));
+      }
     } catch (error) {
       if (DEBUG_CONSOLE) {
         console.error('Error fetching institutions:', error);

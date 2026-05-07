@@ -52,7 +52,8 @@ const OverviewHistoryUpload: React.FC = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [page, rowsPerPage, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, rowsPerPage]);
 
   const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {

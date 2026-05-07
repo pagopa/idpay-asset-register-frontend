@@ -11,6 +11,29 @@ const Overview: React.FC = () => {
   const { t } = useScopedTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
+  const fields = useMemo(
+    () => [
+      { label: 'overviewTitleBoxInfoTitleLblRs', value: user?.org_name },
+      { label: 'overviewTitleBoxInfoTitleLblCf', value: user?.org_taxcode },
+      { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat },
+      { label: 'overviewTitleBoxInfoTitleLblSl', value: user?.org_address },
+      { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec },
+      { label: 'overviewTitleBoxInfoTitleLblEmailOp', value: user?.org_email },
+    ].map(({ label, value }) => {
+      const hasValidValue = typeof value === 'string' && value.length > 0;
+
+      return {
+        label,
+        value,
+        hasValidValue,
+        displayValue: hasValidValue
+          ? truncateString(value as string, MAX_LENGTH_OVERVIEW_PROD)
+          : value || EMPTY_DATA,
+      };
+    }),
+    [user]
+  );
+
   return (
     <Box width="100%" px={2}>
       <TitleBox
@@ -61,40 +84,21 @@ const Overview: React.FC = () => {
                 rowGap: 2,
               }}
             >
-              {[
-                { label: 'overviewTitleBoxInfoTitleLblRs', value: user?.org_name, truncate: true },
-                {
-                  label: 'overviewTitleBoxInfoTitleLblCf',
-                  value: user?.org_taxcode,
-                  truncate: true,
-                },
-                { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat, truncate: true },
-                {
-                  label: 'overviewTitleBoxInfoTitleLblSl',
-                  value: user?.org_address,
-                  truncate: true,
-                },
-                { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec, truncate: true },
-                {
-                  label: 'overviewTitleBoxInfoTitleLblEmailOp',
-                  value: user?.org_email,
-                  truncate: true,
-                },
-              ].map(({ label, value, truncate }) => (
+              {fields.map(({ label, value, hasValidValue, displayValue }) => (
                 <React.Fragment key={label}>
                   <Box sx={{ gridColumn: 'span 3', alignContent: 'center' }}>
                     <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
                   </Box>
                   <Box sx={{ gridColumn: 'span 9' }}>
-                    {truncate && value ? (
+                    {hasValidValue ? (
                       <Tooltip title={value}>
                         <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }}>
-                          {truncateString(value, MAX_LENGTH_OVERVIEW_PROD)}
+                          {displayValue}
                         </Typography>
                       </Tooltip>
                     ) : (
                       <Typography variant="body2" sx={{ fontWeight: '600' }}>
-                        {value || EMPTY_DATA}
+                        {displayValue}
                       </Typography>
                     )}
                   </Box>
