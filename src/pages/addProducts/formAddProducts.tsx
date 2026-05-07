@@ -27,6 +27,8 @@ import { useErrorHandling } from '../../hooks/useErrorHandling';
 import { useFileState } from '../../hooks/useFileState';
 import { UploadProductListParams } from '../../api/generated/register';
 import { delay } from '../../helpers';
+import { buildRoute } from '../../components/SideMenu/SideMenu';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { useCategories } from '../../hooks/useCategories';
 import { downloadCsv } from './helpers';
 import FileUploadSection from './fileUploadSection';
@@ -47,6 +49,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
     const { t } = useTranslation();
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();
+    const initiativeId = useCurrentInitiativeId();
 
     const fileState = useFileState();
     const errorHandling = useErrorHandling(t);
@@ -217,7 +220,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
       if (res.status === 200) {
         await delay(1000);
-        onExit(() => navigate(ROUTES.HOME, { replace: true }));
+        onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ""), { replace: true }));
       } else {
         handleUploadErrorAndRejectFile(res.data);
       }
@@ -335,7 +338,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         >
           <Button
             variant="outlined"
-            onClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
+            onClick={() => onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ""), { replace: true }))}
             data-testid="cancel-button-test"
           >
             {t('commons.backBtn')}

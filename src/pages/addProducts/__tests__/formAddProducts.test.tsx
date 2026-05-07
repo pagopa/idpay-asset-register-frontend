@@ -52,13 +52,19 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
-    PRODUCTS: '/prodotti',
+    PRODUCTS: '/home/:initiativeId/prodotti',
+    OVERVIEW: '/home/:initiativeId/panoramica',
   },
   BASE_ROUTE: '/base',
 }));
 
 jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
+}));
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'initiative-1',
 }));
 
 jest.mock('../../../hooks/useFileState');
