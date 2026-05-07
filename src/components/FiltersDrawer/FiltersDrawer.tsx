@@ -104,7 +104,7 @@ export default function FiltersDrawer({
   const [draftGtin, setDraftGtin] = useState(gtinCodeFilter);
   const [showEprelError, setShowEprelError] = useState(false);
   const [showGtinError, setShowGtinError] = useState(false);
-  const {categories} = useCategories("bonusElettrodomestici");
+  const {categories} = useCategories();
 
   const isValidNumeric = (value: string) => /^\d+$/.test(value);
   const isValidGtin = (value: string) => /^[a-zA-Z0-9]{1,14}$/.test(value);

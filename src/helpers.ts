@@ -271,9 +271,7 @@ export const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 export const createCsv = ({headers, fields}: {headers: Array<string>; fields: Array<string>}) => {
-  const csv = [headers, fields].map(row => row.join(";")).join("\n");
+  const csv = [headers, fields]?.map(row => row?.join(";"))?.join("\n");
   const blob = new Blob([csv], { type: 'text/csv' });
   return URL.createObjectURL(blob);
 };
-
-export const initiativeNameFormatter = (initiativeName: string) => initiativeName.charAt(0).toLowerCase() + initiativeName.slice(1).replace(/\s+/g, '');

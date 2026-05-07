@@ -70,7 +70,7 @@ export default function FilterBar({
   handleDeleteFiltersButtonClick,
 }: FilterProps) {
   const { t } = useScopedTranslation();
-  const {categories} = useCategories("bonusElettrodomestici");
+  const {categories} = useCategories();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
     user?.org_role as USERS_TYPES
