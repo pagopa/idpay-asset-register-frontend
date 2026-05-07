@@ -25,10 +25,6 @@ jest.mock('../../../utils/constants', () => ({
     INVITALIA_L2: 'INVITALIA_L2',
     OTHER: 'OTHER',
   },
-  PRODUCTS_CATEGORIES: {
-    CATEGORY_1: 'category1',
-    CATEGORY_2: 'category2',
-  },
   PRODUCTS_STATES: {
     STATE_1: 'state1',
     STATE_2: 'state2',
@@ -74,6 +70,17 @@ const renderWithProviders = (component: React.ReactElement, preloadedState?: any
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
+  }),
+}));
+
+jest.mock('../../../hooks/useCategories', () => ({
+  useCategories: () => ({
+    categories: {
+      CAT_1: {
+        label: "Lavatrici",
+        csv: ""
+      }
+    }
   }),
 }));
 
@@ -186,11 +193,11 @@ describe('FilterBar', () => {
     const categorySelect = screen.getByLabelText('pages.products.filterLabels.category');
     fireEvent.mouseDown(categorySelect);
 
-    const categoryOption = screen.getByText('pages.products.categories.CATEGORY_1');
+    const categoryOption = screen.getByText('Lavatrici');
     fireEvent.click(categoryOption);
 
     expect(defaultProps.setCategoryFilter).toHaveBeenCalledWith(
-      'pages.products.categories.CATEGORY_1'
+      'Lavatrici'
     );
   });
 
@@ -237,7 +244,7 @@ describe('FilterBar', () => {
   });
 
   it('should call setFiltering when filter button is clicked', () => {
-    const props = { ...defaultProps, categoryFilter: 'pages.products.categories.CATEGORY_1' };
+    const props = { ...defaultProps, categoryFilter: 'Lavatrici' };
     renderWithProviders(<FilterBar loading={false} {...props} />);
 
     const filterButton = screen.getByText('pages.products.filterLabels.filter');
@@ -247,7 +254,7 @@ describe('FilterBar', () => {
   });
 
   it('should call handleDeleteFiltersButtonClick when delete filters button is clicked', () => {
-    const props = { ...defaultProps, categoryFilter: 'pages.products.categories.CATEGORY_1' };
+    const props = { ...defaultProps, categoryFilter: 'Lavatrici' };
     renderWithProviders(<FilterBar loading={false} {...props} />);
 
     const deleteButton = screen.getByText('pages.products.filterLabels.deleteFilters');
@@ -262,8 +269,7 @@ describe('FilterBar', () => {
     const categorySelect = screen.getByLabelText('pages.products.filterLabels.category');
     fireEvent.mouseDown(categorySelect);
 
-    expect(screen.getByText('pages.products.categories.CATEGORY_1')).toBeInTheDocument();
-    expect(screen.getByText('pages.products.categories.CATEGORY_2')).toBeInTheDocument();
+    expect(screen.getByText('Lavatrici')).toBeInTheDocument();
   });
 
   it('should render all status options in select', () => {
@@ -306,7 +312,7 @@ describe('FilterBar', () => {
   it('should display current filter values', () => {
     const props = {
       ...defaultProps,
-      categoryFilter: 'pages.products.categories.CATEGORY_1',
+      categoryFilter: 'Lavatrici',
       statusFilter: 'pages.products.categories.STATE_1',
       batchFilter: '1',
       eprelCodeFilter: 'EPREL123',
@@ -315,7 +321,7 @@ describe('FilterBar', () => {
 
     renderWithProviders(<FilterBar loading={false} {...props} />);
 
-    expect(screen.getByDisplayValue('pages.products.categories.CATEGORY_1')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Lavatrici')).toBeInTheDocument();
     expect(screen.getByDisplayValue('pages.products.categories.STATE_1')).toBeInTheDocument();
     expect(screen.getByDisplayValue('1')).toBeInTheDocument();
     expect(screen.getByDisplayValue('EPREL123')).toBeInTheDocument();

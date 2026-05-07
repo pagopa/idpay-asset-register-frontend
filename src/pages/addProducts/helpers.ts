@@ -1,40 +1,6 @@
-import { PRODUCTS_CATEGORIES, DEBUG_CONSOLE } from '../../utils/constants';
+import { DEBUG_CONSOLE } from '../../utils/constants';
 import { CsvDTO } from '../../api/generated/register';
 
-export const categoryList = [
-  {
-    label: 'commons.categories.refrigeratingappl',
-    value: PRODUCTS_CATEGORIES.REFRIGERATINGAPPL,
-  },
-  {
-    label: 'commons.categories.tumbledryers',
-    value: PRODUCTS_CATEGORIES.TUMBLEDRYERS,
-  },
-  {
-    label: 'commons.categories.rangehoods',
-    value: PRODUCTS_CATEGORIES.RANGEHOODS,
-  },
-  {
-    label: 'commons.categories.ovens',
-    value: PRODUCTS_CATEGORIES.OVENS,
-  },
-  {
-    label: 'commons.categories.washerdriers',
-    value: PRODUCTS_CATEGORIES.WASHERDRIERS,
-  },
-  {
-    label: 'commons.categories.dishwashers',
-    value: PRODUCTS_CATEGORIES.DISHWASHERS,
-  },
-  {
-    label: 'commons.categories.washingmachines',
-    value: PRODUCTS_CATEGORIES.WASHINGMACHINES,
-  },
-  {
-    label: 'commons.categories.cookinghobs',
-    value: PRODUCTS_CATEGORIES.COOKINGHOBS,
-  },
-];
 
 export const downloadCsv = (content: CsvDTO | string | undefined, filename: string) => {
   const BOM = '\uFEFF';
