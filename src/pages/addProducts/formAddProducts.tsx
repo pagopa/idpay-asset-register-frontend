@@ -23,6 +23,7 @@ import {
 } from '../../services/registerService';
 import ROUTES from '../../routes';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useErrorHandling } from '../../hooks/useErrorHandling';
 import { useFileState } from '../../hooks/useFileState';
 import { UploadProductListParams } from '../../api/generated/register';

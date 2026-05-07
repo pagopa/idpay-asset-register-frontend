@@ -3,8 +3,18 @@
     "title": "Default Bonus"
   },
   "pages" : {
-    "overview": {
-      "currentInitiativeTest": "Default Bonus"
+    "addProducts": {
+      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Default. Dopo il caricamento, potrai visualizzarli nella sezione "
+    },
+    "tos": {
+      "and": "e l’",
+      "backHome": "Torna alla home",
+      "linkPrivacy": "Informativa Privacy",
+      "linkTos": "Termini e condizioni d’uso",
+      "termsDescription": "Accedendo, accetti i",
+      "termsDescription2": "del servizio e confermi di aver letto l’",
+      "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
+      "title": "Nome Iniziativa"
     }
   }
 }
