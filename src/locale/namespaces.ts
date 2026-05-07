@@ -7,12 +7,8 @@ export enum LocaleNamespace {
   Common = 'common',
 
   DefaultCopy = 'default/copy',
-  DefaultTos = 'default/tos',
-  DefaultPrivacyPolicy = 'default/privacyPolicy',
 
   InitiativeCopy = 'initiative/copy',
-  InitiativeTos = 'initiative/tos',
-  InitiativePrivacyPolicy = 'initiative/privacyPolicy',
 }
 
 export const initiativeNamespaceGenerator = (initiativesList: Array<InitiativeDescriptor>) =>
@@ -23,13 +19,9 @@ export const buildScopedNamespaces = (initiativeName?: string) => ({
   initiative: initiativeName
     ? ([
         `${initiativeName}/copy`,
-        `${initiativeName}/tos`,
-        `${initiativeName}/privacyPolicy`,
       ] as const)
     : ([] as const),
   default: [
     LocaleNamespace.DefaultCopy,
-    LocaleNamespace.DefaultTos,
-    LocaleNamespace.DefaultPrivacyPolicy,
   ] as const,
 });

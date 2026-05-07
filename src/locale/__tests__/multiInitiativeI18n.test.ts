@@ -31,13 +31,6 @@ describe('loadItNamespace', () => {
       expect(result).not.toEqual({});
     });
 
-    test('returns content for "default/tos" namespace', async () => {
-      const result = await loadItNamespace('default/tos');
-      expect(result).toBeDefined();
-      expect(typeof result).toBe('object');
-      expect(result).not.toEqual({});
-    });
-
     test('resolves for "default/privacyPolicy" namespace (placeholder file is {})', async () => {
       const result = await loadItNamespace('default/privacyPolicy');
       expect(result).toBeDefined();

@@ -14,24 +14,8 @@ describe('LocaleNamespace enum', () => {
     expect(LocaleNamespace.DefaultCopy).toBe('default/copy');
   });
 
-  test('DefaultTos has correct value', () => {
-    expect(LocaleNamespace.DefaultTos).toBe('default/tos');
-  });
-
-  test('DefaultPrivacyPolicy has correct value', () => {
-    expect(LocaleNamespace.DefaultPrivacyPolicy).toBe('default/privacyPolicy');
-  });
-
   test('InitiativeCopy has correct value', () => {
     expect(LocaleNamespace.InitiativeCopy).toBe('initiative/copy');
-  });
-
-  test('InitiativeTos has correct value', () => {
-    expect(LocaleNamespace.InitiativeTos).toBe('initiative/tos');
-  });
-
-  test('InitiativePrivacyPolicy has correct value', () => {
-    expect(LocaleNamespace.InitiativePrivacyPolicy).toBe('initiative/privacyPolicy');
   });
 
   test('enum contains exactly the expected keys', () => {
@@ -39,11 +23,7 @@ describe('LocaleNamespace enum', () => {
     expect(keys).toEqual([
       'Common',
       'DefaultCopy',
-      'DefaultTos',
-      'DefaultPrivacyPolicy',
       'InitiativeCopy',
-      'InitiativeTos',
-      'InitiativePrivacyPolicy',
     ]);
   });
 });
@@ -87,13 +67,9 @@ describe('buildScopedNamespaces', () => {
     expect(result.common).toEqual([LocaleNamespace.Common]);
     expect(result.initiative).toEqual([
       'bonusElettrodomestici2025/copy',
-      'bonusElettrodomestici2025/tos',
-      'bonusElettrodomestici2025/privacyPolicy',
     ]);
     expect(result.default).toEqual([
       LocaleNamespace.DefaultCopy,
-      LocaleNamespace.DefaultTos,
-      LocaleNamespace.DefaultPrivacyPolicy,
     ]);
   });
 
@@ -104,8 +80,6 @@ describe('buildScopedNamespaces', () => {
     expect(result.initiative).toEqual([]);
     expect(result.default).toEqual([
       LocaleNamespace.DefaultCopy,
-      LocaleNamespace.DefaultTos,
-      LocaleNamespace.DefaultPrivacyPolicy,
     ]);
   });
 
@@ -120,7 +94,7 @@ describe('buildScopedNamespaces', () => {
     const withoutName = buildScopedNamespaces();
 
     expect(withName.default).toEqual(withoutName.default);
-    expect(withName.default).toHaveLength(3);
+    expect(withName.default).toHaveLength(1);
   });
 
   test('common scope always contains exactly one entry', () => {
@@ -134,7 +108,7 @@ describe('buildScopedNamespaces', () => {
 
   test('initiative scope contains three entries when name is provided', () => {
     const result = buildScopedNamespaces('testInitiative');
-    expect(result.initiative).toHaveLength(3);
+    expect(result.initiative).toHaveLength(1);
   });
 
   test('initiative namespace paths follow the pattern <initiativeName>/<file>', () => {

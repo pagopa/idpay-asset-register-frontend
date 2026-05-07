@@ -74,7 +74,6 @@ export const useScopedTranslation = (
         'common',
         `${initiativeName}/copy`,
         `${initiativeName}/tos`,
-        `${initiativeName}/privacyPolicy`,
       ];
     }
 
