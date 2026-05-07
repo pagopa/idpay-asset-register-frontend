@@ -1,778 +1,692 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\overview\__tests__\overview.test.tsx">
-    <testCase name="Overview Component Rendering Tests should render the main title and subtitle correctly" duration="104"/>
-    <testCase name="Overview Component Rendering Tests should render the information section title" duration="32"/>
-    <testCase name="Overview Component Rendering Tests should render all field labels" duration="28"/>
-    <testCase name="Overview Component Rendering Tests should render OverviewProductionSection component" duration="29"/>
-    <testCase name="Overview Component Rendering Tests should render footer paper element" duration="26"/>
-    <testCase name="Overview Component User Data Display Tests should display user data with tooltips when data is available and truncated" duration="27"/>
-    <testCase name="Overview Component User Data Display Tests should display truncated text in the UI when text exceeds max length" duration="20"/>
-    <testCase name="Overview Component User Data Display Tests should display short text without truncation" duration="23"/>
-    <testCase name="Overview Component Empty Data Handling Tests should display empty data placeholder when user data is null" duration="18"/>
-    <testCase name="Overview Component Empty Data Handling Tests should display empty data placeholder when user object exists but fields are empty" duration="16"/>
-    <testCase name="Overview Component Empty Data Handling Tests should handle partially filled user data" duration="26"/>
-    <testCase name="Overview Component Function Calls Tests should call fetchUserFromLocalStorage on component mount" duration="21"/>
-    <testCase name="Overview Component Function Calls Tests should call truncateString for each field with data" duration="20"/>
-    <testCase name="Overview Component Function Calls Tests should not call truncateString for empty fields" duration="19">
-      <failure message="Error: expect(jest.fn()).toHaveBeenCalledTimes(expected)"><![CDATA[Error: expect(jest.fn()).toHaveBeenCalledTimes(expected)
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\ProductsTable.test.tsx">
+    <testCase name="ProductsTable – vista INVITALIA render base: header mockato, righe e colonne coerenti; mostra producer troncato e chip di stato" duration="816"/>
+    <testCase name="ProductsTable – vista INVITALIA click su icona nell’ultima cella chiama handleListButtonClick; click su riga/checkbox non propaga" duration="3420"/>
+    <testCase name="ProductsTable – vista INVITALIA checkbox abilitata/disabilitata correttamente in base a ruolo L1 e stato; gestione gtin non stringa" duration="1818"/>
+    <testCase name="ProductsTable – vista INVITALIA select all / deselect all per INVITALIA L1 seleziona solo UPLOADED e SUPERVISED" duration="2715"/>
+    <testCase name="ProductsTable – vista INVITALIA toggle singolo checkbox usa setSelected callback e gestisce aggiunta/rimozione" duration="998">
+      <failure message="Error: expect(jest.fn()).toHaveBeenLastCalledWith(...expected)"><![CDATA[Error: expect(jest.fn()).toHaveBeenLastCalledWith(...expected)
 
-Expected number of calls: 3
-Received number of calls: 6
-    at Object.<anonymous> (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\overview\__tests__\overview.test.tsx:268:34)
-    at Promise.then.completed (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\utils.js:391:28)
-    at new Promise (<anonymous>)
-    at callAsyncCircusFn (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\utils.js:316:10)
-    at _callCircusTest (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\run.js:218:40)
-    at processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at _runTest (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\run.js:155:3)
-    at _runTestsForDescribeBlock (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\run.js:66:9)
-    at _runTestsForDescribeBlock (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\run.js:60:9)
-    at _runTestsForDescribeBlock (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\run.js:60:9)
-    at run (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\run.js:25:3)
-    at runAndTransformResultsToJestFormat (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:170:21)
-    at jestAdapter (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:82:19)
-    at runTestInternal (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-runner\build\runTest.js:389:16)
-    at runTest (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jest-runner\build\runTest.js:475:34)]]></failure>
+Expected: ["GTIN-111"]
+
+Number of calls: 0
+    at Object.<anonymous> (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\ProductsTable.test.tsx:272:30)]]></failure>
     </testCase>
-    <testCase name="Overview Component Accessibility Tests should have tooltips with proper title attributes for accessibility" duration="20"/>
-    <testCase name="Overview Component Component Structure Tests should render all Typography components with correct variants" duration="22"/>
-    <testCase name="Overview Component Error Handling Tests should handle when fetchUserFromLocalStorage returns undefined" duration="19"/>
+    <testCase name="ProductsTable – vista INVITALIA vista INVITALIA L2: select all prende solo WAIT_APPROVED; checkbox per altri stati è disabilitata" duration="639"/>
+    <testCase name="ProductsTable – vista INVITALIA producer tooltip derivato da istituzioni (getProducer) e truncateString usato" duration="378"/>
+    <testCase name="ProductsTable – vista INVITALIA sort handler passa dal thead mockato" duration="750"/>
+    <testCase name="ProductsTable – vista PRODUTTORE render producer head, righe producer e click sull’icona actions invoca handleListButtonClick" duration="704"/>
+    <testCase name="ProductsTable – vista PRODUTTORE getCellContent copre tutti i campi (category, energyClass, eprel, gtin, batch, status, actions)" duration="117"/>
+    <testCase name="ProductsTable mostra la cella category (INVITALIA)" duration="304"/>
+    <testCase name="ProductsTable mostra la cella category (PRODUTTORE)" duration="60"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\uploadsHistory\__tests__\uploadsHistory.test.tsx">
-    <testCase name="OverviewHistoryUpload renders correctly in loading state" duration="23"/>
-    <testCase name="OverviewHistoryUpload shows data correctly when API succeeds" duration="30"/>
-    <testCase name="OverviewHistoryUpload shows error message when API fails" duration="10"/>
-    <testCase name="OverviewHistoryUpload shows InfoUpload when uploadStatus is UPLOADED" duration="6"/>
-    <testCase name="OverviewHistoryUpload does not show InfoUpload when uploadStatus is not UPLOADED" duration="30"/>
-    <testCase name="OverviewHistoryUpload calls getProductFilesList with correct initial parameters" duration="28"/>
-    <testCase name="OverviewHistoryUpload handles empty content array correctly" duration="10"/>
-    <testCase name="OverviewHistoryUpload handles null content correctly" duration="7"/>
-    <testCase name="OverviewHistoryUpload handles undefined content correctly" duration="8"/>
-    <testCase name="OverviewHistoryUpload InfoUpload component renders with correct props" duration="9"/>
-    <testCase name="OverviewHistoryUpload renders error state with empty table" duration="9"/>
-    <testCase name="OverviewHistoryUpload useEffect dependency array works correctly" duration="1012">
-      <failure message="Error: expect(jest.fn()).toHaveBeenCalledTimes(expected)"><![CDATA[Error: expect(jest.fn()).toHaveBeenCalledTimes(expected)
-
-Expected number of calls: 1
-Received number of calls: 113
-
-Ignored nodes: comments, script, style
-<html>
-  <head>
-    <meta
-      content=""
-      name="emotion-insertion-point"
-    />
-  </head>
-  <body>
-    <div>
-      <div
-        class="MuiBox-root css-v4b62z"
-        data-testid="title-overview"
-      >
-        <div>
-          <h4>
-            Storico caricamenti
-          </h4>
-          <p>
-            Visualizza tutti i caricamenti e i dettagli.
-          </p>
-        </div>
-        <div
-          class="MuiBox-root css-0"
-        >
-          <div
-            data-testid="uploads-table"
-          >
-            <div>
-              Loading...
-            </div>
-            <div>
-              Data loaded
-            </div>
-            <button
-              data-testid="page-change-btn"
-            >
-              Change Page
-            </button>
-            <input
-              data-testid="rows-per-page-input"
-              value="10"
-            />
-          </div>
-        </div>
-        <div
-          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-1jcbk1c-MuiPaper-root"
-          style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
-        />
-      </div>
-    </div>
-  </body>
-</html>
-    at C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\uploadsHistory\__tests__\uploadsHistory.test.tsx:220:39
-    at runWithExpensiveErrorDiagnosticsDisabled (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\@testing-library\dom\dist\config.js:47:12)
-    at checkCallback (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\@testing-library\dom\dist\wait-for.js:124:77)
-    at checkRealTimersCallback (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\@testing-library\dom\dist\wait-for.js:118:16)
-    at Timeout.task [as _onTimeout] (C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\node_modules\jsdom\lib\jsdom\browser\Window.js:516:19)
-    at listOnTimeout (node:internal/timers:588:17)
-    at processTimers (node:internal/timers:523:7)]]></failure>
-    </testCase>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\__tests__\malformedRoutesRedirect.test.tsx">
+    <testCase name="Malformed initiative-scoped routes &quot;/panoramica&quot; (missing initiativeId) redirects to HOME" duration="72"/>
+    <testCase name="Malformed initiative-scoped routes URL with double slash redirects to HOME (error case)" duration="20"/>
+    <testCase name="Malformed initiative-scoped routes URL with initiativeId but missing endpoint redirects to HOME" duration="20"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\BreadcrumbsBox.test.tsx">
+    <testCase name="test suite for BreadcrumbsBox render BreadcrumbsBox" duration="25"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\ProductDataGrid.test.tsx">
+    <testCase name="ProductDataGrid Rendering and States renders loading state initially" duration="30"/>
+    <testCase name="ProductDataGrid Rendering and States renders products table when data is loaded" duration="66"/>
+    <testCase name="ProductDataGrid Rendering and States renders empty state when no products" duration="19"/>
+    <testCase name="ProductDataGrid User Types and Roles calls getProducts with org_id for regular user" duration="33"/>
+    <testCase name="ProductDataGrid User Types and Roles calls getProducts with institutionId for Invitalia user" duration="75"/>
+    <testCase name="ProductDataGrid User Types and Roles shows action buttons for Invitalia user with selections" duration="69"/>
+    <testCase name="ProductDataGrid Filtering opens and closes filters drawer" duration="68"/>
+    <testCase name="ProductDataGrid Sorting and Pagination handles sorting" duration="84"/>
+    <testCase name="ProductDataGrid Product Detail Drawer opens and closes detail drawer" duration="54"/>
+    <testCase name="ProductDataGrid Error Handling handles API errors gracefully" duration="47"/>
+    <testCase name="ProductDataGrid Error Handling handles batch filter API errors" duration="32"/>
+    <testCase name="ProductDataGrid – extra coverage shows the Supervised action button for Invitalia L1 when selected rows contain no supervised items" duration="51"/>
+    <testCase name="ProductDataGrid – extra coverage disables Wait Approved for Invitalia L1 when a selected row is already WAIT_APPROVED" duration="61"/>
+    <testCase name="ProductDataGrid – extra coverage opens ProductModal for Invitalia L1 when status checks pass for SUPERVISED action" duration="106"/>
+    <testCase name="ProductDataGrid – extra coverage opens Confirm dialog for WAIT_APPROVED flow and handles confirm + success messages" duration="114"/>
+    <testCase name="ProductDataGrid – extra coverage shows mix-status error when status checks fail, then hides it after timeout" duration="54"/>
+    <testCase name="ProductDataGrid – extra coverage shows &quot;yourself approved&quot; error for Invitalia L2 when someUploaded is true" duration="93"/>
+    <testCase name="ProductDataGrid – extra coverage renders a filter chip automatically for Invitalia L2 (admin default status) and shows pagination label" duration="82"/>
+    <testCase name="ProductDataGrid – extra coverage opens and closes the Filters drawer and applies filtering (setFiltering)" duration="123"/>
+    <testCase name="ProductDataGrid – extra coverage handles sorting and paginated label rendering" duration="62"/>
+    <testCase name="ProductDataGrid – extra coverage opens and closes the Detail drawer via ProductsTable callback" duration="81"/>
+    <testCase name="ProductDataGrid – extra coverage gracefully handles getBatchFilterList API error path without breaking the table" duration="46"/>
+    <testCase name="ProductDataGrid – extra coverage does not render action buttons when no selection" duration="60"/>
+    <testCase name="ProductDataGrid – extra coverage renders WAIT_APPROVED message result when ProductModal success triggers WAIT_APPROVED for L1" duration="91"/>
+    <testCase name="ProductDataGrid – extra coverage handleOpenModalWithStatusCheck returns early when no selected rows" duration="51"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\SideMenu\__tests__\SideMenu.test.tsx">
+    <testCase name="Test suite for SideMenu component renders the component" duration="35"/>
+    <testCase name="Test suite for SideMenu component opens the first initiative accordion by default on HOME" duration="71"/>
+    <testCase name="Test suite for SideMenu component user clicks the link to home page" duration="93"/>
+    <testCase name="Test suite for SideMenu component user clicks the link to uploads" duration="108"/>
+    <testCase name="Test suite for SideMenu component user clicks the link to products page and triggers navigation" duration="109"/>
+    <testCase name="Test suite for SideMenu component does not render extra items for Invitalia users with invalid role" duration="16"/>
+    <testCase name="Test suite for SideMenu component Invitalia L1: mostra voci dedicate e click su &quot;Produttori&quot; porta a /producers" duration="92"/>
+    <testCase name="Test suite for SideMenu component Invitalia L2: isSelected true su products list route" duration="17"/>
+    <testCase name="Test suite for SideMenu component Invitalia: isSelected true su products list route" duration="14"/>
+    <testCase name="Test suite for SideMenu component Non-Invitalia: isSelected corretto su uploads route" duration="17"/>
+    <testCase name="Test suite for SideMenu component Non-Invitalia: isSelected corretto su products route" duration="20"/>
+    <testCase name="Test suite for SideMenu component Non-Invitalia: isSelected corretto su overview route" duration="17"/>
+    <testCase name="Test suite for SideMenu component Click su &quot;Prodotti&quot; non naviga se onExit non invoca la callback" duration="83"/>
+    <testCase name="Test suite for SideMenu component LocalStorage vuoto: mostra menu non-Invitalia senza crash" duration="12"/>
+    <testCase name="Test suite for SideMenu component Invitalia L1: click su &quot;Prodotti Invitalia&quot; naviga alla lista prodotti" duration="79"/>
+    <testCase name="Test suite for SideMenu component Invitalia: mostra icona BuildIcon per Produttori" duration="15"/>
+    <testCase name="Test suite for SideMenu component Invitalia: Produttori isSelected su producers route" duration="14"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\OneTrustContentWrapper.test.tsx">
+    <testCase name="test suite for OneTrustContentWrapper render OneTrustContentWrapper" duration="10"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\AcceptedFile\__tests__\AcceptedFile.test.tsx">
+    <testCase name="test suite for AcceptedFile render AcceptedFile" duration="23"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\InvitaliaOverview\__tests__\invitaliaOverview.test.tsx">
+    <testCase name="InvitaliaOverview renders title and subtitle" duration="32"/>
+    <testCase name="InvitaliaOverview renders institutions table with data" duration="20"/>
+    <testCase name="InvitaliaOverview filters institutions by search" duration="48"/>
+    <testCase name="InvitaliaOverview shows no results when search does not match" duration="36"/>
+    <testCase name="InvitaliaOverview handles institutions with missing description while filtering" duration="39"/>
+    <testCase name="InvitaliaOverview filters out the institution associated with the current user" duration="38"/>
+    <testCase name="InvitaliaOverview falls back to an empty list when the API returns no institutions" duration="31"/>
+    <testCase name="InvitaliaOverview sorts institutions" duration="27"/>
+    <testCase name="InvitaliaOverview changes page and rows per page" duration="39"/>
+    <testCase name="InvitaliaOverview opens and closes the detail drawer" duration="73"/>
+    <testCase name="InvitaliaOverview handles loading state" duration="15"/>
+    <testCase name="InvitaliaOverview handles error in fetchInstitutions" duration="31"/>
+    <testCase name="InvitaliaOverview handles error in handleDetailRequest" duration="48"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Layout\__tests__\Layout.test.tsx">
+    <testCase name="Layout component renders correctly with a matched route (e.g. /home)" duration="35"/>
+    <testCase name="Layout component renders correctly with /products route" duration="16"/>
+    <testCase name="Layout component renders correctly with a nested matched route (e.g. /products/detail)" duration="19"/>
+    <testCase name="Layout component renders correctly with /invitalia-products route" duration="11"/>
+    <testCase name="Layout component renders correctly with /producers route" duration="13"/>
+    <testCase name="Layout component renders correctly with /uploads route" duration="14"/>
+    <testCase name="Layout component renders correctly with a non-matched route (e.g. /privacy-policy)" duration="16"/>
+    <testCase name="Layout component renders correctly with /tos route (maxWidth 100%)" duration="14"/>
+    <testCase name="Layout component hides assistance info when on /assistance route" duration="15"/>
+    <testCase name="Layout component hides assistance info when on a nested /assistance route" duration="14"/>
+    <testCase name="Layout component shows assistance info when not on /assistance route" duration="9"/>
+    <testCase name="Layout component calls customExitAction when Header exit is triggered" duration="24"/>
+    <testCase name="Layout component calls customExitAction when Footer exit is triggered" duration="22"/>
+    <testCase name="Layout component clears only filter, user, and token items from sessionStorage on exit" duration="16"/>
+    <testCase name="Layout component does not remove other keys from localStorage" duration="16"/>
+    <testCase name="Layout component does not remove other keys from sessionStorage" duration="15"/>
+    <testCase name="Layout component removes items with keys starting with &quot;persist:&quot;" duration="16"/>
+    <testCase name="Layout component removes items with keys containing &quot;filter&quot; (case insensitive)" duration="14"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\OverviewProductionSection.test.tsx">
+    <testCase name="OverviewProductionSection renders loading state" duration="44"/>
+    <testCase name="OverviewProductionSection renders empty data state" duration="34"/>
+    <testCase name="OverviewProductionSection renders completed uploads" duration="48"/>
+    <testCase name="OverviewProductionSection renders in-progress uploads with warning" duration="38"/>
+    <testCase name="OverviewProductionSection does not show upload button when status is IN_PROCESS" duration="104"/>
+    <testCase name="OverviewProductionSection navigates to add products with the current initiative id" duration="76"/>
+    <testCase name="OverviewProductionSection navigates to uploads history with the current initiative id" duration="124"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\initiativesList\__tests__\initiativesList.test.tsx">
+    <testCase name="Test suite for initiativeList page Render component" duration="55"/>
+    <testCase name="Test suite for initiativeList page User searches an initiative by name that shows results" duration="47"/>
+    <testCase name="Test suite for initiativeList page User searches an initiative by name that doesn&apos;t show results" duration="58"/>
+    <testCase name="Test suite for initiativeList page User resets previous search" duration="58"/>
+    <testCase name="Test suite for initiativeList page User sorts initiatives by name" duration="46"/>
+    <testCase name="Test suite for initiativeList page Render empty state" duration="19"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\TOSLayout\__tests__\TOSLayout.test.tsx">
+    <testCase name="test suite for TOSLayout test render TosLayout" duration="63"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\hooks\__tests__\useTCAgreement.test.tsx">
     <testCase name="test suite for useTCAgreement hook Initial load scenarios should set acceptedTOS to false when getPortalConsent returns data" duration="84"/>
-    <testCase name="test suite for useTCAgreement hook Initial load scenarios should set acceptedTOS to true when getPortalConsent returns empty object" duration="75"/>
-    <testCase name="test suite for useTCAgreement hook Initial load scenarios should handle getPortalConsent error" duration="78"/>
-    <testCase name="test suite for useTCAgreement hook acceptTOS functionality should successfully accept TOS" duration="157"/>
-    <testCase name="test suite for useTCAgreement hook acceptTOS functionality should handle acceptTOS error" duration="96"/>
-    <testCase name="test suite for useTCAgreement hook acceptTOS functionality should handle acceptTOS when acceptedTOSVersion is undefined" duration="90"/>
-    <testCase name="test suite for useTCAgreement hook Hook return values should return correct initial values" duration="27"/>
+    <testCase name="test suite for useTCAgreement hook Initial load scenarios should set acceptedTOS to true when getPortalConsent returns empty object" duration="78"/>
+    <testCase name="test suite for useTCAgreement hook Initial load scenarios should handle getPortalConsent error" duration="76"/>
+    <testCase name="test suite for useTCAgreement hook acceptTOS functionality should successfully accept TOS" duration="154"/>
+    <testCase name="test suite for useTCAgreement hook acceptTOS functionality should handle acceptTOS error" duration="93"/>
+    <testCase name="test suite for useTCAgreement hook acceptTOS functionality should handle acceptTOS when acceptedTOSVersion is undefined" duration="93"/>
+    <testCase name="test suite for useTCAgreement hook Hook return values should return correct initial values" duration="15"/>
     <testCase name="test suite for useTCAgreement hook Edge cases should handle null response from getPortalConsent" duration="78"/>
-    <testCase name="test suite for useTCAgreement hook Edge cases should handle undefined response from getPortalConsent" duration="77"/>
-    <testCase name="Alternative test approach with HookWrapper should initialize hook without errors" duration="78"/>
-    <testCase name="Alternative test approach with HookWrapper should handle successful getPortalConsent" duration="77"/>
+    <testCase name="test suite for useTCAgreement hook Edge cases should handle undefined response from getPortalConsent" duration="78"/>
+    <testCase name="Alternative test approach with HookWrapper should initialize hook without errors" duration="77"/>
+    <testCase name="Alternative test approach with HookWrapper should handle successful getPortalConsent" duration="78"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\OneTrustContentWrapper.test.tsx">
-    <testCase name="test suite for OneTrustContentWrapper render OneTrustContentWrapper" duration="11"/>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\overview\__tests__\overview.test.tsx">
+    <testCase name="Overview Component Rendering Tests should render the main title and subtitle correctly" duration="43"/>
+    <testCase name="Overview Component Rendering Tests should render the information section title" duration="19"/>
+    <testCase name="Overview Component Rendering Tests should render all field labels" duration="23"/>
+    <testCase name="Overview Component Rendering Tests should render OverviewProductionSection component" duration="31"/>
+    <testCase name="Overview Component Rendering Tests should render footer paper element" duration="21"/>
+    <testCase name="Overview Component User Data Display Tests should display user data with tooltips when data is available and truncated" duration="22"/>
+    <testCase name="Overview Component User Data Display Tests should display truncated text in the UI when text exceeds max length" duration="21"/>
+    <testCase name="Overview Component User Data Display Tests should display short text without truncation" duration="29"/>
+    <testCase name="Overview Component Empty Data Handling Tests should display empty data placeholder when user data is null" duration="13"/>
+    <testCase name="Overview Component Empty Data Handling Tests should display empty data placeholder when user object exists but fields are empty" duration="10"/>
+    <testCase name="Overview Component Empty Data Handling Tests should handle partially filled user data" duration="22"/>
+    <testCase name="Overview Component Function Calls Tests should call fetchUserFromLocalStorage on component mount" duration="27"/>
+    <testCase name="Overview Component Function Calls Tests should call truncateString for each field with data" duration="19"/>
+    <testCase name="Overview Component Function Calls Tests should not call truncateString for empty fields" duration="15"/>
+    <testCase name="Overview Component Accessibility Tests should have tooltips with proper title attributes for accessibility" duration="20"/>
+    <testCase name="Overview Component Component Structure Tests should render all Typography components with correct variants" duration="31"/>
+    <testCase name="Overview Component Error Handling Tests should handle when fetchUserFromLocalStorage returns undefined" duration="14"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\ProductDataGrid.test.tsx">
-    <testCase name="ProductDataGrid Rendering and States renders loading state initially" duration="52"/>
-    <testCase name="ProductDataGrid Rendering and States renders products table when data is loaded" duration="97"/>
-    <testCase name="ProductDataGrid Rendering and States renders empty state when no products" duration="25"/>
-    <testCase name="ProductDataGrid User Types and Roles calls getProducts with org_id for regular user" duration="31"/>
-    <testCase name="ProductDataGrid User Types and Roles calls getProducts with institutionId for Invitalia user" duration="78"/>
-    <testCase name="ProductDataGrid User Types and Roles shows action buttons for Invitalia user with selections" duration="97"/>
-    <testCase name="ProductDataGrid Filtering opens and closes filters drawer" duration="74"/>
-    <testCase name="ProductDataGrid Sorting and Pagination handles sorting" duration="80"/>
-    <testCase name="ProductDataGrid Product Detail Drawer opens and closes detail drawer" duration="52"/>
-    <testCase name="ProductDataGrid Error Handling handles API errors gracefully" duration="35"/>
-    <testCase name="ProductDataGrid Error Handling handles batch filter API errors" duration="47"/>
-    <testCase name="ProductDataGrid – extra coverage shows the Supervised action button for Invitalia L1 when selected rows contain no supervised items" duration="49"/>
-    <testCase name="ProductDataGrid – extra coverage disables Wait Approved for Invitalia L1 when a selected row is already WAIT_APPROVED" duration="66"/>
-    <testCase name="ProductDataGrid – extra coverage opens ProductModal for Invitalia L1 when status checks pass for SUPERVISED action" duration="104"/>
-    <testCase name="ProductDataGrid – extra coverage opens Confirm dialog for WAIT_APPROVED flow and handles confirm + success messages" duration="136"/>
-    <testCase name="ProductDataGrid – extra coverage shows mix-status error when status checks fail, then hides it after timeout" duration="99"/>
-    <testCase name="ProductDataGrid – extra coverage shows &quot;yourself approved&quot; error for Invitalia L2 when someUploaded is true" duration="208"/>
-    <testCase name="ProductDataGrid – extra coverage renders a filter chip automatically for Invitalia L2 (admin default status) and shows pagination label" duration="76"/>
-    <testCase name="ProductDataGrid – extra coverage opens and closes the Filters drawer and applies filtering (setFiltering)" duration="96"/>
-    <testCase name="ProductDataGrid – extra coverage handles sorting and paginated label rendering" duration="76"/>
-    <testCase name="ProductDataGrid – extra coverage opens and closes the Detail drawer via ProductsTable callback" duration="78"/>
-    <testCase name="ProductDataGrid – extra coverage gracefully handles getBatchFilterList API error path without breaking the table" duration="49"/>
-    <testCase name="ProductDataGrid – extra coverage does not render action buttons when no selection" duration="47"/>
-    <testCase name="ProductDataGrid – extra coverage renders WAIT_APPROVED message result when ProductModal success triggers WAIT_APPROVED for L1" duration="112"/>
-    <testCase name="ProductDataGrid – extra coverage handleOpenModalWithStatusCheck returns early when no selected rows" duration="66"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\SideMenu\__tests__\SideMenu.test.tsx">
-    <testCase name="Test suite for SideMenu component renders the component" duration="59"/>
-    <testCase name="Test suite for SideMenu component opens the first initiative accordion by default on HOME" duration="96"/>
-    <testCase name="Test suite for SideMenu component user clicks the link to home page" duration="92"/>
-    <testCase name="Test suite for SideMenu component user clicks the link to uploads" duration="95"/>
-    <testCase name="Test suite for SideMenu component user clicks the link to products page and triggers navigation" duration="111"/>
-    <testCase name="Test suite for SideMenu component does not render extra items for Invitalia users with invalid role" duration="27"/>
-    <testCase name="Test suite for SideMenu component Invitalia L1: mostra voci dedicate e click su &quot;Produttori&quot; porta a /producers" duration="118"/>
-    <testCase name="Test suite for SideMenu component Invitalia L2: isSelected true su products list route" duration="20"/>
-    <testCase name="Test suite for SideMenu component Invitalia: isSelected true su products list route" duration="21"/>
-    <testCase name="Test suite for SideMenu component Non-Invitalia: isSelected corretto su uploads route" duration="34"/>
-    <testCase name="Test suite for SideMenu component Non-Invitalia: isSelected corretto su products route" duration="30"/>
-    <testCase name="Test suite for SideMenu component Non-Invitalia: isSelected corretto su overview route" duration="19"/>
-    <testCase name="Test suite for SideMenu component Click su &quot;Prodotti&quot; non naviga se onExit non invoca la callback" duration="111"/>
-    <testCase name="Test suite for SideMenu component LocalStorage vuoto: mostra menu non-Invitalia senza crash" duration="17"/>
-    <testCase name="Test suite for SideMenu component Invitalia L1: click su &quot;Prodotti Invitalia&quot; naviga alla lista prodotti" duration="106"/>
-    <testCase name="Test suite for SideMenu component Invitalia: mostra icona BuildIcon per Produttori" duration="18"/>
-    <testCase name="Test suite for SideMenu component Invitalia: Produttori isSelected su producers route" duration="42"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\EmptyListTable.test.tsx">
-    <testCase name="test suite for EmptyList render EmptyList" duration="20"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Layout\__tests__\Layout.test.tsx">
-    <testCase name="Layout component renders correctly with a matched route (e.g. /home)" duration="55"/>
-    <testCase name="Layout component renders correctly with /products route" duration="18"/>
-    <testCase name="Layout component renders correctly with a nested matched route (e.g. /products/detail)" duration="14"/>
-    <testCase name="Layout component renders correctly with /invitalia-products route" duration="16"/>
-    <testCase name="Layout component renders correctly with /producers route" duration="15"/>
-    <testCase name="Layout component renders correctly with /uploads route" duration="19"/>
-    <testCase name="Layout component renders correctly with a non-matched route (e.g. /privacy-policy)" duration="11"/>
-    <testCase name="Layout component renders correctly with /tos route (maxWidth 100%)" duration="11"/>
-    <testCase name="Layout component hides assistance info when on /assistance route" duration="11"/>
-    <testCase name="Layout component hides assistance info when on a nested /assistance route" duration="12"/>
-    <testCase name="Layout component shows assistance info when not on /assistance route" duration="14"/>
-    <testCase name="Layout component calls customExitAction when Header exit is triggered" duration="24"/>
-    <testCase name="Layout component calls customExitAction when Footer exit is triggered" duration="16"/>
-    <testCase name="Layout component clears only filter, user, and token items from sessionStorage on exit" duration="27"/>
-    <testCase name="Layout component does not remove other keys from localStorage" duration="32"/>
-    <testCase name="Layout component does not remove other keys from sessionStorage" duration="30"/>
-    <testCase name="Layout component removes items with keys starting with &quot;persist:&quot;" duration="32"/>
-    <testCase name="Layout component removes items with keys containing &quot;filter&quot; (case insensitive)" duration="32"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\OverviewProductionSection.test.tsx">
-    <testCase name="OverviewProductionSection renders loading state" duration="71"/>
-    <testCase name="OverviewProductionSection renders empty data state" duration="29"/>
-    <testCase name="OverviewProductionSection renders completed uploads" duration="60"/>
-    <testCase name="OverviewProductionSection renders in-progress uploads with warning" duration="34"/>
-    <testCase name="OverviewProductionSection does not show upload button when status is IN_PROCESS" duration="64"/>
-    <testCase name="OverviewProductionSection navigates to add products with the current initiative id" duration="103"/>
-    <testCase name="OverviewProductionSection navigates to uploads history with the current initiative id" duration="124"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\InvitaliaOverview\__tests__\invitaliaOverview.test.tsx">
-    <testCase name="InvitaliaOverview renders title and subtitle" duration="30"/>
-    <testCase name="InvitaliaOverview renders institutions table with data" duration="21"/>
-    <testCase name="InvitaliaOverview filters institutions by search" duration="51"/>
-    <testCase name="InvitaliaOverview shows no results when search does not match" duration="28"/>
-    <testCase name="InvitaliaOverview handles institutions with missing description while filtering" duration="35"/>
-    <testCase name="InvitaliaOverview filters out the institution associated with the current user" duration="37"/>
-    <testCase name="InvitaliaOverview falls back to an empty list when the API returns no institutions" duration="31"/>
-    <testCase name="InvitaliaOverview sorts institutions" duration="33"/>
-    <testCase name="InvitaliaOverview changes page and rows per page" duration="32"/>
-    <testCase name="InvitaliaOverview opens and closes the detail drawer" duration="90"/>
-    <testCase name="InvitaliaOverview handles loading state" duration="30"/>
-    <testCase name="InvitaliaOverview handles error in fetchInstitutions" duration="24"/>
-    <testCase name="InvitaliaOverview handles error in handleDetailRequest" duration="54"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\decorators\__tests__\withLogin.test.tsx">
-    <testCase name="withLogin Decorator Component Wrapping should return a wrapped component" duration="0"/>
-    <testCase name="withLogin Decorator Component Wrapping should set correct displayName for wrapped component" duration="1"/>
-    <testCase name="withLogin Decorator Component Wrapping should handle component without displayName" duration="0"/>
-    <testCase name="withLogin Decorator Component Wrapping should handle anonymous component" duration="0"/>
-    <testCase name="withLogin Decorator User Authentication Flow should render wrapped component when user is logged in" duration="5"/>
-    <testCase name="withLogin Decorator User Authentication Flow should not render wrapped component when user is not logged in" duration="2"/>
-    <testCase name="withLogin Decorator User Authentication Flow should attempt silent login when user is not logged in" duration="17"/>
-    <testCase name="withLogin Decorator User Authentication Flow should not attempt silent login when user is already logged in" duration="2"/>
-    <testCase name="withLogin Decorator Loading State Management should initialize useLoading with correct task name" duration="2"/>
-    <testCase name="withLogin Decorator Loading State Management should set loading to true before login attempt" duration="11"/>
-    <testCase name="withLogin Decorator Loading State Management should set loading to false after successful login" duration="77"/>
-    <testCase name="withLogin Decorator Loading State Management should call setLoading in correct order" duration="30"/>
-    <testCase name="withLogin Decorator Props Forwarding should forward props to wrapped component" duration="4"/>
-    <testCase name="withLogin Decorator Props Forwarding should forward multiple props to wrapped component" duration="3"/>
-    <testCase name="withLogin Decorator useEffect Dependencies should only run effect once on mount" duration="6"/>
-    <testCase name="withLogin Decorator Edge Cases should handle undefined user" duration="2"/>
-    <testCase name="withLogin Decorator Edge Cases should handle null user" duration="3"/>
-    <testCase name="withLogin Decorator Edge Cases should handle async login that resolves after component unmounts" duration="2"/>
-    <testCase name="withLogin Decorator Integration Tests should complete full authentication flow" duration="41"/>
-    <testCase name="withLogin Decorator Integration Tests should skip authentication flow when user is already logged in" duration="3"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\HistoryUploadSection.test.tsx">
-    <testCase name="UploadsTable renders loading state" duration="24"/>
-    <testCase name="UploadsTable renders error state" duration="6"/>
-    <testCase name="UploadsTable renders table with data" duration="34"/>
-    <testCase name="UploadsTable handles product link click" duration="27"/>
-    <testCase name="UploadsTable handles download icon click" duration="19"/>
-    <testCase name="UploadsTable renders empty table message" duration="8"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\initiativesList\__tests__\initiativesList.test.tsx">
-    <testCase name="Test suite for initiativeList page Render component" duration="38"/>
-    <testCase name="Test suite for initiativeList page User searches an initiative by name that shows results" duration="34"/>
-    <testCase name="Test suite for initiativeList page User searches an initiative by name that doesn&apos;t show results" duration="47"/>
-    <testCase name="Test suite for initiativeList page User resets previous search" duration="39"/>
-    <testCase name="Test suite for initiativeList page User sorts initiatives by name" duration="36"/>
-    <testCase name="Test suite for initiativeList page Render empty state" duration="13"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\AcceptedFile\__tests__\AcceptedFile.test.tsx">
-    <testCase name="test suite for AcceptedFile render AcceptedFile" duration="24"/>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\LoadingFile\__tests__\LoadingFile.test.tsx">
+    <testCase name="test suite for LoadingFile render LoadingFile" duration="34"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\InvitaliaOverview\__tests__\ManufacturerDetail.test.tsx">
-    <testCase name="ManufacturerDetail renders all DrawerItems with correct values" duration="53"/>
-    <testCase name="ManufacturerDetail renders all DrawerItems with empty string value when data values are missing" duration="16"/>
-    <testCase name="ManufacturerDetail renders DrawerItem with copyable for digitalAddress" duration="18"/>
-    <testCase name="ManufacturerDetail has data-testid manufacturer-detail on root element" duration="17"/>
+    <testCase name="ManufacturerDetail renders all DrawerItems with correct values" duration="85"/>
+    <testCase name="ManufacturerDetail renders all DrawerItems with empty string value when data values are missing" duration="22"/>
+    <testCase name="ManufacturerDetail renders DrawerItem with copyable for digitalAddress" duration="28"/>
+    <testCase name="ManufacturerDetail has data-testid manufacturer-detail on root element" duration="22"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\EmptyListTable.test.tsx">
+    <testCase name="test suite for EmptyList render EmptyList" duration="11"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\InitUploadBox\__tests__\InitUploadBox.test.tsx">
+    <testCase name="test suite for InitUploadBox render InitUploadBox" duration="6"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\HistoryUploadSection.test.tsx">
+    <testCase name="UploadsTable renders loading state" duration="18"/>
+    <testCase name="UploadsTable renders error state" duration="5"/>
+    <testCase name="UploadsTable renders table with data" duration="31"/>
+    <testCase name="UploadsTable handles product link click" duration="17"/>
+    <testCase name="UploadsTable handles download icon click" duration="13"/>
+    <testCase name="UploadsTable renders empty table message" duration="7"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\ExitModal\__tests__\ExitModal.test.tsx">
+    <testCase name="&lt;ExitModal /&gt; renders without crashing" duration="0"/>
+    <testCase name="&lt;ExitModal /&gt; the modal should be in the document" duration="48"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\auth\__tests__\Auth.test.tsx">
-    <testCase name="Auth component should handle successful login and redirect to home" duration="82"/>
-    <testCase name="Auth component should redirect to login if token is missing" duration="14"/>
+    <testCase name="Auth component should handle successful login and redirect to home" duration="86"/>
+    <testCase name="Auth component should redirect to login if token is missing" duration="15"/>
     <testCase name="Auth component should redirect to login on fetch error" duration="76"/>
     <testCase name="Auth component should redirect to login if window.location.hash is undefined" duration="15"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\TOSLayout\__tests__\TOSLayout.test.tsx">
-    <testCase name="test suite for TOSLayout test render TosLayout" duration="52"/>
-  </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\TOS\__tests__\TOSWall.test.tsx">
-    <testCase name="tests for TOSWall test render of TOSWall component with not already accepted tos" duration="29"/>
-    <testCase name="tests for TOSWall test render of TOSWall component with tos already accepted" duration="10"/>
-    <testCase name="tests for TOSWall test render of TOSWall component with tos not accepted yet" duration="7"/>
+    <testCase name="tests for TOSWall test render of TOSWall component with not already accepted tos" duration="35"/>
+    <testCase name="tests for TOSWall test render of TOSWall component with tos already accepted" duration="12"/>
+    <testCase name="tests for TOSWall test render of TOSWall component with tos not accepted yet" duration="10"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\ExitModal\__tests__\ExitModal.test.tsx">
-    <testCase name="&lt;ExitModal /&gt; renders without crashing" duration="1"/>
-    <testCase name="&lt;ExitModal /&gt; the modal should be in the document" duration="50"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\BreadcrumbsBox.test.tsx">
-    <testCase name="test suite for BreadcrumbsBox render BreadcrumbsBox" duration="14"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\LoadingFile\__tests__\LoadingFile.test.tsx">
-    <testCase name="test suite for LoadingFile render LoadingFile" duration="24"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\InitUploadBox\__tests__\InitUploadBox.test.tsx">
-    <testCase name="test suite for InitUploadBox render InitUploadBox" duration="11"/>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\decorators\__tests__\withLogin.test.tsx">
+    <testCase name="withLogin Decorator Component Wrapping should return a wrapped component" duration="2"/>
+    <testCase name="withLogin Decorator Component Wrapping should set correct displayName for wrapped component" duration="0"/>
+    <testCase name="withLogin Decorator Component Wrapping should handle component without displayName" duration="0"/>
+    <testCase name="withLogin Decorator Component Wrapping should handle anonymous component" duration="0"/>
+    <testCase name="withLogin Decorator User Authentication Flow should render wrapped component when user is logged in" duration="6"/>
+    <testCase name="withLogin Decorator User Authentication Flow should not render wrapped component when user is not logged in" duration="2"/>
+    <testCase name="withLogin Decorator User Authentication Flow should attempt silent login when user is not logged in" duration="14"/>
+    <testCase name="withLogin Decorator User Authentication Flow should not attempt silent login when user is already logged in" duration="7"/>
+    <testCase name="withLogin Decorator Loading State Management should initialize useLoading with correct task name" duration="3"/>
+    <testCase name="withLogin Decorator Loading State Management should set loading to true before login attempt" duration="15"/>
+    <testCase name="withLogin Decorator Loading State Management should set loading to false after successful login" duration="70"/>
+    <testCase name="withLogin Decorator Loading State Management should call setLoading in correct order" duration="29"/>
+    <testCase name="withLogin Decorator Props Forwarding should forward props to wrapped component" duration="11"/>
+    <testCase name="withLogin Decorator Props Forwarding should forward multiple props to wrapped component" duration="8"/>
+    <testCase name="withLogin Decorator useEffect Dependencies should only run effect once on mount" duration="20"/>
+    <testCase name="withLogin Decorator Edge Cases should handle undefined user" duration="3"/>
+    <testCase name="withLogin Decorator Edge Cases should handle null user" duration="3"/>
+    <testCase name="withLogin Decorator Edge Cases should handle async login that resolves after component unmounts" duration="2"/>
+    <testCase name="withLogin Decorator Integration Tests should complete full authentication flow" duration="51"/>
+    <testCase name="withLogin Decorator Integration Tests should skip authentication flow when user is already logged in" duration="5"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\InvitaliaOverview\__tests__\institutionsTable.test.tsx">
-    <testCase name="InstitutionsTable renders loading state" duration="13"/>
-    <testCase name="InstitutionsTable renders error state" duration="3"/>
-    <testCase name="InstitutionsTable renders no data message" duration="33"/>
-    <testCase name="InstitutionsTable renders institutions data" duration="26"/>
-    <testCase name="InstitutionsTable calls onRequestSort when header is clicked" duration="56"/>
-    <testCase name="InstitutionsTable navigates to institution products when institution name is clicked" duration="49"/>
+    <testCase name="InstitutionsTable renders loading state" duration="42"/>
+    <testCase name="InstitutionsTable renders error state" duration="11"/>
+    <testCase name="InstitutionsTable renders no data message" duration="70"/>
+    <testCase name="InstitutionsTable renders institutions data" duration="72"/>
+    <testCase name="InstitutionsTable calls onRequestSort when header is clicked" duration="489"/>
+    <testCase name="InstitutionsTable navigates to institution products when institution name is clicked" duration="217"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\ProductModal.test.tsx">
-    <testCase name="ProductModal renders null if selectedProducts is missing or empty" duration="7"/>
-    <testCase name="ProductModal renders SUPERVISED modal with correct texts and char counter" duration="73"/>
-    <testCase name="ProductModal SUPERVISED: validation error on empty reason" duration="143"/>
-    <testCase name="ProductModal SUPERVISED: char counter updates while typing" duration="111"/>
-    <testCase name="ProductModal SUPERVISED: successful flow calls API, closes, updates table, calls onSuccess" duration="356"/>
-    <testCase name="ProductModal SUPERVISED: error flow closes but does not update table or call onSuccess" duration="219"/>
-    <testCase name="ProductModal SUPERVISED: Cancel button and Close icon call onClose" duration="170"/>
-    <testCase name="ProductModal REJECTED: renders dedicated UI, validates both fields, calls API, closes, updates table, calls onSuccess" duration="855"/>
-    <testCase name="ProductModal REJECTED: error flow closes but does not update table or call onSuccess" duration="482"/>
-    <testCase name="ProductModal REJECTED: validation with spaces only shows error" duration="314"/>
-    <testCase name="ProductModal REJECTED: validation with less than 2 chars shows min length error" duration="221"/>
-    <testCase name="ProductModal REJECTED: error on both fields shows both errors" duration="112"/>
-    <testCase name="ProductModal REJECT_APPROVATION: renders, validates, calls API, closes, updates table, calls onSuccess" duration="375"/>
-    <testCase name="ProductModal REJECT_APPROVATION: validation error on empty" duration="94"/>
-    <testCase name="ProductModal REJECT_APPROVATION: error flow closes but does not update table or call onSuccess" duration="235"/>
-    <testCase name="ProductModal ACCEPT_APPROVATION: renders, calls API, closes, updates table, calls onSuccess" duration="93"/>
-    <testCase name="ProductModal ACCEPT_APPROVATION: error flow closes but does not update table or call onSuccess" duration="93"/>
-    <testCase name="ProductModal state resets when modal reopens (open prop effect)" duration="246"/>
-    <testCase name="ProductModal renders without actionType: shows textbox" duration="24"/>
-    <testCase name="ProductModal renders correct texts for each actionType" duration="58"/>
+    <testCase name="ProductModal renders null if selectedProducts is missing or empty" duration="13"/>
+    <testCase name="ProductModal renders SUPERVISED modal with correct texts and char counter" duration="190"/>
+    <testCase name="ProductModal SUPERVISED: validation error on empty reason" duration="1213"/>
+    <testCase name="ProductModal SUPERVISED: char counter updates while typing" duration="576"/>
+    <testCase name="ProductModal SUPERVISED: successful flow calls API, closes, updates table, calls onSuccess" duration="1525"/>
+    <testCase name="ProductModal SUPERVISED: error flow closes but does not update table or call onSuccess" duration="453"/>
+    <testCase name="ProductModal SUPERVISED: Cancel button and Close icon call onClose" duration="263"/>
+    <testCase name="ProductModal REJECTED: renders dedicated UI, validates both fields, calls API, closes, updates table, calls onSuccess" duration="1422"/>
+    <testCase name="ProductModal REJECTED: error flow closes but does not update table or call onSuccess" duration="849"/>
+    <testCase name="ProductModal REJECTED: validation with spaces only shows error" duration="470"/>
+    <testCase name="ProductModal REJECTED: validation with less than 2 chars shows min length error" duration="421"/>
+    <testCase name="ProductModal REJECTED: error on both fields shows both errors" duration="199"/>
+    <testCase name="ProductModal REJECT_APPROVATION: renders, validates, calls API, closes, updates table, calls onSuccess" duration="490"/>
+    <testCase name="ProductModal REJECT_APPROVATION: validation error on empty" duration="172"/>
+    <testCase name="ProductModal REJECT_APPROVATION: error flow closes but does not update table or call onSuccess" duration="327"/>
+    <testCase name="ProductModal ACCEPT_APPROVATION: renders, calls API, closes, updates table, calls onSuccess" duration="125"/>
+    <testCase name="ProductModal ACCEPT_APPROVATION: error flow closes but does not update table or call onSuccess" duration="124"/>
+    <testCase name="ProductModal state resets when modal reopens (open prop effect)" duration="380"/>
+    <testCase name="ProductModal renders without actionType: shows textbox" duration="54"/>
+    <testCase name="ProductModal renders correct texts for each actionType" duration="117"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\addProducts\__tests__\formAddProducts.test.tsx">
-    <testCase name="FormAddProducts Rendering and Initial State renders correctly with initial state" duration="56"/>
-    <testCase name="FormAddProducts Rendering and Initial State renders with all props passed to FileUploadSection" duration="14"/>
-    <testCase name="FormAddProducts Template filename logic shows cookinghobs template for cookinghobs category" duration="85"/>
-    <testCase name="FormAddProducts Template filename logic shows eprel template for non-cookinghobs category" duration="63"/>
-    <testCase name="FormAddProducts Category validation validates category selection correctly" duration="60"/>
-    <testCase name="FormAddProducts Category validation shows validation error when category is touched but empty" duration="48"/>
-    <testCase name="FormAddProducts Category validation clears validation error when valid category is selected" duration="71"/>
-    <testCase name="FormAddProducts Ref and validateForm exposes validateForm method via ref" duration="15"/>
-    <testCase name="FormAddProducts Ref and validateForm validateForm returns false with invalid category" duration="22"/>
-    <testCase name="FormAddProducts Ref and validateForm validateForm returns false with valid category but no file accepted" duration="76"/>
-    <testCase name="FormAddProducts Ref and validateForm validateForm returns true with valid category and accepted file" duration="64"/>
-    <testCase name="FormAddProducts File operations handles download report successfully" duration="90"/>
-    <testCase name="FormAddProducts File operations handles download report error" duration="78"/>
-    <testCase name="FormAddProducts File operations resets file status correctly" duration="14"/>
-    <testCase name="FormAddProducts File operations dismisses error correctly" duration="14"/>
+    <testCase name="FormAddProducts Rendering and Initial State renders correctly with initial state" duration="63"/>
+    <testCase name="FormAddProducts Rendering and Initial State renders with all props passed to FileUploadSection" duration="27"/>
+    <testCase name="FormAddProducts Template filename logic shows cookinghobs template for cookinghobs category" duration="138"/>
+    <testCase name="FormAddProducts Template filename logic shows eprel template for non-cookinghobs category" duration="120"/>
+    <testCase name="FormAddProducts Category validation validates category selection correctly" duration="96"/>
+    <testCase name="FormAddProducts Category validation shows validation error when category is touched but empty" duration="49"/>
+    <testCase name="FormAddProducts Category validation clears validation error when valid category is selected" duration="106"/>
+    <testCase name="FormAddProducts Ref and validateForm exposes validateForm method via ref" duration="22"/>
+    <testCase name="FormAddProducts Ref and validateForm validateForm returns false with invalid category" duration="23"/>
+    <testCase name="FormAddProducts Ref and validateForm validateForm returns false with valid category but no file accepted" duration="87"/>
+    <testCase name="FormAddProducts Ref and validateForm validateForm returns true with valid category and accepted file" duration="81"/>
+    <testCase name="FormAddProducts File operations handles download report successfully" duration="111"/>
+    <testCase name="FormAddProducts File operations handles download report error" duration="92"/>
+    <testCase name="FormAddProducts File operations resets file status correctly" duration="23"/>
+    <testCase name="FormAddProducts File operations dismisses error correctly" duration="23"/>
     <testCase name="FormAddProducts Dropzone callbacks handles onFileDialogOpen with invalid category" duration="23"/>
-    <testCase name="FormAddProducts Dropzone callbacks handles onFileDialogOpen with valid category" duration="54"/>
-    <testCase name="FormAddProducts Dropzone callbacks handles onDrop callback" duration="12"/>
-    <testCase name="FormAddProducts Dropzone callbacks handles onDropRejected callback" duration="13"/>
-    <testCase name="FormAddProducts Dropzone callbacks handles onDropAccepted with valid category - success" duration="56"/>
-    <testCase name="FormAddProducts Dropzone callbacks handles onDropAccepted with valid category - error response" duration="52"/>
-    <testCase name="FormAddProducts Dropzone callbacks handles onDropAccepted with valid category - network error" duration="60"/>
-    <testCase name="FormAddProducts Input click handling handles input click with invalid category" duration="15"/>
-    <testCase name="FormAddProducts Input click handling handles input click with valid category" duration="60"/>
-    <testCase name="FormAddProducts Continue button functionality handles continue with no category selected" duration="63"/>
-    <testCase name="FormAddProducts Continue button functionality handles continue with valid category but no file" duration="122"/>
-    <testCase name="FormAddProducts Continue button functionality handles continue with valid form and file - success" duration="125"/>
-    <testCase name="FormAddProducts Continue button functionality handles continue with valid form and file - upload error" duration="121"/>
-    <testCase name="FormAddProducts Continue button functionality handles continue with no current file error" duration="125"/>
-    <testCase name="FormAddProducts Continue button functionality handles continue with network error" duration="109"/>
-    <testCase name="FormAddProducts Navigation handles cancel button click" duration="15"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage handles formik onSubmit (console.log)" duration="30"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage covers all dropzone configuration options" duration="17"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage handles multiple error scenarios in sequence" duration="14"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage covers isCategoryValid function branches" duration="58"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage handles formik validation states correctly" duration="77"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage covers all FileUploadSection props" duration="42"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage ensures useImperativeHandle dependency array is covered" duration="17"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage covers handleInputClick preventDefault path" duration="12"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage tests all MenuItem rendering" duration="33"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage covers formik enableReinitialize and validateOnMount" duration="24"/>
-    <testCase name="FormAddProducts Edge cases and complete coverage handles all error clearing scenarios" duration="13"/>
+    <testCase name="FormAddProducts Dropzone callbacks handles onFileDialogOpen with valid category" duration="77"/>
+    <testCase name="FormAddProducts Dropzone callbacks handles onDrop callback" duration="16"/>
+    <testCase name="FormAddProducts Dropzone callbacks handles onDropRejected callback" duration="17"/>
+    <testCase name="FormAddProducts Dropzone callbacks handles onDropAccepted with valid category - success" duration="86"/>
+    <testCase name="FormAddProducts Dropzone callbacks handles onDropAccepted with valid category - error response" duration="68"/>
+    <testCase name="FormAddProducts Dropzone callbacks handles onDropAccepted with valid category - network error" duration="94"/>
+    <testCase name="FormAddProducts Input click handling handles input click with invalid category" duration="23"/>
+    <testCase name="FormAddProducts Input click handling handles input click with valid category" duration="94"/>
+    <testCase name="FormAddProducts Continue button functionality handles continue with no category selected" duration="91"/>
+    <testCase name="FormAddProducts Continue button functionality handles continue with valid category but no file" duration="158"/>
+    <testCase name="FormAddProducts Continue button functionality handles continue with valid form and file - success" duration="170"/>
+    <testCase name="FormAddProducts Continue button functionality handles continue with valid form and file - upload error" duration="157"/>
+    <testCase name="FormAddProducts Continue button functionality handles continue with no current file error" duration="158"/>
+    <testCase name="FormAddProducts Continue button functionality handles continue with network error" duration="140"/>
+    <testCase name="FormAddProducts Navigation handles cancel button click" duration="16"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage handles formik onSubmit (console.log)" duration="50"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage covers all dropzone configuration options" duration="23"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage handles multiple error scenarios in sequence" duration="18"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage covers isCategoryValid function branches" duration="84"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage handles formik validation states correctly" duration="130"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage covers all FileUploadSection props" duration="74"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage ensures useImperativeHandle dependency array is covered" duration="23"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage covers handleInputClick preventDefault path" duration="17"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage tests all MenuItem rendering" duration="53"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage covers formik enableReinitialize and validateOnMount" duration="27"/>
+    <testCase name="FormAddProducts Edge cases and complete coverage handles all error clearing scenarios" duration="16"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\FiltersDrawer\__tests__\FiltersDrawer.test.tsx">
-    <testCase name="FiltersDrawer renders header and close button; clicking close closes the drawer" duration="91"/>
-    <testCase name="FiltersDrawer shows &quot;producer&quot; Select when user is INVITALIA" duration="60"/>
-    <testCase name="FiltersDrawer hides &quot;producer&quot; Select when user is NOT INVITALIA" duration="43"/>
-    <testCase name="FiltersDrawer changes status via Select (draft only) and does not apply until &quot;filter&quot; click" duration="206"/>
-    <testCase name="FiltersDrawer changes batch via Select (draft only) and applies on &quot;filter&quot; click" duration="122"/>
-    <testCase name="FiltersDrawer changes category via Select (draft only) and applies on &quot;filter&quot; click" duration="120"/>
-    <testCase name="FiltersDrawer types in eprel/gtin inputs and applies setters on &quot;filter&quot; click (trimmed by helper)" duration="145"/>
-    <testCase name="FiltersDrawer enables &quot;filter&quot; button when at least one draft differs from applied" duration="63"/>
-    <testCase name="FiltersDrawer delete filters resets drafts, calls delete callback, resets page and closes" duration="58"/>
-    <testCase name="FiltersDrawer filter button is disabled when no draft differs from applied (all empty)" duration="49"/>
-    <testCase name="FiltersDrawer shows error for non-numeric EPREL and clears error on change" duration="60"/>
-    <testCase name="FiltersDrawer delete filters button is enabled when errorStatus=true even if no interaction/filters" duration="39"/>
-    <testCase name="FiltersDrawer shows error for invalid GTIN and clears error on paste" duration="60"/>
-    <testCase name="FiltersDrawer batch select renders all provided options" duration="122"/>
-    <testCase name="FiltersDrawer category select shows exactly PRODUCTS_CATEGORY keys" duration="98"/>
-    <testCase name="FiltersDrawer onClose of Drawer triggers toggleFiltersDrawer(false)" duration="39"/>
+    <testCase name="FiltersDrawer renders header and close button; clicking close closes the drawer" duration="141"/>
+    <testCase name="FiltersDrawer shows &quot;producer&quot; Select when user is INVITALIA" duration="108"/>
+    <testCase name="FiltersDrawer hides &quot;producer&quot; Select when user is NOT INVITALIA" duration="98"/>
+    <testCase name="FiltersDrawer changes status via Select (draft only) and does not apply until &quot;filter&quot; click" duration="612"/>
+    <testCase name="FiltersDrawer changes batch via Select (draft only) and applies on &quot;filter&quot; click" duration="261"/>
+    <testCase name="FiltersDrawer changes category via Select (draft only) and applies on &quot;filter&quot; click" duration="239"/>
+    <testCase name="FiltersDrawer types in eprel/gtin inputs and applies setters on &quot;filter&quot; click (trimmed by helper)" duration="259"/>
+    <testCase name="FiltersDrawer enables &quot;filter&quot; button when at least one draft differs from applied" duration="128"/>
+    <testCase name="FiltersDrawer delete filters resets drafts, calls delete callback, resets page and closes" duration="124"/>
+    <testCase name="FiltersDrawer filter button is disabled when no draft differs from applied (all empty)" duration="152"/>
+    <testCase name="FiltersDrawer shows error for non-numeric EPREL and clears error on change" duration="209"/>
+    <testCase name="FiltersDrawer delete filters button is enabled when errorStatus=true even if no interaction/filters" duration="95"/>
+    <testCase name="FiltersDrawer shows error for invalid GTIN and clears error on paste" duration="102"/>
+    <testCase name="FiltersDrawer batch select renders all provided options" duration="216"/>
+    <testCase name="FiltersDrawer category select shows exactly PRODUCTS_CATEGORY keys" duration="164"/>
+    <testCase name="FiltersDrawer onClose of Drawer triggers toggleFiltersDrawer(false)" duration="61"/>
     <testCase name="getChipColor (real constants, no mock) returns expected colors for each known status" duration="0"/>
     <testCase name="getChipColor (real constants, no mock) returns default for unknown/null/undefined" duration="0"/>
-    <testCase name="FiltersDrawer – validations &amp; actions accepts valid EPREL/GTIN values, applies filters and closes the drawer" duration="73"/>
-    <testCase name="FiltersDrawer – validations &amp; actions onPaste removes spaces for EPREL and allows filtering" duration="46"/>
-    <testCase name="FiltersDrawer – status filter by role hides WAIT_APPROVED and SUPERVISED for non-Invitalia users" duration="108"/>
-    <testCase name="FiltersDrawer – onClose draft reset restores drafts to applied filters when the Drawer is closed" duration="182"/>
-    <testCase name="getChipColor (real constants, no mock) – correct expectations matches the real map" duration="0"/>
+    <testCase name="FiltersDrawer – validations &amp; actions accepts valid EPREL/GTIN values, applies filters and closes the drawer" duration="89"/>
+    <testCase name="FiltersDrawer – validations &amp; actions onPaste removes spaces for EPREL and allows filtering" duration="65"/>
+    <testCase name="FiltersDrawer – status filter by role hides WAIT_APPROVED and SUPERVISED for non-Invitalia users" duration="143"/>
+    <testCase name="FiltersDrawer – onClose draft reset restores drafts to applied filters when the Drawer is closed" duration="186"/>
+    <testCase name="getChipColor (real constants, no mock) – correct expectations matches the real map" duration="1"/>
     <testCase name="getChipColor (real constants, no mock) – correct expectations returns default for unknown values" duration="0"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\FilterBar.test.tsx">
-    <testCase name="FilterBar should render all filter elements" duration="67"/>
-    <testCase name="FilterBar should have filter and delete buttons disabled when no filters are set" duration="42"/>
-    <testCase name="FilterBar should enable filter button when category filter is set" duration="37"/>
-    <testCase name="FilterBar should enable filter button when status filter is set" duration="39"/>
-    <testCase name="FilterBar should enable filter button when batch filter is set" duration="34"/>
-    <testCase name="FilterBar should enable filter button when eprel code filter is set" duration="33"/>
-    <testCase name="FilterBar should enable filter button when gtin code filter is set" duration="33"/>
-    <testCase name="FilterBar should enable delete button when errorStatus is true even with no filters" duration="28"/>
-    <testCase name="FilterBar should call setCategoryFilter when category select changes" duration="70"/>
+    <testCase name="FilterBar should render all filter elements" duration="72"/>
+    <testCase name="FilterBar should have filter and delete buttons disabled when no filters are set" duration="33"/>
+    <testCase name="FilterBar should enable filter button when category filter is set" duration="45"/>
+    <testCase name="FilterBar should enable filter button when status filter is set" duration="47"/>
+    <testCase name="FilterBar should enable filter button when batch filter is set" duration="45"/>
+    <testCase name="FilterBar should enable filter button when eprel code filter is set" duration="37"/>
+    <testCase name="FilterBar should enable filter button when gtin code filter is set" duration="35"/>
+    <testCase name="FilterBar should enable delete button when errorStatus is true even with no filters" duration="39"/>
+    <testCase name="FilterBar should call setCategoryFilter when category select changes" duration="75"/>
     <testCase name="FilterBar should call setStatusFilter when status select changes" duration="65"/>
-    <testCase name="FilterBar should call setBatchFilter when batch select changes" duration="61"/>
-    <testCase name="FilterBar should call setEprelCodeFilter when eprel code input changes" duration="45"/>
-    <testCase name="FilterBar should call setGtinCodeFilter when gtin code input changes" duration="43"/>
-    <testCase name="FilterBar should call setFiltering when filter button is clicked" duration="29"/>
-    <testCase name="FilterBar should call handleDeleteFiltersButtonClick when delete filters button is clicked" duration="38"/>
-    <testCase name="FilterBar should render all category options in select" duration="39"/>
-    <testCase name="FilterBar should render all status options in select" duration="43"/>
-    <testCase name="FilterBar should render all batch options in select" duration="41"/>
+    <testCase name="FilterBar should call setBatchFilter when batch select changes" duration="67"/>
+    <testCase name="FilterBar should call setEprelCodeFilter when eprel code input changes" duration="37"/>
+    <testCase name="FilterBar should call setGtinCodeFilter when gtin code input changes" duration="40"/>
+    <testCase name="FilterBar should call setFiltering when filter button is clicked" duration="41"/>
+    <testCase name="FilterBar should call handleDeleteFiltersButtonClick when delete filters button is clicked" duration="34"/>
+    <testCase name="FilterBar should render all category options in select" duration="59"/>
+    <testCase name="FilterBar should render all status options in select" duration="55"/>
+    <testCase name="FilterBar should render all batch options in select" duration="51"/>
     <testCase name="FilterBar should handle empty batchFilterItems array" duration="41"/>
-    <testCase name="FilterBar should handle null/undefined batchFilterItems" duration="28"/>
-    <testCase name="FilterBar should display current filter values" duration="27"/>
-    <testCase name="FilterBar should apply correct styling and layout" duration="39"/>
-    <testCase name="FilterBar should have correct button heights and min widths" duration="40"/>
+    <testCase name="FilterBar should handle null/undefined batchFilterItems" duration="42"/>
+    <testCase name="FilterBar should display current filter values" duration="46"/>
+    <testCase name="FilterBar should apply correct styling and layout" duration="45"/>
+    <testCase name="FilterBar should have correct button heights and min widths" duration="47"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\ProductDetail.test.tsx">
-    <testCase name="ProductDetail.extra renders chronology + formalMotivation blocks when present (non OPERATORE)" duration="83"/>
-    <testCase name="ProductDetail.extra Invitalia L1 + SUPERVISED: shows accept/reject buttons; confirm approve calls waitApproved API and waitApproved message" duration="21"/>
-    <testCase name="ProductDetail.extra Invitalia L1 + UPLOADED: open Supervised modal then close (not cancelled) triggers onUpdateTable/onClose; success triggers onShowSupervisedMsg" duration="28"/>
-    <testCase name="ProductDetail.extra Invitalia L2 + WAIT_APPROVED: shows AcceptApprovation and RejectApprovation flows" duration="46"/>
+    <testCase name="ProductDetail.extra renders chronology + formalMotivation blocks when present (non OPERATORE)" duration="80"/>
+    <testCase name="ProductDetail.extra Invitalia L1 + SUPERVISED: shows accept/reject buttons; confirm approve calls waitApproved API and waitApproved message" duration="23"/>
+    <testCase name="ProductDetail.extra Invitalia L1 + UPLOADED: open Supervised modal then close (not cancelled) triggers onUpdateTable/onClose; success triggers onShowSupervisedMsg" duration="64"/>
+    <testCase name="ProductDetail.extra Invitalia L2 + WAIT_APPROVED: shows AcceptApprovation and RejectApprovation flows" duration="48"/>
     <testCase name="ProductDetail.extra Confirm dialog approve on UPLOADED calls waitApproved API and shows waitApproved (prefers onShowWaitApprovedMsg over onShowApprovedMsg)" duration="46"/>
-    <testCase name="ProductDetail.extra Exclude flow (L1 + UPLOADED): opening and success triggers onShowRejectedMsg via handleSuccess" duration="47"/>
-    <testCase name="ProductDetail.extra does NOT render motivation blocks when OPERATORE user" duration="15"/>
-    <testCase name="ProductDetail.extra does NOT render formalMotivation when empty or status not REJECTED for OPERATORE" duration="18"/>
-    <testCase name="ProductDetail.extra handleSuccess does nothing when no message callbacks are provided" duration="10"/>
-    <testCase name="ProductDetail.extra Confirm dialog fallback: if no onShowWaitApprovedMsg, uses onShowApprovedMsg" duration="20"/>
+    <testCase name="ProductDetail.extra Exclude flow (L1 + UPLOADED): opening and success triggers onShowRejectedMsg via handleSuccess" duration="26"/>
+    <testCase name="ProductDetail.extra does NOT render motivation blocks when OPERATORE user" duration="17"/>
+    <testCase name="ProductDetail.extra does NOT render formalMotivation when empty or status not REJECTED for OPERATORE" duration="13"/>
+    <testCase name="ProductDetail.extra handleSuccess does nothing when no message callbacks are provided" duration="13"/>
+    <testCase name="ProductDetail.extra Confirm dialog fallback: if no onShowWaitApprovedMsg, uses onShowApprovedMsg" duration="30"/>
     <testCase name="ProductDetail.extra Modal close with cancelled=true does NOT trigger onUpdateTable/onClose" duration="18"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\EnhancedTableHead.test.tsx">
-    <testCase name="EnhancedTableHead Rendering should render table head with all cells when isInvitaliaUser is true" duration="53"/>
-    <testCase name="EnhancedTableHead Rendering should render table head without checkbox when isInvitaliaUser is false" duration="12"/>
-    <testCase name="EnhancedTableHead Rendering should render with empty headCells array" duration="18"/>
-    <testCase name="EnhancedTableHead Checkbox behavior should render checkbox as checked when isAllSelected is true" duration="18"/>
-    <testCase name="EnhancedTableHead Checkbox behavior should render checkbox as indeterminate when isIndeterminate is true" duration="21"/>
-    <testCase name="EnhancedTableHead Checkbox behavior should render checkbox as unchecked when both isAllSelected and isIndeterminate are false" duration="24"/>
-    <testCase name="EnhancedTableHead Checkbox behavior should call handleSelectAllClick when checkbox is clicked" duration="20"/>
-    <testCase name="EnhancedTableHead Sorting behavior should render sort labels for sortable columns" duration="20"/>
-    <testCase name="EnhancedTableHead Sorting behavior should not render sort label for selectedStatus column" duration="10"/>
-    <testCase name="EnhancedTableHead Sorting behavior should call onRequestSort when sort label is clicked" duration="13"/>
-    <testCase name="EnhancedTableHead Sorting behavior should show active sort state for current orderBy column" duration="18"/>
-    <testCase name="EnhancedTableHead Sorting behavior should render visually hidden sort direction text for active column - descending" duration="12"/>
-    <testCase name="EnhancedTableHead Sorting behavior should render visually hidden sort direction text for active column - ascending" duration="13"/>
-    <testCase name="EnhancedTableHead Sorting behavior should not render visually hidden text for non-active columns" duration="13"/>
-    <testCase name="EnhancedTableHead Cell alignment and styling should apply correct alignment for left-aligned cells" duration="13"/>
-    <testCase name="EnhancedTableHead Cell alignment and styling should apply correct alignment for center-aligned cells" duration="13"/>
-    <testCase name="EnhancedTableHead Cell alignment and styling should apply correct alignment for right-aligned cells" duration="19"/>
-    <testCase name="EnhancedTableHead Cell alignment and styling should apply cellLeftSx styling to left-aligned cells" duration="11"/>
-    <testCase name="EnhancedTableHead Cell alignment and styling should apply cellCenterSx styling to center-aligned cells" duration="12"/>
-    <testCase name="EnhancedTableHead Cell alignment and styling should apply cellRightSx styling to right-aligned cells" duration="15"/>
-    <testCase name="EnhancedTableHead Cell alignment and styling should apply width styles to cells" duration="13"/>
-    <testCase name="EnhancedTableHead Cell alignment and styling should apply width styles to checkbox cell from first headCell" duration="29"/>
-    <testCase name="EnhancedTableHead Edge cases should handle missing cellSx props" duration="10"/>
+    <testCase name="EnhancedTableHead Rendering should render table head with all cells when isInvitaliaUser is true" duration="62"/>
+    <testCase name="EnhancedTableHead Rendering should render table head without checkbox when isInvitaliaUser is false" duration="10"/>
+    <testCase name="EnhancedTableHead Rendering should render with empty headCells array" duration="11"/>
+    <testCase name="EnhancedTableHead Checkbox behavior should render checkbox as checked when isAllSelected is true" duration="17"/>
+    <testCase name="EnhancedTableHead Checkbox behavior should render checkbox as indeterminate when isIndeterminate is true" duration="23"/>
+    <testCase name="EnhancedTableHead Checkbox behavior should render checkbox as unchecked when both isAllSelected and isIndeterminate are false" duration="17"/>
+    <testCase name="EnhancedTableHead Checkbox behavior should call handleSelectAllClick when checkbox is clicked" duration="28"/>
+    <testCase name="EnhancedTableHead Sorting behavior should render sort labels for sortable columns" duration="32"/>
+    <testCase name="EnhancedTableHead Sorting behavior should not render sort label for selectedStatus column" duration="12"/>
+    <testCase name="EnhancedTableHead Sorting behavior should call onRequestSort when sort label is clicked" duration="12"/>
+    <testCase name="EnhancedTableHead Sorting behavior should show active sort state for current orderBy column" duration="13"/>
+    <testCase name="EnhancedTableHead Sorting behavior should render visually hidden sort direction text for active column - descending" duration="15"/>
+    <testCase name="EnhancedTableHead Sorting behavior should render visually hidden sort direction text for active column - ascending" duration="17"/>
+    <testCase name="EnhancedTableHead Sorting behavior should not render visually hidden text for non-active columns" duration="23"/>
+    <testCase name="EnhancedTableHead Cell alignment and styling should apply correct alignment for left-aligned cells" duration="15"/>
+    <testCase name="EnhancedTableHead Cell alignment and styling should apply correct alignment for center-aligned cells" duration="20"/>
+    <testCase name="EnhancedTableHead Cell alignment and styling should apply correct alignment for right-aligned cells" duration="20"/>
+    <testCase name="EnhancedTableHead Cell alignment and styling should apply cellLeftSx styling to left-aligned cells" duration="23"/>
+    <testCase name="EnhancedTableHead Cell alignment and styling should apply cellCenterSx styling to center-aligned cells" duration="19"/>
+    <testCase name="EnhancedTableHead Cell alignment and styling should apply cellRightSx styling to right-aligned cells" duration="26"/>
+    <testCase name="EnhancedTableHead Cell alignment and styling should apply width styles to cells" duration="17"/>
+    <testCase name="EnhancedTableHead Cell alignment and styling should apply width styles to checkbox cell from first headCell" duration="22"/>
+    <testCase name="EnhancedTableHead Edge cases should handle missing cellSx props" duration="16"/>
     <testCase name="EnhancedTableHead Edge cases should handle headCells without width property" duration="13"/>
-    <testCase name="EnhancedTableHead Edge cases should handle empty first headCell when isInvitaliaUser is true" duration="16"/>
-    <testCase name="EnhancedTableHead Edge cases should render final empty TableCell" duration="34"/>
-    <testCase name="EnhancedTableHead Edge cases should handle different ProductDTO key types" duration="13"/>
-    <testCase name="EnhancedTableHead Edge cases should handle click on different sortable columns" duration="16"/>
+    <testCase name="EnhancedTableHead Edge cases should handle empty first headCell when isInvitaliaUser is true" duration="26"/>
+    <testCase name="EnhancedTableHead Edge cases should render final empty TableCell" duration="35"/>
+    <testCase name="EnhancedTableHead Edge cases should handle different ProductDTO key types" duration="15"/>
+    <testCase name="EnhancedTableHead Edge cases should handle click on different sortable columns" duration="18"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\addProducts\__tests__\addProducts.test.tsx">
-    <testCase name="AddProducts Component renders component correctly" duration="34"/>
-    <testCase name="AddProducts Component renders form section correctly" duration="9"/>
-    <testCase name="AddProducts Component handles file upload interaction" duration="51"/>
-    <testCase name="AddProducts Component displays correct breadcrumb structure" duration="12"/>
+    <testCase name="AddProducts Component renders component correctly" duration="35"/>
+    <testCase name="AddProducts Component renders form section correctly" duration="20"/>
+    <testCase name="AddProducts Component handles file upload interaction" duration="63"/>
+    <testCase name="AddProducts Component displays correct breadcrumb structure" duration="18"/>
     <testCase name="AddProducts Component component handles theme correctly" duration="9"/>
-    <testCase name="AddProducts Component accessibility attributes are present" duration="16"/>
-    <testCase name="AddProducts Component handles back button click and navigation" duration="55"/>
-    <testCase name="AddProducts Component handles back button click when onExit does not execute callback" duration="45"/>
-    <testCase name="AddProducts Component formRef is properly connected to FormAddProducts" duration="10"/>
+    <testCase name="AddProducts Component accessibility attributes are present" duration="21"/>
+    <testCase name="AddProducts Component handles back button click and navigation" duration="72"/>
+    <testCase name="AddProducts Component handles back button click when onExit does not execute callback" duration="62"/>
+    <testCase name="AddProducts Component formRef is properly connected to FormAddProducts" duration="11"/>
     <testCase name="AddProducts Component passes correct props to FormAddProducts" duration="9"/>
-    <testCase name="AddProducts Component renders main container with correct data-testid" duration="10"/>
-    <testCase name="AddProducts Component manual link has correct href when EIE_MANUAL is defined" duration="13"/>
-    <testCase name="AddProducts Component manual link click is not prevented when EIE_MANUAL is defined" duration="65"/>
-    <testCase name="AddProducts Component manual link prevents default when EIE_MANUAL is not defined" duration="61"/>
-    <testCase name="AddProducts Component manual link prevents default when EIE_MANUAL is empty string" duration="77"/>
+    <testCase name="AddProducts Component renders main container with correct data-testid" duration="11"/>
+    <testCase name="AddProducts Component manual link has correct href when EIE_MANUAL is defined" duration="17"/>
+    <testCase name="AddProducts Component manual link click is not prevented when EIE_MANUAL is defined" duration="73"/>
+    <testCase name="AddProducts Component manual link prevents default when EIE_MANUAL is not defined" duration="78"/>
+    <testCase name="AddProducts Component manual link prevents default when EIE_MANUAL is empty string" duration="94"/>
     <testCase name="AddProducts Component fileAccepted state changes correctly" duration="62"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\InvitaliaProductsList\__tests__\InstitutionInfoCard.test.tsx">
-    <testCase name="InstitutionInfoCard renders the component with title" duration="16"/>
-    <testCase name="InstitutionInfoCard fetches and displays institution data successfully" duration="43"/>
-    <testCase name="InstitutionInfoCard displays truncated values with tooltips" duration="31"/>
-    <testCase name="InstitutionInfoCard displays &quot;-&quot; for empty values" duration="16"/>
-    <testCase name="InstitutionInfoCard handles API error gracefully" duration="31"/>
-    <testCase name="InstitutionInfoCard handles missing institution in store" duration="10"/>
-    <testCase name="InstitutionInfoCard handles missing institutionId in store" duration="21"/>
-    <testCase name="InstitutionInfoCard constructs complete address correctly" duration="33"/>
+    <testCase name="InstitutionInfoCard renders the component with title" duration="40"/>
+    <testCase name="InstitutionInfoCard fetches and displays institution data successfully" duration="57"/>
+    <testCase name="InstitutionInfoCard displays truncated values with tooltips" duration="39"/>
+    <testCase name="InstitutionInfoCard displays &quot;-&quot; for empty values" duration="32"/>
+    <testCase name="InstitutionInfoCard handles API error gracefully" duration="44"/>
+    <testCase name="InstitutionInfoCard handles missing institution in store" duration="22"/>
+    <testCase name="InstitutionInfoCard handles missing institutionId in store" duration="40"/>
+    <testCase name="InstitutionInfoCard constructs complete address correctly" duration="46"/>
     <testCase name="InstitutionInfoCard handles partial address data" duration="31"/>
-    <testCase name="InstitutionInfoCard renders all field labels correctly" duration="31"/>
-    <testCase name="InstitutionInfoCard applies correct grid layout classes" duration="12"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\upcomingInitiative\__tests__\upcomingInitiative.test.tsx">
-    <testCase name="UpcomingInitiative renderizza immagine 60x60, titolo, sottotitolo interpolato e bottone" duration="26"/>
-    <testCase name="UpcomingInitiative il click sul bottone invoca console.log con l’evento" duration="72"/>
+    <testCase name="InstitutionInfoCard renders all field labels correctly" duration="36"/>
+    <testCase name="InstitutionInfoCard applies correct grid layout classes" duration="26"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\ProductStatusChip.test.tsx">
-    <testCase name="ProductStatusChip quando status è undefined dovrebbe non renderizzare nulla" duration="15"/>
-    <testCase name="ProductStatusChip quando status è null (coercizione a undefined) dovrebbe non renderizzare nulla" duration="2"/>
-    <testCase name="ProductStatusChip quando status è una stringa vuota dovrebbe non renderizzare nulla" duration="1"/>
-    <testCase name="ProductStatusChip quando status è &quot;APPROVED&quot; dovrebbe non renderizzare nulla" duration="9"/>
-    <testCase name="ProductStatusChip quando status è &quot;REJECTED&quot; dovrebbe renderizzare un chip di errore con icona ErrorIcon" duration="6"/>
-    <testCase name="ProductStatusChip quando status è &quot;REJECTED&quot; dovrebbe avere le corrette proprietà del chip" duration="8"/>
-    <testCase name="ProductStatusChip test di accessibilità dovrebbe renderizzare il chip REJECTED con struttura corretta" duration="3"/>
-    <testCase name="ProductStatusChip test di accessibilità dovrebbe avere testo accessibile per screen reader - REJECTED" duration="4"/>
-    <testCase name="ProductStatusChip test di rendering completo dovrebbe non renderizzare nulla per status undefined" duration="2"/>
-    <testCase name="ProductStatusChip test di rendering completo dovrebbe non renderizzare nulla per status APPROVED" duration="6"/>
-    <testCase name="ProductStatusChip test di rendering completo dovrebbe renderizzare struttura corretta per status REJECTED" duration="5"/>
-    <testCase name="ProductStatusChip test di rendering completo dovrebbe renderizzare struttura corretta per status warning" duration="2"/>
+    <testCase name="ProductStatusChip quando status è undefined dovrebbe non renderizzare nulla" duration="9"/>
+    <testCase name="ProductStatusChip quando status è null (coercizione a undefined) dovrebbe non renderizzare nulla" duration="3"/>
+    <testCase name="ProductStatusChip quando status è una stringa vuota dovrebbe non renderizzare nulla" duration="4"/>
+    <testCase name="ProductStatusChip quando status è &quot;APPROVED&quot; dovrebbe non renderizzare nulla" duration="13"/>
+    <testCase name="ProductStatusChip quando status è &quot;REJECTED&quot; dovrebbe renderizzare un chip di errore con icona ErrorIcon" duration="10"/>
+    <testCase name="ProductStatusChip quando status è &quot;REJECTED&quot; dovrebbe avere le corrette proprietà del chip" duration="13"/>
+    <testCase name="ProductStatusChip test di accessibilità dovrebbe renderizzare il chip REJECTED con struttura corretta" duration="7"/>
+    <testCase name="ProductStatusChip test di accessibilità dovrebbe avere testo accessibile per screen reader - REJECTED" duration="7"/>
+    <testCase name="ProductStatusChip test di rendering completo dovrebbe non renderizzare nulla per status undefined" duration="3"/>
+    <testCase name="ProductStatusChip test di rendering completo dovrebbe non renderizzare nulla per status APPROVED" duration="7"/>
+    <testCase name="ProductStatusChip test di rendering completo dovrebbe renderizzare struttura corretta per status REJECTED" duration="14"/>
+    <testCase name="ProductStatusChip test di rendering completo dovrebbe renderizzare struttura corretta per status warning" duration="3"/>
     <testCase name="ProductStatusChip test di rendering completo dovrebbe applicare correttamente gli stili sx" duration="7"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\NewFilter.test.tsx">
-    <testCase name="NewFilter renders the button with translation text and icon" duration="20"/>
-    <testCase name="NewFilter calls onClick when provided" duration="19"/>
-    <testCase name="NewFilter does not throw when onClick is not provided" duration="9"/>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\upcomingInitiative\__tests__\upcomingInitiative.test.tsx">
+    <testCase name="UpcomingInitiative renderizza immagine 60x60, titolo, sottotitolo interpolato e bottone" duration="60"/>
+    <testCase name="UpcomingInitiative il click sul bottone invoca console.log con l’evento" duration="75"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\InvitaliaProductsList\__tests__\invitaliaProductsList.test.tsx">
-    <testCase name="InvitaliaProductsList renders ProductGrid with institutionId" duration="18"/>
-    <testCase name="InvitaliaProductsList passes empty organizationId when institution is null" duration="4"/>
-    <testCase name="InvitaliaProductsList shows success MsgResult when INVITALIA_MSG_SHOW event is dispatched" duration="8"/>
-    <testCase name="InvitaliaProductsList hides MsgResult when INVITALIA_MSG_DISMISS event is dispatched" duration="6"/>
-    <testCase name="InvitaliaProductsList auto hides MsgResult after 10 seconds timeout" duration="4"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\MessagePage.test.tsx">
-    <testCase name="MessagePage renderizza il messaggio e non mostra il bottone se goBack è false" duration="6"/>
-    <testCase name="MessagePage renderizza il messaggio e mostra il bottone se goBack è true" duration="22"/>
-    <testCase name="MessagePage chiama onGoBack quando il bottone viene cliccato" duration="8"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\ProductActionButtons.test.tsx">
-    <testCase name="ProductActionButtons Rendering conditions should return null when isInvitaliaUser is false" duration="1"/>
-    <testCase name="ProductActionButtons Rendering conditions should return null when status is undefined" duration="1"/>
-    <testCase name="ProductActionButtons Rendering conditions should return null when status is empty string" duration="1"/>
-    <testCase name="ProductActionButtons Rendering conditions should return null when both isInvitaliaUser is false and status is undefined" duration="1"/>
-    <testCase name="ProductActionButtons Non-REJECTED status (but not APPROVED) should render Ripristina and Escludi buttons when status is PENDING" duration="9"/>
-    <testCase name="ProductActionButtons Non-REJECTED status (but not APPROVED) should render Ripristina and Escludi buttons when status is DRAFT" duration="4"/>
-    <testCase name="ProductActionButtons Non-REJECTED status (but not APPROVED) should call onRestore when Ripristina button is clicked in non-REJECTED status" duration="3"/>
-    <testCase name="ProductActionButtons Non-REJECTED status (but not APPROVED) should call onExclude when Escludi button is clicked in non-REJECTED status" duration="3"/>
-    <testCase name="ProductActionButtons REJECTED status should render only Ripristina button when status is REJECTED" duration="1"/>
-    <testCase name="ProductActionButtons REJECTED status should call onRestore when Ripristina button is clicked in REJECTED status" duration="1"/>
-    <testCase name="ProductActionButtons Component structure and styling should render with correct MUI components structure for APPROVED status" duration="12"/>
-    <testCase name="ProductActionButtons Component structure and styling should render with correct MUI components structure for REJECTED status" duration="3"/>
-    <testCase name="ProductActionButtons Edge cases should handle unknown status values as non-REJECTED" duration="3"/>
-    <testCase name="ProductActionButtons Edge cases should handle case-sensitive status comparison" duration="3"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\EprelLinks.test.tsx">
-    <testCase name="EprelLinks renderizza il link se eprelCode è valido" duration="9"/>
-    <testCase name="EprelLinks renderizza solo Typography con emptyData se eprelCode è stringa vuota" duration="2"/>
-    <testCase name="EprelLinks renderizza stringa vuota se linkEprel è null" duration="4"/>
-    <testCase name="EprelLinks renderizza solo Typography con emptyData se eprelCode è undefined" duration="2"/>
-    <testCase name="EprelLinks renderizza solo Typography con emptyData se eprelCode è null" duration="2"/>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\uploadsHistory\__tests__\uploadsHistory.test.tsx">
+    <testCase name="OverviewHistoryUpload renders correctly in loading state" duration="9"/>
+    <testCase name="OverviewHistoryUpload shows data correctly when API succeeds" duration="14"/>
+    <testCase name="OverviewHistoryUpload shows error message when API fails" duration="5"/>
+    <testCase name="OverviewHistoryUpload shows InfoUpload when uploadStatus is UPLOADED" duration="4"/>
+    <testCase name="OverviewHistoryUpload does not show InfoUpload when uploadStatus is not UPLOADED" duration="4"/>
+    <testCase name="OverviewHistoryUpload calls getProductFilesList with correct initial parameters" duration="17"/>
+    <testCase name="OverviewHistoryUpload handles empty content array correctly" duration="5"/>
+    <testCase name="OverviewHistoryUpload handles null content correctly" duration="3"/>
+    <testCase name="OverviewHistoryUpload handles undefined content correctly" duration="3"/>
+    <testCase name="OverviewHistoryUpload InfoUpload component renders with correct props" duration="4"/>
+    <testCase name="OverviewHistoryUpload renders error state with empty table" duration="5"/>
+    <testCase name="OverviewHistoryUpload useEffect dependency array works correctly" duration="14"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\SideMenu\__tests__\SideNavItem.test.tsx">
-    <testCase name="Test suite for SideNavItem component renders without crashing" duration="0"/>
-    <testCase name="Test suite for SideNavItem component Testing rendering of SideMenu component" duration="10"/>
+    <testCase name="Test suite for SideNavItem component renders without crashing" duration="1"/>
+    <testCase name="Test suite for SideNavItem component Testing rendering of SideMenu component" duration="12"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\MessagePage.test.tsx">
+    <testCase name="MessagePage renderizza il messaggio e non mostra il bottone se goBack è false" duration="7"/>
+    <testCase name="MessagePage renderizza il messaggio e mostra il bottone se goBack è true" duration="32"/>
+    <testCase name="MessagePage chiama onGoBack quando il bottone viene cliccato" duration="16"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\InvitaliaProductsList\__tests__\invitaliaProductsList.test.tsx">
+    <testCase name="InvitaliaProductsList renders ProductGrid with institutionId" duration="21"/>
+    <testCase name="InvitaliaProductsList passes empty organizationId when institution is null" duration="7"/>
+    <testCase name="InvitaliaProductsList shows success MsgResult when INVITALIA_MSG_SHOW event is dispatched" duration="16"/>
+    <testCase name="InvitaliaProductsList hides MsgResult when INVITALIA_MSG_DISMISS event is dispatched" duration="8"/>
+    <testCase name="InvitaliaProductsList auto hides MsgResult after 10 seconds timeout" duration="8"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\NewFilter.test.tsx">
+    <testCase name="NewFilter renders the button with translation text and icon" duration="30"/>
+    <testCase name="NewFilter calls onClick when provided" duration="12"/>
+    <testCase name="NewFilter does not throw when onClick is not provided" duration="9"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\ProductActionButtons.test.tsx">
+    <testCase name="ProductActionButtons Rendering conditions should return null when isInvitaliaUser is false" duration="3"/>
+    <testCase name="ProductActionButtons Rendering conditions should return null when status is undefined" duration="2"/>
+    <testCase name="ProductActionButtons Rendering conditions should return null when status is empty string" duration="1"/>
+    <testCase name="ProductActionButtons Rendering conditions should return null when both isInvitaliaUser is false and status is undefined" duration="1"/>
+    <testCase name="ProductActionButtons Non-REJECTED status (but not APPROVED) should render Ripristina and Escludi buttons when status is PENDING" duration="16"/>
+    <testCase name="ProductActionButtons Non-REJECTED status (but not APPROVED) should render Ripristina and Escludi buttons when status is DRAFT" duration="5"/>
+    <testCase name="ProductActionButtons Non-REJECTED status (but not APPROVED) should call onRestore when Ripristina button is clicked in non-REJECTED status" duration="5"/>
+    <testCase name="ProductActionButtons Non-REJECTED status (but not APPROVED) should call onExclude when Escludi button is clicked in non-REJECTED status" duration="6"/>
+    <testCase name="ProductActionButtons REJECTED status should render only Ripristina button when status is REJECTED" duration="2"/>
+    <testCase name="ProductActionButtons REJECTED status should call onRestore when Ripristina button is clicked in REJECTED status" duration="1"/>
+    <testCase name="ProductActionButtons Component structure and styling should render with correct MUI components structure for APPROVED status" duration="5"/>
+    <testCase name="ProductActionButtons Component structure and styling should render with correct MUI components structure for REJECTED status" duration="5"/>
+    <testCase name="ProductActionButtons Edge cases should handle unknown status values as non-REJECTED" duration="6"/>
+    <testCase name="ProductActionButtons Edge cases should handle case-sensitive status comparison" duration="5"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\EprelLinks.test.tsx">
+    <testCase name="EprelLinks renderizza il link se eprelCode è valido" duration="18"/>
+    <testCase name="EprelLinks renderizza solo Typography con emptyData se eprelCode è stringa vuota" duration="3"/>
+    <testCase name="EprelLinks renderizza stringa vuota se linkEprel è null" duration="8"/>
+    <testCase name="EprelLinks renderizza solo Typography con emptyData se eprelCode è undefined" duration="2"/>
+    <testCase name="EprelLinks renderizza solo Typography con emptyData se eprelCode è null" duration="3"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\addProducts\__tests__\fileUploadSection.tests.tsx">
-    <testCase name="FileUploadSection renders loading state" duration="2"/>
-    <testCase name="FileUploadSection renders accepted file state" duration="1"/>
-    <testCase name="FileUploadSection renders rejected file alert if fileRejected and alert info are present" duration="3"/>
-    <testCase name="FileUploadSection renders dropzone and InitUploadBox" duration="2"/>
-    <testCase name="FileUploadSection renders helper text and download link when category is selected" duration="11"/>
+    <testCase name="FileUploadSection renders loading state" duration="12"/>
+    <testCase name="FileUploadSection renders accepted file state" duration="3"/>
+    <testCase name="FileUploadSection renders rejected file alert if fileRejected and alert info are present" duration="9"/>
+    <testCase name="FileUploadSection renders dropzone and InitUploadBox" duration="4"/>
+    <testCase name="FileUploadSection renders helper text and download link when category is selected" duration="33"/>
     <testCase name="FileUploadSection calls onInputClick when input is clicked" duration="6"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\__tests__\App.test.tsx">
-    <testCase name="App routing and gating renders Auth page at /auth (top-level route)" duration="9"/>
-    <testCase name="App routing and gating shows TOSWall inside TOSLayout when TOS not accepted (and not on /privacy or /tos)" duration="2"/>
-    <testCase name="App routing and gating returns empty fragment when TOS status is undefined (and not on /privacy or /tos)" duration="1"/>
-    <testCase name="App routing and gating allows navigating to Privacy and TOS pages even if TOS not accepted" duration="10"/>
-    <testCase name="App routing and gating renders Invitalia routes when user is Invitalia (HOME and PRODUCERS, and * redirect)" duration="5"/>
-    <testCase name="App routing and gating renders Standard routes when user is standard; passes organizationId from store; covers * redirect" duration="15"/>
-  </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\hooks\__tests__\useLogin.test.tsx">
-    <testCase name="useLogin hook userFromJwtToken should correctly convert JWT token to User object" duration="1"/>
-    <testCase name="useLogin hook userFromJwtTokenAsJWTUser should correctly convert JWT token to IDPayUser object" duration="0"/>
-    <testCase name="useLogin hook attemptSilentLogin should handle mock user scenario" duration="4"/>
+    <testCase name="useLogin hook userFromJwtToken should correctly convert JWT token to User object" duration="2"/>
+    <testCase name="useLogin hook userFromJwtTokenAsJWTUser should correctly convert JWT token to IDPayUser object" duration="3"/>
+    <testCase name="useLogin hook attemptSilentLogin should handle mock user scenario" duration="7"/>
     <testCase name="useLogin hook attemptSilentLogin should redirect to login when no token is present" duration="2"/>
-    <testCase name="useLogin hook attemptSilentLogin should handle empty session storage user" duration="2"/>
-    <testCase name="useLogin hook attemptSilentLogin should use existing session storage user" duration="1"/>
-    <testCase name="useLogin hook attemptSilentLogin should handle getUserPermission success in mock scenario" duration="2"/>
-    <testCase name="useLogin hook attemptSilentLogin should handle getUserPermission error in mock scenario" duration="79"/>
-    <testCase name="useLogin hook attemptSilentLogin should handle getUserPermission error with empty session storage" duration="77"/>
+    <testCase name="useLogin hook attemptSilentLogin should handle empty session storage user" duration="3"/>
+    <testCase name="useLogin hook attemptSilentLogin should use existing session storage user" duration="2"/>
+    <testCase name="useLogin hook attemptSilentLogin should handle getUserPermission success in mock scenario" duration="7"/>
+    <testCase name="useLogin hook attemptSilentLogin should handle getUserPermission error in mock scenario" duration="81"/>
+    <testCase name="useLogin hook attemptSilentLogin should handle getUserPermission error with empty session storage" duration="80"/>
     <testCase name="useLogin hook attemptSilentLogin should handle getUserPermission error with existing session storage user" duration="78"/>
-    <testCase name="useLogin hook attemptSilentLogin should handle empty string token" duration="1"/>
-    <testCase name="useLogin hook attemptSilentLogin should handle undefined token" duration="1"/>
-    <testCase name="useLogin hook hook return value should return attemptSilentLogin function" duration="1"/>
+    <testCase name="useLogin hook attemptSilentLogin should handle empty string token" duration="11"/>
+    <testCase name="useLogin hook attemptSilentLogin should handle undefined token" duration="5"/>
+    <testCase name="useLogin hook hook return value should return attemptSilentLogin function" duration="3"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\__tests__\App.test.tsx">
+    <testCase name="App routing and gating renders Auth page at /auth (top-level route)" duration="13"/>
+    <testCase name="App routing and gating shows TOSWall inside TOSLayout when TOS not accepted (and not on /privacy or /tos)" duration="8"/>
+    <testCase name="App routing and gating returns empty fragment when TOS status is undefined (and not on /privacy or /tos)" duration="3"/>
+    <testCase name="App routing and gating allows navigating to Privacy and TOS pages even if TOS not accepted" duration="16"/>
+    <testCase name="App routing and gating renders Invitalia routes when user is Invitalia (HOME and PRODUCERS, and * redirect)" duration="13"/>
+    <testCase name="App routing and gating renders Standard routes when user is standard; passes organizationId from store; covers * redirect" duration="35"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\decorators\__tests__\WithSelectedPartyProducts.test.tsx">
+    <testCase name="withSelectedPartyProducts Decorator Decorator Composition should call withRetrievedValue with correct parameters" duration="1"/>
+    <testCase name="withSelectedPartyProducts Decorator Decorator Composition should call withSelectedParty after withRetrievedValue" duration="1"/>
+    <testCase name="withSelectedPartyProducts Decorator Decorator Composition should pass result of withRetrievedValue to withSelectedParty" duration="1"/>
+    <testCase name="withSelectedPartyProducts Decorator Decorator Composition should return the result of withSelectedParty" duration="0"/>
+    <testCase name="withSelectedPartyProducts Decorator Component Rendering should render wrapped component with party and products props" duration="6"/>
+    <testCase name="withSelectedPartyProducts Decorator Component Rendering should forward additional props to wrapped component" duration="3"/>
+    <testCase name="withSelectedPartyProducts Decorator Component Rendering should handle empty products array" duration="3"/>
+    <testCase name="withSelectedPartyProducts Decorator Type Safety should omit party and products props from component props type" duration="0"/>
+    <testCase name="withSelectedPartyProducts Decorator Type Safety should accept component with only required props" duration="0"/>
+    <testCase name="withSelectedPartyProducts Decorator Different Products Scenarios should handle single product" duration="3"/>
+    <testCase name="withSelectedPartyProducts Decorator Different Products Scenarios should handle products with different statuses" duration="3"/>
+    <testCase name="withSelectedPartyProducts Decorator Integration with Hooks should use useSelectedPartyProducts hook" duration="1"/>
+    <testCase name="withSelectedPartyProducts Decorator Integration with Hooks should use &quot;products&quot; as the property key" duration="0"/>
+    <testCase name="withSelectedPartyProducts Decorator Multiple Instances should allow wrapping multiple different components" duration="1"/>
+    <testCase name="withSelectedPartyProducts Decorator WithSelectedPartyProductsProps Type should define party and products props correctly" duration="1"/>
+    <testCase name="withSelectedPartyProducts Decorator WithSelectedPartyProductsProps Type should require both party and products props" duration="1"/>
+    <testCase name="withSelectedPartyProducts Decorator Decorator Chain Order should apply decorators in correct order (withRetrievedValue then withSelectedParty)" duration="1"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\decorators\__tests__\WithSelectedParty.test.tsx">
     <testCase name="withSelectedParty Decorator Decorator Functionality should call withRetrievedValue with correct parameters" duration="1"/>
-    <testCase name="withSelectedParty Decorator Decorator Functionality should return a component" duration="0"/>
+    <testCase name="withSelectedParty Decorator Decorator Functionality should return a component" duration="1"/>
     <testCase name="withSelectedParty Decorator Component Rendering should render wrapped component with party prop" duration="4"/>
     <testCase name="withSelectedParty Decorator Component Rendering should forward additional props to wrapped component" duration="1"/>
     <testCase name="withSelectedParty Decorator Type Safety should omit party prop from component props type" duration="0"/>
-    <testCase name="withSelectedParty Decorator Type Safety should accept component with only party prop" duration="1"/>
-    <testCase name="withSelectedParty Decorator Type Safety should accept component with party and additional props" duration="0"/>
+    <testCase name="withSelectedParty Decorator Type Safety should accept component with only party prop" duration="0"/>
+    <testCase name="withSelectedParty Decorator Type Safety should accept component with party and additional props" duration="1"/>
     <testCase name="withSelectedParty Decorator Integration with withRetrievedValue should pass useSelectedParty hook to withRetrievedValue" duration="0"/>
     <testCase name="withSelectedParty Decorator Integration with withRetrievedValue should use &quot;party&quot; as the property key" duration="1"/>
     <testCase name="withSelectedParty Decorator Integration with withRetrievedValue should pass the original component to withRetrievedValue" duration="0"/>
-    <testCase name="withSelectedParty Decorator Different Party Scenarios should handle party with minimal required fields" duration="1"/>
-    <testCase name="withSelectedParty Decorator Different Party Scenarios should handle party with all optional fields" duration="1"/>
-    <testCase name="withSelectedParty Decorator Different Party Scenarios should handle party with different statuses" duration="3"/>
+    <testCase name="withSelectedParty Decorator Different Party Scenarios should handle party with minimal required fields" duration="11"/>
+    <testCase name="withSelectedParty Decorator Different Party Scenarios should handle party with all optional fields" duration="2"/>
+    <testCase name="withSelectedParty Decorator Different Party Scenarios should handle party with different statuses" duration="4"/>
     <testCase name="withSelectedParty Decorator Component Display Name should work with components that have displayName" duration="0"/>
     <testCase name="withSelectedParty Decorator Component Display Name should work with anonymous components" duration="1"/>
     <testCase name="withSelectedParty Decorator Multiple Instances should allow wrapping multiple different components" duration="0"/>
     <testCase name="withSelectedParty Decorator WithSelectedPartyProps Type should define party prop correctly" duration="0"/>
     <testCase name="withSelectedParty Decorator WithSelectedPartyProps Type should require party prop" duration="0"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\decorators\__tests__\WithSelectedPartyProducts.test.tsx">
-    <testCase name="withSelectedPartyProducts Decorator Decorator Composition should call withRetrievedValue with correct parameters" duration="1"/>
-    <testCase name="withSelectedPartyProducts Decorator Decorator Composition should call withSelectedParty after withRetrievedValue" duration="1"/>
-    <testCase name="withSelectedPartyProducts Decorator Decorator Composition should pass result of withRetrievedValue to withSelectedParty" duration="0"/>
-    <testCase name="withSelectedPartyProducts Decorator Decorator Composition should return the result of withSelectedParty" duration="1"/>
-    <testCase name="withSelectedPartyProducts Decorator Component Rendering should render wrapped component with party and products props" duration="3"/>
-    <testCase name="withSelectedPartyProducts Decorator Component Rendering should forward additional props to wrapped component" duration="3"/>
-    <testCase name="withSelectedPartyProducts Decorator Component Rendering should handle empty products array" duration="2"/>
-    <testCase name="withSelectedPartyProducts Decorator Type Safety should omit party and products props from component props type" duration="1"/>
-    <testCase name="withSelectedPartyProducts Decorator Type Safety should accept component with only required props" duration="0"/>
-    <testCase name="withSelectedPartyProducts Decorator Different Products Scenarios should handle single product" duration="2"/>
-    <testCase name="withSelectedPartyProducts Decorator Different Products Scenarios should handle products with different statuses" duration="2"/>
-    <testCase name="withSelectedPartyProducts Decorator Integration with Hooks should use useSelectedPartyProducts hook" duration="0"/>
-    <testCase name="withSelectedPartyProducts Decorator Integration with Hooks should use &quot;products&quot; as the property key" duration="1"/>
-    <testCase name="withSelectedPartyProducts Decorator Multiple Instances should allow wrapping multiple different components" duration="0"/>
-    <testCase name="withSelectedPartyProducts Decorator WithSelectedPartyProductsProps Type should define party and products props correctly" duration="0"/>
-    <testCase name="withSelectedPartyProducts Decorator WithSelectedPartyProductsProps Type should require both party and products props" duration="0"/>
-    <testCase name="withSelectedPartyProducts Decorator Decorator Chain Order should apply decorators in correct order (withRetrievedValue then withSelectedParty)" duration="0"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\services\__tests__\registerService.test.ts">
-    <testCase name="Product Service uploadProductList should upload product list successfully" duration="1"/>
-    <testCase name="Product Service uploadProductList should handle error and return empty object" duration="1"/>
-    <testCase name="Product Service uploadProductList should handle non-Error objects" duration="0"/>
-    <testCase name="Product Service uploadProductListVerify should verify product list successfully" duration="1"/>
-    <testCase name="Product Service uploadProductListVerify should handle error and return empty object" duration="1"/>
-    <testCase name="Product Service downloadErrorReport should download error report successfully" duration="1"/>
-    <testCase name="Product Service downloadErrorReport should handle error and return empty data" duration="1"/>
-    <testCase name="Product Service getProductFilesList should get product files list successfully with pagination" duration="1"/>
-    <testCase name="Product Service getProductFilesList should handle error and return empty list" duration="13"/>
-    <testCase name="Product Service getProductFilesList should call without pagination parameters" duration="1"/>
-    <testCase name="Product Service getProducts should get products successfully with all parameters" duration="1"/>
-    <testCase name="Product Service getProducts should get products with minimal parameters" duration="1"/>
-    <testCase name="Product Service getProducts should handle null response and return default object" duration="0"/>
-    <testCase name="Product Service getProducts should handle error and return empty list" duration="1"/>
-    <testCase name="Product Service getInstitutionsList should get institutions list successfully" duration="0"/>
-    <testCase name="Product Service getInstitutionsList should handle error and return empty institutions list" duration="1"/>
-    <testCase name="Product Service getInstitutionById should get institution by id successfully" duration="0"/>
-    <testCase name="Product Service getInstitutionById should handle error and return empty object" duration="1"/>
-    <testCase name="Product Service setSupervisionedStatusList should set supervised status successfully" duration="1"/>
-    <testCase name="Product Service setSupervisionedStatusList should handle error and return empty object" duration="1"/>
-    <testCase name="Product Service setApprovedStatusList should set approved status successfully" duration="1"/>
-    <testCase name="Product Service setApprovedStatusList should handle error" duration="1"/>
-    <testCase name="Product Service setWaitApprovedStatusList should set wait approved status successfully" duration="0"/>
-    <testCase name="Product Service setWaitApprovedStatusList should handle error" duration="0"/>
-    <testCase name="Product Service setRejectedStatusList should set rejected status successfully" duration="0"/>
-    <testCase name="Product Service setRejectedStatusList should handle error" duration="0"/>
-    <testCase name="Product Service setRestoredStatusList should set restored status successfully" duration="0"/>
-    <testCase name="Product Service setRestoredStatusList should handle error" duration="1"/>
-    <testCase name="Product Service getBatchFilterList should get batch filter list successfully" duration="0"/>
-    <testCase name="Product Service getBatchFilterList should handle error and return empty array" duration="1"/>
-    <testCase name="Product Service Error logging with different error types should log error with message property" duration="0"/>
-    <testCase name="Product Service Error logging with different error types should log error with stack property" duration="0"/>
-    <testCase name="Product Service Error logging with different error types should log error with response status and statusText" duration="1"/>
-    <testCase name="Product Service Error logging with different error types should log error with response data" duration="0"/>
-    <testCase name="Product Service Error logging with different error types should log error with config url and method" duration="0"/>
-    <testCase name="Product Service Error logging with different error types should not log when DEBUG_CONSOLE is false" duration="1"/>
-    <testCase name="Product Service Error handling with array response data should handle error with array response data" duration="0"/>
-    <testCase name="Product Service should log error key when present" duration="0"/>
-    <testCase name="Product Service should not log anything when DEBUG_CONSOLE is false" duration="5"/>
-    <testCase name="Product Service should handle complex error object structures in pretty()" duration="1"/>
-    <testCase name="Product Service should log when response data has more than 5 keys" duration="0"/>
-    <testCase name="Product Service should handle config without url or method gracefully" duration="0"/>
-    <testCase name="Product Service should extract error message and stack properly" duration="0"/>
-    <testCase name="Product Service should handle primitive types in pretty()" duration="0"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Footer\__tests__\Footer.test.tsx">
-    <testCase name="usa la lingua dalla querystring e chiama i18n.changeLanguage" duration="6"/>
-    <testCase name="se la querystring non ha lang usa i18n.language e chiama changeLanguage" duration="2"/>
-    <testCase name="link cookie pre-login invoca OneTrust.ToggleInfoDisplay" duration="9"/>
-    <testCase name="postLoginLinks aprono finestre esterne con focus dove previsto" duration="4"/>
-    <testCase name="onExit di default esegue la exitAction" duration="2"/>
-    <testCase name="onExit custom viene chiamato con una funzione exitAction" duration="3"/>
-  </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\Products.test.tsx">
-    <testCase name="Products rende il ProductDataGrid con l’organizationId passato" duration="3"/>
+    <testCase name="Products rende il ProductDataGrid con l’organizationId passato" duration="4"/>
     <testCase name="Products non rende i children (il componente non li supporta)" duration="1"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\api\__tests__\registerApiClient.test.ts">
     <testCase name="sanitizeHeaders sets Authorization header when a token is present" duration="1"/>
     <testCase name="sanitizeHeaders does NOT set Authorization header when token is empty string" duration="0"/>
-    <testCase name="sanitizeHeaders does NOT set Authorization header when token is null/undefined" duration="0"/>
-    <testCase name="sanitizeHeaders removes headers with null values" duration="1"/>
+    <testCase name="sanitizeHeaders does NOT set Authorization header when token is null/undefined" duration="1"/>
+    <testCase name="sanitizeHeaders removes headers with null values" duration="0"/>
     <testCase name="sanitizeHeaders removes headers with &apos;undefined&apos; string values" duration="0"/>
     <testCase name="sanitizeHeaders removes headers with empty string values" duration="1"/>
     <testCase name="sanitizeHeaders keeps headers with valid non-empty values" duration="0"/>
     <testCase name="sanitizeHeaders returns the modified config object" duration="0"/>
     <testCase name="response interceptor success handler passes the response through unchanged" duration="0"/>
-    <testCase name="response interceptor error handler - 401 dispatches addError action" duration="0"/>
+    <testCase name="response interceptor error handler - 401 dispatches addError action" duration="1"/>
     <testCase name="response interceptor error handler - 401 deletes the user storage" duration="0"/>
     <testCase name="response interceptor error handler - 401 redirects to the login page" duration="0"/>
-    <testCase name="response interceptor error handler - 401 rejects the promise with the original error" duration="0"/>
+    <testCase name="response interceptor error handler - 401 rejects the promise with the original error" duration="1"/>
     <testCase name="response interceptor error handler - non-401 does NOT dispatch addError for non-401 errors" duration="0"/>
     <testCase name="response interceptor error handler - non-401 does NOT redirect for non-401 errors" duration="0"/>
-    <testCase name="response interceptor error handler - non-401 still rejects the promise" duration="1"/>
+    <testCase name="response interceptor error handler - non-401 still rejects the promise" duration="0"/>
     <testCase name="RolePermissionApi userPermission returns the API response on success" duration="0"/>
-    <testCase name="RolePermissionApi userPermission returns empty object and logs error on failure" duration="20"/>
+    <testCase name="RolePermissionApi userPermission returns empty object and logs error on failure" duration="18"/>
     <testCase name="RolePermissionApi getPortalConsent returns the API response on success" duration="0"/>
-    <testCase name="RolePermissionApi getPortalConsent returns empty object and logs error on failure" duration="2"/>
+    <testCase name="RolePermissionApi getPortalConsent returns empty object and logs error on failure" duration="1"/>
     <testCase name="RolePermissionApi savePortalConsent calls the API with the given versionId" duration="0"/>
     <testCase name="RolePermissionApi savePortalConsent works when versionId is undefined" duration="0"/>
-    <testCase name="RolePermissionApi savePortalConsent returns undefined and logs error on failure" duration="1"/>
-    <testCase name="RegisterApi.getProduct returns the first item when content is non-empty" duration="0"/>
+    <testCase name="RolePermissionApi savePortalConsent returns undefined and logs error on failure" duration="0"/>
+    <testCase name="RegisterApi.getProduct returns the first item when content is non-empty" duration="1"/>
     <testCase name="RegisterApi.getProduct returns undefined when content array is empty" duration="1"/>
     <testCase name="RegisterApi.getProduct returns undefined when content is missing" duration="0"/>
     <testCase name="RegisterApi.getProduct returns undefined when value is missing" duration="0"/>
-    <testCase name="RegisterApi.getProduct returns fallback object on API error" duration="10"/>
-    <testCase name="RegisterApi.getProductList returns the API response on success" duration="1"/>
+    <testCase name="RegisterApi.getProduct returns fallback object on API error" duration="9"/>
+    <testCase name="RegisterApi.getProductList returns the API response on success" duration="0"/>
     <testCase name="RegisterApi.getProductList returns fallback on error" duration="0"/>
     <testCase name="RegisterApi.getProductFiles returns the API response on success" duration="0"/>
     <testCase name="RegisterApi.getProductFiles returns fallback object on error" duration="0"/>
-    <testCase name="RegisterApi.getBatchFilterItems sets x-organization-selected param when org is non-empty" duration="1"/>
-    <testCase name="RegisterApi.getBatchFilterItems does NOT set x-organization-selected when org is empty string" duration="0"/>
+    <testCase name="RegisterApi.getBatchFilterItems sets x-organization-selected param when org is non-empty" duration="0"/>
+    <testCase name="RegisterApi.getBatchFilterItems does NOT set x-organization-selected when org is empty string" duration="1"/>
     <testCase name="RegisterApi.getBatchFilterItems returns the response directly when it is already an array" duration="0"/>
-    <testCase name="RegisterApi.getBatchFilterItems returns empty array on API error" duration="1"/>
+    <testCase name="RegisterApi.getBatchFilterItems returns empty array on API error" duration="0"/>
     <testCase name="RegisterApi.uploadProductList returns API response on success" duration="0"/>
     <testCase name="RegisterApi.uploadProductList returns empty object and logs error on failure" duration="1"/>
-    <testCase name="RegisterApi.uploadProductListVerify returns API response on success" duration="1"/>
+    <testCase name="RegisterApi.uploadProductListVerify returns API response on success" duration="0"/>
     <testCase name="RegisterApi.uploadProductListVerify returns empty object and logs error on failure" duration="1"/>
-    <testCase name="RegisterApi.downloadErrorReport returns data and empty filename when response has a top-level data string" duration="1"/>
+    <testCase name="RegisterApi.downloadErrorReport returns data and empty filename when response has a top-level data string" duration="0"/>
     <testCase name="RegisterApi.downloadErrorReport returns empty data when top-level data string is blank" duration="0"/>
     <testCase name="RegisterApi.downloadErrorReport extracts filename from content-disposition header (lowercase)" duration="0"/>
     <testCase name="RegisterApi.downloadErrorReport extracts filename from content-disposition header (capitalized)" duration="0"/>
-    <testCase name="RegisterApi.downloadErrorReport extracts filename via headers.get() method" duration="1"/>
+    <testCase name="RegisterApi.downloadErrorReport extracts filename via headers.get() method" duration="0"/>
     <testCase name="RegisterApi.downloadErrorReport returns empty filename when no content-disposition header is present" duration="0"/>
-    <testCase name="RegisterApi.downloadErrorReport reads csv from rawResponse.data when top-level data is empty" duration="1"/>
+    <testCase name="RegisterApi.downloadErrorReport reads csv from rawResponse.data when top-level data is empty" duration="0"/>
     <testCase name="RegisterApi.getInstitutionsList returns the API response on success" duration="0"/>
     <testCase name="RegisterApi.getInstitutionsList returns fallback on error" duration="0"/>
-    <testCase name="RegisterApi.getInstitutionById calls the API with the correct institutionId" duration="1"/>
+    <testCase name="RegisterApi.getInstitutionById calls the API with the correct institutionId" duration="0"/>
     <testCase name="RegisterApi.getInstitutionById returns fallback on error" duration="1"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\redux\slices\__tests__\permissionsSlice.test.ts">
-    <testCase name="initiative Summary slice  initiative Summary slice actions" duration="1"/>
-    <testCase name="initiative Summary slice  initiative Summary slice slectors" duration="1"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\ProductDataGrid.helpers.test.tsx">
-    <testCase name="ProductDataGrid.helpers getSelectedStatuses filters and preserves order" duration="1"/>
-    <testCase name="ProductDataGrid.helpers isAllStatus works for true and false" duration="1"/>
-    <testCase name="ProductDataGrid.helpers isSomeStatus works for true and false" duration="0"/>
-    <testCase name="ProductDataGrid.helpers getStatusChecks detects allUploaded, allSupervised, allWaitApproved, someUploaded and length" duration="1"/>
-    <testCase name="ProductDataGrid.helpers handleModalSuccess: APPROVED when all UPLOADED" duration="1"/>
-    <testCase name="ProductDataGrid.helpers handleModalSuccess: WAIT_APPROVED when all UPLOADED" duration="1"/>
-    <testCase name="ProductDataGrid.helpers handleModalSuccess: SUPERVISED when all UPLOADED shows waitApproved message" duration="0"/>
-    <testCase name="ProductDataGrid.helpers handleModalSuccess: Invitalia WAIT_APPROVED when all SUPERVISED" duration="1"/>
-    <testCase name="ProductDataGrid.helpers handleModalSuccess: Invitalia APPROVED when all SUPERVISED" duration="0"/>
-    <testCase name="ProductDataGrid.helpers handleModalSuccess: Invitalia REJECTED with all UPLOADED resets all messages" duration="1"/>
-    <testCase name="ProductDataGrid.helpers handleModalSuccess: REJECTED or REJECT_APPROVATION shows rejected when not covered by earlier branches" duration="0"/>
-    <testCase name="ProductDataGrid.helpers handleModalSuccess: default path sets approved when no branch matches" duration="0"/>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\services\__tests__\registerService.test.ts">
+    <testCase name="Product Service uploadProductList should upload product list successfully" duration="1"/>
+    <testCase name="Product Service uploadProductList should handle error and return empty object" duration="1"/>
+    <testCase name="Product Service uploadProductList should handle non-Error objects" duration="1"/>
+    <testCase name="Product Service uploadProductListVerify should verify product list successfully" duration="1"/>
+    <testCase name="Product Service uploadProductListVerify should handle error and return empty object" duration="0"/>
+    <testCase name="Product Service downloadErrorReport should download error report successfully" duration="1"/>
+    <testCase name="Product Service downloadErrorReport should handle error and return empty data" duration="0"/>
+    <testCase name="Product Service getProductFilesList should get product files list successfully with pagination" duration="0"/>
+    <testCase name="Product Service getProductFilesList should handle error and return empty list" duration="15"/>
+    <testCase name="Product Service getProductFilesList should call without pagination parameters" duration="1"/>
+    <testCase name="Product Service getProducts should get products successfully with all parameters" duration="1"/>
+    <testCase name="Product Service getProducts should get products with minimal parameters" duration="0"/>
+    <testCase name="Product Service getProducts should handle null response and return default object" duration="0"/>
+    <testCase name="Product Service getProducts should handle error and return empty list" duration="1"/>
+    <testCase name="Product Service getInstitutionsList should get institutions list successfully" duration="0"/>
+    <testCase name="Product Service getInstitutionsList should handle error and return empty institutions list" duration="1"/>
+    <testCase name="Product Service getInstitutionById should get institution by id successfully" duration="0"/>
+    <testCase name="Product Service getInstitutionById should handle error and return empty object" duration="0"/>
+    <testCase name="Product Service setSupervisionedStatusList should set supervised status successfully" duration="0"/>
+    <testCase name="Product Service setSupervisionedStatusList should handle error and return empty object" duration="1"/>
+    <testCase name="Product Service setApprovedStatusList should set approved status successfully" duration="0"/>
+    <testCase name="Product Service setApprovedStatusList should handle error" duration="6"/>
+    <testCase name="Product Service setWaitApprovedStatusList should set wait approved status successfully" duration="0"/>
+    <testCase name="Product Service setWaitApprovedStatusList should handle error" duration="1"/>
+    <testCase name="Product Service setRejectedStatusList should set rejected status successfully" duration="1"/>
+    <testCase name="Product Service setRejectedStatusList should handle error" duration="1"/>
+    <testCase name="Product Service setRestoredStatusList should set restored status successfully" duration="0"/>
+    <testCase name="Product Service setRestoredStatusList should handle error" duration="0"/>
+    <testCase name="Product Service getBatchFilterList should get batch filter list successfully" duration="1"/>
+    <testCase name="Product Service getBatchFilterList should handle error and return empty array" duration="0"/>
+    <testCase name="Product Service Error logging with different error types should log error with message property" duration="1"/>
+    <testCase name="Product Service Error logging with different error types should log error with stack property" duration="0"/>
+    <testCase name="Product Service Error logging with different error types should log error with response status and statusText" duration="0"/>
+    <testCase name="Product Service Error logging with different error types should log error with response data" duration="0"/>
+    <testCase name="Product Service Error logging with different error types should log error with config url and method" duration="0"/>
+    <testCase name="Product Service Error logging with different error types should not log when DEBUG_CONSOLE is false" duration="2"/>
+    <testCase name="Product Service Error handling with array response data should handle error with array response data" duration="0"/>
+    <testCase name="Product Service should log error key when present" duration="1"/>
+    <testCase name="Product Service should not log anything when DEBUG_CONSOLE is false" duration="4"/>
+    <testCase name="Product Service should handle complex error object structures in pretty()" duration="0"/>
+    <testCase name="Product Service should log when response data has more than 5 keys" duration="0"/>
+    <testCase name="Product Service should handle config without url or method gracefully" duration="1"/>
+    <testCase name="Product Service should extract error message and stack properly" duration="1"/>
+    <testCase name="Product Service should handle primitive types in pretty()" duration="1"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\__tests__\helpers.test.ts">
     <testCase name="Helper functions formattedCurrency with undefined" duration="1"/>
-    <testCase name="Helper functions formattedCurrency with number (no cents)" duration="4"/>
+    <testCase name="Helper functions formattedCurrency with number (no cents)" duration="1"/>
     <testCase name="Helper functions formattedCurrency with number and cents = true" duration="0"/>
     <testCase name="Helper functions formatDate with undefined" duration="0"/>
     <testCase name="Helper functions formatDate with valid date" duration="1"/>
     <testCase name="Helper functions formatIban with valid IBAN" duration="0"/>
     <testCase name="Helper functions formatIban with undefined" duration="0"/>
-    <testCase name="Helper functions formatDateWithHours with valid ISO string" duration="1"/>
-    <testCase name="Helper functions formatDateWithoutHours with valid ISO string" duration="1"/>
+    <testCase name="Helper functions formatDateWithHours with valid ISO string" duration="0"/>
+    <testCase name="Helper functions formatDateWithoutHours with valid ISO string" duration="0"/>
     <testCase name="Helper functions formatDateWithoutHours with empty string" duration="0"/>
     <testCase name="Helper functions formatFileName with long name" duration="0"/>
     <testCase name="Helper functions formatFileName with short name" duration="0"/>
@@ -781,19 +695,19 @@ Ignored nodes: comments, script, style
     <testCase name="Helper functions truncateString with short string" duration="0"/>
     <testCase name="Helper functions truncateString with undefined" duration="0"/>
     <testCase name="Additional tests for better coverage formattedCurrency with zero" duration="0"/>
-    <testCase name="Additional tests for better coverage formattedCurrency with cents = false explicitly" duration="1"/>
+    <testCase name="Additional tests for better coverage formattedCurrency with cents = false explicitly" duration="0"/>
     <testCase name="Additional tests for better coverage formatDateWithHours with null" duration="0"/>
     <testCase name="Additional tests for better coverage formatDateWithHours with undefined" duration="0"/>
     <testCase name="Additional tests for better coverage truncateStringResponsive with undefined string" duration="1"/>
-    <testCase name="Additional tests for better coverage truncateStringResponsive with undefined maxLength" duration="10"/>
+    <testCase name="Additional tests for better coverage truncateStringResponsive with undefined maxLength" duration="1"/>
     <testCase name="Additional tests for better coverage truncateStringResponsive with string longer than maxLength" duration="0"/>
-    <testCase name="Additional tests for better coverage truncateStringResponsive with string shorter than maxLength" duration="0"/>
+    <testCase name="Additional tests for better coverage truncateStringResponsive with string shorter than maxLength" duration="1"/>
     <testCase name="Additional tests for better coverage fetchUserFromLocalStorage with valid user data" duration="1"/>
     <testCase name="Additional tests for better coverage fetchUserFromLocalStorage with no user data" duration="0"/>
     <testCase name="Additional tests for better coverage fetchUserFromLocalStorage with invalid JSON" duration="0"/>
-    <testCase name="Additional tests for better coverage initUploadBoxStyle has correct properties" duration="1"/>
-    <testCase name="Additional tests for better coverage initUploadHelperBoxStyle has correct properties" duration="0"/>
-    <testCase name="Additional tests for 100% coverage formatDateWithHours with empty string" duration="0"/>
+    <testCase name="Additional tests for better coverage initUploadBoxStyle has correct properties" duration="0"/>
+    <testCase name="Additional tests for better coverage initUploadHelperBoxStyle has correct properties" duration="1"/>
+    <testCase name="Additional tests for 100% coverage formatDateWithHours with empty string" duration="1"/>
     <testCase name="Additional tests for 100% coverage formatDateWithHours with valid ISO string" duration="1"/>
     <testCase name="Additional tests for 100% coverage formatDateWithHours with invalid date string" duration="0"/>
     <testCase name="Additional tests for 100% coverage getTablePrLength with window defined" duration="1"/>
@@ -801,36 +715,50 @@ Ignored nodes: comments, script, style
     <testCase name="Additional tests for 100% coverage useResponsiveMaxLength with different breakpoints" duration="1"/>
     <testCase name="Additional tests for 100% coverage isOnOrBeforeDate with undefined" duration="0"/>
     <testCase name="Additional tests for 100% coverage isOnOrBeforeDate with empty string" duration="0"/>
-    <testCase name="Additional tests for 100% coverage isOnOrBeforeDate with future date" duration="1"/>
+    <testCase name="Additional tests for 100% coverage isOnOrBeforeDate with future date" duration="13"/>
     <testCase name="Additional tests for 100% coverage isOnOrBeforeDate with past date" duration="1"/>
     <testCase name="Additional tests for 100% coverage isOnOrBeforeDate with today date" duration="1"/>
     <testCase name="Additional tests for 100% coverage customExitAction clears storage and redirects" duration="2"/>
     <testCase name="Additional tests for 100% coverage formattedCurrency with number 0 and cents true" duration="0"/>
     <testCase name="Additional tests for 100% coverage formattedCurrency with custom symbol" duration="1"/>
   </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\redux\slices\__tests__\permissionsSlice.test.ts">
+    <testCase name="initiative Summary slice  initiative Summary slice actions" duration="1"/>
+    <testCase name="initiative Summary slice  initiative Summary slice slectors" duration="0"/>
+  </file>
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\components\Product\__tests__\ProductDataGrid.helpers.test.tsx">
+    <testCase name="ProductDataGrid.helpers getSelectedStatuses filters and preserves order" duration="1"/>
+    <testCase name="ProductDataGrid.helpers isAllStatus works for true and false" duration="1"/>
+    <testCase name="ProductDataGrid.helpers isSomeStatus works for true and false" duration="1"/>
+    <testCase name="ProductDataGrid.helpers getStatusChecks detects allUploaded, allSupervised, allWaitApproved, someUploaded and length" duration="1"/>
+    <testCase name="ProductDataGrid.helpers handleModalSuccess: APPROVED when all UPLOADED" duration="0"/>
+    <testCase name="ProductDataGrid.helpers handleModalSuccess: WAIT_APPROVED when all UPLOADED" duration="0"/>
+    <testCase name="ProductDataGrid.helpers handleModalSuccess: SUPERVISED when all UPLOADED shows waitApproved message" duration="0"/>
+    <testCase name="ProductDataGrid.helpers handleModalSuccess: Invitalia WAIT_APPROVED when all SUPERVISED" duration="0"/>
+    <testCase name="ProductDataGrid.helpers handleModalSuccess: Invitalia APPROVED when all SUPERVISED" duration="1"/>
+    <testCase name="ProductDataGrid.helpers handleModalSuccess: Invitalia REJECTED with all UPLOADED resets all messages" duration="1"/>
+    <testCase name="ProductDataGrid.helpers handleModalSuccess: REJECTED or REJECT_APPROVATION shows rejected when not covered by earlier branches" duration="1"/>
+    <testCase name="ProductDataGrid.helpers handleModalSuccess: default path sets approved when no branch matches" duration="0"/>
+  </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\addProducts\__tests__\helpers.test.ts">
     <testCase name="categoryList should contain all expected categories with correct labels and values" duration="1"/>
     <testCase name="downloadCsv should create a blob with BOM and trigger download with correct filename" duration="2"/>
     <testCase name="downloadCsv supports plain string content" duration="1"/>
-    <testCase name="downloadCsv supports response string content" duration="1"/>
-    <testCase name="downloadCsv supports nested response data content" duration="1"/>
+    <testCase name="downloadCsv supports response string content" duration="11"/>
+    <testCase name="downloadCsv supports nested response data content" duration="0"/>
     <testCase name="downloadCsv supports body string content" duration="1"/>
     <testCase name="downloadCsv supports nested body data content" duration="1"/>
     <testCase name="downloadCsv falls back to report.csv when filename is empty" duration="1"/>
     <testCase name="downloadCsv warns and still downloads an empty csv when content is missing" duration="2"/>
-    <testCase name="downloadCsv removes the temporary link and revokes the object url" duration="2"/>
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\services\__tests__\rolePermissionService.test.ts">
-    <testCase name="RolePermissionService getUserPermission calls API and returns data" duration="0"/>
-    <testCase name="RolePermissionService getPortalConsent calls API and returns data" duration="0"/>
-    <testCase name="RolePermissionService savePortalConsent calls API with versionId" duration="1"/>
+    <testCase name="downloadCsv removes the temporary link and revokes the object url" duration="1"/>
   </file>
   <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\redux\__tests__\store.test.tsx">
-    <testCase name="store configuration usa i reducer corretti, applica persistReducer con la whitelist e disattiva il serializableCheck" duration="5"/>
+    <testCase name="store configuration usa i reducer corretti, applica persistReducer con la whitelist e disattiva il serializableCheck" duration="4"/>
     <testCase name="store configuration include il logger quando LOG_REDUX_ACTIONS è true" duration="1"/>
   </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\pages\components\__tests__\ProductsTable.test.tsx">
-  </file>
-  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\__tests__\malformedRoutesRedirect.test.tsx">
+  <file path="C:\Sviluppo\Progetti\Registro dei beni\idpay-asset-register-frontend\src\services\__tests__\rolePermissionService.test.ts">
+    <testCase name="RolePermissionService getUserPermission calls API and returns data" duration="1"/>
+    <testCase name="RolePermissionService getPortalConsent calls API and returns data" duration="1"/>
+    <testCase name="RolePermissionService savePortalConsent calls API with versionId" duration="0"/>
   </file>
 </testExecutions>

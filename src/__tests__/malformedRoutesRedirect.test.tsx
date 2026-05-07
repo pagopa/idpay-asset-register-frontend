@@ -9,6 +9,9 @@ import { act, render, screen } from '@testing-library/react';
 jest.mock('../utils/env', () => ({
   ENV: {
     PUBLIC_URL: '/base',
+    URL_API: {
+      OPERATION: 'http://localhost',
+    },
     HEADER: {
       LINK: {
         PRODUCTURL: 'http://localhost',
