@@ -47,6 +47,7 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
     <Route path="aggiungi-prodotti" element={<RedirectHomeWithErrorAlert />} />
     <Route path="prodotti" element={<RedirectHomeWithErrorAlert />} />
     <Route path="storico-caricamenti" element={<RedirectHomeWithErrorAlert />} />
+    <Route path=":initiativeId" element={<RedirectHomeWithErrorAlert />} />
     <Route
       path=":initiativeId/panoramica"
       element={
@@ -81,7 +82,7 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
     />
     <Route path="terms-of-service" element={<TOS />} />
     <Route path="privacy-policy" element={<PrivacyPolicy />} />
-    <Route path="*" element={<HomeRedirect />} />
+    <Route path="*" element={<RedirectHomeWithErrorAlert />} />
   </Routes>
 );
 
@@ -93,6 +94,7 @@ const InvitaliaRoutes = () => (
     <Route path="panoramica" element={<RedirectHomeWithErrorAlert />} />
     <Route path="lista-prodotti" element={<RedirectHomeWithErrorAlert />} />
     <Route path="produttori" element={<RedirectHomeWithErrorAlert />} />
+    <Route path=":initiativeId" element={<RedirectHomeWithErrorAlert />} />
     <Route path=":initiativeId/panoramica" element={<InvitaliaProductsList />} />
     <Route path=":initiativeId/lista-prodotti" element={<InvitaliaProductsList />} />
     <Route
@@ -105,7 +107,7 @@ const InvitaliaRoutes = () => (
     />
     <Route path="terms-of-service" element={<TOS />} />
     <Route path="privacy-policy" element={<PrivacyPolicy />} />
-    <Route path="*" element={<HomeRedirect />} />
+    <Route path="*" element={<RedirectHomeWithErrorAlert />} />
   </Routes>
 );
 
