@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { Box, Breadcrumbs, Link, Paper, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -12,10 +11,11 @@ import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { ENV } from '../../utils/env';
 import { useCurrentInitiative } from '../../hooks/useCurrentInitiative';
 import { initiativeNameFormatter } from '../../helpers';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import FormAddProducts, { FormAddProductsRef } from './formAddProducts';
 
 const AddProducts: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const navigate = useNavigate();
   const onExit = useUnloadEventOnExit();
   const [fileAccepted, setFileAccepted] = useState(false);
@@ -56,7 +56,7 @@ const AddProducts: React.FC = () => {
             {t('breadcrumbs.home')}
           </Typography>
           <Typography color="text.disabled" variant="body2">
-            {t('breadcrumbs.aggiungiProdotti')}
+            {t('pages.addProducts.title')}
           </Typography>
         </Breadcrumbs>
       </Box>

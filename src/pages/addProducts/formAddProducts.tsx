@@ -1,6 +1,5 @@
 import { Dispatch, forwardRef, SetStateAction, useImperativeHandle } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -23,6 +22,7 @@ import {
   uploadProductListVerify,
 } from '../../services/registerService';
 import ROUTES from '../../routes';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useErrorHandling } from '../../hooks/useErrorHandling';
 import { useFileState } from '../../hooks/useFileState';
 import { UploadProductListParams } from '../../api/generated/register';
@@ -47,7 +47,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
   // eslint-disable-next-line sonarjs/cognitive-complexity
   ({ fileAccepted, setFileAccepted, selectedInitiative }, ref) => {
     const {categories} = useCategories(selectedInitiative);
-    const { t } = useTranslation();
+    const { t } = useScopedTranslation();
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();
     const initiativeId = useCurrentInitiativeId();

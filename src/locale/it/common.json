@@ -1,9 +1,7 @@
 {
   "breadcrumbs": {
-    "back": "Indietro",
     "exit": "Esci",
-    "home": "Panoramica",
-    "aggiungiProdotti": "Aggiungi prodotti"
+    "home": "Panoramica"
   },
   "commons": {
     "backBtn": "Indietro",
@@ -101,16 +99,6 @@
     "validationDescription": "Verifica che i dati inseriti siano corretti"
   },
   "pages": {
-    "tos": {
-      "and": "e l’",
-      "backHome": "Torna alla home",
-      "linkPrivacy": "Informativa Privacy",
-      "linkTos": "Termini e condizioni d’uso",
-      "termsDescription": "Accedendo, accetti i",
-      "termsDescription2": "del servizio e confermi di aver letto l’",
-      "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
-      "title": "Elenco informatico degli elettrodomestici"
-    },
     "upcomingInitiative": {
       "title": "Ci siamo quasi!",
       "subTitle": "Torna il {{x}} per accedere alla piattaforma"
@@ -162,7 +150,6 @@
     "addProducts": {
       "title": "Aggiungi prodotti",
       "boxAddTitle": "Aggiungi i tuoi prodotti",
-      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
       "boxAddTextProduct": "Prodotti.",
       "goToManual": "Dubbi? Vai al manuale",
       "form": {

@@ -823,5 +823,4 @@ describe('ProductDataGrid – extra coverage', () => {
     expect(screen.queryByTestId('rejectedBtn')).not.toBeInTheDocument();
     expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
   });
-
 });

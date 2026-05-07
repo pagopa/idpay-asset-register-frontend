@@ -1,0 +1,10 @@
+{
+  "commons": {
+    "title": "Default Bonus"
+  },
+  "pages" : {
+    "overview": {
+      "currentInitiativeTest": "Default Bonus"
+    }
+  }
+}

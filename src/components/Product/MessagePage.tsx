@@ -1,5 +1,5 @@
 import { Box, Button } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import EmptyList from '../../pages/components/EmptyListTable';
 
 interface MessagePageProps {
@@ -9,7 +9,7 @@ interface MessagePageProps {
 }
 
 const MessagePage: React.FC<MessagePageProps> = ({ message, goBack, onGoBack }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   return (
     <Box

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableRow, Paper } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 
 type EmptyListTableProps = {
   message: string;
 };
 
 const EmptyListTable: React.FC<EmptyListTableProps> = ({ message }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   return (
     <TableContainer

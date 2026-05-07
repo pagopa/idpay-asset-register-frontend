@@ -92,7 +92,7 @@ jest.mock('../institutionsTable', () => (props: any) => {
 const mockInstitutions = [
   { institutionId: '1', description: 'Alpha' },
   { institutionId: '2', description: 'Beta' },
-] as InstitutionsResponse["institutions"];
+] as InstitutionsResponse['institutions'];
 
 const mockInstitutionDetail = { institutionId: '1', description: 'Alpha', extra: 'detail' };
 

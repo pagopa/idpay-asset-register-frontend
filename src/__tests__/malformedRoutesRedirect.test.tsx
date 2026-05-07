@@ -9,6 +9,9 @@ import { act, render, screen } from '@testing-library/react';
 jest.mock('../utils/env', () => ({
   ENV: {
     PUBLIC_URL: '/base',
+    URL_API: {
+      OPERATION: 'http://localhost',
+    },
     HEADER: {
       LINK: {
         PRODUCTURL: 'http://localhost',
@@ -111,6 +114,29 @@ describe('Malformed initiative-scoped routes', () => {
     await act(async () => {
       jest.advanceTimersByTime(2000);
     });
+    expect(await screen.findByTestId('initiatives-list')).not.toBeNull();
+    jest.useRealTimers();
+  });
+
+  test('URL with initiativeId but missing endpoint redirects to HOME', async () => {
+    jest.useFakeTimers();
+
+    render(
+      <MemoryRouter initialEntries={['/base/68dd003ccce8c534d1da22bc']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(
+      await screen.findByText(
+        /pages\.addProducts\.form\.fileUpload\.fileUploadError\.errorDescription/i
+      )
+    ).not.toBeNull();
+
+    await act(async () => {
+      jest.advanceTimersByTime(2000);
+    });
+
     expect(await screen.findByTestId('initiatives-list')).not.toBeNull();
     jest.useRealTimers();
   });

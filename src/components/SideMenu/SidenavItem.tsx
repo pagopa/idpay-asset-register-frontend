@@ -1,11 +1,13 @@
-import { ListItemButton, ListItemText, ListItemIcon, Icon } from '@mui/material';
-import { SvgIconComponent } from '@mui/icons-material';
+import { ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
+import { createElement } from 'react';
 
 type Props = {
   handleClick: () => void;
   title: string;
   isSelected?: boolean;
-  icon: SvgIconComponent;
+  // keep this as `any` to avoid type incompatibilities when different @mui versions are present
+  // (e.g. due to dependencies like @pagopa/selfcare-common-frontend bringing its own @mui).
+  icon: any;
   level: number;
   disabled?: boolean;
 };
@@ -20,9 +22,7 @@ export default function SidenavItem({
 }: Props) {
   return (
     <ListItemButton selected={isSelected} disabled={disabled} onClick={handleClick}>
-      <ListItemIcon sx={{ ml: level }}>
-        <Icon component={icon} />
-      </ListItemIcon>
+      <ListItemIcon sx={{ ml: level }}>{icon ? createElement(icon as any) : null}</ListItemIcon>
       <ListItemText
         primary={title}
         sx={{

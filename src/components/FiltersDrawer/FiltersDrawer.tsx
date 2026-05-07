@@ -14,9 +14,9 @@ import {
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useTranslation } from 'react-i18next';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
@@ -95,7 +95,7 @@ export default function FiltersDrawer({
   setFiltering,
   setPage,
 }: Props) {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const [draftStatus, setDraftStatus] = useState(statusFilter);
   const [draftProducer, setDraftProducer] = useState(producerFilter);
   const [draftBatch, setDraftBatch] = useState(batchFilter);

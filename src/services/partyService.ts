@@ -5,7 +5,6 @@ export const fetchParties = (): Promise<Array<Party>> => new Promise((resolve) =
 export const fetchPartyDetails = (partyId: string, parties?: Array<Party>): Promise<Party | null> =>
   retrieveParty(partyId, parties);
 
-// check inside parties as first
 const retrieveParty = (
   partyId: string,
   parties: Array<Party> | undefined
