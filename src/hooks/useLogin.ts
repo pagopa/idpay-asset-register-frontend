@@ -90,11 +90,9 @@ export const useLogin = () => {
 
   const attemptSilentLogin = async () => {
     if (CONFIG.MOCKS.MOCK_USER) {
-      //  setUser(mockedUser);
       const mockedUserFromJWT = userFromJwtTokenAsJWTUser(CONFIG.TEST.JWT);
       setUser(mockedUserFromJWT);
       storageTokenOps.write(CONFIG.TEST.JWT);
-      //  storageUserOps.write(mockedUser);
       storageUserOps.write(mockedUserFromJWT);
 
       saveUserPermissions(dispatch, addError, t);
@@ -104,13 +102,10 @@ export const useLogin = () => {
 
     const token = storageTokenOps.read();
 
-    // If there are no credentials, it is impossible to get the user, so
     if (!token) {
-      // Remove any partial data that might have remained, just for safety
       storageUserOps.delete();
-      // Go to the login view
       window.location.assign(CONFIG.URL_FE.LOGIN);
-      // This return is necessary
+
       return;
     }
 
@@ -123,7 +118,6 @@ export const useLogin = () => {
 
       saveUserPermissions(dispatch, addError, t);
     } else {
-      // Otherwise, set the user to the one stored in the storage
       setUser(sessionStorageUser);
 
       saveUserPermissions(dispatch, addError, t);

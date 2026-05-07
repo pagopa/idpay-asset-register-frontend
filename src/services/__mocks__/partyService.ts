@@ -37,7 +37,6 @@ export const mockedParties: Array<Party> = [
     origin: 'IPA',
     institutionType: 'PA',
   },
-  // useCase for PENDING party
   {
     roles: [
       {

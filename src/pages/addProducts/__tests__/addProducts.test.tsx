@@ -61,7 +61,6 @@ jest.mock('react-i18next', () => ({
       const translations: { [key: string]: string } = {
         'breadcrumbs.exit': 'Esci',
         'breadcrumbs.home': 'Home',
-        'breadcrumbs.aggiungiProdotti': 'Aggiungi Prodotti',
         'pages.addProducts.title': 'Aggiungi Prodotti',
         'pages.addProducts.boxAddTitle': 'Carica i tuoi prodotti',
         'pages.addProducts.boxAddText': 'Carica il file con i tuoi prodotti. ',

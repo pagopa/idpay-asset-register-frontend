@@ -1,14 +1,14 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import TuneIcon from '@mui/icons-material/Tune';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 
 type NewFilterProps = {
   onClick?: () => void;
 };
 
 const NewFilter: React.FC<NewFilterProps> = ({ onClick }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   return (
     <Box

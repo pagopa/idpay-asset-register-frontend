@@ -17,9 +17,9 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { downloadErrorReport } from '../../services/registerService';
 import { downloadCsv } from '../addProducts/helpers';
 import { formatDateWithHours } from '../../helpers';
@@ -97,7 +97,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   const paginationInfo = usePagination(page, rowsPerPage, totalElements);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const initiativeId = useCurrentInitiativeId();
 
   const handleDownloadReport = async (idReport: string) => {

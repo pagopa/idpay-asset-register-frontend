@@ -1,6 +1,44 @@
-import i18n, { configureI18n } from '@pagopa/selfcare-common-frontend/lib/locale/locale-utils';
-import it from './it.json';
+import i18n from '@pagopa/selfcare-common-frontend/lib/locale/locale-utils';
+import { initReactI18next } from 'react-i18next';
+import common from './it/common.json';
+import { loadItNamespace } from './multiInitiativeI18n';
 
-configureI18n({ i18n, it });
+const defaultLanguage = 'it';
+
+/**
+ * NOTE:
+ * selfcare-common-frontend's `configureI18n` initializes i18next using a single namespace ("translation").
+ * Since we need namespace support (common, default/*, <initiative>/*), we directly init the shared i18n instance.
+ * This keeps legacy behavior (all keys are still requested without explicit namespace) while enabling lazy-loading.
+ */
+if (process.env.NODE_ENV !== 'test' && initReactI18next) {
+  void (i18n as any).use(initReactI18next).init({
+    lng: defaultLanguage,
+    fallbackLng: defaultLanguage,
+    defaultNS: 'common',
+    ns: ['common'],
+    fallbackNS: ['common'],
+    interpolation: {
+      escapeValue: false,
+    },
+    react: {
+      useSuspense: true,
+    },
+    resources: {
+      [defaultLanguage]: {
+        common,
+      },
+    },
+  } as any);
+}
+
+if (process.env.NODE_ENV !== 'test' && typeof (i18n as any).addResourceBundle === 'function') {
+  void Promise.all(
+    ['default/copy'].map(async (ns) => {
+      const res = await loadItNamespace(ns);
+      (i18n as any).addResourceBundle(defaultLanguage, ns, res, true, true);
+    })
+  );
+}
 
 export default i18n;
