@@ -7,7 +7,7 @@ jest.mock('../utils/env', () => ({
   ENV: {
     PUBLIC_URL: '/base',
     URL_API: {
-      OPERATION: 'https://localhost',
+      OPERATION: 'http://localhost',
     },
     HEADER: {
       LINK: {

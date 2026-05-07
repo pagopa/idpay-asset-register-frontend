@@ -15,7 +15,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useNavigate } from 'react-router-dom';
-import { PRODUCTS_CATEGORIES, DEBUG_CONSOLE } from '../../utils/constants';
+import { DEBUG_CONSOLE } from '../../utils/constants';
 import {
   downloadErrorReport,
   uploadProductList,
@@ -29,7 +29,8 @@ import { UploadProductListParams } from '../../api/generated/register';
 import { delay } from '../../helpers';
 import { buildRoute } from '../../components/SideMenu/SideMenu';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
-import { categoryList, downloadCsv } from './helpers';
+import { useCategories } from '../../hooks/useCategories';
+import { downloadCsv } from './helpers';
 import FileUploadSection from './fileUploadSection';
 
 type Props = {
@@ -44,6 +45,7 @@ export type FormAddProductsRef = {
 const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
   // eslint-disable-next-line sonarjs/cognitive-complexity
   ({ fileAccepted, setFileAccepted }, ref) => {
+    const {categories} = useCategories();
     const { t } = useScopedTranslation();
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();
@@ -64,11 +66,6 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       validationSchema,
       onSubmit: (values) => console.log(values),
     });
-
-    const templateFileName =
-      formik.values.category === PRODUCTS_CATEGORIES.COOKINGHOBS
-        ? 'cookinghobs_template.csv'
-        : 'eprel_template.csv';
 
     const isCategoryValid = () => !formik.errors.category && formik.values.category !== '';
 
@@ -291,13 +288,13 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
                 inputProps={{ 'data-testid': 'selectTimeParam-test' }}
                 data-testid="category-label"
               >
-                {categoryList.map((el) => (
+                { categories && Object.entries(categories).map(([key, value]) => (
                   <MenuItem
-                    key={`category-select-${el.value}`}
-                    value={el.value}
-                    data-testid={`category-option-${el.value}`}
+                    key={`category-select-${key}`}
+                    value={key}
+                    data-testid={`category-option-${key}`}
                   >
-                    {t(el.label)}
+                    {value.label}
                   </MenuItem>
                 ))}
               </Select>
@@ -325,7 +322,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
               getInputProps={getInputProps}
               onInputClick={handleInputClick}
               formikCategory={formik.values.category}
-              templateFileName={templateFileName}
+              csvTemplate={categories?.[formik.values.category]?.csv}
               t={t}
             />
           </Box>

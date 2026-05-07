@@ -12,11 +12,12 @@ import {
 import { Dispatch, SetStateAction } from 'react';
 import { useSelector } from 'react-redux';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
-import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
+import { PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { filterInputWithSpaceRule } from '../../helpers';
 import { ProductDTO } from '../../api/generated/register';
+import { useCategories } from '../../hooks/useCategories';
 import { BatchFilterItems } from './helpers';
 
 interface FilterProps {
@@ -69,6 +70,7 @@ export default function FilterBar({
   handleDeleteFiltersButtonClick,
 }: FilterProps) {
   const { t } = useScopedTranslation();
+  const {categories} = useCategories();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
     user?.org_role as USERS_TYPES
@@ -141,9 +143,9 @@ export default function FilterBar({
               paddingRight: '38px !important',
             }}
           >
-            {Object.keys(PRODUCTS_CATEGORIES).map((category) => (
-              <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
-                {t(`pages.products.categories.${category}`)}
+            {Object.entries(categories).map(([key, value]) => (
+              <MenuItem key={key} value={value.label}>
+                {value.label}
               </MenuItem>
             ))}
           </Select>

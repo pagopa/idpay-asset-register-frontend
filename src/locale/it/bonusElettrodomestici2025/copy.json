@@ -16,5 +16,49 @@
       "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
       "title": "Elenco informatico degli elettrodomestici"
     }
+  },
+  "categories": {
+    "washingmachines": "Lavatrici",
+    "tumbledryers": "Asciugatrici",
+    "ovens": "Forni",
+    "rangehoods": "Cappe da cucina",
+    "dishwashers": "Lavastoviglie",
+    "washerdriers": "Lavasciuga",
+    "refrigeratingappl": "Apparecchi di refrigerazione",
+    "cookinghobs": "Piani cottura"
+  },
+  "csv": {
+    "headers": [
+      "Codice GTIN/EAN",
+      "Codice Prodotto",
+      "Categoria",
+      "Paese di Produzione",
+      "Marca",
+      "Modello"
+    ],
+    "fields": [
+      "GTIN123ABC4567",
+      "SKU98765",
+      "Piano cottura",
+      "IT",
+      "MarcaEsempio",
+      "ModelloX100"
+    ]
+  },
+  "eprel": {
+    "headers": [
+      "Codice EPREL",
+      "Codice GTIN/EAN",
+      "Codice Prodotto",
+      "Categoria",
+      "Paese di Produzione"
+    ],
+    "fields": [
+      "12345",
+      "GTIN01234",
+      "SKU12345",
+      "Lavatrice",
+      "IT"
+    ]
   }
 }
