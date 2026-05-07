@@ -12,6 +12,8 @@ type MsgResultProps = {
   children?: React.ReactNode;
 };
 
+const ALERT_Z_INDEX = 2147483647;
+
 const MsgResult: React.FC<MsgResultProps> = ({
   severity = 'success',
   variant = 'outlined',
@@ -44,7 +46,7 @@ const MsgResult: React.FC<MsgResultProps> = ({
           width: 'auto',
           maxWidth: '400px',
           minWidth: '300px',
-          zIndex: 9999,
+          zIndex: ALERT_Z_INDEX,
           boxShadow: 3,
           borderRadius: 1,
           '& .MuiAlert-icon': {
