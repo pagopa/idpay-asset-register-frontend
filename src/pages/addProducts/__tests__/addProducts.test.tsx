@@ -100,6 +100,10 @@ jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
   useCurrentInitiativeId: () => 'initiative-1',
 }));
 
+jest.mock('../../../hooks/useCurrentInitiative', () => ({
+  useCurrentInitiative: () => 'Bonus Elettrodomestici',
+}));
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
