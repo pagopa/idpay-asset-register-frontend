@@ -16,13 +16,13 @@ import {
   Divider,
   Tooltip,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
 import { useNavigate } from 'react-router-dom';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { ArrowForward } from '@mui/icons-material';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import ROUTES from '../../routes';
 import { getProductFilesList } from '../../services/registerService';
 import { EMPTY_DATA } from '../../utils/constants';
@@ -181,7 +181,7 @@ const UploadsTable: React.FC<{
 }> = ({ loading, error, data, stopNavigation }) => {
   const navigate = useNavigate();
   const onExit = useUnloadEventOnExit();
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const [rowsPerPage] = useState<number>(4);
   const initiativeId = useCurrentInitiativeId();
 
@@ -305,7 +305,7 @@ const UploadsTable: React.FC<{
 };
 
 const OverviewProductionSection: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const onExit = useUnloadEventOnExit();
 
   const [data, setData] = useState<UploadsListDTO | null>(null);

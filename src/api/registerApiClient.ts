@@ -50,7 +50,7 @@ const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
 };
 
 export const registerClient = new Api({
-  baseURL: ENV.URL_API.OPERATION,
+  baseURL: ENV?.URL_API?.OPERATION ?? '',
 });
 
 const internalAxios = registerClient.instance;

@@ -10,14 +10,14 @@ import {
   TextField,
 } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { filterInputWithSpaceRule } from '../../helpers';
-import { BatchFilterItems } from './helpers';
 import { ProductDTO } from '../../api/generated/register';
+import { BatchFilterItems } from './helpers';
 
 interface FilterProps {
   categoryFilter: string;
@@ -68,7 +68,7 @@ export default function FilterBar({
   errorStatus,
   handleDeleteFiltersButtonClick,
 }: FilterProps) {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
     user?.org_role as USERS_TYPES

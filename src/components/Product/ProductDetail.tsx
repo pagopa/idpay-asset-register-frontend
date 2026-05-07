@@ -3,8 +3,8 @@ import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper } from '@
 import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import FlagIcon from '@mui/icons-material/Flag';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import {
   EMPTY_DATA,
   // L1_MOTIVATION_OK,
@@ -250,7 +250,7 @@ function renderEntry(entry: any, idx: number) {
 }
 
 function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   const baseRows = getProductInfoRowsConfig(data, t);
@@ -437,7 +437,7 @@ export default function ProductDetail({
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   const handleConfirmRestore = async () => {
     await handleOpenModal(

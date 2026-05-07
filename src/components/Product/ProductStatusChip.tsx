@@ -1,5 +1,5 @@
 import { Chip } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 
 type ProductStatusChipProps = {
   status: string | undefined;
@@ -10,7 +10,7 @@ const chipSx = {
 };
 
 export default function ProductStatusChip({ status }: ProductStatusChipProps) {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   if (!status) {
     return null;
   }

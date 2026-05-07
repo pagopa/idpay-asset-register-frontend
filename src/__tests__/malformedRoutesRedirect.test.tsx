@@ -1,17 +1,17 @@
 /* eslint-disable */
-
 import { jest, describe, test, expect } from '@jest/globals';
-
-import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { act, render, screen } from '@testing-library/react';
 
 jest.mock('../utils/env', () => ({
   ENV: {
     PUBLIC_URL: '/base',
+    URL_API: {
+      OPERATION: 'https://localhost',
+    },
     HEADER: {
       LINK: {
-        PRODUCTURL: 'http://localhost',
+        PRODUCTURL: 'https://localhost',
       },
     },
   },
@@ -76,15 +76,12 @@ describe('Malformed initiative-scoped routes', () => {
       </MemoryRouter>
     );
 
-    // Should show the error alert first (guard page), then redirect to HOME.
-    // i18n is not initialized in this isolated test, so t() returns the key itself.
     expect(
       await screen.findByText(
         /pages\.addProducts\.form\.fileUpload\.fileUploadError\.errorDescription/i
       )
     ).not.toBeNull();
 
-    // Redirect happens after 2000ms in RedirectHomeWithErrorAlert
     await act(async () => {
       jest.advanceTimersByTime(2000);
     });
@@ -101,7 +98,6 @@ describe('Malformed initiative-scoped routes', () => {
       </MemoryRouter>
     );
 
-    // Should show the error alert first (guard page), then redirect to HOME.
     expect(
       await screen.findByText(
         /pages\.addProducts\.form\.fileUpload\.fileUploadError\.errorDescription/i
@@ -115,11 +111,15 @@ describe('Malformed initiative-scoped routes', () => {
     jest.useRealTimers();
   });
 
+  const mockedId = Array.from({ length: 24 }, () =>
+    Math.floor(Math.random() * 16).toString(16)
+  ).join('');
+
   test('URL with initiativeId but missing endpoint redirects to HOME', async () => {
     jest.useFakeTimers();
 
     render(
-      <MemoryRouter initialEntries={['/base/68dd003ccce8c534d1da22bc']}>
+      <MemoryRouter initialEntries={[`/base/${mockedId}`]}>
         <App />
       </MemoryRouter>
     );
