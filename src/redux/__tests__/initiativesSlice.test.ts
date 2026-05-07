@@ -11,6 +11,7 @@ describe('initiativesSlice', () => {
     {
       initiativeId: 'initiative-1',
       initiativeName: 'Initiative 1',
+      namespaceKey: "initiative12025",
       startDate: '2025-10-01T00:00:00.000Z',
       endDate: '2025-10-31T00:00:00.000Z',
     },
