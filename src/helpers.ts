@@ -275,3 +275,5 @@ export const createCsv = ({headers, fields}: {headers: Array<string>; fields: Ar
   const blob = new Blob([csv], { type: 'text/csv' });
   return URL.createObjectURL(blob);
 };
+
+export const initiativeNameFormatter = (initiativeName: string) => initiativeName.charAt(0).toLowerCase() + initiativeName.slice(1).replace(/\s+/g, '');

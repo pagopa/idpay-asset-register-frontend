@@ -36,6 +36,7 @@ import FileUploadSection from './fileUploadSection';
 type Props = {
   fileAccepted: boolean;
   setFileAccepted: Dispatch<SetStateAction<boolean>>;
+  selectedInitiative: string;
 };
 
 export type FormAddProductsRef = {
@@ -44,8 +45,8 @@ export type FormAddProductsRef = {
 
 const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  ({ fileAccepted, setFileAccepted }, ref) => {
-    const {categories} = useCategories("bonusElettrodomestici");
+  ({ fileAccepted, setFileAccepted, selectedInitiative }, ref) => {
+    const {categories} = useCategories(selectedInitiative);
     const { t } = useTranslation();
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();

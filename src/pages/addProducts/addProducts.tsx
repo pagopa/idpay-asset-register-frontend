@@ -10,6 +10,8 @@ import ROUTES from '../../routes';
 import { buildRoute } from '../../components/SideMenu/SideMenu';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { ENV } from '../../utils/env';
+import { useCurrentInitiative } from '../../hooks/useCurrentInitiative';
+import { initiativeNameFormatter } from '../../helpers';
 import FormAddProducts, { FormAddProductsRef } from './formAddProducts';
 
 const AddProducts: React.FC = () => {
@@ -19,6 +21,7 @@ const AddProducts: React.FC = () => {
   const [fileAccepted, setFileAccepted] = useState(false);
   const formRef = useRef<FormAddProductsRef>(null);
   const initiativeId = useCurrentInitiativeId();
+  const selectedInitiative = useCurrentInitiative();
 
   return (
     <Box pb={0} data-testid="add-products-container">
@@ -112,6 +115,7 @@ const AddProducts: React.FC = () => {
 
         <FormAddProducts
           ref={formRef}
+          selectedInitiative={initiativeNameFormatter(selectedInitiative?.initiativeName || "")}
           fileAccepted={fileAccepted}
           setFileAccepted={setFileAccepted}
         />
