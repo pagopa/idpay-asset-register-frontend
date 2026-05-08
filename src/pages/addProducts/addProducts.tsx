@@ -95,7 +95,7 @@ const AddProducts: React.FC = () => {
             </Typography>
             <Typography letterSpacing={'0.3px'} fontWeight={700}>
               <Link
-                href={ENV.URL_FE.EIE_MANUAL || ''}
+                href={t('pages.addProducts.manualLink')}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {

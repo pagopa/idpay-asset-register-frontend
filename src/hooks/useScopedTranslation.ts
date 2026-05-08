@@ -21,6 +21,7 @@ export type UseScopedTranslationOptions = {
 export type UseScopedTranslationResult = {
   t: TFunction;
   isLoading: boolean;
+  initiativeName?: string;
 };
 
 const resolveInitiativeNamespace = (
@@ -181,7 +182,7 @@ export const useScopedTranslation = (
     void load();
   }, [enableNamespaceLoading, namespacesToLoad]);
 
-  return { t, isLoading };
+  return { t, isLoading, initiativeName };
 };
 
 export default useScopedTranslation;

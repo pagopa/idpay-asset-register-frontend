@@ -258,7 +258,7 @@ const InitiativesList = () => {
                             {row.initiativeName}
                           </Box>
                         </TableCell>
-                        <TableCell>{row.organizationName}</TableCell>
+                        <TableCell>{row.organizationName !== "" && row.organizationName !== null ? row.organizationName : "-"}</TableCell>
                         <TableCell>{row.spendingPeriod}</TableCell>
                         <TableCell>{renderInitiativeStatus(row.status as StatusEnum)}</TableCell>
                       </TableRow>
