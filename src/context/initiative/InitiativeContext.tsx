@@ -38,7 +38,7 @@ export const InitiativeProvider = ({ children }: InitiativeProviderProps) => {
       const controller = new AbortController();
 
       void (async () => {
-        if (initiativeId) {
+        if (initiativeId !== "000") {
           try {
             setIsLoadingInitiatives(true);
             const response = await getMerchantInitiativeList();
