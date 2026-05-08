@@ -146,6 +146,10 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </BrowserRouter>
 );
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('AddProducts Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();

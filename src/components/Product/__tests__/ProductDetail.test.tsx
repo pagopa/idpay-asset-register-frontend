@@ -131,6 +131,10 @@ const renderCmp = (
   );
 };
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('ProductDetail.extra', () => {
   beforeEach(() => {
     jest.clearAllMocks();

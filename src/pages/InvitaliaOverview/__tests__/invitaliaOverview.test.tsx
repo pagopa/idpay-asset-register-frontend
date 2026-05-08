@@ -20,7 +20,6 @@ import InvitaliaOverview from '../invitaliaOverview';
 import * as registerService from '../../../services/registerService';
 import * as reduxHooks from '../../../redux/hooks';
 import * as reduxSlice from '../../../redux/slices/invitaliaSlice';
-import { Institution } from '../../../model/Institution';
 import { Provider } from 'react-redux';
 import { createStore } from '../../../redux/store';
 import { InstitutionsResponse } from '../../../api/generated/register';
@@ -95,6 +94,10 @@ const mockInstitutions = [
 ] as InstitutionsResponse['institutions'];
 
 const mockInstitutionDetail = { institutionId: '1', description: 'Alpha', extra: 'detail' };
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
 
 describe('InvitaliaOverview', () => {
   beforeEach(() => {
