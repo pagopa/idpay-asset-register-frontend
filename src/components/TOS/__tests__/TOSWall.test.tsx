@@ -16,6 +16,10 @@ jest.mock('../../../context/initiative/InitiativeContext', () => ({
   useInitiativeContext: () => ({ initiativeId: 'bonusElettrodomestici2025' }),
 }));
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('tests for TOSWall', () => {
   test('test render of TOSWall component with not already accepted tos', async () => {
     const mockAcceptTos = jest.fn();

@@ -35,6 +35,10 @@ import * as registerService from '../../../services/registerService';
 import { truncateString } from '../../../helpers';
 import '@testing-library/jest-dom';
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
