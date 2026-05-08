@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import MessagePage from '../MessagePage';
 import '@testing-library/jest-dom';
+import {jest} from "@jest/globals";
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -11,6 +12,10 @@ jest.mock('react-i18next', () => ({
 jest.mock('../../../pages/components/EmptyListTable', () => (props: any) => (
   <div data-testid="empty-list">{props.message}</div>
 ));
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
 
 describe('MessagePage', () => {
   it('renderizza il messaggio e non mostra il bottone se goBack è false', () => {

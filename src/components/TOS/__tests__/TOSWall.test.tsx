@@ -11,9 +11,8 @@ jest.mock('../../../utils/constants', () => ({
   I18N_MULTI_INIT_ENABLED: false,
 }));
 
-jest.mock('../../../context/initiative/InitiativeContext', () => ({
-  __esModule: true,
-  useInitiativeContext: () => ({ initiativeId: 'bonusElettrodomestici2025' }),
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
 }));
 
 describe('tests for TOSWall', () => {

@@ -1,5 +1,9 @@
 import InvitaliaProductsList from '../invitaliaProductsList';
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
   default: {

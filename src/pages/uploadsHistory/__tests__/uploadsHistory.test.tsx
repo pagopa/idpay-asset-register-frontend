@@ -52,6 +52,10 @@ jest.mock('../../../services/registerService', () => ({
 
 const mockGetProductFilesList = getProductFilesList as jest.Mock;
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('OverviewHistoryUpload', () => {
   const mockData = {
     totalElements: 2,

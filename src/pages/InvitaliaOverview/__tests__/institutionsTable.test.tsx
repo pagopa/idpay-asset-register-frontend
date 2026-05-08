@@ -77,6 +77,10 @@ const defaultProps = {
   onDetailRequest: jest.fn(),
 };
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('InstitutionsTable', () => {
   it('renders loading state', () => {
     render(
