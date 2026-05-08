@@ -43,6 +43,10 @@ export const InitiativeProvider = ({ children }: InitiativeProviderProps) => {
         if (!controller.signal.aborted) {
           setInitiatives(response?.data ?? []);
         }
+      } catch {
+        if (!controller.signal.aborted) {
+          setInitiatives([]);
+        }
       } finally {
         if (!controller.signal.aborted) {
           setIsLoadingInitiatives(false);

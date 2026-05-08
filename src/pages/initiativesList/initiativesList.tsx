@@ -16,15 +16,16 @@ import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import SearchIcon from '@mui/icons-material/Search';
 import { grey } from '@mui/material/colors';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';
 import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
 import EmptyListTable from '../components/EmptyListTable';
+import { fetchUserFromLocalStorage } from '../../helpers';
+import { getFirstInitiativeMenuItem } from '../../components/SideMenu/sideMenuConfig';
 
 type StatusEnum = InitiativeDTO['status'];
 const PUBLISHED: StatusEnum = 'PUBLISHED';
 const CLOSED: StatusEnum = 'CLOSED';
-import ROUTES from '../../routes';
 import { InitiativeDTO } from '../../api/generated/register';
 import { Data, EnhancedTableProps, HeadCell, Order, getComparator, stableSort } from './helpers';
 
@@ -53,13 +54,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       id: 'spendingPeriod',
       numeric: false,
       disablePadding: false,
-      label: 'Periodo di spesa',
-    },
-    {
-      id: 'serviceId',
-      numeric: false,
-      disablePadding: true,
-      label: 'Codice identificativo',
+      label: 'Periodo di validità',
     },
     {
       id: 'status',
@@ -106,7 +101,13 @@ const InitiativesList = () => {
   const [initiativeList, setInitiativeList] = useState<Array<Data>>([]);
   const [initiativeListFiltered, setInitiativeListFiltered] = useState<Array<Data>>([]);
   const navigate = useNavigate();
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const { data: initiativesListSel = EMPTY_INITIATIVES_LIST } = useGetInitiativesQuery();
+
+  const firstInitiativeMenuItem = useMemo(
+    () => getFirstInitiativeMenuItem(user?.org_role),
+    [user?.org_role]
+  );
 
   useEffect(() => {
     if (Array.isArray(initiativesListSel)) {
@@ -242,8 +243,12 @@ const InitiativesList = () => {
                               cursor: 'pointer',
                             }}
                             onClick={() => {
+                              if (!firstInitiativeMenuItem?.route) {
+                                return;
+                              }
+
                               navigate(
-                                generatePath(ROUTES.OVERVIEW, {
+                                generatePath(firstInitiativeMenuItem.route, {
                                   initiativeId: row.initiativeId,
                                 })
                               );
@@ -255,7 +260,6 @@ const InitiativesList = () => {
                         </TableCell>
                         <TableCell>{row.organizationName}</TableCell>
                         <TableCell>{row.spendingPeriod}</TableCell>
-                        <TableCell>{row.serviceId}</TableCell>
                         <TableCell>{renderInitiativeStatus(row.status as StatusEnum)}</TableCell>
                       </TableRow>
                     );

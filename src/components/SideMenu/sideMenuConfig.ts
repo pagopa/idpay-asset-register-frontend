@@ -4,6 +4,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import type { SvgIconComponent } from '@mui/icons-material';
 import ROUTES from '../../routes';
+import { USERS_TYPES } from '../../utils/constants';
 
 export type SideMenuConfigItem = {
   titleKey: string;
@@ -47,3 +48,11 @@ export const invitaliaInitiativeMenuConfig: Array<SideMenuConfigItem> = [
     dataTestId: 'go-to-overview',
   },
 ];
+
+export const getInitiativeMenuConfig = (userRole?: string): Array<SideMenuConfigItem> =>
+  [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(userRole as USERS_TYPES)
+    ? invitaliaInitiativeMenuConfig
+    : initiativeMenuConfig;
+
+export const getFirstInitiativeMenuItem = (userRole?: string): SideMenuConfigItem | undefined =>
+  getInitiativeMenuConfig(userRole)[0];
