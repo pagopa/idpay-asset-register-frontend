@@ -35,6 +35,10 @@ const renderWithTheme = (component: React.ReactElement) => {
   );
 };
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('EnhancedTableHead', () => {
   const mockHeadCells = [
     {

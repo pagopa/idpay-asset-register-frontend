@@ -92,6 +92,10 @@ const renderComponent = (props: any) =>
     </Provider>
   );
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('UploadsTable', () => {
   const mockData = {
     content: [

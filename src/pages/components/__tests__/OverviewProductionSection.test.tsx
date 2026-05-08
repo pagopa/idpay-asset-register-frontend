@@ -28,6 +28,14 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+jest.mock('../../../hooks/useScopedTranslation', () => ({
+  __esModule: true,
+  default: () => ({
+    t: mockT,
+    isLoading: false,
+  }),
+}));
+
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

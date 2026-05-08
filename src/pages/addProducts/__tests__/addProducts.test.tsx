@@ -22,6 +22,7 @@ jest.mock('../../../utils/env', () => ({
     API_TIMEOUT_MS: {
       OPERATION: 5000,
     },
+    EIE_MANUAL: 'https://mock-manual-url.com/manual.pdf',
   },
 }));
 
@@ -145,6 +146,10 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <ThemeProvider theme={theme}>{children}</ThemeProvider>
   </BrowserRouter>
 );
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
 
 describe('AddProducts Component', () => {
   beforeEach(() => {
@@ -305,7 +310,10 @@ describe('AddProducts Component', () => {
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
-    expect(manualLink).toHaveAttribute('href', '');
+    expect(manualLink).toHaveAttribute(
+      'href',
+      'pages.addProducts.manualLink'
+    );
     expect(manualLink).toHaveAttribute('target', '_blank');
     expect(manualLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
@@ -326,7 +334,7 @@ describe('AddProducts Component', () => {
     expect(manualLink).toBeInTheDocument();
   });
 
-  test('manual link prevents default when EIE_MANUAL is not defined', async () => {
+  test('manual link navigates correctly when EIE_MANUAL is defined', async () => {
     const user = userEvent.setup();
 
     render(
@@ -336,26 +344,16 @@ describe('AddProducts Component', () => {
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
-    expect(manualLink).toHaveAttribute('href', '');
-
-    const preventDefaultSpy = jest.fn();
-
-    manualLink.addEventListener('click', (e) => {
-      if (e.defaultPrevented) {
-        preventDefaultSpy();
-      }
-    });
 
     await user.click(manualLink);
 
-    await waitFor(() => {
-      expect(preventDefaultSpy).not.toHaveBeenCalled();
-    });
+    expect(manualLink).toHaveAttribute(
+      'href',
+      'pages.addProducts.manualLink'
+    );
   });
 
-  test('manual link prevents default when EIE_MANUAL is empty string', async () => {
-    const user = userEvent.setup();
-
+  test('manual link is rendered with manual URL when defined', () => {
     render(
       <TestWrapper>
         <AddProducts />
@@ -363,21 +361,11 @@ describe('AddProducts Component', () => {
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
-    expect(manualLink).toHaveAttribute('href', '');
 
-    const preventDefaultSpy = jest.fn();
-
-    manualLink.addEventListener('click', (e) => {
-      if (e.defaultPrevented) {
-        preventDefaultSpy();
-      }
-    });
-
-    await user.click(manualLink);
-
-    await waitFor(() => {
-      expect(preventDefaultSpy).not.toHaveBeenCalled();
-    });
+    expect(manualLink).toHaveAttribute(
+      'href',
+      'pages.addProducts.manualLink'
+    );
   });
 
   test('fileAccepted state changes correctly', async () => {

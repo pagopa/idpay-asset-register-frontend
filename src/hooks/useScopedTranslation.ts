@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { buildScopedNamespaces } from '../locale/namespaces';
 import { buildNamespaceKey } from '../utils/buildNamespaceKey';
-import { useInitiativeContext } from '../context/initiative/InitiativeContext';
 import i18n from '../locale';
+import {useCurrentInitiativeId} from "./useCurrentInitiativeId";
+import {useInitiativesQuery} from "./useInitiativesQuery";
 
 const failedNamespaceLoads = new Set<string>();
 
@@ -51,10 +52,9 @@ export const useScopedTranslation = (
   options: UseScopedTranslationOptions = {}
 ): UseScopedTranslationResult => {
   const { initiativeName: initiativeNameProp, enableNamespaceLoading = true } = options;
-
-  const { initiativeId, initiatives } = useInitiativeContext();
-
-  const initiativeName = resolveInitiativeNamespace(initiativeNameProp, initiativeId, initiatives);
+  const initiativeId = useCurrentInitiativeId();
+  const { initiatives }  = useInitiativesQuery();
+  const initiativeName = resolveInitiativeNamespace(initiativeNameProp, initiativeId ?? '', initiatives);
 
   const namespaces = useMemo(
     () => buildScopedNamespaces(initiativeName ?? undefined),

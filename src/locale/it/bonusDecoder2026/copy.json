@@ -4,7 +4,8 @@
   },
   "pages" : {
    "addProducts": {
-      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione "
+     "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione ",
+     "manualLink": "https://www.mimit.gov.it/it/incentivi/bonus-decoder-a-casa"
    },
     "tos": {
       "and": "e l’",
