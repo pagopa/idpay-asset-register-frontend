@@ -1,7 +1,7 @@
 import { Box, Paper, Tooltip, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { truncateString } from '../../helpers';
 import { InstitutionResponse } from '../../api/generated/register';
 import { getInstitutionById } from '../../services/registerService';
@@ -9,7 +9,7 @@ import { institutionSelector } from '../../redux/slices/invitaliaSlice';
 import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_INVIT, DEBUG_CONSOLE } from '../../utils/constants';
 
 const InstitutionInfoCard: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const institution = useSelector(institutionSelector);
   const [institutionInfo, setInstitutionInfo] = useState<InstitutionResponse | null>(null);
 

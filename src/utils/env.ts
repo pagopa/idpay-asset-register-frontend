@@ -28,7 +28,7 @@ export const ENV = {
 
   API_TIMEOUT_MS: {
     ROLE_PERMISSION: env.get('REACT_APP_API_ROLE_PERMISSION_TIMEOUT_MS').required().asInt(),
-    OPERATION: env.get('REACT_APP_API_OPERATION_TIMEOUT_MS').required().asInt()
+    OPERATION: env.get('REACT_APP_API_OPERATION_TIMEOUT_MS').required().asInt(),
   },
 
   URL_INSTITUTION_LOGO: {
@@ -52,10 +52,7 @@ export const ENV = {
       .get('REACT_APP_ONE_TRUST_OTNOTICE_CDN_SETTINGS')
       .required()
       .asString(),
-    PRIVACY_POLICY_ID: env
-      .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID')
-      .required()
-      .asString(),
+    PRIVACY_POLICY_ID: env.get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_ID').required().asString(),
     PRIVACY_POLICY_JSON_URL: env
       .get('REACT_APP_ONE_TRUST_PRIVACY_POLICY_JSON_URL')
       .required()
@@ -69,17 +66,17 @@ export const ENV = {
       PRIVACYPOLICY: env.get('REACT_APP_URL_PRIVACY_DISCLAIMER').asString(),
       TERMSANDCONDITIONS: env.get('REACT_APP_URL_TERMS_AND_CONDITIONS').asString(),
       PROTECTIONOFPERSONALDATA:
-          'https://privacyportal-de.onetrust.com/webform/77f17844-04c3-4969-a11d-462ee77acbe1/9ab6533d-be4a-482e-929a-0d8d2ab29df8',
+        'https://privacyportal-de.onetrust.com/webform/77f17844-04c3-4969-a11d-462ee77acbe1/9ab6533d-be4a-482e-929a-0d8d2ab29df8',
       ABOUTUS: 'https://www.pagopa.it/it/societa/chi-siamo/',
       MEDIA: 'https://www.pagopa.it/it/',
       WORKWITHUS: 'https://www.pagopa.it/it/lavora-con-noi/',
       CERTIFICATIONS: 'https://www.pagopa.it/it/certificazioni/',
       INFORMATIONSECURITY:
-          'https://www.pagopa.it/it/politiche-per-la-sicurezza-delle-informazioni/',
+        'https://www.pagopa.it/it/politiche-per-la-sicurezza-delle-informazioni/',
       TRANSPARENTCOMPANY: 'https://pagopa.portaleamministrazionetrasparente.it/',
       DISCLOSUREPOLICY: 'https://www.pagopa.it/it/responsible-disclosure-policy/',
       MODEL231:
-          'https://pagopa.portaleamministrazionetrasparente.it/pagina746_altri-contenuti.html',
+        'https://pagopa.portaleamministrazionetrasparente.it/pagina746_altri-contenuti.html',
       LINKEDIN: 'https://www.linkedin.com/company/pagopa/',
       TWITTER: 'https://twitter.com/pagopa',
       INSTAGRAM: 'https://www.instagram.com/pagopaspa/',

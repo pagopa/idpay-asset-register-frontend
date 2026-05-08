@@ -61,7 +61,6 @@ jest.mock('react-i18next', () => ({
       const translations: { [key: string]: string } = {
         'breadcrumbs.exit': 'Esci',
         'breadcrumbs.home': 'Home',
-        'breadcrumbs.aggiungiProdotti': 'Aggiungi Prodotti',
         'pages.addProducts.title': 'Aggiungi Prodotti',
         'pages.addProducts.boxAddTitle': 'Carica i tuoi prodotti',
         'pages.addProducts.boxAddText': 'Carica il file con i tuoi prodotti. ',
@@ -76,8 +75,8 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
-  TitleBox: ({ title, 'data-testid': testId, ...props }: any) => (
-    <div data-testid={testId} {...props}>
+  TitleBox: ({ title, 'data-testid': testId }: any) => (
+    <div data-testid={testId}>
       <h1>{title}</h1>
     </div>
   ),
@@ -94,6 +93,14 @@ jest.mock('@pagopa/mui-italia', () => ({
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor', () => ({
   useUnloadEventOnExit: () => mockOnExit,
+}));
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'initiative-1',
+}));
+
+jest.mock('../../../hooks/useCurrentInitiative', () => ({
+  useCurrentInitiative: () => 'Bonus Elettrodomestici',
 }));
 
 jest.mock('react-router-dom', () => ({
@@ -126,6 +133,7 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
+    OVERVIEW: '/base/:initiativeId/panoramica',
   },
   BASE_ROUTE: '/base',
 }));
@@ -237,7 +245,7 @@ describe('AddProducts Component', () => {
     await user.click(backButton);
 
     expect(mockOnExit).toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith('/base', { replace: true });
+    expect(mockNavigate).toHaveBeenCalledWith('/base/initiative-1/panoramica', { replace: true });
   });
 
   test('handles back button click when onExit does not execute callback', async () => {

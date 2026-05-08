@@ -13,12 +13,12 @@ import {
   TableSortLabel,
   Typography,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { visuallyHidden } from '@mui/utils';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from '@mui/icons-material';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { formatDateWithoutHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { Order } from '../../components/Product/helpers';
@@ -27,6 +27,8 @@ import { InstitutionsResponse } from '../../api/generated/register';
 import ROUTES from '../../routes';
 import { setInstitution } from '../../redux/slices/invitaliaSlice';
 import EmptyListTable from '../components/EmptyListTable';
+import { buildRoute } from '../../components/SideMenu/SideMenu';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { useAppDispatch } from '../../redux/hooks';
 import { EnhancedTableProps, HeadCell } from './helpers';
 
@@ -35,7 +37,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const createSortHandler = (property: keyof Institution) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   const headCells: ReadonlyArray<HeadCell> = [
     {
@@ -119,9 +121,10 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   onDetailRequest,
 }) => {
   const paginationInfo = usePagination(page, rowsPerPage, totalElements);
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const initiativeId = useCurrentInitiativeId();
 
   useEffect(() => {
     dispatch(setInstitution({} as Institution));
@@ -129,7 +132,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
 
   const goToInstitutionPage = (institution: Institution) => {
     dispatch(setInstitution(institution));
-    navigate(ROUTES.INVITALIA_PRODUCTS_LIST);
+    navigate(buildRoute(ROUTES.INVITALIA_PRODUCTS_LIST, initiativeId ?? ""),);
   };
 
   if (loading) {

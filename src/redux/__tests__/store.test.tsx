@@ -5,10 +5,11 @@ const mockCombineReducers = jest.fn();
 const mockPersistReducer = jest.fn();
 const mockPersistStore = jest.fn();
 const mockLoggerMiddleware = jest.fn((_) => (next: any) => (action: AnyAction) => next(action));
+const mockBaseApiMiddleware = jest.fn((_) => (next: any) => (action: AnyAction) => next(action));
 
 jest.mock('@reduxjs/toolkit', () => ({
-  configureStore: (...args: any[]) => mockConfigureStore(...args),
-  combineReducers: (...args: any[]) => mockCombineReducers(...args),
+  configureStore: (...args: any[]) => mockConfigureStore.apply(null, args as any),
+  combineReducers: (...args: any[]) => mockCombineReducers.apply(null, args as any),
 }));
 
 jest.mock('redux-persist', () => ({
@@ -18,7 +19,7 @@ jest.mock('redux-persist', () => ({
 
 jest.mock('redux-logger', () => ({
   __esModule: true,
-  default: (...args: any[]) => mockLoggerMiddleware(...args),
+  default: mockLoggerMiddleware,
 }));
 
 const makeDummyReducer = (name: string) => {
@@ -44,6 +45,17 @@ jest.mock('../slices/productsSlice', () => ({
 jest.mock('../slices/invitaliaSlice', () => ({
   invitaliaReducer: makeDummyReducer('invitalia'),
 }));
+jest.mock('../slices/initiativesSlice', () => ({
+  __esModule: true,
+  initiativesReducer: makeDummyReducer('initiatives'),
+}));
+jest.mock('../api/baseApi', () => ({
+  baseApi: {
+    reducerPath: 'baseApi',
+    reducer: makeDummyReducer('baseApi'),
+    middleware: mockBaseApiMiddleware,
+  },
+}));
 
 const loadStoreModule = async (logReduxActions: boolean) => {
   jest.resetModules();
@@ -57,6 +69,7 @@ const loadStoreModule = async (logReduxActions: boolean) => {
   mockPersistReducer.mockClear();
   mockPersistStore.mockClear();
   mockLoggerMiddleware.mockClear();
+  mockBaseApiMiddleware.mockClear();
 
   const fakeRootReducer = (state: any = {}, action: AnyAction) => state;
   mockCombineReducers.mockReturnValue(fakeRootReducer);
@@ -91,6 +104,8 @@ describe('store configuration', () => {
       'permissions',
       'products',
       'invitalia',
+      'initiatives',
+      'baseApi',
     ]);
 
     expect(mockPersistReducer).toHaveBeenCalledTimes(1);
@@ -114,7 +129,7 @@ describe('store configuration', () => {
       return ['defaultMiddleware'];
     });
     const builtMiddleware = configureArg.middleware(fakeGDM);
-    expect(builtMiddleware).toEqual(['defaultMiddleware']);
+    expect(builtMiddleware).toEqual(['defaultMiddleware', mockBaseApiMiddleware]);
 
     expect(mod.store).toBe(fakeStore);
     expect(mod.persistor).toBe(fakePersistor);
@@ -130,8 +145,9 @@ describe('store configuration', () => {
     const fakeGDM = jest.fn().mockReturnValue(['defaultMiddleware']);
     const builtMiddleware = configureArg.middleware(fakeGDM);
 
-    expect(builtMiddleware).toHaveLength(2);
-    expect(typeof builtMiddleware[1]).toBe('function');
+    expect(builtMiddleware).toHaveLength(3);
+    expect(builtMiddleware[1]).toBe(mockBaseApiMiddleware);
+    expect(typeof builtMiddleware[2]).toBe('function');
 
     expect(mod.store).toBeDefined();
     expect(mod.persistor).toBeDefined();

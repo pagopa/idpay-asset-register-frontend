@@ -31,6 +31,7 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
+    OVERVIEW: '/overview',
     PRODUCTS: '/products',
     PRODUCERS: '/producers',
     INVITALIA_PRODUCTS_LIST: '/invitalia-products',
@@ -251,6 +252,22 @@ describe('Layout component', () => {
     expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
   });
 
+  it('renders correctly with a nested matched route (e.g. /products/detail)', () => {
+    const store = createTestStore();
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/products/detail']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(screen.getByTestId('mock-sidemenu')).toBeInTheDocument();
+  });
+
   it('renders correctly with /invitalia-products route', () => {
     const store = createTestStore();
 
@@ -339,6 +356,22 @@ describe('Layout component', () => {
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={['/assistance']}>
+          <Layout>
+            <div data-testid="layout-children" />
+          </Layout>
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(screen.getByTestId('second-header-flag')).toHaveTextContent('false');
+  });
+
+  it('hides assistance info when on a nested /assistance route', () => {
+    const store = createTestStore();
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/assistance/sub']}>
           <Layout>
             <div data-testid="layout-children" />
           </Layout>

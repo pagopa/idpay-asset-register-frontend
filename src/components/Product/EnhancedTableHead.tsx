@@ -1,7 +1,7 @@
 import React from 'react';
 import { TableHead, TableRow, TableCell, TableSortLabel, Checkbox, Box } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { useTranslation } from 'react-i18next';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { ProductDTO } from '../../api/generated/register';
 
 interface HeadCell {
@@ -38,7 +38,7 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
   cellCenterSx,
   cellRightSx,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   return (
     <TableHead>

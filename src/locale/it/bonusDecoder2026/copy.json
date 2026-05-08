@@ -1,0 +1,43 @@
+{
+  "commons": {
+    "title": "Bonus Decoder"
+  },
+  "pages" : {
+   "addProducts": {
+      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione "
+   },
+    "tos": {
+      "and": "e l’",
+      "backHome": "Torna alla home",
+      "linkPrivacy": "Informativa Privacy",
+      "linkTos": "Termini e condizioni d’uso",
+      "termsDescription": "Accedendo, accetti i",
+      "termsDescription2": "del servizio e confermi di aver letto l’",
+      "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
+      "title": "Bonus Decoder"
+    }
+  },
+  "categories": {
+    "satellitare": "Satellitare",
+    "terrestre": "Terrestre",
+    "terrestre-via-cavo": "Terrestre via Cavo",
+    "terrestre-e-satellitare": "Terrestre e Satellitare",
+    "terrestre-satellitare-e-via-cavo": "Terrestre, Satellitare e via Cavo"
+  },
+  "csv": {
+    "headers": [
+      "Codice GTIN/EAN",
+      "Codice Prodotto",
+      "Categoria",
+      "Marca",
+      "Modello"
+    ],
+    "fields": [
+      "GTIN123ABC4567",
+      "SKU98765",
+      "{{category}}",
+      "MarcaEsempio",
+      "ModelloX100"
+    ]
+  }
+}

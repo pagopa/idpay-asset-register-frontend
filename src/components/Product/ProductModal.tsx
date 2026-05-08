@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import FlagIcon from '@mui/icons-material/Flag';
-import { useTranslation } from 'react-i18next';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import {
   setSupervisionedStatusList,
   setRejectedStatusList,
@@ -153,7 +153,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       setMotivationOfficialTouched(false);
     }
   }, [open]);
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   const renderMotivationField = (config: any) => {
     const showError =

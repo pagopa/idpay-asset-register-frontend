@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
 import MsgResult from '../../components/Product/MsgResult';
 import Products from '../components/Products';
 
 const InvitaliaProductsList: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const institution = useSelector(institutionSelector);
   const [showMsg, setShowMsg] = useState(false);
   const MSG_RESULT_BT = 80;

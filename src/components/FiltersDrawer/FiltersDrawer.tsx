@@ -14,14 +14,15 @@ import {
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useTranslation } from 'react-i18next';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { PRODUCTS_CATEGORIES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
+import { PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { BatchFilterItems } from '../Product/helpers';
 import { filterInputWithSpaceRule } from '../../helpers';
+import { useCategories } from '../../hooks/useCategories';
 
 type Props = {
   open: boolean;
@@ -94,7 +95,7 @@ export default function FiltersDrawer({
   setFiltering,
   setPage,
 }: Props) {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const [draftStatus, setDraftStatus] = useState(statusFilter);
   const [draftProducer, setDraftProducer] = useState(producerFilter);
   const [draftBatch, setDraftBatch] = useState(batchFilter);
@@ -103,6 +104,7 @@ export default function FiltersDrawer({
   const [draftGtin, setDraftGtin] = useState(gtinCodeFilter);
   const [showEprelError, setShowEprelError] = useState(false);
   const [showGtinError, setShowGtinError] = useState(false);
+  const {categories} = useCategories();
 
   const isValidNumeric = (value: string) => /^\d+$/.test(value);
   const isValidGtin = (value: string) => /^[a-zA-Z0-9]{1,14}$/.test(value);
@@ -332,9 +334,9 @@ export default function FiltersDrawer({
             onChange={onDraftSelect(setDraftCategory)}
             sx={selectSx}
           >
-            {Object.keys(PRODUCTS_CATEGORIES).map((category) => (
-              <MenuItem key={category} value={t(`pages.products.categories.${category}`)}>
-                {t(`pages.products.categories.${category}`)}
+            {Object.entries(categories).map(([key, value]) => (
+              <MenuItem key={key} value={value.label}>
+                {value.label}
               </MenuItem>
             ))}
           </Select>

@@ -17,8 +17,18 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+jest.mock('../../../hooks/useCategories', () => ({
+  useCategories: () => ({
+    categories: {
+      CAT_1: {
+        label: "Lavatrici",
+        csv: ""
+      }
+    }
+  }),
+}));
+
 jest.mock('../../../utils/constants', () => ({
-  PRODUCTS_CATEGORIES: { CATEGORY_A: 'CATEGORY_A', CATEGORY_B: 'CATEGORY_B' },
   PRODUCTS_STATES: {
     UPLOADED: 'UPLOADED',
     WAIT_APPROVED: 'WAIT_APPROVED',
@@ -187,7 +197,7 @@ describe('FiltersDrawer', () => {
     fireEvent.mouseDown(catSelect);
 
     const option = await screen.findByRole('option', {
-      name: 'pages.products.categories.CATEGORY_A',
+      name: 'Lavatrici',
     });
     fireEvent.click(option);
 
@@ -196,7 +206,7 @@ describe('FiltersDrawer', () => {
 
     fireEvent.click(filterBtn);
 
-    expect(props.setCategoryFilter).toHaveBeenCalledWith('pages.products.categories.CATEGORY_A');
+    expect(props.setCategoryFilter).toHaveBeenCalledWith('Lavatrici');
     expect(props.setPage).toHaveBeenCalledWith(0);
     expect(props.setFiltering).toHaveBeenCalledWith(true);
     expect(props.toggleFiltersDrawer).toHaveBeenCalledWith(false);
@@ -339,13 +349,9 @@ describe('FiltersDrawer', () => {
     fireEvent.mouseDown(catSelect);
 
     const optA = await screen.findByRole('option', {
-      name: 'pages.products.categories.CATEGORY_A',
-    });
-    const optB = await screen.findByRole('option', {
-      name: 'pages.products.categories.CATEGORY_B',
+      name: 'Lavatrici',
     });
     expect(optA).toBeInTheDocument();
-    expect(optB).toBeInTheDocument();
   });
 
   it('onClose of Drawer triggers toggleFiltersDrawer(false)', () => {

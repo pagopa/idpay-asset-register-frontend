@@ -1,6 +1,6 @@
-import { useTranslation } from 'react-i18next';
-import { Box, Typography, Link } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import { TOSAgreement } from '@pagopa/mui-italia';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 
 interface TOSWallProps {
   acceptTOS: () => void;
@@ -10,7 +10,7 @@ interface TOSWallProps {
 }
 
 const TOSWall = ({ acceptTOS, tosRoute, privacyRoute, firstAcceptance }: TOSWallProps) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   const description = firstAcceptance ? (
     <Typography color="text.secondary">

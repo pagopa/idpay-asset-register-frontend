@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import { useTranslation } from 'react-i18next';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { InstitutionResponse } from '../../api/generated/register';
 import DrawerHeader from './DrawerHeader';
 import DrawerSubHeader from './DrawerSubHeader';
@@ -12,7 +12,7 @@ type ManufacturerDetailProps = {
 };
 
 const ManufacturerDetail: React.FC<ManufacturerDetailProps> = ({ data }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
 
   return (
     <Box sx={{ width: 400, pl: 2 }} role="presentation" data-testid="manufacturer-detail">

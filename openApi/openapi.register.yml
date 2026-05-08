@@ -24,6 +24,8 @@ tags:
     description: Operations for uploading and verifying product files
   - name: institutions
     description: Operations related to institutions and producers
+  - name: initiatives
+    description: Operations related to initiatives listing
 paths:
   /permissions:
     get:
@@ -389,6 +391,32 @@ paths:
           $ref: '#/components/responses/GET_institutions_429_Response'
         '500':
           $ref: '#/components/responses/GET_institutions_500_Response'
+  /initiatives:
+    get:
+      tags:
+        - initiatives
+      summary: Returns the list of initiatives for the current organization
+      description: >
+        ENG: Returns the list of initiatives associated with the current organization.
+        The organization is derived from the JWT.
+
+        IT: Restituisce la lista delle iniziative associate
+        all'organizzazione corrente, derivata dal JWT.
+      operationId: getInitiatives
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          $ref: '#/components/responses/GET_initiatives_200_Response'
+        '400':
+          $ref: '#/components/responses/GET_initiatives_400_Response'
+        '401':
+          $ref: '#/components/responses/GET_initiatives_401_Response'
+        '429':
+          $ref: '#/components/responses/GET_initiatives_429_Response'
+        '500':
+          $ref: '#/components/responses/GET_initiatives_500_Response'
+
 components:
   headers:
     X-RateLimit-Limit:
@@ -509,19 +537,25 @@ components:
             - KO
         errorKey:
           type: string
-          description: 'ENG: Error Key: <ul>
-            <li>product.invalid.file.maxrow: too many records</li>
-            <li>product.invalid.file.header: wrong headers</li>
-            <li>product.invalid.file.size: file size exceeds limit</li>
-            <li>product.invalid.file.report: error report generated</li>
-            <li>product.invalid.file.extension: file extension not valid (must be csv)</li></ul><br>IT: Chiave di errore:<ul>
-            <li>product.invalid.file.maxrow: numero di record non consentito</li>
-            <li>merchant.invalid.file.header: headers non validi</li>
-            <li>merchant.invalid.file.size: la dimensione del file supera il limite consentito</li>
-            <li>merchant.invalid.file.report: il file caricato ha generato un report di errori</li>
-            <li>product.invalid.file.vat.wrong: partita IVA o CF non valido</li>
-            <li>product.invalid.file.extension: estensione file non valida (deve essere un csv)</li></ul><hr/>'
-
+          description: |
+            <br>ENG: Error Key:
+            <ul>
+              <li>product.invalid.file.maxrow: too many records</li>
+              <li>product.invalid.file.header: wrong headers</li>
+              <li>product.invalid.file.size: file size exceeds limit</li>
+              <li>product.invalid.file.report: error report generated</li>
+              <li>product.invalid.file.extension: file extension not valid (must be csv)</li>
+            </ul>
+            <br>IT: Chiave di errore:
+            <ul>
+              <li>product.invalid.file.maxrow: numero di record non consentito</li>
+              <li>merchant.invalid.file.header: headers non validi</li>
+              <li>merchant.invalid.file.size: la dimensione del file supera il limite consentito</li>
+              <li>merchant.invalid.file.report: il file caricato ha generato un report di errori</li>
+              <li>product.invalid.file.vat.wrong: partita IVA o CF non valido</li>
+              <li>product.invalid.file.extension: estensione file non valida (deve essere un csv)</li>
+            </ul>
+            <hr/>
           enum:
             - product.invalid.file.extension
             - product.invalid.file.maxrow
@@ -1012,6 +1046,53 @@ components:
           type: string
           maxLength: 200
           pattern: .*
+    InitiativeDTO:
+      title: InitiativeDTO
+      type: object
+      properties:
+        initiativeId:
+          type: string
+          description: Initiative unique identifier
+          maxLength: 36
+          pattern: '^[0-9a-fA-F-]{36}$'
+        initiativeName:
+          type: string
+          description: Initiative name
+          maxLength: 255
+          pattern: '.+'
+        organizationName:
+          type: string
+          description: Organization name
+          maxLength: 255
+          pattern: '.+'
+        serviceId:
+          type: string
+          description: Service id
+          maxLength: 255
+          pattern: '.+'
+        status:
+          type: string
+          description: Initiative status
+          enum:
+            - PUBLISHED
+            - APPROVED
+            - IN_REVISION
+            - TO_CHECK
+            - SUSPENDED
+            - DRAFT
+            - CLOSED
+        startDate:
+          type: string
+          format: date
+          description: Initiative start date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+          description: Initiative end date
+        enabled:
+          type: boolean
+          description: Indicates whether the initiative is enabled for the organization
   securitySchemes:
     Bearer:
       type: apiKey
@@ -1972,6 +2053,79 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorDTO'
     GET_institutions_500_Response:
+      description: Server ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+    GET_initiatives_200_Response:
+      description: Ok
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/InitiativeDTO'
+    GET_initiatives_400_Response:
+      description: Bad request
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+    GET_initiatives_401_Response:
+      description: Authentication failed
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+    GET_initiatives_429_Response:
+      description: Too many Request
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        Retry-After:
+          $ref: '#/components/headers/Retry-After'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+    GET_initiatives_500_Response:
       description: Server ERROR
       content:
         application/json:

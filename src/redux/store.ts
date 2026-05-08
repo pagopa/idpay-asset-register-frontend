@@ -9,6 +9,8 @@ import { partiesReducer } from './slices/partiesSlice';
 import { permissionsReducer } from './slices/permissionsSlice';
 import { productsReducer } from './slices/productsSlice';
 import { invitaliaReducer } from './slices/invitaliaSlice';
+import { initiativesReducer } from './slices/initiativesSlice';
+import { baseApi } from './api/baseApi';
 
 const persistConfig = {
   key: 'root',
@@ -23,20 +25,21 @@ const rootReducer = combineReducers({
   permissions: permissionsReducer,
   products: productsReducer,
   invitalia: invitaliaReducer,
+  initiatives: initiativesReducer,
+  [baseApi.reducerPath]: baseApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const additionalMiddlewares = [LOG_REDUX_ACTIONS ? logger : undefined];
-
 export const createStore = () =>
   configureStore({
     reducer: persistedReducer,
-    middleware: (getDefaultMiddleware: (arg0: { serializableCheck: boolean }) => any) =>
-      additionalMiddlewares.reduce(
-        (array, middleware) => (middleware ? array.concat(middleware) : array),
-        getDefaultMiddleware({ serializableCheck: false })
-      ),
+    middleware: (getDefaultMiddleware) => {
+      const baseMiddleware = getDefaultMiddleware({ serializableCheck: false }).concat(
+        baseApi.middleware
+      );
+      return LOG_REDUX_ACTIONS ? baseMiddleware.concat(logger) : baseMiddleware;
+    },
   });
 
 export const store = createStore();

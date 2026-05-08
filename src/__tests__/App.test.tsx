@@ -24,6 +24,10 @@ jest.mock('../decorators/withSelectedPartyProducts', () => ({
   __esModule: true,
   default: (Comp: any) => (props: any) => <Comp {...props} />,
 }));
+jest.mock('../decorators/withInitiativeGuard', () => ({
+  __esModule: true,
+  default: ({ children }: any) => <>{children}</>,
+}));
 
 const mockUseTCAgreement = jest.fn();
 jest.mock('../hooks/useTCAgreement', () => ({
@@ -41,7 +45,12 @@ jest.mock('../helpers', () => ({
 
 jest.mock('../utils/env', () => ({
   __esModule: true,
-  ENV: { UPCOMING_INITIATIVE_DAY: '2099-01-01' },
+  ENV: {
+    UPCOMING_INITIATIVE_DAY: '2099-01-01',
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+    },
+  },
 }));
 
 jest.mock('../redux/slices/invitaliaSlice', () => ({
@@ -61,14 +70,16 @@ jest.mock('../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
-    ADD_PRODUCTS: '/add-products',
-    PRODUCTS: '/products',
-    UPLOADS: '/uploads',
-    TOS: '/tos',
-    PRIVACY_POLICY: '/privacy',
-    PRODUCERS: '/producers',
+    OVERVIEW: '/home/:initiativeId/panoramica',
+    ADD_PRODUCTS: '/home/:initiativeId/aggiungi-prodotti',
+    PRODUCTS: '/home/:initiativeId/prodotti',
+    UPLOADS: '/home/:initiativeId/storico-caricamenti',
+    INVITALIA_PRODUCTS_LIST: '/home/:initiativeId/lista-prodotti',
+    TOS: '/home/terms-of-service',
+    PRIVACY_POLICY: '/home/privacy-policy',
+    PRODUCERS: '/home/:initiativeId/produttori',
     AUTH: '/auth',
-    UPCOMING: '/upcoming',
+    UPCOMING: '/home/:initiativeId/iniziativa-in-arrivo',
   },
 }));
 
@@ -88,6 +99,14 @@ jest.mock('../components/TOSLayout/TOSLayout', () => ({
 jest.mock('../pages/auth/Auth', () => ({
   __esModule: true,
   default: () => <div>AuthPage</div>,
+}));
+jest.mock('../pages/initiativesList/initiativesList', () => ({
+  __esModule: true,
+  default: () => <div>InitiativesListPage</div>,
+}));
+jest.mock('../redux/api/initiativesApi', () => ({
+  __esModule: true,
+  useGetInitiativesQuery: () => ({ isError: false }),
 }));
 jest.mock('../pages/overview/overview', () => ({
   __esModule: true,
@@ -197,11 +216,11 @@ describe('App routing and gating', () => {
     setTC(false);
     setUserRole(undefined);
 
-    renderApp(['/privacy']);
+    renderApp(['/home/privacy-policy']);
     expect(screen.getByTestId('layout')).toBeInTheDocument();
     expect(screen.getByText('PrivacyPolicyPage')).toBeInTheDocument();
 
-    renderApp(['/tos']);
+    renderApp(['/home/terms-of-service']);
     expect(screen.getByText('PrivacyPolicyPage')).toBeInTheDocument();
     expect(screen.getByText('TOSPage')).toBeInTheDocument();
   });
@@ -211,9 +230,9 @@ describe('App routing and gating', () => {
     setUserRole('INVITALIA_L1');
     renderApp(['/home']);
     expect(screen.getByTestId('layout')).toBeInTheDocument();
-    expect(screen.getByText('InvitaliaProductsListPage')).toBeInTheDocument();
+    expect(screen.getByText('InitiativesListPage')).toBeInTheDocument();
 
-    renderApp(['/producers']);
+    renderApp(['/home/initiative-1/produttori']);
     expect(screen.getByText('InvitaliaOverviewPage')).toBeInTheDocument();
   });
 
@@ -223,15 +242,18 @@ describe('App routing and gating', () => {
     setInstitution('ORG_123');
 
     renderApp(['/home']);
+    expect(screen.getByText('InitiativesListPage')).toBeInTheDocument();
+
+    renderApp(['/home/initiative-1/panoramica']);
     expect(screen.getByText('OverviewPage')).toBeInTheDocument();
 
-    renderApp(['/products']);
+    renderApp(['/home/initiative-1/prodotti']);
     expect(screen.getByTestId('products-wrapper')).toBeInTheDocument();
 
-    renderApp(['/add-products']);
+    renderApp(['/home/initiative-1/aggiungi-prodotti']);
     expect(screen.getByText('AddProductsPage')).toBeInTheDocument();
 
-    renderApp(['/uploads']);
+    renderApp(['/home/initiative-1/storico-caricamenti']);
     expect(screen.getByText('UploadsHistoryPage')).toBeInTheDocument();
   });
 });
