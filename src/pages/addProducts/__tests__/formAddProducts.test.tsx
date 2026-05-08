@@ -656,7 +656,7 @@ describe('FormAddProducts', () => {
       await waitFor(() => {
         expect(mockFileState.setFileIsLoading).toHaveBeenCalledWith(true);
         expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
-        expect(uploadProductList).toHaveBeenCalledWith(mockFile, 'cookinghobs');
+        expect(uploadProductList).toHaveBeenCalledWith(mockFile, 'COOKINGHOBS');
       });
     });
 

@@ -114,7 +114,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       try {
         const res = await uploadProductListVerify(
           files[0],
-          formik.values.category as UploadProductListParams['category']
+          formik.values.category.toUpperCase() as UploadProductListParams['category']
         );
         handleUploadResponse(res.data, files[0]);
       } catch (error) {
@@ -213,9 +213,10 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         throw new Error('No file available');
       }
 
+
       const res = await uploadProductList(
         fileState.currentFile,
-        formik.values.category as UploadProductListParams['category']
+        formik.values.category.toUpperCase() as UploadProductListParams['category']
       );
 
       if (res.status === 200) {
