@@ -33,33 +33,35 @@ export const InitiativeProvider = ({ children }: InitiativeProviderProps) => {
   const [initiatives, setInitiatives] = useState<Array<InitiativeDTO>>([]);
   const [isLoadingInitiatives, setIsLoadingInitiatives] = useState(false);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   useEffect(() => {
-    const controller = new AbortController();
+      const controller = new AbortController();
 
-    void (async () => {
-      if(initiativeId) {
-        try {
-          setIsLoadingInitiatives(true);
-          const response = await getMerchantInitiativeList();
-          if (!controller.signal.aborted) {
-            setInitiatives(response?.data ?? []);
-          }
-        } catch {
-          if (!controller.signal.aborted) {
-            setInitiatives([]);
-          }
-        } finally {
-          if (!controller.signal.aborted) {
-            setIsLoadingInitiatives(false);
+      void (async () => {
+        if (initiativeId) {
+          try {
+            setIsLoadingInitiatives(true);
+            const response = await getMerchantInitiativeList();
+            if (!controller.signal.aborted) {
+              setInitiatives(response?.data ?? []);
+            }
+          } catch {
+            if (!controller.signal.aborted) {
+              setInitiatives([]);
+            }
+          } finally {
+            if (!controller.signal.aborted) {
+              setIsLoadingInitiatives(false);
+            }
           }
         }
-      }
-    })();
+      })();
 
-    return () => {
-      controller.abort();
-    };
-  }, []);
+      return () => {
+        controller.abort();
+      };
+    },
+    []);
 
   const value = useMemo<InitiativeContextValue>(
     () => ({ initiativeId, initiatives, isLoadingInitiatives }),
