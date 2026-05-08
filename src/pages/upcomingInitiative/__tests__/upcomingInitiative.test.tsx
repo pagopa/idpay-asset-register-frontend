@@ -39,6 +39,10 @@ jest.mock('../../../helpers', () => ({
   customExitAction: () => console.log({ event: 'exit' }),
 }));
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('UpcomingInitiative', () => {
   test('renderizza immagine 60x60, titolo, sottotitolo interpolato e bottone', () => {
     render(<UpcomingInitiative />);

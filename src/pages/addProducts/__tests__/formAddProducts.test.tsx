@@ -151,6 +151,10 @@ const mockDropzone = {
   getInputProps: jest.fn(() => ({ 'data-testid': 'file-input' })),
 };
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('FormAddProducts', () => {
   const defaultProps = {
     fileAccepted: false,

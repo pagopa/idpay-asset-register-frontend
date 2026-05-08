@@ -166,6 +166,10 @@ function WrapperInvitalia(props: any) {
   );
 }
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('ProductsTable – vista INVITALIA', () => {
   beforeEach(() => {
     jest.clearAllMocks();
