@@ -54,13 +54,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       id: 'spendingPeriod',
       numeric: false,
       disablePadding: false,
-      label: 'Periodo di spesa',
-    },
-    {
-      id: 'serviceId',
-      numeric: false,
-      disablePadding: true,
-      label: 'Codice identificativo',
+      label: 'Periodo di validità',
     },
     {
       id: 'status',
@@ -266,7 +260,6 @@ const InitiativesList = () => {
                         </TableCell>
                         <TableCell>{row.organizationName}</TableCell>
                         <TableCell>{row.spendingPeriod}</TableCell>
-                        <TableCell>{row.serviceId}</TableCell>
                         <TableCell>{renderInitiativeStatus(row.status as StatusEnum)}</TableCell>
                       </TableRow>
                     );
