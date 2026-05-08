@@ -3,19 +3,28 @@ import React from 'react';
 import { store } from '../../../redux/store';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';
 import InitiativesList from '../initiativesList';
+import * as helpers from '../../../helpers';
 
 // Tipi jest non sempre inclusi nel tsconfig del progetto: import esplicito per TS/IDE
-import { beforeEach, describe, expect, test, jest } from '@jest/globals';
+import { beforeEach, describe, expect, test } from '@jest/globals';
 
 const mockUseGetInitiativesQuery = jest.fn();
+const mockNavigate = jest.fn();
 
 jest.mock('../../../redux/api/initiativesApi', () => ({
   useGetInitiativesQuery: () => mockUseGetInitiativesQuery(),
 }));
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
 beforeEach(() => {
+  jest.clearAllMocks();
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
+  jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
   mockUseGetInitiativesQuery.mockReturnValue({
     data: [
       {
@@ -73,5 +82,27 @@ describe('Test suite for initiativeList page', () => {
 
     renderWithContext(<InitiativesList />, store);
     expect(screen.getByText('Nessuna iniziativa presente')).toBeTruthy();
+  });
+
+  test('User clicks an initiative as standard user and navigates to overview', () => {
+    jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'operatore' });
+
+    renderWithContext(<InitiativesList />, store);
+    fireEvent.click(screen.getByTestId('initiative-btn-test'));
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/elenco-informatico-elettrodomestici/initiative-1/panoramica'
+    );
+  });
+
+  test('User clicks an initiative as Invitalia user and navigates to products list', () => {
+    jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'invitalia' });
+
+    renderWithContext(<InitiativesList />, store);
+    fireEvent.click(screen.getByTestId('initiative-btn-test'));
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/elenco-informatico-elettrodomestici/initiative-1/lista-prodotti'
+    );
   });
 });

@@ -107,6 +107,10 @@ const defaultProps = () => ({
   setPage: jest.fn(),
 });
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('FiltersDrawer', () => {
   beforeEach(() => {
     jest.clearAllMocks();

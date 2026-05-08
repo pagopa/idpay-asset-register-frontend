@@ -84,6 +84,10 @@ jest.mock('../../../hooks/useCategories', () => ({
   }),
 }));
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('FilterBar', () => {
   const mockBatchFilterItems: Array<BatchFilterItems> = [
     { productFileId: '1', batchName: 'Batch 1' },
