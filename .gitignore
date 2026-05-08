@@ -23,6 +23,7 @@ appsettings.json
 local.settings.json
 
 node_modules
+test-report.xml
 generated
 build
 local
