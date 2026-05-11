@@ -17,7 +17,6 @@ export const useCategories = () => {
         const csvNamespace = t(`${isNotCookinghobs && isEprel ? "eprel" :  "csv"}`, { returnObjects: true, category: value }) as { headers: Array<string>; fields: Array<string> };
         const csvFile = createCsv(csvNamespace);
         const csvName = isEprel && isNotCookinghobs ? "eprel" : isNotCookinghobs ? formattedValue : key;
-        console.log(csvNamespace);
         return { ...acc, [key]: { label: value, csv: { name: `${csvName}_template.csv`, file: csvFile } } };
     }, {}) : [];
     return { categories };
