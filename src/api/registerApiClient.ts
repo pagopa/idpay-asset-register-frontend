@@ -26,6 +26,8 @@ import {
   UserPermissionDTO,
   VerifyProductListParams,
   InitiativeDTO,
+  GetProductsParams,
+  GetProductFilesListParams,
 } from './generated/register';
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
@@ -258,6 +260,7 @@ function makeStatusUpdater(
 
 export const RegisterApi = {
   getProduct: async (
+    initiativeId: string,
     xOrganizationSelected: string,
     page?: number,
     size?: number,
@@ -270,6 +273,7 @@ export const RegisterApi = {
     productFileId?: string
   ): Promise<ProductDTO | undefined> => {
     const params = buildParams({
+      initiativeId,
       organizationId: xOrganizationSelected,
       page,
       size,
@@ -280,7 +284,7 @@ export const RegisterApi = {
       gtinCode,
       productCode,
       productFileId,
-    });
+    }) as GetProductsParams;
     try {
       const productListValidation = await registerClient.products.getProducts(params);
       const productList = (productListValidation as any)?.value ?? {};
@@ -295,6 +299,7 @@ export const RegisterApi = {
   },
 
   getProductList: async (
+    initiativeId: string,
     xOrganizationSelected: string,
     page?: number,
     size?: number,
@@ -307,6 +312,7 @@ export const RegisterApi = {
     productFileId?: string
   ): Promise<AxiosResponse<ProductListDTO>> => {
     const params = buildParams({
+      initiativeId,
       organizationId: xOrganizationSelected,
       page,
       size,
@@ -317,7 +323,7 @@ export const RegisterApi = {
       gtinCode,
       productCode,
       productFileId,
-    });
+    }) as GetProductsParams;
     try {
       return await registerClient.products.getProducts(params);
     } catch (error) {
@@ -325,8 +331,8 @@ export const RegisterApi = {
     }
   },
 
-  getProductFiles: async (page?: number, size?: number): Promise<AxiosResponse<UploadsListDTO>> => {
-    const params = buildParams({ page, size });
+  getProductFiles: async ( initiativeId: string, page?: number, size?: number): Promise<AxiosResponse<UploadsListDTO>> => {
+    const params = buildParams({ initiativeId, page, size }) as GetProductFilesListParams;
     try {
       return await registerClient.productFiles.getProductFilesList(params);
     } catch (error) {
@@ -334,7 +340,7 @@ export const RegisterApi = {
     }
   },
 
-  getBatchFilterItems: async (xOrganizationSelected: string): Promise<AxiosResponse<BatchList>> => {
+  getBatchFilterItems: async ( initiativeId: string, xOrganizationSelected: string): Promise<AxiosResponse<BatchList>> => {
     const trimmed = (xOrganizationSelected ?? '').trim();
     const params: Record<string, string> = {};
     if (trimmed) {
@@ -342,39 +348,42 @@ export const RegisterApi = {
       params['x-organization-selected'] = trimmed;
     }
     try {
-      return await registerClient.productFiles.getBatchNameList(params);
+      return await registerClient.productFiles.getBatchNameList({ initiativeId, ...params});
     } catch (error) {
       return [] as unknown as AxiosResponse<BatchList>;
     }
   },
 
   uploadProductList: async (
+    initiativeId: string,
     csv: File,
     category: UploadProductListParams['category']
   ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
     try {
-      return await registerClient.productFiles.uploadProductList({ category }, { csv });
+      return await registerClient.productFiles.uploadProductList({initiativeId, category }, { csv });
     } catch (error) {
       logApiError(error, 'uploadProductList');
       return {} as AxiosResponse<RegisterUploadResponseDTO>;
     }
   },
   uploadProductListVerify: async (
+    initiativeId: string,
     csv: File,
     category: VerifyProductListParams['category']
   ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
     try {
-      return await registerClient.productFiles.verifyProductList({ category }, { csv });
+      return await registerClient.productFiles.verifyProductList({ initiativeId, category }, { csv });
     } catch (error) {
       logApiError(error, 'uploadProductListVerify');
       return {} as AxiosResponse<RegisterUploadResponseDTO>;
     }
   },
   downloadErrorReport: async (
+    initiativeId: string,
     productFileId: string
   ): Promise<{ data: CsvDTO; filename: string; warning?: string }> => {
     try {
-      const response = await registerClient.productFiles.downloadErrorReport({ productFileId });
+      const response = await registerClient.productFiles.downloadErrorReport({ initiativeId, productFileId });
       return {
         data: response.data,
         filename: extractFileNameFromHeaders(response?.headers),

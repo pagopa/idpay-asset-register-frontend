@@ -102,7 +102,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
 
   const handleDownloadReport = async (idReport: string) => {
     try {
-      const res = await downloadErrorReport(idReport);
+      const res = await downloadErrorReport(initiativeId, idReport);
       {
         /*  if (DEBUG_CONSOLE) {
         console.debug('downloadErrorReport response (history):', res);

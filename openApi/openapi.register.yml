@@ -101,6 +101,7 @@ paths:
       operationId: uploadProductList
       parameters:
         - $ref: '#/components/parameters/category_query'
+        - $ref: '#/components/parameters/initiativeId_query'
       requestBody:
         content:
           multipart/form-data:
@@ -117,6 +118,7 @@ paths:
           $ref: '#/components/responses/POST_product-files_429_Response'
         '500':
           $ref: '#/components/responses/POST_product-files_500_Response'
+  /product-files/{initiativeId}:
     get:
       tags:
         - products-upload
@@ -124,6 +126,7 @@ paths:
       description: 'ENG: Returns the history uploads list <br> IT: Lista storico caricamenti'
       operationId: getProductFilesList
       parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
         - $ref: '#/components/parameters/page_query'
         - $ref: '#/components/parameters/size_query'
       responses:
@@ -147,6 +150,7 @@ paths:
       operationId: verifyProductList
       parameters:
         - $ref: '#/components/parameters/category_query'
+        - $ref: '#/components/parameters/initiativeId_query'
       requestBody:
         content:
           multipart/form-data:
@@ -163,7 +167,7 @@ paths:
           $ref: '#/components/responses/POST_product-files_verify_429_Response'
         '500':
           $ref: '#/components/responses/POST_product-files_verify_500_Response'
-  /product-files/{productFileId}/report:
+  /product-files/{initiativeId}/{productFileId}/report:
     get:
       tags:
         - products-upload
@@ -172,6 +176,7 @@ paths:
         IT: Scarica il report contenente gli errori del controllo CSV'
       operationId: downloadErrorReport
       parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
         - $ref: '#/components/parameters/productFileId_path'
       responses:
         '200':
@@ -184,7 +189,7 @@ paths:
           $ref: '#/components/responses/GET_product-files_productFileId_report_429_Response'
         '500':
           $ref: '#/components/responses/GET_product-files_productFileId_report_500_Response'
-  /product-files/batch-list:
+  /product-files/{initiativeId}/batch-list:
     get:
       tags:
         - products-upload
@@ -193,6 +198,7 @@ paths:
         degli id dei lotti'
       operationId: getBatchNameList
       parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
         - $ref: '#/components/parameters/x_organization_selected_header'
       responses:
         '200':
@@ -328,6 +334,7 @@ paths:
       description: 'ENG: Returns product list <br> IT: Lista prodotti'
       operationId: getProducts
       parameters:
+        - $ref: '#/components/parameters/initiativeId_query'
         - $ref: '#/components/parameters/page_query'
         - $ref: '#/components/parameters/size_query'
         - $ref: '#/components/parameters/sort_query'
@@ -666,6 +673,11 @@ components:
             file csv'
           maxLength: 255
           pattern: ^.*\.csv$
+        initiativeId:
+          type: string
+          description: 'ENG: initiative Id <br> IT: Nome iniziativa'
+          maxLength: 24
+          pattern: ^[a-fA-F0-9]{24}$
         batchName:
           type: string
           description: 'ENG: The computed name of file <br> IT: Nome ricalcolato del
@@ -755,6 +767,11 @@ components:
     ProductDTO:
       type: object
       properties:
+        initiativeId:
+          type: string
+          description: 'ENG: Initiative Id <br> IT: Id del iniziativa'
+          maxLength: 24
+          pattern: ^[a-fA-F0-9]{24}$
         organizationId:
           type: string
           description: 'ENG: The name of organization <br> IT: Id del produttore'
@@ -2177,6 +2194,15 @@ components:
         minLength: 24
         maxLength: 24
         pattern: ^[a-fA-F0-9]{24}$
+    initiativeId_path:
+      name: initiativeId
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 24
+        maxLength: 24
+        pattern: ^[a-fA-F0-9]{24}$
     x_organization_selected_header:
       name: x-organization-selected
       in: header
@@ -2193,6 +2219,14 @@ components:
         type: string
         maxLength: 36
         pattern: ^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    initiativeId_query:
+      name: initiativeId
+      in: query
+      required: true
+      schema:
+        type: string
+        maxLength: 24
+        pattern: ^[a-fA-F0-9]{24}$
     sort_query:
       name: sort
       in: query

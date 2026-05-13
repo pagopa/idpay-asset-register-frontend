@@ -43,6 +43,7 @@ import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { Institution } from '../../model/Institution';
 import { setWaitApprovedStatusList } from '../../services/registerService';
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { BatchFilterItems, Order } from './helpers';
 import { getStatusChecks } from './ProductDataGrid.helpers';
 import ProductDetail from './ProductDetail';
@@ -66,6 +67,7 @@ const buttonStyle = {
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
+  const initiativeId = useCurrentInitiativeId();
   const [showMsgRejected, setShowMsgRejected] = useState(false);
   const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
   const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
@@ -178,6 +180,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
 
     void getProducts(
+      initiativeId,
       isInvitaliaUser || isInvitaliaAdmin ? producerFilter : user.org_id,
       page,
       rowsPerPage,
@@ -246,7 +249,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
       ? producerFilter || institution?.institutionId || ''
       : organizationId;
 
-    void getBatchFilterList(targetId)
+    void getBatchFilterList(initiativeId, targetId)
       .then((res) => {
         setBatchFilterItems(res.data as unknown as Array<BatchFilterItems>);
       })
