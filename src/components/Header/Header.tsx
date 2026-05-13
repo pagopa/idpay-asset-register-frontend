@@ -24,7 +24,7 @@ const Header = ({ withSecondHeader, onExit, loggedUser }: /* , parties */ Props)
   const products = useAppSelector(partiesSelectors.selectPartySelectedProducts);
   const selectedParty = useAppSelector(partiesSelectors.selectPartySelected);
   const [party2Show, setParty2Show] = useState<Array<Party>>();
-  const title = t('commons.title');
+  const title = t('common.title');
 
   const welfareProduct: ProductEntity = {
     id: 'prod-idpay-asset-register',

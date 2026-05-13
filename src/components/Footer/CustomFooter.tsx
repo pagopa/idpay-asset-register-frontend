@@ -25,29 +25,29 @@ export const CustomFooter = () => {
         }}
         links={[
           {
-            label: t('commons.footer.privacy'),
-            ariaLabel: t('commons.footer.privacy'),
+            label: t('common.footer.privacy'),
+            ariaLabel: t('common.footer.privacy'),
             href: FOOTER_LINKS.PRIVACY,
             linkType: 'external',
             onClick: () => openExternalLink(FOOTER_LINKS.PRIVACY || ''),
           },
           {
-            label: t('commons.footer.personalData'),
-            ariaLabel: t('commons.footer.personalData'),
+            label: t('common.footer.personalData'),
+            ariaLabel: t('common.footer.personalData'),
             linkType: 'external',
             href: FOOTER_LINKS.PERSONAL_DATA,
             onClick: () => openExternalLink(FOOTER_LINKS.PERSONAL_DATA),
           },
           {
-            label: t('commons.footer.termsAndConditions'),
-            ariaLabel: t('commons.footer.termsAndConditions'),
+            label: t('common.footer.termsAndConditions'),
+            ariaLabel: t('common.footer.termsAndConditions'),
             href: FOOTER_LINKS.TERMS_AND_CONDITIONS,
             linkType: 'external',
             onClick: () => openExternalLink(FOOTER_LINKS.TERMS_AND_CONDITIONS || ''),
           },
           {
-            label: t('commons.footer.a11y'),
-            ariaLabel: t('commons.footer.a11y'),
+            label: t('common.footer.a11y'),
+            ariaLabel: t('common.footer.a11y'),
             linkType: 'external',
             onClick: () => openExternalLink(FOOTER_LINKS.A11Y),
           },
@@ -63,7 +63,7 @@ export const CustomFooter = () => {
       <FooterLegal
         content={
           <span style={{ whiteSpace: 'pre-line' }}>
-            <b>{t('commons.footer.PagoPA')}</b> - {t('commons.footer.legalInfo')}
+            <b>{t('common.footer.PagoPA')}</b> - {t('common.footer.legalInfo')}
           </span>
         }
       />

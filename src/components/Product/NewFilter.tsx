@@ -28,7 +28,7 @@ const NewFilter: React.FC<NewFilterProps> = ({ onClick }) => {
         }}
       >
         <TuneIcon fontSize="small" />
-        {t('commons.advancedFilters')}
+        {t('common.advancedFilters')}
       </Button>
     </Box>
   );

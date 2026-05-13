@@ -64,7 +64,7 @@ const ExitModal = ({ title, subtitle, openExitModal, handleCloseExitModal, backR
               onClick={handleCloseExitModal}
               data-testid="cancel-button-test"
             >
-              {t('commons.cancelBtn')}
+              {t('common.cancelBtn')}
             </Button>
             <Button
               variant="contained"
@@ -72,7 +72,7 @@ const ExitModal = ({ title, subtitle, openExitModal, handleCloseExitModal, backR
               onClick={(e) => closeWithoutSaving(e)}
               data-testid="exit-button-test"
             >
-              {t('commons.exitBtn')}
+              {t('common.exitBtn')}
             </Button>
           </Box>
         </Box>
