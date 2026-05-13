@@ -67,8 +67,8 @@ jest.mock('react-i18next', () => ({
         'pages.addProducts.boxAddText': 'Carica il file con i tuoi prodotti. ',
         'pages.addProducts.boxAddTextProduct': 'Formato supportato: CSV',
         'pages.addProducts.goToManual': 'Vai al manuale',
-        'commons.backBtn': 'Indietro',
-        'commons.continueBtn': 'Continua',
+        'common.backBtn': 'Indietro',
+        'common.continueBtn': 'Continua',
       };
       return translations[key] || key;
     },

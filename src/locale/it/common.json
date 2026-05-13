@@ -3,7 +3,7 @@
     "exit": "Esci",
     "home": "Panoramica"
   },
-  "commons": {
+  "common": {
     "backBtn": "Indietro",
     "cancelBtn": "Torna indietro",
     "closeBtn": "Chiudi",
@@ -99,6 +99,16 @@
     "validationDescription": "Verifica che i dati inseriti siano corretti"
   },
   "pages": {
+    "tos": {
+      "and": "e l’",
+      "backHome": "Torna alla home",
+      "linkPrivacy": "Informativa Privacy",
+      "linkTos": "Termini e condizioni d’uso",
+      "termsDescription": "Accedendo, accetti i",
+      "termsDescription2": "del servizio e confermi di aver letto l’",
+      "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
+      "title": "Elenco informatico degli elettrodomestici"
+    },
     "upcomingInitiative": {
       "title": "Ci siamo quasi!",
       "subTitle": "Torna il {{x}} per accedere alla piattaforma"
