@@ -18,7 +18,7 @@ jest.mock('react-i18next', () => ({
     t: (key: string, opts?: Record<string, any>) => {
       if (key === 'pages.upcomingInitiative.title') return 'Titolo Mock';
       if (key === 'pages.upcomingInitiative.subTitle') return `Sottotitolo ${opts?.x ?? ''}`;
-      if (key === 'commons.closeBtn') return 'Chiudi';
+      if (key === 'common.closeBtn') return 'Chiudi';
       return key;
     },
   }),
@@ -37,6 +37,10 @@ jest.mock('../../../asset/images/hourglass.png', () => 'hourglass.png');
 jest.mock('../../../helpers', () => ({
   __esModule: true,
   customExitAction: () => console.log({ event: 'exit' }),
+}));
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
 }));
 
 describe('UpcomingInitiative', () => {

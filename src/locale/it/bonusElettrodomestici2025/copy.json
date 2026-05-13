@@ -1,0 +1,65 @@
+{
+  "commons": {
+    "title": "Elenco informatico degli elettrodomestici"
+  },
+  "pages" : {
+    "addProducts": {
+      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
+      "manualLink": "https://developer.pagopa.it/pari/guides/bonuselettrodomestici-manuale-tecnico-produttore"
+    },
+    "tos": {
+      "and": "e l’",
+      "backHome": "Torna alla home",
+      "linkPrivacy": "Informativa Privacy",
+      "linkTos": "Termini e condizioni d’uso",
+      "termsDescription": "Accedendo, accetti i",
+      "termsDescription2": "del servizio e confermi di aver letto l’",
+      "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
+      "title": "Elenco informatico degli elettrodomestici"
+    }
+  },
+  "categories": {
+    "washingmachines": "Lavatrici",
+    "tumbledryers": "Asciugatrici",
+    "ovens": "Forni",
+    "rangehoods": "Cappe da cucina",
+    "dishwashers": "Lavastoviglie",
+    "washerdriers": "Lavasciuga",
+    "refrigeratingappl": "Apparecchi di refrigerazione",
+    "cookinghobs": "Piani cottura"
+  },
+  "csv": {
+    "headers": [
+      "Codice GTIN/EAN",
+      "Codice Prodotto",
+      "Categoria",
+      "Paese di Produzione",
+      "Marca",
+      "Modello"
+    ],
+    "fields": [
+      "GTIN123ABC4567",
+      "SKU98765",
+      "Piano cottura",
+      "IT",
+      "MarcaEsempio",
+      "ModelloX100"
+    ]
+  },
+  "eprel": {
+    "headers": [
+      "Codice EPREL",
+      "Codice GTIN/EAN",
+      "Codice Prodotto",
+      "Categoria",
+      "Paese di Produzione"
+    ],
+    "fields": [
+      "12345",
+      "GTIN01234",
+      "SKU12345",
+      "Lavatrice",
+      "IT"
+    ]
+  }
+}

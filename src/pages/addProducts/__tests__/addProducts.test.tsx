@@ -22,6 +22,7 @@ jest.mock('../../../utils/env', () => ({
     API_TIMEOUT_MS: {
       OPERATION: 5000,
     },
+    EIE_MANUAL: 'https://mock-manual-url.com/manual.pdf',
   },
 }));
 
@@ -61,14 +62,13 @@ jest.mock('react-i18next', () => ({
       const translations: { [key: string]: string } = {
         'breadcrumbs.exit': 'Esci',
         'breadcrumbs.home': 'Home',
-        'breadcrumbs.aggiungiProdotti': 'Aggiungi Prodotti',
         'pages.addProducts.title': 'Aggiungi Prodotti',
         'pages.addProducts.boxAddTitle': 'Carica i tuoi prodotti',
         'pages.addProducts.boxAddText': 'Carica il file con i tuoi prodotti. ',
         'pages.addProducts.boxAddTextProduct': 'Formato supportato: CSV',
         'pages.addProducts.goToManual': 'Vai al manuale',
-        'commons.backBtn': 'Indietro',
-        'commons.continueBtn': 'Continua',
+        'common.backBtn': 'Indietro',
+        'common.continueBtn': 'Continua',
       };
       return translations[key] || key;
     },
@@ -76,8 +76,8 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
-  TitleBox: ({ title, 'data-testid': testId, ...props }: any) => (
-    <div data-testid={testId} {...props}>
+  TitleBox: ({ title, 'data-testid': testId }: any) => (
+    <div data-testid={testId}>
       <h1>{title}</h1>
     </div>
   ),
@@ -94,6 +94,14 @@ jest.mock('@pagopa/mui-italia', () => ({
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor', () => ({
   useUnloadEventOnExit: () => mockOnExit,
+}));
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'initiative-1',
+}));
+
+jest.mock('../../../hooks/useCurrentInitiative', () => ({
+  useCurrentInitiative: () => 'Bonus Elettrodomestici',
 }));
 
 jest.mock('react-router-dom', () => ({
@@ -126,6 +134,7 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
+    OVERVIEW: '/base/:initiativeId/panoramica',
   },
   BASE_ROUTE: '/base',
 }));
@@ -137,6 +146,10 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <ThemeProvider theme={theme}>{children}</ThemeProvider>
   </BrowserRouter>
 );
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
 
 describe('AddProducts Component', () => {
   beforeEach(() => {
@@ -237,7 +250,7 @@ describe('AddProducts Component', () => {
     await user.click(backButton);
 
     expect(mockOnExit).toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith('/base', { replace: true });
+    expect(mockNavigate).toHaveBeenCalledWith('/base/initiative-1/panoramica', { replace: true });
   });
 
   test('handles back button click when onExit does not execute callback', async () => {
@@ -297,7 +310,10 @@ describe('AddProducts Component', () => {
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
-    expect(manualLink).toHaveAttribute('href', '');
+    expect(manualLink).toHaveAttribute(
+      'href',
+      'pages.addProducts.manualLink'
+    );
     expect(manualLink).toHaveAttribute('target', '_blank');
     expect(manualLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
@@ -318,7 +334,7 @@ describe('AddProducts Component', () => {
     expect(manualLink).toBeInTheDocument();
   });
 
-  test('manual link prevents default when EIE_MANUAL is not defined', async () => {
+  test('manual link navigates correctly when EIE_MANUAL is defined', async () => {
     const user = userEvent.setup();
 
     render(
@@ -328,26 +344,16 @@ describe('AddProducts Component', () => {
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
-    expect(manualLink).toHaveAttribute('href', '');
-
-    const preventDefaultSpy = jest.fn();
-
-    manualLink.addEventListener('click', (e) => {
-      if (e.defaultPrevented) {
-        preventDefaultSpy();
-      }
-    });
 
     await user.click(manualLink);
 
-    await waitFor(() => {
-      expect(preventDefaultSpy).not.toHaveBeenCalled();
-    });
+    expect(manualLink).toHaveAttribute(
+      'href',
+      'pages.addProducts.manualLink'
+    );
   });
 
-  test('manual link prevents default when EIE_MANUAL is empty string', async () => {
-    const user = userEvent.setup();
-
+  test('manual link is rendered with manual URL when defined', () => {
     render(
       <TestWrapper>
         <AddProducts />
@@ -355,21 +361,11 @@ describe('AddProducts Component', () => {
     );
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
-    expect(manualLink).toHaveAttribute('href', '');
 
-    const preventDefaultSpy = jest.fn();
-
-    manualLink.addEventListener('click', (e) => {
-      if (e.defaultPrevented) {
-        preventDefaultSpy();
-      }
-    });
-
-    await user.click(manualLink);
-
-    await waitFor(() => {
-      expect(preventDefaultSpy).not.toHaveBeenCalled();
-    });
+    expect(manualLink).toHaveAttribute(
+      'href',
+      'pages.addProducts.manualLink'
+    );
   });
 
   test('fileAccepted state changes correctly', async () => {

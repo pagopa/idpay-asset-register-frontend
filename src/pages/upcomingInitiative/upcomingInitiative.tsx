@@ -1,12 +1,12 @@
 import { Box, Button, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import hourGlassIcon from '../../asset/images/hourglass.png';
 import { customExitAction } from '../../helpers';
 import { UPCOMING_INITIATIVE_DAY } from '../../utils/constants';
 
 const UpcomingInitiative = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const onExit = useUnloadEventOnExit();
 
   return (
@@ -35,7 +35,7 @@ const UpcomingInitiative = () => {
         sx={{ height: 44, minWidth: 100, mt: 3 }}
         onClick={() => onExit(customExitAction)}
       >
-        {t('commons.closeBtn')}
+        {t('common.closeBtn')}
       </Button>
     </Box>
   );

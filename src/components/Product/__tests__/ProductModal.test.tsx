@@ -71,6 +71,10 @@ const renderModal = (props?: Partial<React.ComponentProps<typeof ProductModal>>)
   return { ...utils, onClose, onUpdateTable, onSuccess, props: allProps };
 };
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('ProductModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();

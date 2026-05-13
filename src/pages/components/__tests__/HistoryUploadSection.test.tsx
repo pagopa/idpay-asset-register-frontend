@@ -1,6 +1,6 @@
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
-  default: {
+  ENV: {
     URL_API: {
       OPERATION: 'https://mock-api/register',
     },
@@ -13,7 +13,7 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
-    PRODUCTS: '/prodotti',
+    PRODUCTS: '/home/:initiativeId/prodotti',
   },
   BASE_ROUTE: '/base',
 }));
@@ -51,10 +51,18 @@ jest.mock('../../../services/registerService', () => ({
   }),
 }));
 
+jest.mock('../../addProducts/helpers', () => ({
+  downloadCsv: jest.fn(),
+}));
+
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
+}));
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'initiative-1',
 }));
 
 const mockDispatch = jest.fn();
@@ -83,6 +91,10 @@ const renderComponent = (props: any) =>
       </ThemeProvider>
     </Provider>
   );
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
 
 describe('UploadsTable', () => {
   const mockData = {
@@ -160,7 +172,7 @@ describe('UploadsTable', () => {
       onRowsPerPageChange: jest.fn(),
     });
     fireEvent.click(screen.getByText(/3 pages.uploadHistory.uploadHistoryAddedProducts/));
-    expect(mockNavigate).toHaveBeenCalledWith('/prodotti', { replace: true });
+    expect(mockNavigate).toHaveBeenCalledWith('/home/initiative-1/prodotti', { replace: true });
   });
 
   it('handles download icon click', async () => {

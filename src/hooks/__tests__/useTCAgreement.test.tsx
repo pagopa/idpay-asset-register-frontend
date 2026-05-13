@@ -6,7 +6,7 @@ import * as rolePermissionService from '../../services/rolePermissionService';
 
 jest.mock('../../utils/env', () => ({
   __esModule: true,
-  default: {
+  ENV: {
     URL_API: {
       OPERATION: 'https://mock-api/register',
     },
@@ -98,7 +98,7 @@ describe('test suite for useTCAgreement hook', () => {
     });
 
     it('should set acceptedTOS to true when getPortalConsent returns empty object', async () => {
-      mockGetPortalConsent.mockResolvedValue({data: {}});
+      mockGetPortalConsent.mockResolvedValue({ data: {} });
 
       Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);
 
@@ -181,7 +181,7 @@ describe('test suite for useTCAgreement hook', () => {
     });
 
     it('should handle acceptTOS when acceptedTOSVersion is undefined', async () => {
-      mockGetPortalConsent.mockResolvedValue({data: {}});
+      mockGetPortalConsent.mockResolvedValue({ data: {} });
       mockSavePortalConsent.mockResolvedValue({});
 
       Object.keys(testHookValues).forEach((key) => delete testHookValues[key]);

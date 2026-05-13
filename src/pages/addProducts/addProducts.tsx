@@ -1,28 +1,40 @@
 import React, { useRef, useState } from 'react';
 import { Box, Breadcrumbs, Link, Paper, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useNavigate } from 'react-router-dom';
-import { BASE_ROUTE } from '../../routes';
+import ROUTES from '../../routes';
+import { buildRoute } from '../../components/SideMenu/SideMenu';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { ENV } from '../../utils/env';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import FormAddProducts, { FormAddProductsRef } from './formAddProducts';
 
 const AddProducts: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const navigate = useNavigate();
   const onExit = useUnloadEventOnExit();
   const [fileAccepted, setFileAccepted] = useState(false);
   const formRef = useRef<FormAddProductsRef>(null);
+  const initiativeId = useCurrentInitiativeId();
 
   return (
     <Box pb={0} data-testid="add-products-container">
       <Box sx={{ display: 'flex', gridColumn: 'span 12', alignItems: 'center', marginTop: 5 }}>
         <ButtonNaked
           component="button"
-          onClick={() => onExit(() => navigate(BASE_ROUTE, { replace: true }))}
+          onClick={() => {
+            if (!initiativeId) {return;}
+
+            onExit(() =>
+              navigate(
+                buildRoute(ROUTES.OVERVIEW, initiativeId),
+                { replace: true }
+              )
+            );
+          }}
           startIcon={<ArrowBackIcon />}
           sx={{
             color: 'primary.main',
@@ -41,7 +53,7 @@ const AddProducts: React.FC = () => {
             {t('breadcrumbs.home')}
           </Typography>
           <Typography color="text.disabled" variant="body2">
-            {t('breadcrumbs.aggiungiProdotti')}
+            {t('pages.addProducts.title')}
           </Typography>
         </Breadcrumbs>
       </Box>
@@ -83,7 +95,7 @@ const AddProducts: React.FC = () => {
             </Typography>
             <Typography letterSpacing={'0.3px'} fontWeight={700}>
               <Link
-                href={ENV.URL_FE.EIE_MANUAL || ''}
+                href={t('pages.addProducts.manualLink')}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {

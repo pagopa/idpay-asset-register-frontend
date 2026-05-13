@@ -125,7 +125,7 @@ describe('Header Component', () => {
     const call = (CustomHeader as jest.Mock).mock.calls[0][0];
     expect(call.productsList[0]).toEqual({
       id: 'prod-idpay-asset-register',
-      title: 'commons.title',
+      title: 'common.title',
       productUrl: '',
       linkType: 'internal',
     });
@@ -268,7 +268,7 @@ describe('Header Component', () => {
     expect(call.productsList).toEqual([
       {
         id: 'prod-idpay-asset-register',
-        title: 'commons.title',
+        title: 'common.title',
         productUrl: '',
         linkType: 'internal',
       },

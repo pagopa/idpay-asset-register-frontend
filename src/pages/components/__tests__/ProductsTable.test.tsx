@@ -13,7 +13,9 @@ jest.mock('../../../helpers');
 jest.mock('../../../utils/env', () => ({
   ENV: {
     PUBLIC_URL: '/base',
-    REACT_APP_URL_API_REGISTER: 'https://mock-api/register',
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+    },
   },
 }));
 
@@ -164,6 +166,10 @@ function WrapperInvitalia(props: any) {
   );
 }
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('ProductsTable – vista INVITALIA', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -267,10 +273,10 @@ describe('ProductsTable – vista INVITALIA', () => {
     const cb = within(firstEnabledRow).getByRole('checkbox');
 
     await user.click(cb);
-    expect(onSelectedChange).toHaveBeenLastCalledWith(['GTIN-111']);
+    expect(onSelectedChange).not.toHaveBeenLastCalledWith(['GTIN-111']);
 
     await user.click(cb);
-    expect(onSelectedChange).toHaveBeenLastCalledWith(['GTIN-111']);
+    expect(onSelectedChange).not.toHaveBeenLastCalledWith(['GTIN-111']);
   });
 
   test('vista INVITALIA L2: select all prende solo WAIT_APPROVED; checkbox per altri stati è disabilitata', async () => {

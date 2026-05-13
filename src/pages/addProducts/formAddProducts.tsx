@@ -1,6 +1,5 @@
 import { Dispatch, forwardRef, SetStateAction, useImperativeHandle } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -16,18 +15,22 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useNavigate } from 'react-router-dom';
-import { PRODUCTS_CATEGORIES, DEBUG_CONSOLE } from '../../utils/constants';
+import { DEBUG_CONSOLE } from '../../utils/constants';
 import {
   downloadErrorReport,
   uploadProductList,
   uploadProductListVerify,
 } from '../../services/registerService';
 import ROUTES from '../../routes';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useErrorHandling } from '../../hooks/useErrorHandling';
 import { useFileState } from '../../hooks/useFileState';
 import { UploadProductListParams } from '../../api/generated/register';
 import { delay } from '../../helpers';
-import { categoryList, downloadCsv } from './helpers';
+import { buildRoute } from '../../components/SideMenu/SideMenu';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import { useCategories } from '../../hooks/useCategories';
+import { downloadCsv } from './helpers';
 import FileUploadSection from './fileUploadSection';
 
 type Props = {
@@ -42,9 +45,11 @@ export type FormAddProductsRef = {
 const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
   // eslint-disable-next-line sonarjs/cognitive-complexity
   ({ fileAccepted, setFileAccepted }, ref) => {
-    const { t } = useTranslation();
+    const {categories} = useCategories();
+    const { t } = useScopedTranslation();
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();
+    const initiativeId = useCurrentInitiativeId();
 
     const fileState = useFileState();
     const errorHandling = useErrorHandling(t);
@@ -61,11 +66,6 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       validationSchema,
       onSubmit: (values) => console.log(values),
     });
-
-    const templateFileName =
-      formik.values.category === PRODUCTS_CATEGORIES.COOKINGHOBS
-        ? 'cookinghobs_template.csv'
-        : 'eprel_template.csv';
 
     const isCategoryValid = () => !formik.errors.category && formik.values.category !== '';
 
@@ -114,7 +114,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       try {
         const res = await uploadProductListVerify(
           files[0],
-          formik.values.category as UploadProductListParams['category']
+          formik.values.category.toUpperCase() as UploadProductListParams['category']
         );
         handleUploadResponse(res.data, files[0]);
       } catch (error) {
@@ -213,14 +213,15 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         throw new Error('No file available');
       }
 
+
       const res = await uploadProductList(
         fileState.currentFile,
-        formik.values.category as UploadProductListParams['category']
+        formik.values.category.toUpperCase() as UploadProductListParams['category']
       );
 
       if (res.status === 200) {
         await delay(1000);
-        onExit(() => navigate(ROUTES.HOME, { replace: true }));
+        onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ""), { replace: true }));
       } else {
         handleUploadErrorAndRejectFile(res.data);
       }
@@ -288,13 +289,13 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
                 inputProps={{ 'data-testid': 'selectTimeParam-test' }}
                 data-testid="category-label"
               >
-                {categoryList.map((el) => (
+                { categories && Object.entries(categories).map(([key, value]) => (
                   <MenuItem
-                    key={`category-select-${el.value}`}
-                    value={el.value}
-                    data-testid={`category-option-${el.value}`}
+                    key={`category-select-${key}`}
+                    value={key}
+                    data-testid={`category-option-${key}`}
                   >
-                    {t(el.label)}
+                    {value.label}
                   </MenuItem>
                 ))}
               </Select>
@@ -322,7 +323,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
               getInputProps={getInputProps}
               onInputClick={handleInputClick}
               formikCategory={formik.values.category}
-              templateFileName={templateFileName}
+              csvTemplate={categories?.[formik.values.category]?.csv}
               t={t}
             />
           </Box>
@@ -338,13 +339,13 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         >
           <Button
             variant="outlined"
-            onClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
+            onClick={() => onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ""), { replace: true }))}
             data-testid="cancel-button-test"
           >
-            {t('commons.backBtn')}
+            {t('common.backBtn')}
           </Button>
           <Button variant="contained" onClick={handleContinue} data-testid="continue-button-test">
-            {t('commons.continueBtn')}
+            {t('common.continueBtn')}
           </Button>
         </Box>
       </>

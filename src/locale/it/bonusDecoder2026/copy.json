@@ -1,0 +1,44 @@
+{
+  "commons": {
+    "title": "Bonus Decoder"
+  },
+  "pages" : {
+   "addProducts": {
+     "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione ",
+     "manualLink": "https://www.mimit.gov.it/it/incentivi/bonus-decoder-a-casa"
+   },
+    "tos": {
+      "and": "e l’",
+      "backHome": "Torna alla home",
+      "linkPrivacy": "Informativa Privacy",
+      "linkTos": "Termini e condizioni d’uso",
+      "termsDescription": "Accedendo, accetti i",
+      "termsDescription2": "del servizio e confermi di aver letto l’",
+      "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
+      "title": "Bonus Decoder"
+    }
+  },
+  "categories": {
+    "ds": "Satellitare",
+    "dt": "Terrestre",
+    "dtc": "Terrestre via Cavo",
+    "dts": "Terrestre e Satellitare",
+    "dtsc": "Terrestre, Satellitare e via Cavo"
+  },
+  "csv": {
+    "headers": [
+      "Codice GTIN/EAN",
+      "Codice Prodotto",
+      "Categoria",
+      "Marca",
+      "Modello"
+    ],
+    "fields": [
+      "GTIN123ABC4567",
+      "SKU98765",
+      "{{category}}",
+      "MarcaEsempio",
+      "ModelloX100"
+    ]
+  }
+}

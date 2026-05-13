@@ -20,6 +20,22 @@ jest.mock('react-i18next', () => ({
   useTranslation: jest.fn(),
 }));
 
+
+jest.mock('../../../hooks/useCategories', () => ({
+  useCategories: () => ({
+    categories: {
+      cookinghobs: {
+        label: "Piani cottura",
+        csv: {name: "cookinghobs_template.csv", file: "/"}
+      },
+      other: {
+        label: "Altro",
+        csv: {name: "other_template.csv", file: "/"}
+      }
+    }
+  }),
+}));
+
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
   ENV: {
@@ -36,13 +52,19 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
-    PRODUCTS: '/prodotti',
+    PRODUCTS: '/home/:initiativeId/prodotti',
+    OVERVIEW: '/home/:initiativeId/panoramica',
   },
   BASE_ROUTE: '/base',
 }));
 
 jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
+}));
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'initiative-1',
 }));
 
 jest.mock('../../../hooks/useFileState');
@@ -68,7 +90,7 @@ jest.mock('../fileUploadSection', () => {
     onDismissError: React.MouseEventHandler<HTMLButtonElement> | undefined;
     onChangeFile: React.MouseEventHandler<HTMLButtonElement> | undefined;
     formikCategory: string;
-    templateFileName: string;
+    csvTemplate: {name: string, file: string};
   }) {
     return (
       <div data-testid="file-upload-section">
@@ -84,7 +106,7 @@ jest.mock('../fileUploadSection', () => {
         <button onClick={props.onChangeFile} data-testid="change-file-btn">
           Change File
         </button>
-        <div data-testid="template-filename">{props.templateFileName}</div>
+        <div data-testid="template-filename">{props.csvTemplate?.name}</div>
         <div data-testid="formik-category">{props.formikCategory}</div>
       </div>
     );
@@ -92,17 +114,7 @@ jest.mock('../fileUploadSection', () => {
 });
 
 jest.mock('../helpers', () => ({
-  categoryList: [
-    { value: 'cookinghobs', label: 'pages.addProducts.categories.cookinghobs' },
-    { value: 'other', label: 'pages.addProducts.categories.other' },
-  ],
   downloadCsv: jest.fn(),
-}));
-
-jest.mock('../../../utils/constants', () => ({
-  PRODUCTS_CATEGORIES: {
-    COOKINGHOBS: 'cookinghobs',
-  },
 }));
 
 const mockNavigate = jest.fn();
@@ -139,6 +151,10 @@ const mockDropzone = {
   getInputProps: jest.fn(() => ({ 'data-testid': 'file-input' })),
 };
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('FormAddProducts', () => {
   const defaultProps = {
     fileAccepted: false,
@@ -149,13 +165,11 @@ describe('FormAddProducts', () => {
     (useTranslation as jest.Mock).mockReturnValue({
       t: (key: string | number) => {
         const translations: { [key: string]: string } = {
-          'pages.addProducts.categories.cookinghobs': 'Cookinghobs',
-          'pages.addProducts.categories.other': 'Other',
           'validation.categoryRequired': 'Category is required',
           'pages.addProducts.form.categoryLabel': 'Select Category',
           'pages.addProducts.form.categoryPlaceholder': 'Choose category',
-          'commons.backBtn': 'Back',
-          'commons.continueBtn': 'Continue',
+          'common.backBtn': 'Back',
+          'common.continueBtn': 'Continue',
         };
         return translations[key as string] || key;
       },
@@ -221,7 +235,7 @@ describe('FormAddProducts', () => {
       fireEvent.mouseDown(categorySelect);
 
       await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
+        const option = screen.getByText('Piani cottura');
         fireEvent.click(option);
       });
 
@@ -235,11 +249,11 @@ describe('FormAddProducts', () => {
       fireEvent.mouseDown(categorySelect);
 
       await waitFor(() => {
-        const option = screen.getByTestId('category-option-other');
+        const option = screen.getByText('Altro');
         fireEvent.click(option);
       });
 
-      expect(screen.getByTestId('template-filename')).toHaveTextContent('eprel_template.csv');
+      expect(screen.getByTestId('template-filename')).toHaveTextContent('other_template.csv');
     });
   });
 
@@ -251,7 +265,7 @@ describe('FormAddProducts', () => {
       fireEvent.mouseDown(categorySelect);
 
       await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
+        const option = screen.getByText('Piani cottura');
         fireEvent.click(option);
       });
 
@@ -284,7 +298,7 @@ describe('FormAddProducts', () => {
 
       fireEvent.mouseDown(categorySelect);
       await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
+        const option = screen.getByText('Piani cottura');
         fireEvent.click(option);
       });
 
@@ -318,7 +332,7 @@ describe('FormAddProducts', () => {
       const categorySelect = screen.getByRole('combobox');
       fireEvent.mouseDown(categorySelect);
       await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
+        const option = screen.getByText('Piani cottura');
         fireEvent.click(option);
       });
 
@@ -334,7 +348,7 @@ describe('FormAddProducts', () => {
       const categorySelect = screen.getByRole('combobox');
       fireEvent.mouseDown(categorySelect);
       await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
+        const option = screen.getByText('Piani cottura');
         fireEvent.click(option);
       });
 
@@ -642,7 +656,7 @@ describe('FormAddProducts', () => {
       await waitFor(() => {
         expect(mockFileState.setFileIsLoading).toHaveBeenCalledWith(true);
         expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
-        expect(uploadProductList).toHaveBeenCalledWith(mockFile, 'cookinghobs');
+        expect(uploadProductList).toHaveBeenCalledWith(mockFile, 'COOKINGHOBS');
       });
     });
 

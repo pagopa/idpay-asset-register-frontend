@@ -6,11 +6,14 @@ import '@testing-library/jest-dom';
 import * as helpers from '../../../helpers';
 
 jest.mock('../../../utils/env', () => ({
-  default: {
+  __esModule: true,
+  ENV: {
     URL_API: {
       OPERATION: 'https://mock-api/register',
     },
-    API_TIMEOUT_MS: 5000,
+    API_TIMEOUT_MS: {
+      OPERATION: 5000,
+    },
   },
 }));
 
@@ -25,11 +28,27 @@ jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
-    UPLOADS: '/uploads',
-    PRODUCTS: '/products',
-    PRODUCERS: '/producers',
+    OVERVIEW: '/:initiativeId/panoramica',
+    ADD_PRODUCTS: '/:initiativeId/aggiungi-prodotti',
+    ASSISTANCE: '/:initiativeId/assistenza',
+    UPLOADS: '/:initiativeId/storico-caricamenti',
+    PRODUCTS: '/:initiativeId/prodotti',
+    INVITALIA_PRODUCTS_LIST: '/:initiativeId/lista-prodotti',
+    PRODUCERS: '/:initiativeId/produttori',
+    UPCOMING: '/:initiativeId/iniziativa-in-arrivo',
   },
   BASE_ROUTE: '/base',
+}));
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({
+    data: [
+      {
+        initiativeId: 'initiative-1',
+        initiativeName: 'Initiative One',
+      },
+    ],
+  }),
 }));
 
 const mockOnExit = jest.fn();
@@ -112,13 +131,27 @@ describe('Test suite for SideMenu component', () => {
     expect(screen.getByTestId('list-test')).toBeInTheDocument();
   });
 
+  test('opens the first initiative accordion by default on HOME', async () => {
+    jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
+    mockUseLocation.mockReturnValue({ pathname: '/home' });
+
+    renderWithContext(<SideMenu />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Initiative One/i })).toHaveAttribute(
+        'aria-expanded',
+        'true'
+      );
+    });
+  });
+
   test('user clicks the link to home page', async () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
     mockOnExit.mockImplementation((cb: () => void) => cb());
     renderWithContext(<SideMenu />);
     const user = userEvent.setup();
 
-    const homeLink = screen.getByText('Panoramica');
+    const homeLink = screen.getByText('Iniziative');
     await user.click(homeLink);
 
     await waitFor(() => {
@@ -136,7 +169,9 @@ describe('Test suite for SideMenu component', () => {
     await user.click(homeLink);
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/uploads', { replace: true });
+      expect(mockNavigate).toHaveBeenCalledWith('/initiative-1/storico-caricamenti', {
+        replace: true,
+      });
     });
   });
 
@@ -151,7 +186,7 @@ describe('Test suite for SideMenu component', () => {
 
     await waitFor(() => {
       expect(mockOnExit).toHaveBeenCalledTimes(1);
-      expect(mockNavigate).toHaveBeenCalledWith('/products', { replace: true });
+      expect(mockNavigate).toHaveBeenCalledWith('/initiative-1/prodotti', { replace: true });
     });
   });
 
@@ -176,13 +211,13 @@ describe('Test suite for SideMenu component', () => {
     await user.click(screen.getByTestId('sidenav-Produttori'));
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/producers', { replace: true });
+      expect(mockNavigate).toHaveBeenCalledWith('/initiative-1/produttori', { replace: true });
     });
   });
 
-  test('Invitalia L2: isSelected true su /home', () => {
+  test('Invitalia L2: isSelected true su products list route', () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'INVITALIA_L2' });
-    mockUseLocation.mockReturnValue({ pathname: '/home' });
+    mockUseLocation.mockReturnValue({ pathname: '/initiative-1/lista-prodotti' });
 
     renderWithContext(<SideMenu />);
 
@@ -192,9 +227,9 @@ describe('Test suite for SideMenu component', () => {
     );
   });
 
-  test('Invitalia: isSelected true su /home/', () => {
+  test('Invitalia: isSelected true su products list route', () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'INVITALIA_L1' });
-    mockUseLocation.mockReturnValue({ pathname: '/home/' });
+    mockUseLocation.mockReturnValue({ pathname: '/initiative-1/lista-prodotti' });
 
     renderWithContext(<SideMenu />);
 
@@ -204,11 +239,11 @@ describe('Test suite for SideMenu component', () => {
     );
   });
 
-  test('Non-Invitalia: isSelected corretto su /uploads', () => {
+  test('Non-Invitalia: isSelected corretto su uploads route', () => {
     jest
       .spyOn(helpers, 'fetchUserFromLocalStorage')
       .mockReturnValue({ org_role: 'SOMETHING_ELSE' });
-    mockUseLocation.mockReturnValue({ pathname: '/uploads' });
+    mockUseLocation.mockReturnValue({ pathname: '/initiative-1/storico-caricamenti' });
 
     renderWithContext(<SideMenu />);
 
@@ -220,9 +255,9 @@ describe('Test suite for SideMenu component', () => {
     expect(screen.getByTestId('sidenav-Prodotti')).toHaveAttribute('data-selected', 'false');
   });
 
-  test('Non-Invitalia: isSelected corretto su /products', () => {
+  test('Non-Invitalia: isSelected corretto su products route', () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'REGULAR_USER' });
-    mockUseLocation.mockReturnValue({ pathname: '/products' });
+    mockUseLocation.mockReturnValue({ pathname: '/initiative-1/prodotti' });
 
     renderWithContext(<SideMenu />);
 
@@ -234,9 +269,9 @@ describe('Test suite for SideMenu component', () => {
     );
   });
 
-  test('Non-Invitalia: isSelected corretto su /home', () => {
+  test('Non-Invitalia: isSelected corretto su overview route', () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'REGULAR_USER' });
-    mockUseLocation.mockReturnValue({ pathname: '/home' });
+    mockUseLocation.mockReturnValue({ pathname: '/initiative-1/panoramica' });
 
     renderWithContext(<SideMenu />);
 
@@ -273,7 +308,7 @@ describe('Test suite for SideMenu component', () => {
     expect(screen.queryByTestId('sidenav-Prodotti Invitalia')).not.toBeInTheDocument();
   });
 
-  test('Invitalia L1: click su "Prodotti Invitalia" naviga a /home', async () => {
+  test('Invitalia L1: click su "Prodotti Invitalia" naviga alla lista prodotti', async () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'INVITALIA_L1' });
     mockOnExit.mockImplementation((cb: () => void) => cb());
 
@@ -283,7 +318,7 @@ describe('Test suite for SideMenu component', () => {
     await user.click(screen.getByTestId('sidenav-Prodotti Invitalia'));
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/home', { replace: true });
+      expect(mockNavigate).toHaveBeenCalledWith('/initiative-1/lista-prodotti', { replace: true });
     });
   });
 
@@ -295,9 +330,9 @@ describe('Test suite for SideMenu component', () => {
     expect(screen.getByTestId('sidenav-Produttori')).toBeInTheDocument();
   });
 
-  test('Invitalia: Produttori isSelected su /producers', () => {
+  test('Invitalia: Produttori isSelected su producers route', () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'INVITALIA_L1' });
-    mockUseLocation.mockReturnValue({ pathname: '/producers' });
+    mockUseLocation.mockReturnValue({ pathname: '/initiative-1/produttori' });
 
     renderWithContext(<SideMenu />);
 

@@ -6,6 +6,15 @@ import '@testing-library/jest-dom';
 import { createStore } from '../../../redux/store';
 import { Provider } from 'react-redux';
 
+jest.mock('../../../utils/env', () => ({
+  __esModule: true,
+  ENV: {
+    URL_API: {
+      OPERATION: 'https://mock-api/register',
+    },
+  },
+}));
+
 const reducer = (state = {}) => state;
 const store = createStore(reducer);
 
@@ -15,27 +24,25 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn(),
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'initiative-1',
 }));
 
 jest.mock('../../../helpers', () => ({
   formatDateWithoutHours: (date: string) => date,
 }));
 
-jest.mock('../../../utils/env', () => ({
-  default: {
-    URL_API: {
-      OPERATION: 'https://mock-api/register',
-    },
-    API_TIMEOUT_MS: 5000,
-  },
-}));
-
 jest.mock('../../../routes', () => ({
   __esModule: true,
   default: {
     HOME: '/home',
+    INVITALIA_PRODUCTS_LIST: '/home/:initiativeId/lista-prodotti',
   },
   BASE_ROUTE: '/base',
 }));
@@ -67,7 +74,12 @@ const defaultProps = {
   onPageChange: jest.fn(),
   onRowsPerPageChange: jest.fn(),
   onRequestSort: jest.fn(),
+  onDetailRequest: jest.fn(),
 };
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
 
 describe('InstitutionsTable', () => {
   it('renders loading state', () => {
@@ -118,5 +130,17 @@ describe('InstitutionsTable', () => {
     });
     fireEvent.click(header);
     expect(defaultProps.onRequestSort).toHaveBeenCalled();
+  });
+
+  it('navigates to institution products when institution name is clicked', () => {
+    render(
+      <Provider store={store}>
+        <InstitutionsTable {...defaultProps} />
+      </Provider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Alpha Institution' }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/home/initiative-1/lista-prodotti');
   });
 });

@@ -3,3 +3,8 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+// Prevent RTK Query from requiring React-Redux context during tests
+jest.mock('@reduxjs/toolkit/query/react', () =>
+  jest.requireActual('@reduxjs/toolkit/query')
+);

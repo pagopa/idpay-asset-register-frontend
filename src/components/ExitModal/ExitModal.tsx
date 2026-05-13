@@ -1,7 +1,7 @@
 import { Modal, Backdrop, Fade, Box, Typography, Button } from '@mui/material';
 import { MouseEventHandler } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 
 type Props = {
   title: string;
@@ -13,7 +13,7 @@ type Props = {
 
 const ExitModal = ({ title, subtitle, openExitModal, handleCloseExitModal, backRoute }: Props) => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const closeWithoutSaving = (e: any) => {
     navigate(backRoute, { replace: true });
     handleCloseExitModal(e);
@@ -64,7 +64,7 @@ const ExitModal = ({ title, subtitle, openExitModal, handleCloseExitModal, backR
               onClick={handleCloseExitModal}
               data-testid="cancel-button-test"
             >
-              {t('commons.cancelBtn')}
+              {t('common.cancelBtn')}
             </Button>
             <Button
               variant="contained"
@@ -72,7 +72,7 @@ const ExitModal = ({ title, subtitle, openExitModal, handleCloseExitModal, backR
               onClick={(e) => closeWithoutSaving(e)}
               data-testid="exit-button-test"
             >
-              {t('commons.exitBtn')}
+              {t('common.exitBtn')}
             </Button>
           </Box>
         </Box>

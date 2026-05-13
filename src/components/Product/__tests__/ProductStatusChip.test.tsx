@@ -25,6 +25,10 @@ const renderWithTheme = (component: React.ReactElement) => {
   return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
 };
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('ProductStatusChip', () => {
   describe('quando status è undefined', () => {
     it('dovrebbe non renderizzare nulla', () => {

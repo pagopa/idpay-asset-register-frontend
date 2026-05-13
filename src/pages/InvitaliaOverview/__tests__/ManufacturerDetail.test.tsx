@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import ManufacturerDetail from '../ManufacturerDetail';
 
@@ -24,6 +23,10 @@ const emptyMockData = {
   address: undefined,
   digitalAddress: undefined,
 };
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
 
 describe('ManufacturerDetail', () => {
   it('renders all DrawerItems with correct values', () => {

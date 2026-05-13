@@ -140,6 +140,10 @@ jest.mock('./../../../components/Product/MsgResult', () => ({
 
 import { ProductStatus } from '../../../api/generated/register';
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 const mockProductData = [
   {
     id: '1',
@@ -823,5 +827,4 @@ describe('ProductDataGrid – extra coverage', () => {
     expect(screen.queryByTestId('rejectedBtn')).not.toBeInTheDocument();
     expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
   });
-
 });

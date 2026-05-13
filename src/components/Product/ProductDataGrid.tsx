@@ -3,10 +3,10 @@ import { Box, Button, Paper, TablePagination, CircularProgress } from '@mui/mate
 import Chip from '@mui/material/Chip';
 import FlagIcon from '@mui/icons-material/Flag';
 import CloseIcon from '@mui/icons-material/Close';
-import { useTranslation } from 'react-i18next';
 import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import {
   getProducts,
   getBatchFilterList,
@@ -64,7 +64,7 @@ const buttonStyle = {
 };
 
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const dispatch = useDispatch();
   const [showMsgRejected, setShowMsgRejected] = useState(false);
   const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
@@ -593,27 +593,26 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
 
       <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
         {loading ? (
-          <Box sx={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CircularProgress />
           </Box>
-          ) : 
-          tableData?.length === 0 ? (
-            <EmptyListTable message="pages.products.noFileLoaded" />
-          ) : (
-            <Box sx={{ width: '100%' }}>
-              <ProductsTable
-                key={refreshKey}
-                tableData={tableData}
-                emptyData={EMPTY_DATA}
-                order={order}
-                orderBy={orderBy}
-                onRequestSort={handleRequestSort}
-                handleListButtonClick={handleListButtonClick}
-                selected={selected}
-                setSelected={setSelected}
-              />
-            </Box>
-          )}
+        ) : tableData?.length === 0 ? (
+          <EmptyListTable message="pages.products.noFileLoaded" />
+        ) : (
+          <Box sx={{ width: '100%' }}>
+            <ProductsTable
+              key={refreshKey}
+              tableData={tableData}
+              emptyData={EMPTY_DATA}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+              handleListButtonClick={handleListButtonClick}
+              selected={selected}
+              setSelected={setSelected}
+            />
+          </Box>
+        )}
 
         {tableData?.length > 0 && !loading && (
           <TablePagination

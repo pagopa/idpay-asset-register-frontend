@@ -8,11 +8,12 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import { theme } from '@pagopa/mui-italia';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { PersistGate } from 'redux-persist/integration/react';
+import { setupListeners } from '@reduxjs/toolkit/query';
 import App from './App';
 import { persistor, store } from './redux/store';
 import { MOCK_USER, testToken } from './utils/constants';
 import { ENV } from './utils/env';
-import './consentAndAnalyticsConfiguration.ts';
+import './consentAndAnalyticsConfiguration';
 import './locale';
 import ROUTES from './routes';
 
@@ -29,6 +30,8 @@ CONFIG.TEST.JWT = testToken;
 
 // eslint-disable-next-line functional/immutable-data
 CONFIG.HEADER.LINK.PRODUCTURL = ROUTES.HOME;
+
+setupListeners(store.dispatch);
 
 const container = document.getElementById('root');
 

@@ -5,11 +5,14 @@ import ROUTES from '../../../routes';
 import '@testing-library/jest-dom';
 
 jest.mock('../../../utils/env', () => ({
-  default: {
+  __esModule: true,
+  ENV: {
     URL_API: {
       OPERATION: 'https://mock-api/register',
     },
-    API_TIMEOUT_MS: 5000,
+    API_TIMEOUT_MS: {
+      OPERATION: 5000,
+    },
   },
 }));
 
@@ -23,6 +26,10 @@ jest.mock('../../../routes', () => ({
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: any) => key }),
+}));
+
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
 }));
 
 describe('<ExitModal />', () => {

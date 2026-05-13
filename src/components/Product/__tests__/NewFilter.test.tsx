@@ -14,6 +14,10 @@ const renderWithTheme = (ui: React.ReactElement) => {
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 };
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+}));
+
 describe('NewFilter', () => {
   it('renders the button with translation text and icon', () => {
     renderWithTheme(<NewFilter />);

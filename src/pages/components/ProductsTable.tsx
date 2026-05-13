@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Box from '@mui/material/Box';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import EprelLinks from '../../components/Product/EprelLinks';
 import { ProductDTO } from '../../api/generated/register';
 import {
@@ -47,7 +47,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   selected,
   setSelected,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const institutionsList = useSelector(institutionListSelector);
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(

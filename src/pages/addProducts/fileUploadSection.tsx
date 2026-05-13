@@ -21,7 +21,7 @@ const FileUploadSection = ({
   getInputProps,
   onInputClick,
   formikCategory,
-  templateFileName,
+  csvTemplate,
   t,
 }: any) => {
   if (fileIsLoading) {
@@ -72,8 +72,8 @@ const FileUploadSection = ({
             <FormHelperText sx={{ fontSize: '0.875rem' }}>
               {t('pages.addProducts.form.fileUpload.fileUploadHelpText')}&#160;
               <Link
-                href={formikCategory ? `${templateFileName}` : undefined}
-                download={!!formikCategory}
+                href={formikCategory ? `${csvTemplate.file}` : undefined}
+                download={csvTemplate.name}
                 type="text/csv"
                 target="_blank"
                 variant="body2"

@@ -17,9 +17,9 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
-import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { downloadErrorReport } from '../../services/registerService';
 import { downloadCsv } from '../addProducts/helpers';
 import { formatDateWithHours } from '../../helpers';
@@ -29,6 +29,8 @@ import ROUTES from '../../routes';
 import { EMPTY_DATA, DEBUG_CONSOLE } from '../../utils/constants';
 import { UploadsListDTO } from '../../api/generated/register';
 import { UploadDTO } from '../../api/generated/register';
+import { buildRoute } from '../../components/SideMenu/SideMenu';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import EmptyListTable from './EmptyListTable';
 
 const rowTableStyle = {
@@ -95,7 +97,8 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   const paginationInfo = usePagination(page, rowsPerPage, totalElements);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
+  const initiativeId = useCurrentInitiativeId();
 
   const handleDownloadReport = async (idReport: string) => {
     try {
@@ -116,7 +119,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   const handleLinkProducts = (batchName: string, productFileId: string) => {
     dispatch(setBatchName(batchName));
     dispatch(setBatchId(productFileId));
-    navigate(ROUTES.PRODUCTS, { replace: true });
+    navigate(buildRoute(ROUTES.PRODUCTS, initiativeId ?? ""), { replace: true });
   };
 
   if (loading) {
