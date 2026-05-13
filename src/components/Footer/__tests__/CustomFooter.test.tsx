@@ -53,25 +53,25 @@ describe('CustomFooter', () => {
 
     render(<CustomFooter />);
 
-    expect(screen.getByText('commons.footer.privacy')).toBeInTheDocument();
-    expect(screen.getByText('commons.footer.personalData')).toBeInTheDocument();
-    expect(screen.getByText('commons.footer.termsAndConditions')).toBeInTheDocument();
-    expect(screen.getByText('commons.footer.a11y')).toBeInTheDocument();
+    expect(screen.getByText('common.footer.privacy')).toBeInTheDocument();
+    expect(screen.getByText('common.footer.personalData')).toBeInTheDocument();
+    expect(screen.getByText('common.footer.termsAndConditions')).toBeInTheDocument();
+    expect(screen.getByText('common.footer.a11y')).toBeInTheDocument();
 
     const legal = screen.getByTestId('footer-legal');
-    expect(legal).toHaveTextContent('commons.footer.PagoPA');
-    expect(legal).toHaveTextContent('commons.footer.legalInfo');
+    expect(legal).toHaveTextContent('common.footer.PagoPA');
+    expect(legal).toHaveTextContent('common.footer.legalInfo');
 
     const companyLink = screen.getByText('company-link');
     expect(companyLink).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('commons.footer.privacy'));
+    fireEvent.click(screen.getByText('common.footer.privacy'));
     expect(global.open).toHaveBeenCalledWith('https://test/privacy', '_blank');
 
     const openResult = (global.open as jest.Mock).mock.results[0].value;
     expect(openResult.focus).toHaveBeenCalled();
 
-    fireEvent.click(screen.getByText('commons.footer.personalData'));
+    fireEvent.click(screen.getByText('common.footer.personalData'));
     expect(global.open).toHaveBeenCalledWith('https://test/data', '_blank');
     const openResult2 = (global.open as jest.Mock).mock.results[0].value;
     expect(openResult2.focus).toHaveBeenCalled();
@@ -91,7 +91,7 @@ describe('CustomFooter', () => {
     (global as any).open = jest.fn(() => ({ focus: jest.fn() }));
 
     render(<CustomFooter />);
-    const a11y = screen.getByText('commons.footer.a11y');
+    const a11y = screen.getByText('common.footer.a11y');
 
     expect(a11y).not.toHaveAttribute('href');
 
@@ -105,7 +105,7 @@ describe('CustomFooter', () => {
 
     render(<CustomFooter />);
     expect(() =>
-      fireEvent.click(screen.getByText('commons.footer.termsAndConditions'))
+      fireEvent.click(screen.getByText('common.footer.termsAndConditions'))
     ).not.toThrow();
     expect(global.open).toHaveBeenCalledWith('https://test/terms', '_blank');
   });
@@ -154,7 +154,7 @@ describe('CustomFooter', () => {
 
       render(<CustomFooter />);
 
-      fireEvent.click(screen.getByText('commons.footer.privacy'));
+      fireEvent.click(screen.getByText('common.footer.privacy'));
       expect(global.open).toHaveBeenCalledWith('', '_blank');
     });
   });
@@ -202,7 +202,7 @@ describe('CustomFooter', () => {
 
       render(<CustomFooter />);
 
-      fireEvent.click(screen.getByText('commons.footer.termsAndConditions'));
+      fireEvent.click(screen.getByText('common.footer.termsAndConditions'));
       expect(global.open).toHaveBeenCalledWith('', '_blank');
     });
   });

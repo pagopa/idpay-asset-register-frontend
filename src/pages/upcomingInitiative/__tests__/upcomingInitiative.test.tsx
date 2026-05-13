@@ -18,7 +18,7 @@ jest.mock('react-i18next', () => ({
     t: (key: string, opts?: Record<string, any>) => {
       if (key === 'pages.upcomingInitiative.title') return 'Titolo Mock';
       if (key === 'pages.upcomingInitiative.subTitle') return `Sottotitolo ${opts?.x ?? ''}`;
-      if (key === 'commons.closeBtn') return 'Chiudi';
+      if (key === 'common.closeBtn') return 'Chiudi';
       return key;
     },
   }),

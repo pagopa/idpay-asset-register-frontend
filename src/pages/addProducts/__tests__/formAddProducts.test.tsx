@@ -168,8 +168,8 @@ describe('FormAddProducts', () => {
           'validation.categoryRequired': 'Category is required',
           'pages.addProducts.form.categoryLabel': 'Select Category',
           'pages.addProducts.form.categoryPlaceholder': 'Choose category',
-          'commons.backBtn': 'Back',
-          'commons.continueBtn': 'Continue',
+          'common.backBtn': 'Back',
+          'common.continueBtn': 'Continue',
         };
         return translations[key as string] || key;
       },
