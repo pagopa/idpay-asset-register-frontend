@@ -8,10 +8,10 @@ info:
     email: cstar@pagopa.it
 servers:
   - description: Development Test
-    url: https://api-io.dev.cstar.pagopa.it/idpay-itn/onboarding
+    url: https://api-io.dev.cstar.pagopa.it/idpay-itn/register
     x-internal: true
   - description: User Acceptance Test
-    url: https://api-io.uat.cstar.pagopa.it/idpay-itn/onboarding
+    url: https://api-io.uat.cstar.pagopa.it/idpay-itn/register
     x-internal: true
 tags:
   - name: products
@@ -91,7 +91,7 @@ paths:
           $ref: '#/components/responses/POST_consent_429_Response'
         '500':
           $ref: '#/components/responses/POST_consent_500_Response'
-  /product-files:
+  /initiatives/{initiativeId}/product-files:
     post:
       tags:
         - products-upload
@@ -100,8 +100,8 @@ paths:
         del file CSV conentente una lista di prodotti'
       operationId: uploadProductList
       parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
         - $ref: '#/components/parameters/category_query'
-        - $ref: '#/components/parameters/initiativeId_query'
       requestBody:
         content:
           multipart/form-data:
@@ -118,7 +118,6 @@ paths:
           $ref: '#/components/responses/POST_product-files_429_Response'
         '500':
           $ref: '#/components/responses/POST_product-files_500_Response'
-  /product-files/{initiativeId}:
     get:
       tags:
         - products-upload
@@ -140,7 +139,7 @@ paths:
           $ref: '#/components/responses/GET_product-files_429_Response'
         '500':
           $ref: '#/components/responses/GET_product-files_500_Response'
-  /product-files/verify:
+  /initiatives/{initiativeId}/product-files/verify:
     post:
       tags:
         - products-upload
@@ -149,8 +148,8 @@ paths:
         del file CSV conentente una lista di prodotti'
       operationId: verifyProductList
       parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
         - $ref: '#/components/parameters/category_query'
-        - $ref: '#/components/parameters/initiativeId_query'
       requestBody:
         content:
           multipart/form-data:
@@ -167,7 +166,7 @@ paths:
           $ref: '#/components/responses/POST_product-files_verify_429_Response'
         '500':
           $ref: '#/components/responses/POST_product-files_verify_500_Response'
-  /product-files/{initiativeId}/{productFileId}/report:
+  /initiatives/{initiativeId}/product-files/{productFileId}/report:
     get:
       tags:
         - products-upload
@@ -189,7 +188,7 @@ paths:
           $ref: '#/components/responses/GET_product-files_productFileId_report_429_Response'
         '500':
           $ref: '#/components/responses/GET_product-files_productFileId_report_500_Response'
-  /product-files/{initiativeId}/batch-list:
+  /initiatives/{initiativeId}/product-files/batch-list:
     get:
       tags:
         - products-upload
@@ -326,7 +325,7 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products:
+  /initiatives/{initiativeId}/products:
     get:
       tags:
         - products
@@ -334,7 +333,7 @@ paths:
       description: 'ENG: Returns product list <br> IT: Lista prodotti'
       operationId: getProducts
       parameters:
-        - $ref: '#/components/parameters/initiativeId_query'
+        - $ref: '#/components/parameters/initiativeId_path'
         - $ref: '#/components/parameters/page_query'
         - $ref: '#/components/parameters/size_query'
         - $ref: '#/components/parameters/sort_query'
@@ -2219,14 +2218,6 @@ components:
         type: string
         maxLength: 36
         pattern: ^$|^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
-    initiativeId_query:
-      name: initiativeId
-      in: query
-      required: true
-      schema:
-        type: string
-        maxLength: 24
-        pattern: ^[a-fA-F0-9]{24}$
     sort_query:
       name: sort
       in: query

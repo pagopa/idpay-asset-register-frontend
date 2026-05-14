@@ -286,7 +286,7 @@ export const RegisterApi = {
       productFileId,
     }) as GetProductsParams;
     try {
-      const productListValidation = await registerClient.products.getProducts(params);
+      const productListValidation = await registerClient.initiatives.getProducts(params);
       const productList = (productListValidation as any)?.value ?? {};
       const content = productList?.content ?? [];
       if (Array.isArray(content) && content.length > 0) {
@@ -325,7 +325,7 @@ export const RegisterApi = {
       productFileId,
     }) as GetProductsParams;
     try {
-      return await registerClient.products.getProducts(params);
+      return await registerClient.initiatives.getProducts(params);
     } catch (error) {
       return { content: [] } as unknown as AxiosResponse<ProductListDTO>;
     }
@@ -334,7 +334,7 @@ export const RegisterApi = {
   getProductFiles: async ( initiativeId: string, page?: number, size?: number): Promise<AxiosResponse<UploadsListDTO>> => {
     const params = buildParams({ initiativeId, page, size }) as GetProductFilesListParams;
     try {
-      return await registerClient.productFiles.getProductFilesList(params);
+      return await registerClient.initiatives.getProductFilesList(params);
     } catch (error) {
       return { status: 200, value: { content: [] } } as unknown as AxiosResponse<UploadsListDTO>;
     }
@@ -348,7 +348,7 @@ export const RegisterApi = {
       params['x-organization-selected'] = trimmed;
     }
     try {
-      return await registerClient.productFiles.getBatchNameList({ initiativeId, ...params});
+      return await registerClient.initiatives.getBatchNameList({ initiativeId, ...params});
     } catch (error) {
       return [] as unknown as AxiosResponse<BatchList>;
     }
@@ -360,7 +360,7 @@ export const RegisterApi = {
     category: UploadProductListParams['category']
   ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
     try {
-      return await registerClient.productFiles.uploadProductList({initiativeId, category }, { csv });
+      return await registerClient.initiatives.uploadProductList({initiativeId, category }, { csv });
     } catch (error) {
       logApiError(error, 'uploadProductList');
       return {} as AxiosResponse<RegisterUploadResponseDTO>;
@@ -372,7 +372,7 @@ export const RegisterApi = {
     category: VerifyProductListParams['category']
   ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
     try {
-      return await registerClient.productFiles.verifyProductList({ initiativeId, category }, { csv });
+      return await registerClient.initiatives.verifyProductList({ initiativeId, category }, { csv });
     } catch (error) {
       logApiError(error, 'uploadProductListVerify');
       return {} as AxiosResponse<RegisterUploadResponseDTO>;
@@ -383,7 +383,7 @@ export const RegisterApi = {
     productFileId: string
   ): Promise<{ data: CsvDTO; filename: string; warning?: string }> => {
     try {
-      const response = await registerClient.productFiles.downloadErrorReport({ initiativeId, productFileId });
+      const response = await registerClient.initiatives.downloadErrorReport({ initiativeId, productFileId });
       return {
         data: response.data,
         filename: extractFileNameFromHeaders(response?.headers),
