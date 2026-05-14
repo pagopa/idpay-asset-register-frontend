@@ -19,14 +19,14 @@
     }
   },
   "categories": {
-    "washingmachines": "Lavatrici",
-    "tumbledryers": "Asciugatrici",
-    "ovens": "Forni",
-    "rangehoods": "Cappe da cucina",
-    "dishwashers": "Lavastoviglie",
-    "washerdriers": "Lavasciuga",
-    "refrigeratingappl": "Apparecchi di refrigerazione",
-    "cookinghobs": "Piani cottura"
+    "washingmachines": {"label": "Lavatrici", "template": {"type": "eprel", "name": "eprel"}},
+    "tumbledryers": {"label": "Asciugatrici", "template": {"type": "eprel", "name": "eprel"}},
+    "ovens": {"label": "Forni", "template": {"type": "eprel", "name": "eprel"}},
+    "rangehoods": {"label": "Cappe da cucina", "template": {"type": "eprel", "name": "eprel"}},
+    "dishwashers": {"label": "Lavastoviglie", "template": {"type": "eprel", "name": "eprel"}},
+    "washerdriers": {"label": "Lavasciuga", "template": {"type": "eprel", "name": "eprel"}},
+    "refrigeratingappl": {"label": "Apparecchi di refrigerazione", "template": {"type": "eprel", "name": "eprel"}},
+    "cookinghobs": {"label": "Piani cottura", "template": {"type": "csv", "name": "cookinghobs"}}
   },
   "csv": {
     "headers": [

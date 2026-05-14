@@ -7,17 +7,23 @@ type CategoryType = {
     csv: string;
 };
 
+type TemplateType = {
+    type: "csv" | "eprel";
+    name: string;
+};
+
+type ConfigType = {
+    label: string;
+    template: TemplateType;
+};
+
 export const useCategories = () => {
-    const { t, initiativeName } = useScopedTranslation();
-    const namespace = t("categories", { returnObjects: true}) as Record<string, string>;
+    const { t } = useScopedTranslation();
+    const namespace = t("categories", { returnObjects: true}) as Record<string, ConfigType>;
     const categories: Record<string, CategoryType> = isObject(namespace) ? Object?.entries(namespace).reduce((acc, [key, value]) => {
-        const formattedValue = value.toLowerCase().replace(/[ ,]+/g, '-');
-        const isEprel = initiativeName === "bonusElettrodomestici2025";
-        const isNotCookinghobs = key !== "cookinghobs";
-        const csvNamespace = t(`${isNotCookinghobs && isEprel ? "eprel" :  "csv"}`, { returnObjects: true, category: value }) as { headers: Array<string>; fields: Array<string> };
+        const csvNamespace = t(`${value.template.type}`, { returnObjects: true, category: value.label }) as { headers: Array<string>; fields: Array<string> };
         const csvFile = createCsv(csvNamespace);
-        const csvName = isEprel && isNotCookinghobs ? "eprel" : isNotCookinghobs ? formattedValue : key;
-        return { ...acc, [key]: { label: value, csv: { name: `${csvName}_template.csv`, file: csvFile } } };
+        return { ...acc, [key]: { label: value.label, csv: { name: `${value.template.name}_template`, file: csvFile } } };
     }, {}) : [];
     return { categories };
 };
