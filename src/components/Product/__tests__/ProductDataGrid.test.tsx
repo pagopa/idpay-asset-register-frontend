@@ -13,6 +13,10 @@ import { productsSlice } from '../../../redux/slices/productsSlice';
 import { invitaliaSlice } from '../../../redux/slices/invitaliaSlice';
 import { USERS_TYPES } from '../../../utils/constants';
 
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'init-1',
+}));
+
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
   default: {
@@ -293,6 +297,7 @@ describe('ProductDataGrid', () => {
       renderComponent();
       await waitFor(() => {
         expect(mockGetProducts).toHaveBeenCalledWith(
+          'init-1',
           'test-org-id',
           0,
           10,
@@ -321,6 +326,7 @@ describe('ProductDataGrid', () => {
       renderComponent({}, storeState);
       await waitFor(() => {
         expect(mockGetProducts).toHaveBeenCalledWith(
+          'init-1',
           'invitalia-inst-id',
           0,
           10,
