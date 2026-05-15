@@ -7,13 +7,9 @@ import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
+import { loadItInitiativeConfig } from '../../locale/multiInitiativeConfig';
+import { getBatchFilterList, getInstitutionsList } from '../../services/registerService';
 import {
-  getProducts,
-  getBatchFilterList,
-  getInstitutionsList,
-} from '../../services/registerService';
-import {
-  PAGINATION_ROWS_PRODUCTS,
   EMPTY_DATA,
   USERS_TYPES,
   PRODUCTS_STATES,
@@ -32,7 +28,6 @@ import EmptyListTable from '../../pages/components/EmptyListTable';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import ProductsTable from '../../pages/components/ProductsTable';
-import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
 import {
   institutionListSelector,
   institutionSelector,
@@ -66,6 +61,24 @@ const buttonStyle = {
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
+
+  const [initiativeConfig, setInitiativeConfig] = useState<any>(undefined);
+
+  useEffect(() => {
+    void loadItInitiativeConfig('bonusDecoder2026', 'operatore').then((cfg) => {
+      setInitiativeConfig(cfg);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (initiativeConfig) {
+      console.log('Loaded initiativeConfig:', initiativeConfig);
+      console.log('Loaded tableConfig:', initiativeConfig?.tables?.products);
+    }
+  }, [initiativeConfig]);
+
+  const tableConfig = initiativeConfig?.tables?.products;
+  const paginationConfig = tableConfig?.ui?.pagination;
   const [showMsgRejected, setShowMsgRejected] = useState(false);
   const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
   const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
@@ -87,9 +100,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
   const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
   const [drawerData, setDrawerData] = useState<ProductDTO>({});
   const [statusFilter, setStatusFilter] = useState<string>('');
-  const [filtering, setFiltering] = useState<boolean>(false);
+  const [, setFiltering] = useState<boolean>(false);
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(
+    paginationConfig?.defaultRowsPerPage ?? 10
+  );
   const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
   const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
@@ -173,26 +188,49 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     fetchProductList();
   };
 
-  const callProductsApi = () => {
-    const sortKey = `${orderBy},${order}`;
-    const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
+  const buildMockResponse = () => {
+    const baseData: Array<ProductDTO> = Array.from({ length: 42 }).map(
+      (_, i) =>
+        ({
+          gtinCode: `00000000000${i}`,
+          productCode: `PRD-${i}`,
+          category: 'Lavatrice',
+          status: Object.values(PRODUCTS_STATES)[i % 3] as any,
+          batchName: `Batch ${Math.floor(i / 5)}`,
+          brand: `Brand ${i}`,
+          model: `Model ${i}`,
+        } as unknown as ProductDTO)
+    );
 
-    void getProducts(
-      isInvitaliaUser || isInvitaliaAdmin ? producerFilter : user.org_id,
-      page,
-      rowsPerPage,
-      sortKey,
-      categoryFilter ? t(`pages.products.categories.${categoryFilter}`) : '',
-      statusFilter ? t(`pages.products.categories.${statusFilter}`) : '',
-      eprelCodeFilter,
-      gtinCodeFilter,
-      undefined,
-      batchFilter
-    )
-      .then((res) => {
+    const sorted = [...baseData].sort((a: any, b: any) => {
+      if (a[orderBy] < b[orderBy]) {
+        return order === 'asc' ? -1 : 1;
+      }
+      if (a[orderBy] > b[orderBy]) {
+        return order === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+
+    const start = page * rowsPerPage;
+    const paginated = sorted.slice(start, start + rowsPerPage);
+
+    return {
+      content: paginated,
+      pageNo: page,
+      totalElements: sorted.length,
+    };
+  };
+
+  const callProductsApi = () => {
+    const mockData = buildMockResponse();
+
+    Promise.resolve({ data: mockData })
+      .then((res: any) => {
         const { content, pageNo, totalElements } = res.data;
         setTableData(content ? Array.from(content) : []);
         setItemsQty(totalElements);
+
         if (pageNo !== undefined && totalElements) {
           setPaginatorFrom(pageNo * rowsPerPage + 1);
           setPaginatorTo(
@@ -201,9 +239,13 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
               : totalElements
           );
         }
+
         setApiErrorOccurred(false);
       })
-      .catch(() => handleStateForError())
+      .catch(() => {
+        setApiErrorOccurred(true);
+        setTableData([]);
+      })
       .finally(() => {
         setLoading(false);
         setFiltering(false);
@@ -211,11 +253,6 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
 
     dispatch(setBatchName(''));
     dispatch(setBatchId(''));
-  };
-
-  const handleStateForError = () => {
-    setApiErrorOccurred(true);
-    setTableData([]);
   };
 
   useEffect(() => {
@@ -260,15 +297,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     }
     setLoading(true);
     callProductsApi();
-  }, [ready, page, orderBy, order, rowsPerPage, organizationId]);
-
-  useEffect(() => {
-    if (!ready || !filtering) {
-      return;
-    }
-    setLoading(true);
-    callProductsApi();
-  }, [ready, filtering, organizationId]);
+  }, [ready, page, orderBy, order, rowsPerPage]);
 
   const handleDeleteFiltersButtonClick = () => {
     setCategoryFilter('');
@@ -407,6 +436,19 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     eprelCodeFilter,
     gtinCodeFilter,
   ]);
+
+  const effectiveColumns = useMemo(() => {
+    if (tableConfig?.columns?.length) {
+      return tableConfig.columns;
+    }
+    if (tableData.length > 0) {
+      return Object.keys(tableData[0]).map((key) => ({
+        id: key,
+        labelKey: key,
+      }));
+    }
+    return [];
+  }, [tableConfig, tableData]);
 
   const renderActionButtons = () => {
     if (!(tableData?.length > 0 && !loading && selected.length !== 0)) {
@@ -603,6 +645,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
             <ProductsTable
               key={refreshKey}
               tableData={tableData}
+              columns={effectiveColumns}
+              selection={tableConfig?.selection}
               emptyData={EMPTY_DATA}
               order={order}
               orderBy={orderBy}
@@ -622,7 +666,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={PAGINATION_ROWS_PRODUCTS}
+            rowsPerPageOptions={paginationConfig?.rowsPerPageOptions ?? [10, 25, 50, 100]}
             labelRowsPerPage={t('pages.products.elementsPerPage')}
             labelDisplayedRows={() =>
               `${paginatorFrom} - ${paginatorTo} ${t(
