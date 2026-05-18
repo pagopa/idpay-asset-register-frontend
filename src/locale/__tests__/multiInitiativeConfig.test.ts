@@ -7,7 +7,7 @@ describe('multiInitiativeConfig dynamic loading', () => {
     const result = await loadItInitiativeConfig('bonusDecoder2026');
 
     expect(result).toBeDefined();
-    expect(result?.tables).toBeDefined();
-    expect(result?.tables?.products).toBeDefined();
+    expect((result as any).tables).toBeDefined();
+    expect((result as any).tables.products).toBeDefined();
   });
 });
