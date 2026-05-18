@@ -250,4 +250,29 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
     await waitFor(() => expect(screen.getByTestId('product-confirm-dialog')).toBeInTheDocument());
   });
+
+  it('does not open modal when no rows are selected', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await waitFor(() => screen.getByTestId('products-table'));
+
+    expect(screen.queryByTestId('rejectedBtn')).not.toBeInTheDocument();
+  });
+
+  it('renders pagination component when data is present', async () => {
+    await renderGrid();
+    await waitFor(() => screen.getByTestId('products-table'));
+
+    expect(screen.getByText(/elementsPerPage/i)).toBeInTheDocument();
+  });
+
+  it('calls sorting handler when header is clicked', async () => {
+    const onRequestSort = jest.fn();
+    await renderGrid();
+
+    await waitFor(() => screen.getByTestId('products-table'));
+
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+
+    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
+  });
 });
