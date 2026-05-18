@@ -453,18 +453,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     gtinCodeFilter,
   ]);
 
-  const effectiveColumns = useMemo(() => {
-    if (tableConfig?.columns?.length) {
-      return tableConfig.columns;
-    }
-    if (tableData.length > 0) {
-      return Object.keys(tableData[0]).map((key) => ({
-        id: key,
-        labelKey: key,
-      }));
-    }
-    return [];
-  }, [tableConfig, tableData]);
+  const effectiveColumns = useMemo(() => tableConfig?.columns ?? [], [tableConfig]);
 
   const renderActionButtons = () => {
     if (!(tableData?.length > 0 && !loading && selected.length !== 0)) {
@@ -610,6 +599,12 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
       )}
     </>
   );
+
+  // 🔐 Hardening: if table is not explicitly configured via allow-list,
+  // do not render anything (fail-safe model)
+  if (!tableConfig) {
+    return null;
+  }
 
   return (
     <Box width="100%" px={2}>

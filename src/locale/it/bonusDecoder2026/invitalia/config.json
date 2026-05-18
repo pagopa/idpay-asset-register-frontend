@@ -5,17 +5,13 @@
     "invitalia": {
       "logicalName": "L1",
       "permissions": {
-        "tables": {
-          "products": true
-        }
+        "tables": ["products"]
       }
     },
     "invitalia_admin": {
       "logicalName": "L2",
       "permissions": {
-        "tables": {
-          "products": true
-        }
+        "tables": ["products"]
       }
     }
   },

@@ -353,4 +353,27 @@ describe('ProductDataGrid (rewritten)', () => {
 
     expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
+
+  it('does not render component when products table is not configured', async () => {
+    (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockReturnValueOnce({
+      config: { tables: {} },
+      loading: false,
+    });
+
+    const store = createStore();
+
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <I18nextProvider i18n={i18n}>
+            <ThemeProvider theme={theme}>
+              <ProductDataGrid organizationId="org" />
+            </ThemeProvider>
+          </I18nextProvider>
+        </Provider>
+      );
+    });
+
+    expect(screen.queryByTestId('products-table')).not.toBeInTheDocument();
+  });
 });

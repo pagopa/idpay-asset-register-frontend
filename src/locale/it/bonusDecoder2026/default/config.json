@@ -5,17 +5,13 @@
     "default": {
       "logicalName": "Utente Standard",
       "permissions": {
-        "tables": {
-          "products": true
-        }
+        "tables": ["products"]
       }
     },
     "super_admin": {
       "logicalName": "Super Admin",
       "permissions": {
-        "tables": {
-          "products": true
-        }
+        "tables": ["products"]
       }
     }
   },
