@@ -2,11 +2,11 @@
   "commons": {
     "title": "Bonus Decoder"
   },
-  "pages" : {
-   "addProducts": {
-     "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione ",
-     "manualLink": "https://www.mimit.gov.it/it/incentivi/bonus-decoder-a-casa"
-   },
+  "pages": {
+    "addProducts": {
+      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione ",
+      "manualLink": "https://www.mimit.gov.it/it/incentivi/bonus-decoder-a-casa"
+    },
     "tos": {
       "and": "e l’",
       "backHome": "Torna alla home",
@@ -18,6 +18,24 @@
       "title": "Bonus Decoder"
     }
   },
+  "tables": {
+    "products": {
+      "columns": {
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "category": "Categoria",
+        "status": "Stato",
+        "batchName": "Lotto"
+      },
+      "filters": {
+        "category": "Categoria",
+        "status": "Stato",
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "productFileId": "Lotto"
+      }
+    }
+  },
   "categories": {
     "satellite": {"label": "Satellitare", "template": {"type": "csv", "name": "satellitare"}},
     "terrestrial": {"label": "Terrestre", "template": {"type": "csv", "name": "terrestre"}},
@@ -26,19 +44,7 @@
     "terrestrial_satellite_and_via_cable": {"label": "Terrestre, Satellitare e via Cavo", "template": {"type": "csv", "name": "terrestre-satellitare-e-via-cavo"}}
   },
   "csv": {
-    "headers": [
-      "Codice GTIN/EAN",
-      "Codice Prodotto",
-      "Categoria",
-      "Marca",
-      "Modello"
-    ],
-    "fields": [
-      "GTIN123ABC4567",
-      "SKU98765",
-      "{{category}}",
-      "MarcaEsempio",
-      "ModelloX100"
-    ]
+    "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
+    "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
   }
 }

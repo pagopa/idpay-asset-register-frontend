@@ -11,7 +11,6 @@ import {
   MAX_LENGTH_DETAILL_PR,
   MIDDLE_STATES,
   PRODUCTS_STATES,
-  USERS_NAMES,
   USERS_TYPES,
 } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
@@ -219,7 +218,7 @@ type ProductInfoRowsProps = {
 };
 
 function renderEntry(entry: any, idx: number) {
-  const operator = entry?.role ? `${USERS_NAMES.OPERATORE} ${entry.role}` : USERS_NAMES.OPERATORE;
+  const operator = entry?.role ? `Produttore ${entry.role}` : 'Produttore';
   const dateLabel = entry?.updateDate
     ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
     : EMPTY_DATA;
@@ -315,9 +314,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
 
   function getFormalMotivationOperator(user: any, chronology: Array<any>) {
     if (user?.org_role !== USERS_TYPES.OPERATORE) {
-      return chronology[0]?.role
-        ? `${USERS_NAMES.OPERATORE} ${chronology[0].role}`
-        : USERS_NAMES.OPERATORE;
+      return chronology[0]?.role ? `Produttore ${chronology[0].role}` : 'Produttore';
     }
     return '';
   }
@@ -703,7 +700,7 @@ export default function ProductDetail({
           confirmButtonText={t('invitaliaModal.waitApproved.buttonTextConfirm')}
           title={t('invitaliaModal.waitApproved.listTitle')}
           message={t('invitaliaModal.waitApproved.description', {
-            L2: USERS_NAMES.INVITALIA_L2,
+            L2: 'L2',
           })}
           onCancel={() => setRestoreDialogOpen(false)}
           onConfirm={handleConfirmRestore}
