@@ -1,8 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ProductsTable from '../ProductsTable';
-import { ProductStatus } from '../../../api/generated/register';
 
 jest.mock('../../../hooks/useScopedTranslation', () => ({
   __esModule: true,
@@ -23,12 +22,12 @@ const baseData = [
   {
     category: 'Lavatrice',
     gtinCode: 'GTIN-1',
-    status: ProductStatus.SUPERVISED,
+    status: 'SUPERVISED',
   },
   {
     category: 'Forno',
     gtinCode: 'GTIN-2',
-    status: ProductStatus.REJECTED,
+    status: 'REJECTED',
   },
 ];
 
@@ -86,10 +85,12 @@ describe('ProductsTable (rewritten)', () => {
     const { handleListButtonClick } = renderTable();
 
     const rows = screen.getAllByRole('row');
-    const firstDataRow = rows[1]; // skip header row
+    const firstDataRow = rows[1]; // skip header
 
-    const actionButton = firstDataRow.querySelector('button');
-    fireEvent.click(actionButton as HTMLElement);
+    const actionCell = within(firstDataRow).getAllByRole('cell').pop();
+    const actionButton = within(actionCell as HTMLElement).getByRole('button');
+
+    fireEvent.click(actionButton);
 
     expect(handleListButtonClick).toHaveBeenCalledWith(
       expect.objectContaining({ category: 'Lavatrice' })
