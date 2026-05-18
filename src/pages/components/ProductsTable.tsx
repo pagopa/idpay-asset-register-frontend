@@ -50,7 +50,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   handleListButtonClick,
   emptyData,
 }) => {
-  const { t, initiativeName } = useScopedTranslation();
+  const { t } = useScopedTranslation();
 
   const handleCheckboxClick = (gtinCode: string) => {
     setSelected((prev) =>
