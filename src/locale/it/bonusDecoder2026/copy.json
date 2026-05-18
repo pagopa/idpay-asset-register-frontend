@@ -19,11 +19,11 @@
     }
   },
   "categories": {
-    "ds": "Satellitare",
-    "dt": "Terrestre",
-    "dtc": "Terrestre via Cavo",
-    "dts": "Terrestre e Satellitare",
-    "dtsc": "Terrestre, Satellitare e via Cavo"
+    "satellite": "Satellitare",
+    "terrestrial": "Terrestre",
+    "terrestrial_via_cable": "Terrestre via Cavo",
+    "terrestrial_and_satellite": "Terrestre e Satellitare",
+    "terrestrial_satellite_and_via_cable": "Terrestre, Satellitare e via Cavo"
   },
   "csv": {
     "headers": [
