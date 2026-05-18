@@ -85,8 +85,11 @@ describe('ProductsTable (rewritten)', () => {
   it('calls handleListButtonClick when action icon is clicked', () => {
     const { handleListButtonClick } = renderTable();
 
-    const buttons = screen.getAllByRole('button');
-    fireEvent.click(buttons[0]);
+    const rows = screen.getAllByRole('row');
+    const firstDataRow = rows[1]; // skip header row
+
+    const actionButton = firstDataRow.querySelector('button');
+    fireEvent.click(actionButton as HTMLElement);
 
     expect(handleListButtonClick).toHaveBeenCalledWith(
       expect.objectContaining({ category: 'Lavatrice' })

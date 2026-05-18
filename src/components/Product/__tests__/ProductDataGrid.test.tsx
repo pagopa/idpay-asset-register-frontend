@@ -12,7 +12,6 @@ import * as useInitiativeConfigHook from '../../../hooks/useInitiativeConfig';
 import { productsSlice } from '../../../redux/slices/productsSlice';
 import { invitaliaSlice } from '../../../redux/slices/invitaliaSlice';
 import { USERS_TYPES } from '../../../utils/constants';
-import { ProductStatus } from '../../../api/generated/register';
 
 jest.mock('../../../services/registerService');
 jest.mock('../../../helpers');
@@ -50,13 +49,21 @@ jest.mock('../ProductDetail', () => ({
 
 jest.mock('../ProductModal', () => ({
   __esModule: true,
-  default: ({ open, onClose, onSuccess }: any) =>
-    open ? (
+  default: ({ open, onClose, onSuccess }: any) => {
+    const { ProductStatus } = require('../../../api/generated/register');
+    return open ? (
       <div data-testid="product-modal">
         <button onClick={onClose}>Close Modal</button>
-        <button onClick={() => onSuccess?.(ProductStatus.REJECTED)}>Success</button>
+        <button
+          onClick={() =>
+            onSuccess?.(require('../../../api/generated/register').ProductStatus.REJECTED)
+          }
+        >
+          Success
+        </button>
       </div>
-    ) : null,
+    ) : null;
+  },
 }));
 
 jest.mock('../ProductConfirmDialog', () => ({
@@ -106,7 +113,7 @@ jest.mock('../../../pages/components/EmptyListTable', () => ({
 jest.mock('../ProductDataGrid.helpers', () => ({
   __esModule: true,
   getStatusChecks: jest.fn(() => ({
-    selectedStatuses: [ProductStatus.SUPERVISED],
+    selectedStatuses: [require('../../../api/generated/register').ProductStatus.SUPERVISED],
     someUploaded: false,
     length: 1,
   })),
@@ -118,14 +125,14 @@ const mockProducts = [
     productName: 'Prod 1',
     gtinCode: 'GTIN1',
     category: 'Cat',
-    status: ProductStatus.SUPERVISED,
+    status: 'SUPERVISED',
   },
   {
     id: '2',
     productName: 'Prod 2',
     gtinCode: 'GTIN2',
     category: 'Cat',
-    status: ProductStatus.REJECTED,
+    status: 'REJECTED',
   },
 ];
 
