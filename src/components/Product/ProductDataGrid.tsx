@@ -7,7 +7,7 @@ import { grey } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
-import { loadItInitiativeConfig } from '../../locale/multiInitiativeConfig';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { getBatchFilterList, getInstitutionsList } from '../../services/registerService';
 import {
   EMPTY_DATA,
@@ -62,20 +62,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
 
-  const [initiativeConfig, setInitiativeConfig] = useState<any>(undefined);
-
-  useEffect(() => {
-    void loadItInitiativeConfig('bonusDecoder2026', 'operatore').then((cfg) => {
-      setInitiativeConfig(cfg);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (initiativeConfig) {
-      console.log('Loaded initiativeConfig:', initiativeConfig);
-      console.log('Loaded tableConfig:', initiativeConfig?.tables?.products);
-    }
-  }, [initiativeConfig]);
+  const { config: initiativeConfig } = useInitiativeConfig();
 
   const tableConfig = initiativeConfig?.tables?.products;
   const paginationConfig = tableConfig?.ui?.pagination;

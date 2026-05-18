@@ -9,6 +9,8 @@ import ProductDataGrid from '../ProductDataGrid';
 import * as registerService from '../../../services/registerService';
 import * as useLogin from '../../../hooks/useLogin';
 import * as helpers from '../../../helpers';
+import * as useInitiativeConfigHook from '../../../hooks/useInitiativeConfig';
+import operatoreConfig from '../../../locale/it/bonusDecoder2026/operatore/config.json';
 import { productsSlice } from '../../../redux/slices/productsSlice';
 import { invitaliaSlice } from '../../../redux/slices/invitaliaSlice';
 import { USERS_TYPES } from '../../../utils/constants';
@@ -34,6 +36,7 @@ jest.mock('../../../api/registerApiClient', () => ({
 jest.mock('../../../services/registerService');
 jest.mock('../../../hooks/useLogin');
 jest.mock('../../../helpers');
+jest.mock('../../../hooks/useInitiativeConfig');
 jest.mock('../../DetailDrawer/DetailDrawer', () => ({
   __esModule: true,
   default: ({ children, open, toggleDrawer }: any) =>
@@ -144,7 +147,7 @@ jest.mock('../../../redux/api/initiativesApi', () => ({
   useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
 }));
 
-const mockProductData = [
+const mockProductData: any[] = [
   {
     id: '1',
     productName: 'Test Product 1',
@@ -228,6 +231,12 @@ describe('ProductDataGrid', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockReturnValue({
+      config: operatoreConfig,
+      loading: false,
+    });
+
     Object.defineProperty(window, 'localStorage', {
       value: {
         getItem: jest.fn(() => 'mock-token'),
@@ -243,8 +252,10 @@ describe('ProductDataGrid', () => {
         pageNo: 0 as any,
         totalElements: 2 as any,
       },
-    });
-    mockGetBatchFilterList.mockResolvedValue({ data: mockBatchFilterItems });
+    } as any);
+    mockGetBatchFilterList.mockResolvedValue({
+      data: mockBatchFilterItems,
+    } as any);
     mockUserFromJwtToken.mockReturnValue({
       org_id: 'test-org-id',
       org_role: 'USER',
@@ -282,7 +293,13 @@ describe('ProductDataGrid', () => {
     });
 
     it('renders empty state when no products', async () => {
-      mockGetProducts.mockResolvedValue({ content: [], pageNo: 0 as any, totalElements: 0 as any });
+      mockGetProducts.mockResolvedValue({
+        data: {
+          content: [] as any,
+          pageNo: 0 as any,
+          totalElements: 0 as any,
+        },
+      } as any);
       renderComponent();
       await waitFor(() => expect(screen.getByTestId('empty-list')).toBeInTheDocument());
     });
@@ -458,7 +475,7 @@ const renderGrid = (props = {}, storeState = {}) => {
   );
 };
 
-const baseProducts = [
+const baseProducts: any[] = [
   {
     id: '1',
     productName: 'Test Product 1',
@@ -505,6 +522,11 @@ describe('ProductDataGrid – extra coverage', () => {
     jest.clearAllMocks();
     jest.useRealTimers();
 
+    (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockReturnValue({
+      config: operatoreConfig,
+      loading: false,
+    });
+
     Object.defineProperty(window, 'localStorage', {
       value: {
         getItem: jest.fn(() => 'mock-token'),
@@ -517,35 +539,33 @@ describe('ProductDataGrid – extra coverage', () => {
 
     mockGetProducts.mockResolvedValue({
       data: {
-        content: baseProducts,
+        content: baseProducts as any,
         pageNo: 0 as any,
         totalElements: 2 as any,
       },
-    });
+    } as any);
     mockGetBatchFilterList.mockResolvedValue({
       data: [
         { productFileId: 'BATCH1', batchName: 'Batch 1' },
         { productFileId: 'BATCH2', batchName: 'Batch 2' },
       ],
-    });
+    } as any);
     mockUserFromJwtToken.mockReturnValue({
-      data: {
-        org_id: 'test-org-id',
-        org_role: 'USER',
-        uid: '',
-        taxCode: '',
-        name: '',
-        surname: '',
-        email: '',
-        org_name: '',
-        org_party_role: '',
-        org_address: '',
-        org_pec: '',
-        org_taxcode: '',
-        org_vat: '',
-        org_email: '',
-      },
-    });
+      org_id: 'test-org-id',
+      org_role: 'USER',
+      uid: '',
+      taxCode: '',
+      name: '',
+      surname: '',
+      email: '',
+      org_name: '',
+      org_party_role: '',
+      org_address: '',
+      org_pec: '',
+      org_taxcode: '',
+      org_vat: '',
+      org_email: '',
+    } as any);
     mockFetchUserFromLocalStorage.mockReturnValue({
       org_id: 'test-org-id',
       org_role: 'USER',
@@ -584,12 +604,12 @@ describe('ProductDataGrid – extra coverage', () => {
             gtinCode: 'GTIN003',
             productName: 'Already Waiting',
             status: ProductStatus.WAIT_APPROVED,
-          },
+          } as any,
         ],
         pageNo: 0 as any,
         totalElements: 1 as any,
       },
-    });
+    } as any);
 
     renderGrid();
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());

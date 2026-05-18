@@ -1,7 +1,7 @@
 export const testToken = '';
 
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
-export const DEBUG_CONSOLE = true;
+export const DEBUG_CONSOLE = false;
 export const MOCK_USER = IS_DEVELOP;
 export const LOG_REDUX_ACTIONS = false;
 
@@ -28,7 +28,7 @@ export enum USERS_TYPES {
   INVITALIA_L1 = 'invitalia',
   INVITALIA_L2 = 'invitalia_admin',
 }
-
+// Deprecation imminent, to be removed in favor of config.json
 export enum USERS_NAMES {
   OPERATORE = 'Operatore',
   INVITALIA_L1 = 'L1',
