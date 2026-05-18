@@ -43,6 +43,7 @@ import { Institution } from '../../model/Institution';
 import { setWaitApprovedStatusList } from '../../services/registerService';
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
 import { BatchFilterItems, Order } from './helpers';
 import { getStatusChecks } from './ProductDataGrid.helpers';
 import ProductDetail from './ProductDetail';
@@ -229,9 +230,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
 
   const callProductsApi = async () => {
     try {
+      const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
       const targetId = isInvitaliaUser
         ? producerFilter || institution?.institutionId || ''
-        : organizationId;
+        : organizationId || user?.org_id || '';
 
       const res = await getProducts(
         initiativeId,
