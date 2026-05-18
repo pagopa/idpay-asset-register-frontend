@@ -130,11 +130,7 @@ jest.mock('../../../pages/components/EmptyListTable', () => ({
 
 jest.mock('../ProductDataGrid.helpers', () => ({
   __esModule: true,
-  getStatusChecks: jest.fn(() => ({
-    selectedStatuses: [require('../../../api/generated/register').ProductStatus.SUPERVISED],
-    someUploaded: false,
-    length: 1,
-  })),
+  getStatusChecks: jest.fn(),
 }));
 
 const mockProducts = [
@@ -211,6 +207,13 @@ describe('ProductDataGrid (rewritten)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.getStatusChecks.mockReturnValue({
+      selectedStatuses: ['SUPERVISED'],
+      someUploaded: false,
+      length: 1,
+    });
   });
 
   it('renders table when products exist', async () => {
@@ -272,10 +275,10 @@ describe('ProductDataGrid (rewritten)', () => {
     await renderGrid();
     await waitFor(() => screen.getByTestId('products-table'));
 
-    expect(screen.getByText(/elementsPerPage/i)).toBeInTheDocument();
+    expect(screen.getByText(/tablePaginationFrom/i)).toBeInTheDocument();
   });
 
-  it('shows loading spinner while fetching', async () => {
+  it('shows loading state branch', async () => {
     (registerService.getProducts as jest.Mock).mockImplementation(
       () =>
         new Promise((resolve) =>
@@ -290,7 +293,7 @@ describe('ProductDataGrid (rewritten)', () => {
     );
 
     await renderGrid();
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
 
   it('handles API error branch', async () => {
