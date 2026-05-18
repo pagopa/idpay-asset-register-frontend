@@ -8,7 +8,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
-import { getBatchFilterList, getInstitutionsList } from '../../services/registerService';
+import {
+  getBatchFilterList,
+  getInstitutionsList,
+  getProducts,
+} from '../../services/registerService';
 import {
   EMPTY_DATA,
   USERS_TYPES,
@@ -155,7 +159,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
 
   const fetchProductList = () => {
     setLoading(true);
-    callProductsApi();
+    void callProductsApi();
   };
 
   const fetchInstitutions = async () => {
@@ -175,6 +179,17 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     fetchProductList();
   };
 
+  /**
+   * MOCK DATA GENERATOR
+   * ------------------------------------------------------------
+   * Used for local development / offline testing / UI demo.
+   *
+   * ⚠️ Not used in production.
+   * To re-enable:
+   * - Uncomment this function
+   * - Replace real API call inside callProductsApi
+   */
+  /*
   const buildMockResponse = () => {
     const baseData: Array<ProductDTO> = Array.from({ length: 42 }).map(
       (_, i) =>
@@ -208,35 +223,49 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
       totalElements: sorted.length,
     };
   };
+  */
 
-  const callProductsApi = () => {
-    const mockData = buildMockResponse();
+  const callProductsApi = async () => {
+    try {
+      const targetId = isInvitaliaUser
+        ? producerFilter || institution?.institutionId || ''
+        : organizationId;
 
-    Promise.resolve({ data: mockData })
-      .then((res: any) => {
-        const { content, pageNo, totalElements } = res.data;
-        setTableData(content ? Array.from(content) : []);
-        setItemsQty(totalElements);
+      const res = await getProducts(
+        targetId,
+        page,
+        rowsPerPage,
+        `${orderBy},${order}`,
+        categoryFilter,
+        producerFilter,
+        batchFilter,
+        eprelCodeFilter,
+        statusFilter || undefined,
+        gtinCodeFilter
+      );
 
-        if (pageNo !== undefined && totalElements) {
-          setPaginatorFrom(pageNo * rowsPerPage + 1);
-          setPaginatorTo(
-            rowsPerPage * (Number(pageNo) + 1) < totalElements
-              ? rowsPerPage * (Number(pageNo) + 1)
-              : totalElements
-          );
-        }
+      const { content, pageNo, totalElements } = res.data;
 
-        setApiErrorOccurred(false);
-      })
-      .catch(() => {
-        setApiErrorOccurred(true);
-        setTableData([]);
-      })
-      .finally(() => {
-        setLoading(false);
-        setFiltering(false);
-      });
+      setTableData(content ? Array.from(content) : []);
+      setItemsQty(totalElements);
+
+      if (pageNo !== undefined && totalElements) {
+        setPaginatorFrom(pageNo * rowsPerPage + 1);
+        setPaginatorTo(
+          rowsPerPage * (Number(pageNo) + 1) < totalElements
+            ? rowsPerPage * (Number(pageNo) + 1)
+            : totalElements
+        );
+      }
+
+      setApiErrorOccurred(false);
+    } catch {
+      setApiErrorOccurred(true);
+      setTableData([]);
+    } finally {
+      setLoading(false);
+      setFiltering(false);
+    }
 
     dispatch(setBatchName(''));
     dispatch(setBatchId(''));
@@ -283,7 +312,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
       return;
     }
     setLoading(true);
-    callProductsApi();
+    void callProductsApi();
   }, [ready, page, orderBy, order, rowsPerPage]);
 
   const handleDeleteFiltersButtonClick = () => {
