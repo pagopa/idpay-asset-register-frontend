@@ -344,10 +344,10 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
             onClick={() => onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ""), { replace: true }))}
             data-testid="cancel-button-test"
           >
-            {t('commons.backBtn')}
+            {t('common.backBtn')}
           </Button>
           <Button variant="contained" onClick={handleContinue} data-testid="continue-button-test">
-            {t('commons.continueBtn')}
+            {t('common.continueBtn')}
           </Button>
         </Box>
       </>

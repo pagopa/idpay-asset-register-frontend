@@ -35,7 +35,7 @@ const UpcomingInitiative = () => {
         sx={{ height: 44, minWidth: 100, mt: 3 }}
         onClick={() => onExit(customExitAction)}
       >
-        {t('commons.closeBtn')}
+        {t('common.closeBtn')}
       </Button>
     </Box>
   );
