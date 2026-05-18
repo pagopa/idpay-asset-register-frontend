@@ -17,6 +17,16 @@ jest.mock('../../../services/registerService');
 jest.mock('../../../helpers');
 jest.mock('../../../hooks/useInitiativeConfig');
 
+jest.mock('../../../redux/api/initiativesApi', () => ({
+  __esModule: true,
+  useGetInitiativesQuery: jest.fn(() => ({
+    data: [],
+    isLoading: false,
+    isError: false,
+    refetch: jest.fn(),
+  })),
+}));
+
 jest.mock('../../DetailDrawer/DetailDrawer', () => ({
   __esModule: true,
   default: ({ children, open, toggleDrawer }: any) =>
