@@ -768,8 +768,8 @@ components:
       properties:
         initiativeId:
           type: string
-          description: 'ENG: Initiative Id <br> IT: Id del iniziativa'
-          maxLength: 24
+          description: 'ENG: The id of the initiative <br> IT: Id dell iniziativa'
+          maxLength: 36
           pattern: ^[a-fA-F0-9]{24}$
         organizationId:
           type: string
