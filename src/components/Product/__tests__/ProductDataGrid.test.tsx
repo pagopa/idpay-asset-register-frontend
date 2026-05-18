@@ -49,9 +49,8 @@ jest.mock('../ProductDetail', () => ({
 
 jest.mock('../ProductModal', () => ({
   __esModule: true,
-  default: ({ open, onClose, onSuccess }: any) => {
-    const { ProductStatus } = require('../../../api/generated/register');
-    return open ? (
+  default: ({ open, onClose, onSuccess }: any) =>
+    open ? (
       <div data-testid="product-modal">
         <button onClick={onClose}>Close Modal</button>
         <button
@@ -62,8 +61,7 @@ jest.mock('../ProductModal', () => ({
           Success
         </button>
       </div>
-    ) : null;
-  },
+    ) : null,
 }));
 
 jest.mock('../ProductConfirmDialog', () => ({
