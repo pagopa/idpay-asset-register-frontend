@@ -2,7 +2,7 @@
 
 import { loadItInitiativeConfig } from '../multiInitiativeConfig';
 
-jest.mock('../it/testInitiative/default/config.json', () => ({
+jest.mock('../it/bonusDecoder2026/default/config.json', () => ({
   __esModule: true,
   default: {
     tables: {
