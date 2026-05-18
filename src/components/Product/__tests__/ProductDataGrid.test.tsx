@@ -17,6 +17,16 @@ jest.mock('../../../services/registerService');
 jest.mock('../../../helpers');
 jest.mock('../../../hooks/useInitiativeConfig');
 
+jest.mock('../../../hooks/useInitiativesQuery', () => ({
+  __esModule: true,
+  useInitiativesQuery: () => ({
+    initiatives: [],
+    isLoading: false,
+    isError: false,
+    refetch: jest.fn(),
+  }),
+}));
+
 jest.mock('../../../redux/api/initiativesApi', () => ({
   __esModule: true,
   useGetInitiativesQuery: jest.fn(() => ({
