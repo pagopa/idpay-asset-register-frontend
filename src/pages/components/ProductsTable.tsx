@@ -40,7 +40,7 @@ interface ProductsTableProps {
 
 const ProductsTable: React.FC<ProductsTableProps> = ({
   tableData,
-  columns,
+  columns = [],
   selection,
   order,
   orderBy,
@@ -51,7 +51,6 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   emptyData,
 }) => {
   const { t, initiativeName } = useScopedTranslation();
-  console.log('ProductsTable initiativeName:', initiativeName);
 
   const handleCheckboxClick = (gtinCode: string) => {
     setSelected((prev) =>
@@ -64,7 +63,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       <Table size="small">
         <TableHead>
           <TableRow>
-            {columns.map((col) => (
+            {(columns || []).map((col) => (
               <TableCell key={col.id}>
                 {col.sortable ? (
                   <TableSortLabel
@@ -84,12 +83,12 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <TableBody>
           {tableData.length === 0 && (
             <TableRow>
-              <TableCell colSpan={columns.length}>{emptyData ?? '-'}</TableCell>
+              <TableCell colSpan={(columns || []).length}>{emptyData ?? '-'}</TableCell>
             </TableRow>
           )}
           {tableData.map((row, index) => (
             <TableRow key={index} hover>
-              {columns.map((col) => {
+              {(columns || []).map((col) => {
                 if (col.type === 'checkbox' && selection?.enabled) {
                   return (
                     <TableCell key={col.id}>

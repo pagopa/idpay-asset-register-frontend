@@ -2,18 +2,9 @@
 
 import { loadItInitiativeConfig } from '../multiInitiativeConfig';
 
-jest.mock('../it/bonusDecoder2026/default/config.json', () => ({
-  __esModule: true,
-  default: {
-    tables: {
-      products: { columns: [] },
-    },
-  },
-}));
-
 describe('multiInitiativeConfig dynamic loading', () => {
   it('should load default config dynamically', async () => {
-    const result = await loadItInitiativeConfig('testInitiative');
+    const result = await loadItInitiativeConfig('bonusDecoder2026');
 
     expect(result).toBeDefined();
     expect(result?.tables).toBeDefined();

@@ -2,19 +2,6 @@
 
 import { loadItNamespace } from '../multiInitiativeI18n';
 
-jest.mock('../it/testInitiative/copy.json', () => ({
-  __esModule: true,
-  default: {
-    tables: {
-      products: {
-        columns: {
-          gtinCode: 'Codice GTIN',
-        },
-      },
-    },
-  },
-}));
-
 describe('multiInitiativeI18n dynamic namespace loading', () => {
   it('should load initiative copy namespace dynamically', async () => {
     const result = await loadItNamespace('testInitiative/copy');

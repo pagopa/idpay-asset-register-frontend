@@ -198,17 +198,23 @@ const createMockStore = (initialState: any = {}) =>
 
 const theme = createTheme();
 
-const renderComponent = (props = {}, storeState = {}) => {
+const renderComponent = async (props = {}, storeState = {}) => {
   const store = createMockStore(storeState);
-  return render(
-    <Provider store={store}>
-      <I18nextProvider i18n={i18n}>
-        <ThemeProvider theme={theme}>
-          <ProductDataGrid organizationId="test-org-id" {...props} />
-        </ThemeProvider>
-      </I18nextProvider>
-    </Provider>
-  );
+
+  let result: any;
+  await act(async () => {
+    result = render(
+      <Provider store={store}>
+        <I18nextProvider i18n={i18n}>
+          <ThemeProvider theme={theme}>
+            <ProductDataGrid organizationId="test-org-id" {...props} />
+          </ThemeProvider>
+        </I18nextProvider>
+      </Provider>
+    );
+  });
+
+  return result;
 };
 
 describe('ProductDataGrid', () => {
@@ -312,7 +318,7 @@ describe('ProductDataGrid', () => {
         expect(mockGetProducts).toHaveBeenCalledWith(
           'test-org-id',
           0,
-          10,
+          operatoreConfig.tables.products.ui.pagination.defaultRowsPerPage,
           'category,asc',
           '',
           '',
@@ -340,7 +346,7 @@ describe('ProductDataGrid', () => {
         expect(mockGetProducts).toHaveBeenCalledWith(
           'invitalia-inst-id',
           0,
-          10,
+          operatoreConfig.tables.products.ui.pagination.defaultRowsPerPage,
           'category,asc',
           '',
           '',
@@ -462,17 +468,23 @@ jest.mock('../ProductDataGrid.helpers', () => ({
   getStatusChecks: jest.fn(),
 }));
 
-const renderGrid = (props = {}, storeState = {}) => {
+const renderGrid = async (props = {}, storeState = {}) => {
   const store = createMockStore(storeState);
-  return render(
-    <Provider store={store}>
-      <I18nextProvider i18n={i18n}>
-        <ThemeProvider theme={theme}>
-          <ProductDataGrid organizationId="test-org-id" {...props} />
-        </ThemeProvider>
-      </I18nextProvider>
-    </Provider>
-  );
+
+  let result: any;
+  await act(async () => {
+    result = render(
+      <Provider store={store}>
+        <I18nextProvider i18n={i18n}>
+          <ThemeProvider theme={theme}>
+            <ProductDataGrid organizationId="test-org-id" {...props} />
+          </ThemeProvider>
+        </I18nextProvider>
+      </Provider>
+    );
+  });
+
+  return result;
 };
 
 const baseProducts: any[] = [
