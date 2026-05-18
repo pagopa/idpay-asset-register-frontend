@@ -1,7 +1,7 @@
 export const testToken = '';
 
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
-export const DEBUG_CONSOLE = true;
+export const DEBUG_CONSOLE = false;
 export const MOCK_USER = IS_DEVELOP;
 export const LOG_REDUX_ACTIONS = false;
 
@@ -9,7 +9,6 @@ export const LOADING_TASK_LOGIN_CHECK = 'LOGIN_CHECK';
 export const LOADING_TASK_SEARCH_PARTIES = 'SEARCH_PARTIES';
 export const LOADING_TASK_SEARCH_PARTY = 'SEARCH_PARTY';
 export const LOADING_TASK_SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
-
 
 export enum PRODUCTS_STATES {
   UPLOADED = 'UPLOADED',
@@ -29,7 +28,7 @@ export enum USERS_TYPES {
   INVITALIA_L1 = 'invitalia',
   INVITALIA_L2 = 'invitalia_admin',
 }
-
+// Deprecation imminent, to be removed in favor of config.json
 export enum USERS_NAMES {
   OPERATORE = 'Operatore',
   INVITALIA_L1 = 'L1',
@@ -40,7 +39,7 @@ export const EMPTY_DATA = '-';
 // export const L1_MOTIVATION_OK = 'Da approvare';
 // export const L2_MOTIVATION_OK = 'Approvato';
 export const MAX_TABLE_HEIGHT = 700;
-export const PAGINATION_ROWS_PRODUCTS = [10, 25, 50, 100];
+// export const PAGINATION_ROWS_PRODUCTS = [10, 25, 50, 100];
 export const PAGINATION_ROWS_UPLOADS = 20;
 
 export const MAX_LENGTH_EMAIL: number = 40;
@@ -55,7 +54,7 @@ export const RESOLUTION_UPSCALING = 1440;
 export const MIN_LENGTH_TEXTFIELD_POPUP = 2;
 export const MAX_LENGTH_TEXTFIELD_POPUP = 200;
 
-export const UPCOMING_INITIATIVE_DAY = "20/10/2025";
+export const UPCOMING_INITIATIVE_DAY = '20/10/2025';
 
 export const MOCKED_INITIATIVES_LIST = [
   {
