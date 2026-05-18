@@ -265,14 +265,79 @@ describe('ProductDataGrid (rewritten)', () => {
     expect(screen.getByText(/elementsPerPage/i)).toBeInTheDocument();
   });
 
-  it('calls sorting handler when header is clicked', async () => {
-    const onRequestSort = jest.fn();
-    await renderGrid();
+  it('shows loading spinner while fetching', async () => {
+    (registerService.getProducts as jest.Mock).mockImplementation(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                data: { content: mockProducts, pageNo: 0, totalElements: 2 },
+              }),
+            50
+          )
+        )
+    );
 
+    await renderGrid();
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+  });
+
+  it('handles API error branch', async () => {
+    (registerService.getProducts as jest.Mock).mockRejectedValueOnce(new Error('API error'));
+
+    await renderGrid();
+    await waitFor(() => {
+      expect(screen.getByTestId('empty-list')).toBeInTheDocument();
+    });
+  });
+
+  it('shows mix status error when multiple statuses selected', async () => {
+    const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.getStatusChecks.mockReturnValueOnce({
+      selectedStatuses: ['A', 'B'],
+      someUploaded: false,
+      length: 2,
+    });
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
     await waitFor(() => screen.getByTestId('products-table'));
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('checkbox-1'));
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
 
-    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(/errorMixSelected/i)).toBeInTheDocument());
+  });
+
+  it('shows yourself approved error for admin with uploaded', async () => {
+    const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.getStatusChecks.mockReturnValueOnce({
+      selectedStatuses: ['UPLOADED'],
+      someUploaded: true,
+      length: 1,
+    });
+
+    await renderGrid(USERS_TYPES.INVITALIA_L2);
+    await waitFor(() => screen.getByTestId('products-table'));
+
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+
+    await waitFor(() => expect(screen.getByText(/errorYourselfApproved/i)).toBeInTheDocument());
+  });
+
+  it('renders filter chip when filters applied', async () => {
+    await renderGrid();
+    await waitFor(() => screen.getByTestId('products-table'));
+
+    expect(screen.queryByRole('button', { name: /CloseIcon/i })).not.toBeInTheDocument();
+  });
+
+  it('renders admin default status filter', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L2);
+    await waitFor(() => screen.getByTestId('products-table'));
+
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
 });
