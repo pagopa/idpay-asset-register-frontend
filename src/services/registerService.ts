@@ -12,11 +12,12 @@ import { InitiativeDTO } from '../api/generated/register';
 import { DEBUG_CONSOLE } from '../utils/constants';
 
 export const uploadProductList = async (
+  initiativeId: string,
   csv: File,
   category: UploadProductListParams['category']
 ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
   try {
-    return await RegisterApi.uploadProductList(csv, category);
+    return await RegisterApi.uploadProductList(initiativeId, csv, category);
   } catch (error: any) {
     if (DEBUG_CONSOLE) {
       const errorKey = error?.response?.data?.errorKey;
@@ -30,11 +31,12 @@ export const uploadProductList = async (
 };
 
 export const uploadProductListVerify = async (
+  initiativeId: string,
   csv: File,
   category: UploadProductListParams['category']
 ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
   try {
-    return await RegisterApi.uploadProductListVerify(csv, category);
+    return await RegisterApi.uploadProductListVerify(initiativeId, csv, category);
   } catch (error: any) {
     if (DEBUG_CONSOLE) {
       const errorKey = error?.response?.data?.errorKey;
@@ -48,10 +50,11 @@ export const uploadProductListVerify = async (
 };
 
 export const downloadErrorReport = async (
+  initiativeId: string,
   productFileId: string
 ): Promise<{ data: CsvDTO; filename: string }> => {
   try {
-    return await RegisterApi.downloadErrorReport(productFileId);
+    return await RegisterApi.downloadErrorReport(initiativeId, productFileId);
   } catch (error: any) {
     if (DEBUG_CONSOLE) {
       const errorKey = error?.response?.data?.errorKey;
@@ -65,11 +68,12 @@ export const downloadErrorReport = async (
 };
 
 export const getProductFilesList = async (
+  initiativeId: string,
   page?: number,
   size?: number
 ): Promise<AxiosResponse<UploadsListDTO>> => {
   try {
-    return await RegisterApi.getProductFiles(page, size);
+    return await RegisterApi.getProductFiles(initiativeId, page, size);
   } catch (error: any) {
     logProductError('RegisterApi.getProductFiles', error);
     return {
@@ -252,6 +256,7 @@ function logProductError(nameService: string, error: any) {
 }
 
 export const getProducts = async (
+  initiativeId: string, 
   organizationId: string,
   page?: number,
   size?: number,
@@ -265,6 +270,7 @@ export const getProducts = async (
 ): Promise<AxiosResponse<ProductListDTO>> => {
   try {
     const result = await RegisterApi.getProductList(
+      initiativeId, 
       organizationId,
       page,
       size,
@@ -388,10 +394,11 @@ export const setRestoredStatusList = async (
 };
 
 export const getBatchFilterList = async (
+  initiativeId: string,
   xOrganizationSelected: string
 ): Promise<AxiosResponse<BatchList>> => {
   try {
-    return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
+    return await RegisterApi.getBatchFilterItems(initiativeId, xOrganizationSelected);
   } catch (error: any) {
     logProductError('RegisterApi.getBatchFilterItems', error);
     return [] as unknown as AxiosResponse<BatchList>;

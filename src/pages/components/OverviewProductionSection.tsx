@@ -307,6 +307,7 @@ const UploadsTable: React.FC<{
 const OverviewProductionSection: React.FC = () => {
   const { t } = useScopedTranslation();
   const onExit = useUnloadEventOnExit();
+  const initiativeId = useCurrentInitiativeId();
 
   const [data, setData] = useState<UploadsListDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -317,7 +318,7 @@ const OverviewProductionSection: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getProductFilesList(0, rowsPerPage)
+    getProductFilesList(initiativeId, 0, rowsPerPage)
       .then((res) => {
         setData(res.data);
         setLoading(false);

@@ -47,12 +47,13 @@ jest.mock('../generated/register', () => {
         getPortalConsent: jest.fn(),
         savePortalConsent: jest.fn(),
       },
-      productFiles: {
+      initiatives: {
         uploadProductList: jest.fn(),
         getProductFilesList: jest.fn(),
         verifyProductList: jest.fn(),
         downloadErrorReport: jest.fn(),
         getBatchNameList: jest.fn(),
+        getProducts: jest.fn(),
       },
       products: {
         updateProductStatusApproved: jest.fn(),
@@ -60,7 +61,6 @@ jest.mock('../generated/register', () => {
         updateProductStatusSupervised: jest.fn(),
         updateProductStatusRejected: jest.fn(),
         updateProductStatusRestored: jest.fn(),
-        getProducts: jest.fn(),
       },
       institutions: {
         retrieveInstitutionById: jest.fn(),
@@ -174,10 +174,10 @@ describe('response interceptor', () => {
 
   describe('error handler - 401', () => {
     const make401Error = (): AxiosError =>
-      ({
-        response: { status: 401 },
-        isAxiosError: true,
-      } as unknown as AxiosError);
+    ({
+      response: { status: 401 },
+      isAxiosError: true,
+    } as unknown as AxiosError);
 
     it('dispatches addError action', async () => {
       await expect(errorHandler(make401Error())).rejects.toBeDefined();
@@ -211,10 +211,10 @@ describe('response interceptor', () => {
 
   describe('error handler - non-401', () => {
     const make500Error = (): AxiosError =>
-      ({
-        response: { status: 500 },
-        isAxiosError: true,
-      } as unknown as AxiosError);
+    ({
+      response: { status: 500 },
+      isAxiosError: true,
+    } as unknown as AxiosError);
 
     it('does NOT dispatch addError for non-401 errors', async () => {
       await expect(errorHandler(make500Error())).rejects.toBeDefined();
@@ -309,40 +309,40 @@ describe('RegisterApi.getProduct', () => {
 
   it('returns the first item when content is non-empty', async () => {
     const product = { id: 'p1' };
-    (registerClient.products.getProducts as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.getProducts as jest.Mock).mockResolvedValue({
       value: { content: [product, { id: 'p2' }] },
     });
 
-    const result = await RegisterApi.getProduct(ORG);
+    const result = await RegisterApi.getProduct('initi-1', ORG);
     expect(result).toEqual(product);
   });
 
   it('returns undefined when content array is empty', async () => {
-    (registerClient.products.getProducts as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.getProducts as jest.Mock).mockResolvedValue({
       value: { content: [] },
     });
 
-    expect(await RegisterApi.getProduct(ORG)).toBeUndefined();
+    expect(await RegisterApi.getProduct('initi-1', ORG)).toBeUndefined();
   });
 
   it('returns undefined when content is missing', async () => {
-    (registerClient.products.getProducts as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.getProducts as jest.Mock).mockResolvedValue({
       value: {},
     });
 
-    expect(await RegisterApi.getProduct(ORG)).toBeUndefined();
+    expect(await RegisterApi.getProduct('initi-1', ORG)).toBeUndefined();
   });
 
   it('returns undefined when value is missing', async () => {
-    (registerClient.products.getProducts as jest.Mock).mockResolvedValue({});
+    (registerClient.initiatives.getProducts as jest.Mock).mockResolvedValue({});
 
-    expect(await RegisterApi.getProduct(ORG)).toBeUndefined();
+    expect(await RegisterApi.getProduct('initi-1', ORG)).toBeUndefined();
   });
 
   it('returns fallback object on API error', async () => {
-    (registerClient.products.getProducts as jest.Mock).mockRejectedValue(new Error('fail'));
+    (registerClient.initiatives.getProducts as jest.Mock).mockRejectedValue(new Error('fail'));
 
-    const result = await RegisterApi.getProduct(ORG);
+    const result = await RegisterApi.getProduct('initi-1', ORG);
     expect(result).toEqual({ status: 200, value: { content: [] } });
   });
 });
@@ -352,15 +352,15 @@ describe('RegisterApi.getProductList', () => {
 
   it('returns the API response on success', async () => {
     const res = mockAxiosResponse({ content: [{ id: 'p1' }] });
-    (registerClient.products.getProducts as jest.Mock).mockResolvedValue(res);
+    (registerClient.initiatives.getProducts as jest.Mock).mockResolvedValue(res);
 
-    expect(await RegisterApi.getProductList(ORG)).toBe(res);
+    expect(await RegisterApi.getProductList('initi-1', ORG)).toBe(res);
   });
 
   it('returns fallback on error', async () => {
-    (registerClient.products.getProducts as jest.Mock).mockRejectedValue(new Error('fail'));
+    (registerClient.initiatives.getProducts as jest.Mock).mockRejectedValue(new Error('fail'));
 
-    const result = await RegisterApi.getProductList(ORG);
+    const result = await RegisterApi.getProductList('initi-1', ORG);
     expect(result).toEqual({ content: [] });
   });
 });
@@ -368,13 +368,13 @@ describe('RegisterApi.getProductList', () => {
 describe('RegisterApi.getProductFiles', () => {
   it('returns the API response on success', async () => {
     const res = mockAxiosResponse({ content: [] });
-    (registerClient.productFiles.getProductFilesList as jest.Mock).mockResolvedValue(res);
+    (registerClient.initiatives.getProductFilesList as jest.Mock).mockResolvedValue(res);
 
     expect(await RegisterApi.getProductFiles()).toBe(res);
   });
 
   it('returns fallback object on error', async () => {
-    (registerClient.productFiles.getProductFilesList as jest.Mock).mockRejectedValue(
+    (registerClient.initiatives.getProductFilesList as jest.Mock).mockRejectedValue(
       new Error('fail')
     );
 
@@ -388,31 +388,32 @@ describe('RegisterApi.getBatchFilterItems', () => {
   const TRIMMED = 'org-1';
 
   it('sets x-organization-selected param when org is non-empty', async () => {
-    (registerClient.productFiles.getBatchNameList as jest.Mock).mockResolvedValue(['batch1']);
+    (registerClient.initiatives.getBatchNameList as jest.Mock).mockResolvedValue(['batch1']);
 
-    await RegisterApi.getBatchFilterItems(ORG);
+    await RegisterApi.getBatchFilterItems('initi-1', ORG);
 
-    expect(registerClient.productFiles.getBatchNameList).toHaveBeenCalledWith({
+    expect(registerClient.initiatives.getBatchNameList).toHaveBeenCalledWith({
+      initiativeId: 'initi-1',
       'x-organization-selected': TRIMMED,
     });
   });
 
   it('does NOT set x-organization-selected when org is empty string', async () => {
-    (registerClient.productFiles.getBatchNameList as jest.Mock).mockResolvedValue([]);
+    (registerClient.initiatives.getBatchNameList as jest.Mock).mockResolvedValue([]);
 
-    await RegisterApi.getBatchFilterItems('   ');
+    await RegisterApi.getBatchFilterItems('initi-1', '   ');
 
-    expect(registerClient.productFiles.getBatchNameList).toHaveBeenCalledWith({});
+    expect(registerClient.initiatives.getBatchNameList).toHaveBeenCalledWith({ initiativeId: 'initi-1' });
   });
 
   it('returns the response directly when it is already an array', async () => {
-    (registerClient.productFiles.getBatchNameList as jest.Mock).mockResolvedValue(['e', 'f']);
+    (registerClient.initiatives.getBatchNameList as jest.Mock).mockResolvedValue(['e', 'f']);
 
     expect(await RegisterApi.getBatchFilterItems(ORG)).toEqual(['e', 'f']);
   });
 
   it('returns empty array on API error', async () => {
-    (registerClient.productFiles.getBatchNameList as jest.Mock).mockRejectedValue(new Error());
+    (registerClient.initiatives.getBatchNameList as jest.Mock).mockRejectedValue(new Error());
     const result = await RegisterApi.getBatchFilterItems(ORG);
     expect(result).toEqual([]);
   });
@@ -423,18 +424,21 @@ describe('RegisterApi.uploadProductList', () => {
 
   it('returns API response on success', async () => {
     const res = mockAxiosResponse({ uploadId: 'u1' });
-    (registerClient.productFiles.uploadProductList as jest.Mock).mockResolvedValue(res);
+    (registerClient.initiatives.uploadProductList as jest.Mock).mockResolvedValue(res);
 
-    expect(await RegisterApi.uploadProductList(file, 'CATEGORY_A')).toBe(res);
-    expect(registerClient.productFiles.uploadProductList).toHaveBeenCalledWith(
-      { category: 'CATEGORY_A' },
-      { csv: file }
+    expect(await RegisterApi.uploadProductList('initi-1', file, 'CATEGORY_A')).toBe(res);
+    expect(registerClient.initiatives.uploadProductList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: "CATEGORY_A",
+        initiativeId: "initi-1"
+      }),
+      {csv: file}
     );
   });
 
   it('returns empty object and logs error on failure', async () => {
     const err = new Error('upload failed');
-    (registerClient.productFiles.uploadProductList as jest.Mock).mockRejectedValue(err);
+    (registerClient.initiatives.uploadProductList as jest.Mock).mockRejectedValue(err);
 
     const result = await RegisterApi.uploadProductList(file, 'CATEGORY_A');
     expect(result).toEqual({});
@@ -446,18 +450,21 @@ describe('RegisterApi.uploadProductListVerify', () => {
 
   it('returns API response on success', async () => {
     const res = mockAxiosResponse({ uploadId: 'u2' });
-    (registerClient.productFiles.verifyProductList as jest.Mock).mockResolvedValue(res);
+    (registerClient.initiatives.verifyProductList as jest.Mock).mockResolvedValue(res);
 
-    expect(await RegisterApi.uploadProductListVerify(file, 'CATEGORY_B')).toBe(res);
-    expect(registerClient.productFiles.verifyProductList).toHaveBeenCalledWith(
-      { category: 'CATEGORY_B' },
-      { csv: file }
+    expect(await RegisterApi.uploadProductListVerify('initi-1', file, 'CATEGORY_B')).toBe(res);
+    expect(registerClient.initiatives.verifyProductList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: "CATEGORY_B",
+        initiativeId: "initi-1"
+      }),
+      {csv: file}
     );
   });
 
   it('returns empty object and logs error on failure', async () => {
     const err = new Error('verify failed');
-    (registerClient.productFiles.verifyProductList as jest.Mock).mockRejectedValue(err);
+    (registerClient.initiatives.verifyProductList as jest.Mock).mockRejectedValue(err);
 
     const result = await RegisterApi.uploadProductListVerify(file, 'CATEGORY_B');
     expect(result).toEqual({});
@@ -468,7 +475,7 @@ describe('RegisterApi.downloadErrorReport', () => {
   const FILE_ID = 'file-123';
 
   it('returns data and empty filename when response has a top-level data string', async () => {
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.downloadErrorReport as jest.Mock).mockResolvedValue({
       data: 'col1,col2\nval1,val2',
     });
 
@@ -479,7 +486,7 @@ describe('RegisterApi.downloadErrorReport', () => {
   });
 
   it('returns empty data when top-level data string is blank', async () => {
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.downloadErrorReport as jest.Mock).mockResolvedValue({
       data: 'csv-content',
       headers: {},
     });
@@ -489,7 +496,7 @@ describe('RegisterApi.downloadErrorReport', () => {
   });
 
   it('extracts filename from content-disposition header (lowercase)', async () => {
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.downloadErrorReport as jest.Mock).mockResolvedValue({
       data: 'a,b',
       headers: { 'content-disposition': 'attachment; filename="errors.csv"' },
     });
@@ -499,7 +506,7 @@ describe('RegisterApi.downloadErrorReport', () => {
   });
 
   it('extracts filename from content-disposition header (capitalized)', async () => {
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.downloadErrorReport as jest.Mock).mockResolvedValue({
       data: 'a,b',
       headers: { 'content-disposition': 'attachment; filename="report.csv"' },
     });
@@ -510,7 +517,7 @@ describe('RegisterApi.downloadErrorReport', () => {
 
   it('extracts filename via headers.get() method', async () => {
     const headers = { 'content-disposition': 'attachment; filename="report.csv"' };
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.downloadErrorReport as jest.Mock).mockResolvedValue({
       data: 'x',
       headers,
     });
@@ -520,7 +527,7 @@ describe('RegisterApi.downloadErrorReport', () => {
   });
 
   it('returns empty filename when no content-disposition header is present', async () => {
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.downloadErrorReport as jest.Mock).mockResolvedValue({
       response: { data: 'a,b', headers: {} },
     });
 
@@ -529,7 +536,7 @@ describe('RegisterApi.downloadErrorReport', () => {
   });
 
   it('reads csv from rawResponse.data when top-level data is empty', async () => {
-    (registerClient.productFiles.downloadErrorReport as jest.Mock).mockResolvedValue({
+    (registerClient.initiatives.downloadErrorReport as jest.Mock).mockResolvedValue({
       data: 'raw-csv',
       headers: {},
     });

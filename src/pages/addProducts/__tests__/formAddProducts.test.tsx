@@ -20,6 +20,9 @@ jest.mock('react-i18next', () => ({
   useTranslation: jest.fn(),
 }));
 
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'init-1',
+}));
 
 jest.mock('../../../hooks/useCategories', () => ({
   useCategories: () => ({
@@ -368,7 +371,7 @@ describe('FormAddProducts', () => {
       await userEvent.click(downloadBtn);
 
       await waitFor(() => {
-        expect(downloadErrorReport).toHaveBeenCalledWith(mockErrorHandling.idReport);
+        expect(downloadErrorReport).toHaveBeenCalledWith("initiative-1", mockErrorHandling.idReport);
         expect(downloadCsv).toHaveBeenCalledWith(mockReportData.data, mockReportData.filename);
       });
     });
@@ -656,7 +659,7 @@ describe('FormAddProducts', () => {
       await waitFor(() => {
         expect(mockFileState.setFileIsLoading).toHaveBeenCalledWith(true);
         expect(mockErrorHandling.clearErrors).toHaveBeenCalled();
-        expect(uploadProductList).toHaveBeenCalledWith(mockFile, 'COOKINGHOBS');
+        expect(uploadProductList).toHaveBeenCalledWith("initiative-1", mockFile, 'COOKINGHOBS');
       });
     });
 

@@ -13,6 +13,19 @@ import { productsSlice } from '../../../redux/slices/productsSlice';
 import { invitaliaSlice } from '../../../redux/slices/invitaliaSlice';
 import { USERS_TYPES } from '../../../utils/constants';
 
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  __esModule: true,
+  useCurrentInitiativeId: jest.fn(() => 'init-1'),
+}));
+
+jest.mock('../../../hooks/useLogin', () => ({
+  __esModule: true,
+  userFromJwtTokenAsJWTUser: () => ({
+    org_id: 'org',
+    org_role: 'USER',
+  }),
+}));
+
 jest.mock('../../../services/registerService');
 jest.mock('../../../helpers');
 jest.mock('../../../hooks/useInitiativeConfig');
@@ -98,7 +111,7 @@ jest.mock('../ProductConfirmDialog', () => ({
 jest.mock('../../../pages/components/ProductsTable', () => ({
   __esModule: true,
   default: ({ tableData, handleListButtonClick, setSelected, selected }: any) => (
-    <div data-testid="products-table">
+    <div data-testid="products-table-inner">
       {tableData.map((row: any, idx: number) => (
         <div key={idx}>
           <span>{row.productName}</span>
@@ -185,6 +198,8 @@ const renderGrid = async (role: string = 'USER', products = mockProducts) => {
     data: [],
   });
 
+  localStorage.setItem('token', 'fake-token');
+
   const store = createStore();
 
   await act(async () => {
@@ -198,6 +213,12 @@ const renderGrid = async (role: string = 'USER', products = mockProducts) => {
       </Provider>
     );
   });
+
+  await waitFor(() => {
+    const table = screen.queryByTestId('products-table');
+    const empty = screen.queryByTestId('empty-list');
+    expect(table || empty).toBeTruthy();
+  });
 };
 
 describe('ProductDataGrid (rewritten)', () => {
@@ -207,6 +228,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.clear();
 
     const helpersModule = require('../ProductDataGrid.helpers');
     helpersModule.getStatusChecks.mockReturnValue({
@@ -218,7 +240,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('renders table when products exist', async () => {
     await renderGrid();
-    await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
+    expect(await screen.findByTestId('products-table')).toBeInTheDocument();
     expect(screen.getByText('Prod 1')).toBeInTheDocument();
     expect(screen.getByText('Prod 2')).toBeInTheDocument();
   });
@@ -233,7 +255,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('opens and closes detail drawer', async () => {
     await renderGrid();
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('detail-btn-0'));
     expect(screen.getByTestId('detail-drawer')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Close Detail'));
@@ -242,7 +264,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('shows action buttons when Invitalia L1 selects a row', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('checkbox-0'));
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
     expect(screen.getByTestId('waitApprovedBtn')).toBeInTheDocument();
@@ -283,7 +305,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('opens ProductModal on action click', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
     await waitFor(() => expect(screen.getByTestId('product-modal')).toBeInTheDocument());
@@ -301,7 +323,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('opens confirm dialog for wait approved', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
     await waitFor(() => expect(screen.getByTestId('product-confirm-dialog')).toBeInTheDocument());
@@ -309,14 +331,14 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('does not open modal when no rows are selected', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     expect(screen.queryByTestId('rejectedBtn')).not.toBeInTheDocument();
   });
 
   it('renders pagination component when data is present', async () => {
     await renderGrid();
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     expect(screen.getByText(/tablePaginationFrom/i)).toBeInTheDocument();
   });
@@ -365,7 +387,7 @@ describe('ProductDataGrid (rewritten)', () => {
     });
 
     await renderGrid(USERS_TYPES.INVITALIA_L1);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('checkbox-1'));
@@ -383,7 +405,7 @@ describe('ProductDataGrid (rewritten)', () => {
     });
 
     await renderGrid(USERS_TYPES.INVITALIA_L2);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
@@ -393,14 +415,14 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('renders filter chip when filters applied', async () => {
     await renderGrid();
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     expect(screen.queryByRole('button', { name: /CloseIcon/i })).not.toBeInTheDocument();
   });
 
   it('renders admin default status filter', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L2);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
