@@ -355,10 +355,10 @@ describe('ProductDataGrid (rewritten)', () => {
   });
 
   it('does not render component when products table is not configured', async () => {
-    (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockReturnValue({
+    (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockImplementation(() => ({
       config: { tables: {} },
       loading: false,
-    });
+    }));
 
     // Ensure async services are safely mocked
     (registerService.getProducts as jest.Mock).mockResolvedValueOnce({
