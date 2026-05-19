@@ -360,6 +360,15 @@ describe('ProductDataGrid (rewritten)', () => {
       loading: false,
     });
 
+    // Ensure async services are safely mocked
+    (registerService.getProducts as jest.Mock).mockResolvedValueOnce({
+      data: { content: [], pageNo: 0, totalElements: 0 },
+    });
+
+    (registerService.getBatchFilterList as jest.Mock).mockResolvedValueOnce({
+      data: [],
+    });
+
     const store = createStore();
 
     await act(async () => {
