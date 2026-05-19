@@ -64,6 +64,23 @@ const buttonStyle = {
   marginRight: 2,
 };
 
+const getMsgResultByActionType = (t: any, actionType?: string) => {
+  switch (actionType) {
+    case PRODUCTS_STATES.SUPERVISED:
+      return t('invitaliaModal.supervised.msgResultSupervised');
+    case PRODUCTS_STATES.REJECTED:
+      return t('invitaliaModal.rejected.msgResultRejected');
+    case PRODUCTS_STATES.WAIT_APPROVED:
+      return t('invitaliaModal.waitApproved.msgResultWaitApproved');
+    case MIDDLE_STATES.REJECT_APPROVATION:
+      return t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation');
+    case MIDDLE_STATES.ACCEPT_APPROVATION:
+      return t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation');
+    default:
+      return '';
+  }
+};
+
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
@@ -73,6 +90,11 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
 
   const tableConfig = initiativeConfig?.tables?.products;
   const paginationConfig = tableConfig?.ui?.pagination;
+
+  if (DEBUG_CONSOLE) {
+    console.log('🔎 initiativeConfig:', initiativeConfig);
+    console.log('🔎 tableConfig:', tableConfig);
+  }
   const [showMsgRejected, setShowMsgRejected] = useState(false);
   const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
   const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
@@ -131,24 +153,35 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     isInvitaliaUser?: boolean,
     isInvitaliaAdmin?: boolean
   ) => {
-    if (actionType === PRODUCTS_STATES.SUPERVISED && isInvitaliaUser) {
-      setShowMsgSupervised(true);
-      return;
-    }
-    if (actionType === PRODUCTS_STATES.WAIT_APPROVED && isInvitaliaUser) {
-      setShowMsgWaitApproved(true);
-      return;
-    }
-    if (actionType === PRODUCTS_STATES.WAIT_APPROVED && isInvitaliaAdmin) {
-      setMsgAcceptApprovation(true);
-      return;
-    }
-    if (actionType === MIDDLE_STATES.REJECT_APPROVATION && isInvitaliaAdmin) {
-      setShowMsgRejectedApprovation(true);
-      return;
-    }
-    if (actionType === PRODUCTS_STATES.REJECTED && isInvitaliaUser) {
-      setShowMsgRejected(true);
+    switch (actionType) {
+      case PRODUCTS_STATES.SUPERVISED:
+        if (isInvitaliaUser) {
+          setShowMsgSupervised(true);
+        }
+        break;
+
+      case PRODUCTS_STATES.WAIT_APPROVED:
+        if (isInvitaliaUser) {
+          setShowMsgWaitApproved(true);
+        } else if (isInvitaliaAdmin) {
+          setMsgAcceptApprovation(true);
+        }
+        break;
+
+      case MIDDLE_STATES.REJECT_APPROVATION:
+        if (isInvitaliaAdmin) {
+          setShowMsgRejectedApprovation(true);
+        }
+        break;
+
+      case PRODUCTS_STATES.REJECTED:
+        if (isInvitaliaUser) {
+          setShowMsgRejected(true);
+        }
+        break;
+
+      default:
+        break;
     }
   };
 
@@ -458,9 +491,23 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     gtinCodeFilter,
   ]);
 
-  const effectiveColumns = useMemo(() => tableConfig?.columns ?? [], [tableConfig]);
+  const effectiveColumns = useMemo(() => {
+    // ✅ Ensure columns is always a valid array (hardening)
+    const baseCols = Array.isArray(tableConfig?.columns) ? tableConfig.columns : [];
 
-  const renderActionButtons = () => {
+    // ✅ Technical columns (detail/action) are always appended.
+    // Business columns are defined via config.json.
+    return [
+      ...baseCols,
+      {
+        id: '__detail__',
+        labelKey: '',
+        type: 'action',
+      },
+    ];
+  }, [tableConfig]);
+
+  const ProductBulkActions = () => {
     if (!(tableData?.length > 0 && !loading && selected.length !== 0)) {
       return null;
     }
@@ -527,64 +574,47 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     );
   };
 
-  const getMsgResultByActionType = (actionType?: string) => {
-    switch (actionType) {
-      case PRODUCTS_STATES.SUPERVISED:
-        return t('invitaliaModal.supervised.msgResultSupervised');
-      case PRODUCTS_STATES.REJECTED:
-        return t('invitaliaModal.rejected.msgResultRejected');
-      case PRODUCTS_STATES.WAIT_APPROVED:
-        return t('invitaliaModal.waitApproved.msgResultWaitApproved');
-      case MIDDLE_STATES.REJECT_APPROVATION:
-        return t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation');
-      case MIDDLE_STATES.ACCEPT_APPROVATION:
-        return t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation');
-      default:
-        return '';
-    }
-  };
-
-  const renderResultMessages = () => (
+  const ProductResultMessages = () => (
     <>
       {showMsgWaitApproved && (
         <MsgResult
           severity="success"
-          message={getMsgResultByActionType(PRODUCTS_STATES.WAIT_APPROVED)}
+          message={getMsgResultByActionType(t, PRODUCTS_STATES.WAIT_APPROVED)}
           bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgSupervised && (
         <MsgResult
           severity="success"
-          message={getMsgResultByActionType(PRODUCTS_STATES.SUPERVISED)}
+          message={getMsgResultByActionType(t, PRODUCTS_STATES.SUPERVISED)}
           bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgApproved && (
         <MsgResult
           severity="success"
-          message={getMsgResultByActionType(PRODUCTS_STATES.WAIT_APPROVED)}
+          message={getMsgResultByActionType(t, PRODUCTS_STATES.WAIT_APPROVED)}
           bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgAcceptApprovation && (
         <MsgResult
           severity="success"
-          message={getMsgResultByActionType(MIDDLE_STATES.ACCEPT_APPROVATION)}
+          message={getMsgResultByActionType(t, MIDDLE_STATES.ACCEPT_APPROVATION)}
           bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgRejected && (
         <MsgResult
           severity="success"
-          message={getMsgResultByActionType(PRODUCTS_STATES.REJECTED)}
+          message={getMsgResultByActionType(t, PRODUCTS_STATES.REJECTED)}
           bottom={MSG_RESULT_BT}
         />
       )}
       {showMsgRejectedApprovation && (
         <MsgResult
           severity="success"
-          message={getMsgResultByActionType(MIDDLE_STATES.REJECT_APPROVATION)}
+          message={getMsgResultByActionType(t, MIDDLE_STATES.REJECT_APPROVATION)}
           bottom={MSG_RESULT_BT}
         />
       )}
@@ -605,9 +635,10 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     </>
   );
 
-  // 🔐 Hardening: if table is not explicitly configured via allow-list,
-  // do not render anything (fail-safe model)
   if (!tableConfig) {
+    if (DEBUG_CONSOLE) {
+      console.warn('⚠️ tableConfig is undefined - products table will not render');
+    }
     return null;
   }
 
@@ -630,7 +661,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
           />
         </Box>
         <Box flexShrink={0} ml={2}>
-          {renderActionButtons()}
+          <ProductBulkActions />
         </Box>
       </Box>
 
@@ -649,9 +680,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
         {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
       </Box>
 
-      <Paper
-        sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}
-      >
+      <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
         {loading ? (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CircularProgress />
@@ -839,7 +868,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
         setFiltering={setFiltering}
         setPage={setPage}
       />
-      {renderResultMessages()}
+      <ProductResultMessages />
     </Box>
   );
 };

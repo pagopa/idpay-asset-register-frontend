@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { loadItInitiativeConfig } from '../locale/multiInitiativeConfig';
+import { buildNamespaceKey } from '../utils/buildNamespaceKey';
 import { useCurrentInitiative } from './useCurrentInitiative';
 import { useIDPayUser } from './useIDPayUser';
 
@@ -8,6 +9,7 @@ export const useInitiativeConfig = () => {
   const user = useIDPayUser();
   const [config, setConfig] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [configError, setConfigError] = useState<boolean>(false);
 
   useEffect(() => {
     if (!initiative || !user?.org_role) {
@@ -16,19 +18,26 @@ export const useInitiativeConfig = () => {
 
     setLoading(true);
 
-    const initiativeName =
-      (initiative as any)?.initiativeName ??
-      (initiative as any)?.displayName ??
-      initiative?.initiativeId;
+    const rawName = (initiative as any)?.initiativeName ?? (initiative as any)?.displayName ?? '';
 
-    void loadItInitiativeConfig(initiativeName, user.org_role)
+    const startDate = (initiative as any)?.startDate ?? '';
+
+    const initiativeNamespace = buildNamespaceKey(rawName, startDate);
+
+    void loadItInitiativeConfig(initiativeNamespace, user.org_role)
       .then((cfg) => {
-        setConfig(cfg);
+        if ((cfg as any)?.roleConfigMissing) {
+          setConfigError(true);
+          setConfig(null);
+        } else {
+          setConfig(cfg);
+          setConfigError(false);
+        }
       })
       .finally(() => {
         setLoading(false);
       });
   }, [initiative, user?.org_role]);
 
-  return { config, loading };
+  return { config, loading, configError };
 };

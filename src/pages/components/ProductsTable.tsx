@@ -13,6 +13,7 @@ import {
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { ProductDTO } from '../../api/generated/register';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
+import ProductStatusChip from '../../components/Product/ProductStatusChip';
 
 interface ColumnConfig {
   id: string;
@@ -106,6 +107,14 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                       <IconButton size="small" onClick={() => handleListButtonClick(row)}>
                         <ArrowForwardIosIcon />
                       </IconButton>
+                    </TableCell>
+                  );
+                }
+
+                if (col.id === 'status') {
+                  return (
+                    <TableCell key={col.id}>
+                      <ProductStatusChip status={(row as any)[col.id]} />
                     </TableCell>
                   );
                 }

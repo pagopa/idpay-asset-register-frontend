@@ -15,6 +15,9 @@
       }
     }
   },
+  "errors": {
+    "profileNotConfigured": "pages.products.profileNotConfigured"
+  },
   "tables": {
     "products": {
       "columns": [

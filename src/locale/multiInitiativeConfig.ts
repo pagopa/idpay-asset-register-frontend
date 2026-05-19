@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { DEBUG_CONSOLE } from '../utils/constants';
 export type InitiativeTablesConfig = {
   role?: string;
   logicalName?: string;
@@ -46,7 +47,7 @@ export const getLogicalRoleName = (
 };
 
 const normalizeRole = (role?: string): string | undefined => {
-  const r = role?.trim();
+  const r = role?.trim().toLowerCase();
   if (!r) {
     return undefined;
   }
@@ -64,6 +65,7 @@ const resolveSubRole = (role?: string): string | undefined => {
   return role.includes('_') ? role : undefined;
 };
 
+/* eslint-disable sonarjs/cognitive-complexity */
 export const loadItInitiativeConfig = async (
   initiativeName: string | undefined,
   role?: string
@@ -72,10 +74,18 @@ export const loadItInitiativeConfig = async (
     return {};
   }
 
+  const safeInitiativeName = initiativeName.trim();
+
+  if (DEBUG_CONSOLE) {
+    console.log('initiativeName raw:', initiativeName);
+    console.log('initiativeFolder used:', safeInitiativeName);
+    console.log('role raw:', role);
+  }
+
   // Runtime validation: role must be a string (compile-time is enforced by OpenAPI generated types)
   if (typeof role !== 'string') {
     try {
-      const mod = await import(`./it/${initiativeName}/default/config.json`);
+      const mod = await import(`./it/${safeInitiativeName}/default/config.json`);
       return (mod as any).default ?? {};
     } catch {
       return {};
@@ -84,21 +94,48 @@ export const loadItInitiativeConfig = async (
 
   const normalizedRole = normalizeRole(role);
 
+  if (DEBUG_CONSOLE) {
+    console.log('role normalized:', normalizedRole);
+  }
+
   try {
-    const basePath = `./it/${initiativeName}/`;
+    const basePath = `./it/${safeInitiativeName}/`;
 
     // Try loading role-specific folder (based on baseRole)
     if (normalizedRole) {
       try {
-        const mod = await import(`${basePath}${normalizedRole}/config.json`);
+        const roleMod = await import(`${basePath}${normalizedRole}/config.json`);
+        const roleConfig = (roleMod as any).default ?? {};
         const subRole = resolveSubRole(role);
-        return applySubRolePermissions((mod as any).default ?? {}, subRole);
+
+        // ✅ Load default config to inherit common settings (like errors)
+        try {
+          const defaultMod = await import(`${basePath}default/config.json`);
+          const defaultConfig = (defaultMod as any).default ?? {};
+
+          return applySubRolePermissions(
+            {
+              ...defaultConfig,
+              ...roleConfig,
+              errors: {
+                ...defaultConfig?.errors,
+                ...roleConfig?.errors,
+              },
+            },
+            subRole
+          );
+        } catch {
+          return applySubRolePermissions(roleConfig, subRole);
+        }
       } catch {
-        // If role folder does not exist for this initiative, fallback to default
+        // ✅ Fallback semplice: carica default
+        const defaultMod = await import(`${basePath}default/config.json`);
+        const defaultConfig = (defaultMod as any).default ?? {};
+        return applySubRolePermissions(defaultConfig, resolveSubRole(role));
       }
     }
 
-    // Fallback to default folder
+    // If no role provided, fallback to default folder
     const mod = await import(`${basePath}default/config.json`);
     const subRole = resolveSubRole(role);
     return applySubRolePermissions((mod as any).default ?? {}, subRole);
