@@ -214,8 +214,12 @@ const renderGrid = async (role: string = 'USER') => {
     );
   });
 
-  // Ensure async effects complete
-  await screen.findByTestId('products-table');
+  // Ensure async effects complete (table OR empty state)
+  await waitFor(() => {
+    const table = screen.queryByTestId('products-table');
+    const empty = screen.queryByTestId('empty-list');
+    expect(table || empty).toBeTruthy();
+  });
 };
 
 describe('ProductDataGrid (rewritten)', () => {
