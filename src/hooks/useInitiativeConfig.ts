@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { loadItInitiativeConfig } from '../locale/multiInitiativeConfig';
+import { buildNamespaceKey } from '../utils/buildNamespaceKey';
 import { useCurrentInitiative } from './useCurrentInitiative';
 import { useIDPayUser } from './useIDPayUser';
 
@@ -17,9 +18,9 @@ export const useInitiativeConfig = () => {
     setLoading(true);
 
     const initiativeName =
-      (initiative as any)?.initiativeName ??
-      (initiative as any)?.displayName ??
-      initiative?.initiativeId;
+      initiative?.initiativeName && initiative?.startDate
+        ? buildNamespaceKey(initiative.initiativeName, initiative.startDate)
+        : (initiative as any)?.displayName ?? initiative?.initiativeId;
 
     void loadItInitiativeConfig(initiativeName, user.org_role)
       .then((cfg) => {
