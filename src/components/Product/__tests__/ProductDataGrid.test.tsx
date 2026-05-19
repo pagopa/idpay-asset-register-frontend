@@ -13,6 +13,19 @@ import { productsSlice } from '../../../redux/slices/productsSlice';
 import { invitaliaSlice } from '../../../redux/slices/invitaliaSlice';
 import { USERS_TYPES } from '../../../utils/constants';
 
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  __esModule: true,
+  useCurrentInitiativeId: jest.fn(() => 'init-1'),
+}));
+
+jest.mock('../../../hooks/useLogin', () => ({
+  __esModule: true,
+  userFromJwtTokenAsJWTUser: () => ({
+    org_id: 'org',
+    org_role: 'USER',
+  }),
+}));
+
 jest.mock('../../../services/registerService');
 jest.mock('../../../helpers');
 jest.mock('../../../hooks/useInitiativeConfig');
@@ -98,7 +111,7 @@ jest.mock('../ProductConfirmDialog', () => ({
 jest.mock('../../../pages/components/ProductsTable', () => ({
   __esModule: true,
   default: ({ tableData, handleListButtonClick, setSelected, selected }: any) => (
-    <div data-testid="products-table">
+    <div data-testid="products-table-inner">
       {tableData.map((row: any, idx: number) => (
         <div key={idx}>
           <span>{row.productName}</span>
@@ -160,7 +173,7 @@ const createStore = () =>
 
 const theme = createTheme();
 
-const renderGrid = async (role: string = 'USER') => {
+const renderGrid = async (role: string = 'USER', products = mockProducts) => {
   (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
     org_id: 'org',
     org_role: role,
@@ -178,12 +191,14 @@ const renderGrid = async (role: string = 'USER') => {
   });
 
   (registerService.getProducts as jest.Mock).mockResolvedValue({
-    data: { content: mockProducts, pageNo: 0, totalElements: 2 },
+    data: { content: products, pageNo: 0, totalElements: products.length },
   });
 
   (registerService.getBatchFilterList as jest.Mock).mockResolvedValue({
     data: [],
   });
+
+  localStorage.setItem('token', 'fake-token');
 
   const store = createStore();
 
@@ -198,6 +213,12 @@ const renderGrid = async (role: string = 'USER') => {
       </Provider>
     );
   });
+
+  await waitFor(() => {
+    const table = screen.queryByTestId('products-table');
+    const empty = screen.queryByTestId('empty-list');
+    expect(table || empty).toBeTruthy();
+  });
 };
 
 describe('ProductDataGrid (rewritten)', () => {
@@ -207,6 +228,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.clear();
 
     const helpersModule = require('../ProductDataGrid.helpers');
     helpersModule.getStatusChecks.mockReturnValue({
@@ -218,7 +240,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('renders table when products exist', async () => {
     await renderGrid();
-    await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
+    expect(await screen.findByTestId('products-table')).toBeInTheDocument();
     expect(screen.getByText('Prod 1')).toBeInTheDocument();
     expect(screen.getByText('Prod 2')).toBeInTheDocument();
   });
@@ -233,7 +255,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('opens and closes detail drawer', async () => {
     await renderGrid();
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('detail-btn-0'));
     expect(screen.getByTestId('detail-drawer')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Close Detail'));
@@ -242,23 +264,66 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('shows action buttons when Invitalia L1 selects a row', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('checkbox-0'));
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
     expect(screen.getByTestId('waitApprovedBtn')).toBeInTheDocument();
+    expect(screen.queryByTestId('supervisedBtn')).not.toBeInTheDocument();
+  });
+
+  it('shows supervised button when selected rows are not already supervised', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1, [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'REJECTED',
+      },
+    ]);
+    await waitFor(() => screen.getByTestId('products-table'));
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+
+    expect(screen.getByTestId('supervisedBtn')).toBeInTheDocument();
+  });
+
+  it('disables wait approved action for Invitalia L1 when selected row already waits approval', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1, [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'WAIT_APPROVED',
+      },
+    ]);
+    await waitFor(() => screen.getByTestId('products-table'));
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+
+    expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
   });
 
   it('opens ProductModal on action click', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
     await waitFor(() => expect(screen.getByTestId('product-modal')).toBeInTheDocument());
   });
 
-  it('opens confirm dialog for wait approved', async () => {
+  it('shows rejected result after a successful L1 rejected action', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
     await waitFor(() => screen.getByTestId('products-table'));
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    fireEvent.click(screen.getByText('Success'));
+
+    await waitFor(() => expect(screen.getByText(/msgResultRejected/i)).toBeInTheDocument());
+  });
+
+  it('opens confirm dialog for wait approved', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
     await waitFor(() => expect(screen.getByTestId('product-confirm-dialog')).toBeInTheDocument());
@@ -266,14 +331,14 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('does not open modal when no rows are selected', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     expect(screen.queryByTestId('rejectedBtn')).not.toBeInTheDocument();
   });
 
   it('renders pagination component when data is present', async () => {
     await renderGrid();
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     expect(screen.getByText(/tablePaginationFrom/i)).toBeInTheDocument();
   });
@@ -305,6 +370,14 @@ describe('ProductDataGrid (rewritten)', () => {
     });
   });
 
+  it('handles batch filter API errors without blocking the table', async () => {
+    (registerService.getBatchFilterList as jest.Mock).mockRejectedValue(new Error('Batch error'));
+
+    await renderGrid();
+
+    await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
+  });
+
   it('shows mix status error when multiple statuses selected', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
     helpersModule.getStatusChecks.mockReturnValueOnce({
@@ -314,7 +387,7 @@ describe('ProductDataGrid (rewritten)', () => {
     });
 
     await renderGrid(USERS_TYPES.INVITALIA_L1);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('checkbox-1'));
@@ -332,7 +405,7 @@ describe('ProductDataGrid (rewritten)', () => {
     });
 
     await renderGrid(USERS_TYPES.INVITALIA_L2);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
@@ -342,15 +415,58 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('renders filter chip when filters applied', async () => {
     await renderGrid();
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     expect(screen.queryByRole('button', { name: /CloseIcon/i })).not.toBeInTheDocument();
   });
 
   it('renders admin default status filter', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L2);
-    await waitFor(() => screen.getByTestId('products-table'));
+    await screen.findByTestId('products-table');
 
     expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('opens and closes filters drawer from the new filter button', async () => {
+    await renderGrid();
+    await waitFor(() => screen.getByTestId('products-table'));
+
+    fireEvent.click(screen.getByRole('button', { name: /common.advancedFilters/i }));
+    expect(screen.getByTestId('filters-drawer')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Close Filters'));
+    await waitFor(() => expect(screen.queryByTestId('filters-drawer')).not.toBeInTheDocument());
+  });
+
+  it('does not render component when products table is not configured', async () => {
+    (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockImplementation(() => ({
+      config: { tables: {} },
+      loading: false,
+    }));
+
+    // Ensure async services are safely mocked
+    (registerService.getProducts as jest.Mock).mockResolvedValueOnce({
+      data: { content: [], pageNo: 0, totalElements: 0 },
+    });
+
+    (registerService.getBatchFilterList as jest.Mock).mockResolvedValue({
+      data: [],
+    });
+
+    const store = createStore();
+
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <I18nextProvider i18n={i18n}>
+            <ThemeProvider theme={theme}>
+              <ProductDataGrid organizationId="org" />
+            </ThemeProvider>
+          </I18nextProvider>
+        </Provider>
+      );
+    });
+
+    expect(screen.queryByTestId('products-table')).not.toBeInTheDocument();
   });
 });

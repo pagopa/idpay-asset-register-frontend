@@ -82,7 +82,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
     const handleDownloadReport = async () => {
       try {
-        const res = await downloadErrorReport(errorHandling.idReport);
+        const res = await downloadErrorReport(initiativeId, errorHandling.idReport);
         {
           /* if (DEBUG_CONSOLE) {
           console.debug('downloadErrorReport response:', res);
@@ -113,6 +113,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
       try {
         const res = await uploadProductListVerify(
+          initiativeId,
           files[0],
           formik.values.category.toUpperCase() as UploadProductListParams['category']
         );
@@ -215,6 +216,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
 
       const res = await uploadProductList(
+        initiativeId,
         fileState.currentFile,
         formik.values.category.toUpperCase() as UploadProductListParams['category']
       );
