@@ -1,0 +1,88 @@
+{
+  "role": "default",
+  "logicalName": "Utente Standard",
+  "categoryTemplates": {
+    "washingmachines": {
+      "type": "eprel",
+      "name": "eprel"
+    },
+    "tumbledryers": {
+      "type": "eprel",
+      "name": "eprel"
+    },
+    "ovens": {
+      "type": "eprel",
+      "name": "eprel"
+    },
+    "rangehoods": {
+      "type": "eprel",
+      "name": "eprel"
+    },
+    "dishwashers": {
+      "type": "eprel",
+      "name": "eprel"
+    },
+    "washerdriers": {
+      "type": "eprel",
+      "name": "eprel"
+    },
+    "refrigeratingappl": {
+      "type": "eprel",
+      "name": "eprel"
+    },
+    "cookinghobs": {
+      "type": "csv",
+      "name": "cookinghobs"
+    }
+  },
+  "templates": {
+    "csv": {
+      "headers": [
+        "Codice GTIN/EAN",
+        "Codice Prodotto",
+        "Categoria",
+        "Paese di Produzione",
+        "Marca",
+        "Modello"
+      ],
+      "fields": ["GTIN123ABC4567", "SKU98765", "Piano cottura", "IT", "MarcaEsempio", "ModelloX100"]
+    },
+    "eprel": {
+      "headers": [
+        "Codice EPREL",
+        "Codice GTIN/EAN",
+        "Codice Prodotto",
+        "Categoria",
+        "Paese di Produzione"
+      ],
+      "fields": ["12345", "GTIN01234", "SKU12345", "Lavatrice", "IT"]
+    }
+  },
+  "subRoles": {
+    "default": {
+      "logicalName": "Utente Standard",
+      "permissions": {
+        "tables": ["products"]
+      }
+    },
+    "operatore": {
+      "logicalName": "Produttore",
+      "permissions": {
+        "tables": ["products"]
+      }
+    },
+    "invitalia": {
+      "logicalName": "L1",
+      "permissions": {
+        "tables": ["products"]
+      }
+    },
+    "invitalia_admin": {
+      "logicalName": "L2",
+      "permissions": {
+        "tables": ["products"]
+      }
+    }
+  },
+  "tables": {}
+}

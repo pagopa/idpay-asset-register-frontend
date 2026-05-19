@@ -37,14 +37,10 @@
     }
   },
   "categories": {
-    "satellite": {"label": "Satellitare", "template": {"type": "csv", "name": "satellitare"}},
-    "terrestrial": {"label": "Terrestre", "template": {"type": "csv", "name": "terrestre"}},
-    "terrestrial_via_cable": {"label": "Terrestre via Cavo", "template": {"type": "csv", "name": "terrestre-via-cavo"}},
-    "terrestrial_and_satellite": {"label": "Terrestre e Satellitare", "template": {"type": "csv", "name": "terrestre-e-satellitare"}},
-    "terrestrial_satellite_and_via_cable": {"label": "Terrestre, Satellitare e via Cavo", "template": {"type": "csv", "name": "terrestre-satellitare-e-via-cavo"}}
-  },
-  "csv": {
-    "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
-    "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
+    "satellite": { "label": "Satellitare" },
+    "terrestrial": { "label": "Terrestre" },
+    "terrestrial_via_cable": { "label": "Terrestre via Cavo" },
+    "terrestrial_and_satellite": { "label": "Terrestre e Satellitare" },
+    "terrestrial_satellite_and_via_cable": { "label": "Terrestre, Satellitare e via Cavo" }
   }
 }

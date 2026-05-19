@@ -2,7 +2,7 @@
   "commons": {
     "title": "Elenco informatico degli elettrodomestici"
   },
-  "pages" : {
+  "pages": {
     "addProducts": {
       "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
       "manualLink": "https://developer.pagopa.it/pari/guides/bonuselettrodomestici-manuale-tecnico-produttore"
@@ -19,47 +19,13 @@
     }
   },
   "categories": {
-    "washingmachines": {"label": "Lavatrici", "template": {"type": "eprel", "name": "eprel"}},
-    "tumbledryers": {"label": "Asciugatrici", "template": {"type": "eprel", "name": "eprel"}},
-    "ovens": {"label": "Forni", "template": {"type": "eprel", "name": "eprel"}},
-    "rangehoods": {"label": "Cappe da cucina", "template": {"type": "eprel", "name": "eprel"}},
-    "dishwashers": {"label": "Lavastoviglie", "template": {"type": "eprel", "name": "eprel"}},
-    "washerdriers": {"label": "Lavasciuga", "template": {"type": "eprel", "name": "eprel"}},
-    "refrigeratingappl": {"label": "Apparecchi di refrigerazione", "template": {"type": "eprel", "name": "eprel"}},
-    "cookinghobs": {"label": "Piani cottura", "template": {"type": "csv", "name": "cookinghobs"}}
-  },
-  "csv": {
-    "headers": [
-      "Codice GTIN/EAN",
-      "Codice Prodotto",
-      "Categoria",
-      "Paese di Produzione",
-      "Marca",
-      "Modello"
-    ],
-    "fields": [
-      "GTIN123ABC4567",
-      "SKU98765",
-      "Piano cottura",
-      "IT",
-      "MarcaEsempio",
-      "ModelloX100"
-    ]
-  },
-  "eprel": {
-    "headers": [
-      "Codice EPREL",
-      "Codice GTIN/EAN",
-      "Codice Prodotto",
-      "Categoria",
-      "Paese di Produzione"
-    ],
-    "fields": [
-      "12345",
-      "GTIN01234",
-      "SKU12345",
-      "Lavatrice",
-      "IT"
-    ]
+    "washingmachines": { "label": "Lavatrici" },
+    "tumbledryers": { "label": "Asciugatrici" },
+    "ovens": { "label": "Forni" },
+    "rangehoods": { "label": "Cappe da cucina" },
+    "dishwashers": { "label": "Lavastoviglie" },
+    "washerdriers": { "label": "Lavasciuga" },
+    "refrigeratingappl": { "label": "Apparecchi di refrigerazione" },
+    "cookinghobs": { "label": "Piani cottura" }
   }
 }
