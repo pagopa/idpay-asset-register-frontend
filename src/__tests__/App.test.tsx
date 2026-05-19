@@ -104,9 +104,11 @@ jest.mock('../pages/initiativesList/initiativesList', () => ({
   __esModule: true,
   default: () => <div>InitiativesListPage</div>,
 }));
+const mockUseGetInitiativesQuery = jest.fn(() => ({ isError: false }));
+
 jest.mock('../redux/api/initiativesApi', () => ({
   __esModule: true,
-  useGetInitiativesQuery: () => ({ isError: false }),
+  useGetInitiativesQuery: mockUseGetInitiativesQuery,
 }));
 jest.mock('../pages/overview/overview', () => ({
   __esModule: true,
@@ -185,6 +187,18 @@ describe('App routing and gating', () => {
     jest.clearAllMocks();
     setInstitution(undefined);
     setUpcoming(false);
+  });
+
+  it('bootstraps initiatives via RTK Query without route coupling', () => {
+    setTC(true);
+    setUserRole(undefined);
+    renderApp(['/home']);
+
+    expect(mockUseGetInitiativesQuery).toHaveBeenCalledWith(undefined, {
+      refetchOnMountOrArgChange: false,
+      refetchOnReconnect: false,
+      refetchOnFocus: false,
+    });
   });
 
   it('renders Auth page at /auth (top-level route)', () => {
