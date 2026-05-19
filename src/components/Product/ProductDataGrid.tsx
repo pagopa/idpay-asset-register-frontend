@@ -42,6 +42,8 @@ import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { Institution } from '../../model/Institution';
 import { setWaitApprovedStatusList } from '../../services/registerService';
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
 import { BatchFilterItems, Order } from './helpers';
 import { getStatusChecks } from './ProductDataGrid.helpers';
 import ProductDetail from './ProductDetail';
@@ -65,6 +67,7 @@ const buttonStyle = {
 const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
+  const initiativeId = useCurrentInitiativeId();
 
   const { config: initiativeConfig } = useInitiativeConfig();
 
@@ -227,11 +230,13 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
 
   const callProductsApi = async () => {
     try {
+      const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
       const targetId = isInvitaliaUser
         ? producerFilter || institution?.institutionId || ''
-        : organizationId;
+        : organizationId || user?.org_id || '';
 
       const res = await getProducts(
+        initiativeId,
         targetId,
         page,
         rowsPerPage,
@@ -299,7 +304,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
       ? producerFilter || institution?.institutionId || ''
       : organizationId;
 
-    void getBatchFilterList(targetId)
+    void getBatchFilterList(initiativeId, targetId)
       .then((res) => {
         setBatchFilterItems(res.data as unknown as Array<BatchFilterItems>);
       })
@@ -649,7 +654,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
         {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
       </Box>
 
-      <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
+      <Paper
+        sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}
+      >
         {loading ? (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CircularProgress />
@@ -657,7 +664,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
         ) : tableData?.length === 0 ? (
           <EmptyListTable message="pages.products.noFileLoaded" />
         ) : (
-          <Box sx={{ width: '100%' }}>
+          <Box sx={{ width: '100%' }} data-testid="products-table">
             <ProductsTable
               key={refreshKey}
               tableData={tableData}

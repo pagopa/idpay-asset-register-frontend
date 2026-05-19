@@ -189,7 +189,7 @@ describe('UploadsTable', () => {
 
     fireEvent.click(screen.getByTestId('download-icon'));
 
-    expect(registerService.downloadErrorReport).toHaveBeenCalledWith('file123');
+    expect(registerService.downloadErrorReport).toHaveBeenCalledWith('initiative-1', 'file123');
   });
 
   it('renders empty table message', () => {
