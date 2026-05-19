@@ -654,7 +654,9 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
         {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
       </Box>
 
-      <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
+      <Paper
+        sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}
+      >
         {loading ? (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CircularProgress />
@@ -662,7 +664,7 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
         ) : tableData?.length === 0 ? (
           <EmptyListTable message="pages.products.noFileLoaded" />
         ) : (
-          <Box sx={{ width: '100%' }}>
+          <Box sx={{ width: '100%' }} data-testid="products-table">
             <ProductsTable
               key={refreshKey}
               tableData={tableData}
