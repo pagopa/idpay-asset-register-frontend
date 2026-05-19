@@ -5,9 +5,7 @@
     "operatore": {
       "logicalName": "Produttore",
       "permissions": {
-        "tables": {
-          "products": true
-        }
+        "tables": ["products"]
       }
     }
   },

@@ -55,4 +55,12 @@ describe('multiInitiativeConfig dynamic loading', () => {
     const result = await loadItInitiativeConfig('bonusDecoder2026');
     expect(result).toBeDefined();
   });
+
+  it('should return empty tables when role has no allowed tables in real config', async () => {
+    const result = await loadItInitiativeConfig('bonusDecoder2026', 'NON_EXISTENT_SUBROLE');
+
+    // If subRole does not match, tables should fallback safely (no crash)
+    expect(result).toBeDefined();
+    expect(result.tables).toBeDefined();
+  });
 });

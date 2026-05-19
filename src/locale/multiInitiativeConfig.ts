@@ -13,12 +13,15 @@ const applySubRolePermissions = (config: any, subRole?: string): InitiativeTable
 
   const permissions = config?.subRoles?.[subRole]?.permissions?.tables;
 
-  if (!permissions || !config?.tables) {
-    return config;
+  if (!Array.isArray(permissions) || !config?.tables) {
+    return {
+      ...config,
+      tables: {},
+    };
   }
 
   const filteredTables = Object.fromEntries(
-    Object.entries(config.tables).filter(([tableKey]) => permissions[tableKey] !== false)
+    Object.entries(config.tables).filter(([tableKey]) => permissions.includes(tableKey))
   );
 
   return {
