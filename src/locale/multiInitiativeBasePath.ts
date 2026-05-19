@@ -8,28 +8,14 @@
  *
  * Ensures deterministic, scalable, and hardcoding-free folder resolution.
  */
-export const normalizeInitiativeName = (displayName: string): string =>
-  displayName
-    .trim()
-    .replace(/\s+/g, ' ')
-    .split(' ')
-    .map((word, index) =>
-      index === 0
-        ? word.charAt(0).toLowerCase() + word.slice(1)
-        : word.charAt(0).toUpperCase() + word.slice(1)
-    )
-    .join('');
+import { buildNamespaceKey } from '../utils/buildNamespaceKey';
 
 export const buildInitiativeFolderName = (displayName: string, startDate?: string): string => {
-  const base = normalizeInitiativeName(displayName);
-
-  if (!startDate) {
-    return base;
+  if (!displayName || !startDate) {
+    return '';
   }
 
-  const year = new Date(startDate).getFullYear();
-
-  return `${base}${year}`;
+  return buildNamespaceKey(displayName, startDate);
 };
 
 export const getInitiativeBasePath = (displayName: string, startDate?: string): string => {
