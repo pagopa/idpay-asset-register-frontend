@@ -160,7 +160,7 @@ const createStore = () =>
 
 const theme = createTheme();
 
-const renderGrid = async (role: string = 'USER') => {
+const renderGrid = async (role: string = 'USER', products = mockProducts) => {
   (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
     org_id: 'org',
     org_role: role,
@@ -178,7 +178,7 @@ const renderGrid = async (role: string = 'USER') => {
   });
 
   (registerService.getProducts as jest.Mock).mockResolvedValue({
-    data: { content: mockProducts, pageNo: 0, totalElements: 2 },
+    data: { content: products, pageNo: 0, totalElements: products.length },
   });
 
   (registerService.getBatchFilterList as jest.Mock).mockResolvedValue({
@@ -246,6 +246,39 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('checkbox-0'));
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
     expect(screen.getByTestId('waitApprovedBtn')).toBeInTheDocument();
+    expect(screen.queryByTestId('supervisedBtn')).not.toBeInTheDocument();
+  });
+
+  it('shows supervised button when selected rows are not already supervised', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1, [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'REJECTED',
+      },
+    ]);
+    await waitFor(() => screen.getByTestId('products-table'));
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+
+    expect(screen.getByTestId('supervisedBtn')).toBeInTheDocument();
+  });
+
+  it('disables wait approved action for Invitalia L1 when selected row already waits approval', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1, [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'WAIT_APPROVED',
+      },
+    ]);
+    await waitFor(() => screen.getByTestId('products-table'));
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+
+    expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
   });
 
   it('opens ProductModal on action click', async () => {
@@ -254,6 +287,16 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
     await waitFor(() => expect(screen.getByTestId('product-modal')).toBeInTheDocument());
+  });
+
+  it('shows rejected result after a successful L1 rejected action', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await waitFor(() => screen.getByTestId('products-table'));
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    fireEvent.click(screen.getByText('Success'));
+
+    await waitFor(() => expect(screen.getByText(/msgResultRejected/i)).toBeInTheDocument());
   });
 
   it('opens confirm dialog for wait approved', async () => {
@@ -305,6 +348,14 @@ describe('ProductDataGrid (rewritten)', () => {
     });
   });
 
+  it('handles batch filter API errors without blocking the table', async () => {
+    (registerService.getBatchFilterList as jest.Mock).mockRejectedValue(new Error('Batch error'));
+
+    await renderGrid();
+
+    await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
+  });
+
   it('shows mix status error when multiple statuses selected', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
     helpersModule.getStatusChecks.mockReturnValueOnce({
@@ -354,6 +405,17 @@ describe('ProductDataGrid (rewritten)', () => {
     expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
 
+  it('opens and closes filters drawer from the new filter button', async () => {
+    await renderGrid();
+    await waitFor(() => screen.getByTestId('products-table'));
+
+    fireEvent.click(screen.getByRole('button', { name: /common.advancedFilters/i }));
+    expect(screen.getByTestId('filters-drawer')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Close Filters'));
+    await waitFor(() => expect(screen.queryByTestId('filters-drawer')).not.toBeInTheDocument());
+  });
+
   it('does not render component when products table is not configured', async () => {
     (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockImplementation(() => ({
       config: { tables: {} },
@@ -365,7 +427,7 @@ describe('ProductDataGrid (rewritten)', () => {
       data: { content: [], pageNo: 0, totalElements: 0 },
     });
 
-    (registerService.getBatchFilterList as jest.Mock).mockResolvedValueOnce({
+    (registerService.getBatchFilterList as jest.Mock).mockResolvedValue({
       data: [],
     });
 
