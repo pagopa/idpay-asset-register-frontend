@@ -21,6 +21,8 @@ interface ColumnConfig {
   labelKey: string;
   sortable?: boolean;
   type?: 'checkbox' | 'action' | 'derived' | 'eprelLink';
+  align?: 'left' | 'center' | 'right' | 'justify' | 'inherit';
+  headerAlign?: 'left' | 'center' | 'right' | 'justify' | 'inherit';
 }
 
 interface SelectionConfig {
@@ -95,7 +97,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <TableHead>
           <TableRow>
             {(columns || []).map((col) => (
-              <TableCell key={col.id}>
+              <TableCell key={col.id} align={col.headerAlign ?? 'left'}>
                 {col.sortable ? (
                   <TableSortLabel
                     active={orderBy === col.id}
@@ -120,7 +122,9 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           {tableData.map((row, index) => (
             <TableRow key={index} hover>
               {(columns || []).map((col) => (
-                <TableCell key={col.id}>{renderCellContent(col, row)}</TableCell>
+                <TableCell key={col.id} align={col.align ?? 'left'}>
+                  {renderCellContent(col, row)}
+                </TableCell>
               ))}
             </TableRow>
           ))}

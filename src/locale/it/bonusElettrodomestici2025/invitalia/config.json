@@ -29,45 +29,53 @@
           "id": "select",
           "labelKey": "",
           "type": "checkbox",
-          "sortable": false
+          "sortable": false,
+          "align": "left"
         },
         {
           "id": "category",
           "labelKey": "pages.products.listHeader.category",
-          "sortable": true
+          "sortable": true,
+          "align": "left"
         },
         {
           "id": "organizationName",
           "labelKey": "pages.products.listHeader.producer",
           "type": "derived",
-          "sortable": false
+          "sortable": false,
+          "align": "left"
         },
         {
           "id": "eprelCode",
           "labelKey": "pages.products.listHeader.eprelCode",
           "type": "eprelLink",
-          "sortable": true
+          "sortable": true,
+          "align": "left"
         },
         {
           "id": "gtinCode",
           "labelKey": "pages.products.listHeader.gtinCode",
-          "sortable": true
+          "sortable": true,
+          "align": "left"
         },
         {
           "id": "batchName",
           "labelKey": "pages.products.listHeader.batch",
-          "sortable": true
+          "sortable": true,
+          "align": "left"
         },
         {
           "id": "status",
           "labelKey": "pages.products.listHeader.status",
-          "sortable": true
+          "sortable": true,
+          "align": "left"
         },
         {
           "id": "actions",
           "labelKey": "",
           "type": "action",
-          "sortable": false
+          "sortable": false,
+          "align": "left"
         }
       ],
       "defaultSort": {
