@@ -19,6 +19,7 @@
     }
   },
   "categories": {
+<<<<<<< BND-75-Display-product-charged
     "washingmachines": "Lavatrici",
     "tumbledryers": "Asciugatrici",
     "ovens": "Forni",
@@ -66,5 +67,15 @@
         "productFileId": "Lotto"
       }
     }
+=======
+    "washingmachines": { "label": "Lavatrici" },
+    "tumbledryers": { "label": "Asciugatrici" },
+    "ovens": { "label": "Forni" },
+    "rangehoods": { "label": "Cappe da cucina" },
+    "dishwashers": { "label": "Lavastoviglie" },
+    "washerdriers": { "label": "Lavasciuga" },
+    "refrigeratingappl": { "label": "Apparecchi di refrigerazione" },
+    "cookinghobs": { "label": "Piani cottura" }
+>>>>>>> develop
   }
 }
