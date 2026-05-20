@@ -27,6 +27,33 @@ export const getStatusChecks = (selected: Array<string>, tableData: Array<Produc
   };
 };
 
+export const validateBulkActionPreconditions = ({
+  selected,
+  tableData,
+  isInvitaliaAdmin,
+}: {
+  selected: Array<string>;
+  tableData: Array<ProductDTO>;
+  isInvitaliaAdmin: boolean;
+}) => {
+  const { selectedStatuses, someUploaded, length } = getStatusChecks(selected, tableData);
+
+  if (length === 0) {
+    return { valid: false, reason: 'EMPTY' };
+  }
+
+  if (isInvitaliaAdmin && someUploaded) {
+    return { valid: false, reason: 'SELF_APPROVAL' };
+  }
+
+  const uniqueStatuses = Array.from(new Set(selectedStatuses));
+  if (uniqueStatuses.length > 1) {
+    return { valid: false, reason: 'MIXED_STATUS' };
+  }
+
+  return { valid: true };
+};
+
 export const handleModalSuccess = ({
   selected,
   tableData,

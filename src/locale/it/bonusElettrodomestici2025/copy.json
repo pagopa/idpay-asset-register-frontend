@@ -2,7 +2,7 @@
   "commons": {
     "title": "Elenco informatico degli elettrodomestici"
   },
-  "pages" : {
+  "pages": {
     "addProducts": {
       "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
       "manualLink": "https://developer.pagopa.it/pari/guides/bonuselettrodomestici-manuale-tecnico-produttore"
@@ -37,14 +37,7 @@
       "Marca",
       "Modello"
     ],
-    "fields": [
-      "GTIN123ABC4567",
-      "SKU98765",
-      "Piano cottura",
-      "IT",
-      "MarcaEsempio",
-      "ModelloX100"
-    ]
+    "fields": ["GTIN123ABC4567", "SKU98765", "Piano cottura", "IT", "MarcaEsempio", "ModelloX100"]
   },
   "eprel": {
     "headers": [
@@ -54,12 +47,24 @@
       "Categoria",
       "Paese di Produzione"
     ],
-    "fields": [
-      "12345",
-      "GTIN01234",
-      "SKU12345",
-      "Lavatrice",
-      "IT"
-    ]
+    "fields": ["12345", "GTIN01234", "SKU12345", "Lavatrice", "IT"]
+  },
+  "tables": {
+    "products": {
+      "columns": {
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "category": "Categoria",
+        "status": "Stato",
+        "batchName": "Lotto"
+      },
+      "filters": {
+        "category": "Categoria",
+        "status": "Stato",
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "productFileId": "Lotto"
+      }
+    }
   }
 }

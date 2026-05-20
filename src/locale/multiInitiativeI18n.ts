@@ -15,8 +15,11 @@ export const loadItNamespace = async (namespace: string): Promise<Resource> => {
       return mod.default as Resource;
     }
 
-    const [initiativeFolder, file] = namespace.split('/');
-    if (!initiativeFolder || !file) {
+    const parts = namespace.split('/');
+    const initiativeFolder = parts[0];
+    const file = parts[1] ?? 'copy';
+
+    if (!initiativeFolder) {
       return {};
     }
 

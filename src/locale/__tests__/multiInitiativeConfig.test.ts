@@ -26,9 +26,11 @@ describe('multiInitiativeConfig dynamic loading', () => {
     expect(result).toBeDefined();
   });
 
-  it('returns empty object when initiative folder does not exist', async () => {
+  it('falls back to default when initiative folder does not exist', async () => {
     const result = await loadItInitiativeConfig('unknownInitiative');
-    expect(result).toEqual({});
+
+    expect(result).toBeDefined();
+    expect(result.tables).toBeDefined();
   });
 
   it('returns undefined when config is undefined in getLogicalRoleName', () => {
