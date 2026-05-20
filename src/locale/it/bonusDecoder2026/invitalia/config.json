@@ -71,11 +71,6 @@
           "sortable": false
         },
         {
-          "id": "eprelCode",
-          "labelKey": "pages.products.listHeader.eprelCode",
-          "sortable": true
-        },
-        {
           "id": "gtinCode",
           "labelKey": "pages.products.listHeader.gtinCode",
           "sortable": true
@@ -123,11 +118,6 @@
           "labelKey": "pages.products.filterLabels.category"
         },
         {
-          "id": "eprelCode",
-          "type": "text",
-          "labelKey": "pages.products.filterLabels.eprelCode"
-        },
-        {
           "id": "gtinCode",
           "type": "text",
           "labelKey": "pages.products.filterLabels.gtinCode"
@@ -154,14 +144,6 @@
             "labelKey": "pages.productDetail.batchName"
           },
           {
-            "id": "registrationDate",
-            "labelKey": "pages.productDetail.eprelCheckDate"
-          },
-          {
-            "id": "eprelCode",
-            "labelKey": "pages.productDetail.eprelCode"
-          },
-          {
             "id": "gtinCode",
             "labelKey": "pages.productDetail.gtinCode"
           },
@@ -180,18 +162,6 @@
           {
             "id": "model",
             "labelKey": "pages.productDetail.model"
-          },
-          {
-            "id": "energyClass",
-            "labelKey": "pages.productDetail.energyClass"
-          },
-          {
-            "id": "countryOfProduction",
-            "labelKey": "pages.productDetail.countryOfProduction"
-          },
-          {
-            "id": "capacity",
-            "labelKey": "pages.productDetail.capacity"
           }
         ]
       }
