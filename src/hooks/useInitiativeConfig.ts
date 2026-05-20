@@ -18,18 +18,12 @@ export const useInitiativeConfig = () => {
 
     setLoading(true);
 
-<<<<<<< BND-75-Display-product-charged
-    const rawName = (initiative as any)?.initiativeName ?? (initiative as any)?.displayName ?? '';
-=======
-    const initiativeName =
-      initiative?.initiativeName && initiative?.startDate
-        ? buildNamespaceKey(initiative.initiativeName, initiative.startDate)
-        : (initiative as any)?.displayName ?? initiative?.initiativeId;
->>>>>>> develop
-
     const startDate = (initiative as any)?.startDate ?? '';
 
-    const initiativeNamespace = buildNamespaceKey(rawName, startDate);
+    const initiativeNamespace =
+      initiative?.initiativeName && startDate
+        ? buildNamespaceKey(initiative.initiativeName, startDate)
+        : (initiative as any)?.displayName ?? initiative?.initiativeId ?? '';
 
     void loadItInitiativeConfig(initiativeNamespace, user.org_role)
       .then((cfg) => {
