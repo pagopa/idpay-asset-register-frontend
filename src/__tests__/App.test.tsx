@@ -104,12 +104,13 @@ jest.mock('../pages/initiativesList/initiativesList', () => ({
   __esModule: true,
   default: () => <div>InitiativesListPage</div>,
 }));
-const mockUseGetInitiativesQuery = jest.fn(() => ({ isError: false }));
 
 jest.mock('../redux/api/initiativesApi', () => ({
   __esModule: true,
-  useGetInitiativesQuery: mockUseGetInitiativesQuery,
+  useGetInitiativesQuery: jest.fn(() => ({ isError: false })),
 }));
+
+const { useGetInitiativesQuery: mockUseGetInitiativesQuery } = require('../redux/api/initiativesApi');
 jest.mock('../pages/overview/overview', () => ({
   __esModule: true,
   default: () => <div>OverviewPage</div>,

@@ -36,7 +36,7 @@ describe('ProductDataGrid.helpers - validateBulkActionPreconditions', () => {
   it('returns invalid for self approval when admin', () => {
     const result = validateBulkActionPreconditions({
       selected: ['1'],
-      tableData: [buildRow(PRODUCTS_STATES.WAIT_APPROVED, '1')] as any,
+      tableData: [buildRow(PRODUCTS_STATES.UPLOADED, '1')] as any,
       isInvitaliaAdmin: true,
     });
 

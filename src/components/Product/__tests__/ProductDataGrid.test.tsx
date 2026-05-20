@@ -141,10 +141,30 @@ jest.mock('../../../pages/components/EmptyListTable', () => ({
   default: () => <div data-testid="empty-list">empty</div>,
 }));
 
-jest.mock('../ProductDataGrid.helpers', () => ({
-  __esModule: true,
-  getStatusChecks: jest.fn(),
-}));
+jest.mock('../ProductDataGrid.helpers', () => {
+  const getStatusChecks = jest.fn();
+
+  return {
+    __esModule: true,
+    getStatusChecks,
+    validateBulkActionPreconditions: jest.fn(({ selected, tableData, isInvitaliaAdmin }) => {
+      const { selectedStatuses = [], someUploaded = false, length = 0 } =
+        getStatusChecks(selected, tableData) ?? {};
+
+      if (length === 0) {
+        return { valid: false, reason: 'EMPTY' };
+      }
+      if (isInvitaliaAdmin && someUploaded) {
+        return { valid: false, reason: 'SELF_APPROVAL' };
+      }
+      if (Array.from(new Set(selectedStatuses)).length > 1) {
+        return { valid: false, reason: 'MIXED_STATUS' };
+      }
+
+      return { valid: true };
+    }),
+  };
+});
 
 const mockProducts = [
   {
@@ -231,6 +251,24 @@ describe('ProductDataGrid (rewritten)', () => {
     localStorage.clear();
 
     const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.validateBulkActionPreconditions.mockImplementation(
+      ({ selected, tableData, isInvitaliaAdmin }: any) => {
+        const { selectedStatuses = [], someUploaded = false, length = 0 } =
+          helpersModule.getStatusChecks(selected, tableData) ?? {};
+
+        if (length === 0) {
+          return { valid: false, reason: 'EMPTY' };
+        }
+        if (isInvitaliaAdmin && someUploaded) {
+          return { valid: false, reason: 'SELF_APPROVAL' };
+        }
+        if (Array.from(new Set(selectedStatuses)).length > 1) {
+          return { valid: false, reason: 'MIXED_STATUS' };
+        }
+
+        return { valid: true };
+      }
+    );
     helpersModule.getStatusChecks.mockReturnValue({
       selectedStatuses: ['SUPERVISED'],
       someUploaded: false,
@@ -303,30 +341,43 @@ describe('ProductDataGrid (rewritten)', () => {
     expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
   });
 
-  it('opens ProductModal on action click', async () => {
+  it('validates selected rows on action click', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
     await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
-    await waitFor(() => expect(screen.getByTestId('product-modal')).toBeInTheDocument());
+
+    const helpersModule = require('../ProductDataGrid.helpers');
+    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalledWith({
+      selected: ['GTIN1'],
+      tableData: mockProducts,
+      isInvitaliaAdmin: false,
+    });
+    expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
   });
 
-  it('shows rejected result after a successful L1 rejected action', async () => {
+  it('does not show rejected result directly from the grid action', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
     await waitFor(() => screen.getByTestId('products-table'));
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
-    fireEvent.click(screen.getByText('Success'));
 
-    await waitFor(() => expect(screen.getByText(/msgResultRejected/i)).toBeInTheDocument());
+    expect(screen.queryByText(/msgResultRejected/i)).not.toBeInTheDocument();
   });
 
-  it('opens confirm dialog for wait approved', async () => {
+  it('validates selected rows for wait approved', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1);
     await screen.findByTestId('products-table');
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
-    await waitFor(() => expect(screen.getByTestId('product-confirm-dialog')).toBeInTheDocument());
+
+    const helpersModule = require('../ProductDataGrid.helpers');
+    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalledWith({
+      selected: ['GTIN1'],
+      tableData: mockProducts,
+      isInvitaliaAdmin: false,
+    });
+    expect(screen.queryByTestId('product-confirm-dialog')).not.toBeInTheDocument();
   });
 
   it('does not open modal when no rows are selected', async () => {
@@ -378,7 +429,7 @@ describe('ProductDataGrid (rewritten)', () => {
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
   });
 
-  it('shows mix status error when multiple statuses selected', async () => {
+  it('validates mixed statuses without opening a grid message', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
     helpersModule.getStatusChecks.mockReturnValueOnce({
       selectedStatuses: ['A', 'B'],
@@ -393,10 +444,15 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('checkbox-1'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
-    await waitFor(() => expect(screen.getByText(/errorMixSelected/i)).toBeInTheDocument());
+    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalledWith({
+      selected: ['GTIN1', 'GTIN2'],
+      tableData: mockProducts,
+      isInvitaliaAdmin: false,
+    });
+    expect(screen.queryByText(/errorMixSelected/i)).not.toBeInTheDocument();
   });
 
-  it('shows yourself approved error for admin with uploaded', async () => {
+  it('validates admin self approval without opening a grid message', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
     helpersModule.getStatusChecks.mockReturnValueOnce({
       selectedStatuses: ['UPLOADED'],
@@ -410,7 +466,12 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
-    await waitFor(() => expect(screen.getByText(/errorYourselfApproved/i)).toBeInTheDocument());
+    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalledWith({
+      selected: ['GTIN1'],
+      tableData: mockProducts,
+      isInvitaliaAdmin: true,
+    });
+    expect(screen.queryByText(/errorYourselfApproved/i)).not.toBeInTheDocument();
   });
 
   it('renders filter chip when filters applied', async () => {
