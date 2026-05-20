@@ -10,6 +10,7 @@ import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { UploadsListDTO } from '../../api/generated/register';
 import { getProductFilesList } from '../../services/registerService';
 import UploadsTable from '../components/HistoryUploadSection';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 
 const OverviewHistoryUpload: React.FC = () => {
   const { t } = useScopedTranslation();
@@ -18,6 +19,7 @@ const OverviewHistoryUpload: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(8);
+  const initiativeId = useCurrentInitiativeId();
 
   interface Props {
     description: string;
@@ -37,7 +39,7 @@ const OverviewHistoryUpload: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getProductFilesList(page, rowsPerPage)
+    getProductFilesList(initiativeId, page, rowsPerPage)
       .then((res: AxiosResponse<UploadsListDTO>) => {
         setData({
           ...res.data,

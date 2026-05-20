@@ -166,6 +166,21 @@ describe('ProductDataGrid.helpers', () => {
     expect(setters.states()).toEqual({ approved: false, wait: false, rejected: false });
   });
 
+  it('handleModalSuccess: Invitalia REJECTED with all SUPERVISED resets all messages', () => {
+    const tableData = [row('A', ProductStatus.SUPERVISED)];
+    const setters = makeSetters({ approved: true, wait: true, rejected: true });
+    handleModalSuccess({
+      selected: ['A'],
+      tableData,
+      modalAction: PRODUCTS_STATES.REJECTED,
+      isInvitaliaUser: true,
+      setShowMsgApproved: setters.setShowMsgApproved,
+      setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
+      setShowMsgRejected: setters.setShowMsgRejected,
+    });
+    expect(setters.states()).toEqual({ approved: false, wait: false, rejected: false });
+  });
+
   it('handleModalSuccess: REJECTED or REJECT_APPROVATION shows rejected when not covered by earlier branches', () => {
     const tableData = [row('A', ProductStatus.WAIT_APPROVED)];
     const s1 = makeSetters();

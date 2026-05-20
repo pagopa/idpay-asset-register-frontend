@@ -1,0 +1,136 @@
+{
+  "role": "operatore",
+  "logicalName": "Produttore",
+  "categoryTemplates": {
+    "satellite": {
+      "type": "csv",
+      "name": "satellitare"
+    },
+    "terrestrial": {
+      "type": "csv",
+      "name": "terrestre"
+    },
+    "terrestrial_via_cable": {
+      "type": "csv",
+      "name": "terrestre-via-cavo"
+    },
+    "terrestrial_and_satellite": {
+      "type": "csv",
+      "name": "terrestre-e-satellitare"
+    },
+    "terrestrial_satellite_and_via_cable": {
+      "type": "csv",
+      "name": "terrestre-satellitare-e-via-cavo"
+    }
+  },
+  "templates": {
+    "csv": {
+      "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
+      "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
+    }
+  },
+  "subRoles": {
+    "operatore": {
+      "logicalName": "Produttore",
+      "permissions": {
+        "tables": ["products"]
+      }
+    }
+  },
+  "tables": {
+    "products": {
+      "columns": [
+        {
+          "id": "gtinCode",
+          "labelKey": "tables.products.columns.gtinCode",
+          "sortable": true
+        },
+        {
+          "id": "productCode",
+          "labelKey": "tables.products.columns.productCode",
+          "sortable": true
+        },
+        {
+          "id": "category",
+          "labelKey": "tables.products.columns.category",
+          "sortable": true
+        },
+        {
+          "id": "status",
+          "labelKey": "tables.products.columns.status",
+          "sortable": true
+        },
+        {
+          "id": "batchName",
+          "labelKey": "tables.products.columns.batchName",
+          "sortable": false
+        }
+      ],
+      "defaultSort": {
+        "field": "gtinCode",
+        "direction": "asc"
+      },
+      "filters": [
+        {
+          "id": "category",
+          "type": "select",
+          "labelKey": "tables.products.filters.category"
+        },
+        {
+          "id": "status",
+          "type": "select",
+          "labelKey": "tables.products.filters.status"
+        },
+        {
+          "id": "gtinCode",
+          "type": "text",
+          "labelKey": "tables.products.filters.gtinCode"
+        },
+        {
+          "id": "productCode",
+          "type": "text",
+          "labelKey": "tables.products.filters.productCode"
+        },
+        {
+          "id": "productFileId",
+          "type": "select",
+          "labelKey": "tables.products.filters.productFileId"
+        }
+      ],
+      "ui": {
+        "filtering": {
+          "enabled": false
+        },
+        "pagination": {
+          "enabled": true,
+          "defaultRowsPerPage": 5,
+          "rowsPerPageOptions": [10, 25, 50, 100]
+        }
+      },
+      "detail": {
+        "fields": [
+          {
+            "id": "gtinCode",
+            "labelKey": "pages.productDetail.gtinCode"
+          },
+          {
+            "id": "productCode",
+            "labelKey": "pages.productDetail.productCode"
+          },
+          {
+            "id": "brand",
+            "labelKey": "pages.productDetail.brand"
+          },
+          {
+            "id": "model",
+            "labelKey": "pages.productDetail.model"
+          },
+          {
+            "id": "status",
+            "labelKey": "pages.productDetail.status"
+          }
+        ]
+      }
+    }
+  }
+}
