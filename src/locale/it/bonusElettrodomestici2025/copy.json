@@ -34,6 +34,8 @@
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
         "category": "Categoria",
+        "energyClass": "Classe energetica",
+        "eprelCode": "Codice EPREL",
         "status": "Stato",
         "batchName": "Lotto"
       },

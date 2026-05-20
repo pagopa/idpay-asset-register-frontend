@@ -1,0 +1,89 @@
+{
+  "role": "invitalia",
+  "logicalName": "L1",
+  "subRoles": {
+    "invitalia": {
+      "logicalName": "L1",
+      "permissions": {
+        "tables": ["products"]
+      }
+    },
+    "invitalia_admin": {
+      "logicalName": "L2",
+      "permissions": {
+        "tables": ["products"]
+      }
+    }
+  },
+  "tables": {
+    "products": {
+      "selection": {
+        "enabled": true,
+        "rules": {
+          "invitalia": ["UPLOADED", "SUPERVISED"],
+          "invitalia_admin": ["WAIT_APPROVED"]
+        }
+      },
+      "columns": [
+        {
+          "id": "select",
+          "labelKey": "",
+          "type": "checkbox",
+          "sortable": false
+        },
+        {
+          "id": "category",
+          "labelKey": "pages.products.listHeader.category",
+          "sortable": true
+        },
+        {
+          "id": "organizationName",
+          "labelKey": "pages.products.listHeader.producer",
+          "type": "derived",
+          "sortable": false
+        },
+        {
+          "id": "eprelCode",
+          "labelKey": "pages.products.listHeader.eprelCode",
+          "type": "eprelLink",
+          "sortable": true
+        },
+        {
+          "id": "gtinCode",
+          "labelKey": "pages.products.listHeader.gtinCode",
+          "sortable": true
+        },
+        {
+          "id": "batchName",
+          "labelKey": "pages.products.listHeader.batch",
+          "sortable": true
+        },
+        {
+          "id": "status",
+          "labelKey": "pages.products.listHeader.status",
+          "sortable": true
+        },
+        {
+          "id": "actions",
+          "labelKey": "",
+          "type": "action",
+          "sortable": false
+        }
+      ],
+      "defaultSort": {
+        "field": "category",
+        "direction": "asc"
+      },
+      "ui": {
+        "filtering": {
+          "enabled": true
+        },
+        "pagination": {
+          "enabled": true,
+          "defaultRowsPerPage": 10,
+          "rowsPerPageOptions": [10, 25, 50, 100]
+        }
+      }
+    }
+  }
+}

@@ -22,29 +22,34 @@
     "products": {
       "columns": [
         {
-          "id": "gtinCode",
-          "labelKey": "tables.products.columns.gtinCode",
-          "sortable": true
-        },
-        {
-          "id": "productCode",
-          "labelKey": "tables.products.columns.productCode",
-          "sortable": true
-        },
-        {
           "id": "category",
           "labelKey": "tables.products.columns.category",
           "sortable": true
         },
         {
-          "id": "status",
-          "labelKey": "tables.products.columns.status",
+          "id": "energyClass",
+          "labelKey": "tables.products.columns.energyClass",
+          "sortable": true
+        },
+        {
+          "id": "eprelCode",
+          "labelKey": "tables.products.columns.eprelCode",
+          "sortable": true
+        },
+        {
+          "id": "gtinCode",
+          "labelKey": "tables.products.columns.gtinCode",
           "sortable": true
         },
         {
           "id": "batchName",
           "labelKey": "tables.products.columns.batchName",
           "sortable": false
+        },
+        {
+          "id": "status",
+          "labelKey": "tables.products.columns.status",
+          "sortable": true
         }
       ],
       "defaultSort": {

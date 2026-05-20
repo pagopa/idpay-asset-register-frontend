@@ -1,0 +1,63 @@
+{
+  "role": "operatore",
+  "logicalName": "Produttore",
+  "subRoles": {
+    "operatore": {
+      "logicalName": "Produttore",
+      "permissions": {
+        "tables": ["products"]
+      }
+    }
+  },
+  "tables": {
+    "products": {
+      "columns": [
+        {
+          "id": "category",
+          "labelKey": "tables.products.columns.category",
+          "sortable": true
+        },
+        {
+          "id": "energyClass",
+          "labelKey": "tables.products.columns.energyClass",
+          "sortable": true
+        },
+        {
+          "id": "eprelCode",
+          "labelKey": "tables.products.columns.eprelCode",
+          "type": "eprelLink",
+          "sortable": true
+        },
+        {
+          "id": "gtinCode",
+          "labelKey": "tables.products.columns.gtinCode",
+          "sortable": true
+        },
+        {
+          "id": "batchName",
+          "labelKey": "tables.products.columns.batchName",
+          "sortable": false
+        },
+        {
+          "id": "status",
+          "labelKey": "tables.products.columns.status",
+          "sortable": true
+        }
+      ],
+      "defaultSort": {
+        "field": "gtinCode",
+        "direction": "asc"
+      },
+      "ui": {
+        "filtering": {
+          "enabled": true
+        },
+        "pagination": {
+          "enabled": true,
+          "defaultRowsPerPage": 10,
+          "rowsPerPageOptions": [10, 25, 50]
+        }
+      }
+    }
+  }
+}
