@@ -55,18 +55,3 @@ export const MIN_LENGTH_TEXTFIELD_POPUP = 2;
 export const MAX_LENGTH_TEXTFIELD_POPUP = 200;
 
 export const UPCOMING_INITIATIVE_DAY = '20/10/2025';
-
-export const MOCKED_INITIATIVES_LIST = [
-  {
-    initiativeId: '68dd003ccce8c534d1da22bc',
-    initiativeName: 'Bonus Elettrodomestici',
-  },
-  {
-    initiativeId: '68dd003ccce8c534d1da22bb',
-    initiativeName: 'Bonus Elettrodomestici 2',
-  },
-  {
-    initiativeId: '68dd003ccce8c534d1da22ba',
-    initiativeName: 'Bonus Elettrodomestici - Verifica gestione ISEE - Caso 1',
-  },
-];
