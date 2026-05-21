@@ -1,0 +1,90 @@
+{
+  "roles": {
+    "name": "operatore",
+    "logicalName": "Produttore",
+    "subRoles": {
+      "operatore": {
+        "logicalName": "Produttore",
+        "permissions": {
+          "tables": ["products"]
+        }
+      }
+    }
+  },
+  "templates": {
+    "formats": {
+      "csv": {
+        "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
+        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
+      },
+      "eprel": {
+        "headers": ["Codice EPREL","Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Paese di Produzione"],
+        "fields": ["12345", "GTIN01234", "SKU12345", "Lavatrice", "IT"]
+      }
+    },
+    "categories": {
+      "washingmachines": { "format": "eprel", "name": "eprel" },
+      "tumbledryers": { "format": "eprel", "name": "eprel" },
+      "ovens": { "format": "eprel", "name": "eprel" },
+      "rangehoods": { "format": "eprel", "name": "eprel" },
+      "dishwashers": { "format": "eprel", "name": "eprel" },
+      "washerdriers": { "format": "eprel", "name": "eprel" },
+      "refrigeratingappl": { "format": "eprel", "name": "eprel" },
+      "cookinghobs": { "format": "csv", "name": "cookinghobs" }
+    }
+  },
+  "ui": {
+    "tables": {
+      "products": {
+        "columns": [
+          {
+            "id": "category",
+            "labelKey": "tables.products.columns.category",
+            "sortable": true,
+            "align": "center"
+          },
+          {
+            "id": "energyClass",
+            "labelKey": "tables.products.columns.energyClass",
+            "sortable": true,
+            "align": "center"
+          },
+          {
+            "id": "eprelCode",
+            "labelKey": "tables.products.columns.eprelCode",
+            "type": "eprelLink",
+            "sortable": true,
+            "align": "center"
+          },
+          {
+            "id": "gtinCode",
+            "labelKey": "tables.products.columns.gtinCode",
+            "sortable": true,
+            "align": "center"
+          },
+          {
+            "id": "batchName",
+            "labelKey": "tables.products.columns.batchName",
+            "sortable": false,
+            "align": "left"
+          },
+          {
+            "id": "status",
+            "labelKey": "tables.products.columns.status",
+            "sortable": true,
+            "align": "left"
+          }
+        ],
+        "defaultSort": { "field": "gtinCode", "direction": "asc" },
+        "ui": {
+          "filtering": { "enabled": true },
+          "pagination": {
+            "enabled": true,
+            "defaultRowsPerPage": 10,
+            "rowsPerPageOptions": [10, 25, 50]
+          }
+        }
+      }
+    }
+  }
+}

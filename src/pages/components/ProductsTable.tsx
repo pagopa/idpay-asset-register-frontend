@@ -13,12 +13,16 @@ import {
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { ProductDTO } from '../../api/generated/register';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
+import ProductStatusChip from '../../components/Product/ProductStatusChip';
+import EprelLinks from '../../components/Product/EprelLinks';
 
 interface ColumnConfig {
   id: string;
   labelKey: string;
   sortable?: boolean;
-  type?: 'checkbox' | 'action' | 'derived';
+  type?: 'checkbox' | 'action' | 'derived' | 'eprelLink';
+  align?: 'left' | 'center' | 'right' | 'justify' | 'inherit';
+  headerAlign?: 'left' | 'center' | 'right' | 'justify' | 'inherit';
 }
 
 interface SelectionConfig {
@@ -58,13 +62,42 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     );
   };
 
+  const renderCellContent = (col: ColumnConfig, row: ProductDTO) => {
+    if (col.type === 'checkbox' && selection?.enabled) {
+      return (
+        <Checkbox
+          checked={selected.includes(row.gtinCode ?? '')}
+          onChange={() => row.gtinCode && handleCheckboxClick(row.gtinCode)}
+        />
+      );
+    }
+
+    if (col.type === 'action') {
+      return (
+        <IconButton size="small" onClick={() => handleListButtonClick(row)}>
+          <ArrowForwardIosIcon />
+        </IconButton>
+      );
+    }
+
+    if (col.id === 'status') {
+      return <ProductStatusChip status={(row as any)[col.id]} />;
+    }
+
+    if (col.type === 'eprelLink') {
+      return <EprelLinks row={row} />;
+    }
+
+    return (row as any)[col.id] ?? '-';
+  };
+
   return (
     <TableContainer>
       <Table size="small">
         <TableHead>
           <TableRow>
             {(columns || []).map((col) => (
-              <TableCell key={col.id}>
+              <TableCell key={col.id} align={col.headerAlign ?? 'left'}>
                 {col.sortable ? (
                   <TableSortLabel
                     active={orderBy === col.id}
@@ -88,30 +121,11 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           )}
           {tableData.map((row, index) => (
             <TableRow key={index} hover>
-              {(columns || []).map((col) => {
-                if (col.type === 'checkbox' && selection?.enabled) {
-                  return (
-                    <TableCell key={col.id}>
-                      <Checkbox
-                        checked={selected.includes(row.gtinCode ?? '')}
-                        onChange={() => row.gtinCode && handleCheckboxClick(row.gtinCode)}
-                      />
-                    </TableCell>
-                  );
-                }
-
-                if (col.type === 'action') {
-                  return (
-                    <TableCell key={col.id}>
-                      <IconButton size="small" onClick={() => handleListButtonClick(row)}>
-                        <ArrowForwardIosIcon />
-                      </IconButton>
-                    </TableCell>
-                  );
-                }
-
-                return <TableCell key={col.id}>{(row as any)[col.id] ?? '-'}</TableCell>;
-              })}
+              {(columns || []).map((col) => (
+                <TableCell key={col.id} align={col.align ?? 'left'}>
+                  {renderCellContent(col, row)}
+                </TableCell>
+              ))}
             </TableRow>
           ))}
         </TableBody>
