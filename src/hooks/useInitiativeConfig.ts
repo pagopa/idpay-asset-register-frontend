@@ -19,8 +19,7 @@ export const useInitiativeConfig = () => {
       logicalName: roles?.logicalName,
       subRoles: roles?.subRoles,
       errors: roles?.errors,
-      categoryTemplates: templates?.categoryTemplates,
-      templates: templates?.template,
+      templates,
       tables: ui?.tables,
     };
   };
