@@ -7,8 +7,8 @@ describe('multiInitiativeConfig dynamic loading', () => {
     const result = await loadItInitiativeConfig('bonusDecoder2026');
 
     expect(result).toBeDefined();
-    expect((result as any).tables).toBeDefined();
-    expect((result as any).tables.products).toBeDefined();
+    expect(result.ui?.tables).toBeDefined();
+    expect(result.ui?.tables?.products).toBeDefined();
   });
 
   it('should return empty object if initiativeName is undefined', async () => {
@@ -39,10 +39,12 @@ describe('multiInitiativeConfig dynamic loading', () => {
 
   it('should resolve logical role name correctly', () => {
     const config = {
-      logicalName: 'BASE_ROLE',
-      subRoles: {
-        ADMIN_SUB: {
-          logicalName: 'ADMIN_LOGICAL',
+      roles: {
+        logicalName: 'BASE_ROLE',
+        subRoles: {
+          ADMIN_SUB: {
+            logicalName: 'ADMIN_LOGICAL',
+          },
         },
       },
     };
@@ -62,6 +64,6 @@ describe('multiInitiativeConfig dynamic loading', () => {
 
     // If subRole does not match, tables should fallback safely (no crash)
     expect(result).toBeDefined();
-    expect(result.tables).toBeDefined();
+    expect(result.ui?.tables).toBeDefined();
   });
 });
