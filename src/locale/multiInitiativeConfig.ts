@@ -83,30 +83,8 @@ const loadRoleSpecificConfig = async (basePath: string, normalizedRole: string, 
   const subRole = resolveSubRole(role);
 
   try {
-    const defaultMod = await import(`${basePath}default/config.json`);
-    const defaultConfig = (defaultMod as any).default ?? {};
-
-    return applySubRolePermissions(
-      {
-        roles: {
-          ...defaultConfig?.roles,
-          ...roleConfig?.roles,
-          errors: {
-            ...defaultConfig?.roles?.errors,
-            ...roleConfig?.roles?.errors,
-          },
-        },
-        templates: {
-          ...defaultConfig?.templates,
-          ...roleConfig?.templates,
-        },
-        ui: {
-          ...defaultConfig?.ui,
-          ...roleConfig?.ui,
-        },
-      },
-      subRole
-    );
+    // Se esiste il file del ruolo → usa solo quello
+    return applySubRolePermissions(roleConfig, subRole);
   } catch {
     return applySubRolePermissions(roleConfig, subRole);
   }

@@ -151,7 +151,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   const effectiveColumns = useMemo(() => {
     const baseCols = Array.isArray(tableConfig?.columns) ? tableConfig.columns : [];
-    return [...baseCols, { id: '__detail__', labelKey: '', type: 'action' }];
+    const hasAction = baseCols.some((c: any) => c.type === 'action');
+
+    return hasAction ? baseCols : [...baseCols, { id: '__detail__', labelKey: '', type: 'action' }];
   }, [tableConfig]);
 
   if (!tableConfig) {
