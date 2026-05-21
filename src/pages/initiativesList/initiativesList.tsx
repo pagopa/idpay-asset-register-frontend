@@ -27,6 +27,7 @@ type StatusEnum = InitiativeDTO['status'];
 const PUBLISHED: StatusEnum = 'PUBLISHED';
 const CLOSED: StatusEnum = 'CLOSED';
 import { InitiativeDTO } from '../../api/generated/register';
+import useScopedTranslation from "../../hooks/useScopedTranslation";
 import { Data, EnhancedTableProps, HeadCell, Order, getComparator, stableSort } from './helpers';
 
 const EMPTY_INITIATIVES_LIST: Array<InitiativeDTO> = [];
@@ -96,6 +97,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 const InitiativesList = () => {
+  const { t } = useScopedTranslation();
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof Data>('initiativeName');
   const [initiativeList, setInitiativeList] = useState<Array<Data>>([]);
@@ -154,9 +156,9 @@ const InitiativesList = () => {
   const renderInitiativeStatus = (status?: StatusEnum) => {
     switch (status) {
       case PUBLISHED:
-        return <Chip sx={{ fontSize: '14px' }} label="In corso" color="success" />;
+        return <Chip sx={{ fontSize: '14px' }} label={t('common.initiativeStatusEnum.published')} color="success" />;
       case CLOSED:
-        return <Chip sx={{ fontSize: '14px' }} label="Chiusa" color="default" />;
+        return <Chip sx={{ fontSize: '14px' }} label={t('common.initiativeStatusEnum.closed')} color="default" />;
       default:
         return null;
     }

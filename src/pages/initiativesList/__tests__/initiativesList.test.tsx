@@ -1,11 +1,8 @@
 import { fireEvent, screen } from '@testing-library/react';
-import React from 'react';
 import { store } from '../../../redux/store';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';
 import InitiativesList from '../initiativesList';
 import * as helpers from '../../../helpers';
-
-// Tipi jest non sempre inclusi nel tsconfig del progetto: import esplicito per TS/IDE
 import { beforeEach, describe, expect, test } from '@jest/globals';
 
 const mockUseGetInitiativesQuery = jest.fn();
@@ -41,7 +38,6 @@ beforeEach(() => {
 });
 
 describe('Test suite for initiativeList page', () => {
-  // fix typing: scrollTo è overloadata (options | x,y)
   window.scrollTo = jest.fn() as unknown as typeof window.scrollTo;
   test('Render component', () => {
     renderWithContext(<InitiativesList />);
