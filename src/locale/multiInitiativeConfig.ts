@@ -2,11 +2,16 @@
 import { DEBUG_CONSOLE } from '../utils/constants';
 
 export type InitiativeTablesConfig = {
-  role?: string;
-  logicalName?: string;
-  subRoles?: Record<string, any>;
-  tables?: Record<string, any>;
-  errors?: Record<string, any>;
+  roles?: {
+    name?: string;
+    logicalName?: string;
+    subRoles?: Record<string, any>;
+    errors?: Record<string, any>;
+  };
+  templates?: Record<string, any>;
+  ui?: {
+    tables?: Record<string, any>;
+  };
 };
 
 export const DEFAULT_INITIATIVE_NAMESPACE = 'default';
@@ -19,17 +24,19 @@ const applySubRolePermissions = (config: any, subRole?: string): InitiativeTable
     return config ?? {};
   }
 
-  const permissions = config?.subRoles?.[subRole]?.permissions?.tables;
+  const permissions = config?.roles?.subRoles?.[subRole]?.permissions?.tables;
 
-  if (!Array.isArray(permissions) || !config?.tables) {
-    return { ...config, tables: {} };
+  const tables = config?.ui?.tables;
+
+  if (!Array.isArray(permissions) || !tables) {
+    return { ...config, ui: { ...config?.ui, tables: {} } };
   }
 
   const filteredTables = Object.fromEntries(
-    Object.entries(config.tables).filter(([tableKey]) => permissions.includes(tableKey))
+    Object.entries(tables).filter(([tableKey]) => permissions.includes(tableKey))
   );
 
-  return { ...config, tables: filteredTables };
+  return { ...config, ui: { ...config?.ui, tables: filteredTables } };
 };
 
 export const getLogicalRoleName = (
@@ -40,9 +47,9 @@ export const getLogicalRoleName = (
     return undefined;
   }
   if (!role) {
-    return config.logicalName;
+    return config.roles?.logicalName;
   }
-  return config.subRoles?.[role]?.logicalName ?? config.logicalName;
+  return config.roles?.subRoles?.[role]?.logicalName ?? config.roles?.logicalName;
 };
 
 const normalizeRole = (role?: string): string | undefined => {
@@ -81,11 +88,21 @@ const loadRoleSpecificConfig = async (basePath: string, normalizedRole: string, 
 
     return applySubRolePermissions(
       {
-        ...defaultConfig,
-        ...roleConfig,
-        errors: {
-          ...defaultConfig?.errors,
-          ...roleConfig?.errors,
+        roles: {
+          ...defaultConfig?.roles,
+          ...roleConfig?.roles,
+          errors: {
+            ...defaultConfig?.roles?.errors,
+            ...roleConfig?.roles?.errors,
+          },
+        },
+        templates: {
+          ...defaultConfig?.templates,
+          ...roleConfig?.templates,
+        },
+        ui: {
+          ...defaultConfig?.ui,
+          ...roleConfig?.ui,
         },
       },
       subRole
