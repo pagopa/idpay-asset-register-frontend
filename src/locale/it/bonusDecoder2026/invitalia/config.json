@@ -1,176 +1,147 @@
 {
-  "role": "invitalia",
-  "logicalName": "L1",
-  "categoryTemplates": {
-    "satellite": {
-      "type": "csv",
-      "name": "satellitare"
-    },
-    "terrestrial": {
-      "type": "csv",
-      "name": "terrestre"
-    },
-    "terrestrial_via_cable": {
-      "type": "csv",
-      "name": "terrestre-via-cavo"
-    },
-    "terrestrial_and_satellite": {
-      "type": "csv",
-      "name": "terrestre-e-satellitare"
-    },
-    "terrestrial_satellite_and_via_cable": {
-      "type": "csv",
-      "name": "terrestre-satellitare-e-via-cavo"
+  "roles": {
+    "name": "invitalia",
+    "logicalName": "L1",
+    "subRoles": {
+      "invitalia": {
+        "logicalName": "L1",
+        "permissions": {
+          "tables": ["products"]
+        }
+      },
+      "invitalia_admin": {
+        "logicalName": "L2",
+        "permissions": {
+          "tables": ["products"]
+        }
+      }
     }
   },
   "templates": {
-    "csv": {
-      "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
-      "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
-    }
-  },
-  "subRoles": {
-    "invitalia": {
-      "logicalName": "L1",
-      "permissions": {
-        "tables": ["products"]
+    "categoryTemplates": {
+      "satellite": { "type": "csv", "name": "satellitare" },
+      "terrestrial": { "type": "csv", "name": "terrestre" },
+      "terrestrial_via_cable": { "type": "csv", "name": "terrestre-via-cavo" },
+      "terrestrial_and_satellite": { "type": "csv", "name": "terrestre-e-satellitare" },
+      "terrestrial_satellite_and_via_cable": {
+        "type": "csv",
+        "name": "terrestre-satellitare-e-via-cavo"
       }
     },
-    "invitalia_admin": {
-      "logicalName": "L2",
-      "permissions": {
-        "tables": ["products"]
+    "template": {
+      "csv": {
+        "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
+        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
       }
     }
   },
-  "tables": {
-    "products": {
-      "selection": {
-        "enabled": true,
-        "rules": {
-          "invitalia": ["UPLOADED", "SUPERVISED"],
-          "invitalia_admin": ["WAIT_APPROVED"]
-        }
-      },
-      "columns": [
-        {
-          "id": "select",
-          "labelKey": "",
-          "type": "checkbox",
-          "sortable": false,
-          "align": "left"
-        },
-        {
-          "id": "category",
-          "labelKey": "pages.products.listHeader.category",
-          "sortable": true,
-          "align": "left"
-        },
-        {
-          "id": "organizationName",
-          "labelKey": "pages.products.listHeader.producer",
-          "type": "derived",
-          "sortable": false,
-          "align": "left"
-        },
-        {
-          "id": "gtinCode",
-          "labelKey": "pages.products.listHeader.gtinCode",
-          "sortable": true,
-          "align": "left"
-        },
-        {
-          "id": "batchName",
-          "labelKey": "pages.products.listHeader.batch",
-          "sortable": true,
-          "align": "left"
-        },
-        {
-          "id": "status",
-          "labelKey": "pages.products.listHeader.status",
-          "sortable": true,
-          "align": "left"
-        },
-        {
-          "id": "actions",
-          "labelKey": "",
-          "type": "action",
-          "sortable": false,
-          "align": "left"
-        }
-      ],
-      "defaultSort": {
-        "field": "category",
-        "direction": "asc"
-      },
-      "filters": [
-        {
-          "id": "status",
-          "type": "select",
-          "labelKey": "pages.products.filterLabels.status"
-        },
-        {
-          "id": "producer",
-          "type": "select",
-          "labelKey": "pages.products.filterLabels.producer"
-        },
-        {
-          "id": "batch",
-          "type": "select",
-          "labelKey": "pages.products.filterLabels.batch"
-        },
-        {
-          "id": "category",
-          "type": "select",
-          "labelKey": "pages.products.filterLabels.category"
-        },
-        {
-          "id": "gtinCode",
-          "type": "text",
-          "labelKey": "pages.products.filterLabels.gtinCode"
-        }
-      ],
-      "ui": {
-        "filtering": {
-          "enabled": true
-        },
-        "pagination": {
+  "ui": {
+    "tables": {
+      "products": {
+        "selection": {
           "enabled": true,
-          "defaultRowsPerPage": 10,
-          "rowsPerPageOptions": [10, 25, 50, 100]
-        }
-      },
-      "detail": {
-        "fields": [
+          "rules": {
+            "invitalia": ["UPLOADED", "SUPERVISED"],
+            "invitalia_admin": ["WAIT_APPROVED"]
+          }
+        },
+        "columns": [
           {
-            "id": "productName",
-            "labelKey": "pages.productDetail.productName"
-          },
-          {
-            "id": "batchName",
-            "labelKey": "pages.productDetail.batchName"
-          },
-          {
-            "id": "gtinCode",
-            "labelKey": "pages.productDetail.gtinCode"
-          },
-          {
-            "id": "productCode",
-            "labelKey": "pages.productDetail.productCode"
+            "id": "select",
+            "labelKey": "",
+            "type": "checkbox",
+            "sortable": false,
+            "align": "left"
           },
           {
             "id": "category",
-            "labelKey": "pages.productDetail.category"
+            "labelKey": "pages.products.listHeader.category",
+            "sortable": true,
+            "align": "left"
           },
           {
-            "id": "brand",
-            "labelKey": "pages.productDetail.brand"
+            "id": "organizationName",
+            "labelKey": "pages.products.listHeader.producer",
+            "type": "derived",
+            "sortable": false,
+            "align": "left"
           },
           {
-            "id": "model",
-            "labelKey": "pages.productDetail.model"
+            "id": "gtinCode",
+            "labelKey": "pages.products.listHeader.gtinCode",
+            "sortable": true,
+            "align": "left"
+          },
+          {
+            "id": "batchName",
+            "labelKey": "pages.products.listHeader.batch",
+            "sortable": true,
+            "align": "left"
+          },
+          {
+            "id": "status",
+            "labelKey": "pages.products.listHeader.status",
+            "sortable": true,
+            "align": "left"
+          },
+          {
+            "id": "actions",
+            "labelKey": "",
+            "type": "action",
+            "sortable": false,
+            "align": "left"
           }
-        ]
+        ],
+        "defaultSort": {
+          "field": "category",
+          "direction": "asc"
+        },
+        "filters": [
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "pages.products.filterLabels.status"
+          },
+          {
+            "id": "producer",
+            "type": "select",
+            "labelKey": "pages.products.filterLabels.producer"
+          },
+          {
+            "id": "batch",
+            "type": "select",
+            "labelKey": "pages.products.filterLabels.batch"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "pages.products.filterLabels.category"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "pages.products.filterLabels.gtinCode"
+          }
+        ],
+        "ui": {
+          "filtering": { "enabled": true },
+          "pagination": {
+            "enabled": true,
+            "defaultRowsPerPage": 10,
+            "rowsPerPageOptions": [10, 25, 50, 100]
+          }
+        },
+        "detail": {
+          "fields": [
+            { "id": "productName", "labelKey": "pages.productDetail.productName" },
+            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
+            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
+            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
+            { "id": "category", "labelKey": "pages.productDetail.category" },
+            { "id": "brand", "labelKey": "pages.productDetail.brand" },
+            { "id": "model", "labelKey": "pages.productDetail.model" }
+          ]
+        }
       }
     }
   }

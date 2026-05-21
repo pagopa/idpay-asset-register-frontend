@@ -1,121 +1,74 @@
 {
-  "role": "default",
-  "logicalName": "Utente Standard",
-  "subRoles": {
-    "default": {
-      "logicalName": "Utente Standard",
-      "permissions": {
-        "tables": ["products"]
+  "roles": {
+    "name": "default",
+    "logicalName": "Utente Standard",
+    "subRoles": {
+      "default": {
+        "logicalName": "Utente Standard",
+        "permissions": {
+          "tables": ["products"]
+        }
+      },
+      "super_admin": {
+        "logicalName": "Super Admin",
+        "permissions": {
+          "tables": ["products"]
+        }
       }
     },
-    "super_admin": {
-      "logicalName": "Super Admin",
-      "permissions": {
-        "tables": ["products"]
-      }
+    "errors": {
+      "profileNotConfigured": "pages.products.profileNotConfigured"
     }
   },
-  "errors": {
-    "profileNotConfigured": "pages.products.profileNotConfigured"
-  },
-  "tables": {
-    "products": {
-      "columns": [
-        {
-          "id": "category",
-          "labelKey": "tables.products.columns.category",
-          "sortable": true
-        },
-        {
-          "id": "energyClass",
-          "labelKey": "tables.products.columns.energyClass",
-          "sortable": true
-        },
-        {
-          "id": "eprelCode",
-          "labelKey": "tables.products.columns.eprelCode",
-          "sortable": true
-        },
-        {
-          "id": "gtinCode",
-          "labelKey": "tables.products.columns.gtinCode",
-          "sortable": true
-        },
-        {
-          "id": "batchName",
-          "labelKey": "tables.products.columns.batchName",
-          "sortable": false
-        },
-        {
-          "id": "status",
-          "labelKey": "tables.products.columns.status",
-          "sortable": true
-        }
-      ],
-      "defaultSort": {
-        "field": "gtinCode",
-        "direction": "asc"
-      },
-      "filters": [
-        {
-          "id": "category",
-          "type": "select",
-          "labelKey": "tables.products.filters.category"
-        },
-        {
-          "id": "status",
-          "type": "select",
-          "labelKey": "tables.products.filters.status"
-        },
-        {
-          "id": "gtinCode",
-          "type": "text",
-          "labelKey": "tables.products.filters.gtinCode"
-        },
-        {
-          "id": "productCode",
-          "type": "text",
-          "labelKey": "tables.products.filters.productCode"
-        },
-        {
-          "id": "productFileId",
-          "type": "select",
-          "labelKey": "tables.products.filters.productFileId"
-        }
-      ],
-      "ui": {
-        "filtering": {
-          "enabled": true
-        },
-        "pagination": {
-          "enabled": true,
-          "defaultRowsPerPage": 10,
-          "rowsPerPageOptions": [10, 25, 50]
-        }
-      },
-      "detail": {
-        "fields": [
+  "templates": {},
+  "ui": {
+    "tables": {
+      "products": {
+        "columns": [
+          { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
           {
-            "id": "gtinCode",
-            "labelKey": "pages.productDetail.gtinCode"
+            "id": "energyClass",
+            "labelKey": "tables.products.columns.energyClass",
+            "sortable": true
           },
+          { "id": "eprelCode", "labelKey": "tables.products.columns.eprelCode", "sortable": true },
+          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
+          { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": false },
+          { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true }
+        ],
+        "defaultSort": { "field": "gtinCode", "direction": "asc" },
+        "filters": [
+          { "id": "category", "type": "select", "labelKey": "tables.products.filters.category" },
+          { "id": "status", "type": "select", "labelKey": "tables.products.filters.status" },
+          { "id": "gtinCode", "type": "text", "labelKey": "tables.products.filters.gtinCode" },
           {
             "id": "productCode",
-            "labelKey": "pages.productDetail.productCode"
+            "type": "text",
+            "labelKey": "tables.products.filters.productCode"
           },
           {
-            "id": "brand",
-            "labelKey": "pages.productDetail.brand"
-          },
-          {
-            "id": "model",
-            "labelKey": "pages.productDetail.model"
-          },
-          {
-            "id": "status",
-            "labelKey": "pages.productDetail.status"
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
           }
-        ]
+        ],
+        "ui": {
+          "filtering": { "enabled": true },
+          "pagination": {
+            "enabled": true,
+            "defaultRowsPerPage": 10,
+            "rowsPerPageOptions": [10, 25, 50]
+          }
+        },
+        "detail": {
+          "fields": [
+            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
+            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
+            { "id": "brand", "labelKey": "pages.productDetail.brand" },
+            { "id": "model", "labelKey": "pages.productDetail.model" },
+            { "id": "status", "labelKey": "pages.productDetail.status" }
+          ]
+        }
       }
     }
   }

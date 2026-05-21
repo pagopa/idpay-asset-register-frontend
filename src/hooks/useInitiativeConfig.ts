@@ -11,6 +11,23 @@ export const useInitiativeConfig = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [configError, setConfigError] = useState<boolean>(false);
 
+  const mapNewStructureToLegacy = (cfg: any) => {
+    const { roles, templates, ui } = cfg;
+
+    return {
+      role: roles?.name,
+      logicalName: roles?.logicalName,
+      subRoles: roles?.subRoles,
+      errors: roles?.errors,
+      categoryTemplates: templates?.categoryTemplates,
+      templates: templates?.template,
+      tables: ui?.tables,
+    };
+  };
+
+  const normalizeConfig = (rawConfig: any) =>
+    rawConfig?.roles ? mapNewStructureToLegacy(rawConfig) : rawConfig;
+
   useEffect(() => {
     if (!initiative || !user?.org_role) {
       return;
@@ -31,7 +48,7 @@ export const useInitiativeConfig = () => {
           setConfigError(true);
           setConfig(null);
         } else {
-          setConfig(cfg);
+          setConfig(normalizeConfig(cfg));
           setConfigError(false);
         }
       })
