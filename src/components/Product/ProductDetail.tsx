@@ -156,7 +156,7 @@ function mapDetailFieldToRowConfig(
           : EMPTY_DATA,
     valueVariant: field.id === 'productName' ? 'h6' : undefined,
     sx:
-      field.id === 'productName'
+      field.id === 'productName' || field.id === 'batchName'
         ? { mb: 1, maxWidth: 350, wordWrap: 'break-word' }
         : undefined,
   };
