@@ -102,7 +102,14 @@ const renderComponent = (institution = mockInstitution) => {
   return render(
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <MemoryRouter>
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: '/',
+              state: { organizationId: institution?.institutionId ?? '' },
+            } as any,
+          ]}
+        >
           <InvitaliaProductsList />
         </MemoryRouter>
       </ThemeProvider>
