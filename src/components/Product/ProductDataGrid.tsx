@@ -248,7 +248,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         bottom={80}
       />
 
-      {/* ✅ Drawer dettaglio prodotto */}
       {selectedProduct && (
         <DetailDrawer
           open={detailOpen}

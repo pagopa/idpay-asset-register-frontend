@@ -42,7 +42,6 @@ const StandardRoutes = ({ organizationId }: StandardRoutesProps) => (
   <Routes>
     <Route path="/" element={<HomeRedirect />} />
 
-    {/* Malformed initiative-scoped URLs (missing :initiativeId) */}
     <Route path="panoramica" element={<RedirectHomeWithErrorAlert />} />
     <Route path="aggiungi-prodotti" element={<RedirectHomeWithErrorAlert />} />
     <Route path="prodotti" element={<RedirectHomeWithErrorAlert />} />
@@ -126,7 +125,7 @@ const SecuredRoutes = withLogin(
       user?.org_role as USERS_TYPES
     );
     const institution = useSelector(institutionSelector);
-    const organizationId = institution?.institutionId || '';
+    const organizationId = user?.org_role === USERS_TYPES.OPERATORE ? user?.org_id : institution?.institutionId || '';
 
     /*
     if (UPCOMING_INITIATIVE_DAY) {
