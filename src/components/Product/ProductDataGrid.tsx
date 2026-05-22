@@ -152,6 +152,16 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     }
   }, [batchId]);
 
+  useEffect(() => {
+    setPage(0);
+    setSelected([]);
+    setCategoryFilter('');
+    setProducerFilter('');
+    setBatchFilter('');
+    setEprelCodeFilter('');
+    setGtinCodeFilter('');
+  }, [initiativeId]);
+
   const handleOpenModalWithStatusCheck = () => {
     const result = validateBulkActionPreconditions({
       selected,

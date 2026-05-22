@@ -20,6 +20,7 @@ describe('Products', () => {
 
   it('non rende i children (il componente non li supporta)', () => {
     render(
+      // @ts-expect-error children non è una prop supportata da Products
       <Products organizationId="org-123">
         <div data-testid="child">Child content</div>
       </Products>
