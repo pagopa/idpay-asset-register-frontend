@@ -25,13 +25,10 @@ export const useProductDataGridInit = ({
   institutionId,
   producerFilter,
   setProducerFilter,
-  setStatusFilter,
   dispatch,
   setInstitutionList,
 }: Props) => {
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
-  const [adminDefaultApplied, setAdminDefaultApplied] = useState(false);
-
   const fetchInstitutions = async () => {
     try {
       const institutionsData = await getInstitutionsList();
@@ -46,22 +43,17 @@ export const useProductDataGridInit = ({
   };
 
   useEffect(() => {
-    if ((isInvitaliaUser || isInvitaliaAdmin) && institutionId) {
-      setProducerFilter(institutionId);
+    if ((isInvitaliaUser || isInvitaliaAdmin) && organizationId) {
+      setProducerFilter(organizationId);
     }
-  }, [isInvitaliaUser, isInvitaliaAdmin, institutionId]);
+  }, [isInvitaliaUser, isInvitaliaAdmin, organizationId]);
 
   useEffect(() => {
-    if (isInvitaliaAdmin && !adminDefaultApplied) {
-      setStatusFilter('Da approvare');
-      setAdminDefaultApplied(true);
-    }
-
     if (isInvitaliaAdmin || isInvitaliaUser) {
       void fetchInstitutions();
     }
 
-    const targetId = isInvitaliaUser ? producerFilter || institutionId || '' : organizationId;
+    const targetId = isInvitaliaUser ? producerFilter || organizationId || '' : organizationId;
 
     void getBatchFilterList(initiativeId, targetId)
       .then((res) => {

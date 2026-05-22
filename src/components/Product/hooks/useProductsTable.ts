@@ -51,11 +51,11 @@ export const useProductsTable = ({
         rowsPerPage,
         `${orderBy},${order}`,
         categoryFilter,
-        producerFilter,
-        batchFilter,
-        eprelCodeFilter,
         statusFilter || undefined,
-        gtinCodeFilter
+        eprelCodeFilter,
+        gtinCodeFilter,
+        producerFilter,
+        batchFilter
       );
 
       const { content, pageNo, totalElements } = res.data;
@@ -97,7 +97,6 @@ export const useProductsTable = ({
     producerFilter,
     batchFilter,
     eprelCodeFilter,
-    statusFilter,
     gtinCodeFilter,
   ]);
 
