@@ -65,6 +65,12 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     batchFilterItems: [],
   });
 
+  useEffect(() => {
+    if (!organizationId) {
+      setProducerFilter('');
+    }
+  }, [organizationId]);
+
   useProductDataGridInit({
     initiativeId,
     organizationId,
@@ -90,9 +96,18 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
 
-  const targetId = isInvitaliaUser
-    ? producerFilter || institution?.institutionId || ''
-    : organizationId || user?.org_id || '';
+  const targetId = producerFilter || organizationId || '';
+
+  const [defaultSuppressed, setDefaultSuppressed] = useState(false);
+
+  const effectiveStatusFilter =
+    isInvitaliaAdmin && !statusFilter && !defaultSuppressed ? 'Da approvare' : statusFilter;
+
+  useEffect(() => {
+    if (effectiveStatusFilter && !statusFilter) {
+      setStatusFilter(effectiveStatusFilter);
+    }
+  }, [effectiveStatusFilter]);
 
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
     initiativeId,
@@ -102,10 +117,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     page,
     rowsPerPage,
     categoryFilter,
-    producerFilter,
+    producerFilter: effectiveStatusFilter,
     batchFilter,
     eprelCodeFilter,
-    statusFilter,
+    statusFilter: undefined,
     gtinCodeFilter,
   });
 
@@ -160,7 +175,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     return null;
   }
 
-  // ✅ Ripristino logica apertura dettaglio
   const handleListButtonClick = (row: ProductDTO) => {
     setSelectedProduct(row);
     setDetailOpen(true);
@@ -169,7 +183,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   return (
     <>
       <ProductDataGridView
-        t={t}
         isInvitaliaUser={isInvitaliaUser}
         tableData={tableData}
         hookLoading={loading}
@@ -205,6 +218,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           setBatchFilter('');
           setEprelCodeFilter('');
           setGtinCodeFilter('');
+          if (isInvitaliaAdmin) {
+            setDefaultSuppressed(true);
+          }
           dispatch(
             setInstitution({
               institutionId: '',
@@ -265,7 +281,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       <FiltersDrawer
         open={filtersDrawerOpen}
         toggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
-        statusFilter={statusFilter}
+        statusFilter={effectiveStatusFilter}
         setStatusFilter={setStatusFilter}
         producerFilter={producerFilter}
         setProducerFilter={setProducerFilter}
@@ -286,6 +302,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           setBatchFilter('');
           setEprelCodeFilter('');
           setGtinCodeFilter('');
+          if (isInvitaliaAdmin) {
+            setDefaultSuppressed(true);
+          }
         }}
         setFiltering={() => {}}
         setPage={setPage}

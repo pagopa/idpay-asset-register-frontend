@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import FlagIcon from '@mui/icons-material/Flag';
+import { useTranslation } from 'react-i18next';
 import { ProductDTO } from '../../api/generated/register';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 
@@ -9,7 +10,6 @@ type Props = {
   selected: Array<string>;
   isInvitaliaUser: boolean;
   hookLoading: boolean;
-  t: any;
   handleOpenModalWithStatusCheck: (action: string) => void;
 };
 
@@ -25,9 +25,9 @@ const ProductStatusActionBar: React.FC<Props> = ({
   selected,
   isInvitaliaUser,
   hookLoading,
-  t,
   handleOpenModalWithStatusCheck,
 }) => {
+  const { t } = useTranslation();
   if (!(tableData?.length > 0 && !hookLoading && selected.length !== 0)) {
     return null;
   }
