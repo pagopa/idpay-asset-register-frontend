@@ -69,11 +69,13 @@
         },
         "detail": {
           "fields": [
+            { "id": "productName", "labelKey": "pages.productDetail.productName" },
+            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
             { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
             { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
+            { "id": "category", "labelKey": "pages.productDetail.category" },
             { "id": "brand", "labelKey": "pages.productDetail.brand" },
-            { "id": "model", "labelKey": "pages.productDetail.model" },
-            { "id": "status", "labelKey": "pages.productDetail.status" }
+            { "id": "model", "labelKey": "pages.productDetail.model" }
           ]
         }
       }
