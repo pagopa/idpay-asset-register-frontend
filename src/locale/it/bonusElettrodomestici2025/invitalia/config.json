@@ -6,26 +6,100 @@
       "invitalia": {
         "logicalName": "L1",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       },
       "invitalia_admin": {
         "logicalName": "L2",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       }
     }
   },
-  "templates": {},
+  "templates": {
+    "category": {
+      "washingmachines": {
+        "label": "category.washingmachines.label",
+        "format": "eprel",
+        "name": "eprel"
+      },
+      "tumbledryers": {
+        "label": "category.tumbledryers.label",
+        "format": "eprel",
+        "name": "eprel"
+      },
+      "ovens": {
+        "label": "category.ovens.label",
+        "format": "eprel",
+        "name": "eprel"
+      },
+      "rangehoods": {
+        "label": "category.rangehoods.label",
+        "format": "eprel",
+        "name": "eprel"
+      },
+      "dishwashers": {
+        "label": "category.dishwashers.label",
+        "format": "eprel",
+        "name": "eprel"
+      },
+      "washerdriers": {
+        "label": "category.washerdriers.label",
+        "format": "eprel",
+        "name": "eprel"
+      },
+      "refrigeratingappl": {
+        "label": "category.refrigeratingappl.label",
+        "format": "eprel",
+        "name": "eprel"
+      },
+      "cookinghobs": {
+        "label": "category.cookinghobs.label",
+        "format": "csv",
+        "name": "cookinghobs"
+      }
+    },
+    "status": {
+      "UPLOADED": {
+        "label": "status.products.UPLOADED",
+        "color": "default"
+      },
+      "WAIT_APPROVED": {
+        "label": "status.products.WAIT_APPROVED",
+        "color": "info"
+      },
+      "SUPERVISED": {
+        "label": "status.products.SUPERVISED",
+        "color": "primary"
+      },
+      "APPROVED": {
+        "label": "status.products.APPROVED",
+        "color": "success"
+      },
+      "REJECTED": {
+        "label": "status.products.REJECTED",
+        "color": "error"
+      }
+    }
+  },
   "ui": {
     "tables": {
       "products": {
         "selection": {
           "enabled": true,
           "rules": {
-            "invitalia": ["UPLOADED", "SUPERVISED"],
-            "invitalia_admin": ["WAIT_APPROVED"]
+            "invitalia": [
+              "UPLOADED",
+              "SUPERVISED"
+            ],
+            "invitalia_admin": [
+              "WAIT_APPROVED"
+            ]
           }
         },
         "columns": [
@@ -63,8 +137,8 @@
             "align": "left"
           },
           {
-            "id": "batchName",
-            "labelKey": "pages.products.listHeader.batch",
+            "id": "productFileId",
+            "labelKey": "pages.products.listHeader.productFileId",
             "sortable": true,
             "align": "left"
           },
@@ -74,15 +148,31 @@
             "sortable": true,
             "align": "left"
           },
-          { "id": "actions", "labelKey": "", "type": "action", "sortable": false, "align": "left" }
+          {
+            "id": "actions",
+            "labelKey": "",
+            "type": "action",
+            "sortable": false,
+            "align": "left"
+          }
         ],
-        "defaultSort": { "field": "category", "direction": "asc" },
+        "defaultSort": {
+          "field": "category",
+          "direction": "asc"
+        },
         "ui": {
-          "filtering": { "enabled": true },
+          "filtering": {
+            "enabled": true
+          },
           "pagination": {
             "enabled": true,
             "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [10, 25, 50, 100]
+            "rowsPerPageOptions": [
+              10,
+              25,
+              50,
+              100
+            ]
           }
         }
       }

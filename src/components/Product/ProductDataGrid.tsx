@@ -5,9 +5,7 @@ import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { USERS_TYPES } from '../../utils/constants';
-import { batchIdSelector } from '../../redux/slices/productsSlice';
 import {
-  institutionListSelector,
   institutionSelector,
   setInstitutionList,
   setInstitution,
@@ -16,6 +14,7 @@ import { ProductDTO } from '../../api/generated/register';
 
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
+import { SelectProps } from '../FiltersDrawer/filtersRender';
 import { useProductsTable } from './hooks/useProductsTable';
 import { useProductFilters } from './hooks/useProductFilters';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
@@ -34,6 +33,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
   const { config } = useInitiativeConfig();
+  const [filters, setFilters] = useState<Record<string, {value: string; label: string}>>({});
+  const filtersValue = Object.keys(filters).length ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value}) , {}) : {};
 
   const tableConfig = config?.tables?.products;
   const paginationConfig = tableConfig?.ui?.pagination;
@@ -42,28 +43,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
 
-  const batchId = useSelector(batchIdSelector);
-  const institutions = useSelector(institutionListSelector);
   const institution = useSelector(institutionSelector);
-
-  const {
-    categoryFilter,
-    setCategoryFilter,
-    producerFilter,
-    setProducerFilter,
-    batchFilter,
-    setBatchFilter,
-    statusFilter,
-    setStatusFilter,
-    eprelCodeFilter,
-    setEprelCodeFilter,
-    gtinCodeFilter,
-    setGtinCodeFilter,
-    filtersLabel,
-  } = useProductFilters({
-    institutions: institutions ?? [],
-    batchFilterItems: [],
-  });
+  const { filtersLabel } = useProductFilters({setFilters, filters});
 
   useProductDataGridInit({
     initiativeId,
@@ -71,9 +52,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     isInvitaliaUser,
     isInvitaliaAdmin,
     institutionId: institution?.institutionId,
-    producerFilter,
-    setProducerFilter,
-    setStatusFilter,
     dispatch,
     setInstitutionList,
   });
@@ -91,7 +69,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
 
   const targetId = isInvitaliaUser
-    ? producerFilter || institution?.institutionId || ''
+    ?  institution?.institutionId || ''
     : organizationId || user?.org_id || '';
 
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
@@ -101,41 +79,18 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     order,
     page,
     rowsPerPage,
-    categoryFilter,
-    producerFilter,
-    batchFilter,
-    eprelCodeFilter,
-    statusFilter,
-    gtinCodeFilter,
+    ...filtersValue
   });
 
-  const batchFilterItems = useMemo(() => {
-    const map = new Map<string, { productFileId: string; batchName: string }>();
-
-    tableData.forEach((item) => {
-      const productFileId = (item as any)?.productFileId;
-      const batchName = (item as any)?.batchName;
-
-      if (productFileId && batchName && !map.has(productFileId)) {
-        map.set(productFileId, {
-          productFileId,
-          batchName,
-        });
-      }
-    });
-
-    return Array.from(map.values());
-  }, [tableData]);
+  const batchFilterItems = useMemo(() =>
+    tableData.reduce((acc, batch): SelectProps => {
+      const batchName = batch.batchName?.replace(".csv", "");
+      return { ...acc, [batch.batchName || '']: { label: batchName } };
+    }, {} as SelectProps), [tableData]);
 
   useEffect(() => {
     setSelected([]);
   }, [tableData]);
-
-  useEffect(() => {
-    if (batchId) {
-      setBatchFilter(batchId);
-    }
-  }, [batchId]);
 
   const handleOpenModalWithStatusCheck = () => {
     const result = validateBulkActionPreconditions({
@@ -199,12 +154,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           setPage(0);
         }}
         handleDeleteFiltersButtonClick={() => {
-          setCategoryFilter('');
-          setStatusFilter('');
-          setProducerFilter('');
-          setBatchFilter('');
-          setEprelCodeFilter('');
-          setGtinCodeFilter('');
+          setFilters({});
           dispatch(
             setInstitution({
               institutionId: '',
@@ -256,7 +206,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
               setDetailOpen(false);
               setSelectedProduct(null);
             }}
-            onShowRejectedMsg={() => {}}
+            onShowRejectedMsg={() => { }}
           />
         </DetailDrawer>
       )}
@@ -265,30 +215,13 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       <FiltersDrawer
         open={filtersDrawerOpen}
         toggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        producerFilter={producerFilter}
-        setProducerFilter={setProducerFilter}
-        batchFilter={batchFilter}
-        setBatchFilter={setBatchFilter}
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        eprelCodeFilter={eprelCodeFilter}
-        setEprelCodeFilter={setEprelCodeFilter}
-        gtinCodeFilter={gtinCodeFilter}
-        setGtinCodeFilter={setGtinCodeFilter}
-        batchFilterItems={batchFilterItems}
         errorStatus={false}
-        handleDeleteFiltersButtonClick={() => {
-          setCategoryFilter('');
-          setStatusFilter('');
-          setProducerFilter('');
-          setBatchFilter('');
-          setEprelCodeFilter('');
-          setGtinCodeFilter('');
-        }}
-        setFiltering={() => {}}
+        handleApplyFilters={(filters) => setFilters(prev => ({ ...prev, ...filters}))}
+        handleDeleteFiltersButtonClick={() => setFilters({})}
+        filters={filters}
+        setFiltering={() => { }}
         setPage={setPage}
+        batchFilterItems={batchFilterItems}
       />
     </>
   );

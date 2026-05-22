@@ -2,216 +2,56 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import {
   Button,
-  Chip,
   FormControl,
   IconButton,
   InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  TextField,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { Dispatch, SetStateAction, useState } from 'react';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
-import { PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
-import { institutionListSelector } from '../../redux/slices/invitaliaSlice';
-import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
-import { BatchFilterItems } from '../Product/helpers';
-import { filterInputWithSpaceRule } from '../../helpers';
-import { useCategories } from '../../hooks/useCategories';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
+import { FiltersProps, filtersRender, SelectProps } from './filtersRender';
 
 type Props = {
   open: boolean;
   toggleFiltersDrawer: (isOpen: boolean) => void;
-  statusFilter: string;
-  setStatusFilter: Dispatch<SetStateAction<string>>;
-  producerFilter: string;
-  setProducerFilter: Dispatch<SetStateAction<string>>;
-  batchFilter: string;
-  setBatchFilter: Dispatch<SetStateAction<string>>;
-  categoryFilter: string;
-  setCategoryFilter: Dispatch<SetStateAction<string>>;
-  eprelCodeFilter: string;
-  setEprelCodeFilter: Dispatch<SetStateAction<string>>;
-  gtinCodeFilter: string;
-  setGtinCodeFilter: Dispatch<SetStateAction<string>>;
-  batchFilterItems: Array<BatchFilterItems>;
+  batchFilterItems: SelectProps;
   errorStatus: boolean;
   handleDeleteFiltersButtonClick: () => void;
+  filters: Record<string, {value: string; label: string}>;
+  handleApplyFilters: (filters: Record<string, {value: string; label: string}>) => void;
   setFiltering: Dispatch<SetStateAction<boolean>>;
   setPage: Dispatch<SetStateAction<number>>;
 };
 
-export const getChipColor = (
-  status?: PRODUCTS_STATES | string
-):
-  | 'default'
-  | 'primary'
-  | 'indigo'
-  | 'success'
-  | 'error'
-  | 'secondary'
-  | 'info'
-  | 'warning'
-  | undefined => {
-  switch (status) {
-    case PRODUCTS_STATES.UPLOADED:
-      return 'default';
-    case PRODUCTS_STATES.WAIT_APPROVED:
-      return 'info';
-    case PRODUCTS_STATES.SUPERVISED:
-      return 'primary';
-    case PRODUCTS_STATES.APPROVED:
-      return 'success';
-    case PRODUCTS_STATES.REJECTED:
-      return 'error';
-    default:
-      return 'default';
-  }
-};
 
 export default function FiltersDrawer({
   open,
   toggleFiltersDrawer,
-  statusFilter,
-  setStatusFilter,
-  producerFilter,
-  setProducerFilter,
-  batchFilter,
-  setBatchFilter,
-  categoryFilter,
-  setCategoryFilter,
   batchFilterItems,
-  eprelCodeFilter,
-  setEprelCodeFilter,
-  gtinCodeFilter,
-  setGtinCodeFilter,
-  errorStatus,
   handleDeleteFiltersButtonClick,
+  handleApplyFilters,
   setFiltering,
+  filters,
   setPage,
 }: Props) {
   const { t } = useScopedTranslation();
-  const [draftStatus, setDraftStatus] = useState(statusFilter);
-  const [draftProducer, setDraftProducer] = useState(producerFilter);
-  const [draftBatch, setDraftBatch] = useState(batchFilter);
-  const [draftCategory, setDraftCategory] = useState(categoryFilter);
-  const [draftEprel, setDraftEprel] = useState(eprelCodeFilter);
-  const [draftGtin, setDraftGtin] = useState(gtinCodeFilter);
-  const [showEprelError, setShowEprelError] = useState(false);
-  const [showGtinError, setShowGtinError] = useState(false);
-  const {categories} = useCategories();
+  const { config } = useInitiativeConfig();
+  const [draftFilters, setDraftFilters] = useState<Record<string, {value: string; label: string}>>(filters);
 
-  const isValidNumeric = (value: string) => /^\d+$/.test(value);
-  const isValidGtin = (value: string) => /^[a-zA-Z0-9]{1,14}$/.test(value);
-  const menuProps = useMemo(() => ({ PaperProps: { style: { maxHeight: 350 } } }), []);
-  const selectSx = useMemo(() => ({ paddingRight: '38px !important' }), []);
-  const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isDirty = useMemo(
-    () =>
-      draftStatus !== statusFilter ||
-      draftProducer !== producerFilter ||
-      draftBatch !== batchFilter ||
-      draftCategory !== categoryFilter ||
-      draftEprel !== eprelCodeFilter ||
-      draftGtin !== gtinCodeFilter,
-    [
-      draftStatus,
-      draftProducer,
-      draftBatch,
-      draftCategory,
-      draftEprel,
-      draftGtin,
-      statusFilter,
-      producerFilter,
-      batchFilter,
-      categoryFilter,
-      eprelCodeFilter,
-      gtinCodeFilter,
-    ]
-  );
-  const appliedEmpty = useMemo(
-    () =>
-      ![categoryFilter, producerFilter, statusFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
-        .filter(Boolean)
-        .some((v) => v.trim()),
-    [categoryFilter, producerFilter, statusFilter, batchFilter, eprelCodeFilter, gtinCodeFilter]
-  );
-  const institutionsList = useSelector(institutionListSelector);
-  const isInvitaliaUser = [USERS_TYPES.INVITALIA_L1, USERS_TYPES.INVITALIA_L2].includes(
-    user?.org_role as USERS_TYPES
-  );
-
-  useEffect(() => {
-    if (open) {
-      setDraftStatus(statusFilter);
-      setDraftProducer(producerFilter);
-      setDraftBatch(batchFilter);
-      setDraftCategory(categoryFilter);
-      setDraftEprel(eprelCodeFilter);
-      setDraftGtin(gtinCodeFilter);
-    }
-  }, [
-    open,
-    statusFilter,
-    producerFilter,
-    batchFilter,
-    categoryFilter,
-    eprelCodeFilter,
-    gtinCodeFilter,
-  ]);
-
-  const handleFilter = () => {
-    if (draftEprel?.length > 0 && !isValidNumeric(draftEprel)) {
-      setShowEprelError(true);
-      return;
-    }
-    if (draftGtin?.length > 0 && !isValidGtin(draftGtin)) {
-      setShowGtinError(true);
-      return;
-    }
-    setShowEprelError(false);
-    setShowGtinError(false);
-    setStatusFilter(draftStatus);
-    setProducerFilter(draftProducer);
-    setBatchFilter(draftBatch);
-    setCategoryFilter(draftCategory);
-    setEprelCodeFilter(draftEprel);
-    setGtinCodeFilter(draftGtin);
-
+  const handleFilters = () => {
     setPage(0);
     setFiltering(true);
+    handleApplyFilters(draftFilters);
     toggleFiltersDrawer(false);
   };
 
   const handleDeleteFilters = () => {
     handleDeleteFiltersButtonClick();
-    setDraftStatus('');
-    setDraftProducer('');
-    setDraftBatch('');
-    setDraftCategory('');
-    setDraftEprel('');
-    setDraftGtin('');
+    setDraftFilters({});
     setPage(0);
     toggleFiltersDrawer(false);
-  };
-
-  const onDraftSelect =
-    (setter: Dispatch<SetStateAction<string>>) => (event: SelectChangeEvent<string>) => {
-      setter(event.target.value as string);
-    };
-
-  const resetDraftsToApplied = () => {
-    setDraftStatus(statusFilter);
-    setDraftProducer(producerFilter);
-    setDraftBatch(batchFilter);
-    setDraftCategory(categoryFilter);
-    setDraftEprel(eprelCodeFilter);
-    setDraftGtin(gtinCodeFilter);
   };
 
   return (
@@ -219,7 +59,6 @@ export default function FiltersDrawer({
       anchor="right"
       open={open}
       onClose={() => {
-        resetDraftsToApplied();
         toggleFiltersDrawer(false);
       }}
       data-testid="detail-drawer"
@@ -245,182 +84,30 @@ export default function FiltersDrawer({
         </IconButton>
       </Box>
       <Box paddingX="24px" maxWidth="417px">
-        <FormControl fullWidth size="small" margin="normal">
-          <InputLabel id="status-filter-select-label">
-            {t('pages.products.filterLabels.status')}
-          </InputLabel>
-          <Select
-            labelId="status-filter-select-label"
-            id="status-filter-select"
-            value={draftStatus}
-            label={t('pages.products.filterLabels.status')}
-            MenuProps={menuProps}
-            onChange={onDraftSelect(setDraftStatus)}
-            sx={selectSx}
-          >
-            {(Object.keys(PRODUCTS_STATES) as Array<PRODUCTS_STATES>)
-              .filter(
-                (status) =>
-                  isInvitaliaUser ||
-                  ![PRODUCTS_STATES.WAIT_APPROVED, PRODUCTS_STATES.SUPERVISED].includes(status)
-              )
-              .map((status) => (
-                <MenuItem key={status} value={t(`pages.products.categories.${status}`)}>
-                  <Chip
-                    color={getChipColor(status)}
-                    label={t(`pages.products.categories.${status}`)}
-                  />
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-
-        {isInvitaliaUser && (
-          <FormControl fullWidth size="small" margin="normal">
-            <InputLabel id="producer-filter-select-label">
-              {t('pages.products.filterLabels.producer')}
-            </InputLabel>
-            <Select
-              labelId="producer-filter-select-label"
-              id="producer-filter-select"
-              value={draftProducer}
-              label={t('pages.products.filterLabels.producer')}
-              MenuProps={menuProps}
-              onChange={(e) => setDraftProducer(e.target.value as string)}
-              sx={selectSx}
-            >
-              {institutionsList?.map((producer) => (
-                <MenuItem key={producer.institutionId} value={producer.institutionId}>
-                  {producer.description}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-
-        <FormControl fullWidth size="small" margin="normal">
-          <InputLabel id="batch-filter-select-label">
-            {t('pages.products.filterLabels.batch')}
-          </InputLabel>
-          <Select
-            labelId="batch-filter-select-label"
-            id="batch-filter-select"
-            value={draftBatch}
-            label={t('pages.products.filterLabels.batch')}
-            MenuProps={menuProps}
-            onChange={onDraftSelect(setDraftBatch)}
-            sx={selectSx}
-          >
-            {batchFilterItems?.map((batch) => (
-              <MenuItem key={batch?.productFileId} value={batch?.productFileId}>
-                <Tooltip title={batch?.batchName}>
-                  <span>{truncateString(batch?.batchName, 35)}</span>
-                </Tooltip>
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl fullWidth size="small" margin="normal">
-          <InputLabel id="category-filter-select-label">
-            {t('pages.products.filterLabels.category')}
-          </InputLabel>
-          <Select
-            labelId="category-filter-select-label"
-            id="category-filter-select"
-            value={draftCategory}
-            label={t('pages.products.filterLabels.category')}
-            MenuProps={menuProps}
-            onChange={onDraftSelect(setDraftCategory)}
-            sx={selectSx}
-          >
-            {Object.entries(categories).map(([key, value]) => (
-              <MenuItem key={key} value={value.label}>
-                {value.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {(() => {
-          const showErrorEprel =
-            showEprelError && draftEprel.length > 0 && !isValidNumeric(draftEprel);
-          const helperEprel = showErrorEprel ? 'Il codice deve essere numerico' : undefined;
-          return (
-            <TextField
-              fullWidth
-              size="small"
-              id="eprel-code-text"
-              label={t('pages.products.filterLabels.eprelCode')}
-              variant="outlined"
-              margin="normal"
-              value={draftEprel}
-              onChange={(e) => {
-                setDraftEprel(filterInputWithSpaceRule(e.target.value));
-                if (showEprelError) {
-                  setShowEprelError(false);
-                }
-              }}
-              onPaste={(e) => {
-                e.preventDefault();
-                const text = e.clipboardData.getData('text').replace(/\s+/g, '');
-                setDraftEprel(filterInputWithSpaceRule(text));
-                if (showEprelError) {
-                  setShowEprelError(false);
-                }
-              }}
-              error={showErrorEprel}
-              helperText={helperEprel}
-              InputProps={{ inputProps: { inputMode: 'numeric', pattern: '[0-9]*' } }}
-            />
-          );
-        })()}
-
-        {(() => {
-          const showErrorGtin = showGtinError && draftGtin.length > 0 && !isValidGtin(draftGtin);
-          const helperGtin = showErrorGtin ? 'Il codice deve avere 14 caratteri' : undefined;
-          return (
-            <TextField
-              fullWidth
-              size="small"
-              id="gtin-code-text"
-              label={t('pages.products.filterLabels.gtinCode')}
-              variant="outlined"
-              margin="normal"
-              value={draftGtin}
-              onChange={(e) => {
-                setDraftGtin(filterInputWithSpaceRule(e.target.value));
-                if (showGtinError) {
-                  setShowGtinError(false);
-                }
-              }}
-              onPaste={(e) => {
-                e.preventDefault();
-                const text = e.clipboardData.getData('text').replace(/\s+/g, '');
-                setDraftGtin(filterInputWithSpaceRule(text));
-                if (showGtinError) {
-                  setShowGtinError(false);
-                }
-              }}
-              error={showErrorGtin}
-              helperText={helperGtin}
-              InputProps={{ inputProps: { maxLength: 14 } }}
-            />
-          );
-        })()}
+        {config && config.tables?.products?.filters.map(({ type, ...item }: FiltersProps) => {
+          const isBatch = item.id === "batchName";
+          const template = isBatch ? batchFilterItems : config?.templates?.[item.id];
+          return <FormControl key={item.id} fullWidth size="small" margin="normal">
+            {type === "select" && <InputLabel id={`${item.id}-filter-select-label`}>
+              {t(item.labelKey)}
+            </InputLabel>}
+            {filtersRender[type]({ item, t, template, filters: draftFilters, setFilters: (value) => setDraftFilters(prev => ({ ...prev, ...value })) })
+            }
+          </FormControl>;
+        })}
 
         <Button
-          disabled={!isDirty}
+          // disabled={!isDirty}
           variant="outlined"
           fullWidth
           sx={{ height: 44, minWidth: 100, marginY: '24px' }}
-          onClick={handleFilter}
+          onClick={handleFilters}
         >
           {t('pages.products.filterLabels.filter')}
         </Button>
 
         <Button
-          disabled={appliedEmpty && !errorStatus}
+          disabled={!Object.keys(draftFilters).length}
           variant="text"
           fullWidth
           sx={{ height: 44, minWidth: 100 }}

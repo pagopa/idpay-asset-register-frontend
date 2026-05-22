@@ -6,7 +6,9 @@
       "default": {
         "logicalName": "Fallback Default",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       }
     },
@@ -19,30 +21,74 @@
     "tables": {
       "products": {
         "columns": [
-          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode" },
-          { "id": "productCode", "labelKey": "tables.products.columns.productCode" },
-          { "id": "category", "labelKey": "tables.products.columns.category" },
-          { "id": "status", "labelKey": "tables.products.columns.status" },
-          { "id": "batchName", "labelKey": "tables.products.columns.batchName" }
+          {
+            "id": "gtinCode",
+            "labelKey": "tables.products.columns.gtinCode"
+          },
+          {
+            "id": "productCode",
+            "labelKey": "tables.products.columns.productCode"
+          },
+          {
+            "id": "category",
+            "labelKey": "tables.products.columns.category"
+          },
+          {
+            "id": "status",
+            "labelKey": "tables.products.columns.status"
+          },
+          {
+            "id": "productFileId",
+            "labelKey": "tables.products.columns.productFileId"
+          }
         ],
-        "defaultSort": { "field": "gtinCode", "direction": "asc" },
+        "defaultSort": {
+          "field": "gtinCode",
+          "direction": "asc"
+        },
         "filters": [
-          { "id": "category", "type": "select" },
-          { "id": "status", "type": "select" },
-          { "id": "gtinCode", "type": "text" },
-          { "id": "productCode", "type": "text" }
+          {
+            "id": "category",
+            "type": "select"
+          },
+          {
+            "id": "status",
+            "type": "select"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text"
+          },
+          {
+            "id": "productCode",
+            "type": "text"
+          }
         ],
         "ui": {
-          "filtering": { "enabled": true },
-          "pagination": { "enabled": true }
+          "filtering": {
+            "enabled": true
+          },
+          "pagination": {
+            "enabled": true
+          }
         },
         "detail": {
           "fields": [
-            { "id": "gtinCode" },
-            { "id": "productCode" },
-            { "id": "brand" },
-            { "id": "model" },
-            { "id": "status" }
+            {
+              "id": "gtinCode"
+            },
+            {
+              "id": "productCode"
+            },
+            {
+              "id": "brand"
+            },
+            {
+              "id": "model"
+            },
+            {
+              "id": "status"
+            }
           ]
         }
       }

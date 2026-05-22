@@ -10,9 +10,6 @@ type Props = {
   isInvitaliaUser: boolean;
   isInvitaliaAdmin: boolean;
   institutionId?: string;
-  producerFilter: string;
-  setProducerFilter: (v: string) => void;
-  setStatusFilter: (v: string) => void;
   dispatch: any;
   setInstitutionList: (v: Array<Institution>) => any;
 };
@@ -23,9 +20,6 @@ export const useProductDataGridInit = ({
   isInvitaliaUser,
   isInvitaliaAdmin,
   institutionId,
-  producerFilter,
-  setProducerFilter,
-  setStatusFilter,
   dispatch,
   setInstitutionList,
 }: Props) => {
@@ -46,14 +40,7 @@ export const useProductDataGridInit = ({
   };
 
   useEffect(() => {
-    if ((isInvitaliaUser || isInvitaliaAdmin) && institutionId) {
-      setProducerFilter(institutionId);
-    }
-  }, [isInvitaliaUser, isInvitaliaAdmin, institutionId]);
-
-  useEffect(() => {
     if (isInvitaliaAdmin && !adminDefaultApplied) {
-      setStatusFilter('Da approvare');
       setAdminDefaultApplied(true);
     }
 
@@ -61,7 +48,7 @@ export const useProductDataGridInit = ({
       void fetchInstitutions();
     }
 
-    const targetId = isInvitaliaUser ? producerFilter || institutionId || '' : organizationId;
+    const targetId = isInvitaliaUser ? institutionId || '' : organizationId;
 
     void getBatchFilterList(initiativeId, targetId)
       .then((res) => {
@@ -73,7 +60,6 @@ export const useProductDataGridInit = ({
   }, [
     isInvitaliaUser,
     isInvitaliaAdmin,
-    producerFilter,
     institutionId,
     organizationId,
     initiativeId,
