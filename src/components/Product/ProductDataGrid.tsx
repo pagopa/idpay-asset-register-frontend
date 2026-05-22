@@ -246,6 +246,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           <ProductDetail
             open={detailOpen}
             data={selectedProduct}
+            detailFields={tableConfig?.detail?.fields}
             isInvitaliaUser={isInvitaliaUser}
             isInvitaliaAdmin={isInvitaliaAdmin}
             onClose={() => {
