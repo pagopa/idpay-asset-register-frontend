@@ -115,7 +115,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     return null;
   }
 
-  // ✅ Ripristino logica apertura dettaglio
   const handleListButtonClick = (row: ProductDTO) => {
     setSelectedProduct(row);
     setDetailOpen(true);
@@ -124,7 +123,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   return (
     <>
       <ProductDataGridView
-        t={t}
         isInvitaliaUser={isInvitaliaUser}
         tableData={tableData}
         hookLoading={loading}
@@ -182,7 +180,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         bottom={80}
       />
 
-      {/* ✅ Drawer dettaglio prodotto */}
       {selectedProduct && (
         <DetailDrawer
           open={detailOpen}
@@ -196,6 +193,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           <ProductDetail
             open={detailOpen}
             data={selectedProduct}
+            detailFields={tableConfig?.detail?.fields}
             isInvitaliaUser={isInvitaliaUser}
             isInvitaliaAdmin={isInvitaliaAdmin}
             onClose={() => {

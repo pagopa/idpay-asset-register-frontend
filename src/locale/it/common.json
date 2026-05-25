@@ -272,6 +272,8 @@
     "productDetail": {
       "eprelCheckDate": "Data verifica EPREL",
       "productSheet": "SCHEDA PRODOTTO",
+      "productName": "Nome prodotto",
+      "batchName": "Lotto",
       "eprelCode": "Codice EPREL",
       "gtinCode": "Codice GTIN/EAN",
       "productCode": "Codice prodotto",

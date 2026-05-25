@@ -82,12 +82,7 @@ const loadRoleSpecificConfig = async (basePath: string, normalizedRole: string, 
   const roleConfig = (roleMod as any).default ?? {};
   const subRole = resolveSubRole(role);
 
-  try {
-    // Se esiste il file del ruolo → usa solo quello
-    return applySubRolePermissions(roleConfig, subRole);
-  } catch {
-    return applySubRolePermissions(roleConfig, subRole);
-  }
+  return applySubRolePermissions(roleConfig, subRole);
 };
 
 const resolveAndValidate = async (

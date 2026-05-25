@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
-import { institutionSelector } from '../../redux/slices/invitaliaSlice';
 import MsgResult from '../../components/Product/MsgResult';
 import Products from '../components/Products';
 
 const InvitaliaProductsList: React.FC = () => {
   const { t } = useScopedTranslation();
-  const institution = useSelector(institutionSelector);
+  const location = useLocation();
+  const organizationIdFromNavigation = (location.state as any)?.organizationId;
   const [showMsg, setShowMsg] = useState(false);
   const MSG_RESULT_BT = 80;
 
@@ -34,7 +34,7 @@ const InvitaliaProductsList: React.FC = () => {
 
   return (
     <Box ml={2}>
-      <Products organizationId={institution?.institutionId || ''} />
+      <Products organizationId={organizationIdFromNavigation} />
       {showMsg && (
         <MsgResult
           severity="success"

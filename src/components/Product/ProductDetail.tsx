@@ -26,6 +26,7 @@ import ProductStatusChip from './ProductStatusChip';
 type Props = {
   open: boolean;
   data: ProductDTO;
+  detailFields?: Array<ProductDetailFieldConfig>;
   isInvitaliaUser: boolean;
   isInvitaliaAdmin: boolean;
   onUpdateTable?: () => void;
@@ -79,6 +80,11 @@ const handleOpenModal = (
 type ProductInfoRowVariant = 'body2' | 'body1' | undefined;
 type ProductInfoValueVariant = 'h6' | 'body2' | undefined;
 
+export type ProductDetailFieldConfig = {
+  id: string;
+  labelKey?: string;
+};
+
 type RowConfig = {
   type?: 'row';
   label: string;
@@ -116,7 +122,55 @@ const mapBaseRowToRowConfig = (
   sx: row.sx,
 });
 
-function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | DividerConfig> {
+const defaultDetailLabelKeys: Record<string, string> = {
+  batchName: 'pages.productDetail.batchName',
+  brand: 'pages.productDetail.brand',
+  capacity: 'pages.productDetail.capacity',
+  category: 'pages.productDetail.category',
+  countryOfProduction: 'pages.productDetail.countryOfProduction',
+  energyClass: 'pages.productDetail.energyClass',
+  eprelCode: 'pages.productDetail.eprelCode',
+  gtinCode: 'pages.productDetail.gtinCode',
+  model: 'pages.productDetail.model',
+  productCode: 'pages.productDetail.productCode',
+  productName: 'pages.productDetail.productName',
+  registrationDate: 'pages.productDetail.eprelCheckDate',
+  status: 'pages.productDetail.status',
+};
+
+function mapDetailFieldToRowConfig(
+  field: ProductDetailFieldConfig,
+  data: ProductDTO,
+  t: any
+): RowConfig {
+  const value = data[field.id as keyof ProductDTO];
+  const hasValue = value !== undefined && value !== null && value !== '';
+
+  return {
+    label: t(field.labelKey ?? defaultDetailLabelKeys[field.id] ?? field.id),
+    value:
+      field.id === 'registrationDate' && hasValue
+        ? String(format(new Date(String(value)), 'dd/MM/yyyy'))
+        : hasValue
+          ? String(value)
+          : EMPTY_DATA,
+    valueVariant: field.id === 'productName' ? 'h6' : undefined,
+    sx:
+      field.id === 'productName' || field.id === 'batchName'
+        ? { mb: 1, maxWidth: 350, wordWrap: 'break-word' }
+        : undefined,
+  };
+}
+
+function getProductInfoRowsConfig(
+  data: ProductDTO,
+  t: any,
+  detailFields?: Array<ProductDetailFieldConfig>
+): Array<RowConfig | DividerConfig> {
+  if (detailFields?.length) {
+    return detailFields.map((field) => mapDetailFieldToRowConfig(field, data, t));
+  }
+
   const baseRows: Array<{
     label: string;
     dataKey: keyof ProductDTO | null;
@@ -213,6 +267,7 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
 
 type ProductInfoRowsProps = {
   data: ProductDTO;
+  detailFields?: Array<ProductDetailFieldConfig>;
   currentStatus: ProductStatus;
   children?: React.ReactNode;
 };
@@ -248,11 +303,11 @@ function renderEntry(entry: any, idx: number) {
   );
 }
 
-function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
+function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps) {
   const { t } = useScopedTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
-  const baseRows = getProductInfoRowsConfig(data, t);
+  const baseRows = getProductInfoRowsConfig(data, t, detailFields);
 
   const chronology = ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
   const filteredChronology = chronology.filter(
@@ -420,6 +475,7 @@ type ProductDetailProps = Props & {
 
 export default function ProductDetail({
   data,
+  detailFields,
   isInvitaliaUser,
   isInvitaliaAdmin,
   onUpdateTable,
@@ -571,7 +627,11 @@ export default function ProductDetail({
         <Box sx={{ flex: '1 1 0', overflowY: 'auto' }}>
           <List>
             <ProductStatusChip status={data.status} />
-            <ProductInfoRows data={data} currentStatus={data.status as ProductStatus} />
+            <ProductInfoRows
+              data={data}
+              detailFields={detailFields}
+              currentStatus={data.status as ProductStatus}
+            />
           </List>
         </Box>
         {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
