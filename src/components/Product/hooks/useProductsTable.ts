@@ -98,6 +98,7 @@ export const useProductsTable = ({
     category,
     producer,
     productFileId,
+    productCode,
     eprelCode,
     status,
     gtinCode,
