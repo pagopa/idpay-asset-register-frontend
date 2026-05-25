@@ -44,7 +44,6 @@
           { "id": "status", "labelKey": "tables.products.columns.status" },
           { "id": "batchName", "labelKey": "tables.products.columns.batchName" }
         ],
-        "defaultSort": { "field": "gtinCode", "direction": "asc" },
         "filters": [
           { "id": "category", "type": "select" },
           { "id": "status", "type": "select" },

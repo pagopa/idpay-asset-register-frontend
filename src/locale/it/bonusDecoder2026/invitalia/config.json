@@ -92,10 +92,6 @@
             "align": "left"
           }
         ],
-        "defaultSort": {
-          "field": "category",
-          "direction": "asc"
-        },
         "filters": [
           {
             "id": "status",

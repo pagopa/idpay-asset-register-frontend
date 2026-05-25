@@ -54,13 +54,13 @@
             "labelKey": "pages.products.listHeader.eprelCode",
             "type": "eprelLink",
             "sortable": true,
-            "align": "left"
+            "align": "center"
           },
           {
             "id": "gtinCode",
             "labelKey": "pages.products.listHeader.gtinCode",
             "sortable": true,
-            "align": "left"
+            "align": "center"
           },
           {
             "id": "batchName",
@@ -76,7 +76,6 @@
           },
           { "id": "actions", "labelKey": "", "type": "action", "sortable": false, "align": "left" }
         ],
-        "defaultSort": { "field": "category", "direction": "asc" },
         "ui": {
           "filtering": { "enabled": true },
           "pagination": {

@@ -134,13 +134,10 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
             {(columns || []).map((col) => (
               <TableCell
                 key={col.id}
-                align={col.id === 'eprelCode' ? 'center' : col.headerAlign ?? 'left'}
+                align={col.headerAlign ?? col.align ?? 'left'}
                 sx={{
                   fontWeight: 600,
                   color: headerTextColor,
-                  '& .MuiTableSortLabel-root': {
-                    ml: 1.5,
-                  },
                 }}
               >
                 {col.sortable ? (
@@ -180,15 +177,12 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
               {(columns || []).map((col) => (
                 <TableCell
                   key={col.id}
-                  align={col.id === 'eprelCode' ? 'center' : col.align ?? 'left'}
+                  align={col.align ?? 'left'}
                   sx={{
                     borderTop: `${rowBorderWidth} solid ${rowBorderColor}`,
                     borderBottom: `${rowBorderWidth} solid ${rowBorderColor}`,
                     pt: 2,
                     pb: 2,
-                    ...(col.id === 'eprelCode' && {
-                      textAlign: 'center',
-                    }),
                     ...(col.id === 'status' && {
                       verticalAlign: 'middle',
                       pt: 2,
