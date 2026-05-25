@@ -119,8 +119,8 @@
               "labelKey": "pages.productDetail.productName"
             },
             {
-              "id": "batchName",
-              "labelKey": "pages.productDetail.batchName"
+              "id": "productFileId",
+              "labelKey": "pages.productDetail.productFileId"
             },
             {
               "id": "gtinCode",

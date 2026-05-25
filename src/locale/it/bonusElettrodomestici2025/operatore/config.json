@@ -173,7 +173,10 @@
             "labelKey": "tables.products.filters.eprelCode",
             "regEx": "^\\d{5,}$",
             "error": "tables.products.filters.errors.eprelCode",
-            "inputProps": {"inputMode": "numeric", "pattern": "^\\d{5,}$"}
+            "inputProps": {
+              "inputMode": "numeric",
+              "pattern": "^\\d{5,}$"
+            }
           },
           {
             "id": "gtinCode",
@@ -181,7 +184,9 @@
             "labelKey": "tables.products.filters.gtinCode",
             "regEx": "[a-zA-Z0-9]{14}$",
             "error": "tables.products.filters.errors.gtinCode",
-            "inputProps": { "maxLength": 14 }
+            "inputProps": {
+              "maxLength": 14
+            }
           }
         ],
         "ui": {
@@ -191,23 +196,64 @@
           "pagination": {
             "enabled": true,
             "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [10, 25, 50, 100]
+            "rowsPerPageOptions": [
+              10,
+              25,
+              50,
+              100
+            ]
           }
         },
         "detail": {
           "fields": [
-            { "id": "productName", "labelKey": "pages.productDetail.productName" },
-            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
-            { "id": "registrationDate", "labelKey": "pages.productDetail.eprelCheckDate" },
-            { "id": "eprelCode", "labelKey": "pages.productDetail.eprelCode" },
-            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
-            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
-            { "id": "category", "labelKey": "pages.productDetail.category" },
-            { "id": "brand", "labelKey": "pages.productDetail.brand" },
-            { "id": "model", "labelKey": "pages.productDetail.model" },
-            { "id": "energyClass", "labelKey": "pages.productDetail.energyClass" },
-            { "id": "countryOfProduction", "labelKey": "pages.productDetail.countryOfProduction" },
-            { "id": "capacity", "labelKey": "pages.productDetail.capacity" }
+            {
+              "id": "productName",
+              "labelKey": "pages.productDetail.productName"
+            },
+            {
+              "id": "productFileId",
+              "labelKey": "pages.productDetail.productFileId"
+            },
+            {
+              "id": "registrationDate",
+              "labelKey": "pages.productDetail.eprelCheckDate"
+            },
+            {
+              "id": "eprelCode",
+              "labelKey": "pages.productDetail.eprelCode"
+            },
+            {
+              "id": "gtinCode",
+              "labelKey": "pages.productDetail.gtinCode"
+            },
+            {
+              "id": "productCode",
+              "labelKey": "pages.productDetail.productCode"
+            },
+            {
+              "id": "category",
+              "labelKey": "pages.productDetail.category"
+            },
+            {
+              "id": "brand",
+              "labelKey": "pages.productDetail.brand"
+            },
+            {
+              "id": "model",
+              "labelKey": "pages.productDetail.model"
+            },
+            {
+              "id": "energyClass",
+              "labelKey": "pages.productDetail.energyClass"
+            },
+            {
+              "id": "countryOfProduction",
+              "labelKey": "pages.productDetail.countryOfProduction"
+            },
+            {
+              "id": "capacity",
+              "labelKey": "pages.productDetail.capacity"
+            }
           ]
         }
       }

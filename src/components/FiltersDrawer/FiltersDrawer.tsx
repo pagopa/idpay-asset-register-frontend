@@ -16,7 +16,8 @@ import { FiltersProps, filtersRender, SelectProps } from './filtersRender';
 type Props = {
   open: boolean;
   toggleFiltersDrawer: (isOpen: boolean) => void;
-  batchFilterItems: SelectProps;
+  batchFilterItems: Record<string, SelectProps>;
+  producerFilterItems?: Record<string, SelectProps>;
   errorStatus: boolean;
   filters: Record<string, {value: string; label: string}>;
   setFilters: (value: Record<string, {value: string; label: string}>) => void;
@@ -28,6 +29,7 @@ export default function FiltersDrawer({
   open,
   toggleFiltersDrawer,
   batchFilterItems,
+  producerFilterItems,
   filters,
   setFilters,
   setPage,
@@ -75,8 +77,9 @@ export default function FiltersDrawer({
       </Box>
       <Box paddingX="24px" maxWidth="417px">
         {config && config.tables?.products?.filters.map(({ type, ...item }: FiltersProps) => {
+          const isProducer = item.id === "producer";
           const isBatch = item.id === "productFileId";
-          const template = isBatch ? batchFilterItems : config?.templates?.[item.id];
+          const template = isBatch ? batchFilterItems : isProducer ? producerFilterItems : config?.templates?.[item.id];
           return <FormControl key={item.id} fullWidth size="small" margin="normal">
             {type === "select" && <InputLabel id={`${item.id}-filter-select-label`}>
               {t(item.labelKey)}

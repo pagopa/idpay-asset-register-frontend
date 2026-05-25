@@ -9,6 +9,7 @@ import {
   institutionSelector,
   setInstitutionList,
   setInstitution,
+  institutionListSelector,
 } from '../../redux/slices/invitaliaSlice';
 import { ProductDTO } from '../../api/generated/register';
 
@@ -32,8 +33,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
   const { config } = useInitiativeConfig();
-  const [filters, setFilters] = useState<Record<string, {value: string; label: string}>>({});
-  const filtersValue = Object.keys(filters).length ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value}) , {}) : {};
+  const [filters, setFilters] = useState<Record<string, { value: string; label: string }>>({});
+  const filtersValue: typeof filters & {producer?: string} = Object.keys(filters).length ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {}) : {};
 
   const tableConfig = config?.tables?.products;
   const paginationConfig = tableConfig?.ui?.pagination;
@@ -43,6 +44,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
 
   const institution = useSelector(institutionSelector);
+  const institutions = useSelector(institutionListSelector);
 
   const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
@@ -67,7 +69,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
 
   const targetId = isInvitaliaUser
-    ?  institution?.institutionId || ''
+    ? filtersValue?.producer || institution?.institutionId || ''
     : organizationId || user?.org_id || '';
 
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
@@ -80,11 +82,15 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     ...filtersValue
   });
 
-  const batchFilter = useMemo(() =>
-    batchFilterItems.reduce((acc, batch): SelectProps => {
+  const batchFilter: Record<string, SelectProps> = useMemo(() =>
+    batchFilterItems.reduce((acc, batch) => {
       const batchName = batch?.batchName?.replace(".csv", "");
       return { ...acc, [batch?.productFileId || '']: { label: batchName, value: batchName } };
-    }, {} as SelectProps), [tableData]);
+    }, {}), [tableData]);
+
+  const producerFilter: Record<string, SelectProps> | undefined = useMemo(() =>
+    institutions?.reduce((acc, institution) => ({ ...acc, [institution?.institutionId]: { label: institution?.description, value: institution?.institutionId } }), {}),
+    [institutions]);
 
   useEffect(() => {
     setSelected([]);
@@ -215,6 +221,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         setFilters={setFilters}
         setPage={setPage}
         batchFilterItems={batchFilter}
+        producerFilterItems={producerFilter}
       />
     </>
   );
