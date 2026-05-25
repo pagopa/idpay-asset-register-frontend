@@ -47,7 +47,6 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
     },
     text: ({ item, t, filters, setFilters }) => {
         const { id, labelKey, regEx, error, inputProps } = item;
-        console.log("FiltersDrawer", "regex: ", RegExp(regEx || ''), "test: ", (RegExp(regEx || '').test(filters?.[id]?.value)));
         return <TextField
             fullWidth
             id={`${id}-text`}

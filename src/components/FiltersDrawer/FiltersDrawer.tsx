@@ -35,7 +35,6 @@ export default function FiltersDrawer({
   const { t } = useScopedTranslation();
   const { config } = useInitiativeConfig();
   const [draftFilters, setDraftFilters] = useState<Record<string, {value: string; label: string}>>(filters);
-  console.log("🚀 ~ FiltersDrawer ~ draftFilters:", draftFilters);
 
   useEffect(() => setDraftFilters(filters), [filters]);
 
