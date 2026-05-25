@@ -16,8 +16,27 @@
   },
   "templates": {},
   "ui": {
+    "backgroundColor": "#FFFFFF",
+    "resolutionUpscaling": 1440,
     "tables": {
       "products": {
+        "style": {
+          "maxTableHeight": 700,
+          "lengths": {
+            "detail": 40,
+            "minTable": 30,
+            "maxTable": 45
+          },
+          "header": {
+            "textColor": "#17324D"
+          },
+          "row": {
+            "backgroundColor": "#FFFFFF",
+            "hoverBackgroundColor": "#F5F7FA",
+            "borderColor": "#E3E7EB",
+            "borderWidth": "1px"
+          }
+        },
         "columns": [
           { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode" },
           { "id": "productCode", "labelKey": "tables.products.columns.productCode" },
