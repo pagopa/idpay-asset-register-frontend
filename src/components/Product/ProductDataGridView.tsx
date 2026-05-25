@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Paper, TablePagination, CircularProgress } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTheme } from '@mui/material/styles';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import EmptyListTable from '../../pages/components/EmptyListTable';
@@ -64,6 +65,7 @@ const ProductDataGridView: React.FC<Props> = ({
   handleOpenModalWithStatusCheck,
 }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
   return (
     <>
       <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -97,9 +99,12 @@ const ProductDataGridView: React.FC<Props> = ({
           <Chip
             size="medium"
             label={filtersLabel}
-            sx={{ color: 'white !important', backgroundColor: '#0073E6 !important' }}
+            sx={{
+              color: theme.palette.primary.contrastText,
+              backgroundColor: theme.palette.primary.main,
+            }}
             onDelete={handleDeleteFiltersButtonClick}
-            deleteIcon={<CloseIcon sx={{ color: 'white !important' }} />}
+            deleteIcon={<CloseIcon sx={{ color: theme.palette.primary.contrastText }} />}
           />
         ) : (
           <span />
