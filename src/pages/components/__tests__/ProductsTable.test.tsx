@@ -11,6 +11,23 @@ jest.mock('../../../hooks/useScopedTranslation', () => ({
   }),
 }));
 
+// ✅ Mock useInitiativeConfig to avoid useGetInitiativesQuery dependency
+jest.mock('../../../hooks/useInitiativeConfig', () => ({
+  __esModule: true,
+  useInitiativeConfig: () => ({
+    config: {
+      ui: {
+        tables: {
+          products: {
+            style: {},
+          },
+        },
+      },
+    },
+    loading: false,
+  }),
+}));
+
 jest.mock('../../../components/Product/ProductStatusChip', () => ({
   __esModule: true,
   default: ({ status }: { status: string }) => <span data-testid="status-chip">{status}</span>,
