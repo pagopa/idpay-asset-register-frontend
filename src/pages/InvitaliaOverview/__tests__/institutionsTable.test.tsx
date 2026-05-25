@@ -15,8 +15,7 @@ jest.mock('../../../utils/env', () => ({
   },
 }));
 
-const reducer = (state = {}) => state;
-const store = createStore(reducer);
+const store = createStore();
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -141,6 +140,9 @@ describe('InstitutionsTable', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Alpha Institution' }));
 
-    expect(mockNavigate).toHaveBeenCalledWith('/home/initiative-1/lista-prodotti');
+    expect(mockNavigate).toHaveBeenCalledWith(
+      '/home/initiative-1/lista-prodotti',
+      { state: { organizationId: '1' } }
+    );
   });
 });

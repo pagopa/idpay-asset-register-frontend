@@ -27,5 +27,25 @@
     "washerdriers": { "label": "Lavasciuga" },
     "refrigeratingappl": { "label": "Apparecchi di refrigerazione" },
     "cookinghobs": { "label": "Piani cottura" }
+  },
+  "tables": {
+    "products": {
+      "columns": {
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "category": "Categoria",
+        "energyClass": "Classe energetica",
+        "eprelCode": "Codice EPREL",
+        "status": "Stato",
+        "batchName": "Lotto"
+      },
+      "filters": {
+        "category": "Categoria",
+        "status": "Stato",
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "productFileId": "Lotto"
+      }
+    }
   }
 }

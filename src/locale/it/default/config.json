@@ -1,0 +1,59 @@
+{
+  "roles": {
+    "name": "default",
+    "logicalName": "Fallback Default",
+    "subRoles": {
+      "default": {
+        "logicalName": "Fallback Default",
+        "permissions": {
+          "tables": ["products"]
+        }
+      }
+    },
+    "errors": {
+      "profileNotConfigured": "pages.products.profileNotConfigured"
+    }
+  },
+  "templates": {},
+  "ui": {
+    "resolutionUpscaling": 1440,
+    "tables": {
+      "products": {
+        "style": {
+          "maxTableHeight": 700,
+          "lengths": {
+            "detail": 40,
+            "minTable": 30,
+            "maxTable": 45
+          }
+        },
+        "columns": [
+          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode" },
+          { "id": "productCode", "labelKey": "tables.products.columns.productCode" },
+          { "id": "category", "labelKey": "tables.products.columns.category" },
+          { "id": "status", "labelKey": "tables.products.columns.status" },
+          { "id": "batchName", "labelKey": "tables.products.columns.batchName" }
+        ],
+        "filters": [
+          { "id": "category", "type": "select" },
+          { "id": "status", "type": "select" },
+          { "id": "gtinCode", "type": "text" },
+          { "id": "productCode", "type": "text" }
+        ],
+        "ui": {
+          "filtering": { "enabled": true },
+          "pagination": { "enabled": true }
+        },
+        "detail": {
+          "fields": [
+            { "id": "gtinCode" },
+            { "id": "productCode" },
+            { "id": "brand" },
+            { "id": "model" },
+            { "id": "status" }
+          ]
+        }
+      }
+    }
+  }
+}

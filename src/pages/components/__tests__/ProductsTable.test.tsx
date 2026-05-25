@@ -11,10 +11,33 @@ jest.mock('../../../hooks/useScopedTranslation', () => ({
   }),
 }));
 
+// ✅ Mock useInitiativeConfig to avoid useGetInitiativesQuery dependency
+jest.mock('../../../hooks/useInitiativeConfig', () => ({
+  __esModule: true,
+  useInitiativeConfig: () => ({
+    config: {
+      ui: {
+        tables: {
+          products: {
+            style: {},
+          },
+        },
+      },
+    },
+    loading: false,
+  }),
+}));
+
+jest.mock('../../../components/Product/ProductStatusChip', () => ({
+  __esModule: true,
+  default: ({ status }: { status: string }) => <span data-testid="status-chip">{status}</span>,
+}));
+
 const columns = [
   { id: 'checkbox', labelKey: 'checkbox', type: 'checkbox' as const },
   { id: 'category', labelKey: 'category', sortable: true },
   { id: 'gtinCode', labelKey: 'gtin' },
+  { id: 'status', labelKey: 'status' },
   { id: 'action', labelKey: 'action', type: 'action' as const },
 ];
 
@@ -55,12 +78,16 @@ const renderTable = (overrideProps: any = {}) => {
 };
 
 describe('ProductsTable (rewritten)', () => {
-  it('renders headers and rows correctly', () => {
+  it('renders headers, rows and status chip correctly', () => {
     renderTable();
 
     expect(screen.getByText('category')).toBeInTheDocument();
     expect(screen.getByText('Lavatrice')).toBeInTheDocument();
     expect(screen.getByText('Forno')).toBeInTheDocument();
+
+    const chips = screen.getAllByTestId('status-chip');
+    expect(chips[0]).toHaveTextContent('SUPERVISED');
+    expect(chips[1]).toHaveTextContent('REJECTED');
   });
 
   it('calls onRequestSort when clicking sortable header', () => {
@@ -68,7 +95,7 @@ describe('ProductsTable (rewritten)', () => {
 
     renderTable({ onRequestSort });
 
-    fireEvent.click(screen.getByText('category'));
+    fireEvent.click(screen.getByRole('button', { name: 'category' }));
     expect(onRequestSort).toHaveBeenCalled();
   });
 

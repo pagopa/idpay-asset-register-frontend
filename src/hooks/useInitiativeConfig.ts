@@ -9,6 +9,23 @@ export const useInitiativeConfig = () => {
   const user = useIDPayUser();
   const [config, setConfig] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [configError, setConfigError] = useState<boolean>(false);
+
+  const mapNewStructureToLegacy = (cfg: any) => {
+    const { roles, templates, ui } = cfg;
+
+    return {
+      role: roles?.name,
+      logicalName: roles?.logicalName,
+      subRoles: roles?.subRoles,
+      errors: roles?.errors,
+      templates,
+      tables: ui?.tables,
+    };
+  };
+
+  const normalizeConfig = (rawConfig: any) =>
+    rawConfig?.roles ? mapNewStructureToLegacy(rawConfig) : rawConfig;
 
   useEffect(() => {
     if (!initiative || !user?.org_role) {
@@ -17,19 +34,27 @@ export const useInitiativeConfig = () => {
 
     setLoading(true);
 
-    const initiativeName =
-      initiative?.initiativeName && initiative?.startDate
-        ? buildNamespaceKey(initiative.initiativeName, initiative.startDate)
-        : (initiative as any)?.displayName ?? initiative?.initiativeId;
+    const startDate = (initiative as any)?.startDate ?? '';
 
-    void loadItInitiativeConfig(initiativeName, user.org_role)
+    const initiativeNamespace =
+      initiative?.initiativeName && startDate
+        ? buildNamespaceKey(initiative.initiativeName, startDate)
+        : (initiative as any)?.displayName ?? initiative?.initiativeId ?? '';
+
+    void loadItInitiativeConfig(initiativeNamespace, user.org_role)
       .then((cfg) => {
-        setConfig(cfg);
+        if ((cfg as any)?.roleConfigMissing) {
+          setConfigError(true);
+          setConfig(null);
+        } else {
+          setConfig(normalizeConfig(cfg));
+          setConfigError(false);
+        }
       })
       .finally(() => {
         setLoading(false);
       });
   }, [initiative, user?.org_role]);
 
-  return { config, loading };
+  return { config, loading, configError };
 };

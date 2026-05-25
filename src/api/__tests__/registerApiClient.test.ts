@@ -186,9 +186,9 @@ describe('response interceptor', () => {
         id: 'tokenNotValid',
         blocking: false,
         toNotify: false,
-        techDescription: 'token expired or not valid',
-        displayableDescription: 'Your session has expired',
-        displayableTitle: 'Redirecting you to the login page',
+        techDescription: 'Unauthorized - token invalid or expired',
+        displayableDescription: 'Please login again',
+        displayableTitle: 'Session expired',
         error: new Error(),
       });
     });
@@ -205,7 +205,7 @@ describe('response interceptor', () => {
 
     it('rejects the promise with the original error', async () => {
       const err = make401Error();
-      await expect(errorHandler(err)).rejects.toBe(err);
+      await expect(errorHandler(err)).rejects.toMatchObject({ status: 401 });
     });
   });
 
@@ -228,7 +228,7 @@ describe('response interceptor', () => {
 
     it('still rejects the promise', async () => {
       const err = make500Error();
-      await expect(errorHandler(err)).rejects.toBe(err);
+      await expect(errorHandler(err)).rejects.toMatchObject({ status: 500 });
     });
   });
 });
@@ -245,12 +245,11 @@ describe('RolePermissionApi', () => {
       expect(result).toBe(res);
     });
 
-    it('returns empty object and logs error on failure', async () => {
+    it('rejects on failure', async () => {
       const err = new Error('Network error');
       (registerClient.permissions.userPermission as jest.Mock).mockRejectedValue(err);
 
-      const result = await RolePermissionApi.userPermission();
-      expect(result).toEqual({});
+      await expect(RolePermissionApi.userPermission()).rejects.toBe(err);
     });
   });
 
@@ -263,12 +262,11 @@ describe('RolePermissionApi', () => {
       expect(result).toBe(res);
     });
 
-    it('returns empty object and logs error on failure', async () => {
+    it('rejects on failure', async () => {
       const err = new Error('Consent error');
       (registerClient.consent.getPortalConsent as jest.Mock).mockRejectedValue(err);
 
-      const result = await RolePermissionApi.getPortalConsent();
-      expect(result).toEqual({});
+      await expect(RolePermissionApi.getPortalConsent()).rejects.toBe(err);
     });
   });
 
@@ -294,12 +292,11 @@ describe('RolePermissionApi', () => {
       });
     });
 
-    it('returns undefined and logs error on failure', async () => {
+    it('rejects on failure', async () => {
       const err = new Error('Save failed');
       (registerClient.consent.savePortalConsent as jest.Mock).mockRejectedValue(err);
 
-      const result = await RolePermissionApi.savePortalConsent('v1');
-      expect(result).toBeUndefined();
+      await expect(RolePermissionApi.savePortalConsent('v1')).rejects.toBe(err);
     });
   });
 });
@@ -339,11 +336,11 @@ describe('RegisterApi.getProduct', () => {
     expect(await RegisterApi.getProduct('initi-1', ORG)).toBeUndefined();
   });
 
-  it('returns fallback object on API error', async () => {
-    (registerClient.initiatives.getProducts as jest.Mock).mockRejectedValue(new Error('fail'));
+  it('rejects on API error', async () => {
+    const err = new Error('fail');
+    (registerClient.initiatives.getProducts as jest.Mock).mockRejectedValue(err);
 
-    const result = await RegisterApi.getProduct('initi-1', ORG);
-    expect(result).toEqual({ status: 200, value: { content: [] } });
+    await expect(RegisterApi.getProduct('initi-1', ORG)).rejects.toBe(err);
   });
 });
 
@@ -357,11 +354,11 @@ describe('RegisterApi.getProductList', () => {
     expect(await RegisterApi.getProductList('initi-1', ORG)).toBe(res);
   });
 
-  it('returns fallback on error', async () => {
-    (registerClient.initiatives.getProducts as jest.Mock).mockRejectedValue(new Error('fail'));
+  it('rejects on error', async () => {
+    const err = new Error('fail');
+    (registerClient.initiatives.getProducts as jest.Mock).mockRejectedValue(err);
 
-    const result = await RegisterApi.getProductList('initi-1', ORG);
-    expect(result).toEqual({ content: [] });
+    await expect(RegisterApi.getProductList('initi-1', ORG)).rejects.toBe(err);
   });
 });
 
@@ -373,13 +370,13 @@ describe('RegisterApi.getProductFiles', () => {
     expect(await RegisterApi.getProductFiles()).toBe(res);
   });
 
-  it('returns fallback object on error', async () => {
+  it('rejects on error', async () => {
+    const err = new Error('fail');
     (registerClient.initiatives.getProductFilesList as jest.Mock).mockRejectedValue(
-      new Error('fail')
+      err
     );
 
-    const result = await RegisterApi.getProductFiles();
-    expect(result).toEqual({ status: 200, value: { content: [] } });
+    await expect(RegisterApi.getProductFiles()).rejects.toBe(err);
   });
 });
 
@@ -412,10 +409,10 @@ describe('RegisterApi.getBatchFilterItems', () => {
     expect(await RegisterApi.getBatchFilterItems(ORG)).toEqual(['e', 'f']);
   });
 
-  it('returns empty array on API error', async () => {
-    (registerClient.initiatives.getBatchNameList as jest.Mock).mockRejectedValue(new Error());
-    const result = await RegisterApi.getBatchFilterItems(ORG);
-    expect(result).toEqual([]);
+  it('rejects on API error', async () => {
+    const err = new Error();
+    (registerClient.initiatives.getBatchNameList as jest.Mock).mockRejectedValue(err);
+    await expect(RegisterApi.getBatchFilterItems('initi-1', ORG)).rejects.toBe(err);
   });
 });
 
@@ -436,12 +433,11 @@ describe('RegisterApi.uploadProductList', () => {
     );
   });
 
-  it('returns empty object and logs error on failure', async () => {
+  it('rejects on failure', async () => {
     const err = new Error('upload failed');
     (registerClient.initiatives.uploadProductList as jest.Mock).mockRejectedValue(err);
 
-    const result = await RegisterApi.uploadProductList(file, 'CATEGORY_A');
-    expect(result).toEqual({});
+    await expect(RegisterApi.uploadProductList('initi-1', file, 'CATEGORY_A')).rejects.toBe(err);
   });
 });
 
@@ -462,12 +458,13 @@ describe('RegisterApi.uploadProductListVerify', () => {
     );
   });
 
-  it('returns empty object and logs error on failure', async () => {
+  it('rejects on failure', async () => {
     const err = new Error('verify failed');
     (registerClient.initiatives.verifyProductList as jest.Mock).mockRejectedValue(err);
 
-    const result = await RegisterApi.uploadProductListVerify(file, 'CATEGORY_B');
-    expect(result).toEqual({});
+    await expect(RegisterApi.uploadProductListVerify('initi-1', file, 'CATEGORY_B')).rejects.toBe(
+      err
+    );
   });
 });
 
@@ -554,13 +551,13 @@ describe('RegisterApi.getInstitutionsList', () => {
     expect(await RegisterApi.getInstitutionsList()).toBe(res);
   });
 
-  it('returns fallback on error', async () => {
+  it('rejects on error', async () => {
+    const err = new Error('fail');
     (registerClient.institutions.getInstitutionsList as jest.Mock).mockImplementation(() => {
-      throw new Error('fail');
+      throw err;
     });
 
-    const result = await RegisterApi.getInstitutionsList();
-    expect(result).toEqual({ status: 200, value: { institutions: [] } });
+    await expect(RegisterApi.getInstitutionsList()).rejects.toBe(err);
   });
 });
 
@@ -578,12 +575,12 @@ describe('RegisterApi.getInstitutionById', () => {
     });
   });
 
-  it('returns fallback on error', async () => {
+  it('rejects on error', async () => {
+    const err = new Error('fail');
     (registerClient.institutions.retrieveInstitutionById as jest.Mock).mockImplementation(() => {
-      throw new Error('fail');
+      throw err;
     });
 
-    const result = await RegisterApi.getInstitutionById(ID);
-    expect(result).toEqual({ status: 200, value: { institutions: [] } });
+    await expect(RegisterApi.getInstitutionById(ID)).rejects.toBe(err);
   });
 });

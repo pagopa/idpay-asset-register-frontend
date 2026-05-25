@@ -5,10 +5,10 @@ import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import FlagIcon from '@mui/icons-material/Flag';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import {
   EMPTY_DATA,
   // L1_MOTIVATION_OK,
-  MAX_LENGTH_DETAILL_PR,
   MIDDLE_STATES,
   PRODUCTS_STATES,
   USERS_TYPES,
@@ -26,6 +26,7 @@ import ProductStatusChip from './ProductStatusChip';
 type Props = {
   open: boolean;
   data: ProductDTO;
+  detailFields?: Array<ProductDetailFieldConfig>;
   isInvitaliaUser: boolean;
   isInvitaliaAdmin: boolean;
   onUpdateTable?: () => void;
@@ -79,6 +80,11 @@ const handleOpenModal = (
 type ProductInfoRowVariant = 'body2' | 'body1' | undefined;
 type ProductInfoValueVariant = 'h6' | 'body2' | undefined;
 
+export type ProductDetailFieldConfig = {
+  id: string;
+  labelKey?: string;
+};
+
 type RowConfig = {
   type?: 'row';
   label: string;
@@ -116,7 +122,55 @@ const mapBaseRowToRowConfig = (
   sx: row.sx,
 });
 
-function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | DividerConfig> {
+const defaultDetailLabelKeys: Record<string, string> = {
+  batchName: 'pages.productDetail.batchName',
+  brand: 'pages.productDetail.brand',
+  capacity: 'pages.productDetail.capacity',
+  category: 'pages.productDetail.category',
+  countryOfProduction: 'pages.productDetail.countryOfProduction',
+  energyClass: 'pages.productDetail.energyClass',
+  eprelCode: 'pages.productDetail.eprelCode',
+  gtinCode: 'pages.productDetail.gtinCode',
+  model: 'pages.productDetail.model',
+  productCode: 'pages.productDetail.productCode',
+  productName: 'pages.productDetail.productName',
+  registrationDate: 'pages.productDetail.eprelCheckDate',
+  status: 'pages.productDetail.status',
+};
+
+function mapDetailFieldToRowConfig(
+  field: ProductDetailFieldConfig,
+  data: ProductDTO,
+  t: any
+): RowConfig {
+  const value = data[field.id as keyof ProductDTO];
+  const hasValue = value !== undefined && value !== null && value !== '';
+
+  return {
+    label: t(field.labelKey ?? defaultDetailLabelKeys[field.id] ?? field.id),
+    value:
+      field.id === 'registrationDate' && hasValue
+        ? String(format(new Date(String(value)), 'dd/MM/yyyy'))
+        : hasValue
+        ? String(value)
+        : EMPTY_DATA,
+    valueVariant: field.id === 'productName' ? 'h6' : undefined,
+    sx:
+      field.id === 'productName' || field.id === 'batchName'
+        ? { mb: 1, maxWidth: 350, wordWrap: 'break-word' }
+        : undefined,
+  };
+}
+
+function getProductInfoRowsConfig(
+  data: ProductDTO,
+  t: any,
+  detailFields?: Array<ProductDetailFieldConfig>
+): Array<RowConfig | DividerConfig> {
+  if (detailFields?.length) {
+    return detailFields.map((field) => mapDetailFieldToRowConfig(field, data, t));
+  }
+
   const baseRows: Array<{
     label: string;
     dataKey: keyof ProductDTO | null;
@@ -213,11 +267,12 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
 
 type ProductInfoRowsProps = {
   data: ProductDTO;
+  detailFields?: Array<ProductDetailFieldConfig>;
   currentStatus: ProductStatus;
   children?: React.ReactNode;
 };
 
-function renderEntry(entry: any, idx: number) {
+function renderEntry(entry: any, idx: number, detailMaxLength: number) {
   const operator = entry?.role ? `Produttore ${entry.role}` : 'Produttore';
   const dateLabel = entry?.updateDate
     ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
@@ -233,7 +288,7 @@ function renderEntry(entry: any, idx: number) {
     <Box key={`${header}-${idx}`} sx={{ mb: 2, width: '100%' }}>
       <Box component="span" sx={{ width: '100%' }}>
         <Typography variant="body1" color="textSecondary">
-          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+          {truncateString(header, detailMaxLength)}
         </Typography>
         <TextareaAutosize
           maxRows={10}
@@ -248,11 +303,13 @@ function renderEntry(entry: any, idx: number) {
   );
 }
 
-function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
+function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps) {
   const { t } = useScopedTranslation();
+  const { config } = useInitiativeConfig();
+  const detailMaxLength = config?.ui?.tables?.products?.style?.lengths?.detail ?? 40;
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
-  const baseRows = getProductInfoRowsConfig(data, t);
+  const baseRows = getProductInfoRowsConfig(data, t, detailFields);
 
   const chronology = ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
   const filteredChronology = chronology.filter(
@@ -279,7 +336,9 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                 labelColor="#17324D"
                 value={
                   <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                    {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
+                    {filteredChronology.map((entry, idx) =>
+                      renderEntry(entry, idx, detailMaxLength)
+                    )}
                   </Box>
                 }
               />
@@ -359,7 +418,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
                     <Box component="span" sx={{ width: '100%' }}>
                       {header && header.trim() !== '' && (
                         <Typography variant="body1" color="textSecondary">
-                          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                          {truncateString(header, detailMaxLength)}
                         </Typography>
                       )}
                       <TextareaAutosize
@@ -420,6 +479,7 @@ type ProductDetailProps = Props & {
 
 export default function ProductDetail({
   data,
+  detailFields,
   isInvitaliaUser,
   isInvitaliaAdmin,
   onUpdateTable,
@@ -571,7 +631,11 @@ export default function ProductDetail({
         <Box sx={{ flex: '1 1 0', overflowY: 'auto' }}>
           <List>
             <ProductStatusChip status={data.status} />
-            <ProductInfoRows data={data} currentStatus={data.status as ProductStatus} />
+            <ProductInfoRows
+              data={data}
+              detailFields={detailFields}
+              currentStatus={data.status as ProductStatus}
+            />
           </List>
         </Box>
         {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (

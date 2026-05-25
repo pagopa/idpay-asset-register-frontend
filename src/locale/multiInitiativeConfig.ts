@@ -1,33 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { DEBUG_CONSOLE } from '../utils/constants';
+
 export type InitiativeTablesConfig = {
-  role?: string;
-  logicalName?: string;
-  subRoles?: Record<string, any>;
-  tables?: Record<string, any>;
+  roles?: {
+    name?: string;
+    logicalName?: string;
+    subRoles?: Record<string, any>;
+    errors?: Record<string, any>;
+  };
+  templates?: Record<string, any>;
+  ui?: {
+    tables?: Record<string, any>;
+  };
 };
+
+export const DEFAULT_INITIATIVE_NAMESPACE = 'default';
+
+const validateInitiativeConfig = (config: any): boolean =>
+  Boolean(config && typeof config === 'object');
 
 const applySubRolePermissions = (config: any, subRole?: string): InitiativeTablesConfig => {
   if (!config || !subRole) {
     return config ?? {};
   }
 
-  const permissions = config?.subRoles?.[subRole]?.permissions?.tables;
+  const permissions = config?.roles?.subRoles?.[subRole]?.permissions?.tables;
 
-  if (!Array.isArray(permissions) || !config?.tables) {
-    return {
-      ...config,
-      tables: {},
-    };
+  const tables = config?.ui?.tables;
+
+  if (!Array.isArray(permissions) || !tables) {
+    return { ...config, ui: { ...config?.ui, tables: {} } };
   }
 
   const filteredTables = Object.fromEntries(
-    Object.entries(config.tables).filter(([tableKey]) => permissions.includes(tableKey))
+    Object.entries(tables).filter(([tableKey]) => permissions.includes(tableKey))
   );
 
-  return {
-    ...config,
-    tables: filteredTables,
-  };
+  return { ...config, ui: { ...config?.ui, tables: filteredTables } };
 };
 
 export const getLogicalRoleName = (
@@ -37,21 +46,17 @@ export const getLogicalRoleName = (
   if (!config) {
     return undefined;
   }
-
   if (!role) {
-    return config.logicalName;
+    return config.roles?.logicalName;
   }
-
-  return config.subRoles?.[role]?.logicalName ?? config.logicalName;
+  return config.roles?.subRoles?.[role]?.logicalName ?? config.roles?.logicalName;
 };
 
 const normalizeRole = (role?: string): string | undefined => {
-  const r = role?.trim();
+  const r = role?.trim().toLowerCase();
   if (!r) {
     return undefined;
   }
-
-  // Base role is always the first segment before "_"
   return r.split('_')[0];
 };
 
@@ -59,24 +64,73 @@ const resolveSubRole = (role?: string): string | undefined => {
   if (!role) {
     return undefined;
   }
-
-  // If role contains "_", it is considered a subRole
   return role.includes('_') ? role : undefined;
+};
+
+const loadGlobalDefaultConfig = async (role?: string) => {
+  const mod = await import(`./it/${DEFAULT_INITIATIVE_NAMESPACE}/config.json`);
+  return applySubRolePermissions((mod as any).default ?? {}, resolveSubRole(role));
+};
+
+const loadInitiativeDefaultConfig = async (basePath: string, role?: string) => {
+  const mod = await import(`${basePath}default/config.json`);
+  return applySubRolePermissions((mod as any).default ?? {}, resolveSubRole(role));
+};
+
+const loadRoleSpecificConfig = async (basePath: string, normalizedRole: string, role?: string) => {
+  const roleMod = await import(`${basePath}${normalizedRole}/config.json`);
+  const roleConfig = (roleMod as any).default ?? {};
+  const subRole = resolveSubRole(role);
+
+  return applySubRolePermissions(roleConfig, subRole);
+};
+
+const resolveAndValidate = async (
+  loader: () => Promise<InitiativeTablesConfig>
+): Promise<InitiativeTablesConfig> => {
+  const config = await loader();
+  return validateInitiativeConfig(config) ? config : {};
+};
+
+const handleFallback = async (
+  initiativeName: string,
+  role?: string,
+  allowFallback?: boolean
+): Promise<InitiativeTablesConfig> => {
+  if (allowFallback && initiativeName !== DEFAULT_INITIATIVE_NAMESPACE) {
+    return loadGlobalDefaultConfig(role);
+  }
+  return {};
 };
 
 export const loadItInitiativeConfig = async (
   initiativeName: string | undefined,
-  role?: string
+  role?: string,
+  allowFallback: boolean = true
 ): Promise<InitiativeTablesConfig> => {
   if (!initiativeName) {
     return {};
   }
 
-  // Runtime validation: role must be a string (compile-time is enforced by OpenAPI generated types)
+  const safeInitiativeName = initiativeName.trim();
+  const basePath = `./it/${safeInitiativeName}/`;
+
+  if (DEBUG_CONSOLE) {
+    console.log('initiativeName raw:', initiativeName);
+    console.log('initiativeFolder used:', safeInitiativeName);
+    console.log('role raw:', role);
+  }
+
+  const loadWithoutRole = async () => {
+    if (safeInitiativeName === DEFAULT_INITIATIVE_NAMESPACE) {
+      return loadGlobalDefaultConfig(role);
+    }
+    return loadInitiativeDefaultConfig(basePath, role);
+  };
+
   if (typeof role !== 'string') {
     try {
-      const mod = await import(`./it/${initiativeName}/default/config.json`);
-      return (mod as any).default ?? {};
+      return resolveAndValidate(() => loadInitiativeDefaultConfig(basePath));
     } catch {
       return {};
     }
@@ -84,25 +138,23 @@ export const loadItInitiativeConfig = async (
 
   const normalizedRole = normalizeRole(role);
 
-  try {
-    const basePath = `./it/${initiativeName}/`;
+  if (DEBUG_CONSOLE) {
+    console.log('role normalized:', normalizedRole);
+  }
 
-    // Try loading role-specific folder (based on baseRole)
-    if (normalizedRole) {
-      try {
-        const mod = await import(`${basePath}${normalizedRole}/config.json`);
-        const subRole = resolveSubRole(role);
-        return applySubRolePermissions((mod as any).default ?? {}, subRole);
-      } catch {
-        // If role folder does not exist for this initiative, fallback to default
-      }
+  const loadWithRole = async () => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return await loadRoleSpecificConfig(basePath, normalizedRole!, role);
+    } catch {
+      return loadWithoutRole();
     }
+  };
 
-    // Fallback to default folder
-    const mod = await import(`${basePath}default/config.json`);
-    const subRole = resolveSubRole(role);
-    return applySubRolePermissions((mod as any).default ?? {}, subRole);
+  try {
+    const loader = normalizedRole ? loadWithRole : loadWithoutRole;
+    return await resolveAndValidate(loader);
   } catch {
-    return {};
+    return handleFallback(initiativeName, role, allowFallback);
   }
 };

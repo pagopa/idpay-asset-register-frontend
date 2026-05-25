@@ -25,6 +25,25 @@ jest.mock('../../../services/registerService', () => ({
   setWaitApprovedStatusList: jest.fn(),
 }));
 
+// ✅ Mock useInitiativeConfig to avoid Redux dependency (useIDPayUser)
+jest.mock('../../../hooks/useInitiativeConfig', () => ({
+  __esModule: true,
+  useInitiativeConfig: () => ({
+    config: {
+      ui: {
+        tables: {
+          products: {
+            style: {
+              lengths: { detail: 40 },
+            },
+          },
+        },
+      },
+    },
+    loading: false,
+  }),
+}));
+
 jest.mock('../ProductConfirmDialog', () => {
   return function ProductConfirmDialog({ open, onCancel, onConfirm, onSuccess }: any) {
     return open ? (
@@ -161,6 +180,20 @@ describe('ProductDetail.extra', () => {
     expect(screen.getByText('pages.productDetail.motivationFormal')).toBeInTheDocument();
 
     expect(screen.getByRole('textbox', { name: /Motivazione formale/ })).toHaveValue('Formal OK');
+  });
+
+  it('renders detail rows from the configured fields in their configured order', () => {
+    renderCmp({
+      detailFields: [{ id: 'gtinCode', labelKey: 'custom.gtin' }, { id: 'registrationDate' }],
+    });
+
+    expect(screen.getAllByTestId('row-label').map((label) => label.textContent)).toEqual([
+      'custom.gtin',
+      'pages.productDetail.eprelCheckDate',
+    ]);
+    expect(screen.getByText('GTIN-001')).toBeInTheDocument();
+    expect(screen.getByText('01/01/2024')).toBeInTheDocument();
+    expect(screen.queryByText('pages.productDetail.brand')).not.toBeInTheDocument();
   });
 
   it('Invitalia L1 + SUPERVISED: shows accept/reject buttons; confirm approve calls waitApproved API and waitApproved message', async () => {
