@@ -24,7 +24,6 @@ export const useProductDataGridInit = ({
   setInstitutionList,
 }: Props) => {
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
-  const [adminDefaultApplied, setAdminDefaultApplied] = useState(false);
 
   const fetchInstitutions = async () => {
     try {
@@ -40,10 +39,6 @@ export const useProductDataGridInit = ({
   };
 
   useEffect(() => {
-    if (isInvitaliaAdmin && !adminDefaultApplied) {
-      setAdminDefaultApplied(true);
-    }
-
     if (isInvitaliaAdmin || isInvitaliaUser) {
       void fetchInstitutions();
     }

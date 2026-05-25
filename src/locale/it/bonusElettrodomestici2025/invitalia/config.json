@@ -164,7 +164,8 @@
           {
             "id": "status",
             "type": "select",
-            "labelKey": "tables.products.filters.status"
+            "labelKey": "tables.products.filters.status",
+            "defaultValue": "WAIT_APPROVED"
           },
           {
             "id": "producer",

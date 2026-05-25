@@ -33,11 +33,13 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
   const { config } = useInitiativeConfig();
-  const [filters, setFilters] = useState<Record<string, { value: string; label: string }>>({});
-  const filtersValue: typeof filters & {producer?: string} = Object.keys(filters).length ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {}) : {};
+  const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({});
+  const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {}) : {};
 
   const tableConfig = config?.tables?.products;
   const paginationConfig = tableConfig?.ui?.pagination;
+  const filtersConfig: Array<Record<string, string>> = config?.tables?.products?.filters;
+  const templateConfig = config?.templates;
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
@@ -95,6 +97,19 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   useEffect(() => {
     setSelected([]);
   }, [tableData]);
+
+  useEffect(() => {
+    if (isInvitaliaAdmin && filtersConfig && templateConfig) {
+      const defaultValues = filtersConfig?.filter((filter) => filter?.defaultValue);
+      if (defaultValues) {
+        const defaultFilters = defaultValues?.reduce((acc, { id, defaultValue }) => {
+          const label = t(templateConfig?.[id]?.[defaultValue]?.label);
+          return ({ ...acc, [id]: { value: defaultValue, label } });
+        }, {} as Record<string, { value: string; label?: string }>);
+        setFilters(defaultFilters);
+      }
+    };
+  }, [isInvitaliaAdmin, filtersConfig, templateConfig]);
 
   const handleOpenModalWithStatusCheck = () => {
     const result = validateBulkActionPreconditions({
@@ -222,6 +237,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         setPage={setPage}
         batchFilterItems={batchFilter}
         producerFilterItems={producerFilter}
+        filtersConfig={filtersConfig}
+        templateConfig={templateConfig}
       />
     </>
   );

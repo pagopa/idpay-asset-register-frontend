@@ -10,7 +10,6 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
-import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { FiltersProps, filtersRender, SelectProps } from './filtersRender';
 
 type Props = {
@@ -19,9 +18,11 @@ type Props = {
   batchFilterItems: Record<string, SelectProps>;
   producerFilterItems?: Record<string, SelectProps>;
   errorStatus: boolean;
-  filters: Record<string, {value: string; label: string}>;
-  setFilters: (value: Record<string, {value: string; label: string}>) => void;
+  filters: Record<string, {value: string; label?: string}>;
+  setFilters: (value: Record<string, {value: string; label?: string}>) => void;
   setPage: Dispatch<SetStateAction<number>>;
+  filtersConfig: any;
+  templateConfig: any;
 };
 
 
@@ -33,10 +34,12 @@ export default function FiltersDrawer({
   filters,
   setFilters,
   setPage,
+  filtersConfig,
+  templateConfig
 }: Props) {
   const { t } = useScopedTranslation();
-  const { config } = useInitiativeConfig();
-  const [draftFilters, setDraftFilters] = useState<Record<string, {value: string; label: string}>>(filters);
+  const [draftFilters, setDraftFilters] = useState<Record<string, {value: string; label?: string}>>(filters);
+  const [errors, setErrors] = useState<Array<string> | undefined>();
 
   useEffect(() => setDraftFilters(filters), [filters]);
 
@@ -76,20 +79,24 @@ export default function FiltersDrawer({
         </IconButton>
       </Box>
       <Box paddingX="24px" maxWidth="417px">
-        {config && config.tables?.products?.filters.map(({ type, ...item }: FiltersProps) => {
+        {filtersConfig && filtersConfig.map(({ type, ...item }: FiltersProps) => {
           const isProducer = item.id === "producer";
           const isBatch = item.id === "productFileId";
-          const template = isBatch ? batchFilterItems : isProducer ? producerFilterItems : config?.templates?.[item.id];
+          const template = isBatch ? batchFilterItems : isProducer ? producerFilterItems : templateConfig?.[item.id];
+
+          const filtersParams = { item, t, template, errors, setErrors, filters: draftFilters, setFilters: (value: typeof filters) => setDraftFilters( prev => ({ ...prev, ...value })) };
+
           return <FormControl key={item.id} fullWidth size="small" margin="normal">
             {type === "select" && <InputLabel id={`${item.id}-filter-select-label`}>
               {t(item.labelKey)}
             </InputLabel>}
-            {filtersRender[type]({ item, t, template, filters: draftFilters, setFilters: (value) => setDraftFilters( prev => ({ ...prev, ...value })) })
+            {filtersRender[type](filtersParams)
             }
           </FormControl>;
         })}
 
         <Button
+          disabled={!Object.keys(draftFilters).length || !!errors}
           variant="outlined"
           fullWidth
           sx={{ height: 44, minWidth: 100, marginY: '24px' }}

@@ -19,8 +19,10 @@ export type SelectProps = {
 type Props = {
     item: Omit<FiltersProps, 'type'>;
     t: TFunction<"translation", undefined>;
-    filters: Record<string, { value: string; label: string }>;
-    setFilters: (value: Record<string, { value: string; label: string }>) => void;
+    filters: Record<string, { value: string; label?: string }>;
+    setFilters: (value: Record<string, { value: string; label?: string }>) => void;
+    errors?: Array<string>;
+    setErrors: (errors?: Array<string>) => void;
     template?: Record<string, SelectProps>;
 };
 
@@ -32,20 +34,20 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
             id={`${id}-filter-select`}
             label={t(labelKey)}
             MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
-            value={filters?.[id]?.value}
+            value={filters?.[id]?.value || ''}
             sx={{ paddingRight: '38px !important' }}
         >
-            {template && Object.entries(template).map(([key, value]) => (
+            {template ? Object.entries(template).map(([key, value]) => (
                 <MenuItem key={key} value={key} onClick={() => setFilters({ [id]: { value: key, label: t(value.label) } })}>
                     {value?.color ? <Chip
                         color={value.color}
                         label={t(value.label)}
                     /> : t(value.label)}
                 </MenuItem>
-            ))}
+            )) : []}
         </Select>;
     },
-    text: ({ item, t, filters, setFilters }) => {
+    text: ({ item, t, filters, setFilters, errors, setErrors }) => {
         const { id, labelKey, regEx, error, inputProps } = item;
         return <TextField
             fullWidth
@@ -55,16 +57,20 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
             variant="outlined"
             value={filters?.[id]?.value}
             onChange={(e) => {
+                const isError = e.target.value && !(RegExp(regEx || '').test(e.target.value));
                 const ruledValue = filterInputWithSpaceRule(e.target.value);
-                setFilters({ [id]: { value: ruledValue, label: ruledValue } });
+                setFilters({ [id]: { value: ruledValue } });
+                setErrors(isError ? [...(errors || []), id] : errors?.filter(error => error !== id));
             }}
-            error={!!filters?.[id]?.value && !(RegExp(regEx || '').test(filters?.[id]?.value))}
+            error={errors?.includes(id)}
             helperText={error && t(error)}
             onPaste={(e) => {
                 e.preventDefault();
                 const text = e.clipboardData.getData('text').replace(/\s+/g, '');
                 const ruledValue = filterInputWithSpaceRule(text);
-                setFilters({ [id]: { value: ruledValue, label: ruledValue } });
+                const isError = text && !(RegExp(regEx || '').test(text));
+                setFilters({ [id]: { value: ruledValue } });
+                setErrors(isError ? [...(errors || []), id] : errors?.filter(error => error !== id));
             }}
             slotProps={{ htmlInput: inputProps }}
         />;

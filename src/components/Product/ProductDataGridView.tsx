@@ -23,7 +23,7 @@ type Props = {
   rowsPerPage: number;
   order: any;
   orderBy: keyof ProductDTO;
-  filters: Record<string, { value: string; label: string }>;
+  filters: Record<string, { value: string; label?: string }>;
   selected: Array<string>;
   effectiveColumns: Array<any>;
   paginationConfig: any;
