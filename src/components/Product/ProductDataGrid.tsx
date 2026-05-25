@@ -16,7 +16,6 @@ import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { SelectProps } from '../FiltersDrawer/filtersRender';
 import { useProductsTable } from './hooks/useProductsTable';
-import { useProductFilters } from './hooks/useProductFilters';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
 import { validateBulkActionPreconditions } from './ProductDataGrid.helpers';
 
@@ -44,9 +43,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
 
   const institution = useSelector(institutionSelector);
-  const { filtersLabel } = useProductFilters({setFilters, filters});
 
-  useProductDataGridInit({
+  const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
     organizationId,
     isInvitaliaUser,
@@ -82,10 +80,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     ...filtersValue
   });
 
-  const batchFilterItems = useMemo(() =>
-    tableData.reduce((acc, batch): SelectProps => {
-      const batchName = batch.batchName?.replace(".csv", "");
-      return { ...acc, [batch.batchName || '']: { label: batchName } };
+  const batchFilter = useMemo(() =>
+    batchFilterItems.reduce((acc, batch): SelectProps => {
+      const batchName = batch?.batchName?.replace(".csv", "");
+      return { ...acc, [batch?.productFileId || '']: { label: batchName, value: batchName } };
     }, {} as SelectProps), [tableData]);
 
   useEffect(() => {
@@ -133,7 +131,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         rowsPerPage={rowsPerPage}
         order={order}
         orderBy={orderBy}
-        filtersLabel={filtersLabel}
+        filters={filters}
         selected={selected}
         effectiveColumns={effectiveColumns}
         paginationConfig={paginationConfig}
@@ -209,17 +207,14 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         </DetailDrawer>
       )}
 
-      {/* ✅ Filters Drawer */}
       <FiltersDrawer
         open={filtersDrawerOpen}
         toggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
         errorStatus={false}
-        handleApplyFilters={(filters) => setFilters(prev => ({ ...prev, ...filters}))}
-        handleDeleteFiltersButtonClick={() => setFilters({})}
         filters={filters}
-        setFiltering={() => { }}
+        setFilters={setFilters}
         setPage={setPage}
-        batchFilterItems={batchFilterItems}
+        batchFilterItems={batchFilter}
       />
     </>
   );

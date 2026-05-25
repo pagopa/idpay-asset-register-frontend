@@ -49,19 +49,26 @@
         "filters": [
           {
             "id": "category",
-            "type": "select"
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
           },
           {
             "id": "status",
-            "type": "select"
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
           },
           {
             "id": "gtinCode",
-            "type": "text"
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "error": "Il codice deve avere 14 caratteri",
+            "inputProps": { "maxLength": 14 }
           },
           {
-            "id": "productCode",
-            "type": "text"
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
           }
         ],
         "ui": {

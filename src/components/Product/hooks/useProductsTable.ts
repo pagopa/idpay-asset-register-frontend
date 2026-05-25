@@ -17,6 +17,7 @@ export type UseProductsTableParams = {
   eprelCode?: string;
   status?: string;
   gtinCode?: string;
+  productCode?: string;
 };
 
 export const useProductsTable = ({
@@ -29,6 +30,7 @@ export const useProductsTable = ({
   category,
   producer,
   productFileId,
+  productCode,
   eprelCode,
   status,
   gtinCode,
@@ -51,11 +53,11 @@ export const useProductsTable = ({
         rowsPerPage,
         `${orderBy},${order}`,
         category?.toUpperCase(),
-        producer,
-        productFileId,
-        eprelCode,
         status || undefined,
-        gtinCode
+        eprelCode,
+        gtinCode,
+        productCode,
+        productFileId
       );
 
       const { content, pageNo, totalElements } = res.data;

@@ -160,6 +160,44 @@
           "field": "category",
           "direction": "asc"
         },
+        "filters": [
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
+          },
+          {
+            "id": "producer",
+            "type": "select",
+            "labelKey": "pages.products.filterLabels.producer"
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^\\d{5}$",
+            "error": "tables.products.filters.errors.eprelCode",
+            "inputProps": {"inputMode": "numeric", "pattern": "[0-9]*"}
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "error": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
+          }
+        ],
         "ui": {
           "filtering": {
             "enabled": true
@@ -177,21 +215,54 @@
         },
         "detail": {
           "fields": [
-            { "id": "productName", "labelKey": "pages.productDetail.productName" },
-            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
-            { "id": "registrationDate", "labelKey": "pages.productDetail.eprelCheckDate" },
-            { "id": "eprelCode", "labelKey": "pages.productDetail.eprelCode" },
-            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
-            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
-            { "id": "category", "labelKey": "pages.productDetail.category" },
-            { "id": "brand", "labelKey": "pages.productDetail.brand" },
-            { "id": "model", "labelKey": "pages.productDetail.model" },
-            { "id": "energyClass", "labelKey": "pages.productDetail.energyClass" },
+            {
+              "id": "productName",
+              "labelKey": "pages.productDetail.productName"
+            },
+            {
+              "id": "batchName",
+              "labelKey": "pages.productDetail.batchName"
+            },
+            {
+              "id": "registrationDate",
+              "labelKey": "pages.productDetail.eprelCheckDate"
+            },
+            {
+              "id": "eprelCode",
+              "labelKey": "pages.productDetail.eprelCode"
+            },
+            {
+              "id": "gtinCode",
+              "labelKey": "pages.productDetail.gtinCode"
+            },
+            {
+              "id": "productCode",
+              "labelKey": "pages.productDetail.productCode"
+            },
+            {
+              "id": "category",
+              "labelKey": "pages.productDetail.category"
+            },
+            {
+              "id": "brand",
+              "labelKey": "pages.productDetail.brand"
+            },
+            {
+              "id": "model",
+              "labelKey": "pages.productDetail.model"
+            },
+            {
+              "id": "energyClass",
+              "labelKey": "pages.productDetail.energyClass"
+            },
             {
               "id": "countryOfProduction",
               "labelKey": "pages.productDetail.countryOfProduction"
             },
-            { "id": "capacity", "labelKey": "pages.productDetail.capacity" }
+            {
+              "id": "capacity",
+              "labelKey": "pages.productDetail.capacity"
+            }
           ]
         }
       }

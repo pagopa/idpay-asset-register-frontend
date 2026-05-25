@@ -8,6 +8,7 @@ export type FiltersProps = {
     labelKey: string;
     regEx?: string;
     error?: string;
+    inputProps?: Record<string, string>;
 };
 
 export type SelectProps = {
@@ -18,8 +19,8 @@ export type SelectProps = {
 type Props = {
     item: Omit<FiltersProps, 'type'>;
     t: TFunction<"translation", undefined>;
-    filters: Record<string, {value: string; label: string}>;
-    setFilters: (value: Record<string, {value: string; label: string}>) => void;
+    filters: Record<string, { value: string; label: string }>;
+    setFilters: (value: Record<string, { value: string; label: string }>) => void;
     template?: Record<string, SelectProps>;
 };
 
@@ -45,7 +46,8 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
         </Select>;
     },
     text: ({ item, t, filters, setFilters }) => {
-        const { id, labelKey, regEx, error } = item;
+        const { id, labelKey, regEx, error, inputProps } = item;
+        console.log("FiltersDrawer", "regex: ", RegExp(regEx || ''), "test: ", (RegExp(regEx || '').test(filters?.[id]?.value)));
         return <TextField
             fullWidth
             id={`${id}-text`}
@@ -54,25 +56,18 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
             variant="outlined"
             value={filters?.[id]?.value}
             onChange={(e) => {
-                const itemRegEx = RegExp(regEx || '');
-                const isValid = itemRegEx.test(e.target.value);
                 const ruledValue = filterInputWithSpaceRule(e.target.value);
-                if (isValid) {
-                    setFilters({ [id]: { value: ruledValue, label: ruledValue } });
-                }
+                setFilters({ [id]: { value: ruledValue, label: ruledValue } });
             }}
-            error={!!filters?.[id] && (RegExp(regEx || '').test(filters?.[id]?.value) || !filters?.[id]?.value.length)}
+            error={!!filters?.[id]?.value && !(RegExp(regEx || '').test(filters?.[id]?.value))}
             helperText={error && t(error)}
             onPaste={(e) => {
                 e.preventDefault();
-                const itemRegEx = RegExp(regEx || '');
                 const text = e.clipboardData.getData('text').replace(/\s+/g, '');
-                const isValid = itemRegEx.test(text);
                 const ruledValue = filterInputWithSpaceRule(text);
-                if (isValid) {
-                    setFilters({ [id]: { value: ruledValue, label: ruledValue } });
-                }
+                setFilters({ [id]: { value: ruledValue, label: ruledValue } });
             }}
+            slotProps={{ htmlInput: inputProps }}
         />;
     }
 };

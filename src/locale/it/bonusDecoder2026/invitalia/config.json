@@ -180,7 +180,10 @@
           {
             "id": "gtinCode",
             "type": "text",
-            "labelKey": "pages.products.filterLabels.gtinCode"
+            "labelKey": "pages.products.filterLabels.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "error": "Il codice deve avere 14 caratteri",
+            "inputProps": { "maxLength": 14 }
           }
         ],
         "ui": {

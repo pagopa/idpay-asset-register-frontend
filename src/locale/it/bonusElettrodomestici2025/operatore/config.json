@@ -171,15 +171,17 @@
             "id": "eprelCode",
             "type": "text",
             "labelKey": "tables.products.filters.eprelCode",
-            "regEx": "^\/d+$",
-            "error": "tables.products.filters.errors.eprelCode"
+            "regEx": "^\\d{5,}$",
+            "error": "tables.products.filters.errors.eprelCode",
+            "inputProps": {"inputMode": "numeric", "pattern": "^\\d{5,}$"}
           },
           {
             "id": "gtinCode",
             "type": "text",
             "labelKey": "tables.products.filters.gtinCode",
-            "regEx": "^[a-zA-Z0-9]{1,14}$",
-            "error": "tables.products.filters.errors.gtinCode"
+            "regEx": "[a-zA-Z0-9]{14}$",
+            "error": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
           }
         ],
         "ui": {
