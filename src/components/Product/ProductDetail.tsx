@@ -5,10 +5,10 @@ import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import FlagIcon from '@mui/icons-material/Flag';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import {
   EMPTY_DATA,
   // L1_MOTIVATION_OK,
-  MAX_LENGTH_DETAILL_PR,
   MIDDLE_STATES,
   PRODUCTS_STATES,
   USERS_TYPES,
@@ -152,8 +152,8 @@ function mapDetailFieldToRowConfig(
       field.id === 'registrationDate' && hasValue
         ? String(format(new Date(String(value)), 'dd/MM/yyyy'))
         : hasValue
-          ? String(value)
-          : EMPTY_DATA,
+        ? String(value)
+        : EMPTY_DATA,
     valueVariant: field.id === 'productName' ? 'h6' : undefined,
     sx:
       field.id === 'productName' || field.id === 'batchName'
@@ -272,7 +272,7 @@ type ProductInfoRowsProps = {
   children?: React.ReactNode;
 };
 
-function renderEntry(entry: any, idx: number) {
+function renderEntry(entry: any, idx: number, detailMaxLength: number) {
   const operator = entry?.role ? `Produttore ${entry.role}` : 'Produttore';
   const dateLabel = entry?.updateDate
     ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
@@ -288,7 +288,7 @@ function renderEntry(entry: any, idx: number) {
     <Box key={`${header}-${idx}`} sx={{ mb: 2, width: '100%' }}>
       <Box component="span" sx={{ width: '100%' }}>
         <Typography variant="body1" color="textSecondary">
-          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+          {truncateString(header, detailMaxLength)}
         </Typography>
         <TextareaAutosize
           maxRows={10}
@@ -305,6 +305,8 @@ function renderEntry(entry: any, idx: number) {
 
 function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps) {
   const { t } = useScopedTranslation();
+  const { config } = useInitiativeConfig();
+  const detailMaxLength = config?.ui?.tables?.products?.style?.lengths?.detail ?? 40;
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   const baseRows = getProductInfoRowsConfig(data, t, detailFields);
@@ -334,7 +336,9 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
                 labelColor="#17324D"
                 value={
                   <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                    {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
+                    {filteredChronology.map((entry, idx) =>
+                      renderEntry(entry, idx, detailMaxLength)
+                    )}
                   </Box>
                 }
               />
@@ -414,7 +418,7 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
                     <Box component="span" sx={{ width: '100%' }}>
                       {header && header.trim() !== '' && (
                         <Typography variant="body1" color="textSecondary">
-                          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+                          {truncateString(header, detailMaxLength)}
                         </Typography>
                       )}
                       <TextareaAutosize

@@ -38,7 +38,7 @@ export enum USERS_NAMES {
 export const EMPTY_DATA = '-';
 // export const L1_MOTIVATION_OK = 'Da approvare';
 // export const L2_MOTIVATION_OK = 'Approvato';
-export const MAX_TABLE_HEIGHT = 700;
+/* export const MAX_TABLE_HEIGHT = 700; */
 // export const PAGINATION_ROWS_PRODUCTS = [10, 25, 50, 100];
 export const PAGINATION_ROWS_UPLOADS = 20;
 
@@ -46,10 +46,10 @@ export const MAX_LENGTH_EMAIL: number = 40;
 export const MAX_LENGTH_OVERVIEW_PROD: number = 75;
 export const MAX_LENGTH_OVERVIEW_INVIT: number = 140;
 
-export const MAX_LENGTH_DETAILL_PR: number = 40;
-export const MIN_LENGTH_TABLE_PR: number = 30;
-export const MAX_LENGTH_TABLE_PR: number = 45;
-export const RESOLUTION_UPSCALING = 1440;
+/* export const MAX_LENGTH_DETAILL_PR: number = 40; */
+/* export const MIN_LENGTH_TABLE_PR: number = 30; */
+/* export const MAX_LENGTH_TABLE_PR: number = 45; */
+/* export const RESOLUTION_UPSCALING = 1440; */
 
 export const MIN_LENGTH_TEXTFIELD_POPUP = 2;
 export const MAX_LENGTH_TEXTFIELD_POPUP = 200;
