@@ -78,7 +78,7 @@ describe('ProductsTable (rewritten)', () => {
 
     renderTable({ onRequestSort });
 
-    fireEvent.click(screen.getByText('category'));
+    fireEvent.click(screen.getByRole('button', { name: 'category' }));
     expect(onRequestSort).toHaveBeenCalled();
   });
 
