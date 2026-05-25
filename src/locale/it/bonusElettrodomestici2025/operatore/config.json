@@ -18,7 +18,13 @@
         "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
       },
       "eprel": {
-        "headers": ["Codice EPREL","Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Paese di Produzione"],
+        "headers": [
+          "Codice EPREL",
+          "Codice GTIN/EAN",
+          "Codice Prodotto",
+          "Categoria",
+          "Paese di Produzione"
+        ],
         "fields": ["12345", "GTIN01234", "SKU12345", "Lavatrice", "IT"]
       }
     },
@@ -41,7 +47,7 @@
             "id": "category",
             "labelKey": "tables.products.columns.category",
             "sortable": true,
-            "align": "center"
+            "align": "left"
           },
           {
             "id": "energyClass",
@@ -75,7 +81,6 @@
             "align": "left"
           }
         ],
-        "defaultSort": { "field": "gtinCode", "direction": "asc" },
         "ui": {
           "filtering": { "enabled": true },
           "pagination": {

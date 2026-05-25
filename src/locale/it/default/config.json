@@ -16,7 +16,6 @@
   },
   "templates": {},
   "ui": {
-    "backgroundColor": "#FFFFFF",
     "resolutionUpscaling": 1440,
     "tables": {
       "products": {
@@ -26,15 +25,6 @@
             "detail": 40,
             "minTable": 30,
             "maxTable": 45
-          },
-          "header": {
-            "textColor": "#17324D"
-          },
-          "row": {
-            "backgroundColor": "#FFFFFF",
-            "hoverBackgroundColor": "#F5F7FA",
-            "borderColor": "#E3E7EB",
-            "borderWidth": "1px"
           }
         },
         "columns": [
@@ -44,7 +34,6 @@
           { "id": "status", "labelKey": "tables.products.columns.status" },
           { "id": "batchName", "labelKey": "tables.products.columns.batchName" }
         ],
-        "defaultSort": { "field": "gtinCode", "direction": "asc" },
         "filters": [
           { "id": "category", "type": "select" },
           { "id": "status", "type": "select" },

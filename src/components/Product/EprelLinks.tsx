@@ -1,4 +1,5 @@
 import { Link, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { EMPTY_DATA } from '../../utils/constants';
 import { ProductDTO } from '../../api/generated/register';
 
@@ -8,6 +9,7 @@ interface EprelLinkProps {
 
 const EprelLinks: React.FC<EprelLinkProps> = ({ row }) => {
   const { linkEprel, eprelCode } = row;
+  const theme = useTheme();
 
   return eprelCode?.trim() !== '' && typeof eprelCode === 'string' ? (
     <Link
@@ -15,7 +17,7 @@ const EprelLinks: React.FC<EprelLinkProps> = ({ row }) => {
       href={linkEprel ?? ''}
       target="_blank"
       rel="noopener"
-      sx={{ fontWeight: 'fontWeightBold', color: '#0062C3' }}
+      sx={{ fontWeight: 'fontWeightBold', color: theme.palette.primary.main }}
     >
       {eprelCode}
     </Link>

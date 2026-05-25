@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Tooltip } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { ProductDTO } from '../../api/generated/register';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
@@ -59,15 +60,13 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
 }) => {
   const { t } = useScopedTranslation();
   const { config } = useInitiativeConfig();
-  const styleConfig = config?.ui?.tables?.products?.style;
-  const rowConfig = styleConfig?.row;
-  const headerConfig = styleConfig?.header;
+  const theme = useTheme();
 
-  const rowBg = rowConfig?.backgroundColor ?? '#FFFFFF';
-  const rowHoverBg = rowConfig?.hoverBackgroundColor ?? '#F5F7FA';
-  const rowBorderColor = rowConfig?.borderColor ?? '#E3E7EB';
-  const rowBorderWidth = rowConfig?.borderWidth ?? '1px';
-  const headerTextColor = headerConfig?.textColor ?? '#17324D';
+  const rowBg = theme.palette.background.paper;
+  const rowHoverBg = theme.palette.action.hover;
+  const rowBorderColor = theme.palette.divider;
+  const rowBorderWidth = '1px';
+  const headerTextColor = theme.palette.text.primary;
 
   const handleCheckboxClick = (gtinCode: string) => {
     setSelected((prev) =>
@@ -90,7 +89,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
         <IconButton size="small" onClick={() => handleListButtonClick(row)}>
           <ChevronRightIcon
             sx={{
-              color: '#0073E6',
+              color: theme.palette.primary.main,
               fontSize: 18,
             }}
           />
@@ -134,13 +133,10 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
             {(columns || []).map((col) => (
               <TableCell
                 key={col.id}
-                align={col.id === 'eprelCode' ? 'center' : col.headerAlign ?? 'left'}
+                align={col.headerAlign ?? col.align ?? 'left'}
                 sx={{
                   fontWeight: 600,
                   color: headerTextColor,
-                  '& .MuiTableSortLabel-root': {
-                    ml: 1.5,
-                  },
                 }}
               >
                 {col.sortable ? (
@@ -180,15 +176,12 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
               {(columns || []).map((col) => (
                 <TableCell
                   key={col.id}
-                  align={col.id === 'eprelCode' ? 'center' : col.align ?? 'left'}
+                  align={col.align ?? 'left'}
                   sx={{
                     borderTop: `${rowBorderWidth} solid ${rowBorderColor}`,
                     borderBottom: `${rowBorderWidth} solid ${rowBorderColor}`,
                     pt: 2,
                     pb: 2,
-                    ...(col.id === 'eprelCode' && {
-                      textAlign: 'center',
-                    }),
                     ...(col.id === 'status' && {
                       verticalAlign: 'middle',
                       pt: 2,
