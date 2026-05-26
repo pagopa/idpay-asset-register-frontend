@@ -14,8 +14,8 @@
   "templates": {
     "formats": {
       "csv": {
-        "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
-        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
+        "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Paese di Produzione", "Marca", "Modello"],
+        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "IT", "MarcaEsempio", "ModelloX100"]
       },
       "eprel": {
         "headers": [
