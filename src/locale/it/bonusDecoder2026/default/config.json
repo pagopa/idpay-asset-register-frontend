@@ -8,12 +8,6 @@
         "permissions": {
           "tables": ["products"]
         }
-      },
-      "super_admin": {
-        "logicalName": "Super Admin",
-        "permissions": {
-          "tables": ["products"]
-        }
       }
     },
     "errors": {
