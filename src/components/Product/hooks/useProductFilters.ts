@@ -5,7 +5,7 @@ type UseProductFiltersParams = {
 };
 
 export const useProductFilters = ({ filters }: UseProductFiltersParams) => {
-  const filtersLabel = useMemo(() => Object.values(filters).reduce((acc, value) => acc + `${acc ? ', ' : ''}` + (value?.label ?? value?.value), ''), [filters]);
+  const filtersLabel = useMemo(() => filters ? Object.values(filters).reduce((acc, value) => acc + `${acc ? ', ' : ''}` + (value?.label ?? value?.value), '') : undefined, [filters]);
 
-  return { filtersLabel};
+  return { filtersLabel };
 };
