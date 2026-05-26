@@ -187,7 +187,7 @@
             "type": "text",
             "labelKey": "tables.products.filters.eprelCode",
             "regEx": "^\\d{5}$",
-            "error": "tables.products.filters.errors.eprelCode",
+            "message": "tables.products.filters.errors.eprelCode",
             "inputProps": {"inputMode": "numeric", "pattern": "[0-9]*"}
           },
           {
@@ -195,7 +195,7 @@
             "type": "text",
             "labelKey": "tables.products.filters.gtinCode",
             "regEx": "^[a-zA-Z0-9]{1,14}$",
-            "error": "tables.products.filters.errors.gtinCode",
+            "message": "tables.products.filters.errors.gtinCode",
             "inputProps": { "maxLength": 14 }
           }
         ],

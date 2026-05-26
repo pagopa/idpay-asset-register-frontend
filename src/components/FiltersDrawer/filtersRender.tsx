@@ -7,7 +7,7 @@ export type FiltersProps = {
     type: "select" | "text";
     labelKey: string;
     regEx?: string;
-    error?: string;
+    message?: string;
     inputProps?: Record<string, string>;
 };
 
@@ -48,7 +48,7 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
         </Select>;
     },
     text: ({ item, t, filters, setFilters, errors, setErrors }) => {
-        const { id, labelKey, regEx, error, inputProps } = item;
+        const { id, labelKey, regEx, message, inputProps } = item;
         return <TextField
             fullWidth
             id={`${id}-text`}
@@ -63,7 +63,7 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
                 setErrors(isError ? [...(errors || []), id] : errors?.filter(error => error !== id));
             }}
             error={errors?.includes(id)}
-            helperText={error && t(error)}
+            helperText={message && t(message)}
             onPaste={(e) => {
                 e.preventDefault();
                 const text = e.clipboardData.getData('text').replace(/\s+/g, '');
