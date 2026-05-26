@@ -4,6 +4,10 @@ import type { AnyAction } from '@reduxjs/toolkit';
 const mockConfigureStore = jest.fn();
 const mockCombineReducers = jest.fn();
 const mockCreateAsyncThunk = jest.fn(() => jest.fn());
+const mockCreateSlice = jest.fn(() => ({
+  reducer: (state: any) => state,
+  actions: {},
+}));
 const mockPersistReducer = jest.fn();
 const mockPersistStore = jest.fn();
 const mockLoggerMiddleware = jest.fn((_) => (next: any) => (action: AnyAction) => next(action));
@@ -14,6 +18,7 @@ jest.mock('@reduxjs/toolkit', () => ({
   configureStore: (...args: any[]) => mockConfigureStore.apply(null, args as any),
   combineReducers: (...args: any[]) => mockCombineReducers.apply(null, args as any),
   createAsyncThunk: mockCreateAsyncThunk,
+  createSlice: mockCreateSlice,
 }));
 
 jest.mock('redux-persist', () => ({
