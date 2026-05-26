@@ -1,4 +1,4 @@
-import { describe, test, expect, jest } from '@jest/globals';
+import { describe, test, expect } from '@jest/globals';
 import type { AnyAction } from '@reduxjs/toolkit';
 
 const mockConfigureStore = jest.fn();
@@ -9,12 +9,16 @@ const mockPersistStore = jest.fn();
 const mockLoggerMiddleware = jest.fn((_) => (next: any) => (action: AnyAction) => next(action));
 const mockBaseApiMiddleware = jest.fn((_) => (next: any) => (action: AnyAction) => next(action));
 
-jest.mock('@reduxjs/toolkit', () => ({
-  __esModule: true,
-  configureStore: (...args: any[]) => mockConfigureStore.apply(null, args as any),
-  combineReducers: (...args: any[]) => mockCombineReducers.apply(null, args as any),
-  createAsyncThunk: mockCreateAsyncThunk,
-}));
+jest.mock('@reduxjs/toolkit', () => {
+  const actual: any = jest.requireActual('@reduxjs/toolkit');
+  return {
+    __esModule: true,
+    ...actual,
+    configureStore: (...args: any[]) => mockConfigureStore.apply(null, args as any),
+    combineReducers: (...args: any[]) => mockCombineReducers.apply(null, args as any),
+    createAsyncThunk: mockCreateAsyncThunk,
+  };
+});
 
 jest.mock('redux-persist', () => ({
   persistStore: (...args: any[]) => mockPersistStore(...args),
@@ -109,6 +113,7 @@ describe('store configuration', () => {
       'products',
       'invitalia',
       'initiatives',
+      'initiativeConfig',
       'baseApi',
     ]);
 
