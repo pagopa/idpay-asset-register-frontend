@@ -20,6 +20,10 @@
  * This file must preserve loading order to avoid regressions.
  */
 import { DEBUG_CONSOLE, DEFAULT_INITIATIVE_NAMESPACE } from '../utils/constants';
+import { InitiativeNotFoundError } from './config/errors';
+import { mergeConfigs } from './config/mergeConfigs';
+import { applySubRolePermissions } from './config/permissionFilter';
+import { getInitiativeBasePath } from './multiInitiativeBasePath';
 
 export type InitiativeTablesConfig = {
   roles?: {
@@ -45,30 +49,6 @@ const normalizeRole = (role?: string): string | undefined => {
 const resolveSubRole = (role?: string): string | undefined =>
   role?.includes('_') ? role : undefined;
 
-const applySubRolePermissions = (
-  config: InitiativeTablesConfig,
-  subRole?: string
-): InitiativeTablesConfig => {
-  if (!config || !subRole) {
-    return config ?? {};
-  }
-
-  const permissions = (config.roles?.subRoles as Record<string, any> | undefined)?.[subRole]
-    ?.permissions?.tables;
-
-  const tables = config.ui?.tables as Record<string, unknown> | undefined;
-
-  if (!Array.isArray(permissions) || !tables) {
-    return { ...config, ui: { ...config.ui, tables: {} } };
-  }
-
-  const filteredTables = Object.fromEntries(
-    Object.entries(tables).filter(([key]) => permissions.includes(key))
-  );
-
-  return { ...config, ui: { ...config.ui, tables: filteredTables } };
-};
-
 export const getLogicalRoleName = (
   config: InitiativeTablesConfig,
   role?: string
@@ -87,42 +67,6 @@ export const getLogicalRoleName = (
   );
 };
 
-const mergeConfigs = <T extends Record<string, any>>(base: T, override: Partial<T>): T => {
-  if (!base) {
-    return override as T;
-  }
-  if (!override) {
-    return base;
-  }
-
-  if (Array.isArray(base) || Array.isArray(override)) {
-    return (override ?? base) as T;
-  }
-
-  return Object.keys(override).reduce(
-    (acc, key) => {
-      const baseValue = base[key];
-      const overrideValue = override[key];
-
-      const mergedValue =
-        baseValue &&
-        overrideValue &&
-        typeof baseValue === 'object' &&
-        typeof overrideValue === 'object' &&
-        !Array.isArray(baseValue) &&
-        !Array.isArray(overrideValue)
-          ? mergeConfigs(baseValue as any, overrideValue as any)
-          : overrideValue;
-
-      return {
-        ...acc,
-        [key]: mergedValue,
-      };
-    },
-    { ...base }
-  );
-};
-
 const loadGlobalDefaultConfig = async (role?: string): Promise<InitiativeTablesConfig> => {
   const mod = await import(`./it/${DEFAULT_INITIATIVE_NAMESPACE}/config.json`);
   const config = (mod as { default?: InitiativeTablesConfig }).default ?? {};
@@ -133,9 +77,20 @@ const loadInitiativeDefaultConfig = async (
   basePath: string,
   role?: string
 ): Promise<InitiativeTablesConfig> => {
-  const mod = await import(`${basePath}default/config.json`);
-  const config = (mod as { default?: InitiativeTablesConfig }).default ?? {};
-  return applySubRolePermissions(config, resolveSubRole(role));
+  try {
+    const mod = await import(`${basePath}default/config.json`);
+    const config = (mod as { default?: InitiativeTablesConfig }).default ?? {};
+    return applySubRolePermissions(config, resolveSubRole(role));
+  } catch (error: any) {
+    const isModuleNotFound =
+      error?.code === 'MODULE_NOT_FOUND' || error?.message?.includes('Cannot find module');
+
+    if (isModuleNotFound) {
+      throw new InitiativeNotFoundError(basePath);
+    }
+
+    throw error;
+  }
 };
 
 const loadRoleSpecificConfig = async (
@@ -172,37 +127,23 @@ const handleFallback = async (
   return {};
 };
 
-export const loadItInitiativeConfig = async (
-  initiativeName?: string,
-  role?: string,
-  allowFallback: boolean = true
+const resolveBasePathSafe = (initiativeName: string, startDate?: string): string => {
+  const official = getInitiativeBasePath(initiativeName, startDate);
+  return official && official !== './it//' ? official : `./it/${initiativeName}/`;
+};
+
+const executeInitiativeLoad = async (
+  basePath: string,
+  safeInitiativeName: string,
+  role?: string
 ): Promise<InitiativeTablesConfig> => {
-  if (!initiativeName) {
-    return {};
-  }
-
-  const safeInitiativeName = initiativeName.trim();
-  const basePath = `./it/${safeInitiativeName}/`;
-
-  if (DEBUG_CONSOLE) {
-    console.log('initiativeName raw:', initiativeName);
-    console.log('initiativeFolder used:', safeInitiativeName);
-    console.log('role raw:', role);
-  }
-
-  const loadWithoutRole = async () => {
-    if (safeInitiativeName === DEFAULT_INITIATIVE_NAMESPACE) {
-      return loadGlobalDefaultConfig(role);
-    }
-    return loadInitiativeDefaultConfig(basePath, role);
-  };
+  const loadWithoutRole = async (): Promise<InitiativeTablesConfig> =>
+    safeInitiativeName === DEFAULT_INITIATIVE_NAMESPACE
+      ? loadGlobalDefaultConfig(role)
+      : loadInitiativeDefaultConfig(basePath, role);
 
   if (typeof role !== 'string') {
-    try {
-      return resolveAndValidate(() => loadInitiativeDefaultConfig(basePath));
-    } catch {
-      return {};
-    }
+    return resolveAndValidate(() => loadInitiativeDefaultConfig(basePath));
   }
 
   const normalizedRole = normalizeRole(role);
@@ -211,18 +152,47 @@ export const loadItInitiativeConfig = async (
     console.log('role normalized:', normalizedRole);
   }
 
-  const loadWithRole = async () => {
-    try {
-      return await loadRoleSpecificConfig(basePath, normalizedRole as string, role);
-    } catch {
-      return loadWithoutRole();
-    }
-  };
+  const loader = normalizedRole
+    ? async () => {
+        try {
+          return await loadRoleSpecificConfig(basePath, normalizedRole, role);
+        } catch {
+          return loadWithoutRole();
+        }
+      }
+    : loadWithoutRole;
+
+  return resolveAndValidate(loader);
+};
+
+export const loadItInitiativeConfig = async (
+  initiativeName?: string,
+  role?: string,
+  allowFallback: boolean = true,
+  startDate?: string
+): Promise<InitiativeTablesConfig> => {
+  if (!initiativeName) {
+    return {};
+  }
+
+  const basePath = resolveBasePathSafe(initiativeName, startDate);
+  const safeInitiativeName = basePath.replace('./it/', '').replace('/', '');
+
+  if (DEBUG_CONSOLE) {
+    console.log('initiativeName raw:', initiativeName);
+    console.log('initiativeFolder used:', safeInitiativeName);
+    console.log('role raw:', role);
+  }
 
   try {
-    const loader = normalizedRole ? loadWithRole : loadWithoutRole;
-    return await resolveAndValidate(loader);
-  } catch {
-    return handleFallback(initiativeName, role, allowFallback);
+    return await executeInitiativeLoad(basePath, safeInitiativeName, role);
+  } catch (error) {
+    if (error instanceof InitiativeNotFoundError) {
+      if (DEBUG_CONSOLE) {
+        console.log(error.message);
+      }
+      return handleFallback(initiativeName, role, allowFallback);
+    }
+    throw error;
   }
 };
