@@ -18,8 +18,8 @@ type Props = {
   batchFilterItems: Record<string, SelectProps>;
   producerFilterItems?: Record<string, SelectProps>;
   errorStatus: boolean;
-  filters: Record<string, {value: string; label?: string}>;
-  setFilters: (value: Record<string, {value: string; label?: string}>) => void;
+  filters: Record<string, { value: string; label?: string }>;
+  setFilters: (value: Record<string, { value: string; label?: string }>) => void;
   setPage: Dispatch<SetStateAction<number>>;
   filtersConfig: any;
   templateConfig: any;
@@ -38,8 +38,12 @@ export default function FiltersDrawer({
   templateConfig
 }: Props) {
   const { t } = useScopedTranslation();
-  const [draftFilters, setDraftFilters] = useState<Record<string, {value: string; label?: string}>>(filters);
-  const [errors, setErrors] = useState<Array<string> | undefined>();
+  const [draftFilters, setDraftFilters] = useState<Record<string, { value: string; label?: string }>>(filters);
+  const [errors, setErrors] = useState<Array<string>>([]);
+  const templateMap: Record<string, any> = {
+    producer: producerFilterItems,
+    productFileId: batchFilterItems
+  };
 
   useEffect(() => setDraftFilters(filters), [filters]);
 
@@ -48,6 +52,17 @@ export default function FiltersDrawer({
     toggleFiltersDrawer(false);
     setFilters(filters);
   }, []);
+
+  const handleErrors = useCallback((id: string, isError: boolean) => {
+    setErrors((prev) => isError ? !prev?.includes(id) ? [...(prev || []), id] : prev
+      : prev?.filter(error => error !== id) || []);
+  }, []);
+
+  const handleDraftFilters = useCallback((id: string, value: { value: string; label?: string }) => {
+    const newFilters = Object.entries(draftFilters).reduce((acc, [filterKey, filterValue]) =>
+      ({ ...acc, ...(filterKey !== id ? { [filterKey]: filterValue } : {}) }), value.value ? { [id]: value } : {});
+    setDraftFilters(newFilters);
+  }, [draftFilters]);
 
   return (
     <Drawer
@@ -80,11 +95,8 @@ export default function FiltersDrawer({
       </Box>
       <Box paddingX="24px" maxWidth="417px">
         {filtersConfig && filtersConfig.map(({ type, ...item }: FiltersProps) => {
-          const isProducer = item.id === "producer";
-          const isBatch = item.id === "productFileId";
-          const template = isBatch ? batchFilterItems : isProducer ? producerFilterItems : templateConfig?.[item.id];
-
-          const filtersParams = { item, t, template, errors, setErrors, filters: draftFilters, setFilters: (value: typeof filters) => setDraftFilters( prev => ({ ...prev, ...value })) };
+          const template = templateMap?.[item.id] || templateConfig?.[item.id];
+          const filtersParams = { item, t, template, errors, setErrors: handleErrors, filters: draftFilters, setFilters: handleDraftFilters };
 
           return <FormControl key={item.id} fullWidth size="small" margin="normal">
             {type === "select" && <InputLabel id={`${item.id}-filter-select-label`}>
@@ -96,7 +108,7 @@ export default function FiltersDrawer({
         })}
 
         <Button
-          disabled={!Object.keys(draftFilters).length || !!errors}
+          disabled={!Object.keys(draftFilters).length || !!errors.length}
           variant="outlined"
           fullWidth
           sx={{ height: 44, minWidth: 100, marginY: '24px' }}
@@ -110,7 +122,10 @@ export default function FiltersDrawer({
           variant="text"
           fullWidth
           sx={{ height: 44, minWidth: 100 }}
-          onClick={() => handleFilters({})}
+          onClick={() => {
+            handleFilters({});
+            setErrors([]);
+          }}
         >
           {t('pages.products.filterLabels.deleteFilters')}
         </Button>
