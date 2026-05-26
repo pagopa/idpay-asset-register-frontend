@@ -1,42 +1,72 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { DEBUG_CONSOLE } from '../utils/constants';
+/**
+ * Initiative configuration loading schema
+ *
+ * Folder structure:
+ *
+ * src/locale/it/
+ * ├── default/                         → global emergency fallback
+ * │
+ * └── <initiativeName>/
+ *     ├── default/config.json          → base configuration for the initiative
+ *     ├── operatore/config.json        → role override (merged over default)
+ *     └── invitalia/config.json        → role override (merged over default)
+ *
+ * Loading logic:
+ * 1. Load initiative default config
+ * 2. If role exists → load role config and merge over initiative default
+ * 3. Apply sub-role permissions filtering (tables visibility)
+ * 4. If initiative fails → fallback to global default
+ *
+ * This file must preserve loading order to avoid regressions.
+ */
+import { DEBUG_CONSOLE, DEFAULT_INITIATIVE_NAMESPACE } from '../utils/constants';
 
 export type InitiativeTablesConfig = {
   roles?: {
     name?: string;
     logicalName?: string;
-    subRoles?: Record<string, any>;
-    errors?: Record<string, any>;
+    subRoles?: Record<string, unknown>;
+    errors?: Record<string, unknown>;
   };
-  templates?: Record<string, any>;
+  templates?: Record<string, unknown>;
   ui?: {
-    tables?: Record<string, any>;
+    tables?: Record<string, unknown>;
   };
 };
 
-export const DEFAULT_INITIATIVE_NAMESPACE = 'default';
-
-const validateInitiativeConfig = (config: any): boolean =>
+const validateInitiativeConfig = (config: unknown): config is InitiativeTablesConfig =>
   Boolean(config && typeof config === 'object');
 
-const applySubRolePermissions = (config: any, subRole?: string): InitiativeTablesConfig => {
+const normalizeRole = (role?: string): string | undefined => {
+  const r = role?.trim().toLowerCase();
+  return r ? r.split('_')[0] : undefined;
+};
+
+const resolveSubRole = (role?: string): string | undefined =>
+  role?.includes('_') ? role : undefined;
+
+const applySubRolePermissions = (
+  config: InitiativeTablesConfig,
+  subRole?: string
+): InitiativeTablesConfig => {
   if (!config || !subRole) {
     return config ?? {};
   }
 
-  const permissions = config?.roles?.subRoles?.[subRole]?.permissions?.tables;
+  const permissions = (config.roles?.subRoles as Record<string, any> | undefined)?.[subRole]
+    ?.permissions?.tables;
 
-  const tables = config?.ui?.tables;
+  const tables = config.ui?.tables as Record<string, unknown> | undefined;
 
   if (!Array.isArray(permissions) || !tables) {
-    return { ...config, ui: { ...config?.ui, tables: {} } };
+    return { ...config, ui: { ...config.ui, tables: {} } };
   }
 
   const filteredTables = Object.fromEntries(
-    Object.entries(tables).filter(([tableKey]) => permissions.includes(tableKey))
+    Object.entries(tables).filter(([key]) => permissions.includes(key))
   );
 
-  return { ...config, ui: { ...config?.ui, tables: filteredTables } };
+  return { ...config, ui: { ...config.ui, tables: filteredTables } };
 };
 
 export const getLogicalRoleName = (
@@ -46,43 +76,82 @@ export const getLogicalRoleName = (
   if (!config) {
     return undefined;
   }
+
   if (!role) {
     return config.roles?.logicalName;
   }
-  return config.roles?.subRoles?.[role]?.logicalName ?? config.roles?.logicalName;
+
+  return (
+    (config.roles?.subRoles as Record<string, any> | undefined)?.[role]?.logicalName ??
+    config.roles?.logicalName
+  );
 };
 
-const normalizeRole = (role?: string): string | undefined => {
-  const r = role?.trim().toLowerCase();
-  if (!r) {
-    return undefined;
+const mergeConfigs = <T extends Record<string, any>>(base: T, override: Partial<T>): T => {
+  if (!base) {
+    return override as T;
   }
-  return r.split('_')[0];
-};
-
-const resolveSubRole = (role?: string): string | undefined => {
-  if (!role) {
-    return undefined;
+  if (!override) {
+    return base;
   }
-  return role.includes('_') ? role : undefined;
+
+  if (Array.isArray(base) || Array.isArray(override)) {
+    return (override ?? base) as T;
+  }
+
+  return Object.keys(override).reduce(
+    (acc, key) => {
+      const baseValue = base[key];
+      const overrideValue = override[key];
+
+      const mergedValue =
+        baseValue &&
+        overrideValue &&
+        typeof baseValue === 'object' &&
+        typeof overrideValue === 'object' &&
+        !Array.isArray(baseValue) &&
+        !Array.isArray(overrideValue)
+          ? mergeConfigs(baseValue as any, overrideValue as any)
+          : overrideValue;
+
+      return {
+        ...acc,
+        [key]: mergedValue,
+      };
+    },
+    { ...base }
+  );
 };
 
-const loadGlobalDefaultConfig = async (role?: string) => {
+const loadGlobalDefaultConfig = async (role?: string): Promise<InitiativeTablesConfig> => {
   const mod = await import(`./it/${DEFAULT_INITIATIVE_NAMESPACE}/config.json`);
-  return applySubRolePermissions((mod as any).default ?? {}, resolveSubRole(role));
+  const config = (mod as { default?: InitiativeTablesConfig }).default ?? {};
+  return applySubRolePermissions(config, resolveSubRole(role));
 };
 
-const loadInitiativeDefaultConfig = async (basePath: string, role?: string) => {
+const loadInitiativeDefaultConfig = async (
+  basePath: string,
+  role?: string
+): Promise<InitiativeTablesConfig> => {
   const mod = await import(`${basePath}default/config.json`);
-  return applySubRolePermissions((mod as any).default ?? {}, resolveSubRole(role));
+  const config = (mod as { default?: InitiativeTablesConfig }).default ?? {};
+  return applySubRolePermissions(config, resolveSubRole(role));
 };
 
-const loadRoleSpecificConfig = async (basePath: string, normalizedRole: string, role?: string) => {
+const loadRoleSpecificConfig = async (
+  basePath: string,
+  normalizedRole: string,
+  role?: string
+): Promise<InitiativeTablesConfig> => {
   const roleMod = await import(`${basePath}${normalizedRole}/config.json`);
-  const roleConfig = (roleMod as any).default ?? {};
-  const subRole = resolveSubRole(role);
+  const roleConfig = (roleMod as { default?: InitiativeTablesConfig }).default ?? {};
 
-  return applySubRolePermissions(roleConfig, subRole);
+  const defaultMod = await import(`${basePath}default/config.json`);
+  const initiativeDefault = (defaultMod as { default?: InitiativeTablesConfig }).default ?? {};
+
+  const merged = mergeConfigs(initiativeDefault, roleConfig);
+
+  return applySubRolePermissions(merged, resolveSubRole(role));
 };
 
 const resolveAndValidate = async (
@@ -104,7 +173,7 @@ const handleFallback = async (
 };
 
 export const loadItInitiativeConfig = async (
-  initiativeName: string | undefined,
+  initiativeName?: string,
   role?: string,
   allowFallback: boolean = true
 ): Promise<InitiativeTablesConfig> => {
@@ -144,8 +213,7 @@ export const loadItInitiativeConfig = async (
 
   const loadWithRole = async () => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return await loadRoleSpecificConfig(basePath, normalizedRole!, role);
+      return await loadRoleSpecificConfig(basePath, normalizedRole as string, role);
     } catch {
       return loadWithoutRole();
     }

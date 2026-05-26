@@ -17,7 +17,7 @@ describe('multiInitiativeConfig dynamic loading', () => {
   });
 
   it('should fallback to default folder if role is not string', async () => {
-    const result = await loadItInitiativeConfig('bonusDecoder2026', undefined as unknown as string);
+    const result = await loadItInitiativeConfig('bonusDecoder2026', undefined);
     expect(result).toBeDefined();
   });
 
@@ -26,10 +26,9 @@ describe('multiInitiativeConfig dynamic loading', () => {
     expect(result).toBeDefined();
   });
 
-  it('rejects when initiative folder does not exist', async () => {
-    await expect(loadItInitiativeConfig('unknownInitiative')).rejects.toThrow(
-      "Cannot find module './it/unknownInitiative/default/config.json'"
-    );
+  it('returns empty object when initiative folder does not exist', async () => {
+    const result = await loadItInitiativeConfig('unknownInitiative');
+    expect(result).toEqual({});
   });
 
   it('returns undefined when config is undefined in getLogicalRoleName', () => {

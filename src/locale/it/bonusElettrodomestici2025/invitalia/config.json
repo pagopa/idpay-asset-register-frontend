@@ -74,16 +74,14 @@
             "sortable": true,
             "align": "left"
           },
-          { "id": "actions", "labelKey": "", "type": "action", "sortable": false, "align": "left" }
-        ],
-        "ui": {
-          "filtering": { "enabled": true },
-          "pagination": {
-            "enabled": true,
-            "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [10, 25, 50, 100]
+          {
+            "id": "actions",
+            "labelKey": "",
+            "type": "action",
+            "sortable": false,
+            "align": "left"
           }
-        },
+        ],
         "detail": {
           "fields": [
             { "id": "productName", "labelKey": "pages.productDetail.productName" },

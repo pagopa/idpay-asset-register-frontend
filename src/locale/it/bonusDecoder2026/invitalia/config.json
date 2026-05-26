@@ -17,24 +17,6 @@
       }
     }
   },
-  "templates": {
-    "formats": {
-      "csv": {
-        "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
-        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
-      }
-    },
-    "categories": {
-      "satellite": { "format": "csv", "name": "satellitare" },
-      "terrestrial": { "format": "csv", "name": "terrestre" },
-      "terrestrial_via_cable": { "format": "csv", "name": "terrestre-via-cavo" },
-      "terrestrial_and_satellite": { "format": "csv", "name": "terrestre-e-satellitare" },
-      "terrestrial_satellite_and_via_cable": {
-        "format": "csv",
-        "name": "terrestre-satellitare-e-via-cavo"
-      }
-    }
-  },
   "ui": {
     "tables": {
       "products": {
@@ -118,26 +100,7 @@
             "type": "text",
             "labelKey": "pages.products.filterLabels.gtinCode"
           }
-        ],
-        "ui": {
-          "filtering": { "enabled": true },
-          "pagination": {
-            "enabled": true,
-            "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [10, 25, 50, 100]
-          }
-        },
-        "detail": {
-          "fields": [
-            { "id": "productName", "labelKey": "pages.productDetail.productName" },
-            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
-            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
-            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
-            { "id": "category", "labelKey": "pages.productDetail.category" },
-            { "id": "brand", "labelKey": "pages.productDetail.brand" },
-            { "id": "model", "labelKey": "pages.productDetail.model" }
-          ]
-        }
+        ]
       }
     }
   }
