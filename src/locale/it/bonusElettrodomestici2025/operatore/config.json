@@ -15,7 +15,7 @@
     "formats": {
       "csv": {
         "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Paese di Produzione", "Marca", "Modello"],
-        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "IT", "MarcaEsempio", "ModelloX100"]
+        "fields": ["GTIN123ABC4567", "SKU98765", "Piano cottura", "IT", "MarcaEsempio", "ModelloX100"]
       },
       "eprel": {
         "headers": [
