@@ -17,7 +17,6 @@ type Props = {
   toggleFiltersDrawer: (isOpen: boolean) => void;
   batchFilterItems: Record<string, SelectProps>;
   producerFilterItems?: Record<string, SelectProps>;
-  errorStatus: boolean;
   filters: Record<string, { value: string; label?: string }>;
   setFilters: (value: Record<string, { value: string; label?: string }>) => void;
   setPage: Dispatch<SetStateAction<number>>;
@@ -68,9 +67,6 @@ export default function FiltersDrawer({
     <Drawer
       anchor="right"
       open={open}
-      onClose={() => {
-        toggleFiltersDrawer(false);
-      }}
       data-testid="detail-drawer"
     >
       <Box

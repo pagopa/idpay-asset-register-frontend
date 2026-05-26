@@ -231,7 +231,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       <FiltersDrawer
         open={filtersDrawerOpen}
         toggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
-        errorStatus={false}
         filters={filters}
         setFilters={setFilters}
         setPage={setPage}
