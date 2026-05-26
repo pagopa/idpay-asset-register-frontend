@@ -10,6 +10,7 @@ import { permissionsReducer } from './slices/permissionsSlice';
 import { productsReducer } from './slices/productsSlice';
 import { invitaliaReducer } from './slices/invitaliaSlice';
 import { initiativesReducer } from './slices/initiativesSlice';
+import { initiativeConfigReducer } from './slices/initiativeConfigSlice';
 import { baseApi } from './api/baseApi';
 
 const persistConfig = {
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   products: productsReducer,
   invitalia: invitaliaReducer,
   initiatives: initiativesReducer,
+  initiativeConfig: initiativeConfigReducer,
   [baseApi.reducerPath]: baseApi.reducer,
 });
 
