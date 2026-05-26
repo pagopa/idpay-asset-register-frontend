@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+
 import {
   formattedCurrency,
   formatDate,
@@ -10,8 +12,6 @@ import {
   fetchUserFromLocalStorage,
   initUploadBoxStyle,
   initUploadHelperBoxStyle,
-  getTablePrLength,
-  useResponsiveMaxLength,
   isOnOrBeforeDate,
   customExitAction,
 } from '../helpers';
@@ -192,77 +192,6 @@ describe('Additional tests for 100% coverage', () => {
 
   test('formatDateWithHours with invalid date string', () => {
     expect(formatDateWithHours('invalid-date')).toBe(EMPTY_DATA);
-  });
-
-  test('getTablePrLength with window defined', () => {
-    const originalWindow = global.window;
-
-    Object.defineProperty(global, 'window', {
-      value: { innerWidth: 1920 }, // assumendo RESOLUTION_UPSCALING sia < 1920
-      writable: true,
-    });
-
-    const resultLarge = getTablePrLength();
-    expect(typeof resultLarge).toBe('number');
-
-    Object.defineProperty(global, 'window', {
-      value: { innerWidth: 800 },
-      writable: true,
-    });
-
-    const resultSmall = getTablePrLength();
-    expect(typeof resultSmall).toBe('number');
-
-    global.window = originalWindow;
-  });
-
-  test('getTablePrLength without window', () => {
-    const originalWindow = global.window;
-    delete global.window;
-
-    const result = getTablePrLength();
-    expect(typeof result).toBe('number');
-
-    global.window = originalWindow;
-  });
-
-  test('useResponsiveMaxLength with different breakpoints', () => {
-    const mockTheme = {
-      breakpoints: {
-        only: jest.fn(),
-      },
-    };
-
-    const { useTheme, useMediaQuery } = require('@mui/material');
-
-    useTheme.mockReturnValue(mockTheme);
-
-    useMediaQuery.mockReturnValue(true);
-    mockTheme.breakpoints.only.mockReturnValue('(max-width:599.95px)');
-    useMediaQuery.mockImplementation((query) => query === '(max-width:599.95px)');
-
-    const resultXs = useResponsiveMaxLength();
-    expect(resultXs).toBe(15);
-
-    useMediaQuery.mockImplementation((query) => query.includes('sm'));
-    const resultSm = useResponsiveMaxLength();
-    expect(resultSm).toBe(70);
-
-    useMediaQuery.mockImplementation((query) => query.includes('md'));
-    const resultMd = useResponsiveMaxLength();
-    expect(resultMd).toBe(70);
-
-    useMediaQuery.mockImplementation((query) => query.includes('lg'));
-    const resultLg = useResponsiveMaxLength();
-    expect(resultLg).toBe(70);
-
-    useMediaQuery.mockImplementation((query) => query.includes('xl'));
-    const resultXl = useResponsiveMaxLength();
-    expect(resultXl).toBe(70);
-
-    useMediaQuery.mockReturnValue(false);
-    const resultDefault = useResponsiveMaxLength();
-    expect(resultDefault).toBe(70);
   });
 
   test('isOnOrBeforeDate with undefined', () => {

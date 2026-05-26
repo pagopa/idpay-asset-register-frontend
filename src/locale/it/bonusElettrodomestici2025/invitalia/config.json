@@ -128,13 +128,13 @@
             "labelKey": "pages.products.listHeader.eprelCode",
             "type": "eprelLink",
             "sortable": true,
-            "align": "left"
+            "align": "center"
           },
           {
             "id": "gtinCode",
             "labelKey": "pages.products.listHeader.gtinCode",
             "sortable": true,
-            "align": "left"
+            "align": "center"
           },
           {
             "id": "productFileId",

@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Paper, TablePagination, CircularProgress } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
-import { grey } from '@mui/material/colors';
+import { useTheme } from '@mui/material/styles';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { useTranslation } from 'react-i18next';
 import EmptyListTable from '../../pages/components/EmptyListTable';
@@ -67,6 +67,7 @@ const ProductDataGridView: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { filtersLabel } = useProductFilters({ filters });
+  const theme = useTheme();
   return (
     <>
       <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -100,9 +101,12 @@ const ProductDataGridView: React.FC<Props> = ({
           <Chip
             size="medium"
             label={filtersLabel}
-            sx={{ color: 'white !important', backgroundColor: '#0073E6 !important' }}
+            sx={{
+              color: theme.palette.primary.contrastText,
+              backgroundColor: theme.palette.primary.main,
+            }}
             onDelete={handleDeleteFiltersButtonClick}
-            deleteIcon={<CloseIcon sx={{ color: 'white !important' }} />}
+            deleteIcon={<CloseIcon sx={{ color: theme.palette.primary.contrastText }} />}
           />
         ) : (
           <span />
@@ -110,7 +114,7 @@ const ProductDataGridView: React.FC<Props> = ({
         {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
       </Box>
 
-      <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
+      <Paper elevation={0} sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: 'transparent' }}>
         {hookLoading ? (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CircularProgress />
@@ -136,6 +140,7 @@ const ProductDataGridView: React.FC<Props> = ({
 
         {tableData?.length > 0 && !hookLoading && (
           <TablePagination
+            sx={{ backgroundColor: 'transparent' }}
             component="div"
             count={itemsQty || 0}
             page={page}

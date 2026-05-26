@@ -96,10 +96,6 @@
             "sortable": false
           }
         ],
-        "defaultSort": {
-          "field": "gtinCode",
-          "direction": "asc"
-        },
         "filters": [
           {
             "id": "category",

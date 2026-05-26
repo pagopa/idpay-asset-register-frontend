@@ -60,10 +60,6 @@
             "sortable": true
           }
         ],
-        "defaultSort": {
-          "field": "gtinCode",
-          "direction": "asc"
-        },
         "filters": [
           {
             "id": "status",

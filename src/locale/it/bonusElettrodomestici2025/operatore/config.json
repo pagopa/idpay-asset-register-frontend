@@ -113,7 +113,7 @@
             "id": "category",
             "labelKey": "tables.products.columns.category",
             "sortable": true,
-            "align": "center"
+            "align": "left"
           },
           {
             "id": "energyClass",
@@ -147,10 +147,6 @@
             "align": "left"
           }
         ],
-        "defaultSort": {
-          "field": "gtinCode",
-          "direction": "asc"
-        },
         "filters": [
           {
             "id": "status",
