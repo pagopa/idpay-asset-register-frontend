@@ -1,3 +1,4 @@
+import { describe, test, expect, jest } from '@jest/globals';
 import type { AnyAction } from '@reduxjs/toolkit';
 
 const mockConfigureStore = jest.fn();
@@ -8,8 +9,10 @@ const mockLoggerMiddleware = jest.fn((_) => (next: any) => (action: AnyAction) =
 const mockBaseApiMiddleware = jest.fn((_) => (next: any) => (action: AnyAction) => next(action));
 
 jest.mock('@reduxjs/toolkit', () => ({
+  __esModule: true,
   configureStore: (...args: any[]) => mockConfigureStore.apply(null, args as any),
   combineReducers: (...args: any[]) => mockCombineReducers.apply(null, args as any),
+  createAsyncThunk: jest.fn(() => jest.fn()),
 }));
 
 jest.mock('redux-persist', () => ({
@@ -96,8 +99,8 @@ describe('store configuration', () => {
     const { mod, fakeStore, fakePersistor } = await loadStoreModule(false);
 
     expect(mockCombineReducers).toHaveBeenCalledTimes(1);
-    const reducersArg = mockCombineReducers.mock.calls[0][0];
-    expect(Object.keys(reducersArg)).toEqual([
+    const reducersArg = mockCombineReducers.mock.calls[0][0] as any;
+    expect(Object.keys(reducersArg as any)).toEqual([
       'user',
       'appState',
       'parties',
@@ -109,7 +112,7 @@ describe('store configuration', () => {
     ]);
 
     expect(mockPersistReducer).toHaveBeenCalledTimes(1);
-    const [persistConfigArg, rootReducerArg] = mockPersistReducer.mock.calls[0];
+    const [persistConfigArg, rootReducerArg] = mockPersistReducer.mock.calls[0] as any;
 
     expect(persistConfigArg).toMatchObject({
       key: 'root',
@@ -118,7 +121,7 @@ describe('store configuration', () => {
     expect(persistConfigArg.storage).toBeTruthy();
 
     expect(mockConfigureStore).toHaveBeenCalledTimes(1);
-    const configureArg = mockConfigureStore.mock.calls[0][0];
+    const configureArg = mockConfigureStore.mock.calls[0][0] as any;
 
     expect(configureArg.reducer).toBe(rootReducerArg);
 
@@ -140,7 +143,7 @@ describe('store configuration', () => {
   test('include il logger quando LOG_REDUX_ACTIONS è true', async () => {
     const { mod } = await loadStoreModule(true);
 
-    const configureArg = mockConfigureStore.mock.calls[0][0];
+    const configureArg = mockConfigureStore.mock.calls[0][0] as any;
 
     const fakeGDM = jest.fn().mockReturnValue(['defaultMiddleware']);
     const builtMiddleware = configureArg.middleware(fakeGDM);
