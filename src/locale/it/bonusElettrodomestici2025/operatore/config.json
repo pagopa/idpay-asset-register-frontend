@@ -20,13 +20,15 @@
           "Codice GTIN/EAN",
           "Codice Prodotto",
           "Categoria",
+          "Paese di Produzione",
           "Marca",
           "Modello"
         ],
         "fields": [
           "GTIN123ABC4567",
           "SKU98765",
-          "{{category}}",
+          "Piano cottura",
+          "IT",
           "MarcaEsempio",
           "ModelloX100"
         ]
