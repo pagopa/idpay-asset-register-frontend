@@ -40,10 +40,29 @@
           { "id": "batchName", "labelKey": "tables.products.columns.batchName" }
         ],
         "filters": [
-          { "id": "category", "type": "select" },
-          { "id": "status", "type": "select" },
-          { "id": "gtinCode", "type": "text" },
-          { "id": "productCode", "type": "text" }
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "tables.products.filters.errors",
+            "inputProps": { "maxLength": 14 }
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
+          }
         ],
         "detail": {
           "fields": [

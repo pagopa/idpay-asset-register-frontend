@@ -31,18 +31,36 @@
           { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true }
         ],
         "filters": [
-          { "id": "category", "type": "select", "labelKey": "tables.products.filters.category" },
-          { "id": "status", "type": "select", "labelKey": "tables.products.filters.status" },
-          { "id": "gtinCode", "type": "text", "labelKey": "tables.products.filters.gtinCode" },
           {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
           },
           {
             "id": "productFileId",
             "type": "select",
             "labelKey": "tables.products.filters.productFileId"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^\\d{5}$",
+            "message": "tables.products.filters.errors.eprelCode",
+            "inputProps": { "inputMode": "numeric", "pattern": "[0-9]*" }
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
           }
         ],
         "detail": {
