@@ -36,9 +36,10 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
             MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
             value={filters?.[id]?.value || ''}
             sx={{ paddingRight: '38px !important' }}
+            onChange={(e) => setFilters(id, { value: e.target.value, label: t(template?.[e.target.value]?.label || '') })}
         >
             {template ? Object.entries(template).map(([key, value]) => (
-                <MenuItem key={key} value={key} onClick={() => setFilters(id, { value: key, label: t(value.label) } )}>
+                <MenuItem key={key} value={key}>
                     {value?.color ? <Chip
                         color={value.color}
                         label={t(value.label)}
@@ -60,7 +61,7 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
             onChange={(e) => {
                 const isError = !!e.target.value && !(RegExp(regEx || '').test(e.target.value));
                 const ruledValue = filterInputWithSpaceRule(e.target.value);
-                setFilters(id, { value: ruledValue } );
+                setFilters(id, { value: ruledValue });
                 setErrors(id, isError);
             }}
             error={isError}
@@ -70,7 +71,7 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
                 const text = e.clipboardData.getData('text').replace(/\s+/g, '');
                 const ruledValue = filterInputWithSpaceRule(text);
                 const isError = !!text && !(RegExp(regEx || '').test(text));
-                setFilters(id, { value: ruledValue } );
+                setFilters(id, { value: ruledValue });
                 setErrors(id, isError);
             }}
             slotProps={{ htmlInput: inputProps }}
