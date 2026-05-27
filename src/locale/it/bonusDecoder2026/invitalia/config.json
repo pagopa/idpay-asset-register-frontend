@@ -179,7 +179,7 @@
             "type": "text",
             "labelKey": "pages.products.filterLabels.gtinCode",
             "regEx": "^[a-zA-Z0-9]{1,14}$",
-            "message": "Il codice deve avere 14 caratteri",
+            "message": "pages.products.filterLabels.errors",
             "inputProps": { "maxLength": 14 }
           }
         ],

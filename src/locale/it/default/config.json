@@ -67,7 +67,7 @@
             "type": "text",
             "labelKey": "tables.products.filters.gtinCode",
             "regEx": "^[a-zA-Z0-9]{1,14}$",
-            "message": "Il codice deve avere 14 caratteri",
+            "message": "tables.products.filters.errors",
             "inputProps": { "maxLength": 14 }
           },
           {
