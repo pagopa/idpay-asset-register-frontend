@@ -49,6 +49,7 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
     },
     text: ({ item, t, filters, setFilters, errors, setErrors }) => {
         const { id, labelKey, regEx, message, inputProps } = item;
+        const isError = !!filters?.[id]?.value && errors?.includes(id);
         return <TextField
             fullWidth
             id={`${id}-text`}
@@ -62,8 +63,8 @@ export const filtersRender: Record<'select' | 'text', ({ item, t, filters, setFi
                 setFilters(id, { value: ruledValue } );
                 setErrors(id, isError);
             }}
-            error={!!filters?.[id]?.value && errors?.includes(id)}
-            helperText={message && t(message)}
+            error={isError}
+            helperText={message && isError && t(message)}
             onPaste={(e) => {
                 e.preventDefault();
                 const text = e.clipboardData.getData('text').replace(/\s+/g, '');

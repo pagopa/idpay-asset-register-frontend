@@ -53,8 +53,8 @@ export default function FiltersDrawer({
   }, []);
 
   const handleErrors = useCallback((id: string, isError: boolean) => {
-    setErrors((prev) => isError ? !prev?.includes(id) ? [...(prev || []), id] : prev
-      : prev?.filter(error => error !== id) || []);
+    setErrors((prev) => isError ? !prev?.includes(id) ? [...prev, id] : prev
+      : prev.filter(error => error !== id));
   }, []);
 
   const handleDraftFilters = useCallback((id: string, value: { value: string; label?: string }) => {
@@ -109,6 +109,7 @@ export default function FiltersDrawer({
           fullWidth
           sx={{ height: 44, minWidth: 100, marginY: '24px' }}
           onClick={() => handleFilters(draftFilters)}
+          data-testid="send-btn"
         >
           {t('pages.products.filterLabels.filter')}
         </Button>
@@ -122,6 +123,7 @@ export default function FiltersDrawer({
             handleFilters({});
             setErrors([]);
           }}
+          data-testid="cancel-btn"
         >
           {t('pages.products.filterLabels.deleteFilters')}
         </Button>
