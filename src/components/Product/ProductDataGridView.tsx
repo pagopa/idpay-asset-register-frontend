@@ -102,11 +102,11 @@ const ProductDataGridView: React.FC<Props> = ({
             size="medium"
             label={filtersLabel}
             sx={{
-              color: theme.palette.primary.contrastText,
-              backgroundColor: theme.palette.primary.main,
+              color: `${theme.palette.primary.contrastText} !important`,
+              backgroundColor: `${theme.palette.primary.main} !important`,
             }}
             onDelete={handleDeleteFiltersButtonClick}
-            deleteIcon={<CloseIcon sx={{ color: theme.palette.primary.contrastText }} />}
+            deleteIcon={<CloseIcon sx={{ color: `${theme.palette.primary.contrastText} !important` }} />}
           />
         ) : (
           <span />
