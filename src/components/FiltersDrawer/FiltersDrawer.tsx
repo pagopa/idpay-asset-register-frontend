@@ -104,7 +104,7 @@ export default function FiltersDrawer({
   const [draftGtin, setDraftGtin] = useState(gtinCodeFilter);
   const [showEprelError, setShowEprelError] = useState(false);
   const [showGtinError, setShowGtinError] = useState(false);
-  const {categories} = useCategories();
+  const { categories } = useCategories();
 
   const isValidNumeric = (value: string) => /^\d+$/.test(value);
   const isValidGtin = (value: string) => /^[a-zA-Z0-9]{1,14}$/.test(value);
@@ -265,7 +265,7 @@ export default function FiltersDrawer({
                   ![PRODUCTS_STATES.WAIT_APPROVED, PRODUCTS_STATES.SUPERVISED].includes(status)
               )
               .map((status) => (
-                <MenuItem key={status} value={t(`pages.products.categories.${status}`)}>
+                <MenuItem key={status} value={status}>
                   <Chip
                     color={getChipColor(status)}
                     label={t(`pages.products.categories.${status}`)}

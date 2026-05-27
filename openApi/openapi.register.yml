@@ -342,6 +342,7 @@ paths:
         - $ref: '#/components/parameters/model_query'
         - $ref: '#/components/parameters/eprelCode_query'
         - $ref: '#/components/parameters/gtinCode_query'
+        - $ref: '#/components/parameters/productCode_query'
         - $ref: '#/components/parameters/productFileId_query'
         - $ref: '#/components/parameters/productName_query'
         - $ref: '#/components/parameters/fullProductName_query'
@@ -2233,6 +2234,7 @@ components:
           - gtinCode, desc
           - eprelCode, desc
           - status, desc
+          - productCode, desc
           - organizationName, asc
           - category, asc
           - brand, asc
@@ -2242,6 +2244,7 @@ components:
           - gtinCode, asc
           - eprelCode, asc
           - status, asc
+          - productCode, asc
           - organizationName, desc
     eprelCode_query:
       name: eprelCode
@@ -2251,6 +2254,14 @@ components:
         type: string
         maxLength: 50
         pattern: ^\d+$
+    productCode_query:
+      name: productCode
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 50
+        pattern: ^[a-zA-Z0-9]{1,100}$
     brand_query:
       name: brand
       in: query

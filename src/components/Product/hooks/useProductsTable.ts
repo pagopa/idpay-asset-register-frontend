@@ -98,6 +98,7 @@ export const useProductsTable = ({
     batchFilter,
     eprelCodeFilter,
     gtinCodeFilter,
+    statusFilter,
   ]);
 
   return {

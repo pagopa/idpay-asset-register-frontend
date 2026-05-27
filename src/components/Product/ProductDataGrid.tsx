@@ -12,7 +12,7 @@ import {
   setInstitutionList,
   setInstitution,
 } from '../../redux/slices/invitaliaSlice';
-import { ProductDTO } from '../../api/generated/register';
+import { ProductDTO, ProductStatus } from '../../api/generated/register';
 
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
@@ -101,13 +101,23 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [defaultSuppressed, setDefaultSuppressed] = useState(false);
 
   const effectiveStatusFilter =
-    isInvitaliaAdmin && !statusFilter && !defaultSuppressed ? 'Da approvare' : statusFilter;
+    isInvitaliaAdmin && !statusFilter && !defaultSuppressed
+      ? ProductStatus.WAIT_APPROVED
+      : statusFilter;
 
   useEffect(() => {
     if (effectiveStatusFilter && !statusFilter) {
       setStatusFilter(effectiveStatusFilter);
     }
   }, [effectiveStatusFilter]);
+
+  const translatedFiltersLabel = useMemo(() => {
+    if (!statusFilter) {
+      return filtersLabel;
+    }
+    const translatedStatus = t(`pages.products.categories.${statusFilter}`);
+    return filtersLabel.replace(statusFilter, translatedStatus);
+  }, [filtersLabel, statusFilter, t]);
 
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
     initiativeId,
@@ -117,10 +127,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     page,
     rowsPerPage,
     categoryFilter,
-    producerFilter: effectiveStatusFilter,
+    producerFilter,
     batchFilter,
     eprelCodeFilter,
-    statusFilter: undefined,
+    statusFilter: effectiveStatusFilter,
     gtinCodeFilter,
   });
 
@@ -203,7 +213,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         rowsPerPage={rowsPerPage}
         order={order}
         orderBy={orderBy}
-        filtersLabel={filtersLabel}
+        filtersLabel={translatedFiltersLabel}
         selected={selected}
         effectiveColumns={effectiveColumns}
         paginationConfig={paginationConfig}
