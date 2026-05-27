@@ -210,13 +210,15 @@ paths:
           $ref: '#/components/responses/GET_product-files_batch-list_429_Response'
         '500':
           $ref: '#/components/responses/GET_product-files_batch-list_500_Response'
-  /products/update-status/approved:
+  /initiatives/{initiativeId}/products/update-status/approved:
     post:
       tags:
         - products
       summary: Approve a list of products
       description: 'ENG: Approve a list of products by updating their status to APPROVED. IT: Approva una lista di prodotti aggiornando il loro stato a APPROVED.'
       operationId: updateProductStatusApproved
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -233,13 +235,15 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/wait-approved:
+  /initiatives/{initiativeId}/products/update-status/wait-approved:
     post:
       tags:
         - products
       summary: Request approve for a list of products
       description: 'ENG: Reuqest approve a list of products by updating their status to WAIT_APPROVED. IT: Richiede approvazione di una lista di prodotti aggiornando il loro stato a WAIT_APPROVED.'
       operationId: updateProductStatusWaitApproved
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -256,13 +260,15 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/supervised:
+  /initiatives/{initiativeId}/products/update-status/supervised:
     post:
       tags:
         - products
       summary: Mark products as in supervision
       description: 'ENG: Set the status of a list of products to SUPERVISED. IT: Imposta lo stato di una lista di prodotti su SUPERVISED.        '
       operationId: updateProductStatusSupervised
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -279,13 +285,15 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/rejected:
+  /initiatives/{initiativeId}/products/update-status/rejected:
     post:
       tags:
         - products
       summary: Reject a list of products
       description: 'ENG: Reject a list of products by updating their status to REJECTED. IT: Rifiuta una lista di prodotti aggiornando il loro stato a REJECTED. '
       operationId: updateProductStatusRejected
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -302,13 +310,15 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/restored:
+  /initiatives/{initiativeId}/products/update-status/restored:
     post:
       tags:
         - products
       summary: Restore a list of products
       description: 'ENG: Reject a list of products by updating their status to UPLOADED. IT: Ripristina una lista di prodotti aggiornando il loro stato a UPLOADED. '
       operationId: updateProductStatusRestored
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -342,6 +352,7 @@ paths:
         - $ref: '#/components/parameters/model_query'
         - $ref: '#/components/parameters/eprelCode_query'
         - $ref: '#/components/parameters/gtinCode_query'
+        - $ref: '#/components/parameters/productCode_query'
         - $ref: '#/components/parameters/productFileId_query'
         - $ref: '#/components/parameters/productName_query'
         - $ref: '#/components/parameters/fullProductName_query'
@@ -2233,6 +2244,7 @@ components:
           - gtinCode, desc
           - eprelCode, desc
           - status, desc
+          - productCode, desc
           - organizationName, asc
           - category, asc
           - brand, asc
@@ -2242,6 +2254,7 @@ components:
           - gtinCode, asc
           - eprelCode, asc
           - status, asc
+          - productCode, asc
           - organizationName, desc
     eprelCode_query:
       name: eprelCode
@@ -2251,6 +2264,14 @@ components:
         type: string
         maxLength: 50
         pattern: ^\d+$
+    productCode_query:
+      name: productCode
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 50
+        pattern: ^[a-zA-Z0-9]{1,100}$
     brand_query:
       name: brand
       in: query

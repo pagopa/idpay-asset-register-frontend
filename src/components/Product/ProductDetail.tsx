@@ -18,6 +18,7 @@ import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import { statusChangeMessage } from '../../model/Product';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -34,13 +35,14 @@ type Props = {
   children?: React.ReactNode;
 };
 const callRejectedApi = async (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string,
   formalMotivation: string
 ) => {
   try {
-    await setRejectedStatusList(gtinCodes, currentStatus, motivation, formalMotivation);
+    await setRejectedStatusList(initiativeId, gtinCodes, currentStatus, motivation, formalMotivation);
   } catch (error) {
     if (DEBUG_CONSOLE) {
       console.error(error);
@@ -49,12 +51,13 @@ const callRejectedApi = async (
 };
 
 const callWaitApprovedApi = async (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string
 ) => {
   try {
-    await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
+    await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   } catch (error) {
     if (DEBUG_CONSOLE) {
       console.error(error);
@@ -63,6 +66,7 @@ const callWaitApprovedApi = async (
 };
 
 const handleOpenModal = (
+  initiativeId: string,
   action: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
@@ -70,9 +74,9 @@ const handleOpenModal = (
   formalMotivation: string
 ) => {
   if (action === PRODUCTS_STATES.REJECTED) {
-    return callRejectedApi(gtinCodes, currentStatus, motivation, formalMotivation);
+    return callRejectedApi(initiativeId, gtinCodes, currentStatus, motivation, formalMotivation);
   } else if (action === PRODUCTS_STATES.APPROVED) {
-    return callWaitApprovedApi(gtinCodes, currentStatus, motivation);
+    return callWaitApprovedApi(initiativeId, gtinCodes, currentStatus, motivation);
   }
   return Promise.resolve();
 };
@@ -491,6 +495,7 @@ export default function ProductDetail({
   onShowRejectedApprovationMsg,
   onShowAcceptApprovationMsg,
 }: ProductDetailProps) {
+  const initiativeId = useCurrentInitiativeId();
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
@@ -498,6 +503,7 @@ export default function ProductDetail({
 
   const handleConfirmRestore = async () => {
     await handleOpenModal(
+      initiativeId,
       PRODUCTS_STATES.APPROVED,
       [data.gtinCode ?? ''],
       data.status as ProductStatus,
