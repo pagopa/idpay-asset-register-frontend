@@ -27,6 +27,11 @@
             "maxTable": 45
           }
         },
+        "pagination": {
+          "enabled": true,
+          "defaultRowsPerPage": 10,
+          "rowsPerPageOptions": [10, 25, 50, 100]
+        },
         "columns": [
           { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode" },
           { "id": "productCode", "labelKey": "tables.products.columns.productCode" },
@@ -40,10 +45,6 @@
           { "id": "gtinCode", "type": "text" },
           { "id": "productCode", "type": "text" }
         ],
-        "ui": {
-          "filtering": { "enabled": true },
-          "pagination": { "enabled": true }
-        },
         "detail": {
           "fields": [
             { "id": "gtinCode" },

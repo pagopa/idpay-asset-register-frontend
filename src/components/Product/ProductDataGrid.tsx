@@ -36,7 +36,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const { config } = useInitiativeConfig();
 
   const tableConfig = config?.tables?.products;
-  const paginationConfig = tableConfig?.ui?.pagination;
+  const paginationConfig = tableConfig?.pagination;
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
@@ -185,7 +185,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   };
 
   const effectiveColumns = useMemo(() => {
-    const baseCols = Array.isArray(tableConfig?.columns) ? tableConfig.columns : [];
+    const baseCols = tableConfig?.columns ?? [];
     const hasAction = baseCols.some((c: any) => c.type === 'action');
 
     return hasAction ? baseCols : [...baseCols, { id: '__detail__', labelKey: '', type: 'action' }];

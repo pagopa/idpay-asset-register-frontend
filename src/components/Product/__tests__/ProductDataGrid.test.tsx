@@ -148,8 +148,11 @@ jest.mock('../ProductDataGrid.helpers', () => {
     __esModule: true,
     getStatusChecks,
     validateBulkActionPreconditions: jest.fn(({ selected, tableData, isInvitaliaAdmin }) => {
-      const { selectedStatuses = [], someUploaded = false, length = 0 } =
-        getStatusChecks(selected, tableData) ?? {};
+      const {
+        selectedStatuses = [],
+        someUploaded = false,
+        length = 0,
+      } = getStatusChecks(selected, tableData) ?? {};
 
       if (length === 0) {
         return { valid: false, reason: 'EMPTY' };
@@ -203,7 +206,8 @@ const renderGrid = async (role: string = 'USER', products = mockProducts) => {
     config: {
       tables: {
         products: {
-          ui: { pagination: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] } },
+          pagination: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] },
+          columns: [],
         },
       },
     },
@@ -253,8 +257,11 @@ describe('ProductDataGrid (rewritten)', () => {
     const helpersModule = require('../ProductDataGrid.helpers');
     helpersModule.validateBulkActionPreconditions.mockImplementation(
       ({ selected, tableData, isInvitaliaAdmin }: any) => {
-        const { selectedStatuses = [], someUploaded = false, length = 0 } =
-          helpersModule.getStatusChecks(selected, tableData) ?? {};
+        const {
+          selectedStatuses = [],
+          someUploaded = false,
+          length = 0,
+        } = helpersModule.getStatusChecks(selected, tableData) ?? {};
 
         if (length === 0) {
           return { valid: false, reason: 'EMPTY' };

@@ -45,14 +45,6 @@
             "labelKey": "tables.products.filters.productFileId"
           }
         ],
-        "ui": {
-          "filtering": { "enabled": true },
-          "pagination": {
-            "enabled": true,
-            "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [10, 25, 50, 100]
-          }
-        },
         "detail": {
           "fields": [
             { "id": "productName", "labelKey": "pages.productDetail.productName" },

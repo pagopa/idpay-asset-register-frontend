@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import type { InitiativeConfig, LegacyInitiativeConfig } from '../model/config/ConfigSchema';
 import {
   loadInitiativeConfigThunk,
   selectActiveInitiativeConfig,
@@ -8,11 +9,15 @@ import type { AppDispatch, RootState } from '../redux/store';
 import { useCurrentInitiative } from './useCurrentInitiative';
 import { useIDPayUser } from './useIDPayUser';
 
-export const useInitiativeConfig = () => {
+export const useInitiativeConfig = (): {
+  config: LegacyInitiativeConfig | undefined;
+  loading: boolean;
+  configError: unknown;
+} => {
   const initiative = useCurrentInitiative();
   const user = useIDPayUser();
   const dispatch = useDispatch<AppDispatch>();
-  const config = useSelector(selectActiveInitiativeConfig) as any;
+  const config = useSelector(selectActiveInitiativeConfig) as InitiativeConfig | undefined;
   const loading = useSelector((state: RootState) => state.initiativeConfig.loading);
   const configError = useSelector((state: RootState) => state.initiativeConfig.error);
 
@@ -32,7 +37,7 @@ export const useInitiativeConfig = () => {
     );
   }, [initiative, user?.org_role, dispatch]);
 
-  const mapNewStructureToLegacy = (cfg: any) => {
+  const mapNewStructureToLegacy = (cfg: InitiativeConfig): LegacyInitiativeConfig => {
     const { roles, templates, ui } = cfg ?? {};
     return {
       role: roles?.name,
@@ -44,7 +49,13 @@ export const useInitiativeConfig = () => {
     };
   };
 
-  const normalized = config?.roles ? mapNewStructureToLegacy(config) : config;
+  const normalized: LegacyInitiativeConfig | undefined = config?.roles
+    ? mapNewStructureToLegacy(config)
+    : undefined;
 
-  return { config: normalized as any, loading, configError };
+  return {
+    config: normalized,
+    loading,
+    configError,
+  };
 };

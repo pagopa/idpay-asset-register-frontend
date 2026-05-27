@@ -24,15 +24,7 @@
           { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
           { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true },
           { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": false }
-        ],
-        "ui": {
-          "filtering": { "enabled": false },
-          "pagination": {
-            "enabled": true,
-            "defaultRowsPerPage": 5,
-            "rowsPerPageOptions": [10, 25, 50, 100]
-          }
-        }
+        ]
       }
     }
   }

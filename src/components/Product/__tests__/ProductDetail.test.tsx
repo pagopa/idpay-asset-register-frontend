@@ -30,17 +30,16 @@ jest.mock('../../../hooks/useInitiativeConfig', () => ({
   __esModule: true,
   useInitiativeConfig: () => ({
     config: {
-      ui: {
-        tables: {
-          products: {
-            style: {
-              lengths: { detail: 40 },
-            },
+      tables: {
+        products: {
+          style: {
+            lengths: { detail: 40 },
           },
         },
       },
     },
     loading: false,
+    configError: null,
   }),
 }));
 
