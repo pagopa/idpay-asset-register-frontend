@@ -6,24 +6,102 @@
       "operatore": {
         "logicalName": "Produttore",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       }
+    }
+  },
+  "templates": {
+    "formats": {
+      "csv": {
+        "headers": [
+          "Codice GTIN/EAN",
+          "Codice Prodotto",
+          "Categoria",
+          "Marca",
+          "Modello"
+        ],
+        "fields": [
+          "GTIN123ABC4567",
+          "SKU98765",
+          "{{category}}",
+          "MarcaEsempio",
+          "ModelloX100"
+        ]
+      }
+    }
+  },
+  "status": {
+    "UPLOADED": {
+      "label": "status.products.UPLOADED",
+      "color": "default"
+    },
+    "APPROVED": {
+      "label": "status.products.APPROVED",
+      "color": "success"
+    },
+    "REJECTED": {
+      "label": "status.products.REJECTED",
+      "color": "error"
     }
   },
   "ui": {
     "tables": {
       "products": {
         "columns": [
-          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
+          {
+            "id": "gtinCode",
+            "labelKey": "tables.products.columns.gtinCode",
+            "sortable": true
+          },
           {
             "id": "productCode",
             "labelKey": "tables.products.columns.productCode",
             "sortable": true
           },
-          { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
-          { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true },
-          { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": false }
+          {
+            "id": "category",
+            "labelKey": "tables.products.columns.category",
+            "sortable": true
+          },
+          {
+            "id": "status",
+            "labelKey": "tables.products.columns.status",
+            "sortable": true
+          },
+          {
+            "id": "batchName",
+            "labelKey": "tables.products.columns.batchName",
+            "sortable": false
+          }
+        ],
+        "filters": [
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status",
+            "defaultValue": "WAIT_APPROVED"
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
+          }
         ]
       }
     }

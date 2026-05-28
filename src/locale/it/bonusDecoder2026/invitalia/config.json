@@ -6,15 +6,41 @@
       "invitalia": {
         "logicalName": "L1",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       },
       "invitalia_admin": {
         "logicalName": "L2",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       }
+    }
+  },
+  "status": {
+    "UPLOADED": {
+      "label": "status.products.UPLOADED",
+      "color": "default"
+    },
+    "WAIT_APPROVED": {
+      "label": "status.products.WAIT_APPROVED",
+      "color": "info"
+    },
+    "SUPERVISED": {
+      "label": "status.products.SUPERVISED",
+      "color": "primary"
+    },
+    "APPROVED": {
+      "label": "status.products.APPROVED",
+      "color": "success"
+    },
+    "REJECTED": {
+      "label": "status.products.REJECTED",
+      "color": "error"
     }
   },
   "ui": {
@@ -23,8 +49,13 @@
         "selection": {
           "enabled": true,
           "rules": {
-            "invitalia": ["UPLOADED", "SUPERVISED"],
-            "invitalia_admin": ["WAIT_APPROVED"]
+            "invitalia": [
+              "UPLOADED",
+              "SUPERVISED"
+            ],
+            "invitalia_admin": [
+              "WAIT_APPROVED"
+            ]
           }
         },
         "columns": [
@@ -78,28 +109,31 @@
           {
             "id": "status",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.status",
+            "labelKey": "tables.products.filters.status",
             "defaultValue": "WAIT_APPROVED"
           },
           {
             "id": "producer",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.producer"
+            "labelKey": "tables.products.filters.producer"
           },
           {
-            "id": "batch",
+            "id": "productFileId",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.batch"
+            "labelKey": "tables.products.filters.productFileId"
           },
           {
             "id": "category",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.category"
+            "labelKey": "tables.products.filters.category"
           },
           {
             "id": "gtinCode",
             "type": "text",
-            "labelKey": "pages.products.filterLabels.gtinCode"
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
           }
         ]
       }

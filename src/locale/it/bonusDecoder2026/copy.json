@@ -32,15 +32,29 @@
         "status": "Stato",
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
-        "productFileId": "Lotto"
+        "producer": "Produttore",
+        "productFileId": "Lotto",
+        "errors": {
+          "gtinCode": "Il codice deve avere 14 caratteri"
+        }
       }
     }
   },
   "categories": {
-    "satellite": { "label": "Satellitare" },
-    "terrestrial": { "label": "Terrestre" },
-    "terrestrial_via_cable": { "label": "Terrestre via Cavo" },
-    "terrestrial_and_satellite": { "label": "Terrestre e Satellitare" },
-    "terrestrial_satellite_and_via_cable": { "label": "Terrestre, Satellitare e via Cavo" }
+    "satellite": {
+      "label": "Satellitare"
+    },
+    "terrestrial": {
+      "label": "Terrestre"
+    },
+    "terrestrial_via_cable": {
+      "label": "Terrestre via Cavo"
+    },
+    "terrestrial_and_satellite": {
+      "label": "Terrestre e Satellitare"
+    },
+    "terrestrial_satellite_and_via_cable": {
+      "label": "Terrestre, Satellitare e via Cavo"
+    }
   }
 }

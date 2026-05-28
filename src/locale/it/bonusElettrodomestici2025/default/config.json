@@ -6,7 +6,9 @@
       "default": {
         "logicalName": "Utente Standard",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       }
     },
@@ -14,64 +16,106 @@
       "profileNotConfigured": "pages.products.profileNotConfigured"
     }
   },
+  "categories": {
+    "washingmachines": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "tumbledryers": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "ovens": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "rangehoods": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "dishwashers": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "washerdriers": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "refrigeratingappl": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "cookinghobs": {
+      "format": "csv",
+      "name": "cookinghobs"
+    }
+  },
   "templates": {},
   "ui": {
     "tables": {
       "products": {
         "columns": [
-          { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
+          {
+            "id": "category",
+            "labelKey": "tables.products.columns.category",
+            "sortable": true
+          },
           {
             "id": "energyClass",
             "labelKey": "tables.products.columns.energyClass",
             "sortable": true
           },
-          { "id": "eprelCode", "labelKey": "tables.products.columns.eprelCode", "sortable": true },
-          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
-          { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": false },
-          { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true }
-        ],
-        "filters": [
-          {
-            "id": "status",
-            "type": "select",
-            "labelKey": "tables.products.filters.status"
-          },
-          {
-            "id": "productFileId",
-            "type": "select",
-            "labelKey": "tables.products.filters.productFileId"
-          },
-          {
-            "id": "category",
-            "type": "select",
-            "labelKey": "tables.products.filters.category"
-          },
           {
             "id": "eprelCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.eprelCode",
-            "regEx": "\\d$",
-            "message": "tables.products.filters.errors.eprelCode",
-            "inputProps": { "inputMode": "numeric", "pattern": "\\d$" }
+            "labelKey": "tables.products.columns.eprelCode",
+            "sortable": true
           },
           {
             "id": "gtinCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.gtinCode",
-            "regEx": "^[a-zA-Z0-9]{1,14}$",
-            "message": "tables.products.filters.errors.gtinCode",
-            "inputProps": { "maxLength": 14 }
+            "labelKey": "tables.products.columns.gtinCode",
+            "sortable": true
+          },
+          {
+            "id": "batchName",
+            "labelKey": "tables.products.columns.batchName",
+            "sortable": false
+          },
+          {
+            "id": "status",
+            "labelKey": "tables.products.columns.status",
+            "sortable": true
           }
         ],
         "detail": {
           "fields": [
-            { "id": "productName", "labelKey": "pages.productDetail.productName" },
-            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
-            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
-            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
-            { "id": "brand", "labelKey": "pages.productDetail.brand" },
-            { "id": "model", "labelKey": "pages.productDetail.model" },
-            { "id": "status", "labelKey": "pages.productDetail.status" }
+            {
+              "id": "productName",
+              "labelKey": "pages.productDetail.productName"
+            },
+            {
+              "id": "batchName",
+              "labelKey": "pages.productDetail.batchName"
+            },
+            {
+              "id": "gtinCode",
+              "labelKey": "pages.productDetail.gtinCode"
+            },
+            {
+              "id": "productCode",
+              "labelKey": "pages.productDetail.productCode"
+            },
+            {
+              "id": "brand",
+              "labelKey": "pages.productDetail.brand"
+            },
+            {
+              "id": "model",
+              "labelKey": "pages.productDetail.model"
+            },
+            {
+              "id": "status",
+              "labelKey": "pages.productDetail.status"
+            }
           ]
         }
       }

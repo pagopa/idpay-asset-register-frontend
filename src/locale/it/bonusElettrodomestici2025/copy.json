@@ -19,14 +19,30 @@
     }
   },
   "categories": {
-    "washingmachines": { "label": "Lavatrici" },
-    "tumbledryers": { "label": "Asciugatrici" },
-    "ovens": { "label": "Forni" },
-    "rangehoods": { "label": "Cappe da cucina" },
-    "dishwashers": { "label": "Lavastoviglie" },
-    "washerdriers": { "label": "Lavasciuga" },
-    "refrigeratingappl": { "label": "Apparecchi di refrigerazione" },
-    "cookinghobs": { "label": "Piani cottura" }
+    "washingmachines": {
+      "label": "Lavatrici"
+    },
+    "tumbledryers": {
+      "label": "Asciugatrici"
+    },
+    "ovens": {
+      "label": "Forni"
+    },
+    "rangehoods": {
+      "label": "Cappe da cucina"
+    },
+    "dishwashers": {
+      "label": "Lavastoviglie"
+    },
+    "washerdriers": {
+      "label": "Lavasciuga"
+    },
+    "refrigeratingappl": {
+      "label": "Apparecchi di refrigerazione"
+    },
+    "cookinghobs": {
+      "label": "Piani cottura"
+    }
   },
   "tables": {
     "products": {
@@ -44,7 +60,13 @@
         "status": "Stato",
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
-        "productFileId": "Lotto"
+        "productFileId": "Lotto",
+        "producer": "Produttore",
+        "eprelCode": "Codice EPREL",
+        "errors": {
+          "gtinCode": "Il codice deve avere 14 caratteri",
+          "eprelCode": "Il codice deve essere numerico"
+        }
       }
     }
   }
