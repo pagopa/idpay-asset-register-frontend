@@ -6,13 +6,17 @@
       "invitalia": {
         "logicalName": "L1",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       },
       "invitalia_admin": {
         "logicalName": "L2",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       }
     }
@@ -20,18 +24,69 @@
   "templates": {
     "formats": {
       "csv": {
-        "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
-        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
+        "headers": [
+          "Codice GTIN/EAN",
+          "Codice Prodotto",
+          "Categoria",
+          "Marca",
+          "Modello"
+        ],
+        "fields": [
+          "GTIN123ABC4567",
+          "SKU98765",
+          "{{category}}",
+          "MarcaEsempio",
+          "ModelloX100"
+        ]
       }
     },
-    "categories": {
-      "satellite": { "format": "csv", "name": "satellitare" },
-      "terrestrial": { "format": "csv", "name": "terrestre" },
-      "terrestrial_via_cable": { "format": "csv", "name": "terrestre-via-cavo" },
-      "terrestrial_and_satellite": { "format": "csv", "name": "terrestre-e-satellitare" },
+    "category": {
+      "satellite": {
+        "label": "category.satellite.label",
+        "format": "csv",
+        "name": "satellitare"
+      },
+      "terrestrial": {
+        "label": "category.terrestrial.label",
+        "format": "csv",
+        "name": "terrestre"
+      },
+      "terrestrial_via_cable": {
+        "label": "category.terrestrial_via_cable.label",
+        "format": "csv",
+        "name": "terrestre-via-cavo"
+      },
+      "terrestrial_and_satellite": {
+        "label": "category.terrestrial_and_satellite.label",
+        "format": "csv",
+        "name": "terrestre-e-satellitare"
+      },
       "terrestrial_satellite_and_via_cable": {
+        "label": "category.terrestrial_satellite_and_via_cable.label",
         "format": "csv",
         "name": "terrestre-satellitare-e-via-cavo"
+      }
+    },
+    "status": {
+      "UPLOADED": {
+        "label": "status.products.UPLOADED",
+        "color": "default"
+      },
+      "WAIT_APPROVED": {
+        "label": "status.products.WAIT_APPROVED",
+        "color": "info"
+      },
+      "SUPERVISED": {
+        "label": "status.products.SUPERVISED",
+        "color": "primary"
+      },
+      "APPROVED": {
+        "label": "status.products.APPROVED",
+        "color": "success"
+      },
+      "REJECTED": {
+        "label": "status.products.REJECTED",
+        "color": "error"
       }
     }
   },
@@ -41,8 +96,13 @@
         "selection": {
           "enabled": true,
           "rules": {
-            "invitalia": ["UPLOADED", "SUPERVISED"],
-            "invitalia_admin": ["WAIT_APPROVED"]
+            "invitalia": [
+              "UPLOADED",
+              "SUPERVISED"
+            ],
+            "invitalia_admin": [
+              "WAIT_APPROVED"
+            ]
           }
         },
         "columns": [
@@ -73,8 +133,8 @@
             "align": "left"
           },
           {
-            "id": "batchName",
-            "labelKey": "pages.products.listHeader.batch",
+            "id": "productFileId",
+            "labelKey": "pages.products.listHeader.productFileId",
             "sortable": true,
             "align": "left"
           },
@@ -96,7 +156,8 @@
           {
             "id": "status",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.status"
+            "labelKey": "pages.products.filterLabels.status",
+            "defaultValue": "WAIT_APPROVED"
           },
           {
             "id": "producer",
@@ -104,9 +165,9 @@
             "labelKey": "pages.products.filterLabels.producer"
           },
           {
-            "id": "batch",
+            "id": "productFileId",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.batch"
+            "labelKey": "pages.products.filterLabels.productFileId"
           },
           {
             "id": "category",
@@ -116,26 +177,57 @@
           {
             "id": "gtinCode",
             "type": "text",
-            "labelKey": "pages.products.filterLabels.gtinCode"
+            "labelKey": "pages.products.filterLabels.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "pages.products.filterLabels.errors",
+            "inputProps": { "maxLength": 14 }
           }
         ],
         "ui": {
-          "filtering": { "enabled": true },
+          "filtering": {
+            "enabled": true
+          },
           "pagination": {
             "enabled": true,
             "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [10, 25, 50, 100]
+            "rowsPerPageOptions": [
+              10,
+              25,
+              50,
+              100
+            ]
           }
         },
         "detail": {
           "fields": [
-            { "id": "productName", "labelKey": "pages.productDetail.productName" },
-            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
-            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
-            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
-            { "id": "category", "labelKey": "pages.productDetail.category" },
-            { "id": "brand", "labelKey": "pages.productDetail.brand" },
-            { "id": "model", "labelKey": "pages.productDetail.model" }
+            {
+              "id": "productName",
+              "labelKey": "pages.productDetail.productName"
+            },
+            {
+              "id": "productFileId",
+              "labelKey": "pages.productDetail.productFileId"
+            },
+            {
+              "id": "gtinCode",
+              "labelKey": "pages.productDetail.gtinCode"
+            },
+            {
+              "id": "productCode",
+              "labelKey": "pages.productDetail.productCode"
+            },
+            {
+              "id": "category",
+              "labelKey": "pages.productDetail.category"
+            },
+            {
+              "id": "brand",
+              "labelKey": "pages.productDetail.brand"
+            },
+            {
+              "id": "model",
+              "labelKey": "pages.productDetail.model"
+            }
           ]
         }
       }
