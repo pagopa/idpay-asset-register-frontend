@@ -50,9 +50,9 @@
             "id": "eprelCode",
             "type": "text",
             "labelKey": "tables.products.filters.eprelCode",
-            "regEx": "^\\d{5}$",
+            "regEx": "\\d$",
             "message": "tables.products.filters.errors.eprelCode",
-            "inputProps": { "inputMode": "numeric", "pattern": "[0-9]*" }
+            "inputProps": { "inputMode": "numeric", "pattern": "\\d$" }
           },
           {
             "id": "gtinCode",
