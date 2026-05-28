@@ -4,19 +4,20 @@ import { ProductDTO } from '../../../api/generated/register';
 import { Order } from '../helpers';
 import { DEBUG_CONSOLE } from '../../../utils/constants';
 
-type UseProductsTableParams = {
+export type UseProductsTableParams = {
   initiativeId: string;
   organizationId: string;
   orderBy: keyof ProductDTO;
   order: Order;
   page: number;
   rowsPerPage: number;
-  categoryFilter: string;
-  producerFilter: string;
-  batchFilter: string;
-  eprelCodeFilter: string;
-  statusFilter?: string;
-  gtinCodeFilter: string;
+  category?: string;
+  producer?: string;
+  productFileId?: string;
+  eprelCode?: string;
+  status?: string;
+  gtinCode?: string;
+  productCode?: string;
 };
 
 export const useProductsTable = ({
@@ -26,12 +27,13 @@ export const useProductsTable = ({
   order,
   page,
   rowsPerPage,
-  categoryFilter,
-  producerFilter,
-  batchFilter,
-  eprelCodeFilter,
-  statusFilter,
-  gtinCodeFilter,
+  category,
+  producer,
+  productFileId,
+  productCode,
+  eprelCode,
+  status,
+  gtinCode,
 }: UseProductsTableParams) => {
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,12 +52,12 @@ export const useProductsTable = ({
         page,
         rowsPerPage,
         `${orderBy},${order}`,
-        categoryFilter,
-        statusFilter || undefined,
-        eprelCodeFilter,
-        gtinCodeFilter,
-        producerFilter,
-        batchFilter
+        category?.toUpperCase(),
+        status || undefined,
+        eprelCode,
+        gtinCode,
+        productCode,
+        productFileId
       );
 
       const { content, pageNo, totalElements } = res.data;
@@ -93,11 +95,13 @@ export const useProductsTable = ({
     rowsPerPage,
     orderBy,
     order,
-    categoryFilter,
-    producerFilter,
-    batchFilter,
-    eprelCodeFilter,
-    gtinCodeFilter,
+    category,
+    producer,
+    productFileId,
+    productCode,
+    eprelCode,
+    status,
+    gtinCode,
   ]);
 
   return {

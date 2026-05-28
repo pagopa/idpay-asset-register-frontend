@@ -6,13 +6,17 @@
       "default": {
         "logicalName": "Utente Standard",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       },
       "super_admin": {
         "logicalName": "Super Admin",
         "permissions": {
-          "tables": ["products"]
+          "tables": [
+            "products"
+          ]
         }
       }
     },
@@ -25,49 +29,115 @@
     "tables": {
       "products": {
         "columns": [
-          { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
+          {
+            "id": "category",
+            "labelKey": "tables.products.columns.category",
+            "sortable": true
+          },
           {
             "id": "energyClass",
             "labelKey": "tables.products.columns.energyClass",
             "sortable": true
           },
-          { "id": "eprelCode", "labelKey": "tables.products.columns.eprelCode", "sortable": true },
-          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
-          { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": false },
-          { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true }
+          {
+            "id": "eprelCode",
+            "labelKey": "tables.products.columns.eprelCode",
+            "sortable": true
+          },
+          {
+            "id": "gtinCode",
+            "labelKey": "tables.products.columns.gtinCode",
+            "sortable": true
+          },
+          {
+            "id": "productFileId",
+            "labelKey": "tables.products.columns.productFileId",
+            "sortable": false
+          },
+          {
+            "id": "status",
+            "labelKey": "tables.products.columns.status",
+            "sortable": true
+          }
         ],
         "filters": [
-          { "id": "category", "type": "select", "labelKey": "tables.products.filters.category" },
-          { "id": "status", "type": "select", "labelKey": "tables.products.filters.status" },
-          { "id": "gtinCode", "type": "text", "labelKey": "tables.products.filters.gtinCode" },
           {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
           },
           {
             "id": "productFileId",
             "type": "select",
             "labelKey": "tables.products.filters.productFileId"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^\\d{5}$",
+            "message": "tables.products.filters.errors.eprelCode",
+            "inputProps": {"inputMode": "numeric", "pattern": "[0-9]*"}
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
           }
         ],
         "ui": {
-          "filtering": { "enabled": true },
+          "filtering": {
+            "enabled": true
+          },
           "pagination": {
             "enabled": true,
             "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [10, 25, 50, 100]
+            "rowsPerPageOptions": [
+              10,
+              25,
+              50,
+              100
+            ]
           }
         },
         "detail": {
           "fields": [
-            { "id": "productName", "labelKey": "pages.productDetail.productName" },
-            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
-            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
-            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
-            { "id": "brand", "labelKey": "pages.productDetail.brand" },
-            { "id": "model", "labelKey": "pages.productDetail.model" },
-            { "id": "status", "labelKey": "pages.productDetail.status" }
+            {
+              "id": "productName",
+              "labelKey": "pages.productDetail.productName"
+            },
+            {
+              "id": "productFileId",
+              "labelKey": "pages.productDetail.productFileId"
+            },
+            {
+              "id": "gtinCode",
+              "labelKey": "pages.productDetail.gtinCode"
+            },
+            {
+              "id": "productCode",
+              "labelKey": "pages.productDetail.productCode"
+            },
+            {
+              "id": "brand",
+              "labelKey": "pages.productDetail.brand"
+            },
+            {
+              "id": "model",
+              "labelKey": "pages.productDetail.model"
+            },
+            {
+              "id": "status",
+              "labelKey": "pages.productDetail.status"
+            }
           ]
         }
       }

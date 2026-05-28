@@ -42,7 +42,7 @@ const applyTemplateValues = (templateContent: TemplateContentType, category: str
 export const useCategories = () => {
   const { t } = useScopedTranslation();
   const { config } = useInitiativeConfig();
-  const namespace = t('categories', { returnObjects: true }) as Record<
+  const namespace = t('category', { returnObjects: true }) as Record<
     string,
     string | CopyCategoryType
   >;
