@@ -5,19 +5,19 @@ import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { USERS_TYPES } from '../../utils/constants';
-import { batchIdSelector } from '../../redux/slices/productsSlice';
 import {
-  institutionListSelector,
   institutionSelector,
   setInstitutionList,
   setInstitution,
+  institutionListSelector,
 } from '../../redux/slices/invitaliaSlice';
-import { ProductDTO, ProductStatus } from '../../api/generated/register';
+import { ProductDTO } from '../../api/generated/register';
 
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
+import { SelectProps } from '../FiltersDrawer/filtersRender';
+import EmptyListTable from '../../pages/components/EmptyListTable';
 import { useProductsTable } from './hooks/useProductsTable';
-import { useProductFilters } from './hooks/useProductFilters';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
 import { validateBulkActionPreconditions } from './ProductDataGrid.helpers';
 
@@ -34,52 +34,32 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
   const { config } = useInitiativeConfig();
+  const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({});
+  const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length
+    ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {})
+    : {};
 
   const tableConfig = config?.tables?.products;
   const paginationConfig = tableConfig?.pagination;
+  const filtersConfig = config?.tables?.products?.filters;
+  const templateConfig: any = config?.templates;
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
+
+  const subRoleConfig = config?.subRoles?.[user?.org_role as string];
+  const hasProductsPermission = subRoleConfig?.permissions?.tables?.includes('products');
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
 
-  const batchId = useSelector(batchIdSelector);
-  const institutions = useSelector(institutionListSelector);
   const institution = useSelector(institutionSelector);
+  const institutions = useSelector(institutionListSelector);
 
-  const {
-    categoryFilter,
-    setCategoryFilter,
-    producerFilter,
-    setProducerFilter,
-    batchFilter,
-    setBatchFilter,
-    statusFilter,
-    setStatusFilter,
-    eprelCodeFilter,
-    setEprelCodeFilter,
-    gtinCodeFilter,
-    setGtinCodeFilter,
-    filtersLabel,
-  } = useProductFilters({
-    institutions: institutions ?? [],
-    batchFilterItems: [],
-  });
-
-  useEffect(() => {
-    if (!organizationId) {
-      setProducerFilter('');
-    }
-  }, [organizationId]);
-
-  useProductDataGridInit({
+  const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
     organizationId,
     isInvitaliaUser,
     isInvitaliaAdmin,
     institutionId: institution?.institutionId,
-    producerFilter,
-    setProducerFilter,
-    setStatusFilter,
     dispatch,
     setInstitutionList,
   });
@@ -96,28 +76,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
 
-  const targetId = producerFilter || organizationId || '';
-
-  const [defaultSuppressed, setDefaultSuppressed] = useState(false);
-
-  const effectiveStatusFilter =
-    isInvitaliaAdmin && !statusFilter && !defaultSuppressed
-      ? ProductStatus.WAIT_APPROVED
-      : statusFilter;
-
-  useEffect(() => {
-    if (effectiveStatusFilter && !statusFilter) {
-      setStatusFilter(effectiveStatusFilter);
-    }
-  }, [effectiveStatusFilter]);
-
-  const translatedFiltersLabel = useMemo(() => {
-    if (!statusFilter) {
-      return filtersLabel;
-    }
-    const translatedStatus = t(`pages.products.categories.${statusFilter}`);
-    return filtersLabel.replace(statusFilter, translatedStatus);
-  }, [filtersLabel, statusFilter, t]);
+  const targetId = isInvitaliaUser
+    ? filtersValue?.producer || institution?.institutionId || ''
+    : organizationId || user?.org_id || '';
 
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
     initiativeId,
@@ -126,51 +87,52 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     order,
     page,
     rowsPerPage,
-    categoryFilter,
-    producerFilter,
-    batchFilter,
-    eprelCodeFilter,
-    statusFilter: effectiveStatusFilter,
-    gtinCodeFilter,
+    ...filtersValue,
   });
 
-  const batchFilterItems = useMemo(() => {
-    const map = new Map<string, { productFileId: string; batchName: string }>();
+  const batchFilter: Record<string, SelectProps> = useMemo(
+    () =>
+      batchFilterItems.reduce((acc, batch) => {
+        const batchName = batch?.batchName?.replace('.csv', '');
+        return { ...acc, [batch?.productFileId || '']: { label: batchName, value: batchName } };
+      }, {}),
+    [tableData]
+  );
 
-    tableData.forEach((item) => {
-      const productFileId = (item as any)?.productFileId;
-      const batchName = (item as any)?.batchName;
+  const producerFilter: Record<string, SelectProps> | undefined = useMemo(
+    () =>
+      institutions?.reduce(
+        (acc, institution) => ({
+          ...acc,
+          [institution?.institutionId]: {
+            label: institution?.description,
+            value: institution?.institutionId,
+          },
+        }),
+        {}
+      ),
+    [institutions]
+  );
 
-      if (productFileId && batchName && !map.has(productFileId)) {
-        map.set(productFileId, {
-          productFileId,
-          batchName,
-        });
+  useEffect(() => {
+    setSelected([]);
+  }, [tableData]);
+
+  useEffect(() => {
+    if (isInvitaliaAdmin && filtersConfig && templateConfig) {
+      const defaultValues = filtersConfig?.filter((filter: any) => filter?.defaultValue);
+      if (defaultValues) {
+        const defaultFilters = defaultValues?.reduce(
+          (acc: Record<string, { value: string; label?: string }>, { id, defaultValue }: any) => {
+            const label = t(templateConfig?.[id]?.[defaultValue]?.label);
+            return { ...acc, [id]: { value: defaultValue, label } };
+          },
+          {}
+        );
+        setFilters(defaultFilters);
       }
-    });
-
-    return Array.from(map.values());
-  }, [tableData]);
-
-  useEffect(() => {
-    setSelected([]);
-  }, [tableData]);
-
-  useEffect(() => {
-    if (batchId) {
-      setBatchFilter(batchId);
     }
-  }, [batchId]);
-
-  useEffect(() => {
-    setPage(0);
-    setSelected([]);
-    setCategoryFilter('');
-    setProducerFilter('');
-    setBatchFilter('');
-    setEprelCodeFilter('');
-    setGtinCodeFilter('');
-  }, [initiativeId]);
+  }, [isInvitaliaAdmin, filtersConfig, templateConfig]);
 
   const handleOpenModalWithStatusCheck = () => {
     const result = validateBulkActionPreconditions({
@@ -195,6 +157,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     return null;
   }
 
+  if (!hasProductsPermission) {
+    return <EmptyListTable message="pages.products.noFileLoaded" />;
+  }
+
   const handleListButtonClick = (row: ProductDTO) => {
     setSelectedProduct(row);
     setDetailOpen(true);
@@ -213,7 +179,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         rowsPerPage={rowsPerPage}
         order={order}
         orderBy={orderBy}
-        filtersLabel={translatedFiltersLabel}
+        filters={filters}
         selected={selected}
         effectiveColumns={effectiveColumns}
         paginationConfig={paginationConfig}
@@ -232,15 +198,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           setPage(0);
         }}
         handleDeleteFiltersButtonClick={() => {
-          setCategoryFilter('');
-          setStatusFilter('');
-          setProducerFilter('');
-          setBatchFilter('');
-          setEprelCodeFilter('');
-          setGtinCodeFilter('');
-          if (isInvitaliaAdmin) {
-            setDefaultSuppressed(true);
-          }
+          setFilters({});
           dispatch(
             setInstitution({
               institutionId: '',
@@ -297,37 +255,16 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         </DetailDrawer>
       )}
 
-      {/* ✅ Filters Drawer */}
       <FiltersDrawer
         open={filtersDrawerOpen}
         toggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
-        statusFilter={effectiveStatusFilter}
-        setStatusFilter={setStatusFilter}
-        producerFilter={producerFilter}
-        setProducerFilter={setProducerFilter}
-        batchFilter={batchFilter}
-        setBatchFilter={setBatchFilter}
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        eprelCodeFilter={eprelCodeFilter}
-        setEprelCodeFilter={setEprelCodeFilter}
-        gtinCodeFilter={gtinCodeFilter}
-        setGtinCodeFilter={setGtinCodeFilter}
-        batchFilterItems={batchFilterItems}
-        errorStatus={false}
-        handleDeleteFiltersButtonClick={() => {
-          setCategoryFilter('');
-          setStatusFilter('');
-          setProducerFilter('');
-          setBatchFilter('');
-          setEprelCodeFilter('');
-          setGtinCodeFilter('');
-          if (isInvitaliaAdmin) {
-            setDefaultSuppressed(true);
-          }
-        }}
-        setFiltering={() => {}}
+        filters={filters}
+        setFilters={setFilters}
         setPage={setPage}
+        batchFilterItems={batchFilter}
+        producerFilterItems={producerFilter}
+        filtersConfig={filtersConfig}
+        templateConfig={templateConfig}
       />
     </>
   );

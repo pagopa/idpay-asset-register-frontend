@@ -82,6 +82,34 @@
             "align": "left"
           }
         ],
+        "filters": [
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "pages.products.filterLabels.status",
+            "defaultValue": "WAIT_APPROVED"
+          },
+          {
+            "id": "producer",
+            "type": "select",
+            "labelKey": "pages.products.filterLabels.producer"
+          },
+          {
+            "id": "batch",
+            "type": "select",
+            "labelKey": "pages.products.filterLabels.batch"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "pages.products.filterLabels.category"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "pages.products.filterLabels.gtinCode"
+          }
+        ],
         "detail": {
           "fields": [
             { "id": "productName", "labelKey": "pages.productDetail.productName" },

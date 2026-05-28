@@ -10,6 +10,7 @@ import ProductsTable from '../../pages/components/ProductsTable';
 import { ProductDTO } from '../../api/generated/register';
 import NewFilter from './NewFilter';
 import ProductStatusActionBar from './ProductStatusActionBar';
+import { useProductFilters } from './hooks/useProductFilters';
 
 type Props = {
   isInvitaliaUser: boolean;
@@ -22,7 +23,7 @@ type Props = {
   rowsPerPage: number;
   order: any;
   orderBy: keyof ProductDTO;
-  filtersLabel: string;
+  filters: Record<string, { value: string; label?: string }>;
   selected: Array<string>;
   effectiveColumns: Array<any>;
   paginationConfig: any;
@@ -49,7 +50,7 @@ const ProductDataGridView: React.FC<Props> = ({
   rowsPerPage,
   order,
   orderBy,
-  filtersLabel,
+  filters,
   selected,
   effectiveColumns,
   paginationConfig,
@@ -65,6 +66,7 @@ const ProductDataGridView: React.FC<Props> = ({
   handleOpenModalWithStatusCheck,
 }) => {
   const { t } = useTranslation();
+  const { filtersLabel } = useProductFilters({ filters });
   const theme = useTheme();
   return (
     <>
@@ -100,11 +102,11 @@ const ProductDataGridView: React.FC<Props> = ({
             size="medium"
             label={filtersLabel}
             sx={{
-              color: theme.palette.primary.contrastText,
-              backgroundColor: theme.palette.primary.main,
+              color: `${theme.palette.primary.contrastText} !important`,
+              backgroundColor: `${theme.palette.primary.main} !important`,
             }}
             onDelete={handleDeleteFiltersButtonClick}
-            deleteIcon={<CloseIcon sx={{ color: theme.palette.primary.contrastText }} />}
+            deleteIcon={<CloseIcon sx={{ color: `${theme.palette.primary.contrastText} !important` }} />}
           />
         ) : (
           <span />

@@ -78,7 +78,8 @@
           {
             "id": "status",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.status"
+            "labelKey": "pages.products.filterLabels.status",
+            "defaultValue": "WAIT_APPROVED"
           },
           {
             "id": "producer",

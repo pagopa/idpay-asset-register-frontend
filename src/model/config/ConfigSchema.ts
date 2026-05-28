@@ -8,6 +8,10 @@ export interface FilterConfig {
   id: string;
   type: 'select' | 'text';
   labelKey?: string;
+  defaultValue?: string;
+  regEx?: string;
+  message?: string;
+  inputProps?: Record<string, unknown>;
 }
 
 export interface DetailFieldConfig {
