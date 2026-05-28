@@ -212,7 +212,7 @@ describe('InvitaliaOverview', () => {
     renderWithProvider(<InvitaliaOverview />);
     const pageBtn = await screen.findByText('PageChange');
     fireEvent.click(pageBtn);
-    expect(screen.getByTestId('table-page')).toHaveTextContent('1');
+    await waitFor(() => expect(screen.getByTestId('table-page')).toHaveTextContent('1'));
     const rowsBtn = await screen.findByText('RowsPerPage');
     fireEvent.click(rowsBtn);
     expect(screen.getByTestId('table-rows')).toHaveTextContent('5');
