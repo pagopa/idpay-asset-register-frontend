@@ -1,45 +1,96 @@
+/// <reference types="jest" />
+import { describe, test, expect } from '@jest/globals';
 import { validateBulkActionPreconditions } from '../ProductDataGrid.helpers';
-import { PRODUCTS_STATES } from '../../../utils/constants';
+import { ProductDTO } from '../../../api/generated/register';
 
-describe('ProductDataGrid.helpers - validateBulkActionPreconditions', () => {
-  const buildRow = (status: string, gtin: string) => ({
-    gtinCode: gtin,
+const createRow = (status: any, gtinCode: string): ProductDTO =>
+  ({
     status,
+    gtinCode,
+  } as ProductDTO);
+
+describe('validateBulkActionPreconditions - config driven', () => {
+  const tableData: ProductDTO[] = [
+    createRow('UPLOADED', '1'),
+    createRow('WAIT_APPROVED', '2'),
+    createRow('SUPERVISED', '3'),
+  ];
+
+  test('returns EMPTY when nothing selected', () => {
+    const result = validateBulkActionPreconditions({
+      selected: [],
+      tableData,
+      roleKey: 'invitalia',
+      tableConfig: { columns: [] } as any,
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.reason).toBe('EMPTY');
   });
 
-  it('returns valid when statuses are homogeneous', () => {
+  test('blocks mixed status when preventMixedStatus true', () => {
     const result = validateBulkActionPreconditions({
       selected: ['1', '2'],
-      tableData: [
-        buildRow(PRODUCTS_STATES.UPLOADED, '1'),
-        buildRow(PRODUCTS_STATES.UPLOADED, '2'),
-      ] as any,
-      isInvitaliaAdmin: false,
+      tableData,
+      roleKey: 'invitalia',
+      tableConfig: {
+        bulkRules: {
+          preventMixedStatus: true,
+        },
+      } as any,
+    });
+
+    expect(result.valid).toBe(false);
+    expect(result.reason).toBe('MIXED_STATUS');
+  });
+
+  test('allows mixed status when preventMixedStatus false', () => {
+    const result = validateBulkActionPreconditions({
+      selected: ['1', '2'],
+      tableData,
+      roleKey: 'invitalia',
+      tableConfig: {
+        bulkRules: {
+          preventMixedStatus: false,
+        },
+      } as any,
     });
 
     expect(result.valid).toBe(true);
   });
 
-  it('returns invalid for mixed statuses', () => {
-    const result = validateBulkActionPreconditions({
-      selected: ['1', '2'],
-      tableData: [
-        buildRow(PRODUCTS_STATES.UPLOADED, '1'),
-        buildRow(PRODUCTS_STATES.SUPERVISED, '2'),
-      ] as any,
-      isInvitaliaAdmin: false,
-    });
-
-    expect(result.valid).toBe(false);
-  });
-
-  it('returns invalid for self approval when admin', () => {
+  test('blocks when status not allowed for role', () => {
     const result = validateBulkActionPreconditions({
       selected: ['1'],
-      tableData: [buildRow(PRODUCTS_STATES.UPLOADED, '1')] as any,
-      isInvitaliaAdmin: true,
+      tableData,
+      roleKey: 'invitalia_admin',
+      tableConfig: {
+        bulkRules: {
+          allowedStatusesByRole: {
+            invitalia_admin: ['WAIT_APPROVED'],
+          },
+        },
+      } as any,
     });
 
     expect(result.valid).toBe(false);
+    expect(result.reason).toBe('NOT_ALLOWED_STATUS');
+  });
+
+  test('allows when status allowed for role', () => {
+    const result = validateBulkActionPreconditions({
+      selected: ['2'],
+      tableData,
+      roleKey: 'invitalia_admin',
+      tableConfig: {
+        bulkRules: {
+          allowedStatusesByRole: {
+            invitalia_admin: ['WAIT_APPROVED'],
+          },
+        },
+      } as any,
+    });
+
+    expect(result.valid).toBe(true);
   });
 });
