@@ -28,21 +28,36 @@ type Props = {
   organizationId: string;
 };
 
+type FullConfig =
+  | import('../../model/config/ConfigSchema').InitiativeConfig
+  | import('../../model/config/ConfigSchema').LegacyInitiativeConfig;
+
+function resolveTableConfig(typedConfig: FullConfig) {
+  if ('ui' in typedConfig && typedConfig.ui) {
+    return typedConfig.ui.tables.products;
+  }
+  if ('tables' in typedConfig && typedConfig.tables) {
+    return typedConfig.tables.products;
+  }
+  return undefined;
+}
+
 const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
   const { config } = useInitiativeConfig();
+  const typedConfig = config as FullConfig;
   const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({});
   const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length
     ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {})
     : {};
 
-  const tableConfig = (config as any)?.ui?.tables?.products ?? (config as any)?.tables?.products;
+  const tableConfig = resolveTableConfig(typedConfig);
+
   const paginationConfig = tableConfig?.pagination;
-  const filtersConfig =
-    (config as any)?.ui?.tables?.products?.filters ?? (config as any)?.tables?.products?.filters;
-  const templateConfig = config?.templates;
+  const filtersConfig = tableConfig?.filters;
+  const templateConfig = 'templates' in typedConfig ? typedConfig.templates : undefined;
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
@@ -105,8 +120,12 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   );
 
   const buildCategoryOptions = () => {
-    const configCategories = (config as any)?.categories;
-    const templateCategories = (config as any)?.templates?.categories ?? {};
+    const configCategories = 'categories' in typedConfig ? typedConfig.categories : undefined;
+
+    const templateCategories =
+      'templates' in typedConfig && typedConfig.templates?.categories
+        ? typedConfig.templates.categories
+        : {};
 
     if (!configCategories || Object.keys(configCategories).length === 0) {
       return Object.fromEntries(
@@ -137,8 +156,12 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       return filtersConfig;
     }
 
-    return filtersConfig.map((filter: any) => {
-      if (filter.useInitiativeCategories || filter.id === 'category') {
+    return filtersConfig.map((filter) => {
+      if (
+        ('useInitiativeCategories' in filter &&
+          (filter as unknown as { useInitiativeCategories?: boolean }).useInitiativeCategories) ||
+        filter.id === 'category'
+      ) {
         return { ...filter, options: buildCategoryOptions() };
       }
 
@@ -184,17 +207,18 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   useEffect(() => {
     if (isInvitaliaAdmin && enrichedFiltersConfig) {
-      const defaultValues = enrichedFiltersConfig.filter((filter: any) => filter?.defaultValue);
+      const defaultValues = enrichedFiltersConfig.filter((filter) => filter?.defaultValue);
       if (defaultValues) {
         const defaultFilters = defaultValues.reduce(
           (
             acc: Record<string, { value: string; label?: string }>,
-            { id, defaultValue, options }: any
+            { id, defaultValue, options }
           ) => {
-            const label = options?.[defaultValue]?.labelKey
-              ? t(options[defaultValue].labelKey)
-              : defaultValue;
-            return { ...acc, [id]: { value: defaultValue, label } };
+            const label =
+              options && defaultValue && options[defaultValue]?.labelKey
+                ? t(options[defaultValue].labelKey)
+                : defaultValue;
+            return { ...acc, [id]: { value: defaultValue || '', label } };
           },
           {}
         );
