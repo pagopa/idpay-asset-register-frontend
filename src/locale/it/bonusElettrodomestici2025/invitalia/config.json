@@ -21,70 +21,26 @@
       }
     }
   },
-  "templates": {
-    "category": {
-      "washingmachines": {
-        "label": "category.washingmachines.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "tumbledryers": {
-        "label": "category.tumbledryers.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "ovens": {
-        "label": "category.ovens.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "rangehoods": {
-        "label": "category.rangehoods.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "dishwashers": {
-        "label": "category.dishwashers.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "washerdriers": {
-        "label": "category.washerdriers.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "refrigeratingappl": {
-        "label": "category.refrigeratingappl.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "cookinghobs": {
-        "label": "category.cookinghobs.label",
-        "format": "csv",
-        "name": "cookinghobs"
-      }
+  "status": {
+    "UPLOADED": {
+      "label": "status.products.UPLOADED",
+      "color": "default"
     },
-    "status": {
-      "UPLOADED": {
-        "label": "status.products.UPLOADED",
-        "color": "default"
-      },
-      "WAIT_APPROVED": {
-        "label": "status.products.WAIT_APPROVED",
-        "color": "info"
-      },
-      "SUPERVISED": {
-        "label": "status.products.SUPERVISED",
-        "color": "primary"
-      },
-      "APPROVED": {
-        "label": "status.products.APPROVED",
-        "color": "success"
-      },
-      "REJECTED": {
-        "label": "status.products.REJECTED",
-        "color": "error"
-      }
+    "WAIT_APPROVED": {
+      "label": "status.products.WAIT_APPROVED",
+      "color": "info"
+    },
+    "SUPERVISED": {
+      "label": "status.products.SUPERVISED",
+      "color": "primary"
+    },
+    "APPROVED": {
+      "label": "status.products.APPROVED",
+      "color": "success"
+    },
+    "REJECTED": {
+      "label": "status.products.REJECTED",
+      "color": "error"
     }
   },
   "ui": {
@@ -137,7 +93,7 @@
             "align": "center"
           },
           {
-            "id": "productFileId",
+            "id": "batchName",
             "labelKey": "pages.products.listHeader.productFileId",
             "sortable": true,
             "align": "left"
@@ -156,10 +112,6 @@
             "align": "left"
           }
         ],
-        "defaultSort": {
-          "field": "category",
-          "direction": "asc"
-        },
         "filters": [
           {
             "id": "status",
@@ -170,7 +122,7 @@
           {
             "id": "producer",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.producer"
+            "labelKey": "tables.products.filters.producer"
           },
           {
             "id": "productFileId",
@@ -188,7 +140,10 @@
             "labelKey": "tables.products.filters.eprelCode",
             "regEx": "\\d$",
             "message": "tables.products.filters.errors.eprelCode",
-            "inputProps": {"inputMode": "numeric", "pattern": "\\d$"}
+            "inputProps": {
+              "inputMode": "numeric",
+              "pattern": "\\d$"
+            }
           },
           {
             "id": "gtinCode",
@@ -196,24 +151,11 @@
             "labelKey": "tables.products.filters.gtinCode",
             "regEx": "^[a-zA-Z0-9]{1,14}$",
             "message": "tables.products.filters.errors.gtinCode",
-            "inputProps": { "maxLength": 14 }
+            "inputProps": {
+              "maxLength": 14
+            }
           }
         ],
-        "ui": {
-          "filtering": {
-            "enabled": true
-          },
-          "pagination": {
-            "enabled": true,
-            "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [
-              10,
-              25,
-              50,
-              100
-            ]
-          }
-        },
         "detail": {
           "fields": [
             {
@@ -221,8 +163,8 @@
               "labelKey": "pages.productDetail.productName"
             },
             {
-              "id": "productFileId",
-              "labelKey": "pages.productDetail.productFileId"
+              "id": "batchName",
+              "labelKey": "pages.productDetail.batchName"
             },
             {
               "id": "registrationDate",

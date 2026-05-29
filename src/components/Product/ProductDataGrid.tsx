@@ -16,6 +16,7 @@ import { ProductDTO } from '../../api/generated/register';
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { SelectProps } from '../FiltersDrawer/filtersRender';
+import EmptyListTable from '../../pages/components/EmptyListTable';
 import { useProductsTable } from './hooks/useProductsTable';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
 import { validateBulkActionPreconditions } from './ProductDataGrid.helpers';
@@ -34,14 +35,19 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const initiativeId = useCurrentInitiativeId();
   const { config } = useInitiativeConfig();
   const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({});
-  const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {}) : {};
+  const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length
+    ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {})
+    : {};
 
   const tableConfig = config?.tables?.products;
-  const paginationConfig = tableConfig?.ui?.pagination;
-  const filtersConfig: Array<Record<string, string>> = config?.tables?.products?.filters;
-  const templateConfig = config?.templates;
+  const paginationConfig = tableConfig?.pagination;
+  const filtersConfig = config?.tables?.products?.filters;
+  const templateConfig: any = config?.templates;
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
+
+  const subRoleConfig = config?.subRoles?.[user?.org_role as string];
+  const hasProductsPermission = subRoleConfig?.permissions?.tables?.includes('products');
   const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
 
@@ -81,18 +87,32 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     order,
     page,
     rowsPerPage,
-    ...filtersValue
+    ...filtersValue,
   });
 
-  const batchFilter: Record<string, SelectProps> = useMemo(() =>
-    batchFilterItems.reduce((acc, batch) => {
-      const batchName = batch?.batchName?.replace(".csv", "");
-      return { ...acc, [batch?.productFileId || '']: { label: batchName, value: batchName } };
-    }, {}), [tableData]);
+  const batchFilter: Record<string, SelectProps> = useMemo(
+    () =>
+      batchFilterItems.reduce((acc, batch) => {
+        const batchName = batch?.batchName?.replace('.csv', '');
+        return { ...acc, [batch?.productFileId || '']: { label: batchName, value: batchName } };
+      }, {}),
+    [tableData]
+  );
 
-  const producerFilter: Record<string, SelectProps> | undefined = useMemo(() =>
-    institutions?.reduce((acc, institution) => ({ ...acc, [institution?.institutionId]: { label: institution?.description, value: institution?.institutionId } }), {}),
-    [institutions]);
+  const producerFilter: Record<string, SelectProps> | undefined = useMemo(
+    () =>
+      institutions?.reduce(
+        (acc, institution) => ({
+          ...acc,
+          [institution?.institutionId]: {
+            label: institution?.description,
+            value: institution?.institutionId,
+          },
+        }),
+        {}
+      ),
+    [institutions]
+  );
 
   useEffect(() => {
     setSelected([]);
@@ -100,15 +120,18 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   useEffect(() => {
     if (isInvitaliaAdmin && filtersConfig && templateConfig) {
-      const defaultValues = filtersConfig?.filter((filter) => filter?.defaultValue);
+      const defaultValues = filtersConfig?.filter((filter: any) => filter?.defaultValue);
       if (defaultValues) {
-        const defaultFilters = defaultValues?.reduce((acc, { id, defaultValue }) => {
-          const label = t(templateConfig?.[id]?.[defaultValue]?.label);
-          return ({ ...acc, [id]: { value: defaultValue, label } });
-        }, {} as Record<string, { value: string; label?: string }>);
+        const defaultFilters = defaultValues?.reduce(
+          (acc: Record<string, { value: string; label?: string }>, { id, defaultValue }: any) => {
+            const label = t(templateConfig?.[id]?.[defaultValue]?.label);
+            return { ...acc, [id]: { value: defaultValue, label } };
+          },
+          {}
+        );
         setFilters(defaultFilters);
       }
-    };
+    }
   }, [isInvitaliaAdmin, filtersConfig, templateConfig]);
 
   const handleOpenModalWithStatusCheck = () => {
@@ -124,7 +147,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   };
 
   const effectiveColumns = useMemo(() => {
-    const baseCols = Array.isArray(tableConfig?.columns) ? tableConfig.columns : [];
+    const baseCols = tableConfig?.columns ?? [];
     const hasAction = baseCols.some((c: any) => c.type === 'action');
 
     return hasAction ? baseCols : [...baseCols, { id: '__detail__', labelKey: '', type: 'action' }];
@@ -132,6 +155,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   if (!tableConfig) {
     return null;
+  }
+
+  if (!hasProductsPermission) {
+    return <EmptyListTable message="pages.products.noFileLoaded" />;
   }
 
   const handleListButtonClick = (row: ProductDTO) => {
@@ -223,7 +250,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
               setDetailOpen(false);
               setSelectedProduct(null);
             }}
-            onShowRejectedMsg={() => { }}
+            onShowRejectedMsg={() => {}}
           />
         </DetailDrawer>
       )}

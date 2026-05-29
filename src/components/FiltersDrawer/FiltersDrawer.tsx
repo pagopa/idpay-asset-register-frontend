@@ -1,12 +1,6 @@
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import {
-  Button,
-  FormControl,
-  IconButton,
-  InputLabel,
-  Typography,
-} from '@mui/material';
+import { Button, FormControl, IconButton, InputLabel, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
@@ -24,7 +18,6 @@ type Props = {
   templateConfig: any;
 };
 
-
 export default function FiltersDrawer({
   open,
   toggleFiltersDrawer,
@@ -34,14 +27,15 @@ export default function FiltersDrawer({
   setFilters,
   setPage,
   filtersConfig,
-  templateConfig
+  templateConfig,
 }: Props) {
   const { t } = useScopedTranslation();
-  const [draftFilters, setDraftFilters] = useState<Record<string, { value: string; label?: string }>>(filters);
+  const [draftFilters, setDraftFilters] =
+    useState<Record<string, { value: string; label?: string }>>(filters);
   const [errors, setErrors] = useState<Array<string>>([]);
   const templateMap: Record<string, any> = {
     producer: producerFilterItems,
-    productFileId: batchFilterItems
+    productFileId: batchFilterItems,
   };
 
   useEffect(() => setDraftFilters(filters), [filters]);
@@ -53,22 +47,27 @@ export default function FiltersDrawer({
   }, []);
 
   const handleErrors = useCallback((id: string, isError: boolean) => {
-    setErrors((prev) => isError ? !prev?.includes(id) ? [...prev, id] : prev
-      : prev.filter(error => error !== id));
+    setErrors((prev) =>
+      isError ? (!prev?.includes(id) ? [...prev, id] : prev) : prev.filter((error) => error !== id)
+    );
   }, []);
 
-  const handleDraftFilters = useCallback((id: string, value: { value: string; label?: string }) => {
-    const newFilters = Object.entries(draftFilters).reduce((acc, [filterKey, filterValue]) =>
-      ({ ...acc, ...(filterKey !== id ? { [filterKey]: filterValue } : {}) }), value.value ? { [id]: value } : {});
-    setDraftFilters(newFilters);
-  }, [draftFilters]);
+  const handleDraftFilters = useCallback(
+    (id: string, value: { value: string; label?: string }) => {
+      const newFilters = Object.entries(draftFilters).reduce(
+        (acc, [filterKey, filterValue]) => ({
+          ...acc,
+          ...(filterKey !== id ? { [filterKey]: filterValue } : {}),
+        }),
+        value.value ? { [id]: value } : {}
+      );
+      setDraftFilters(newFilters);
+    },
+    [draftFilters]
+  );
 
   return (
-    <Drawer
-      anchor="right"
-      open={open}
-      data-testid="detail-drawer"
-    >
+    <Drawer anchor="right" open={open} data-testid="detail-drawer">
       <Box
         sx={{
           display: 'flex',
@@ -90,18 +89,30 @@ export default function FiltersDrawer({
         </IconButton>
       </Box>
       <Box paddingX="24px" maxWidth="417px">
-        {filtersConfig && filtersConfig.map(({ type, ...item }: FiltersProps) => {
-          const template = templateMap?.[item.id] || templateConfig?.[item.id];
-          const filtersParams = { item, t, template, errors, setErrors: handleErrors, filters: draftFilters, setFilters: handleDraftFilters };
+        {filtersConfig &&
+          filtersConfig.map(({ type, ...item }: FiltersProps) => {
+            const template = templateMap?.[item.id] || templateConfig?.[item.id];
+            const filtersParams = {
+              item,
+              t,
+              template,
+              errors,
+              setErrors: handleErrors,
+              filters: draftFilters,
+              setFilters: handleDraftFilters,
+            };
 
-          return <FormControl key={item.id} fullWidth size="small" margin="normal">
-            {type === "select" && <InputLabel id={`${item.id}-filter-select-label`}>
-              {t(item.labelKey)}
-            </InputLabel>}
-            {filtersRender[type](filtersParams)
-            }
-          </FormControl>;
-        })}
+            return (
+              <FormControl key={item.id} fullWidth size="small" margin="normal">
+                {type === 'select' && (
+                  <InputLabel id={`${item.id}-filter-select-label`}>
+                    {t(item.labelKey ?? '')}
+                  </InputLabel>
+                )}
+                {filtersRender[type](filtersParams)}
+              </FormControl>
+            );
+          })}
 
         <Button
           disabled={!Object.keys(draftFilters).length || !!errors.length}

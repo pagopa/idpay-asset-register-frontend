@@ -30,7 +30,7 @@
     "removeFiltersBtn": "Rimuovi filtri",
     "sendBtn": "Invia",
     "title": "Elenco informatico degli elettrodomestici",
-    "category": {
+    "categories": {
       "washingmachines": "Lavatrici",
       "tumbledryers": "Asciugatrici",
       "ovens": "Forni",
@@ -208,7 +208,7 @@
         "category": "Categoria",
         "status": "Stato",
         "producer": "Produttore",
-        "productFileId": "Lotto",
+        "batch": "Lotto",
         "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN/EAN",
         "manufacturerCode": "Codice produttore",
@@ -224,7 +224,7 @@
         "gtinCode": "Codice GTIN/EAN",
         "productFileId": "Lotto"
       },
-      "category": {
+      "categories": {
         "WASHINGMACHINES": "Lavatrici",
         "WASHERDRIERS": "Lavasciuga",
         "OVENS": "Forni",
@@ -273,7 +273,7 @@
       "eprelCheckDate": "Data verifica EPREL",
       "productSheet": "SCHEDA PRODOTTO",
       "productName": "Nome prodotto",
-      "productFileId": "Lotto",
+      "batchName": "Lotto",
       "eprelCode": "Codice EPREL",
       "gtinCode": "Codice GTIN/EAN",
       "productCode": "Codice prodotto",

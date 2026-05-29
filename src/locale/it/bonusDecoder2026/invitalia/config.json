@@ -21,73 +21,26 @@
       }
     }
   },
-  "templates": {
-    "formats": {
-      "csv": {
-        "headers": [
-          "Codice GTIN/EAN",
-          "Codice Prodotto",
-          "Categoria",
-          "Marca",
-          "Modello"
-        ],
-        "fields": [
-          "GTIN123ABC4567",
-          "SKU98765",
-          "{{category}}",
-          "MarcaEsempio",
-          "ModelloX100"
-        ]
-      }
+  "status": {
+    "UPLOADED": {
+      "label": "status.products.UPLOADED",
+      "color": "default"
     },
-    "category": {
-      "satellite": {
-        "label": "category.satellite.label",
-        "format": "csv",
-        "name": "satellitare"
-      },
-      "terrestrial": {
-        "label": "category.terrestrial.label",
-        "format": "csv",
-        "name": "terrestre"
-      },
-      "terrestrial_via_cable": {
-        "label": "category.terrestrial_via_cable.label",
-        "format": "csv",
-        "name": "terrestre-via-cavo"
-      },
-      "terrestrial_and_satellite": {
-        "label": "category.terrestrial_and_satellite.label",
-        "format": "csv",
-        "name": "terrestre-e-satellitare"
-      },
-      "terrestrial_satellite_and_via_cable": {
-        "label": "category.terrestrial_satellite_and_via_cable.label",
-        "format": "csv",
-        "name": "terrestre-satellitare-e-via-cavo"
-      }
+    "WAIT_APPROVED": {
+      "label": "status.products.WAIT_APPROVED",
+      "color": "info"
     },
-    "status": {
-      "UPLOADED": {
-        "label": "status.products.UPLOADED",
-        "color": "default"
-      },
-      "WAIT_APPROVED": {
-        "label": "status.products.WAIT_APPROVED",
-        "color": "info"
-      },
-      "SUPERVISED": {
-        "label": "status.products.SUPERVISED",
-        "color": "primary"
-      },
-      "APPROVED": {
-        "label": "status.products.APPROVED",
-        "color": "success"
-      },
-      "REJECTED": {
-        "label": "status.products.REJECTED",
-        "color": "error"
-      }
+    "SUPERVISED": {
+      "label": "status.products.SUPERVISED",
+      "color": "primary"
+    },
+    "APPROVED": {
+      "label": "status.products.APPROVED",
+      "color": "success"
+    },
+    "REJECTED": {
+      "label": "status.products.REJECTED",
+      "color": "error"
     }
   },
   "ui": {
@@ -133,8 +86,8 @@
             "align": "left"
           },
           {
-            "id": "productFileId",
-            "labelKey": "pages.products.listHeader.productFileId",
+            "id": "batchName",
+            "labelKey": "pages.products.listHeader.batch",
             "sortable": true,
             "align": "left"
           },
@@ -156,80 +109,33 @@
           {
             "id": "status",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.status",
+            "labelKey": "tables.products.filters.status",
             "defaultValue": "WAIT_APPROVED"
           },
           {
             "id": "producer",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.producer"
+            "labelKey": "tables.products.filters.producer"
           },
           {
             "id": "productFileId",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.productFileId"
+            "labelKey": "tables.products.filters.productFileId"
           },
           {
             "id": "category",
             "type": "select",
-            "labelKey": "pages.products.filterLabels.category"
+            "labelKey": "tables.products.filters.category"
           },
           {
             "id": "gtinCode",
             "type": "text",
-            "labelKey": "pages.products.filterLabels.gtinCode",
+            "labelKey": "tables.products.filters.gtinCode",
             "regEx": "^[a-zA-Z0-9]{1,14}$",
-            "message": "pages.products.filterLabels.errors",
+            "message": "tables.products.filters.errors.gtinCode",
             "inputProps": { "maxLength": 14 }
           }
-        ],
-        "ui": {
-          "filtering": {
-            "enabled": true
-          },
-          "pagination": {
-            "enabled": true,
-            "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [
-              10,
-              25,
-              50,
-              100
-            ]
-          }
-        },
-        "detail": {
-          "fields": [
-            {
-              "id": "productName",
-              "labelKey": "pages.productDetail.productName"
-            },
-            {
-              "id": "productFileId",
-              "labelKey": "pages.productDetail.productFileId"
-            },
-            {
-              "id": "gtinCode",
-              "labelKey": "pages.productDetail.gtinCode"
-            },
-            {
-              "id": "productCode",
-              "labelKey": "pages.productDetail.productCode"
-            },
-            {
-              "id": "category",
-              "labelKey": "pages.productDetail.category"
-            },
-            {
-              "id": "brand",
-              "labelKey": "pages.productDetail.brand"
-            },
-            {
-              "id": "model",
-              "labelKey": "pages.productDetail.model"
-            }
-          ]
-        }
+        ]
       }
     }
   }

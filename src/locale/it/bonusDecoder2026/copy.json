@@ -25,13 +25,14 @@
         "productCode": "Codice prodotto",
         "category": "Categoria",
         "status": "Stato",
-        "productFileId": "Lotto"
+        "batchName": "Lotto"
       },
       "filters": {
         "category": "Categoria",
         "status": "Stato",
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
+        "producer": "Produttore",
         "productFileId": "Lotto",
         "errors": {
           "gtinCode": "Il codice deve avere 14 caratteri"
@@ -39,7 +40,7 @@
       }
     }
   },
-  "category": {
+  "categories": {
     "satellite": {
       "label": "Satellitare"
     },
@@ -54,15 +55,6 @@
     },
     "terrestrial_satellite_and_via_cable": {
       "label": "Terrestre, Satellitare e via Cavo"
-    }
-  },
-  "status": {
-    "products": {
-      "UPLOADED": "Da Esaminare",
-      "WAIT_APPROVED": "Da approvare",
-      "SUPERVISED": "Da controllare",
-      "APPROVED": "Approvato",
-      "REJECTED": "Escluso"
     }
   }
 }

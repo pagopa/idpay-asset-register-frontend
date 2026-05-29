@@ -10,18 +10,44 @@
             "products"
           ]
         }
-      },
-      "super_admin": {
-        "logicalName": "Super Admin",
-        "permissions": {
-          "tables": [
-            "products"
-          ]
-        }
       }
     },
     "errors": {
       "profileNotConfigured": "pages.products.profileNotConfigured"
+    }
+  },
+  "categories": {
+    "washingmachines": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "tumbledryers": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "ovens": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "rangehoods": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "dishwashers": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "washerdriers": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "refrigeratingappl": {
+      "format": "eprel",
+      "name": "eprel"
+    },
+    "cookinghobs": {
+      "format": "csv",
+      "name": "cookinghobs"
     }
   },
   "templates": {},
@@ -50,8 +76,8 @@
             "sortable": true
           },
           {
-            "id": "productFileId",
-            "labelKey": "tables.products.columns.productFileId",
+            "id": "batchName",
+            "labelKey": "tables.products.columns.batchName",
             "sortable": false
           },
           {
@@ -60,54 +86,6 @@
             "sortable": true
           }
         ],
-        "filters": [
-          {
-            "id": "status",
-            "type": "select",
-            "labelKey": "tables.products.filters.status"
-          },
-          {
-            "id": "productFileId",
-            "type": "select",
-            "labelKey": "tables.products.filters.productFileId"
-          },
-          {
-            "id": "category",
-            "type": "select",
-            "labelKey": "tables.products.filters.category"
-          },
-          {
-            "id": "eprelCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.eprelCode",
-            "regEx": "\\d$",
-            "message": "tables.products.filters.errors.eprelCode",
-            "inputProps": {"inputMode": "numeric", "pattern": "\\d$"}
-          },
-          {
-            "id": "gtinCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.gtinCode",
-            "regEx": "^[a-zA-Z0-9]{1,14}$",
-            "message": "tables.products.filters.errors.gtinCode",
-            "inputProps": { "maxLength": 14 }
-          }
-        ],
-        "ui": {
-          "filtering": {
-            "enabled": true
-          },
-          "pagination": {
-            "enabled": true,
-            "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [
-              10,
-              25,
-              50,
-              100
-            ]
-          }
-        },
         "detail": {
           "fields": [
             {
@@ -115,8 +93,8 @@
               "labelKey": "pages.productDetail.productName"
             },
             {
-              "id": "productFileId",
-              "labelKey": "pages.productDetail.productFileId"
+              "id": "batchName",
+              "labelKey": "pages.productDetail.batchName"
             },
             {
               "id": "gtinCode",

@@ -6,9 +6,7 @@
       "default": {
         "logicalName": "Fallback Default",
         "permissions": {
-          "tables": [
-            "products"
-          ]
+          "tables": ["products"]
         }
       }
     },
@@ -29,27 +27,17 @@
             "maxTable": 45
           }
         },
+        "pagination": {
+          "enabled": true,
+          "defaultRowsPerPage": 10,
+          "rowsPerPageOptions": [10, 25, 50, 100]
+        },
         "columns": [
-          {
-            "id": "gtinCode",
-            "labelKey": "tables.products.columns.gtinCode"
-          },
-          {
-            "id": "productCode",
-            "labelKey": "tables.products.columns.productCode"
-          },
-          {
-            "id": "category",
-            "labelKey": "tables.products.columns.category"
-          },
-          {
-            "id": "status",
-            "labelKey": "tables.products.columns.status"
-          },
-          {
-            "id": "productFileId",
-            "labelKey": "tables.products.columns.productFileId"
-          }
+          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode" },
+          { "id": "productCode", "labelKey": "tables.products.columns.productCode" },
+          { "id": "category", "labelKey": "tables.products.columns.category" },
+          { "id": "status", "labelKey": "tables.products.columns.status" },
+          { "id": "batchName", "labelKey": "tables.products.columns.batchName" }
         ],
         "filters": [
           {
@@ -76,31 +64,13 @@
             "labelKey": "tables.products.filters.productFileId"
           }
         ],
-        "ui": {
-          "filtering": {
-            "enabled": true
-          },
-          "pagination": {
-            "enabled": true
-          }
-        },
         "detail": {
           "fields": [
-            {
-              "id": "gtinCode"
-            },
-            {
-              "id": "productCode"
-            },
-            {
-              "id": "brand"
-            },
-            {
-              "id": "model"
-            },
-            {
-              "id": "status"
-            }
+            { "id": "gtinCode" },
+            { "id": "productCode" },
+            { "id": "brand" },
+            { "id": "model" },
+            { "id": "status" }
           ]
         }
       }

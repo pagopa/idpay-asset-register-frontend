@@ -31,47 +31,20 @@
           "ModelloX100"
         ]
       }
+    }
+  },
+  "status": {
+    "UPLOADED": {
+      "label": "status.products.UPLOADED",
+      "color": "default"
     },
-    "category": {
-      "satellite": {
-        "label": "category.satellite.label",
-        "format": "csv",
-        "name": "satellitare"
-      },
-      "terrestrial": {
-        "label": "category.terrestrial.label",
-        "format": "csv",
-        "name": "terrestre"
-      },
-      "terrestrial_via_cable": {
-        "label": "category.terrestrial_via_cable.label",
-        "format": "csv",
-        "name": "terrestre-via-cavo"
-      },
-      "terrestrial_and_satellite": {
-        "label": "category.terrestrial_and_satellite.label",
-        "format": "csv",
-        "name": "terrestre-e-satellitare"
-      },
-      "terrestrial_satellite_and_via_cable": {
-        "label": "category.terrestrial_satellite_and_via_cable.label",
-        "format": "csv",
-        "name": "terrestre-satellitare-e-via-cavo"
-      }
+    "APPROVED": {
+      "label": "status.products.APPROVED",
+      "color": "success"
     },
-    "status": {
-      "UPLOADED": {
-        "label": "status.products.UPLOADED",
-        "color": "default"
-      },
-      "APPROVED": {
-        "label": "status.products.APPROVED",
-        "color": "success"
-      },
-      "REJECTED": {
-        "label": "status.products.REJECTED",
-        "color": "error"
-      }
+    "REJECTED": {
+      "label": "status.products.REJECTED",
+      "color": "error"
     }
   },
   "ui": {
@@ -99,92 +72,37 @@
             "sortable": true
           },
           {
-            "id": "productFileId",
-            "labelKey": "tables.products.columns.productFileId",
+            "id": "batchName",
+            "labelKey": "tables.products.columns.batchName",
             "sortable": false
           }
         ],
         "filters": [
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status",
+            "defaultValue": "WAIT_APPROVED"
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
+          },
           {
             "id": "category",
             "type": "select",
             "labelKey": "tables.products.filters.category"
           },
           {
-            "id": "status",
-            "type": "select",
-            "labelKey": "tables.products.filters.status"
-          },
-          {
             "id": "gtinCode",
             "type": "text",
             "labelKey": "tables.products.filters.gtinCode",
             "regEx": "^[a-zA-Z0-9]{1,14}$",
-            "message": "tables.products.filters.errors",
+            "message": "tables.products.filters.errors.gtinCode",
             "inputProps": { "maxLength": 14 }
-          },
-          {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
-          },
-          {
-            "id": "productFileId",
-            "type": "select",
-            "labelKey": "tables.products.filters.productFileId"
           }
-        ],
-        "ui": {
-          "filtering": {
-            "enabled": false
-          },
-          "pagination": {
-            "enabled": true,
-            "defaultRowsPerPage": 5,
-            "rowsPerPageOptions": [
-              10,
-              25,
-              50,
-              100
-            ]
-          }
-        },
-        "detail": {
-          "fields": [
-            {
-              "id": "productName",
-              "labelKey": "pages.productDetail.productName"
-            },
-            {
-              "id": "productFileId",
-              "labelKey": "pages.productDetail.productFileId"
-            },
-            {
-              "id": "gtinCode",
-              "labelKey": "pages.productDetail.gtinCode"
-            },
-            {
-              "id": "productCode",
-              "labelKey": "pages.productDetail.productCode"
-            },
-            {
-              "id": "category",
-              "labelKey": "pages.productDetail.category"
-            },
-            {
-              "id": "brand",
-              "labelKey": "pages.productDetail.brand"
-            },
-            {
-              "id": "model",
-              "labelKey": "pages.productDetail.model"
-            },
-            {
-              "id": "status",
-              "labelKey": "pages.productDetail.status"
-            }
-          ]
-        }
+        ]
       }
     }
   }

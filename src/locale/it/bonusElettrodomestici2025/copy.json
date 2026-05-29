@@ -18,7 +18,7 @@
       "title": "Elenco informatico degli elettrodomestici"
     }
   },
-  "category": {
+  "categories": {
     "washingmachines": {
       "label": "Lavatrici"
     },
@@ -44,15 +44,6 @@
       "label": "Piani cottura"
     }
   },
-  "status": {
-    "products": {
-      "UPLOADED": "Da Esaminare",
-      "WAIT_APPROVED": "Da approvare",
-      "SUPERVISED": "Da controllare",
-      "APPROVED": "Approvato",
-      "REJECTED": "Escluso"
-    }
-  },
   "tables": {
     "products": {
       "columns": {
@@ -62,7 +53,7 @@
         "energyClass": "Classe energetica",
         "eprelCode": "Codice EPREL",
         "status": "Stato",
-        "productFileId": "Lotto"
+        "batchName": "Lotto"
       },
       "filters": {
         "category": "Categoria",
@@ -70,6 +61,7 @@
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
         "productFileId": "Lotto",
+        "producer": "Produttore",
         "eprelCode": "Codice EPREL",
         "errors": {
           "gtinCode": "Il codice deve avere 14 caratteri",

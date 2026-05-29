@@ -49,62 +49,20 @@
           "IT"
         ]
       }
+    }
+  },
+  "status": {
+    "UPLOADED": {
+      "label": "status.products.UPLOADED",
+      "color": "default"
     },
-    "category": {
-      "washingmachines": {
-        "label": "category.washingmachines.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "tumbledryers": {
-        "label": "category.tumbledryers.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "ovens": {
-        "label": "category.ovens.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "rangehoods": {
-        "label": "category.rangehoods.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "dishwashers": {
-        "label": "category.dishwashers.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "washerdriers": {
-        "label": "category.washerdriers.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "refrigeratingappl": {
-        "label": "category.refrigeratingappl.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "cookinghobs": {
-        "label": "category.cookinghobs.label",
-        "format": "csv",
-        "name": "cookinghobs"
-      }
+    "APPROVED": {
+      "label": "status.products.APPROVED",
+      "color": "success"
     },
-    "status": {
-      "UPLOADED": {
-        "label": "status.products.UPLOADED",
-        "color": "default"
-      },
-      "APPROVED": {
-        "label": "status.products.APPROVED",
-        "color": "success"
-      },
-      "REJECTED": {
-        "label": "status.products.REJECTED",
-        "color": "error"
-      }
+    "REJECTED": {
+      "label": "status.products.REJECTED",
+      "color": "error"
     }
   },
   "ui": {
@@ -137,8 +95,8 @@
             "align": "center"
           },
           {
-            "id": "productFileId",
-            "labelKey": "tables.products.columns.productFileId",
+            "id": "batchName",
+            "labelKey": "tables.products.columns.batchName",
             "sortable": false,
             "align": "left"
           },
@@ -209,8 +167,8 @@
               "labelKey": "pages.productDetail.productName"
             },
             {
-              "id": "productFileId",
-              "labelKey": "pages.productDetail.productFileId"
+              "id": "batchName",
+              "labelKey": "pages.productDetail.batchName"
             },
             {
               "id": "registrationDate",

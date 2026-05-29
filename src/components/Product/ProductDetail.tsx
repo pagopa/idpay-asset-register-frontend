@@ -306,7 +306,7 @@ function renderEntry(entry: any, idx: number, detailMaxLength: number) {
 function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps) {
   const { t } = useScopedTranslation();
   const { config } = useInitiativeConfig();
-  const detailMaxLength = config?.ui?.tables?.products?.style?.lengths?.detail ?? 40;
+  const detailMaxLength = config?.tables?.products?.style?.lengths?.detail ?? 40;
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   const baseRows = getProductInfoRowsConfig(data, t, detailFields);

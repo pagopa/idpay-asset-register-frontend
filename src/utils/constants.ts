@@ -1,6 +1,8 @@
 export const testToken = '';
 
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
+export const DEFAULT_INITIATIVE_NAMESPACE = 'default';
+
 export const DEBUG_CONSOLE = false;
 export const MOCK_USER = IS_DEVELOP;
 export const LOG_REDUX_ACTIONS = false;
