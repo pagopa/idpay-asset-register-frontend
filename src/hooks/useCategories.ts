@@ -12,17 +12,10 @@ type CategoryType = {
 
 type FormatKey = 'csv' | 'eprel';
 
-type TemplateType = {
-  format: FormatKey;
-  name: string;
-};
-
 type TemplateContentType = {
   headers: Array<string>;
   fields: Array<string>;
 };
-
-type CategoryTemplatesConfig = Record<string, TemplateType>;
 
 type TemplatesConfig = Partial<Record<FormatKey, TemplateContentType>>;
 
@@ -31,38 +24,77 @@ const applyTemplateValues = (templateContent: TemplateContentType, category: str
   fields: templateContent.fields.map((field) => field.replace('{{category}}', category)),
 });
 
-export const useCategories = () => {
-  const { t } = useScopedTranslation();
-  const { config } = useInitiativeConfig();
-  const categoriesConfig = config?.templates?.categories as CategoryTemplatesConfig | undefined;
-  const formats = config?.templates?.formats as TemplatesConfig | undefined;
+const buildCategories = (
+  categoriesConfig: any,
+  formats: TemplatesConfig | undefined,
+  t: (key: string) => string
+): Record<string, CategoryType> => {
+  if (!categoriesConfig) {
+    return {};
+  }
 
-  const categories: Record<string, CategoryType> = categoriesConfig
-    ? Object.entries(categoriesConfig).reduce((acc, [key, template]) => {
-        const translated = t(`categories.${key}.label`);
-        const label = translated && translated !== `categories.${key}.label` ? translated : key;
+  return Object.fromEntries(
+    Object.entries(categoriesConfig as Record<string, any>)
+      .map(([key, category]) => {
+        const normalizedKey = key.toUpperCase();
+        const isNew = !!category?.labelKey;
+        const enabledUpload = isNew ? category?.enabledIn?.upload !== false : true;
+        if (!enabledUpload) {
+          return null;
+        }
 
-        const templateContent = formats?.[template.format];
+        const labelKey = isNew
+          ? category.labelKey
+          : `categories.${normalizedKey.toLowerCase()}.label`;
+        const translated = t(labelKey);
+        const label = translated && translated !== labelKey ? translated : normalizedKey;
 
+        const templateFormat: FormatKey = isNew
+          ? category.templateFormat
+          : (category?.format as FormatKey);
+
+        const templateContent = formats?.[templateFormat];
         if (!templateContent) {
-          return { ...acc, [key]: { label } };
+          return [normalizedKey, { label }];
         }
 
         const csvNamespace = applyTemplateValues(templateContent, label);
         const csvFile = createCsv(csvNamespace);
 
-        return {
-          ...acc,
-          [key]: {
+        return [
+          normalizedKey,
+          {
             label,
             csv: {
-              name: `${template.name}_template.csv`,
+              name: `${normalizedKey}_template.csv`,
               file: csvFile,
             },
           },
-        };
-      }, {})
-    : {};
+        ];
+      })
+      .filter(Boolean) as Array<[string, CategoryType]>
+  );
+};
+
+export const useCategories = () => {
+  const { t } = useScopedTranslation();
+  const { config } = useInitiativeConfig();
+
+  const categoriesConfig =
+    ((config as any)?.categories as
+      | Record<
+          string,
+          {
+            labelKey: string;
+            templateFormat: FormatKey;
+            enabledIn?: { upload?: boolean; filters?: boolean };
+          }
+        >
+      | undefined) ?? (config?.templates?.categories as any);
+
+  const formats = config?.templates?.formats as TemplatesConfig | undefined;
+
+  const categories = buildCategories(categoriesConfig, formats, t);
 
   return { categories };
 };

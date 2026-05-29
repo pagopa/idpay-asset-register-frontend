@@ -24,6 +24,33 @@
           { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
           { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true },
           { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": false }
+        ],
+        "filters": [
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode"
+          },
+          {
+            "id": "productCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.productCode"
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
+          }
         ]
       }
     }

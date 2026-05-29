@@ -10,7 +10,6 @@ type Props = {
   open: boolean;
   toggleFiltersDrawer: (isOpen: boolean) => void;
   batchFilterItems: Record<string, SelectProps>;
-  producerFilterItems?: Record<string, SelectProps>;
   filters: Record<string, { value: string; label?: string }>;
   setFilters: (value: Record<string, { value: string; label?: string }>) => void;
   setPage: Dispatch<SetStateAction<number>>;
@@ -22,7 +21,6 @@ export default function FiltersDrawer({
   open,
   toggleFiltersDrawer,
   batchFilterItems,
-  producerFilterItems,
   filters,
   setFilters,
   setPage,
@@ -34,7 +32,6 @@ export default function FiltersDrawer({
     useState<Record<string, { value: string; label?: string }>>(filters);
   const [errors, setErrors] = useState<Array<string>>([]);
   const templateMap: Record<string, any> = {
-    producer: producerFilterItems,
     productFileId: batchFilterItems,
   };
 
@@ -91,7 +88,7 @@ export default function FiltersDrawer({
       <Box paddingX="24px" maxWidth="417px">
         {filtersConfig &&
           filtersConfig.map(({ type, ...item }: FiltersProps) => {
-            const template = templateMap?.[item.id] || templateConfig?.[item.id];
+            const template = item.options || templateMap?.[item.id] || templateConfig?.[item.id];
             const filtersParams = {
               item,
               t,
@@ -103,7 +100,7 @@ export default function FiltersDrawer({
             };
 
             return (
-              <FormControl key={item.id} fullWidth size="small" margin="normal">
+              <FormControl key={item.id} fullWidth size="small" margin="normal" variant="outlined">
                 {type === 'select' && (
                   <InputLabel id={`${item.id}-filter-select-label`}>
                     {t(item.labelKey ?? '')}

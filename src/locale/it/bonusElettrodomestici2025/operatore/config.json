@@ -53,6 +53,33 @@
             "align": "left"
           }
         ],
+        "filters": [
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode"
+          },
+          {
+            "id": "productCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.productCode"
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
+          }
+        ],
         "detail": {
           "fields": [
             { "id": "productName", "labelKey": "pages.productDetail.productName" },

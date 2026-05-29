@@ -14,6 +14,48 @@
       "profileNotConfigured": "pages.products.profileNotConfigured"
     }
   },
+  "categories": {
+    "WASHINGMACHINES": {
+      "labelKey": "categories.lavatrice",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "WASHERDRIERS": {
+      "labelKey": "categories.lavasciuga",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "OVENS": {
+      "labelKey": "categories.forno",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "RANGEHOODS": {
+      "labelKey": "categories.cappa",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "DISHWASHERS": {
+      "labelKey": "categories.lavastoviglie",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "TUMBLEDRYERS": {
+      "labelKey": "categories.asciugatrice",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "REFRIGERATINGAPPL": {
+      "labelKey": "categories.refrigerazione",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "COOKINGHOBS": {
+      "labelKey": "categories.pianoCottura",
+      "templateFormat": "csv",
+      "enabledIn": { "upload": true, "filters": true }
+    }
+  },
   "templates": {
     "formats": {
       "csv": {
@@ -85,15 +127,8 @@
           {
             "id": "category",
             "type": "select",
-            "labelKey": "tables.products.filters.category"
-          },
-          {
-            "id": "eprelCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.eprelCode",
-            "regEx": "\\d$",
-            "message": "tables.products.filters.errors.eprelCode",
-            "inputProps": { "inputMode": "numeric", "pattern": "\\d$" }
+            "labelKey": "tables.products.filters.category",
+            "useInitiativeCategories": true
           },
           {
             "id": "gtinCode",
@@ -102,6 +137,11 @@
             "regEx": "^[a-zA-Z0-9]{1,14}$",
             "message": "tables.products.filters.errors.gtinCode",
             "inputProps": { "maxLength": 14 }
+          },
+          {
+            "id": "productCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.productCode"
           }
         ],
         "detail": {

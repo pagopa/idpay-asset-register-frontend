@@ -12,6 +12,7 @@ export interface FilterConfig {
   regEx?: string;
   message?: string;
   inputProps?: Record<string, unknown>;
+  options?: Record<string, { labelKey: string }>;
 }
 
 export interface DetailFieldConfig {
@@ -73,6 +74,14 @@ export interface TemplatesConfig {
 
 export interface InitiativeConfig {
   roles: RolesConfig;
+  categories?: Record<
+    string,
+    {
+      labelKey: string;
+      templateFormat: 'csv' | 'eprel';
+      enabledIn?: { upload?: boolean; filters?: boolean };
+    }
+  >;
   templates?: TemplatesConfig;
   ui: InitiativeUIConfig;
 }

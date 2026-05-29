@@ -37,17 +37,26 @@
       "products": {
         "columns": [
           { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
-          {
-            "id": "productCode",
-            "labelKey": "tables.products.columns.productCode",
-            "sortable": true
-          },
           { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
           { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true },
           { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": false }
         ],
         "filters": [
-          { "id": "category", "type": "select", "labelKey": "tables.products.filters.category" },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category",
+            "options": {
+              "WASHINGMACHINES": { "labelKey": "categories.lavatrice" },
+              "WASHERDRIERS": { "labelKey": "categories.lavasciuga" },
+              "COOKINGHOBS": { "labelKey": "categories.pianoCottura" },
+              "REFRIGERATINGAPPL": { "labelKey": "categories.refrigerazione" },
+              "TUMBLEDRYERS": { "labelKey": "categories.asciugatrice" },
+              "DISHWASHERS": { "labelKey": "categories.lavastoviglie" },
+              "RANGEHOODS": { "labelKey": "categories.cappa" },
+              "OVENS": { "labelKey": "categories.forno" }
+            }
+          },
           { "id": "status", "type": "select", "labelKey": "tables.products.filters.status" },
           { "id": "gtinCode", "type": "text", "labelKey": "tables.products.filters.gtinCode" },
           {

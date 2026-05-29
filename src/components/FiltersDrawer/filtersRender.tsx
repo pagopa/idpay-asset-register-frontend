@@ -34,27 +34,40 @@ export const filtersRender: Record<
         labelId={`${id}-filter-select-label`}
         id={`${id}-filter-select`}
         label={t(labelKey ?? '')}
-        MenuProps={{ PaperProps: { style: { maxHeight: 350 } } }}
+        MenuProps={{
+          disablePortal: true,
+          PaperProps: { style: { maxHeight: 350 } },
+        }}
         value={filters?.[id]?.value || ''}
+        displayEmpty
+        renderValue={() => filters?.[id]?.label || ''}
         sx={{ paddingRight: '38px !important' }}
         onChange={(e) =>
           setFilters(id, {
             value: e.target.value,
-            label: t(template?.[e.target.value]?.label || ''),
+            label: t(
+              (template as any)?.[e.target.value]?.labelKey ??
+                (template as any)?.[e.target.value]?.label ??
+                ''
+            ),
           })
         }
       >
-        {template
-          ? Object.entries(template).map(([key, value]) => (
-              <MenuItem key={key} value={key}>
-                {value?.color ? (
-                  <Chip color={value.color} label={t(value.label)} />
-                ) : (
-                  t(value.label ?? '')
-                )}
-              </MenuItem>
-            ))
-          : []}
+        <MenuItem value="">
+          <em>-</em>
+        </MenuItem>
+        {Object.entries(template || {}).map(([key, value]) => (
+          <MenuItem key={key} value={key}>
+            {value?.color ? (
+              <Chip
+                color={value.color}
+                label={t((value as any).labelKey ?? (value as any).label)}
+              />
+            ) : (
+              t((value as any).labelKey ?? (value as any).label ?? '')
+            )}
+          </MenuItem>
+        ))}
       </Select>
     );
   },

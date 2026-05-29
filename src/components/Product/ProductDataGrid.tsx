@@ -9,7 +9,6 @@ import {
   institutionSelector,
   setInstitutionList,
   setInstitution,
-  institutionListSelector,
 } from '../../redux/slices/invitaliaSlice';
 import { ProductDTO } from '../../api/generated/register';
 
@@ -39,10 +38,11 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {})
     : {};
 
-  const tableConfig = config?.tables?.products;
+  const tableConfig = (config as any)?.ui?.tables?.products ?? (config as any)?.tables?.products;
   const paginationConfig = tableConfig?.pagination;
-  const filtersConfig = config?.tables?.products?.filters;
-  const templateConfig: any = config?.templates;
+  const filtersConfig =
+    (config as any)?.ui?.tables?.products?.filters ?? (config as any)?.tables?.products?.filters;
+  const templateConfig = config?.templates;
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
@@ -52,7 +52,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
 
   const institution = useSelector(institutionSelector);
-  const institutions = useSelector(institutionListSelector);
 
   const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
@@ -93,38 +92,108 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const batchFilter: Record<string, SelectProps> = useMemo(
     () =>
       batchFilterItems.reduce((acc, batch) => {
-        const batchName = batch?.batchName?.replace('.csv', '');
-        return { ...acc, [batch?.productFileId || '']: { label: batchName, value: batchName } };
+        const batchName = batch?.batchName?.replace('.csv', '') || '';
+        return {
+          ...acc,
+          [batch?.productFileId || '']: {
+            label: batchName,
+            value: batchName,
+          },
+        };
       }, {}),
-    [tableData]
+    [batchFilterItems]
   );
 
-  const producerFilter: Record<string, SelectProps> | undefined = useMemo(
-    () =>
-      institutions?.reduce(
-        (acc, institution) => ({
-          ...acc,
-          [institution?.institutionId]: {
-            label: institution?.description,
-            value: institution?.institutionId,
+  const buildCategoryOptions = () => {
+    const configCategories = (config as any)?.categories;
+    const templateCategories = (config as any)?.templates?.categories ?? {};
+
+    if (!configCategories || Object.keys(configCategories).length === 0) {
+      return Object.fromEntries(
+        Object.keys(templateCategories).map((key: string) => {
+          const upperKey = key.toUpperCase();
+          return [
+            upperKey,
+            {
+              label: t(`categories.${key}.label`),
+            },
+          ];
+        })
+      );
+    }
+
+    return Object.fromEntries(
+      Object.entries(configCategories).map(([key, value]: any) => [
+        key,
+        {
+          label: value?.labelKey ? t(value.labelKey, { returnObjects: false }) : key,
+        },
+      ])
+    );
+  };
+
+  const enrichedFiltersConfig = useMemo(() => {
+    if (!filtersConfig) {
+      return filtersConfig;
+    }
+
+    return filtersConfig.map((filter: any) => {
+      if (filter.useInitiativeCategories || filter.id === 'category') {
+        return { ...filter, options: buildCategoryOptions() };
+      }
+
+      if (filter.id === 'status') {
+        return {
+          ...filter,
+          options: {
+            UPLOADED: {
+              labelKey: 'chip.productStatusLabel.uploaded',
+              color: 'default',
+            },
+            WAIT_APPROVED: {
+              labelKey: 'chip.productStatusLabel.waitApproved',
+              color: 'warning',
+            },
+            APPROVED: {
+              labelKey: 'chip.productStatusLabel.approved',
+              color: 'success',
+            },
+            SUPERVISED: {
+              labelKey: 'chip.productStatusLabel.supervised',
+              color: 'info',
+            },
+            REJECTED: {
+              labelKey: 'chip.productStatusLabel.rejected',
+              color: 'error',
+            },
           },
-        }),
-        {}
-      ),
-    [institutions]
-  );
+        };
+      }
+
+      if (filter.id === 'productFileId') {
+        return { ...filter, options: batchFilter };
+      }
+
+      return filter;
+    });
+  }, [filtersConfig, config, batchFilter]);
 
   useEffect(() => {
     setSelected([]);
   }, [tableData]);
 
   useEffect(() => {
-    if (isInvitaliaAdmin && filtersConfig && templateConfig) {
-      const defaultValues = filtersConfig?.filter((filter: any) => filter?.defaultValue);
+    if (isInvitaliaAdmin && enrichedFiltersConfig) {
+      const defaultValues = enrichedFiltersConfig.filter((filter: any) => filter?.defaultValue);
       if (defaultValues) {
-        const defaultFilters = defaultValues?.reduce(
-          (acc: Record<string, { value: string; label?: string }>, { id, defaultValue }: any) => {
-            const label = t(templateConfig?.[id]?.[defaultValue]?.label);
+        const defaultFilters = defaultValues.reduce(
+          (
+            acc: Record<string, { value: string; label?: string }>,
+            { id, defaultValue, options }: any
+          ) => {
+            const label = options?.[defaultValue]?.labelKey
+              ? t(options[defaultValue].labelKey)
+              : defaultValue;
             return { ...acc, [id]: { value: defaultValue, label } };
           },
           {}
@@ -132,7 +201,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         setFilters(defaultFilters);
       }
     }
-  }, [isInvitaliaAdmin, filtersConfig, templateConfig]);
+  }, [isInvitaliaAdmin, enrichedFiltersConfig]);
 
   const handleOpenModalWithStatusCheck = () => {
     const result = validateBulkActionPreconditions({
@@ -262,8 +331,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         setFilters={setFilters}
         setPage={setPage}
         batchFilterItems={batchFilter}
-        producerFilterItems={producerFilter}
-        filtersConfig={filtersConfig}
+        filtersConfig={enrichedFiltersConfig}
         templateConfig={templateConfig}
       />
     </>
