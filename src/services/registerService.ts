@@ -303,9 +303,9 @@ export const getProducts = async (
   }
 };
 
-export const getInstitutionsList = async (): Promise<AxiosResponse<InstitutionsResponse>> => {
+export const getInstitutionsList = async (initiativeId: string): Promise<AxiosResponse<InstitutionsResponse>> => {
   try {
-    return await RegisterApi.getInstitutionsList();
+    return await RegisterApi.getInstitutionsList(initiativeId);
   } catch (error: any) {
     logProductError('RegisterApi.getInstitutionsList', error);
     return { institutions: [] } as unknown as AxiosResponse<InstitutionsResponse>;
@@ -313,10 +313,11 @@ export const getInstitutionsList = async (): Promise<AxiosResponse<InstitutionsR
 };
 
 export const getInstitutionById = async (
+  initiativeId: string,
   institutionId: string
 ): Promise<AxiosResponse<InstitutionResponse>> => {
   try {
-    return await RegisterApi.getInstitutionById(institutionId);
+    return await RegisterApi.getInstitutionById(initiativeId, institutionId);
   } catch (error: any) {
     logProductError('RegisterApi.getInstitutionById', error);
     return {} as AxiosResponse<InstitutionResponse>;

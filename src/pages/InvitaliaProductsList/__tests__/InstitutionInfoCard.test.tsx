@@ -70,6 +70,9 @@ const createMockStore = (institutionState: any) => {
     },
   });
 };
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'init-1',
+}));
 
 const theme = createTheme();
 
@@ -135,7 +138,7 @@ describe('InstitutionInfoCard', () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(mockedGetInstitutionById).toHaveBeenCalledWith('12345');
+      expect(mockedGetInstitutionById).toHaveBeenCalledWith('init-1', '12345');
     });
 
     expect(screen.getByText('Ragione Sociale')).toBeInTheDocument();
@@ -184,7 +187,7 @@ describe('InstitutionInfoCard', () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(mockedGetInstitutionById).toHaveBeenCalledWith('12345');
+      expect(mockedGetInstitutionById).toHaveBeenCalledWith('init-1', '12345');
     });
   });
 
@@ -194,7 +197,7 @@ describe('InstitutionInfoCard', () => {
     renderComponent({ institution: null });
 
     await waitFor(() => {
-      expect(mockedGetInstitutionById).toHaveBeenCalledWith('');
+      expect(mockedGetInstitutionById).toHaveBeenCalledWith('init-1', '');
     });
   });
 
@@ -204,7 +207,7 @@ describe('InstitutionInfoCard', () => {
     renderComponent({ institution: {} });
 
     await waitFor(() => {
-      expect(mockedGetInstitutionById).toHaveBeenCalledWith('');
+      expect(mockedGetInstitutionById).toHaveBeenCalledWith('init-1', '');
     });
   });
 

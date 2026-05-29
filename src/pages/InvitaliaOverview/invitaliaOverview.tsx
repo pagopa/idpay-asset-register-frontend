@@ -15,11 +15,13 @@ import { setInstitutionList } from '../../redux/slices/invitaliaSlice';
 import { useAppDispatch } from '../../redux/hooks';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { filterInputWithSpaceRule } from '../../helpers';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import InstitutionsTable from './institutionsTable';
 import { sortInstitutions } from './helpers';
 import ManufacturerDetail from './ManufacturerDetail';
 
 const InvitaliaOverview: React.FC = () => {
+  const initiativeId = useCurrentInitiativeId();
   const { t } = useScopedTranslation();
   const dispatch = useAppDispatch();
   const [institutions, setInstitutions] = useState<InstitutionsResponse>({
@@ -42,7 +44,7 @@ const InvitaliaOverview: React.FC = () => {
 
   const fetchInstitutions = async () => {
     try {
-      const institutionsData: AxiosResponse<InstitutionsResponse> = await getInstitutionsList();
+      const institutionsData: AxiosResponse<InstitutionsResponse> = await getInstitutionsList(initiativeId);
       setInstitutions({ institutions: institutionsData.data.institutions || [] });
 
       const institutionsDataFilteredByUser = (institutionsData.data.institutions || []).filter(
@@ -113,7 +115,7 @@ const InvitaliaOverview: React.FC = () => {
 
   const handleDetailRequest = async (institution: Institution) => {
     try {
-      const res = await getInstitutionById(institution.institutionId);
+      const res = await getInstitutionById(initiativeId, institution.institutionId);
       setInstitutionData(res.data);
       setDrawerOpened(true);
     } catch (error) {

@@ -34,6 +34,11 @@ jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   ),
 }));
 
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'init-1',
+}));
+
 const mockFilterInputWithSpaceRule = jest.fn();
 
 jest.mock('../../../helpers', () => ({
@@ -101,6 +106,7 @@ jest.mock('../../../redux/api/initiativesApi', () => ({
 
 describe('InvitaliaOverview', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     const { fetchUserFromLocalStorage } = require('../../../helpers');
     fetchUserFromLocalStorage.mockReturnValue({ uid: 'user-x' });
     mockFilterInputWithSpaceRule.mockImplementation((value: string) => value);
@@ -212,7 +218,7 @@ describe('InvitaliaOverview', () => {
     renderWithProvider(<InvitaliaOverview />);
     const pageBtn = await screen.findByText('PageChange');
     fireEvent.click(pageBtn);
-    await waitFor(() => expect(screen.getByTestId('table-page')).toHaveTextContent('1'));
+    expect(screen.getByTestId('table-page')).toHaveTextContent('1');
     const rowsBtn = await screen.findByText('RowsPerPage');
     fireEvent.click(rowsBtn);
     expect(screen.getByTestId('table-rows')).toHaveTextContent('5');
@@ -259,7 +265,7 @@ describe('InvitaliaOverview', () => {
     const detailBtn = screen.getByText('Detail');
     fireEvent.click(detailBtn);
     await waitFor(() => {
-      expect(registerService.getInstitutionById).toHaveBeenCalledWith('1');
+      expect(registerService.getInstitutionById).toHaveBeenCalledWith('init-1', '1');
     });
     expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument();
   });

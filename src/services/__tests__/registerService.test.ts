@@ -286,17 +286,17 @@ describe('Product Service', () => {
       const mockResponse = { id: '123', name: 'Institution 1' };
       (RegisterApi.getInstitutionById as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await getInstitutionById('123');
+      const result = await getInstitutionById('init-1', '123');
 
       expect(result).toEqual(mockResponse);
-      expect(RegisterApi.getInstitutionById).toHaveBeenCalledWith('123');
+      expect(RegisterApi.getInstitutionById).toHaveBeenCalledWith('init-1', '123');
     });
 
     it('should handle error and return empty object', async () => {
       const error = new Error('Not found');
       (RegisterApi.getInstitutionById as jest.Mock).mockRejectedValue(error);
 
-      const result = await getInstitutionById('123');
+      const result = await getInstitutionById('init-1', '123');
 
       expect(result).toEqual({});
     });

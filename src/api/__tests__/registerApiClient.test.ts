@@ -544,11 +544,12 @@ describe('RegisterApi.downloadErrorReport', () => {
 });
 
 describe('RegisterApi.getInstitutionsList', () => {
+  const INIT_ID = 'init-42';
   it('returns the API response on success', async () => {
     const res = mockAxiosResponse({ institutions: [] });
     (registerClient.institutions.getInstitutionsList as jest.Mock).mockReturnValue(res);
 
-    expect(await RegisterApi.getInstitutionsList()).toBe(res);
+    expect(await RegisterApi.getInstitutionsList(INIT_ID)).toBe(res);
   });
 
   it('rejects on error', async () => {
@@ -557,21 +558,22 @@ describe('RegisterApi.getInstitutionsList', () => {
       throw err;
     });
 
-    await expect(RegisterApi.getInstitutionsList()).rejects.toBe(err);
+    await expect(RegisterApi.getInstitutionsList(INIT_ID)).rejects.toBe(err);
   });
 });
 
 describe('RegisterApi.getInstitutionById', () => {
-  const ID = 'inst-42';
+  const INST_ID = 'inst-42';
+  const INIT_ID = 'init-42';
 
   it('calls the API with the correct institutionId', async () => {
-    const res = mockAxiosResponse({ id: ID });
+    const res = mockAxiosResponse({ institutionId: INST_ID });
     (registerClient.institutions.retrieveInstitutionById as jest.Mock).mockReturnValue(res);
 
-    const result = await RegisterApi.getInstitutionById(ID);
+    const result = await RegisterApi.getInstitutionById(INIT_ID, INST_ID);
     expect(result).toBe(res);
     expect(registerClient.institutions.retrieveInstitutionById).toHaveBeenCalledWith({
-      institutionId: ID,
+      institutionId: INST_ID
     });
   });
 
@@ -581,6 +583,6 @@ describe('RegisterApi.getInstitutionById', () => {
       throw err;
     });
 
-    await expect(RegisterApi.getInstitutionById(ID)).rejects.toBe(err);
+    await expect(RegisterApi.getInstitutionById(INIT_ID, INST_ID)).rejects.toBe(err);
   });
 });

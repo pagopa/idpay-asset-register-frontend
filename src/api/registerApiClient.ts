@@ -136,44 +136,43 @@ function logIoTsValidationErrors(error: any, originalResponse?: any) {
       const productLog =
         pathArr[0] === 'content' && pathArr.length > 2 && originalResponse?.content
           ? (() => {
-              const index = parseInt(pathArr[1], 10);
-              const product = originalResponse.content[index];
-              if (product && typeof product === 'object') {
-                const mainKeys = [
-                  'gtinCode',
-                  'organizationId',
-                  'registrationDate',
-                  'status',
-                  'model',
-                  'productGroup',
-                  'category',
-                  'brand',
-                  'eprelCode',
-                  'productCode',
-                  'countryOfProduction',
-                  'energyClass',
-                  'linkEprel',
-                  'batchName',
-                  'productName',
-                  'capacity',
-                  'organizationName',
-                ];
-                const productSummary = mainKeys.reduce(
-                  (acc, key) => ({ ...acc, [key]: product[key] }),
-                  {} as Record<string, any>
-                );
-                return `\n  [PRODUCT ERROR CONTEXT] Product at index ${index}: ${JSON.stringify(
-                  productSummary,
-                  null,
-                  2
-                )}`;
-              }
-              return '';
-            })()
+            const index = parseInt(pathArr[1], 10);
+            const product = originalResponse.content[index];
+            if (product && typeof product === 'object') {
+              const mainKeys = [
+                'gtinCode',
+                'organizationId',
+                'registrationDate',
+                'status',
+                'model',
+                'productGroup',
+                'category',
+                'brand',
+                'eprelCode',
+                'productCode',
+                'countryOfProduction',
+                'energyClass',
+                'linkEprel',
+                'batchName',
+                'productName',
+                'capacity',
+                'organizationName',
+              ];
+              const productSummary = mainKeys.reduce(
+                (acc, key) => ({ ...acc, [key]: product[key] }),
+                {} as Record<string, any>
+              );
+              return `\n  [PRODUCT ERROR CONTEXT] Product at index ${index}: ${JSON.stringify(
+                productSummary,
+                null,
+                2
+              )}`;
+            }
+            return '';
+          })()
           : '';
       console.error(
-        `  [${idx}] path: ${pathStr}, expected: ${
-          e.context?.[e.context.length - 1]?.type?.name
+        `  [${idx}] path: ${pathStr}, expected: ${e.context?.[e.context.length - 1]?.type?.name
         }, actual: ${JSON.stringify(e.value)}${productLog}`
       );
     });
@@ -200,23 +199,23 @@ function makeStatusUpdater(
     try {
       const body = needsFormalMotivation
         ? {
-            gtinCodes,
-            currentStatus,
-            motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
-            ...(formalMotivation
-              ? {
-                  formalMotivation:
-                    typeof formalMotivation === 'string'
-                      ? formalMotivation.trim()
-                      : formalMotivation,
-                }
-              : {}),
-          }
+          gtinCodes,
+          currentStatus,
+          motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
+          ...(formalMotivation
+            ? {
+              formalMotivation:
+                typeof formalMotivation === 'string'
+                  ? formalMotivation.trim()
+                  : formalMotivation,
+            }
+            : {}),
+        }
         : {
-            gtinCodes,
-            currentStatus,
-            motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
-          };
+          gtinCodes,
+          currentStatus,
+          motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
+        };
       const result = await apiMethod(body);
       return result ?? {};
     } catch (error) {
@@ -345,12 +344,20 @@ export const RegisterApi = {
     }
   },
 
-  getInstitutionsList: async (): Promise<AxiosResponse<InstitutionsResponse>> =>
-    registerClient.institutions.getInstitutionsList({}),
-
-  getInstitutionById: async (institutionId: string): Promise<AxiosResponse<InstitutionResponse>> =>
-    registerClient.institutions.retrieveInstitutionById({ institutionId }),
-
+  getInstitutionsList: async (initiativeId: string): Promise<AxiosResponse<InstitutionsResponse>> => {
+    if (DEBUG_CONSOLE) {
+      // WIP
+      console.log(`InstitutionsList initiativeId: ${initiativeId}`);
+    }
+    return registerClient.institutions.getInstitutionsList();
+  },
+  getInstitutionById: async (initiativeId: string, institutionId: string): Promise<AxiosResponse<InstitutionResponse>> => {
+    if (DEBUG_CONSOLE) {
+      // WIP
+      console.log(`InstitutionById initiativeId: ${initiativeId}`);
+    }
+    return registerClient.institutions.retrieveInstitutionById({ institutionId });
+  },
   setSupervisionedStatusList: makeStatusUpdater(
     registerClient.products.updateProductStatusSupervised
   ),

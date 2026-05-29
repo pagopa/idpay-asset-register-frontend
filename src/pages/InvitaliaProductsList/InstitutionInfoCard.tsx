@@ -7,15 +7,17 @@ import { InstitutionResponse } from '../../api/generated/register';
 import { getInstitutionById } from '../../services/registerService';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
 import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_INVIT, DEBUG_CONSOLE } from '../../utils/constants';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 
 const InstitutionInfoCard: React.FC = () => {
+  const initiativeId = useCurrentInitiativeId();
   const { t } = useScopedTranslation();
   const institution = useSelector(institutionSelector);
   const [institutionInfo, setInstitutionInfo] = useState<InstitutionResponse | null>(null);
 
   const fetchInstitution = async () => {
     try {
-      const res = await getInstitutionById(institution?.institutionId || '');
+      const res = await getInstitutionById(initiativeId, institution?.institutionId || '');
       setInstitutionInfo(res.data);
     } catch (error) {
       if (DEBUG_CONSOLE) {

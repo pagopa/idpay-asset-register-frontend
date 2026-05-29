@@ -27,7 +27,7 @@ export const useProductDataGridInit = ({
 
   const fetchInstitutions = async () => {
     try {
-      const institutionsData = await getInstitutionsList();
+      const institutionsData = await getInstitutionsList(initiativeId);
       dispatch(
         setInstitutionList((institutionsData.data.institutions ?? []) as Array<Institution>)
       );
