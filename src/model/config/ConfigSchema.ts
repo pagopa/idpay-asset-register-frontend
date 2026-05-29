@@ -36,6 +36,28 @@ export interface ProductTableConfig {
     rowsPerPageOptions: Array<number>;
   };
 
+  organizationSource?: 'user' | 'filter';
+
+  selection?: {
+    enabled?: boolean;
+    rules?: Record<string, Array<string>>;
+  };
+
+  bulkRules?: {
+    preventMixedStatus?: boolean;
+    allowedStatusesByRole?: Record<string, Array<string>>;
+  };
+
+  statusBehavior?: Record<
+    string,
+    {
+      requiresAdmin?: boolean;
+      allowBulkAction?: boolean;
+    }
+  >;
+
+  defaultFiltersByRole?: Record<string, Record<string, string>>;
+
   columns: Array<ColumnConfig>;
   filters?: Array<FilterConfig>;
   detail?: {

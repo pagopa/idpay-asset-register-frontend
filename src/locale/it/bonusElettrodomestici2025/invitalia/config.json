@@ -20,6 +20,13 @@
   "ui": {
     "tables": {
       "products": {
+        "bulkRules": {
+          "preventMixedStatus": true,
+          "allowedStatusesByRole": {
+            "invitalia": ["UPLOADED", "SUPERVISED"],
+            "invitalia_admin": ["WAIT_APPROVED"]
+          }
+        },
         "selection": {
           "enabled": true,
           "rules": {

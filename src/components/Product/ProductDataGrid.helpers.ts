@@ -27,28 +27,40 @@ export const getStatusChecks = (selected: Array<string>, tableData: Array<Produc
   };
 };
 
+import { ProductTableConfig } from '../../model/config/ConfigSchema';
+
 export const validateBulkActionPreconditions = ({
   selected,
   tableData,
-  isInvitaliaAdmin,
+  roleKey,
+  tableConfig,
 }: {
   selected: Array<string>;
   tableData: Array<ProductDTO>;
-  isInvitaliaAdmin: boolean;
+  roleKey?: string;
+  tableConfig?: ProductTableConfig;
 }) => {
-  const { selectedStatuses, someUploaded, length } = getStatusChecks(selected, tableData);
+  const { selectedStatuses, length } = getStatusChecks(selected, tableData);
 
   if (length === 0) {
     return { valid: false, reason: 'EMPTY' };
   }
 
-  if (isInvitaliaAdmin && someUploaded) {
-    return { valid: false, reason: 'SELF_APPROVAL' };
-  }
+  const bulkRules = tableConfig?.bulkRules;
+  const preventMixed = bulkRules?.preventMixedStatus ?? true;
 
   const uniqueStatuses = Array.from(new Set(selectedStatuses));
-  if (uniqueStatuses.length > 1) {
+  if (preventMixed && uniqueStatuses.length > 1) {
     return { valid: false, reason: 'MIXED_STATUS' };
+  }
+
+  const allowedByRole = bulkRules?.allowedStatusesByRole;
+  if (roleKey && allowedByRole && allowedByRole[roleKey]) {
+    const allowedStatuses = allowedByRole[roleKey];
+    const allAllowed = selectedStatuses.every((s) => allowedStatuses.includes(s));
+    if (!allAllowed) {
+      return { valid: false, reason: 'NOT_ALLOWED_STATUS' };
+    }
   }
 
   return { valid: true };

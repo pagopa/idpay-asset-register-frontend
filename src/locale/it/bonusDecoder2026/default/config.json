@@ -35,6 +35,9 @@
   "ui": {
     "tables": {
       "products": {
+        "bulkRules": {
+          "preventMixedStatus": true
+        },
         "columns": [
           { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
           { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },

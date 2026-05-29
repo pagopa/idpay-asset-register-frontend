@@ -101,6 +101,9 @@
   "ui": {
     "tables": {
       "products": {
+        "bulkRules": {
+          "preventMixedStatus": true
+        },
         "columns": [
           { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
           {

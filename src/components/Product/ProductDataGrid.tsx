@@ -4,7 +4,6 @@ import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { fetchUserFromLocalStorage } from '../../helpers';
-import { USERS_TYPES } from '../../utils/constants';
 import {
   institutionSelector,
   setInstitutionList,
@@ -28,45 +27,47 @@ type Props = {
   organizationId: string;
 };
 
-type FullConfig =
-  | import('../../model/config/ConfigSchema').InitiativeConfig
-  | import('../../model/config/ConfigSchema').LegacyInitiativeConfig;
-
-function resolveTableConfig(typedConfig: FullConfig) {
-  if ('ui' in typedConfig && typedConfig.ui) {
-    return typedConfig.ui.tables.products;
-  }
-  if ('tables' in typedConfig && typedConfig.tables) {
-    return typedConfig.tables.products;
-  }
-  return undefined;
-}
+import { useResolvedProductTableConfig } from './hooks/useResolvedProductTableConfig';
+import { useEnrichedProductFilters } from './hooks/useEnrichedProductFilters';
+import { useTargetOrganization } from './hooks/useTargetOrganization';
 
 const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
   const { config } = useInitiativeConfig();
-  const typedConfig = config as FullConfig;
+  const typedConfig = config as import('../../model/config/ConfigSchema').InitiativeConfig;
+  const { tableConfig, paginationConfig, filtersConfig, templateConfig } =
+    useResolvedProductTableConfig(typedConfig);
+
   const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({});
   const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length
     ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {})
     : {};
 
-  const tableConfig = resolveTableConfig(typedConfig);
-
-  const paginationConfig = tableConfig?.pagination;
-  const filtersConfig = tableConfig?.filters;
-  const templateConfig = 'templates' in typedConfig ? typedConfig.templates : undefined;
-
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   const subRoleConfig = config?.subRoles?.[user?.org_role as string];
   const hasProductsPermission = subRoleConfig?.permissions?.tables?.includes('products');
-  const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
-  const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
+
+  const currentRoleKey = user?.org_role as string | undefined;
+
+  const selectionRules = tableConfig?.selection?.rules ?? {};
+  const currentRoleRules = currentRoleKey ? selectionRules[currentRoleKey] : undefined;
+
+  const isInvitaliaUser = Array.isArray(currentRoleRules) && currentRoleRules.length > 0;
+  const isInvitaliaAdmin =
+    Array.isArray(currentRoleRules) && currentRoleRules.includes('WAIT_APPROVED');
 
   const institution = useSelector(institutionSelector);
+
+  const { targetId } = useTargetOrganization({
+    organizationId,
+    user,
+    filtersValue,
+    institutionId: institution?.institutionId,
+    tableConfig,
+  });
 
   const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
@@ -89,10 +90,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [detailOpen, setDetailOpen] = useState(false);
 
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
-
-  const targetId = isInvitaliaUser
-    ? filtersValue?.producer || institution?.institutionId || ''
-    : organizationId || user?.org_id || '';
 
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
     initiativeId,
@@ -119,119 +116,53 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     [batchFilterItems]
   );
 
-  const buildCategoryOptions = () => {
-    const configCategories = 'categories' in typedConfig ? typedConfig.categories : undefined;
-
-    const templateCategories =
-      'templates' in typedConfig && typedConfig.templates?.categories
-        ? typedConfig.templates.categories
-        : {};
-
-    if (!configCategories || Object.keys(configCategories).length === 0) {
-      return Object.fromEntries(
-        Object.keys(templateCategories).map((key: string) => {
-          const upperKey = key.toUpperCase();
-          return [
-            upperKey,
-            {
-              label: t(`categories.${key}.label`),
-            },
-          ];
-        })
-      );
-    }
-
-    return Object.fromEntries(
-      Object.entries(configCategories).map(([key, value]: any) => [
-        key,
-        {
-          label: value?.labelKey ? t(value.labelKey, { returnObjects: false }) : key,
-        },
-      ])
-    );
-  };
-
-  const enrichedFiltersConfig = useMemo(() => {
-    if (!filtersConfig) {
-      return filtersConfig;
-    }
-
-    return filtersConfig.map((filter) => {
-      if (
-        ('useInitiativeCategories' in filter &&
-          (filter as unknown as { useInitiativeCategories?: boolean }).useInitiativeCategories) ||
-        filter.id === 'category'
-      ) {
-        return { ...filter, options: buildCategoryOptions() };
-      }
-
-      if (filter.id === 'status') {
-        return {
-          ...filter,
-          options: {
-            UPLOADED: {
-              labelKey: 'chip.productStatusLabel.uploaded',
-              color: 'default',
-            },
-            WAIT_APPROVED: {
-              labelKey: 'chip.productStatusLabel.waitApproved',
-              color: 'warning',
-            },
-            APPROVED: {
-              labelKey: 'chip.productStatusLabel.approved',
-              color: 'success',
-            },
-            SUPERVISED: {
-              labelKey: 'chip.productStatusLabel.supervised',
-              color: 'info',
-            },
-            REJECTED: {
-              labelKey: 'chip.productStatusLabel.rejected',
-              color: 'error',
-            },
-          },
-        };
-      }
-
-      if (filter.id === 'productFileId') {
-        return { ...filter, options: batchFilter };
-      }
-
-      return filter;
-    });
-  }, [filtersConfig, config, batchFilter]);
+  const { enrichedFiltersConfig } = useEnrichedProductFilters({
+    typedConfig,
+    filtersConfig,
+    batchFilter,
+    t,
+  });
 
   useEffect(() => {
     setSelected([]);
   }, [tableData]);
 
   useEffect(() => {
-    if (isInvitaliaAdmin && enrichedFiltersConfig) {
-      const defaultValues = enrichedFiltersConfig.filter((filter) => filter?.defaultValue);
-      if (defaultValues) {
-        const defaultFilters = defaultValues.reduce(
-          (
-            acc: Record<string, { value: string; label?: string }>,
-            { id, defaultValue, options }
-          ) => {
-            const label =
-              options && defaultValue && options[defaultValue]?.labelKey
-                ? t(options[defaultValue].labelKey)
-                : defaultValue;
-            return { ...acc, [id]: { value: defaultValue || '', label } };
-          },
-          {}
-        );
+    if (enrichedFiltersConfig) {
+      const defaultValues = enrichedFiltersConfig as Array<
+        import('../../model/config/ConfigSchema').FilterConfig
+      >;
+
+      const filteredDefaults = defaultValues.filter((filter) => !!filter?.defaultValue);
+
+      if (filteredDefaults.length > 0) {
+        const defaultFilters = filteredDefaults.reduce<
+          Record<string, { value: string; label?: string }>
+        >((acc, filter) => {
+          const { id, defaultValue, options } = filter;
+
+          const label =
+            options && defaultValue && options[defaultValue]?.labelKey
+              ? t(options[defaultValue].labelKey)
+              : defaultValue;
+
+          return {
+            ...acc,
+            [id]: { value: defaultValue || '', label },
+          };
+        }, {});
+
         setFilters(defaultFilters);
       }
     }
-  }, [isInvitaliaAdmin, enrichedFiltersConfig]);
+  }, [enrichedFiltersConfig, t]);
 
   const handleOpenModalWithStatusCheck = () => {
     const result = validateBulkActionPreconditions({
       selected,
       tableData,
-      isInvitaliaAdmin,
+      roleKey: currentRoleKey,
+      tableConfig,
     });
 
     if (!result.valid) {
@@ -262,7 +193,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   return (
     <>
       <ProductDataGridView
-        isInvitaliaUser={isInvitaliaUser}
+        isInvitaliaUser={false}
         tableData={tableData}
         hookLoading={loading}
         itemsQty={itemsQty ?? 0}
@@ -333,8 +264,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
             open={detailOpen}
             data={selectedProduct}
             detailFields={tableConfig?.detail?.fields}
-            isInvitaliaUser={isInvitaliaUser}
-            isInvitaliaAdmin={isInvitaliaAdmin}
+            isInvitaliaUser={false}
+            isInvitaliaAdmin={false}
             onClose={() => {
               setDetailOpen(false);
               setSelectedProduct(null);

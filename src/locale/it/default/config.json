@@ -32,6 +32,9 @@
           "defaultRowsPerPage": 10,
           "rowsPerPageOptions": [10, 25, 50, 100]
         },
+        "bulkRules": {
+          "preventMixedStatus": true
+        },
         "columns": [
           { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode" },
           { "id": "productCode", "labelKey": "tables.products.columns.productCode" },
