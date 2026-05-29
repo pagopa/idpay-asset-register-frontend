@@ -30,16 +30,6 @@
     "removeFiltersBtn": "Rimuovi filtri",
     "sendBtn": "Invia",
     "title": "Elenco informatico degli elettrodomestici",
-    "categories": {
-      "washingmachines": "Lavatrici",
-      "tumbledryers": "Asciugatrici",
-      "ovens": "Forni",
-      "rangehoods": "Cappe da cucina",
-      "dishwashers": "Lavastoviglie",
-      "washerdriers": "Lavasciuga",
-      "refrigeratingappl": "Apparecchi di refrigerazione",
-      "cookinghobs": "Piani cottura"
-    },
     "advancedFilters": "Filtri avanzati",
     "footer": {
       "a11y": "Accessibilità",
@@ -222,7 +212,7 @@
         "energeticClass": "Classe energetica",
         "eprelCode": "EPREL",
         "gtinCode": "Codice GTIN/EAN",
-        "batch": "Lotto"
+        "productFileId": "Lotto"
       },
       "categories": {
         "WASHINGMACHINES": "Lavatrici",
