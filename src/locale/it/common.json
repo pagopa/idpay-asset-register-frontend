@@ -222,7 +222,7 @@
         "energeticClass": "Classe energetica",
         "eprelCode": "EPREL",
         "gtinCode": "Codice GTIN/EAN",
-        "batch": "Lotto"
+        "productFileId": "Lotto"
       },
       "categories": {
         "WASHINGMACHINES": "Lavatrici",
