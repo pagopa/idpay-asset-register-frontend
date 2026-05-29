@@ -21,22 +21,20 @@ import {
 } from '../../services/registerService';
 import { filterInputWithSpaceRule } from '../../helpers';
 import { ProductStatus } from '../../api/generated/register';
-import { DEBUG_CONSOLE } from '../../utils/constants';
+import { DEBUG_CONSOLE, USERS_NAMES } from '../../utils/constants';
 import {
   EMPTY_DATA,
   // L2_MOTIVATION_OK,
-  MIDDLE_STATES,
-  PRODUCTS_STATES,
   MIN_LENGTH_TEXTFIELD_POPUP,
   MAX_LENGTH_TEXTFIELD_POPUP,
 } from '../../utils/constants';
-import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 
 interface ProductModalProps {
+  initiativeId: string;
   open: boolean;
   onClose: (cancelled?: boolean) => void;
   productName?: string;
-  actionType?: string;
+  actionType: string;
   onUpdateTable?: () => void;
   selectedProducts?: Array<{
     status: ProductStatus;
@@ -129,6 +127,7 @@ const modalStyles = {
 };
 
 const ProductModal: React.FC<ProductModalProps> = ({
+  initiativeId,
   open,
   onClose,
   actionType,
@@ -136,7 +135,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
   selectedProducts,
   onSuccess,
 }) => {
-  const initiativeId = useCurrentInitiativeId();
   const [motivationInternal, setMotivationInternal] = useState('');
   const [motivationOfficial, setMotivationOfficial] = useState('');
   const [motivationTouched, setMotivationTouched] = useState(false);
@@ -157,7 +155,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   }, [open]);
   const { t } = useScopedTranslation();
 
-  const renderMotivationField = (config: any) => {
+  const renderMotivationField = () => {
     const showError =
       motivationTouched &&
       (motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
@@ -175,7 +173,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       <>
         <TextField
           required
-          label={config?.reasonLabel}
+          label={t(`invitaliaModal.${actionType}.reasonLabel`)}
           color="primary"
           fullWidth
           inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
@@ -212,10 +210,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
       : undefined;
     return (
       <>
-        <Typography sx={modalStyles.listTitle}>{MODAL_CONFIG.REJECTED.listTitleNoteUff}</Typography>
+        <Typography sx={modalStyles.listTitle}>{t(`invitaliaModal.${actionType}.listTitleNoteUff`)}</Typography>
         <TextField
           required
-          label={MODAL_CONFIG.REJECTED.reasonPlaceholderNoteUff}
+          label={t(`invitaliaModal.${actionType}.reasonPlaceholderNoteUff`)}
           color="primary"
           fullWidth
           inputProps={{ maxLength: MAX_LENGTH_TEXTFIELD_POPUP }}
@@ -235,68 +233,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
       </>
     );
   };
-
-  const MODAL_CONFIG = {
-    SUPERVISED: {
-      title: t('invitaliaModal.supervised.title'),
-      description: t('invitaliaModal.supervised.description'),
-      listTitle: t('invitaliaModal.supervised.listTitle'),
-      reasonLabel: t('invitaliaModal.supervised.reasonLabel'),
-      reasonPlaceholder: t('invitaliaModal.supervised.reasonPlaceholder'),
-      buttonText: t('invitaliaModal.supervised.buttonText'),
-      buttonTextConfirm: t('invitaliaModal.supervised.buttonTextConfirm'),
-      buttonTextCancel: t('invitaliaModal.supervised.buttonTextCancel'),
-      msgResult: t('invitaliaModal.supervised.msgResultSupervised'),
-    },
-    REJECTED: {
-      title: t('invitaliaModal.rejected.title'),
-      description: t('invitaliaModal.rejected.description'),
-      listTitle: t('invitaliaModal.rejected.listTitle'),
-      reasonLabel: t('invitaliaModal.rejected.reasonLabel'),
-      reasonPlaceholder: t('invitaliaModal.rejected.reasonPlaceholder'),
-      buttonText: t('invitaliaModal.rejected.buttonText'),
-      listTitleNoteUff: t('invitaliaModal.rejected.listTitleNoteUff'),
-      reasonPlaceholderNoteUff: t('invitaliaModal.rejected.reasonPlaceholderNoteUff'),
-      buttonTextConfirm: t('invitaliaModal.rejected.buttonTextConfirm'),
-      buttonTextCancel: t('invitaliaModal.rejected.buttonTextCancel'),
-      msgResult: t('invitaliaModal.rejected.msgResultRejected'),
-    },
-    WAIT_APPROVED: {
-      title: t('invitaliaModal.waitApproved.title'),
-      description: t('invitaliaModal.waitApproved.description'),
-      listTitle: t('invitaliaModal.waitApproved.listTitle'),
-      reasonLabel: t('invitaliaModal.waitApproved.reasonLabel'),
-      reasonPlaceholder: t('invitaliaModal.waitApproved.reasonPlaceholder'),
-      buttonText: t('invitaliaModal.waitApproved.buttonText'),
-      buttonTextConfirm: t('invitaliaModal.waitApproved.buttonTextConfirm'),
-      buttonTextCancel: t('invitaliaModal.waitApproved.buttonTextCancel'),
-      msgResult: t('invitaliaModal.waitApproved.msgResultWaitApproved'),
-    },
-    REJECT_APPROVATION: {
-      title: t('invitaliaModal.rejectApprovation.title'),
-      description: t('invitaliaModal.rejectApprovation.description'),
-      listTitle: t('invitaliaModal.rejectApprovation.listTitle'),
-      reasonLabel: t('invitaliaModal.rejectApprovation.reasonLabel'),
-      reasonPlaceholder: t('invitaliaModal.rejectApprovation.reasonPlaceholder'),
-      buttonText: t('invitaliaModal.rejectApprovation.buttonText'),
-      buttonTextConfirm: t('invitaliaModal.rejectApprovation.buttonTextConfirm'),
-      buttonTextCancel: t('invitaliaModal.rejectApprovation.buttonTextCancel'),
-      msgResult: t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation'),
-    },
-    ACCEPT_APPROVATION: {
-      title: t('invitaliaModal.acceptApprovation.title'),
-      description: t('invitaliaModal.acceptApprovation.description'),
-      listTitle: t('invitaliaModal.acceptApprovation.listTitle'),
-      reasonLabel: t('invitaliaModal.acceptApprovation.reasonLabel'),
-      reasonPlaceholder: t('invitaliaModal.acceptApprovation.reasonPlaceholder'),
-      buttonText: t('invitaliaModal.acceptApprovation.buttonText'),
-      buttonTextConfirm: t('invitaliaModal.acceptApprovation.buttonTextConfirm'),
-      buttonTextCancel: t('invitaliaModal.acceptApprovation.buttonTextCancel'),
-      msgResult: t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation'),
-    },
-  };
-
-  const config = MODAL_CONFIG[actionType as keyof typeof MODAL_CONFIG];
 
   if (!selectedProducts || selectedProducts.length === 0) {
     return null;
@@ -405,6 +341,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
     }
   };
 
+  const apiConfig: {[key: typeof actionType]: () => void} = {
+    supervised: callSupervisionedApi,
+    rejected: callRejectedApi,
+    acceptApprovation: callApprovedApi,
+    rejectApprovation: callRestoredApi
+  };
+
   const handleCloseWithUpdate = () => {
     onClose(true);
   };
@@ -417,15 +360,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
         sx: modalStyles.dialogPaper,
       }}
     >
-      <DialogTitle sx={modalStyles.dialogTitle}>{config?.title || ''}</DialogTitle>
+      <DialogTitle sx={modalStyles.dialogTitle}>{t(`invitaliaModal.${actionType}.title`) || ''}</DialogTitle>
 
       <DialogContent sx={{ p: 0 }}>
-        <Typography sx={modalStyles.descriptionText}>{config?.description || ''}</Typography>
-        <Typography sx={modalStyles.listTitle}>{config?.listTitle || ''}</Typography>
-        {actionType !== MIDDLE_STATES.ACCEPT_APPROVATION && (
+        <Typography sx={modalStyles.descriptionText}>{t(`pages.invitaliaModal.${actionType}.description`, { user: USERS_NAMES.INVITALIA_L2 }) || ''}</Typography>
+        <Typography sx={modalStyles.listTitle}>{t(`invitaliaModal.${actionType}.listTitle`) || ''}</Typography>
+        {actionType !== "acceptApprovation" && (
           <>
-            {renderMotivationField(config)}
-            {actionType === PRODUCTS_STATES.REJECTED && renderMotivationNoteUffField()}
+            {renderMotivationField()}
+            {actionType === "rejected" && renderMotivationNoteUffField()}
           </>
         )}
       </DialogContent>
@@ -436,56 +379,19 @@ const ProductModal: React.FC<ProductModalProps> = ({
           color="primary"
           sx={modalStyles.buttonCancel}
         >
-          {config?.buttonTextCancel}
+          {t(`invitaliaModal.${actionType}.buttonTextCancel`)}
         </Button>
-        {actionType === PRODUCTS_STATES.SUPERVISED && (
           <Button
             variant="contained"
             color="primary"
             sx={{
               ...buttonStyle,
             }}
-            onClick={callSupervisionedApi}
+            onClick={() => apiConfig?.[actionType] && apiConfig?.[actionType]()}
           >
-            <FlagIcon /> {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
+            { actionType === "supervised" && <FlagIcon />}
+            {t(`invitaliaModal.${actionType}.buttonTextConfirm`) + ` (${selectedProducts?.length})`}
           </Button>
-        )}
-        {actionType === PRODUCTS_STATES.REJECTED && (
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              ...buttonStyle,
-            }}
-            onClick={callRejectedApi}
-          >
-            {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
-          </Button>
-        )}
-        {actionType === MIDDLE_STATES.REJECT_APPROVATION && (
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              ...buttonStyle,
-            }}
-            onClick={callRestoredApi}
-          >
-            {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
-          </Button>
-        )}
-        {actionType === MIDDLE_STATES.ACCEPT_APPROVATION && (
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              ...buttonStyle,
-            }}
-            onClick={callApprovedApi}
-          >
-            {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
-          </Button>
-        )}
         <IconButton aria-label="close" onClick={handleCloseWithUpdate} sx={modalStyles.closeButton}>
           <CloseIcon />
         </IconButton>

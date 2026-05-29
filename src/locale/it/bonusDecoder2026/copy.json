@@ -16,6 +16,23 @@
       "termsDescription2": "del servizio e confermi di aver letto l’",
       "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
       "title": "Bonus Decoder"
+    },
+    "invitaliaModal": {
+      "supervised": {
+        "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali controlli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'."
+      },
+      "rejected": {
+        "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori riceveranno la notifica dell'esclusione."
+      },
+      "waitApproved": {
+        "description": "Stai per inoltrare i prodotti selezionati a {{user}} per l'approvazione finale. Quando {{user}} avrà approvato, i prodotti selezionati verranno pubblicati nel registro dei beni."
+      },
+      "rejectApprovation": {
+        "description": "Stai per rifiutare la richiesta di approvazione inviata da L1. Dopo questa operazione, i prodotti torneranno allo stato “Da Esaminare”."
+      },
+      "acceptApprovation": {
+        "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nel registro dei beni."
+      }
     }
   },
   "tables": {

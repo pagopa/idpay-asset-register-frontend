@@ -314,7 +314,6 @@
   "invitaliaModal": {
     "supervised": {
       "title": "Richiedi ulteriori controlli ai produttori",
-      "description": "Con questa azione segnali che i prodotti necessitano di ulteriori controlli. Puoi avviare tali controlli utilizzando gli indirizzi PEC disponibili nella sezione 'Produttori'.",
       "listTitle": "Perché stai richiedendo ulteriori controlli?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
@@ -326,7 +325,6 @@
     },
     "rejected": {
       "title": "Richiedi esclusione",
-      "description": "Stai per escludere definitivamente i  prodotti selezionati. I produttori riceveranno la notifica dell'esclusione.",
       "listTitle": "Perché stai escludendo i prodotti?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
@@ -340,7 +338,6 @@
     },
     "waitApproved": {
       "title": "Approva",
-      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
       "listTitle": "Richiedi approvazione",
       "reasonLabel": "Richiedi approvazione",
       "reasonPlaceholder": "Richiedi approvazione",
@@ -352,7 +349,6 @@
     },
     "rejectApprovation": {
       "title": "Rifiuta approvazione",
-      "description": "Stai per rifiutare la richiesta di approvazione inviata da L1. Dopo questa operazione, i prodotti torneranno allo stato “Da Esaminare”.",
       "listTitle": "Perché stai rifiutando l’approvazione di questi prodotti?",
       "reasonLabel": "Nota interna",
       "reasonPlaceholder": "Nota interna",
@@ -364,7 +360,6 @@
     },
     "acceptApprovation": {
       "title": "Approva prodotti",
-      "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nell’elenco informatico degli elettrodomestici.",
       "listTitle": "",
       "reasonLabel": "",
       "reasonPlaceholder": "",

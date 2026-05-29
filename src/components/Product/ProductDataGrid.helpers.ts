@@ -1,5 +1,16 @@
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
+import { MsgResultProps } from './MsgResult';
+
+export const modalStatusMsg: Record<string, MsgResultProps> = {
+  waitApproved: { severity: "success", message: 'invitaliaModal.waitApproved.msgResultWaitApproved' },
+  supervised: { severity: "success", message: 'invitaliaModal.supervised.msgResultSupervised' },
+  rejected: { severity: "success", message: 'invitaliaModal.rejected.msgResultRejected' },
+  rejectApprovation: { severity: "success", message: 'invitaliaModal.rejectApprovation.msgResultRejectedApprovation' },
+  acceptApprovation: { severity: "success", message: 'invitaliaModal.acceptApprovation.msgResultAcceptApprovation' },
+  errorYourselfApproved: { severity: "error", message: 'msgResutlt.errorYourselfApproved' },
+  errorMixSelected: { severity: "error", message: 'msgResutlt.errorMixSelected' }
+};
 
 export const getSelectedStatuses = (
   selected: Array<string>,

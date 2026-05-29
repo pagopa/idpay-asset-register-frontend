@@ -3,14 +3,14 @@ import { Box, Button } from '@mui/material';
 import FlagIcon from '@mui/icons-material/Flag';
 import { useTranslation } from 'react-i18next';
 import { ProductDTO } from '../../api/generated/register';
-import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
+import { PRODUCTS_STATES} from '../../utils/constants';
 
 type Props = {
   tableData: Array<ProductDTO>;
   selected: Array<string>;
   isInvitaliaUser: boolean;
   hookLoading: boolean;
-  handleOpenModalWithStatusCheck: (action: string) => void;
+  setModalAction: (action: string) => void;
 };
 
 const buttonStyle = {
@@ -25,7 +25,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
   selected,
   isInvitaliaUser,
   hookLoading,
-  handleOpenModalWithStatusCheck,
+  setModalAction,
 }) => {
   const { t } = useTranslation();
   if (!(tableData?.length > 0 && !hookLoading && selected.length !== 0)) {
@@ -45,11 +45,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
         variant="outlined"
         color="error"
         sx={{ ...buttonStyle }}
-        onClick={() =>
-          handleOpenModalWithStatusCheck(
-            isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION
-          )
-        }
+        onClick={() => setModalAction( isInvitaliaUser ? "rejected" : "rejectApprovation")}
       >
         {isInvitaliaUser
           ? `${t('invitaliaModal.rejected.buttonText')} (${selected.length})`
@@ -62,7 +58,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
           color="primary"
           variant="outlined"
           sx={{ ...buttonStyle }}
-          onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED)}
+          onClick={() => setModalAction("supervised")}
         >
           <FlagIcon />
           {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
@@ -83,11 +79,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
           ) &&
             isInvitaliaUser)
         }
-        onClick={() =>
-          handleOpenModalWithStatusCheck(
-            isInvitaliaUser ? PRODUCTS_STATES.WAIT_APPROVED : MIDDLE_STATES.ACCEPT_APPROVATION
-          )
-        }
+        onClick={() => setModalAction(isInvitaliaUser ? "waitApproved" : "acceptApprovation")}
       >
         {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
       </Button>

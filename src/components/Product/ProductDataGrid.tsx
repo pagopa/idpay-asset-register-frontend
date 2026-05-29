@@ -18,10 +18,8 @@ import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { SelectProps } from '../FiltersDrawer/filtersRender';
 import { useProductsTable } from './hooks/useProductsTable';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
-import { validateBulkActionPreconditions } from './ProductDataGrid.helpers';
 
 import ProductDataGridView from './ProductDataGridView';
-import ProductResultMessages from './ProductResultMessages';
 import ProductDetail from './ProductDetail';
 
 type Props = {
@@ -111,18 +109,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     };
   }, [isInvitaliaAdmin, filtersConfig, templateConfig]);
 
-  const handleOpenModalWithStatusCheck = () => {
-    const result = validateBulkActionPreconditions({
-      selected,
-      tableData,
-      isInvitaliaAdmin,
-    });
-
-    if (!result.valid) {
-      return;
-    }
-  };
-
   const effectiveColumns = useMemo(() => {
     const baseCols = Array.isArray(tableConfig?.columns) ? tableConfig.columns : [];
     const hasAction = baseCols.some((c: any) => c.type === 'action');
@@ -142,7 +128,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   return (
     <>
       <ProductDataGridView
+        initiativeId={initiativeId}
         isInvitaliaUser={isInvitaliaUser}
+        isInvitaliaAdmin={isInvitaliaAdmin}
         tableData={tableData}
         hookLoading={loading}
         itemsQty={itemsQty ?? 0}
@@ -182,21 +170,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           );
         }}
         handleToggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
-        handleOpenModalWithStatusCheck={handleOpenModalWithStatusCheck}
-      />
-
-      <ProductResultMessages
-        showMsgWaitApproved={false}
-        showMsgSupervised={false}
-        showMsgApproved={false}
-        showMsgAcceptApprovation={false}
-        showMsgRejected={false}
-        showMsgRejectedApprovation={false}
-        showMixStatusError={false}
-        showYourselfApprovedError={false}
-        t={t}
-        getMsgResultByActionType={() => ''}
-        bottom={80}
       />
 
       {selectedProduct && (

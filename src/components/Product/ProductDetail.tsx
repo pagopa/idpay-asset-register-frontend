@@ -11,6 +11,7 @@ import {
   // L1_MOTIVATION_OK,
   MIDDLE_STATES,
   PRODUCTS_STATES,
+  USERS_NAMES,
   USERS_TYPES,
 } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
@@ -116,9 +117,9 @@ const mapBaseRowToRowConfig = (
   label: row.label,
   value:
     row.dataKey &&
-    data[row.dataKey as keyof ProductDTO] !== undefined &&
-    data[row.dataKey as keyof ProductDTO] !== null &&
-    data[row.dataKey as keyof ProductDTO] !== ''
+      data[row.dataKey as keyof ProductDTO] !== undefined &&
+      data[row.dataKey as keyof ProductDTO] !== null &&
+      data[row.dataKey as keyof ProductDTO] !== ''
       ? String(data[row.dataKey as keyof ProductDTO])
       : EMPTY_DATA,
   labelVariant: row.labelVariant,
@@ -156,8 +157,8 @@ function mapDetailFieldToRowConfig(
       field.id === 'registrationDate' && hasValue
         ? String(format(new Date(String(value)), 'dd/MM/yyyy'))
         : hasValue
-        ? String(value)
-        : EMPTY_DATA,
+          ? String(value)
+          : EMPTY_DATA,
     valueVariant: field.id === 'productName' ? 'h6' : undefined,
     sx:
       field.id === 'productName' || field.id === 'batchName'
@@ -183,67 +184,67 @@ function getProductInfoRowsConfig(
     sx?: SxProps<Theme>;
     isTranslation?: boolean;
   }> = [
-    {
-      label: '',
-      dataKey: 'productName',
-      valueVariant: 'h6',
-      sx: { mb: 1, maxWidth: 350, wordWrap: 'break-word' },
-    },
-    {
-      label: '',
-      dataKey: 'batchName',
-      labelVariant: 'body2',
-      valueVariant: 'body2',
-    },
-    {
-      label: t('pages.productDetail.eprelCheckDate'),
-      dataKey: 'registrationDate',
-    },
-    {
-      label: '',
-      dataKey: null,
-      labelVariant: 'body2',
-      valueVariant: 'body2',
-      sx: { mt: 4, mb: 2 },
-      isTranslation: true,
-    },
-    {
-      label: t('pages.productDetail.eprelCode'),
-      dataKey: 'eprelCode',
-    },
-    {
-      label: t('pages.productDetail.gtinCode'),
-      dataKey: 'gtinCode',
-    },
-    {
-      label: t('pages.productDetail.productCode'),
-      dataKey: 'productCode',
-    },
-    {
-      label: t('pages.productDetail.category'),
-      dataKey: 'category',
-    },
-    {
-      label: t('pages.productDetail.brand'),
-      dataKey: 'brand',
-    },
-    {
-      label: t('pages.productDetail.model'),
-      dataKey: 'model',
-    },
-    {
-      label: t('pages.productDetail.energyClass'),
-      dataKey: 'energyClass',
-    },
-    {
-      label: t('pages.productDetail.countryOfProduction'),
-      dataKey: 'countryOfProduction',
-    },
-    {
-      label: t('pages.productDetail.capacity'),
-      dataKey: 'capacity',
-    },
-  ];
+      {
+        label: '',
+        dataKey: 'productName',
+        valueVariant: 'h6',
+        sx: { mb: 1, maxWidth: 350, wordWrap: 'break-word' },
+      },
+      {
+        label: '',
+        dataKey: 'batchName',
+        labelVariant: 'body2',
+        valueVariant: 'body2',
+      },
+      {
+        label: t('pages.productDetail.eprelCheckDate'),
+        dataKey: 'registrationDate',
+      },
+      {
+        label: '',
+        dataKey: null,
+        labelVariant: 'body2',
+        valueVariant: 'body2',
+        sx: { mt: 4, mb: 2 },
+        isTranslation: true,
+      },
+      {
+        label: t('pages.productDetail.eprelCode'),
+        dataKey: 'eprelCode',
+      },
+      {
+        label: t('pages.productDetail.gtinCode'),
+        dataKey: 'gtinCode',
+      },
+      {
+        label: t('pages.productDetail.productCode'),
+        dataKey: 'productCode',
+      },
+      {
+        label: t('pages.productDetail.category'),
+        dataKey: 'category',
+      },
+      {
+        label: t('pages.productDetail.brand'),
+        dataKey: 'brand',
+      },
+      {
+        label: t('pages.productDetail.model'),
+        dataKey: 'model',
+      },
+      {
+        label: t('pages.productDetail.energyClass'),
+        dataKey: 'energyClass',
+      },
+      {
+        label: t('pages.productDetail.countryOfProduction'),
+        dataKey: 'countryOfProduction',
+      },
+      {
+        label: t('pages.productDetail.capacity'),
+        dataKey: 'capacity',
+      },
+    ];
 
   const firstTwoRows = baseRows.slice(0, 2).map((row) => mapBaseRowToRowConfig(row, data));
 
@@ -331,24 +332,24 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
   const motivationRow =
     user?.org_role !== USERS_TYPES.OPERATORE && hasMotivations
       ? ({
-          renderCustom(this: RowConfig) {
-            return (
-              <ProductInfoRow
-                label={t('pages.productDetail.motivation')}
-                labelVariant="overline"
-                sx={{ marginTop: 3, fontWeight: 700 }}
-                labelColor="#17324D"
-                value={
-                  <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                    {filteredChronology.map((entry, idx) =>
-                      renderEntry(entry, idx, detailMaxLength)
-                    )}
-                  </Box>
-                }
-              />
-            );
-          },
-        } as RowConfig & { renderCustom?: () => JSX.Element })
+        renderCustom(this: RowConfig) {
+          return (
+            <ProductInfoRow
+              label={t('pages.productDetail.motivation')}
+              labelVariant="overline"
+              sx={{ marginTop: 3, fontWeight: 700 }}
+              labelColor="#17324D"
+              value={
+                <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                  {filteredChronology.map((entry, idx) =>
+                    renderEntry(entry, idx, detailMaxLength)
+                  )}
+                </Box>
+              }
+            />
+          );
+        },
+      } as RowConfig & { renderCustom?: () => JSX.Element })
       : null;
 
   function isValidDateString(date: string | undefined): boolean {
@@ -405,42 +406,42 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
   const formalMotivationRow = !displayFormalMotivation(user?.org_role, data.status)
     ? null
     : ({
-        renderCustom(this: RowConfig) {
-          const dateLabel = getFormalMotivationDateLabel(chronology);
-          const operator = getFormalMotivationOperator(user, chronology);
-          const header = getFormalMotivationHeader(user, dateLabel, operator);
+      renderCustom(this: RowConfig) {
+        const dateLabel = getFormalMotivationDateLabel(chronology);
+        const operator = getFormalMotivationOperator(user, chronology);
+        const header = getFormalMotivationHeader(user, dateLabel, operator);
 
-          return (
-            <ProductInfoRow
-              label={t('pages.productDetail.motivationFormal')}
-              labelVariant="overline"
-              sx={{ marginTop: 3, fontWeight: 700 }}
-              labelColor="#17324D"
-              value={
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
-                    <Box component="span" sx={{ width: '100%' }}>
-                      {header && header.trim() !== '' && (
-                        <Typography variant="body1" color="textSecondary">
-                          {truncateString(header, detailMaxLength)}
-                        </Typography>
-                      )}
-                      <TextareaAutosize
-                        maxRows={10}
-                        value={formalMotivationText}
-                        readOnly
-                        aria-label="Motivazione formale"
-                        name="formalMotivation"
-                        className="product-detail-textarea"
-                      />
-                    </Box>
+        return (
+          <ProductInfoRow
+            label={t('pages.productDetail.motivationFormal')}
+            labelVariant="overline"
+            sx={{ marginTop: 3, fontWeight: 700 }}
+            labelColor="#17324D"
+            value={
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
+                  <Box component="span" sx={{ width: '100%' }}>
+                    {header && header.trim() !== '' && (
+                      <Typography variant="body1" color="textSecondary">
+                        {truncateString(header, detailMaxLength)}
+                      </Typography>
+                    )}
+                    <TextareaAutosize
+                      maxRows={10}
+                      value={formalMotivationText}
+                      readOnly
+                      aria-label="Motivazione formale"
+                      name="formalMotivation"
+                      className="product-detail-textarea"
+                    />
                   </Box>
                 </Box>
-              }
-            />
-          );
-        },
-      } as RowConfig & { renderCustom?: () => JSX.Element });
+              </Box>
+            }
+          />
+        );
+      },
+    } as RowConfig & { renderCustom?: () => JSX.Element });
 
   const extraRows = [
     ...(motivationRow ? [motivationRow] : []),
@@ -541,7 +542,7 @@ export default function ProductDetail({
     }
   };
 
-  const resetAllMsgs = () => {};
+  const resetAllMsgs = () => { };
 
   const setMsgByActionType = (actionType?: string) => {
     if (actionType === PRODUCTS_STATES.SUPERVISED && typeof onShowSupervisedMsg === 'function') {
@@ -769,15 +770,14 @@ export default function ProductDetail({
           cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
           confirmButtonText={t('invitaliaModal.waitApproved.buttonTextConfirm')}
           title={t('invitaliaModal.waitApproved.listTitle')}
-          message={t('invitaliaModal.waitApproved.description', {
-            L2: 'L2',
-          })}
+          message={t('pages.invitaliaModal.waitApproved.description', { user: USERS_NAMES.INVITALIA_L2 })}
           onCancel={() => setRestoreDialogOpen(false)}
           onConfirm={handleConfirmRestore}
           onSuccess={handleSuccess}
         />
 
         <ProductModal
+          initiativeId={initiativeId}
           open={supervisionModalOpen}
           onClose={(cancelled) => {
             setSupervisionModalOpen(false);
@@ -809,6 +809,7 @@ export default function ProductDetail({
           }
         />
         <ProductModal
+          initiativeId={initiativeId}
           open={excludeModalOpen}
           onClose={() => handleModalClose(setExcludeModalOpen, true)}
           actionType={isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION}

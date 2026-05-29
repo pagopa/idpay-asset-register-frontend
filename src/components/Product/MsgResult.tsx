@@ -4,7 +4,7 @@ import Alert from '@mui/material/Alert';
 import Slide from '@mui/material/Slide';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 
-type MsgResultProps = {
+export type MsgResultProps = {
   severity?: 'error' | 'warning' | 'info' | 'success';
   variant?: 'filled' | 'outlined';
   message: string;

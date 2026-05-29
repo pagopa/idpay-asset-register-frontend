@@ -219,7 +219,7 @@ function makeStatusUpdater(
             currentStatus,
             motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
           };
-      const result = await apiMethod(initiativeId, body);
+      const result = await apiMethod({initiativeId}, body);
       return result ?? {};
     } catch (error) {
       logApiError(error, 'makeStatusUpdater');

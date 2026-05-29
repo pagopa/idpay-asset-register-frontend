@@ -1,19 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Paper, TablePagination, CircularProgress } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@mui/material/styles';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
-import { useTranslation } from 'react-i18next';
 import EmptyListTable from '../../pages/components/EmptyListTable';
 import ProductsTable from '../../pages/components/ProductsTable';
-import { ProductDTO } from '../../api/generated/register';
+import { ProductDTO, ProductStatus } from '../../api/generated/register';
+import { setWaitApprovedStatusList } from '../../services/registerService';
+import { DEBUG_CONSOLE, EMPTY_DATA, USERS_NAMES } from '../../utils/constants';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import NewFilter from './NewFilter';
 import ProductStatusActionBar from './ProductStatusActionBar';
 import { useProductFilters } from './hooks/useProductFilters';
+import ProductModal from './ProductModal';
+import { getStatusChecks, modalStatusMsg } from './ProductDataGrid.helpers';
+import ProductConfirmDialog from './ProductConfirmDialog';
+import MsgResult, { MsgResultProps } from './MsgResult';
 
 type Props = {
+  initiativeId: string;
   isInvitaliaUser: boolean;
+  isInvitaliaAdmin: boolean;
   tableData: Array<ProductDTO>;
   hookLoading: boolean;
   itemsQty: number;
@@ -36,11 +44,14 @@ type Props = {
   handleChangeRowsPerPage: any;
   handleDeleteFiltersButtonClick: () => void;
   handleToggleFiltersDrawer: (v: boolean) => void;
-  handleOpenModalWithStatusCheck: (action: string) => void;
 };
 
+const msgInitialValue = { message: '' };
+
 const ProductDataGridView: React.FC<Props> = ({
+  initiativeId,
   isInvitaliaUser,
+  isInvitaliaAdmin,
   tableData,
   hookLoading,
   itemsQty,
@@ -63,11 +74,53 @@ const ProductDataGridView: React.FC<Props> = ({
   handleChangeRowsPerPage,
   handleDeleteFiltersButtonClick,
   handleToggleFiltersDrawer,
-  handleOpenModalWithStatusCheck,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const { filtersLabel } = useProductFilters({ filters });
   const theme = useTheme();
+
+  const [message, setMessage] = useState<MsgResultProps>(msgInitialValue);
+  const [modalAction, setModalAction] = useState<string>('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleConfirmRestore = async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatus,
+    motivation: string
+  ) => {
+    try {
+      await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
+      setMessage(modalStatusMsg.waitApproved);
+    } catch (error) {
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
+    } finally {
+      setIsDialogOpen(false);
+    }
+  };
+
+  const handleModalAction = (action: string) => {
+    const { selectedStatuses, someUploaded, length } = getStatusChecks(selected, tableData);
+    if (length) {
+      if (isInvitaliaAdmin && someUploaded) {
+        setMessage(modalStatusMsg.errorYourselfApproved);
+        setTimeout(() => setMessage(msgInitialValue), 3000);
+        return;
+      }
+
+      const uniqueStatuses = Array.from(new Set(selectedStatuses));
+      if (uniqueStatuses.length > 1) {
+        setMessage(modalStatusMsg.errorMixSelected);
+        setTimeout(() => setMessage(msgInitialValue), 3000);
+        return;
+      }
+      setModalAction(action);
+      setIsModalOpen(true);
+    }
+  };
+
   return (
     <>
       <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -91,7 +144,7 @@ const ProductDataGridView: React.FC<Props> = ({
             selected={selected}
             isInvitaliaUser={isInvitaliaUser}
             hookLoading={hookLoading}
-            handleOpenModalWithStatusCheck={handleOpenModalWithStatusCheck}
+            setModalAction={handleModalAction}
           />
         </Box>
       </Box>
@@ -157,6 +210,70 @@ const ProductDataGridView: React.FC<Props> = ({
           />
         )}
       </Paper>
+
+      <ProductModal
+        initiativeId={initiativeId}
+        open={isModalOpen}
+        onClose={(cancelled) => {
+          setIsModalOpen(false);
+          if (cancelled) {
+            setMessage(msgInitialValue);
+          }
+        }}
+        actionType={modalAction}
+        // onUpdateTable={updaDataTable}
+        selectedProducts={
+          tableData
+            .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
+            .map((row) => ({
+              status: row.status as ProductStatus,
+              productName: row.productName,
+              gtinCode: row.gtinCode,
+              category: row.category,
+            })) as Array<{
+              status: ProductStatus;
+              productName?: string;
+              gtinCode: string;
+              category?: string;
+            }>
+        }
+        onSuccess={() => { }}
+      />
+
+      <ProductConfirmDialog
+        open={isDialogOpen}
+        cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
+        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${selected.length
+          })`}
+        title={t('invitaliaModal.waitApproved.listTitle')}
+        message={t('pages.invitaliaModal.waitApproved.description', { user: USERS_NAMES.INVITALIA_L2 })}
+        onCancel={() => setIsDialogOpen(false)}
+        onConfirm={async () => {
+          const currentStatus =
+            (tableData.find((row) => row.gtinCode === selected[0])
+              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
+          try {
+            await handleConfirmRestore(selected, currentStatus, EMPTY_DATA);
+            // updaDataTable();
+            setIsDialogOpen(false);
+          } catch (error) {
+            if (DEBUG_CONSOLE) {
+              console.error('Error during restore:', error);
+            }
+          }
+        }}
+        onSuccess={() => {
+          setMessage(msgInitialValue);
+          const currentStatus =
+            (tableData.find((row) => row.gtinCode === selected[0])
+              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
+          if (currentStatus === ProductStatus.UPLOADED) {
+            setMessage(modalStatusMsg.waitApproved);
+          }
+        }}
+      />
+
+      <MsgResult {...message} bottom={80} />
     </>
   );
 };
