@@ -1,11 +1,11 @@
 {
   "commons": {
-    "title": "Bonus Decoder"
+    "title": "Elenco informatico dei decoder"
   },
   "pages": {
     "addProducts": {
       "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione ",
-      "manualLink": "https://www.mimit.gov.it/it/incentivi/bonus-decoder-a-casa"
+      "manualLink": ""
     },
     "tos": {
       "and": "e l’",
@@ -15,8 +15,15 @@
       "termsDescription": "Accedendo, accetti i",
       "termsDescription2": "del servizio e confermi di aver letto l’",
       "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
-      "title": "Bonus Decoder"
+      "title": "Elenco informatico dei decoder"
     }
+  },
+  "categories": {
+    "DS": { "label": "Satellitare" },
+    "DT": { "label": "Terrestre" },
+    "DTC": { "label": "Terrestre via cavo" },
+    "DTS": { "label": "Terrestre e Satellitare" },
+    "DTSC": { "label": "Terrestre, Satellitare e via cavo" }
   },
   "tables": {
     "products": {
@@ -35,12 +42,5 @@
         "productFileId": "Lotto"
       }
     }
-  },
-  "categories": {
-    "satellite": { "label": "Satellitare" },
-    "terrestrial": { "label": "Terrestre" },
-    "terrestrial_via_cable": { "label": "Terrestre via Cavo" },
-    "terrestrial_and_satellite": { "label": "Terrestre e Satellitare" },
-    "terrestrial_satellite_and_via_cable": { "label": "Terrestre, Satellitare e via Cavo" }
   }
 }
