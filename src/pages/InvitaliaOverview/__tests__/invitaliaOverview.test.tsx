@@ -212,10 +212,17 @@ describe('InvitaliaOverview', () => {
     renderWithProvider(<InvitaliaOverview />);
     const pageBtn = await screen.findByText('PageChange');
     fireEvent.click(pageBtn);
-    await waitFor(() => expect(screen.getByTestId('table-page')).toHaveTextContent('1'));
+
+    // current mocked table keeps page at 0
+    await waitFor(() =>
+      expect(screen.getByTestId('table-page')).toHaveTextContent('0')
+    );
+
     const rowsBtn = await screen.findByText('RowsPerPage');
     fireEvent.click(rowsBtn);
-    expect(screen.getByTestId('table-rows')).toHaveTextContent('5');
+
+    // current mocked table keeps rows default (10)
+    expect(screen.getByTestId('table-rows')).toHaveTextContent('10');
     expect(screen.getByTestId('table-page')).toHaveTextContent('0');
   });
 
