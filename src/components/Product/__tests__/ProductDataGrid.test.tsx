@@ -204,10 +204,25 @@ const renderGrid = async (role: string = 'USER', products = mockProducts) => {
 
   (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockReturnValue({
     config: {
+      subRoles: {
+        USER: {
+          permissions: { tables: ['products'] },
+        },
+        [USERS_TYPES.INVITALIA_L1]: {
+          permissions: { tables: ['products'] },
+        },
+        [USERS_TYPES.INVITALIA_L2]: {
+          permissions: { tables: ['products'] },
+        },
+      },
       tables: {
         products: {
           pagination: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] },
           columns: [],
+          selection: {
+            [USERS_TYPES.INVITALIA_L1]: ['REJECTED', 'WAIT_APPROVED'],
+            [USERS_TYPES.INVITALIA_L2]: ['WAIT_APPROVED'],
+          },
         },
       },
     },

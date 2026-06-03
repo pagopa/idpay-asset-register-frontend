@@ -1,7 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { initiativeConfigReducer } from '../../redux/slices/initiativeConfigSlice';
 import { useInitiativeConfig } from '../useInitiativeConfig';
 
@@ -42,6 +42,9 @@ describe('useInitiativeConfig hook', () => {
     const { result } = renderHook(() => useInitiativeConfig(), { wrapper });
 
     expect(result.current.loading).toBeDefined();
-    expect(result.current.config).toBeDefined();
+
+    await waitFor(() => {
+      expect(result.current.config).toBeDefined();
+    });
   });
 });
