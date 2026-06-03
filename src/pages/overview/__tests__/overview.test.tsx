@@ -19,6 +19,8 @@ jest.mock('react-i18next', () => ({
         'pages.overview.overviewTitleBoxInfoTitleLblSl': 'Sede Legale',
         'pages.overview.overviewTitleBoxInfoTitleLblPec': 'PEC',
         'pages.overview.overviewTitleBoxInfoTitleLblEmailOp': 'Email Operativa',
+        'pages.overview.missingOperativeEmailWarning':
+          "Inserisci l'e-mail operativa per poter caricare i prodotti.",
       };
       return translations[key] || key;
     },

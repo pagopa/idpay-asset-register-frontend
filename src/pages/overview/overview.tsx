@@ -1,15 +1,21 @@
-import React, { useMemo } from 'react';
-import { Box, Paper, Typography, Tooltip } from '@mui/material';
+import React, { useMemo, useState } from 'react';
+import { Alert, Box, Paper, Typography, Tooltip } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
+import { ButtonNaked } from '@pagopa/mui-italia';
+import { EditOutlined } from '@mui/icons-material';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import OverviewProductionSection from '../components/OverviewProductionSection';
+import OperativeEmailModal from '../components/OperativeEmailModal';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_PROD } from '../../utils/constants';
 
 const Overview: React.FC = () => {
   const { t } = useScopedTranslation();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
+  const [operativeEmailModalOpen, setOperativeEmailModalOpen] = useState(false);
+  const isOperativeEmailMissing =
+    typeof user?.org_email !== 'string' || user.org_email.trim().length === 0;
 
   const fields = useMemo(
     () => [
@@ -41,12 +47,18 @@ const Overview: React.FC = () => {
         subTitle={t('pages.overview.overviewTitleDescription')}
         mbTitle={2}
         mtTitle={2}
-        mbSubTitle={5}
+        mbSubTitle={2}
         variantTitle="h4"
         variantSubTitle="body1"
         data-testid="title-overview"
         titleFontSize="42px"
       />
+
+      {isOperativeEmailMissing && (
+        <Alert severity="warning" variant='outlined' sx={{ mb: 3 }}>
+          <Typography variant="body2">{t('pages.overview.missingOperativeEmailWarning')}</Typography>
+        </Alert>
+      )}
 
       <Box
         sx={{
@@ -84,32 +96,62 @@ const Overview: React.FC = () => {
                 rowGap: 2,
               }}
             >
-              {fields.map(({ label, value, hasValidValue, displayValue }) => (
-                <React.Fragment key={label}>
-                  <Box sx={{ gridColumn: 'span 3', alignContent: 'center' }}>
-                    <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
-                  </Box>
-                  <Box sx={{ gridColumn: 'span 9' }}>
-                    {hasValidValue ? (
-                      <Tooltip title={value}>
-                        <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }}>
+              {fields.map(({ label, value, hasValidValue, displayValue }) => {
+                const isOperativeEmail = label === 'overviewTitleBoxInfoTitleLblEmailOp';
+
+                return (
+                  <React.Fragment key={label}>
+                    <Box sx={{ gridColumn: 'span 3', alignContent: 'center' }}>
+                      <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        gridColumn: 'span 9',
+                        display: isOperativeEmail ? 'flex' : 'block',
+                        alignItems: isOperativeEmail ? 'center' : undefined,
+                        justifyContent: isOperativeEmail ? 'space-between' : undefined,
+                        gap: isOperativeEmail ? 2 : undefined,
+                      }}
+                    >
+                      {hasValidValue ? (
+                        <Tooltip title={value}>
+                          <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }}>
+                            {displayValue}
+                          </Typography>
+                        </Tooltip>
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: '600' }}>
                           {displayValue}
                         </Typography>
-                      </Tooltip>
-                    ) : (
-                      <Typography variant="body2" sx={{ fontWeight: '600' }}>
-                        {displayValue}
-                      </Typography>
-                    )}
-                  </Box>
-                </React.Fragment>
-              ))}
+                      )}
+                      {isOperativeEmail && (
+                        <ButtonNaked
+                          aria-label="Modifica e-mail operativa"
+                          onClick={() => setOperativeEmailModalOpen(true)}
+                          size="medium"
+                          sx={{ color: '#0B3EE3' }}
+                        >
+                          <EditOutlined sx={{ width: 22, color: '#0B3EE3' }} />
+                        </ButtonNaked>
+                      )}
+                    </Box>
+                  </React.Fragment>
+                );
+              })}
             </Box>
           </Paper>
         </Box>
 
-        <OverviewProductionSection />
+        <OverviewProductionSection isOperativeEmailMissing={isOperativeEmailMissing} />
       </Box>
+
+      <OperativeEmailModal
+        open={operativeEmailModalOpen}
+        onClose={() => setOperativeEmailModalOpen(false)}
+        onSave={() => {
+          setOperativeEmailModalOpen(false);
+        }}
+      />
 
       <Paper
         sx={{
