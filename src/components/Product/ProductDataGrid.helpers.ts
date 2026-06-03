@@ -6,7 +6,16 @@ export const getSelectedStatuses = (
   tableData: Array<ProductDTO>
 ): Array<ProductStatus> =>
   selected
-    .map((gtinCode) => tableData.find((row) => row.gtinCode === gtinCode)?.status)
+    .map((selectedKey) => {
+      const match = tableData.find((row) => {
+        const rowKey = String(
+          (row as any).gtinCode ?? (row as any).gtin ?? (row as any).productCode ?? ''
+        );
+        return rowKey === String(selectedKey);
+      });
+
+      return match?.status;
+    })
     .filter((status): status is ProductStatus => status !== undefined);
 
 export const isAllStatus = (statuses: Array<string>, status: string) =>
@@ -57,7 +66,9 @@ export const validateBulkActionPreconditions = ({
   const allowedByRole = bulkRules?.allowedStatusesByRole;
   if (roleKey && allowedByRole && allowedByRole[roleKey]) {
     const allowedStatuses = allowedByRole[roleKey];
+
     const allAllowed = selectedStatuses.every((s) => allowedStatuses.includes(s));
+
     if (!allAllowed) {
       return { valid: false, reason: 'NOT_ALLOWED_STATUS' };
     }

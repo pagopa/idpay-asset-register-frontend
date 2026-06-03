@@ -17,11 +17,12 @@ import { SelectProps } from '../FiltersDrawer/filtersRender';
 import EmptyListTable from '../../pages/components/EmptyListTable';
 import { useProductsTable } from './hooks/useProductsTable';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
-import { validateBulkActionPreconditions } from './ProductDataGrid.helpers';
+import { validateBulkActionPreconditions, handleModalSuccess } from './ProductDataGrid.helpers';
 
 import ProductDataGridView from './ProductDataGridView';
 import ProductResultMessages from './ProductResultMessages';
 import ProductDetail from './ProductDetail';
+import ProductBulkActionDialog from './ProductBulkActionDialog';
 
 type Props = {
   organizationId: string;
@@ -84,7 +85,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(paginationConfig?.defaultRowsPerPage ?? 10);
   const [selected, setSelected] = useState<Array<string>>([]);
-  const refreshKey = 0;
+  const refreshKey = useMemo(() => Date.now(), [initiativeId]);
 
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -160,7 +161,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   useEffect(() => {
     setSelected([]);
-  }, [tableData]);
+  }, [initiativeId]);
 
   useEffect(() => {
     if (enrichedFiltersConfig) {
@@ -192,7 +193,21 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     }
   }, [enrichedFiltersConfig, t]);
 
-  const handleOpenModalWithStatusCheck = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalAction, setModalAction] = useState<string | undefined>();
+  const [showMsgRejected, setShowMsgRejected] = useState(false);
+  const [showMsgApproved, setShowMsgApproved] = useState(false);
+  const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
+
+  const handleOpenModalWithStatusCheck = (action: string) => {
+    console.log('[DEBUG] handleOpenModalWithStatusCheck', {
+      action,
+      selected,
+      tableData,
+      roleKey: currentRoleKey,
+      tableConfig,
+    });
+
     const result = validateBulkActionPreconditions({
       selected,
       tableData,
@@ -200,9 +215,15 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       tableConfig,
     });
 
+    console.log('[DEBUG] validateBulkActionPreconditions result', result);
+
     if (!result.valid) {
+      console.log('[DEBUG] Modal blocked by validation', result.reason);
       return;
     }
+
+    setModalAction(action);
+    setModalOpen(true);
   };
 
   const effectiveColumns = useMemo(() => {
@@ -228,7 +249,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   return (
     <>
       <ProductDataGridView
-        isInvitaliaUser={false}
+        isInvitaliaUser={isInvitaliaUser}
         tableData={tableData}
         hookLoading={loading}
         itemsQty={itemsQty ?? 0}
@@ -272,11 +293,11 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       />
 
       <ProductResultMessages
-        showMsgWaitApproved={false}
+        showMsgWaitApproved={showMsgWaitApproved}
         showMsgSupervised={false}
-        showMsgApproved={false}
+        showMsgApproved={showMsgApproved}
         showMsgAcceptApprovation={false}
-        showMsgRejected={false}
+        showMsgRejected={showMsgRejected}
         showMsgRejectedApprovation={false}
         showMixStatusError={false}
         showYourselfApprovedError={false}
@@ -284,6 +305,38 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         getMsgResultByActionType={() => ''}
         bottom={80}
       />
+
+      {modalOpen && (
+        <ProductBulkActionDialog
+          open={modalOpen}
+          action={modalAction}
+          selected={selected}
+          tableData={tableData}
+          isInvitaliaUser={isInvitaliaUser}
+          onClose={() => setModalOpen(false)}
+          onConfirm={async () => {
+            if (!modalAction) {
+              return;
+            }
+
+            handleModalSuccess({
+              selected,
+              tableData,
+              modalAction,
+              isInvitaliaUser,
+              setShowMsgRejected,
+              setShowMsgApproved,
+              setShowMsgWaitApproved,
+            });
+
+            setModalOpen(false);
+            setSelected([]);
+          }}
+          setShowMsgRejected={setShowMsgRejected}
+          setShowMsgApproved={setShowMsgApproved}
+          setShowMsgWaitApproved={setShowMsgWaitApproved}
+        />
+      )}
 
       {selectedProduct && (
         <DetailDrawer
