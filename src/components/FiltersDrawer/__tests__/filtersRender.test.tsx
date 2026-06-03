@@ -24,7 +24,6 @@ describe('filtersRender.select', () => {
     const select = screen.getByRole('combobox');
     expect(select).toBeInTheDocument();
 
-    // Remove zero‑width space (\u200B) before assertion
     const cleaned = select.textContent?.replace(/\u200B/g, '') ?? '';
     expect(cleaned.trim()).toBe('');
   });
@@ -52,5 +51,92 @@ describe('filtersRender.select', () => {
       value: 'A',
       label: 'Option A',
     });
+  });
+});
+
+describe('filtersRender.text', () => {
+  it('handles onChange with valid value (no error)', () => {
+    const setFilters = jest.fn();
+    const setErrors = jest.fn();
+
+    render(
+      filtersRender.text({
+        item: {
+          id: 'code',
+          labelKey: 'code.label',
+          regEx: '^[A-Z]+$',
+        },
+        t: t as any,
+        filters: {},
+        setFilters,
+        setErrors,
+        errors: [],
+      } as any)
+    );
+
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: 'ABC' } });
+
+    expect(setFilters).toHaveBeenCalledWith('code', { value: 'ABC' });
+    expect(setErrors).toHaveBeenCalledWith('code', false);
+  });
+
+  it('handles onChange with invalid value (sets error)', () => {
+    const setFilters = jest.fn();
+    const setErrors = jest.fn();
+
+    render(
+      filtersRender.text({
+        item: {
+          id: 'code',
+          labelKey: 'code.label',
+          regEx: '^[A-Z]+$',
+          message: 'error.message',
+        },
+        t: t as any,
+        filters: { code: { value: 'abc' } },
+        setFilters,
+        setErrors,
+        errors: ['code'],
+      } as any)
+    );
+
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: 'abc' } });
+
+    expect(setFilters).toHaveBeenCalledWith('code', { value: 'abc' });
+    expect(setErrors).toHaveBeenCalledWith('code', true);
+  });
+
+  it('handles onPaste and strips spaces before validation', () => {
+    const setFilters = jest.fn();
+    const setErrors = jest.fn();
+
+    render(
+      filtersRender.text({
+        item: {
+          id: 'code',
+          labelKey: 'code.label',
+          regEx: '^[A-Z]+$',
+        },
+        t: t as any,
+        filters: {},
+        setFilters,
+        setErrors,
+        errors: [],
+      } as any)
+    );
+
+    const input = screen.getByRole('textbox');
+
+    fireEvent.paste(input, {
+      clipboardData: {
+        getData: () => 'A B C',
+      },
+      preventDefault: jest.fn(),
+    });
+
+    expect(setFilters).toHaveBeenCalledWith('code', { value: 'A B C' });
+    expect(setErrors).toHaveBeenCalledWith('code', false);
   });
 });
