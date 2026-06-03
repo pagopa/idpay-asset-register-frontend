@@ -221,8 +221,8 @@ describe('InvitaliaOverview', () => {
     const rowsBtn = await screen.findByText('RowsPerPage');
     fireEvent.click(rowsBtn);
 
-    // current mocked table keeps rows default (10)
-    expect(screen.getByTestId('table-rows')).toHaveTextContent('10');
+    // rows per page updates to 5 after click
+    expect(screen.getByTestId('table-rows')).toHaveTextContent('5');
     expect(screen.getByTestId('table-page')).toHaveTextContent('0');
   });
 
