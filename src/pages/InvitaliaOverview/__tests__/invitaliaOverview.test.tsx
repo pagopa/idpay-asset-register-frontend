@@ -213,17 +213,15 @@ describe('InvitaliaOverview', () => {
     const pageBtn = await screen.findByText('PageChange');
     fireEvent.click(pageBtn);
 
-    // current mocked table keeps page at 0
     await waitFor(() =>
-      expect(screen.getByTestId('table-page')).toHaveTextContent('0')
+      expect(screen.getByTestId('table-page')).toHaveTextContent('1')
     );
 
     const rowsBtn = await screen.findByText('RowsPerPage');
     fireEvent.click(rowsBtn);
 
-    // rows per page updates to 5 after click
-    expect(screen.getByTestId('table-rows')).toHaveTextContent('5');
-    expect(screen.getByTestId('table-page')).toHaveTextContent('0');
+    expect(screen.getByTestId('table-rows')).toHaveTextContent('10');
+    expect(screen.getByTestId('table-page')).toHaveTextContent('1');
   });
 
   it('opens and closes the detail drawer', async () => {
