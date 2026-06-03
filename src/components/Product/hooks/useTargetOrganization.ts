@@ -16,14 +16,18 @@ export function useTargetOrganization({
   institutionId,
   tableConfig,
 }: Params) {
-  const organizationSource = tableConfig?.organizationSource ?? 'user';
+  const organizationSource = tableConfig?.organizationSource;
 
   const targetId = useMemo(() => {
+    if (organizationSource === 'user') {
+      return user?.org_id || '';
+    }
+
     if (organizationSource === 'filter') {
       return filtersValue?.producer || institutionId || '';
     }
 
-    return organizationId || user?.org_id || '';
+    return '';
   }, [organizationSource, filtersValue, institutionId, organizationId, user]);
 
   return {

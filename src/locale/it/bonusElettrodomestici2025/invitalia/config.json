@@ -20,11 +20,17 @@
   "ui": {
     "tables": {
       "products": {
+        "organizationSource": "filter",
         "bulkRules": {
           "preventMixedStatus": true,
           "allowedStatusesByRole": {
             "invitalia": ["UPLOADED", "SUPERVISED"],
             "invitalia_admin": ["WAIT_APPROVED"]
+          }
+        },
+        "defaultFiltersByRole": {
+          "invitalia_admin": {
+            "status": "WAIT_APPROVED"
           }
         },
         "selection": {
@@ -97,8 +103,7 @@
           {
             "id": "status",
             "type": "select",
-            "labelKey": "tables.products.filters.status",
-            "defaultValue": "WAIT_APPROVED"
+            "labelKey": "tables.products.filters.status"
           },
           {
             "id": "gtinCode",

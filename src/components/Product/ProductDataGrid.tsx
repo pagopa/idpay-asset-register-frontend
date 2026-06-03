@@ -123,6 +123,41 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     t,
   });
 
+  // Apply role-based default filters (e.g. L2 -> WAIT_APPROVED)
+  useEffect(() => {
+    if (!currentRoleKey) {
+      return;
+    }
+
+    const roleDefaults = tableConfig?.defaultFiltersByRole?.[currentRoleKey];
+
+    if (!roleDefaults) {
+      return;
+    }
+
+    setFilters((prev) => {
+      // do not override manually set filters
+      if (prev && Object.keys(prev).length > 0 && prev.status) {
+        return prev;
+      }
+
+      const mappedDefaults = Object.entries(roleDefaults).reduce<
+        Record<string, { value: string; label?: string }>
+      >(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: { value: value as string },
+        }),
+        {}
+      );
+
+      return {
+        ...mappedDefaults,
+        ...prev,
+      };
+    });
+  }, [currentRoleKey, tableConfig]);
+
   useEffect(() => {
     setSelected([]);
   }, [tableData]);
