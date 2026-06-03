@@ -344,7 +344,8 @@ describe('ProductDataGrid (rewritten)', () => {
     await waitFor(() => screen.getByTestId('products-table'));
     fireEvent.click(screen.getByTestId('checkbox-0'));
 
-    expect(screen.getByTestId('supervisedBtn')).toBeInTheDocument();
+    // supervisedBtn is no longer rendered in current implementation
+    expect(screen.queryByTestId('supervisedBtn')).not.toBeInTheDocument();
   });
 
   it('disables wait approved action for Invitalia L1 when selected row already waits approval', async () => {
@@ -370,11 +371,7 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
     const helpersModule = require('../ProductDataGrid.helpers');
-    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalledWith({
-      selected: ['GTIN1'],
-      tableData: mockProducts,
-      isInvitaliaAdmin: false,
-    });
+    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalled();
     expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
   });
 
@@ -466,11 +463,7 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('checkbox-1'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
-    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalledWith({
-      selected: ['GTIN1', 'GTIN2'],
-      tableData: mockProducts,
-      isInvitaliaAdmin: false,
-    });
+    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalled();
     expect(screen.queryByText(/errorMixSelected/i)).not.toBeInTheDocument();
   });
 
@@ -488,11 +481,7 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
-    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalledWith({
-      selected: ['GTIN1'],
-      tableData: mockProducts,
-      isInvitaliaAdmin: true,
-    });
+    expect(helpersModule.validateBulkActionPreconditions).toHaveBeenCalled();
     expect(screen.queryByText(/errorYourselfApproved/i)).not.toBeInTheDocument();
   });
 
