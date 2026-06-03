@@ -50,7 +50,7 @@ const baseData = [
     gtinCode: 'GTIN-2',
     status: 'REJECTED',
   },
-];
+] as any[];
 
 const renderTable = (overrideProps: any = {}) => {
   const setSelected = jest.fn();
@@ -139,5 +139,113 @@ describe('ProductsTable (rewritten)', () => {
     );
 
     expect(screen.getByText('NO_DATA')).toBeInTheDocument();
+  });
+
+  it('renders without crashing when columns is undefined (uses default [])', () => {
+    render(
+      <ProductsTable
+        tableData={baseData}
+        columns={undefined as any}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="category"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+    expect(screen.getByRole('table')).toBeInTheDocument();
+  });
+
+  it('setSelected updater adds uniqueKey when checked and key is not in prev', () => {
+    const setSelected = jest.fn().mockImplementation((fn: (prev: string[]) => string[]) => {
+      const result = fn([]);
+      expect(result).toContain('GTIN-1');
+    });
+
+    renderTable({ setSelected });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    expect(setSelected).toHaveBeenCalled();
+  });
+
+  it('setSelected updater returns prev unchanged when key is already selected', () => {
+    const setSelected = jest.fn().mockImplementation((fn: (prev: string[]) => string[]) => {
+      const result = fn(['GTIN-1']);
+      expect(result).toEqual(['GTIN-1']);
+    });
+
+    renderTable({ setSelected });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    expect(setSelected).toHaveBeenCalled();
+  });
+
+  it('setSelected updater removes uniqueKey when checkbox is unchecked', () => {
+    const setSelected = jest.fn().mockImplementation((fn: (prev: string[]) => string[]) => {
+      const result = fn(['GTIN-1']);
+      expect(result).not.toContain('GTIN-1');
+    });
+
+    renderTable({ selected: ['GTIN-1'], setSelected });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    fireEvent.click(checkboxes[0]);
+
+    expect(setSelected).toHaveBeenCalled();
+  });
+
+  it('renders numeric cell value via the value ?? "-" fallback', () => {
+    const colsWithNumber = [
+      ...columns,
+      { id: 'score', labelKey: 'score' },
+    ];
+    const dataWithNumber = [{ ...baseData[0], score: 99 }] as any[];
+
+    render(
+      <ProductsTable
+        tableData={dataWithNumber}
+        columns={colsWithNumber}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="category"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('99')).toBeInTheDocument();
+  });
+
+  it('renders "-" when cell value is undefined', () => {
+    const colsWithMissing = [
+      ...columns,
+      { id: 'missingField', labelKey: 'missingField' },
+    ];
+
+    render(
+      <ProductsTable
+        tableData={baseData}
+        columns={colsWithMissing}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="category"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    const cells = screen.getAllByRole('cell');
+    const dashCells = cells.filter((c) => c.textContent === '-');
+    expect(dashCells.length).toBeGreaterThan(0);
   });
 });
