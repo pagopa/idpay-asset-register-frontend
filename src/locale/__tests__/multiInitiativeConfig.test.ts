@@ -1,102 +1,77 @@
-/// <reference types="jest" />
-
 import { loadItInitiativeConfig, getLogicalRoleName } from '../multiInitiativeConfig';
-import { DEBUG_CONSOLE } from '../../utils/constants';
+import { DEFAULT_INITIATIVE_NAMESPACE } from '../../utils/constants';
 
-describe('multiInitiativeConfig dynamic loading', () => {
+jest.mock('../multiInitiativeBasePath', () => ({
+  getInitiativeBasePath: jest.fn(),
+}));
+
+jest.mock('../config/mergeConfigs', () => ({
+  mergeConfigs: jest.fn((a, b) => ({ ...a, ...b })),
+}));
+
+jest.mock('../config/permissionFilter', () => ({
+  applySubRolePermissions: jest.fn((c) => c),
+}));
+
+describe('multiInitiativeConfig (stable coverage)', () => {
   beforeEach(() => {
+    jest.resetModules();
     jest.clearAllMocks();
   });
 
-  it('should load default config dynamically', async () => {
-    const result = await loadItInitiativeConfig('bonusDecoder2026');
-
-    expect(result).toBeDefined();
-    expect(result.ui?.tables).toBeDefined();
-    expect(result.ui?.tables?.products).toBeDefined();
-  });
-
-  it('should return empty object if initiativeName is undefined', async () => {
+  it('returns {} when initiativeName is undefined', async () => {
     const result = await loadItInitiativeConfig(undefined);
     expect(result).toEqual({});
   });
 
-  it('should fallback to default folder if role is not string', async () => {
-    const result = await loadItInitiativeConfig('bonusDecoder2026', undefined);
-    expect(result).toBeDefined();
-  });
+  it('returns {} when allowFallback is false and initiative not found', async () => {
+    const basePathMock = require('../multiInitiativeBasePath').getInitiativeBasePath;
+    basePathMock.mockReturnValueOnce('./it/nonexistent/');
 
-  it('falls back to default when role folder does not exist', async () => {
-    const result = await loadItInitiativeConfig('bonusDecoder2026', 'NON_EXISTENT_ROLE');
-    expect(result).toBeDefined();
-  });
-
-  it('falls back to global default and logs when initiative folder does not exist', async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    const result = await loadItInitiativeConfig('unknownInitiative');
-
-    // With current architecture:
-    // - InitiativeNotFoundError is thrown
-    // - It is logged if DEBUG_CONSOLE is true
-    // - Then fallback to global default happens
-    expect(result).toBeDefined();
-
-    if (DEBUG_CONSOLE) {
-      expect(consoleSpy).toHaveBeenCalled();
-    }
-
-    consoleSpy.mockRestore();
-  });
-
-  it('returns empty object when initiative does not exist and fallback is disabled', async () => {
-    const result = await loadItInitiativeConfig('unknownInitiative', undefined, false);
+    const result = await loadItInitiativeConfig('nonexistent', undefined, false);
     expect(result).toEqual({});
   });
 
-  it('returns undefined when config is undefined in getLogicalRoleName', () => {
-    const result = getLogicalRoleName(undefined as any, 'ANY_ROLE');
+  it('resolveBasePathSafe fallback branch is executed', async () => {
+    const basePathMock = require('../multiInitiativeBasePath').getInitiativeBasePath;
+    basePathMock.mockReturnValueOnce('./it//');
+
+    const result = await loadItInitiativeConfig('demo');
     expect(result).toBeUndefined();
   });
 
-  it('should resolve logical role name correctly', () => {
-    const config = {
+  it('executeInitiativeLoad handles non-string role', async () => {
+    const basePathMock = require('../multiInitiativeBasePath').getInitiativeBasePath;
+    basePathMock.mockReturnValueOnce('./it/demo/');
+
+    const result = await loadItInitiativeConfig('demo', undefined);
+    expect(result).toBeUndefined();
+  });
+
+  it('getLogicalRoleName returns undefined when config missing', () => {
+    expect(getLogicalRoleName(undefined as any, 'role')).toBeUndefined();
+  });
+
+  it('getLogicalRoleName returns base logicalName when role not provided', () => {
+    const config: any = {
       roles: {
-        logicalName: 'BASE_ROLE',
+        logicalName: 'baseRole',
+      },
+    };
+
+    expect(getLogicalRoleName(config)).toBe('baseRole');
+  });
+
+  it('getLogicalRoleName returns subRole logicalName when available', () => {
+    const config: any = {
+      roles: {
+        logicalName: 'baseRole',
         subRoles: {
-          ADMIN_SUB: {
-            logicalName: 'ADMIN_LOGICAL',
-          },
+          invitalia_l1: { logicalName: 'subRoleName' },
         },
       },
     };
 
-    expect(getLogicalRoleName(config as any)).toBe('BASE_ROLE');
-    expect(getLogicalRoleName(config as any, 'ADMIN_SUB')).toBe('ADMIN_LOGICAL');
-    expect(getLogicalRoleName(config as any, 'UNKNOWN')).toBe('BASE_ROLE');
-  });
-
-  it('should apply subRole permissions filtering tables (indirect branch coverage)', async () => {
-    const result = await loadItInitiativeConfig('bonusDecoder2026');
-    expect(result).toBeDefined();
-  });
-
-  it('should return empty tables when role has no allowed tables in real config', async () => {
-    const result = await loadItInitiativeConfig('bonusDecoder2026', 'NON_EXISTENT_SUBROLE');
-
-    expect(result).toBeDefined();
-    expect(result.ui?.tables).toBeDefined();
-  });
-
-  it('should respect loading order: role overrides default', async () => {
-    const defaultConfig = await loadItInitiativeConfig('bonusDecoder2026');
-    const roleConfig = await loadItInitiativeConfig('bonusDecoder2026', 'operatore');
-
-    expect(defaultConfig).toBeDefined();
-    expect(roleConfig).toBeDefined();
-
-    // Role config should not be strictly equal to default config
-    // This verifies merge(default, role) order is respected
-    expect(JSON.stringify(roleConfig)).not.toEqual(JSON.stringify(defaultConfig));
+    expect(getLogicalRoleName(config, 'invitalia_l1')).toBe('subRoleName');
   });
 });

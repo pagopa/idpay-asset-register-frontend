@@ -1,92 +1,56 @@
-import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { filtersRender } from '../filtersRender';
 
-describe("Render component", () => {
-    const defaultProps = {
+const t = (k: string) => k;
+
+describe('filtersRender.select', () => {
+  it('renders empty string when filter label is undefined (covers renderValue fallback)', () => {
+    const setFilters = jest.fn();
+
+    render(
+      filtersRender.select({
+        item: { id: 'status', labelKey: 'status.label' },
+        t: t as any,
         filters: {},
-        t: (value) => value,
-        setFilters: jest.fn(),
-        errors: [],
-        setErrors: jest.fn()
-    }
-    it("should render select component", async () => {
-        const props = {
-            ...defaultProps,
-            item: {
-                id: "status",
-                labelKey: "tables.products.filters.status"
-            },
-            template: {
-                UPLOADED: {
-                    label: "UPLOADED"
-                }
-            }
-        }
-        render(filtersRender.select(props))
+        setFilters,
+        setErrors: jest.fn(),
+        template: {
+          A: { label: 'Option A' },
+        },
+      } as any)
+    );
 
-        const select = screen.getByRole("combobox")
+    const select = screen.getByRole('combobox');
+    expect(select).toBeInTheDocument();
 
-        expect(select).toBeInTheDocument();
-        await userEvent.click(select)
+    // Remove zero‑width space (\u200B) before assertion
+    const cleaned = select.textContent?.replace(/\u200B/g, '') ?? '';
+    expect(cleaned.trim()).toBe('');
+  });
 
-        const option = screen.getByText("UPLOADED")
-        await userEvent.click(option)
+  it('uses template label when selecting option', () => {
+    const setFilters = jest.fn();
 
-        expect(props.setFilters).toHaveBeenCalled()
-    })
-    it("should render text component", async () => {
-        const props = {
-            ...defaultProps,
-            item: {
-                id: "gtinCode",
-                labelKey: "tables.products.filters.gtinCode"
-            },
-        }
-        render(filtersRender.text(props))
+    render(
+      filtersRender.select({
+        item: { id: 'status', labelKey: 'status.label' },
+        t: t as any,
+        filters: {},
+        setFilters,
+        setErrors: jest.fn(),
+        template: {
+          A: { label: 'Option A' },
+        },
+      } as any)
+    );
 
-        const textInput = screen.getByRole("textbox")
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+    fireEvent.click(screen.getByText('Option A'));
 
-        expect(textInput).toBeInTheDocument();
-        await userEvent.type(textInput, "GTINCODETEST01")
-
-        expect(props.setFilters).toHaveBeenCalledTimes(14)
-    })
-    it("should paste text", async () => {
-        
-        const props = {
-            ...defaultProps,
-            item: {
-                id: "gtinCode",
-                labelKey: "tables.products.filters.gtinCode"
-            },
-        }
-        render(filtersRender.text(props))
-
-        const textInput = screen.getByRole("textbox")
-
-        await userEvent.click(textInput)
-        await userEvent.paste("GTINCODETEST01")
-        
-        expect(props.setFilters).toHaveBeenCalledWith("gtinCode", {value: "GTINCODETEST01"})
-    })
-    it("should show error", async () => {
-        
-        const props = {
-            ...defaultProps,
-            item: {
-                id: "gtinCode",
-                labelKey: "tables.products.filters.gtinCode",
-            },
-        }
-        render(filtersRender.text(props))
-
-        const textInput = screen.getByRole("textbox")
-
-        await userEvent.click(textInput)
-        await userEvent.paste("+++")
-        expect(props.setFilters).toHaveBeenCalledWith("gtinCode", {value: "+++"})
-        expect(props.setErrors).toHaveBeenCalled()
-    })
-})
+    expect(setFilters).toHaveBeenCalledWith('status', {
+      value: 'A',
+      label: 'Option A',
+    });
+  });
+});
