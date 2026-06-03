@@ -9,7 +9,6 @@ import {
   BatchList,
   CsvDTO,
   InstitutionResponse,
-  InstitutionsResponse,
   PortalConsentDTO,
   ProductDTO,
   ProductListDTO,
@@ -24,6 +23,8 @@ import {
   InitiativeDTO,
   GetProductsParams,
   GetProductFilesListParams,
+  ProducersResponseDTO,
+  InstitutionsResponse,
 } from './generated/register';
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
@@ -181,6 +182,7 @@ function logIoTsValidationErrors(error: any, originalResponse?: any) {
 }
 
 type StatusUpdater = (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string,
@@ -188,10 +190,11 @@ type StatusUpdater = (
 ) => Promise<ProductsUpdateDTO>;
 
 function makeStatusUpdater(
-  apiMethod: (data: ProductsUpdateDTO, params?: RequestParams) => Promise<any>,
+  apiMethod: ({initiativeId}: any, data: ProductsUpdateDTO, params?: RequestParams) => Promise<any>,
   needsFormalMotivation = false
 ): StatusUpdater {
   return async (
+    initiativeId: string,
     gtinCodes: Array<string>,
     currentStatus: ProductStatus,
     motivation: string,
@@ -217,7 +220,7 @@ function makeStatusUpdater(
             currentStatus,
             motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
           };
-      const result = await apiMethod(body);
+      const result = await apiMethod({initiativeId}, body);
       return result ?? {};
     } catch (error) {
       logApiError(error, 'makeStatusUpdater');
@@ -345,6 +348,9 @@ export const RegisterApi = {
     }
   },
 
+  getProducers: async (initiativeId: string): Promise<AxiosResponse<ProducersResponseDTO>> =>
+    registerClient.initiatives.getProducersByInitiative({initiativeId}),
+
   getInstitutionsList: async (): Promise<AxiosResponse<InstitutionsResponse>> =>
     registerClient.institutions.getInstitutionsList({}),
 
@@ -352,17 +358,18 @@ export const RegisterApi = {
     registerClient.institutions.retrieveInstitutionById({ institutionId }),
 
   setSupervisionedStatusList: makeStatusUpdater(
-    registerClient.products.updateProductStatusSupervised
+    registerClient.initiatives.updateProductStatusSupervised
   ),
-  setApprovedStatusList: makeStatusUpdater(registerClient.products.updateProductStatusApproved),
+  setApprovedStatusList: makeStatusUpdater(registerClient.initiatives.updateProductStatusApproved),
+
   setWaitApprovedStatusList: makeStatusUpdater(
-    registerClient.products.updateProductStatusWaitApproved
+    registerClient.initiatives.updateProductStatusWaitApproved
   ),
   setRejectedStatusList: makeStatusUpdater(
-    registerClient.products.updateProductStatusRejected,
+    registerClient.initiatives.updateProductStatusRejected,
     true
   ),
-  setRestoredStatusList: makeStatusUpdater(registerClient.products.updateProductStatusRestored),
+  setRestoredStatusList: makeStatusUpdater(registerClient.initiatives.updateProductStatusRestored),
 
   getMerchantInitiativeList: async (): Promise<AxiosResponse<Array<InitiativeDTO>>> =>
     await registerClient.initiatives.getInitiatives({}),

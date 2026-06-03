@@ -26,6 +26,8 @@ tags:
     description: Operations related to institutions and producers
   - name: initiatives
     description: Operations related to initiatives listing
+  - name: producers
+    description: Operations related to producers listing
 paths:
   /permissions:
     get:
@@ -210,13 +212,15 @@ paths:
           $ref: '#/components/responses/GET_product-files_batch-list_429_Response'
         '500':
           $ref: '#/components/responses/GET_product-files_batch-list_500_Response'
-  /products/update-status/approved:
+  /initiatives/{initiativeId}/products/update-status/approved:
     post:
       tags:
         - products
       summary: Approve a list of products
       description: 'ENG: Approve a list of products by updating their status to APPROVED. IT: Approva una lista di prodotti aggiornando il loro stato a APPROVED.'
       operationId: updateProductStatusApproved
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -233,13 +237,15 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/wait-approved:
+  /initiatives/{initiativeId}/products/update-status/wait-approved:
     post:
       tags:
         - products
       summary: Request approve for a list of products
       description: 'ENG: Reuqest approve a list of products by updating their status to WAIT_APPROVED. IT: Richiede approvazione di una lista di prodotti aggiornando il loro stato a WAIT_APPROVED.'
       operationId: updateProductStatusWaitApproved
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -256,13 +262,15 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/supervised:
+  /initiatives/{initiativeId}/products/update-status/supervised:
     post:
       tags:
         - products
       summary: Mark products as in supervision
       description: 'ENG: Set the status of a list of products to SUPERVISED. IT: Imposta lo stato di una lista di prodotti su SUPERVISED.        '
       operationId: updateProductStatusSupervised
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -279,13 +287,15 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/rejected:
+  /initiatives/{initiativeId}/products/update-status/rejected:
     post:
       tags:
         - products
       summary: Reject a list of products
       description: 'ENG: Reject a list of products by updating their status to REJECTED. IT: Rifiuta una lista di prodotti aggiornando il loro stato a REJECTED. '
       operationId: updateProductStatusRejected
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -302,13 +312,15 @@ paths:
           $ref: '#/components/responses/POST_products_update-status_429_Response'
         '500':
           $ref: '#/components/responses/POST_products_update-status_500_Response'
-  /products/update-status/restored:
+  /initiatives/{initiativeId}/products/update-status/restored:
     post:
       tags:
         - products
       summary: Restore a list of products
       description: 'ENG: Reject a list of products by updating their status to UPLOADED. IT: Ripristina una lista di prodotti aggiornando il loro stato a UPLOADED. '
       operationId: updateProductStatusRestored
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
       requestBody:
         content:
           application/json:
@@ -342,6 +354,7 @@ paths:
         - $ref: '#/components/parameters/model_query'
         - $ref: '#/components/parameters/eprelCode_query'
         - $ref: '#/components/parameters/gtinCode_query'
+        - $ref: '#/components/parameters/productCode_query'
         - $ref: '#/components/parameters/productFileId_query'
         - $ref: '#/components/parameters/productName_query'
         - $ref: '#/components/parameters/fullProductName_query'
@@ -358,6 +371,30 @@ paths:
           $ref: '#/components/responses/GET_products_429_Response'
         '500':
           $ref: '#/components/responses/GET_products_500_Response'
+  /initiatives/{initiativeId}/producers:
+    get:
+      tags:
+        - producers
+      summary: Returns the producers list for an initiative
+      description: 'ENG: Returns the producers list for the selected initiative <br> IT: Lista produttori per iniziativa'
+      operationId: getProducersByInitiative
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
+        - $ref: '#/components/parameters/page_query'
+        - $ref: '#/components/parameters/size_query'
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          $ref: '#/components/responses/GET_producers_200_Response'
+        '400':
+          $ref: '#/components/responses/GET_producers_400_Response'
+        '401':
+          $ref: '#/components/responses/GET_producers_401_Response'
+        '429':
+          $ref: '#/components/responses/GET_producers_429_Response'
+        '500':
+          $ref: '#/components/responses/GET_producers_500_Response'
   /institutions/{institutionId}:
     get:
       tags:
@@ -422,7 +459,31 @@ paths:
           $ref: '#/components/responses/GET_initiatives_429_Response'
         '500':
           $ref: '#/components/responses/GET_initiatives_500_Response'
+  /initiatives/{initiativeId}/email:
+    put:
+      tags:
+        - producers
+      summary: Update the producer's email
+      description: >
+        ENG: Update/save the email for the producer for the selected initative
 
+        IT: Aggiorna/salva la mail del produttore per l'inizativa selezionata
+      operationId: updateOperativeEmail
+      parameters:
+        - $ref: '#/components/parameters/initiativeId_path'
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          $ref: '#/components/responses/PUT_update_email_200_Response'
+        '400':
+          $ref: '#/components/responses/PUT_update_email_400_Response'
+        '401':
+          $ref: '#/components/responses/PUT_update_email_401_Response'
+        '429':
+          $ref: '#/components/responses/PUT_update_email_429_Response'
+        '500':
+          $ref: '#/components/responses/PUT_update_email_500_Response'
 components:
   headers:
     X-RateLimit-Limit:
@@ -966,6 +1027,63 @@ components:
                 maxLength: 255
                 format: date
           maxItems: 1000
+    ProducersResponseDTO:
+      title: ProducersResponseDTO
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProducerDTO'
+          maxItems: 1000
+        pageNo:
+          type: integer
+          format: int64
+          description: 'ENG: The number of the page <br> IT: Il numero della pagina'
+          minimum: 0
+          maximum: 1000000
+        pageSize:
+          type: integer
+          format: int64
+          description: 'ENG: The element size for page <br> IT: Il numero di elementi per pagina'
+          minimum: 0
+          maximum: 1000000
+        totalElements:
+          type: integer
+          format: int64
+          description: 'ENG: The total number of the elements <br> IT: Il numero totale degli elementi'
+          minimum: 0
+          maximum: 1000000
+        totalPages:
+          type: integer
+          format: int64
+          description: 'ENG: The total number of the pages <br> IT: Il numero totale delle pagine'
+          minimum: 0
+          maximum: 1000000
+    ProducerDTO:
+      title: ProducerDTO
+      type: object
+      properties:
+        producerId:
+          type: string
+          description: 'ENG: Producer id <br> IT: Id del produttore'
+          maxLength: 255
+          pattern: .*
+        producerName:
+          type: string
+          description: 'ENG: Producer name <br> IT: Nome del produttore'
+          maxLength: 255
+          pattern: .*
+        createdAt:
+          type: string
+          description: 'ENG: Producer creation date <br> IT: Data creazione del produttore'
+          maxLength: 255
+          format: date-time
+        updatedAt:
+          type: string
+          description: 'ENG: Producer update date <br> IT: Data aggiornamento del produttore'
+          maxLength: 255
+          format: date-time
     BatchList:
       title: BatchList
       type: array
@@ -1030,6 +1148,31 @@ components:
             - product.invalid.update.currentStatus
             - product.invalid.update.notFound
             - product.invalid.update.transitionNotAllowed
+    UpdatedOperativeEmailResultDTO:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - OK
+            - KO
+        errorKey:
+          type: string
+          nullable: true
+          description: >
+            ENG: Error Key for product status update:
+            <ul>
+              <li><b>update.email.wrong.format</b>: email wrong format</li>
+              <li><b>update.email.invalid.initiative</b>: user not onboarded for the initative</li>
+            </ul>
+            IT: Chiave di errore per l’aggiornamento stato prodotto:
+            <ul>
+              <li><b>update.email.wrong.format</b>: formato errato dell'email</li>
+              <li><b>update.email.invalid.initiative</b>: utente non onboardato sull'iniziativa</li>
+            </ul>
+          enum:
+            - update.email.wrong.format
+            - update.email.invalid.initiative
     ProductFileDTO:
       required:
         - csv
@@ -2077,6 +2220,77 @@ components:
       headers:
         Access-Control-Allow-Origin:
           $ref: '#/components/headers/Access-Control-Allow-Origin'
+    GET_producers_200_Response:
+      description: Ok
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProducersResponseDTO'
+    GET_producers_400_Response:
+      description: Bad request
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+    GET_producers_401_Response:
+      description: Authentication failed
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+    GET_producers_429_Response:
+      description: Too many Request
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        Retry-After:
+          $ref: '#/components/headers/Retry-After'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+    GET_producers_500_Response:
+      description: Server ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
     GET_initiatives_200_Response:
       description: Ok
       headers:
@@ -2150,6 +2364,79 @@ components:
       headers:
         Access-Control-Allow-Origin:
           $ref: '#/components/headers/Access-Control-Allow-Origin'
+    PUT_update_email_200_Response:
+      description: Ok
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/UpdatedOperativeEmailResultDTO'
+    PUT_update_email_400_Response:
+      description: Bad request
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+    PUT_update_email_401_Response:
+      description: Authentication failed
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+    PUT_update_email_429_Response:
+      description: Too many Request
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
+        Retry-After:
+          $ref: '#/components/headers/Retry-After'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+    PUT_update_email_500_Response:
+      description: Server ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+      headers:
+        Access-Control-Allow-Origin:
+          $ref: '#/components/headers/Access-Control-Allow-Origin'
   parameters:
     category_query:
       name: category
@@ -2166,6 +2453,11 @@ components:
           - TUMBLEDRYERS
           - REFRIGERATINGAPPL
           - COOKINGHOBS
+          - DS
+          - DT
+          - DTS
+          - DTC
+          - DTSC
     page_query:
       name: page
       in: query
@@ -2233,6 +2525,7 @@ components:
           - gtinCode, desc
           - eprelCode, desc
           - status, desc
+          - productCode, desc
           - organizationName, asc
           - category, asc
           - brand, asc
@@ -2242,6 +2535,7 @@ components:
           - gtinCode, asc
           - eprelCode, asc
           - status, asc
+          - productCode, asc
           - organizationName, desc
     eprelCode_query:
       name: eprelCode
@@ -2251,6 +2545,14 @@ components:
         type: string
         maxLength: 50
         pattern: ^\d+$
+    productCode_query:
+      name: productCode
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 50
+        pattern: ^[a-zA-Z0-9]{1,100}$
     brand_query:
       name: brand
       in: query
