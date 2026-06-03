@@ -38,6 +38,37 @@ const ProductStatusActionBar: React.FC<Props> = ({
       PRODUCTS_STATES.SUPERVISED
   );
 
+  // Restore legacy logic: Approve only if ALL selected are UPLOADED
+  const selectedStatuses = selected.map((selectedKey) => {
+    const row = tableData.find(
+      (r) =>
+        String(r.gtinCode) === String(selectedKey) ||
+        String((r as any).gtin) === String(selectedKey) ||
+        String(r.productCode) === String(selectedKey)
+    );
+    return String(row?.status);
+  });
+
+  const allUploaded = selectedStatuses.every((s) => s === PRODUCTS_STATES.UPLOADED);
+
+  const allApproved = selectedStatuses.every((s) => s === PRODUCTS_STATES.APPROVED);
+
+  const allSupervised = selectedStatuses.every((s) => s === PRODUCTS_STATES.SUPERVISED);
+
+  const allWaitApproved = selectedStatuses.every((s) => s === PRODUCTS_STATES.WAIT_APPROVED);
+
+  // Approve -> only if ALL are UPLOADED
+  const disableApprove = selected.length === 0 || !allUploaded;
+
+  // Supervise (Invitalia) -> only if ALL are APPROVED
+  const disableSupervise = selected.length === 0 || !allApproved;
+
+  // Reject:
+  // Invitalia -> ALL APPROVED OR ALL SUPERVISED
+  // L1/L2 -> ALL WAIT_APPROVED
+  const disableReject =
+    selected.length === 0 || (isInvitaliaUser ? !(allApproved || allSupervised) : !allWaitApproved);
+
   return (
     <Box display="flex" flexDirection="row" justifyContent="flex-end">
       <Button
@@ -45,6 +76,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
         variant="outlined"
         color="error"
         sx={{ ...buttonStyle }}
+        disabled={disableReject}
         onClick={() => {
           console.log('[DEBUG] Rejected clicked', {
             selected,
@@ -67,6 +99,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
           color="primary"
           variant="outlined"
           sx={{ ...buttonStyle }}
+          disabled={disableSupervise}
           onClick={() => {
             console.log('[DEBUG] Supervised clicked', {
               selected,
@@ -85,18 +118,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
         color="primary"
         variant="contained"
         sx={{ ...buttonStyle }}
-        disabled={
-          selected.length === 0 ||
-          (selected.some(
-            (gtinCode) =>
-              String(
-                tableData.find(
-                  (row) => String((row as any).gtin ?? row.gtinCode) === String(gtinCode)
-                )?.status
-              ) === PRODUCTS_STATES.WAIT_APPROVED
-          ) &&
-            isInvitaliaUser)
-        }
+        disabled={disableApprove}
         onClick={() => {
           console.log('[DEBUG] WaitApproved clicked', {
             selected,

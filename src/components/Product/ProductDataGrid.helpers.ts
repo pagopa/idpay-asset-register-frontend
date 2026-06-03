@@ -41,7 +41,6 @@ import { ProductTableConfig } from '../../model/config/ConfigSchema';
 export const validateBulkActionPreconditions = ({
   selected,
   tableData,
-  roleKey,
   tableConfig,
 }: {
   selected: Array<string>;
@@ -63,16 +62,8 @@ export const validateBulkActionPreconditions = ({
     return { valid: false, reason: 'MIXED_STATUS' };
   }
 
-  const allowedByRole = bulkRules?.allowedStatusesByRole;
-  if (roleKey && allowedByRole && allowedByRole[roleKey]) {
-    const allowedStatuses = allowedByRole[roleKey];
-
-    const allAllowed = selectedStatuses.every((s) => allowedStatuses.includes(s));
-
-    if (!allAllowed) {
-      return { valid: false, reason: 'NOT_ALLOWED_STATUS' };
-    }
-  }
+  // Temporarily disable config-based role validation to restore legacy behavior.
+  // Validation is now controlled by UI button enable/disable logic.
 
   return { valid: true };
 };
