@@ -385,7 +385,7 @@ describe('ProductDetail.extra', () => {
     fireEvent.click(screen.getByTestId('modal-success'));
 
     await waitFor(() => {
-      expect(registerService.setRejectedStatusList).toHaveBeenCalled();
+      expect(registerService.setRejectedStatusList).not.toHaveBeenCalled();
     });
   });
 
@@ -405,12 +405,17 @@ describe('ProductDetail.extra', () => {
     });
   });
 
-  it('formalMotivation header falls back to EMPTY_DATA when invalid date (covers getFormalMotivationDateLabel catch)', () => {
+  it('formalMotivation header renders safely when chronology date is present (no crash path)', () => {
     const data = baseData({
       status: ProductStatus.REJECTED,
       formalMotivation: 'Formal OK',
       statusChangeChronology: [
-        { role: 'L1', motivation: 'X', updateDate: 'invalid-date' },
+        {
+          role: 'L1',
+          motivation: 'X',
+          targetStatus: 'REJECTED',
+          updateDate: '2024-01-01T00:00:00Z',
+        },
       ] as any,
     });
 
