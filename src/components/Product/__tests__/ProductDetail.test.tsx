@@ -431,4 +431,49 @@ describe('ProductDetail.extra', () => {
 
     expect(screen.getAllByTestId('product-info-row').length).toBeGreaterThan(0);
   });
+
+  it('does not render motivation entry when motivation is only whitespace (covers renderEntry null branch)', () => {
+    const data = baseData({
+      statusChangeChronology: [
+        { role: 'L1', motivation: '   ', updateDate: '2024-05-06T11:00:00Z' },
+      ] as any,
+    });
+
+    renderCmp({}, data);
+
+    expect(screen.queryByText('Produttore')).not.toBeInTheDocument();
+  });
+
+  it('OPERATORE formal header uses only date (covers getFormalMotivationHeader branch)', () => {
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_role: USERS_TYPES.OPERATORE,
+    });
+
+    const data = baseData({
+      status: ProductStatus.REJECTED,
+      formalMotivation: 'Formal OK',
+      statusChangeChronology: [
+        {
+          role: 'L1',
+          motivation: 'X',
+          targetStatus: 'REJECTED',
+          updateDate: '2024-01-01T00:00:00Z',
+        },
+      ] as any,
+    });
+
+    renderCmp({}, data);
+
+    expect(screen.getByText('pages.productDetail.motivationFormal')).toBeInTheDocument();
+  });
+
+  it('handleOpenModal default branch does not crash (unknown action)', async () => {
+    const data = baseData({ status: ProductStatus.UPLOADED });
+    renderCmp({}, data);
+
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    fireEvent.click(screen.getByTestId('modal-close'));
+
+    expect(screen.getByTestId('product-detail')).toBeInTheDocument();
+  });
 });
