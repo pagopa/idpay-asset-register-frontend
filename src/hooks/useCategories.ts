@@ -27,7 +27,8 @@ const applyTemplateValues = (templateContent: TemplateContentType, category: str
 const buildCategories = (
   categoriesConfig: any,
   formats: TemplatesConfig | undefined,
-  t: (key: string) => string
+  t: (key: string) => string,
+  templatesCategories?: Record<string, any>
 ): Record<string, CategoryType> => {
   if (!categoriesConfig) {
     return {};
@@ -47,7 +48,12 @@ const buildCategories = (
           ? category.labelKey
           : `categories.${normalizedKey.toLowerCase()}.label`;
         const translated = t(labelKey);
-        const label = translated && translated !== labelKey ? translated : normalizedKey;
+        const resolvedFromTranslation =
+          translated && translated !== labelKey ? translated : undefined;
+
+        const resolvedFromTemplate = templatesCategories?.[normalizedKey]?.name;
+
+        const label = resolvedFromTranslation ?? resolvedFromTemplate ?? normalizedKey;
 
         const templateFormat: FormatKey = isNew
           ? category.templateFormat
@@ -94,7 +100,8 @@ export const useCategories = () => {
 
   const formats = config?.templates?.formats as TemplatesConfig | undefined;
 
-  const categories = buildCategories(categoriesConfig, formats, t);
+  const templatesCategories = (config?.templates?.categories as Record<string, any>) || {};
+  const categories = buildCategories(categoriesConfig, formats, t, templatesCategories);
 
   return { categories };
 };

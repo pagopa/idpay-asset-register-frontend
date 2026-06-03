@@ -16,27 +16,27 @@
   },
   "categories": {
     "DS": {
-      "labelKey": "categories.satellite",
+      "labelKey": "categories.DS.label",
       "templateFormat": "csv",
       "enabledIn": { "upload": true, "filters": true }
     },
     "DT": {
-      "labelKey": "categories.terrestrial",
+      "labelKey": "categories.DT.label",
       "templateFormat": "csv",
       "enabledIn": { "upload": true, "filters": true }
     },
     "DTC": {
-      "labelKey": "categories.terrestrialViaCable",
+      "labelKey": "categories.DTC.label",
       "templateFormat": "csv",
       "enabledIn": { "upload": true, "filters": true }
     },
     "DTS": {
-      "labelKey": "categories.terrestrialAndSatellite",
+      "labelKey": "categories.DTS.label",
       "templateFormat": "csv",
       "enabledIn": { "upload": true, "filters": true }
     },
     "DTSC": {
-      "labelKey": "categories.terrestrialSatelliteAndViaCable",
+      "labelKey": "categories.DTSC.label",
       "templateFormat": "csv",
       "enabledIn": { "upload": true, "filters": true }
     }
@@ -49,11 +49,11 @@
       }
     },
     "categories": {
-      "DS": { "format": "csv", "name": "satellitare" },
-      "DT": { "format": "csv", "name": "terrestre" },
-      "DTC": { "format": "csv", "name": "terrestre-via-cavo" },
-      "DTS": { "format": "csv", "name": "terrestre-e-satellitare" },
-      "DTSC": { "format": "csv", "name": "terrestre-satellitare-e-via-cavo" }
+      "DS": { "format": "csv", "name": "Satellitare" },
+      "DT": { "format": "csv", "name": "Terrestre" },
+      "DTC": { "format": "csv", "name": "Terrestre via cavo" },
+      "DTS": { "format": "csv", "name": "Terrestre e Satellitare" },
+      "DTSC": { "format": "csv", "name": "Terrestre, Satellitare e via cavo" }
     }
   },
   "ui": {
