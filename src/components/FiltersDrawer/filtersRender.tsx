@@ -38,9 +38,8 @@ export const filtersRender: Record<
           disablePortal: true,
           PaperProps: { style: { maxHeight: 350 } },
         }}
-        value={filters?.[id]?.value || ''}
-        displayEmpty
-        renderValue={() => filters?.[id]?.label || ''}
+        value={filters?.[id]?.value ?? ''}
+        renderValue={() => filters?.[id]?.label ?? ''}
         sx={{ paddingRight: '38px !important' }}
         onChange={(e) =>
           setFilters(id, {
@@ -53,9 +52,6 @@ export const filtersRender: Record<
           })
         }
       >
-        <MenuItem value="">
-          <em>-</em>
-        </MenuItem>
         {Object.entries(template || {}).map(([key, value]) => (
           <MenuItem key={key} value={key}>
             {value?.color ? (
