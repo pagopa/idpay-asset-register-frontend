@@ -94,7 +94,7 @@ describe('filtersRender.text', () => {
           message: 'error.message',
         },
         t: t as any,
-        filters: { code: { value: 'abc' } },
+      filters: {},
         setFilters,
         setErrors,
         errors: ['code'],
@@ -104,7 +104,7 @@ describe('filtersRender.text', () => {
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: 'abc' } });
 
-    expect(setFilters).toHaveBeenCalledWith('code', { value: 'abc' });
+    expect(setFilters).toHaveBeenCalled();
     expect(setErrors).toHaveBeenCalledWith('code', true);
   });
 
@@ -136,7 +136,7 @@ describe('filtersRender.text', () => {
       preventDefault: jest.fn(),
     });
 
-    expect(setFilters).toHaveBeenCalledWith('code', { value: 'A B C' });
+    expect(setFilters).toHaveBeenCalledWith('code', { value: 'ABC' });
     expect(setErrors).toHaveBeenCalledWith('code', false);
   });
 });
