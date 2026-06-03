@@ -76,7 +76,7 @@
           },
           {
             "id": "batchName",
-            "labelKey": "pages.products.listHeader.batch",
+            "labelKey": "pages.products.listHeader.productFileId",
             "sortable": true,
             "align": "left"
           },
