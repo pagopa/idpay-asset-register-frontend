@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ProductsTable from '../ProductsTable';
@@ -11,7 +10,6 @@ jest.mock('../../../hooks/useScopedTranslation', () => ({
   }),
 }));
 
-// ✅ Mock useInitiativeConfig to avoid useGetInitiativesQuery dependency
 jest.mock('../../../hooks/useInitiativeConfig', () => ({
   __esModule: true,
   useInitiativeConfig: () => ({
@@ -112,7 +110,7 @@ describe('ProductsTable (rewritten)', () => {
     const { handleListButtonClick } = renderTable();
 
     const rows = screen.getAllByRole('row');
-    const firstDataRow = rows[1]; // skip header
+    const firstDataRow = rows[1];
 
     const actionCell = within(firstDataRow).getAllByRole('cell').pop();
     const actionButton = within(actionCell as HTMLElement).getByRole('button');
