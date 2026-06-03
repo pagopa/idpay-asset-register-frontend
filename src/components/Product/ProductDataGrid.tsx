@@ -70,6 +70,19 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     tableConfig,
   });
 
+  // Ensure producer filter chip is shown when arriving from Producers page
+  useEffect(() => {
+    if (organizationId && tableConfig?.organizationSource === 'filter') {
+      setFilters((prev) => ({
+        ...prev,
+        producer: {
+          value: organizationId,
+          label: institution?.description || organizationId,
+        },
+      }));
+    }
+  }, [organizationId, institution?.description, tableConfig]);
+
   const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
     organizationId,
@@ -101,6 +114,28 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     rowsPerPage,
     ...filtersValue,
   });
+
+  // Replace producer label with readable name once products are loaded
+  useEffect(() => {
+    if (
+      organizationId &&
+      filters.producer &&
+      filters.producer.label === organizationId &&
+      tableData?.length > 0
+    ) {
+      const readableName = (tableData[0] as any)?.organizationName;
+
+      if (readableName) {
+        setFilters((prev) => ({
+          ...prev,
+          producer: {
+            value: organizationId,
+            label: readableName,
+          },
+        }));
+      }
+    }
+  }, [organizationId, tableData]);
 
   const batchFilter: Record<string, SelectProps> = useMemo(
     () =>
@@ -144,13 +179,19 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
       const mappedDefaults = Object.entries(roleDefaults).reduce<
         Record<string, { value: string; label?: string }>
-      >(
-        (acc, [key, value]) => ({
+      >((acc, [key, value]) => {
+        const filterConfigItem = enrichedFiltersConfig?.find((f: any) => f.id === key);
+
+        const label =
+          filterConfigItem?.options && value && filterConfigItem.options[value]
+            ? t(filterConfigItem.options[value].labelKey)
+            : (value as string);
+
+        return {
           ...acc,
-          [key]: { value: value as string },
-        }),
-        {}
-      );
+          [key]: { value: value as string, label },
+        };
+      }, {});
 
       return {
         ...mappedDefaults,
@@ -160,6 +201,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   }, [currentRoleKey, tableConfig]);
 
   useEffect(() => {
+    // Reset state only when initiative changes
+    setFilters({});
+    setPage(0);
     setSelected([]);
   }, [initiativeId]);
 

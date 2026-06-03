@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { TFunction } from 'i18next';
 import { SelectProps } from '../../FiltersDrawer/filtersRender';
 import { InitiativeConfig } from '../../../model/config/ConfigSchema';
@@ -11,6 +12,7 @@ type Params = {
 };
 
 export function useEnrichedProductFilters({ typedConfig, filtersConfig, batchFilter, t }: Params) {
+  const institutionList = useSelector((state: any) => state.invitalia?.institutionList);
   const buildCategoryOptions = () => {
     const configCategories = typedConfig.categories;
     const templateCategories = typedConfig.templates?.categories ?? {};
@@ -84,9 +86,19 @@ export function useEnrichedProductFilters({ typedConfig, filtersConfig, batchFil
         return { ...filter, options: batchFilter };
       }
 
+      if (filter.id === 'producer') {
+        const producerOptions = institutionList
+          ? Object.fromEntries(
+              institutionList.map((item: any) => [item.institutionId, { label: item.description }])
+            )
+          : {};
+
+        return { ...filter, options: producerOptions };
+      }
+
       return filter;
     });
-  }, [filtersConfig, batchFilter]);
+  }, [filtersConfig, batchFilter, institutionList]);
 
   return { enrichedFiltersConfig };
 }

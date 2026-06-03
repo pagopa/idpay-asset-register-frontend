@@ -279,6 +279,18 @@
       "restoreProductMessage": "Vuoi ripristinare il prodotto segnalato in precedenza?"
     }
   },
+  "tables": {
+    "products": {
+      "filters": {
+        "category": "Categoria",
+        "status": "Stato",
+        "producer": "Produttore",
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "productFileId": "Lotto"
+      }
+    }
+  },
   "roles": {
     "admin": "Amministratore",
     "operatore": "Operatore",

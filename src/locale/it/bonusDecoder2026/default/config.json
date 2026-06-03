@@ -14,6 +14,33 @@
       "profileNotConfigured": "pages.products.profileNotConfigured"
     }
   },
+  "categories": {
+    "DS": {
+      "labelKey": "categories.satellite",
+      "templateFormat": "csv",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "DT": {
+      "labelKey": "categories.terrestrial",
+      "templateFormat": "csv",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "DTC": {
+      "labelKey": "categories.terrestrialViaCable",
+      "templateFormat": "csv",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "DTS": {
+      "labelKey": "categories.terrestrialAndSatellite",
+      "templateFormat": "csv",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "DTSC": {
+      "labelKey": "categories.terrestrialSatelliteAndViaCable",
+      "templateFormat": "csv",
+      "enabledIn": { "upload": true, "filters": true }
+    }
+  },
   "templates": {
     "formats": {
       "csv": {
@@ -22,14 +49,11 @@
       }
     },
     "categories": {
-      "satellite": { "format": "csv", "name": "satellitare" },
-      "terrestrial": { "format": "csv", "name": "terrestre" },
-      "terrestrial_via_cable": { "format": "csv", "name": "terrestre-via-cavo" },
-      "terrestrial_and_satellite": { "format": "csv", "name": "terrestre-e-satellitare" },
-      "terrestrial_satellite_and_via_cable": {
-        "format": "csv",
-        "name": "terrestre-satellitare-e-via-cavo"
-      }
+      "DS": { "format": "csv", "name": "satellitare" },
+      "DT": { "format": "csv", "name": "terrestre" },
+      "DTC": { "format": "csv", "name": "terrestre-via-cavo" },
+      "DTS": { "format": "csv", "name": "terrestre-e-satellitare" },
+      "DTSC": { "format": "csv", "name": "terrestre-satellitare-e-via-cavo" }
     }
   },
   "ui": {
@@ -39,29 +63,44 @@
           "preventMixedStatus": true
         },
         "columns": [
-          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
-          { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
-          { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true },
-          { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": false }
+          {
+            "id": "gtinCode",
+            "labelKey": "tables.products.columns.gtinCode",
+            "sortable": true
+          },
+          {
+            "id": "category",
+            "labelKey": "tables.products.columns.category",
+            "sortable": true
+          },
+          {
+            "id": "status",
+            "labelKey": "tables.products.columns.status",
+            "sortable": true
+          },
+          {
+            "id": "batchName",
+            "labelKey": "tables.products.columns.batchName",
+            "sortable": false
+          }
         ],
         "filters": [
           {
             "id": "category",
             "type": "select",
             "labelKey": "tables.products.filters.category",
-            "options": {
-              "WASHINGMACHINES": { "labelKey": "categories.lavatrice" },
-              "WASHERDRIERS": { "labelKey": "categories.lavasciuga" },
-              "COOKINGHOBS": { "labelKey": "categories.pianoCottura" },
-              "REFRIGERATINGAPPL": { "labelKey": "categories.refrigerazione" },
-              "TUMBLEDRYERS": { "labelKey": "categories.asciugatrice" },
-              "DISHWASHERS": { "labelKey": "categories.lavastoviglie" },
-              "RANGEHOODS": { "labelKey": "categories.cappa" },
-              "OVENS": { "labelKey": "categories.forno" }
-            }
+            "useInitiativeCategories": true
           },
-          { "id": "status", "type": "select", "labelKey": "tables.products.filters.status" },
-          { "id": "gtinCode", "type": "text", "labelKey": "tables.products.filters.gtinCode" },
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode"
+          },
           {
             "id": "productCode",
             "type": "text",
