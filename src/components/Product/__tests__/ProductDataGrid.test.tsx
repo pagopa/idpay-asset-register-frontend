@@ -9,6 +9,7 @@ import ProductDataGrid from '../ProductDataGrid';
 import * as registerService from '../../../services/registerService';
 import * as helpers from '../../../helpers';
 import * as useInitiativeConfigHook from '../../../hooks/useInitiativeConfig';
+import * as resolvedTableConfigHook from '../hooks/useResolvedProductTableConfig';
 import { productsSlice } from '../../../redux/slices/productsSlice';
 import { invitaliaSlice } from '../../../redux/slices/invitaliaSlice';
 import { USERS_TYPES } from '../../../utils/constants';
@@ -29,6 +30,11 @@ jest.mock('../../../hooks/useLogin', () => ({
 jest.mock('../../../services/registerService');
 jest.mock('../../../helpers');
 jest.mock('../../../hooks/useInitiativeConfig');
+
+jest.mock('../hooks/useResolvedProductTableConfig', () => ({
+  __esModule: true,
+  useResolvedProductTableConfig: jest.fn(),
+}));
 
 jest.mock('../../../hooks/useInitiativesQuery', () => ({
   __esModule: true,
@@ -196,7 +202,19 @@ const createStore = () =>
 
 const theme = createTheme();
 
-const renderGrid = async (role: string = 'USER', products = mockProducts) => {
+const renderGrid = async (
+  role: string = 'USER',
+  products = mockProducts,
+  {
+    hasPermission = true,
+    organizationSource,
+    defaultFiltersByRole,
+  }: {
+    hasPermission?: boolean;
+    organizationSource?: string;
+    defaultFiltersByRole?: Record<string, Record<string, string>>;
+  } = {}
+) => {
   (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
     org_id: 'org',
     org_role: role,
@@ -206,13 +224,13 @@ const renderGrid = async (role: string = 'USER', products = mockProducts) => {
     config: {
       subRoles: {
         USER: {
-          permissions: { tables: ['products'] },
+          permissions: { tables: hasPermission ? ['products'] : [] },
         },
         [USERS_TYPES.INVITALIA_L1]: {
-          permissions: { tables: ['products'] },
+          permissions: { tables: hasPermission ? ['products'] : [] },
         },
         [USERS_TYPES.INVITALIA_L2]: {
-          permissions: { tables: ['products'] },
+          permissions: { tables: hasPermission ? ['products'] : [] },
         },
       },
       tables: {
@@ -223,10 +241,27 @@ const renderGrid = async (role: string = 'USER', products = mockProducts) => {
             [USERS_TYPES.INVITALIA_L1]: ['REJECTED', 'WAIT_APPROVED'],
             [USERS_TYPES.INVITALIA_L2]: ['WAIT_APPROVED'],
           },
+          organizationSource,
+          defaultFiltersByRole,
         },
       },
     },
     loading: false,
+  });
+
+  (resolvedTableConfigHook.useResolvedProductTableConfig as jest.Mock).mockReturnValue({
+    tableConfig: {
+      columns: [],
+      selection: {
+        [USERS_TYPES.INVITALIA_L1]: ['REJECTED', 'WAIT_APPROVED'],
+        [USERS_TYPES.INVITALIA_L2]: ['WAIT_APPROVED'],
+      },
+      organizationSource,
+      defaultFiltersByRole,
+    },
+    paginationConfig: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] },
+    filtersConfig: [],
+    templateConfig: {},
   });
 
   (registerService.getProducts as jest.Mock).mockResolvedValue({
@@ -547,13 +582,24 @@ describe('ProductDataGrid (rewritten)', () => {
   });
 
   it('does not render component when products table is not configured', async () => {
-    (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockImplementation(() => ({
-      config: { tables: {} },
-      loading: false,
-    }));
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_id: 'org',
+      org_role: 'USER',
+    });
 
-    // Ensure async services are safely mocked
-    (registerService.getProducts as jest.Mock).mockResolvedValueOnce({
+    (resolvedTableConfigHook.useResolvedProductTableConfig as jest.Mock).mockReturnValue({
+      tableConfig: undefined,
+      paginationConfig: {},
+      filtersConfig: [],
+      templateConfig: {},
+    });
+
+    (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockReturnValue({
+      config: {},
+      loading: false,
+    });
+
+    (registerService.getProducts as jest.Mock).mockResolvedValue({
       data: { content: [], pageNo: 0, totalElements: 0 },
     });
 
@@ -576,5 +622,33 @@ describe('ProductDataGrid (rewritten)', () => {
     });
 
     expect(screen.queryByTestId('products-table')).not.toBeInTheDocument();
+  });
+
+  it('renders empty list when user has no products permission', async () => {
+    await renderGrid('USER', mockProducts, { hasPermission: false });
+    await waitFor(() => {
+      expect(screen.getByTestId('empty-list')).toBeInTheDocument();
+    });
+  });
+
+  it('applies producer filter when organizationSource is filter', async () => {
+    await renderGrid('USER', mockProducts, { organizationSource: 'filter' });
+    await screen.findByTestId('products-table');
+
+    // no crash and table still visible after effect
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('applies role-based default filters when configured', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L2, mockProducts, {
+      defaultFiltersByRole: {
+        [USERS_TYPES.INVITALIA_L2]: {
+          status: 'WAIT_APPROVED',
+        },
+      },
+    });
+
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
 });
