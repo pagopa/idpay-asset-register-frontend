@@ -68,18 +68,30 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   const rowBorderWidth = '1px';
   const headerTextColor = theme.palette.text.primary;
 
-  const handleCheckboxClick = (gtinCode: string) => {
-    setSelected((prev) =>
-      prev.includes(gtinCode) ? prev.filter((code) => code !== gtinCode) : [...prev, gtinCode]
-    );
-  };
-
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const renderCellContent = (col: ColumnConfig, row: ProductDTO) => {
     if (col.type === 'checkbox' && selection?.enabled) {
+      const uniqueKey = String(
+        (row as any).gtinCode ??
+          (row as any).gtin ??
+          row.productCode ??
+          `${col.id}-${JSON.stringify(row)}`
+      );
+
       return (
         <Checkbox
-          checked={selected.includes(row.gtinCode ?? '')}
-          onChange={() => row.gtinCode && handleCheckboxClick(row.gtinCode)}
+          checked={selected.includes(uniqueKey)}
+          onChange={(e, checked) => {
+            e.stopPropagation();
+
+            setSelected((prev) =>
+              checked
+                ? prev.includes(uniqueKey)
+                  ? prev
+                  : [...prev, uniqueKey]
+                : prev.filter((c) => c !== uniqueKey)
+            );
+          }}
         />
       );
     }
@@ -162,7 +174,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           )}
           {tableData.map((row, index) => (
             <TableRow
-              key={index}
+              key={(row as any).gtin ?? row.gtinCode ?? index}
               hover
               sx={{
                 backgroundColor: rowBg,

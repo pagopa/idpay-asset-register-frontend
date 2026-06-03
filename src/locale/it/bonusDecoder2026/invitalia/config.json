@@ -27,6 +27,11 @@
             "invitalia_admin": ["WAIT_APPROVED"]
           }
         },
+        "defaultFiltersByRole": {
+          "invitalia_admin": {
+            "status": "WAIT_APPROVED"
+          }
+        },
         "selection": {
           "enabled": true,
           "rules": {
@@ -90,8 +95,7 @@
           {
             "id": "status",
             "type": "select",
-            "labelKey": "tables.products.filters.status",
-            "defaultValue": "WAIT_APPROVED"
+            "labelKey": "tables.products.filters.status"
           },
           {
             "id": "gtinCode",
