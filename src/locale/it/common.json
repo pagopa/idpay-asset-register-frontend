@@ -1,4 +1,11 @@
 {
+  "categories": {
+    "satellite": "Satellitare",
+    "terrestrial": "Terrestre",
+    "terrestrialViaCable": "Terrestre via cavo",
+    "terrestrialAndSatellite": "Terrestre e Satellitare",
+    "terrestrialSatelliteAndViaCable": "Terrestre, Satellitare e via cavo"
+  },
   "breadcrumbs": {
     "exit": "Esci",
     "home": "Panoramica"

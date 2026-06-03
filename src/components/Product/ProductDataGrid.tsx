@@ -70,7 +70,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     tableConfig,
   });
 
-  // Ensure producer filter chip is shown when arriving from Producers page
   useEffect(() => {
     if (organizationId && tableConfig?.organizationSource === 'filter') {
       setFilters((prev) => ({
