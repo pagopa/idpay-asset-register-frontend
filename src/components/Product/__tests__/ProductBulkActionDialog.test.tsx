@@ -81,11 +81,10 @@ describe('ProductBulkActionDialog', () => {
   });
 
   it('shows loading spinner when confirming', async () => {
-    const slowConfirm: (action: string, reason?: string) => Promise<void> =
-      () =>
-        new Promise<void>((resolve) =>
-          setTimeout(() => resolve(), 50)
-        );
+    const slowConfirm = jest.fn(
+      (): Promise<void> =>
+        new Promise<void>((resolve) => setTimeout(() => resolve(), 50))
+    );
 
     render(
       <ProductBulkActionDialog
