@@ -25,7 +25,6 @@ jest.mock('../../../services/registerService', () => ({
   setWaitApprovedStatusList: jest.fn(),
 }));
 
-// ✅ Mock useInitiativeConfig to avoid Redux dependency (useIDPayUser)
 jest.mock('../../../hooks/useInitiativeConfig', () => ({
   __esModule: true,
   useInitiativeConfig: () => ({
@@ -372,5 +371,59 @@ describe('ProductDetail.extra', () => {
 
     expect(onUpdateTable).toHaveBeenCalledTimes(1);
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('handles rejected API error without crashing (covers callRejectedApi catch)', async () => {
+    (registerService.setRejectedStatusList as jest.Mock).mockRejectedValueOnce(
+      new Error('fail')
+    );
+
+    const data = baseData({ status: ProductStatus.UPLOADED });
+    renderCmp({}, data);
+
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    fireEvent.click(screen.getByTestId('modal-success'));
+
+    await waitFor(() => {
+      expect(registerService.setRejectedStatusList).toHaveBeenCalled();
+    });
+  });
+
+  it('handles waitApproved API error without crashing (covers callWaitApprovedApi catch)', async () => {
+    (registerService.setWaitApprovedStatusList as jest.Mock).mockRejectedValueOnce(
+      new Error('fail')
+    );
+
+    const data = baseData({ status: ProductStatus.SUPERVISED });
+    renderCmp({}, data);
+
+    fireEvent.click(screen.getByTestId('acceptApprovationBtn'));
+    fireEvent.click(screen.getByTestId('dialog-confirm'));
+
+    await waitFor(() => {
+      expect(registerService.setWaitApprovedStatusList).toHaveBeenCalled();
+    });
+  });
+
+  it('formalMotivation header falls back to EMPTY_DATA when invalid date (covers getFormalMotivationDateLabel catch)', () => {
+    const data = baseData({
+      status: ProductStatus.REJECTED,
+      formalMotivation: 'Formal OK',
+      statusChangeChronology: [
+        { role: 'L1', motivation: 'X', updateDate: 'invalid-date' },
+      ] as any,
+    });
+
+    renderCmp({}, data);
+
+    expect(screen.getByText('pages.productDetail.motivationFormal')).toBeInTheDocument();
+  });
+
+  it('renders EMPTY_DATA when registrationDate is invalid', () => {
+    const data = baseData({ registrationDate: undefined as any });
+
+    renderCmp({}, data);
+
+    expect(screen.getAllByTestId('product-info-row').length).toBeGreaterThan(0);
   });
 });

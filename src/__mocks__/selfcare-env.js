@@ -1,6 +1,4 @@
 module.exports = {
-  // This mock must follow the real shape exported by
-  // @pagopa/selfcare-common-frontend/lib/config/env.js
   CONFIG: {
     URL_FE: {
       LOGIN_GOOGLE: '',

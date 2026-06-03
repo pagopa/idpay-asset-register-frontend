@@ -230,9 +230,6 @@ describe('FiltersDrawer Component', () => {
       const select = screen.getByTestId('producer-testId');
       fireEvent.change(select, { target: { value: 'prod-1' } });
 
-      // With the current FiltersDrawer implementation, the producer select will NOT update
-      // unless the template passed to the select renderer contains the selected key.
-      // Since the component does not map producer -> producerFilterItems, the send button stays disabled.
       const sendBtn = await screen.findByTestId('send-btn');
       await act(async () => {});
       expect(sendBtn).toBeDisabled();
@@ -266,12 +263,9 @@ describe('FiltersDrawer Component', () => {
       const selectProducer = screen.getByTestId('producer-testId');
       fireEvent.change(selectProducer, { target: { value: 'prod-2' } });
 
-      // ensure rerender happened before clicking
       const sendBtn = await screen.findByTestId('send-btn');
       fireEvent.click(sendBtn);
 
-      // producer filter is not part of templateMap in the component,
-      // so changing producer should clear it from draftFilters.
       expect(mockSetFilters).toHaveBeenCalledWith({
         productFileId: { value: 'batch-1', label: 'Batch 1' },
       });

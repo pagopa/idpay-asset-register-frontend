@@ -78,7 +78,6 @@ describe('ProductStatusActionBar', () => {
     fireEvent.click(screen.getByTestId('rejectedBtn'));
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
 
-    // current implementation may disable or internally guard actions
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
     expect(screen.getByTestId('waitApprovedBtn')).toBeInTheDocument();
   });

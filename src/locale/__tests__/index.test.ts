@@ -1,5 +1,3 @@
-/// <reference types="jest" />
-
 describe('locale/index.ts initialization', () => {
   const originalEnv = process.env.NODE_ENV;
 
