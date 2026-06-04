@@ -19,6 +19,14 @@ const mockTranslations = {
 };
 
 const mockT = (key: string) => mockTranslations[key as keyof typeof mockTranslations] ?? key;
+const emailLabel = mockTranslations['pages.overview.operativeEmailModal.emailAriaLabel'];
+const confirmEmailLabel =
+  mockTranslations['pages.overview.operativeEmailModal.confirmEmailAriaLabel'];
+const saveButtonName = mockTranslations['pages.overview.operativeEmailModal.saveButton'];
+const invalidEmailError =
+  mockTranslations['pages.overview.operativeEmailModal.invalidEmailError'];
+const requiredError = mockTranslations['pages.overview.operativeEmailModal.requiredError'];
+const mismatchError = mockTranslations['pages.overview.operativeEmailModal.emailMismatchError'];
 
 jest.mock('../../../hooks/useScopedTranslation', () => ({
   __esModule: true,
@@ -41,14 +49,28 @@ const renderModal = (props?: Partial<React.ComponentProps<typeof OperativeEmailM
   };
 };
 
+const getEmailInput = () => screen.getByLabelText(emailLabel);
+const getConfirmEmailInput = () => screen.getByLabelText(confirmEmailLabel);
+const getSaveButton = () => screen.getByRole('button', { name: saveButtonName });
+
+const fillEmailsAndSave = async (
+  user: ReturnType<typeof userEvent.setup>,
+  email: string,
+  confirmEmail: string
+) => {
+  await user.type(getEmailInput(), email);
+  await user.type(getConfirmEmailInput(), confirmEmail);
+  await user.click(getSaveButton());
+};
+
 describe('OperativeEmailModal', () => {
   it('shows required errors for empty fields', async () => {
     const user = userEvent.setup();
     const { props } = renderModal();
 
-    await user.click(screen.getByRole('button', { name: 'Salva' }));
+    await user.click(getSaveButton());
 
-    expect(screen.getAllByText('Campo obbligatorio')).toHaveLength(2);
+    expect(screen.getAllByText(requiredError)).toHaveLength(2);
     expect(props.onSave).not.toHaveBeenCalled();
   });
 
@@ -56,23 +78,26 @@ describe('OperativeEmailModal', () => {
     const user = userEvent.setup();
     const { props } = renderModal();
 
-    await user.type(screen.getByLabelText('E-mail'), 'not-email');
-    await user.type(screen.getByLabelText('Conferma e-mail'), 'still-not-email');
-    await user.click(screen.getByRole('button', { name: 'Salva' }));
+    await fillEmailsAndSave(user, 'not-email', 'still-not-email');
 
-    expect(screen.getAllByText('Inserisci un indirizzo e-mail valido')).toHaveLength(2);
+    expect(screen.getAllByText(invalidEmailError)).toHaveLength(2);
     expect(props.onSave).not.toHaveBeenCalled();
   });
 
-  it('rejects malformed emails without using regex backtracking', async () => {
+  it('prefills only the first email field when an initial email is provided', () => {
+    renderModal({ initialEmail: 'current@example.com' });
+
+    expect(getEmailInput()).toHaveValue('current@example.com');
+    expect(getConfirmEmailInput()).toHaveValue('');
+  });
+
+  it('rejects emails that do not match the backend pattern', async () => {
     const user = userEvent.setup();
     const { props } = renderModal();
 
-    await user.type(screen.getByLabelText('E-mail'), 'name@@example..com');
-    await user.type(screen.getByLabelText('Conferma e-mail'), 'name@@example..com');
-    await user.click(screen.getByRole('button', { name: 'Salva' }));
+    await fillEmailsAndSave(user, 'name@example.c', 'name@example.c');
 
-    expect(screen.getAllByText('Inserisci un indirizzo e-mail valido')).toHaveLength(2);
+    expect(screen.getAllByText(invalidEmailError)).toHaveLength(2);
     expect(props.onSave).not.toHaveBeenCalled();
   });
 
@@ -80,11 +105,9 @@ describe('OperativeEmailModal', () => {
     const user = userEvent.setup();
     const { props } = renderModal();
 
-    await user.type(screen.getByLabelText('E-mail'), 'one@example.com');
-    await user.type(screen.getByLabelText('Conferma e-mail'), 'two@example.com');
-    await user.click(screen.getByRole('button', { name: 'Salva' }));
+    await fillEmailsAndSave(user, 'one@example.com', 'two@example.com');
 
-    expect(screen.getByText('Le e-mail non coincidono')).toBeInTheDocument();
+    expect(screen.getByText(mismatchError)).toBeInTheDocument();
     expect(props.onSave).not.toHaveBeenCalled();
   });
 
@@ -93,10 +116,19 @@ describe('OperativeEmailModal', () => {
     const onSave = jest.fn();
     renderModal({ onSave });
 
-    await user.type(screen.getByLabelText('E-mail'), ' test@example.com ');
-    await user.type(screen.getByLabelText('Conferma e-mail'), ' test@example.com ');
-    await user.click(screen.getByRole('button', { name: 'Salva' }));
+    await fillEmailsAndSave(user, ' test@example.com ', ' test@example.com ');
 
     expect(onSave).toHaveBeenCalledWith('test@example.com');
+  });
+
+  it('accepts emails with characters allowed by the backend pattern', async () => {
+    const user = userEvent.setup();
+    const onSave = jest.fn();
+    renderModal({ onSave });
+    const validEmail = 'test+name_1.2@example-domain.sub.it';
+
+    await fillEmailsAndSave(user, validEmail, validEmail);
+
+    expect(onSave).toHaveBeenCalledWith(validEmail);
   });
 });

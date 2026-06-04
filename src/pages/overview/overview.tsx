@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Paper, Snackbar, SnackbarCloseReason, Typography, Tooltip } from '@mui/material';
+import { Box, Paper, Typography, Tooltip } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
-import { ButtonNaked, MIAlert } from '@pagopa/mui-italia';
+import { ButtonNaked } from '@pagopa/mui-italia';
 import { EditOutlined } from '@mui/icons-material';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
+import MsgResult from '../../components/Product/MsgResult';
 import OverviewProductionSection from '../components/OverviewProductionSection';
 import OperativeEmailModal from '../components/OperativeEmailModal';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
@@ -17,6 +18,7 @@ import { useInitiativesQuery } from '../../hooks/useInitiativesQuery';
 type ToastState = {
   open: boolean;
   severity: 'success' | 'error';
+  messageKey: string;
   key: number;
 };
 
@@ -28,33 +30,46 @@ const Overview: React.FC = () => {
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
   const [operativeEmailModalOpen, setOperativeEmailModalOpen] = useState(false);
   const [operativeEmailLoading, setOperativeEmailLoading] = useState(false);
-  const [toast, setToast] = useState<ToastState>({ open: false, severity: 'success', key: 0 });
+  const [toast, setToast] = useState<ToastState>({
+    open: false,
+    severity: 'success',
+    messageKey: 'success',
+    key: 0,
+  });
   const operativeEmail = currentInitiative?.organizationEmail;
   const isOperativeEmailMissing =
     typeof operativeEmail !== 'string' || operativeEmail.trim().length === 0;
 
-  const handleSaveOperativeEmail = (operativeEmail: string) => {
+  const handleSaveOperativeEmail = (newOperativeEmail: string) => {
     if (!initiativeId) {
       return;
     }
 
+    const successMessageKey = isOperativeEmailMissing ? 'insertedSuccess' : 'success';
+
     setOperativeEmailLoading(true);
-    updateOperativeEmail(initiativeId, operativeEmail)
+    updateOperativeEmail(initiativeId, newOperativeEmail)
       .then(() => refetchInitiatives())
       .then(() => {
-        setToast((current) => ({ open: true, severity: 'success', key: current.key + 1 }));
+        setToast((current) => ({
+          open: true,
+          severity: 'success',
+          messageKey: successMessageKey,
+          key: current.key + 1,
+        }));
       })
       .catch(() => {
-        setToast((current) => ({ open: true, severity: 'error', key: current.key + 1 }));
+        setToast((current) => ({
+          open: true,
+          severity: 'error',
+          messageKey: 'error',
+          key: current.key + 1,
+        }));
       })
       .finally(() => {
         setOperativeEmailModalOpen(false);
         setOperativeEmailLoading(false);
       });
-  };
-
-  const handleCloseToast = (_event?: React.SyntheticEvent | Event, _reason?: SnackbarCloseReason) => {
-    setToast((current) => ({ ...current, open: false }));
   };
 
   const fields = useMemo(
@@ -95,9 +110,7 @@ const Overview: React.FC = () => {
       />
 
       {isOperativeEmailMissing && (
-        <Box sx={{mb: 3, '& .MuiAlert-message': { fontSize: 16, }, '& .MuiAlert-root': {display: "flex", alignItems: "center", justifyContent: "center" }}}>
-          <MIAlert severity="warning" description={t('pages.overview.missingOperativeEmailWarning')}/>
-        </Box>  
+        <MsgResult severity="warning" message={t('pages.overview.missingOperativeEmailWarning')} />
       )}
 
       <Box
@@ -188,31 +201,17 @@ const Overview: React.FC = () => {
         open={operativeEmailModalOpen}
         onClose={() => setOperativeEmailModalOpen(false)}
         onSave={handleSaveOperativeEmail}
+        initialEmail={operativeEmail}
         isLoading={operativeEmailLoading}
       />
 
-      <Snackbar
-        key={toast.key}
-        open={toast.open}
-        autoHideDuration={6000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        sx={{ zIndex: 9999 }}
-      >
-        <Box
-          sx={{
-            '& .MuiAlert-root': {display: "flex", alignItems: "center", justifyContent: "center" },
-            '& .MuiAlert-message': {
-              fontSize: 16,
-            },
-          }}
-        >
-          <MIAlert
-            severity={toast.severity}
-            description={t(`pages.overview.operativeEmailModal.toast.${toast.severity}`)}
-          />
-        </Box>
-      </Snackbar>
+      {toast.open && (
+        <MsgResult
+          key={toast.key}
+          severity={toast.severity}
+          message={t(`pages.overview.operativeEmailModal.toast.${toast.messageKey}`)}
+        />
+      )}
 
       <Paper
         sx={{

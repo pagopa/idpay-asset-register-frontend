@@ -27,17 +27,16 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onSave: (email: string) => void;
+  initialEmail?: string;
   isLoading?: boolean;
 };
 
-const MAX_EMAIL_LENGTH = 254;
-const MAX_EMAIL_LOCAL_PART_LENGTH = 64;
-const MODAL_BLUE = '#0B3EE3';
-const MODAL_RED = '#D13333';
+const MODAL_PRIMARY_COLOR = 'primary.main';
+const MODAL_ERROR_COLOR_PLACEHOLDER = 'error.main';
 
 const modalStyles = {
   paper: {
-    width: 700,
+    width: "40%",
     maxWidth: 'calc(100% - 32px)',
     borderRadius: '16px',
     p: 3.5,
@@ -50,7 +49,7 @@ const modalStyles = {
   closeButton: {
     position: 'absolute',
     right: 20,
-    top: 20,
+    top: 26,
     color: 'text.primary',
     '&:hover': {
       backgroundColor: 'transparent',
@@ -58,14 +57,11 @@ const modalStyles = {
   },
   title: {
     p: 0,
-    pr: 5,
-    mb: 1.5,
   },
   titleText: {
     fontFamily: 'Titillium Web',
-    fontSize: 28,
-    lineHeight: '36px',
-    color: "#0E0F13",
+    fontSize: 24,
+    color: "text.primary",
     fontWeight: 700,
   },
   content: {
@@ -73,21 +69,20 @@ const modalStyles = {
     overflow: 'visible',
   },
   description: {
-    mb: 3.5,
-    color: '#5C6F82',
+    mb: 2.5,
+    color: 'text.description',
     fontFamily: 'Titillium Web',
-    fontSize: 18,
-    lineHeight: '28px',
+    fontSize: 16,
   },
   fields: {
     display: 'grid',
-    rowGap: 2.5,
+    rowGap: 1.4,
   },
   textField: {
     '& .MuiOutlinedInput-root': {
-      minHeight: 56,
+      height: 40,
       borderRadius: '8px',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: 'white',
     },
     '& .MuiOutlinedInput-notchedOutline': {
       borderWidth: 2,
@@ -97,51 +92,50 @@ const modalStyles = {
     },
     '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
       borderWidth: 2,
-      borderColor: MODAL_BLUE,
+      borderColor: MODAL_PRIMARY_COLOR,
     },
     '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
-      borderColor: MODAL_RED,
+      borderColor: MODAL_ERROR_COLOR_PLACEHOLDER,
     },
     '& .MuiInputBase-input': {
       fontFamily: 'Titillium Web',
-      fontSize: 18,
+      fontSize: 14,
       lineHeight: '24px',
       fontWeight: 600,
     },
     '& .MuiInputLabel-root': {
       fontFamily: 'Titillium Web',
       fontWeight: 600,
-      backgroundColor: '#FFFFFF',
+      backgroundColor: 'white',
       px: 0.5,
-      transform: 'translate(50px, 16px) scale(1)',
+      transform: 'translate(50px, 6px) scale(1)',
     },
     '& .MuiInputLabel-root.MuiInputLabel-shrink': {
       transform: 'translate(14px, -9px) scale(0.75)',
     },
     '& .MuiInputLabel-root.Mui-focused': {
-      color: MODAL_BLUE,
+      color: MODAL_PRIMARY_COLOR,
     },
     '& .MuiInputLabel-root.Mui-error': {
-      color: MODAL_RED,
+      color: MODAL_ERROR_COLOR_PLACEHOLDER,
     },
     '& .MuiFormHelperText-root': {
       ml: 2,
-      mt: 0.75,
       fontFamily: 'Titillium Web',
-      fontSize: 16,
+      fontSize: 12,
       lineHeight: '22px',
     },
     '& .MuiFormHelperText-root.Mui-error': {
-      color: MODAL_RED,
+      color: MODAL_ERROR_COLOR_PLACEHOLDER,
     },
   },
   inputIcon: {
     color: '#A9B7C8',
-    fontSize: 26,
+    fontSize: 22,
   },
   errorIcon: {
-    color: MODAL_RED,
-    fontSize: 26,
+    color: MODAL_ERROR_COLOR_PLACEHOLDER,
+    fontSize: 22,
   },
   actions: {
     p: 0,
@@ -149,63 +143,60 @@ const modalStyles = {
     gap: 2,
   },
   cancelButton: {
-    color: MODAL_BLUE,
+    color: MODAL_PRIMARY_COLOR,
     fontWeight: 700,
-    fontSize: 18,
+    fontSize: 15,
     '&:hover': {
-      color: MODAL_BLUE,
+      color: MODAL_PRIMARY_COLOR,
     },
   },
   saveButton: {
-    backgroundColor: MODAL_BLUE,
-    minWidth: 104,
-    height: 56,
-    px: 3,
+    backgroundColor: MODAL_PRIMARY_COLOR,
+    height: 40,
     borderRadius: '8px',
     fontFamily: 'Titillium Web',
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 600,
     textTransform: 'none',
     '&:hover': {
-      backgroundColor: MODAL_BLUE,
+      backgroundColor: MODAL_PRIMARY_COLOR,
     },
   },
 };
 
-const hasWhitespace = (value: string) => {
-  for (const char of value) {
-    if (char <= ' ') {
-      return true;
-    }
-  }
+const isAsciiAlpha = (char: string) =>
+  (char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z');
 
-  return false;
-};
+const isAsciiDigit = (char: string) => char >= '0' && char <= '9';
+
+const areAllCharsAllowed = (value: string, isAllowedChar: (char: string) => boolean) =>
+  value.length > 0 && Array.from(value).every(isAllowedChar);
+
+const isAllowedLocalPartChar = (char: string) =>
+  isAsciiAlpha(char) || isAsciiDigit(char) || ['+', '_', '.', '-'].includes(char);
+
+const isAllowedDomainLabelChar = (char: string) =>
+  isAsciiAlpha(char) || isAsciiDigit(char) || char === '-';
 
 const isValidEmail = (value: string) => {
-  if (value.length > MAX_EMAIL_LENGTH || hasWhitespace(value)) {
+  const emailParts = value.split('@');
+  if (emailParts.length !== 2 || !areAllCharsAllowed(emailParts[0], isAllowedLocalPartChar)) {
     return false;
   }
 
-  const atIndex = value.indexOf('@');
-  if (atIndex <= 0 || atIndex !== value.lastIndexOf('@')) {
+  const domainLabels = emailParts[1].split('.');
+  if (domainLabels.length < 2) {
     return false;
   }
 
-  const localPart = value.slice(0, atIndex);
-  const domain = value.slice(atIndex + 1);
-  if (
-    localPart.length > MAX_EMAIL_LOCAL_PART_LENGTH ||
-    domain.length === 0 ||
-    domain.startsWith('.') ||
-    domain.endsWith('.') ||
-    domain.includes('..')
-  ) {
-    return false;
-  }
+  const tld = domainLabels[domainLabels.length - 1];
+  const domainPrefixLabels = domainLabels.slice(0, -1);
 
-  const dotIndex = domain.lastIndexOf('.');
-  return dotIndex > 0 && dotIndex < domain.length - 1;
+  return (
+    domainPrefixLabels.every((label) => areAllCharsAllowed(label, isAllowedDomainLabelChar)) &&
+    tld.length >= 2 &&
+    areAllCharsAllowed(tld, isAsciiAlpha)
+  );
 };
 
 const getEmailError = (value: string, t: (key: string) => string) => {
@@ -220,7 +211,13 @@ const getEmailError = (value: string, t: (key: string) => string) => {
   return undefined;
 };
 
-const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave, isLoading = false }) => {
+const OperativeEmailModal: React.FC<Props> = ({
+  open,
+  onClose,
+  onSave,
+  initialEmail,
+  isLoading = false,
+}) => {
   const { t } = useScopedTranslation();
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
@@ -230,13 +227,13 @@ const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave, isLoading
 
   useEffect(() => {
     if (open) {
-      setEmail('');
+      setEmail(initialEmail ?? '');
       setConfirmEmail('');
       setEmailFocused(false);
       setConfirmEmailFocused(false);
       setFieldErrors({});
     }
-  }, [open]);
+  }, [initialEmail, open]);
 
   const validate = () => {
     const trimmedEmail = email.trim();
@@ -273,13 +270,13 @@ const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave, isLoading
         sx: modalStyles.paper,
       }}
     >
-      <IconButton
+      <IconButton 
         aria-label={t('common.closeBtn')}
         onClick={onClose}
         disabled={isLoading}
         sx={modalStyles.closeButton}
       >
-        <CloseIcon fontSize="large" />
+        <CloseIcon sx={{width: 25, height: 25}} />
       </IconButton>
       <DialogTitle sx={modalStyles.title}>
         <Typography component="span" sx={modalStyles.titleText}>
