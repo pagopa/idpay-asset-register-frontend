@@ -13,6 +13,7 @@ import {
   TableSortLabel,
   Typography,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { visuallyHidden } from '@mui/utils';
 import React, { useEffect } from 'react';
@@ -30,6 +31,7 @@ import EmptyListTable from '../components/EmptyListTable';
 import { buildRoute } from '../../components/SideMenu/SideMenu';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { useAppDispatch } from '../../redux/hooks';
+import { EMPTY_DATA } from '../../utils/constants';
 import { EnhancedTableProps, HeadCell } from './helpers';
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -125,6 +127,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const initiativeId = useCurrentInitiativeId();
+  const theme = useTheme();
 
   useEffect(() => {
     dispatch(setInstitution({} as Institution));
@@ -172,16 +175,21 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
         {((data.institutions as Array<Institution>) ?? []).map((row: Institution) => (
           <TableRow key={row.institutionId}>
             <TableCell>
-              <Link
-                underline="hover"
-                component="button"
-                onClick={() => goToInstitutionPage(row)}
-                sx={{ textDecoration: 'none' }}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 'fontWeightBold', color: '#0062C3' }}>
-                  {row.description}
+              {row.description ?
+                <Link
+                  underline="hover"
+                  component="button"
+                  onClick={() => goToInstitutionPage(row)}
+                  sx={{ textDecoration: 'none' }}
+                >
+                  <Typography variant="body2" sx={{ fontWeight: theme.typography.fontWeightBold, color: theme.palette.primary.main}}>
+                    {row.description}
+                  </Typography>
+                </Link> :
+                <Typography variant="body2">
+                  {EMPTY_DATA}
                 </Typography>
-              </Link>
+              }
             </TableCell>
             <TableCell>{formatDateWithoutHours(row.createdAt.toString())}</TableCell>
             <TableCell>{formatDateWithoutHours(row.updatedAt.toString())}</TableCell>

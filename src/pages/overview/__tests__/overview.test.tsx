@@ -173,7 +173,7 @@ describe('Overview Component', () => {
       const { container } = renderWithTheme(<Overview />);
 
       const papers = container.querySelectorAll('[class*="MuiPaper"]');
-      expect(papers.length).toBeGreaterThanOrEqual(2); // Info section + footer
+      expect(papers.length).toBeGreaterThanOrEqual(2);
     });
   });
 
