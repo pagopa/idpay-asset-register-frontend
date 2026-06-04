@@ -13,6 +13,7 @@ import {
   TableSortLabel,
   Typography,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { visuallyHidden } from '@mui/utils';
 import React, { useEffect } from 'react';
@@ -126,6 +127,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const initiativeId = useCurrentInitiativeId();
+  const theme = useTheme();
 
   useEffect(() => {
     dispatch(setInstitution({} as Institution));
@@ -180,7 +182,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
                   onClick={() => goToInstitutionPage(row)}
                   sx={{ textDecoration: 'none' }}
                 >
-                  <Typography variant="body2" sx={{ fontWeight: 'fontWeightBold', color: '#0062C3' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 'fontWeightBold', color: theme.palette.primary.main}}>
                     {row.description}
                   </Typography>
                 </Link> :
