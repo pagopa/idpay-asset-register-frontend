@@ -1,6 +1,4 @@
-/// <reference types="jest" />
 import '@testing-library/jest-dom';
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProductDetail from '../ProductDetail';
 
@@ -27,6 +25,13 @@ jest.mock('../../../helpers', () => ({
 jest.mock('../../../services/registerService', () => ({
   setRejectedStatusList: jest.fn(() => Promise.resolve()),
   setWaitApprovedStatusList: jest.fn(() => Promise.resolve()),
+}));
+
+jest.mock('../../../api/registerApiClient', () => ({
+  RegisterApi: {
+    setRejectedStatusList: jest.fn(() => Promise.resolve()),
+    setWaitApprovedStatusList: jest.fn(() => Promise.resolve()),
+  },
 }));
 
 jest.mock('../ProductStatusChip', () => ({
@@ -495,5 +500,56 @@ describe('ProductDetail', () => {
     fireEvent.click(screen.getByTestId('modal-success'));
 
     expect(onShowRejectedApprovationMsg).toHaveBeenCalled();
+  });
+
+  it('handles confirm restore error branch and shows generic error', async () => {
+    const { RegisterApi } = require('../../../api/registerApiClient');
+    RegisterApi.setWaitApprovedStatusList.mockImplementationOnce(() =>
+      Promise.reject(new Error('error'))
+    );
+
+    const onClose = jest.fn();
+    const onShowGenericError = jest.fn();
+
+    render(
+      <ProductDetail
+        open
+        data={{ ...baseData, status: 'UPLOADED' }}
+        isInvitaliaUser
+        isInvitaliaAdmin={false}
+        onClose={onClose}
+        onShowGenericError={onShowGenericError}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('approvedBtn'));
+    fireEvent.click(screen.getByTestId('confirm'));
+
+    await screen.findByTestId('approvedBtn');
+
+    expect(onClose).toHaveBeenCalled();
+    expect(onShowGenericError).toHaveBeenCalled();
+  });
+
+  it('does not render formal motivation for operator when not rejected', () => {
+    const { fetchUserFromLocalStorage } = require('../../../helpers');
+    fetchUserFromLocalStorage.mockReturnValueOnce({ org_role: 'operatore' });
+
+    render(
+      <ProductDetail
+        open
+        data={{
+          ...baseData,
+          status: 'UPLOADED',
+          formalMotivation: 'Hidden reason',
+        }}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.queryByDisplayValue('Hidden reason')).not.toBeInTheDocument();
   });
 });

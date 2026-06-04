@@ -106,6 +106,7 @@
         },
         "columns": [
           { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
+          { "id": "producer", "labelKey": "tables.products.columns.producer", "sortable": true },
           {
             "id": "energyClass",
             "labelKey": "tables.products.columns.energyClass",

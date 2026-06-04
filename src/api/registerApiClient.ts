@@ -61,7 +61,25 @@ internalAxios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 });
 
 internalAxios.interceptors.response.use(
-  (response: AxiosResponse) => response,
+  (response: AxiosResponse) => {
+    const rawData: any = response?.data;
+    // Support both plain response and wrapped response (e.g. { value: {...} })
+    const data: any = rawData?.value ?? rawData;
+
+    // Centralized business error handling (status === 'KO')
+    if (data && typeof data === 'object' && 'status' in data && data.status === 'KO') {
+      const errorKey = data?.errorKey;
+      const message = errorKey || data?.message || 'Business error';
+
+      const apiError = new ApiError(response.status ?? 200, message, errorKey, data);
+
+      resolveApiErrorStatus(apiError);
+
+      return Promise.reject(apiError);
+    }
+
+    return response;
+  },
   (error: AxiosError) => {
     const status = error.response?.status ?? 500;
     const data: any = error.response?.data;
@@ -190,8 +208,17 @@ type StatusUpdater = (
   formalMotivation?: string
 ) => Promise<ProductsUpdateDTO>;
 
+function extractBusinessPayload(result: any): any {
+  const raw: any = result?.data ?? result;
+  return raw?.value ?? raw;
+}
+
 function makeStatusUpdater(
-  apiMethod: ({initiativeId}: any, data: ProductsUpdateDTO, params?: RequestParams) => Promise<any>,
+  apiMethod: (
+    { initiativeId }: any,
+    data: ProductsUpdateDTO,
+    params?: RequestParams
+  ) => Promise<any>,
   needsFormalMotivation = false
 ): StatusUpdater {
   return async (
@@ -221,11 +248,23 @@ function makeStatusUpdater(
             currentStatus,
             motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
           };
-      const result = await apiMethod({initiativeId}, body);
+
+      const result = await apiMethod({ initiativeId }, body);
+      const payload = extractBusinessPayload(result);
+
+      if (payload?.status === 'KO') {
+        throw new ApiError(
+          200,
+          payload?.errorKey || payload?.message || 'Business error',
+          payload?.errorKey,
+          payload
+        );
+      }
+
       return result ?? {};
     } catch (error) {
       logApiError(error, 'makeStatusUpdater');
-      return {} as ProductsUpdateDTO;
+      throw error;
     }
   };
 }
@@ -350,7 +389,7 @@ export const RegisterApi = {
   },
 
   getProducers: async (initiativeId: string): Promise<AxiosResponse<ProducersResponseDTO>> =>
-    registerClient.initiatives.getProducersByInitiative({initiativeId}),
+    registerClient.initiatives.getProducersByInitiative({ initiativeId }),
 
   getInstitutionById: async (institutionId: string): Promise<AxiosResponse<InstitutionResponse>> =>
     registerClient.institutions.retrieveInstitutionById({ institutionId }),

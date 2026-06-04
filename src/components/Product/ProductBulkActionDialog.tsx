@@ -25,6 +25,10 @@ type Props = {
   setShowMsgRejected: (v: boolean) => void;
   setShowMsgApproved: (v: boolean) => void;
   setShowMsgWaitApproved: (v: boolean) => void;
+  setShowMsgSupervised: (v: boolean) => void;
+  setShowMsgRejectedApprovation: (v: boolean) => void;
+  setShowMsgAcceptApprovation: (v: boolean) => void;
+  setShowGenericError: (v: boolean) => void;
 };
 
 const ProductBulkActionDialog: React.FC<Props> = ({
@@ -38,6 +42,10 @@ const ProductBulkActionDialog: React.FC<Props> = ({
   setShowMsgRejected,
   setShowMsgApproved,
   setShowMsgWaitApproved,
+  setShowMsgSupervised,
+  setShowMsgRejectedApprovation,
+  setShowMsgAcceptApprovation,
+  setShowGenericError,
 }) => {
   const { t } = useTranslation();
   const [reason, setReason] = useState('');
@@ -65,20 +73,49 @@ const ProductBulkActionDialog: React.FC<Props> = ({
     if (requireReason && !reason) {
       return;
     }
+
     setLoading(true);
-    await onConfirm(action, reason);
-    handleModalSuccess({
-      selected,
-      tableData,
-      modalAction: action,
-      isInvitaliaUser,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
-    });
-    setLoading(false);
-    onClose();
-    setReason('');
+
+    try {
+      await onConfirm(action, reason);
+
+      handleModalSuccess({
+        selected,
+        tableData,
+        modalAction: action,
+        isInvitaliaUser,
+        setShowMsgRejected,
+        setShowMsgApproved,
+        setShowMsgWaitApproved,
+        setShowMsgSupervised,
+        setShowMsgRejectedApprovation,
+        setShowMsgAcceptApprovation,
+      });
+
+      setShowGenericError(false);
+      onClose();
+    } catch (error) {
+      // Reset all success messages
+      setShowMsgRejected(false);
+      setShowMsgApproved(false);
+      setShowMsgWaitApproved(false);
+      setShowMsgSupervised(false);
+      setShowMsgRejectedApprovation(false);
+      setShowMsgAcceptApprovation(false);
+
+      // Always show generic error as fallback
+      setShowGenericError(true);
+
+      // Fix focus retention before closing modal (prevents aria-hidden warning)
+      if (document?.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+
+      onClose();
+    } finally {
+      setLoading(false);
+      setReason('');
+    }
   };
 
   return (
