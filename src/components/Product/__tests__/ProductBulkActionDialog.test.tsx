@@ -24,6 +24,9 @@ const defaultProps = {
   setShowMsgRejected: jest.fn(),
   setShowMsgApproved: jest.fn(),
   setShowMsgWaitApproved: jest.fn(),
+  setShowMsgSupervised: jest.fn(),
+  setShowMsgRejectedApprovation: jest.fn(),
+  setShowMsgAcceptApprovation: jest.fn(),
   setShowGenericError: jest.fn(),
 };
 
@@ -149,6 +152,41 @@ describe('ProductBulkActionDialog', () => {
         MIDDLE_STATES.REJECT_APPROVATION,
         'reason'
       );
+    });
+  });
+
+  it('handles error flow and resets all messages showing generic error', async () => {
+    const failingConfirm = jest.fn().mockRejectedValue(new Error('error'));
+
+    render(
+      <ProductBulkActionDialog
+        {...defaultProps}
+        onConfirm={failingConfirm}
+      />
+    );
+
+    fireEvent.change(
+      screen.getByLabelText('invitaliaModal.rejected.reasonLabel'),
+      { target: { value: 'reason' } }
+    );
+
+    fireEvent.click(
+      screen.getByText('invitaliaModal.rejected.buttonTextConfirm')
+    );
+
+    await waitFor(() => {
+      expect(failingConfirm).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(defaultProps.setShowMsgRejected).toHaveBeenCalledWith(false);
+      expect(defaultProps.setShowMsgApproved).toHaveBeenCalledWith(false);
+      expect(defaultProps.setShowMsgWaitApproved).toHaveBeenCalledWith(false);
+      expect(defaultProps.setShowMsgSupervised).toHaveBeenCalledWith(false);
+      expect(defaultProps.setShowMsgRejectedApprovation).toHaveBeenCalledWith(false);
+      expect(defaultProps.setShowMsgAcceptApprovation).toHaveBeenCalledWith(false);
+      expect(defaultProps.setShowGenericError).toHaveBeenCalledWith(true);
+      expect(defaultProps.onClose).toHaveBeenCalled();
     });
   });
 });
