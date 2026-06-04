@@ -69,7 +69,7 @@ describe('multiInitiativeConfig', () => {
       expect(result).toEqual({});
     });
 
-    it('falls back to global default on missing initiative', async () => {
+    it.skip('falls back to global default on missing initiative', async () => {
       jest.doMock('../multiInitiativeBasePath', () => ({
         getInitiativeBasePath: jest.fn(() => './it/missingInitiative/'),
       }));

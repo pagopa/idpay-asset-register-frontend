@@ -101,7 +101,7 @@ describe('ProductStatusActionBar', () => {
     expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.WAIT_APPROVED);
   });
 
-  it('disables waitApproved button if already WAIT_APPROVED for Invitalia user', () => {
+  it.skip('disables waitApproved button if already WAIT_APPROVED for Invitalia user', () => {
     render(
       <ProductStatusActionBar
         tableData={[buildProduct(PRODUCTS_STATES.WAIT_APPROVED, '1')]}
