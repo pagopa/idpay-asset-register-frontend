@@ -5,6 +5,7 @@ import { InstitutionsResponse } from '../../../api/generated/register';
 import '@testing-library/jest-dom';
 import { createStore } from '../../../redux/store';
 import { Provider } from 'react-redux';
+import { EMPTY_DATA } from '../../../utils/constants';
 
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
@@ -56,6 +57,12 @@ const mockInstitutions: Institution[] = [
   {
     institutionId: '2',
     description: 'Beta Institution',
+    createdAt: '2023-02-01',
+    updatedAt: '2023-02-02',
+  },
+  {
+    institutionId: '2',
+    description: null,
     createdAt: '2023-02-01',
     updatedAt: '2023-02-02',
   },
@@ -116,6 +123,7 @@ describe('InstitutionsTable', () => {
     );
     expect(screen.getByText('Alpha Institution')).toBeInTheDocument();
     expect(screen.getByText('Beta Institution')).toBeInTheDocument();
+    expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
   });
 
   it('calls onRequestSort when header is clicked', () => {
