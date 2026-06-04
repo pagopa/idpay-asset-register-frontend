@@ -129,8 +129,9 @@
         "invalidEmailError": "l'indirizzo e-mail non è valido",
         "emailMismatchError": "le e-mail non coincidono",
         "toast": {
-          "success": "Hai modificato l\u2019email operativa.",
-          "error": "Si \u00e8 verificato un errore, riprova."
+          "insertedSuccess": "Hai inserito l’email operativa.",
+          "success": "Hai modificato l’email operativa.",
+          "error": "Si è verificato un errore, riprova."
         }
       },
       "overviewTitleBoxProdTitle": "Prodotti",
