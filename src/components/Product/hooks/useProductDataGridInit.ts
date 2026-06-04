@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getInstitutionsList, getBatchFilterList } from '../../../services/registerService';
+import { getBatchFilterList, getProducers } from '../../../services/registerService';
 import { Institution } from '../../../model/Institution';
 import { BatchFilterItems } from '../helpers';
 import { DEBUG_CONSOLE } from '../../../utils/constants';
@@ -27,9 +27,11 @@ export const useProductDataGridInit = ({
 
   const fetchInstitutions = async () => {
     try {
-      const institutionsData = await getInstitutionsList();
+      const institutionsData = await getProducers(initiativeId);
+      const mappedInstitutions: Array<Institution> = (institutionsData.data.content || []).map(({producerId, producerName, createdAt, updatedAt}) =>
+        ({institutionId: producerId || '', description: producerName || '', createdAt: createdAt || '', updatedAt: updatedAt || ''}));
       dispatch(
-        setInstitutionList((institutionsData.data.institutions ?? []) as Array<Institution>)
+        setInstitutionList(mappedInstitutions)
       );
     } catch (error) {
       if (DEBUG_CONSOLE) {
