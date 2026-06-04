@@ -133,4 +133,16 @@ describe('ProductStatusChip', () => {
       expect(chip).toHaveStyle('margin-bottom: 8px');
     });
   });
+
+  it.each([
+    ['UPLOADED', 'chip.productStatusLabel.uploaded', 'MuiChip-colorDefault'],
+    ['WAIT_APPROVED', 'chip.productStatusLabel.waitApproved', 'MuiChip-colorInfo'],
+    ['SUPERVISED', 'chip.productStatusLabel.supervised', 'MuiChip-colorPrimary'],
+  ])('renders the %s status chip', (status, label, colorClass) => {
+    renderWithTheme(<ProductStatusChip status={status} />);
+
+    const chip = screen.getByText(label).closest('.MuiChip-root');
+    expect(chip).toBeInTheDocument();
+    expect(chip).toHaveClass(colorClass);
+  });
 });

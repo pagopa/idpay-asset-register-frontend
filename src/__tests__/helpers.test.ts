@@ -12,6 +12,11 @@ import {
   fetchUserFromLocalStorage,
   initUploadBoxStyle,
   initUploadHelperBoxStyle,
+  filterInputWithSpaceRule,
+  cleanTrailingSpace,
+  getResponsiveTableMaxLength,
+  delay,
+  createCsv,
   isOnOrBeforeDate,
   customExitAction,
 } from '../helpers';
@@ -194,6 +199,21 @@ describe('Additional tests for 100% coverage', () => {
     expect(formatDateWithHours('invalid-date')).toBe(EMPTY_DATA);
   });
 
+  test('formatDateWithHours with invalid object-like value', () => {
+    expect(formatDateWithHours({} as any)).toBe(EMPTY_DATA);
+  });
+
+  test('formatDateWithHours handles date formatting with missing formatter parts', () => {
+    const originalDateTimeFormat = Intl.DateTimeFormat;
+    (Intl as any).DateTimeFormat = jest.fn(() => ({
+      formatToParts: () => [{ type: 'day', value: '01' }],
+    }));
+
+    expect(formatDateWithHours(new Date('2022-10-01T14:05:30.000Z'))).toBe('01//, ::');
+
+    (Intl as any).DateTimeFormat = originalDateTimeFormat;
+  });
+
   test('isOnOrBeforeDate with undefined', () => {
     expect(isOnOrBeforeDate(undefined)).toBe(false);
   });
@@ -278,6 +298,80 @@ describe('Additional tests for 100% coverage', () => {
 
   test('formattedCurrency with custom symbol', () => {
     expect(formattedCurrency(undefined, 'N/A')).toBe('N/A');
+  });
+
+  test('filterInputWithSpaceRule removes spaces until enough alphanumeric chars are present', () => {
+    expect(filterInputWithSpaceRule(' a ')).toBe('a');
+    expect(filterInputWithSpaceRule('  ab   cd  ')).toBe('ab cd ');
+    expect(filterInputWithSpaceRule('ab  cd')).toBe('ab cd');
+  });
+
+  test('cleanTrailingSpace removes only one final space', () => {
+    expect(cleanTrailingSpace('abc ')).toBe('abc');
+    expect(cleanTrailingSpace('abc')).toBe('abc');
+  });
+
+  test('getResponsiveTableMaxLength falls back when configured values are missing', () => {
+    Object.defineProperty(window, 'innerWidth', { value: 1600, configurable: true });
+    expect(
+      getResponsiveTableMaxLength({
+        ui: {
+          resolutionUpscaling: 1200,
+          tables: { products: { style: { lengths: {} } } },
+        },
+      })
+    ).toBe(45);
+
+    Object.defineProperty(window, 'innerWidth', { value: 800, configurable: true });
+    expect(
+      getResponsiveTableMaxLength({
+        ui: {
+          resolutionUpscaling: 1200,
+          tables: { products: { style: { lengths: {} } } },
+        },
+      })
+    ).toBe(30);
+  });
+
+  test('getResponsiveTableMaxLength handles missing and responsive configs', () => {
+    expect(getResponsiveTableMaxLength({})).toBe(45);
+
+    const originalInnerWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { value: 1600, configurable: true });
+    expect(
+      getResponsiveTableMaxLength({
+        ui: {
+          resolutionUpscaling: 1200,
+          tables: { products: { style: { lengths: { maxTable: 80, minTable: 20 } } } },
+        },
+      })
+    ).toBe(80);
+
+    Object.defineProperty(window, 'innerWidth', { value: 800, configurable: true });
+    expect(
+      getResponsiveTableMaxLength({
+        ui: {
+          resolutionUpscaling: 1200,
+          tables: { products: { style: { lengths: { maxTable: 80, minTable: 20 } } } },
+        },
+      })
+    ).toBe(20);
+    Object.defineProperty(window, 'innerWidth', { value: originalInnerWidth, configurable: true });
+  });
+
+  test('delay resolves and createCsv builds an object url', async () => {
+    jest.useFakeTimers();
+    const promise = delay(50);
+    jest.advanceTimersByTime(50);
+    await promise;
+    jest.useRealTimers();
+
+    Object.defineProperty(URL, 'createObjectURL', {
+      value: jest.fn(() => 'blob:url'),
+      configurable: true,
+    });
+    expect(createCsv({ headers: ['a', 'b'], fields: ['1', '2'] })).toBe('blob:url');
+    expect(URL.createObjectURL).toHaveBeenCalled();
   });
 });
 
