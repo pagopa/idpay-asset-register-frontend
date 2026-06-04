@@ -27,18 +27,19 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onSave: (email: string) => void;
+  initialEmail?: string;
   isLoading?: boolean;
 };
 
 const EMAIL_LOCAL_PART_PATTERN = /^[A-Za-z0-9+_.-]+$/;
 const EMAIL_DOMAIN_LABEL_PATTERN = /^[A-Za-z0-9-]+$/;
 const EMAIL_TLD_PATTERN = /^[A-Za-z]{2,}$/;
-const MODAL_BLUE = '#0B3EE3';
-const MODAL_RED = '#D13333';
+const MODAL_PRIMARY_COLOR = 'primary.main';
+const MODAL_ERROR_COLOR_PLACEHOLDER = 'error.main';
 
 const modalStyles = {
   paper: {
-    width: 700,
+    width: "40%",
     maxWidth: 'calc(100% - 32px)',
     borderRadius: '16px',
     p: 3.5,
@@ -51,7 +52,7 @@ const modalStyles = {
   closeButton: {
     position: 'absolute',
     right: 20,
-    top: 20,
+    top: 26,
     color: 'text.primary',
     '&:hover': {
       backgroundColor: 'transparent',
@@ -59,14 +60,11 @@ const modalStyles = {
   },
   title: {
     p: 0,
-    pr: 5,
-    mb: 1.5,
   },
   titleText: {
     fontFamily: 'Titillium Web',
-    fontSize: 28,
-    lineHeight: '36px',
-    color: "#0E0F13",
+    fontSize: 24,
+    color: "text.primary",
     fontWeight: 700,
   },
   content: {
@@ -74,21 +72,20 @@ const modalStyles = {
     overflow: 'visible',
   },
   description: {
-    mb: 3.5,
-    color: '#5C6F82',
+    mb: 2.5,
+    color: 'text.description',
     fontFamily: 'Titillium Web',
-    fontSize: 18,
-    lineHeight: '28px',
+    fontSize: 16,
   },
   fields: {
     display: 'grid',
-    rowGap: 2.5,
+    rowGap: 1.4,
   },
   textField: {
     '& .MuiOutlinedInput-root': {
-      minHeight: 56,
+      height: 40,
       borderRadius: '8px',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: 'white',
     },
     '& .MuiOutlinedInput-notchedOutline': {
       borderWidth: 2,
@@ -98,51 +95,50 @@ const modalStyles = {
     },
     '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
       borderWidth: 2,
-      borderColor: MODAL_BLUE,
+      borderColor: MODAL_PRIMARY_COLOR,
     },
     '& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline': {
-      borderColor: MODAL_RED,
+      borderColor: MODAL_ERROR_COLOR_PLACEHOLDER,
     },
     '& .MuiInputBase-input': {
       fontFamily: 'Titillium Web',
-      fontSize: 18,
+      fontSize: 14,
       lineHeight: '24px',
       fontWeight: 600,
     },
     '& .MuiInputLabel-root': {
       fontFamily: 'Titillium Web',
       fontWeight: 600,
-      backgroundColor: '#FFFFFF',
+      backgroundColor: 'white',
       px: 0.5,
-      transform: 'translate(50px, 16px) scale(1)',
+      transform: 'translate(50px, 6px) scale(1)',
     },
     '& .MuiInputLabel-root.MuiInputLabel-shrink': {
       transform: 'translate(14px, -9px) scale(0.75)',
     },
     '& .MuiInputLabel-root.Mui-focused': {
-      color: MODAL_BLUE,
+      color: MODAL_PRIMARY_COLOR,
     },
     '& .MuiInputLabel-root.Mui-error': {
-      color: MODAL_RED,
+      color: MODAL_ERROR_COLOR_PLACEHOLDER,
     },
     '& .MuiFormHelperText-root': {
       ml: 2,
-      mt: 0.75,
       fontFamily: 'Titillium Web',
-      fontSize: 16,
+      fontSize: 12,
       lineHeight: '22px',
     },
     '& .MuiFormHelperText-root.Mui-error': {
-      color: MODAL_RED,
+      color: MODAL_ERROR_COLOR_PLACEHOLDER,
     },
   },
   inputIcon: {
     color: '#A9B7C8',
-    fontSize: 26,
+    fontSize: 22,
   },
   errorIcon: {
-    color: MODAL_RED,
-    fontSize: 26,
+    color: MODAL_ERROR_COLOR_PLACEHOLDER,
+    fontSize: 22,
   },
   actions: {
     p: 0,
@@ -150,25 +146,23 @@ const modalStyles = {
     gap: 2,
   },
   cancelButton: {
-    color: MODAL_BLUE,
+    color: MODAL_PRIMARY_COLOR,
     fontWeight: 700,
-    fontSize: 18,
+    fontSize: 15,
     '&:hover': {
-      color: MODAL_BLUE,
+      color: MODAL_PRIMARY_COLOR,
     },
   },
   saveButton: {
-    backgroundColor: MODAL_BLUE,
-    minWidth: 104,
-    height: 56,
-    px: 3,
+    backgroundColor: MODAL_PRIMARY_COLOR,
+    height: 40,
     borderRadius: '8px',
     fontFamily: 'Titillium Web',
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 600,
     textTransform: 'none',
     '&:hover': {
-      backgroundColor: MODAL_BLUE,
+      backgroundColor: MODAL_PRIMARY_COLOR,
     },
   },
 };
@@ -205,7 +199,13 @@ const getEmailError = (value: string, t: (key: string) => string) => {
   return undefined;
 };
 
-const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave, isLoading = false }) => {
+const OperativeEmailModal: React.FC<Props> = ({
+  open,
+  onClose,
+  onSave,
+  initialEmail,
+  isLoading = false,
+}) => {
   const { t } = useScopedTranslation();
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
@@ -215,13 +215,13 @@ const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave, isLoading
 
   useEffect(() => {
     if (open) {
-      setEmail('');
+      setEmail(initialEmail ?? '');
       setConfirmEmail('');
       setEmailFocused(false);
       setConfirmEmailFocused(false);
       setFieldErrors({});
     }
-  }, [open]);
+  }, [initialEmail, open]);
 
   const validate = () => {
     const trimmedEmail = email.trim();
@@ -258,13 +258,13 @@ const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave, isLoading
         sx: modalStyles.paper,
       }}
     >
-      <IconButton
+      <IconButton 
         aria-label={t('common.closeBtn')}
         onClick={onClose}
         disabled={isLoading}
         sx={modalStyles.closeButton}
       >
-        <CloseIcon fontSize="large" />
+        <CloseIcon sx={{width: 25, height: 25}} />
       </IconButton>
       <DialogTitle sx={modalStyles.title}>
         <Typography component="span" sx={modalStyles.titleText}>

@@ -64,6 +64,13 @@ describe('OperativeEmailModal', () => {
     expect(props.onSave).not.toHaveBeenCalled();
   });
 
+  it('prefills only the first email field when an initial email is provided', () => {
+    renderModal({ initialEmail: 'current@example.com' });
+
+    expect(screen.getByLabelText('E-mail')).toHaveValue('current@example.com');
+    expect(screen.getByLabelText('Conferma e-mail')).toHaveValue('');
+  });
+
   it('rejects emails that do not match the backend pattern', async () => {
     const user = userEvent.setup();
     const { props } = renderModal();
