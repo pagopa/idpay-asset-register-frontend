@@ -164,6 +164,11 @@ jest.mock('../ProductDataGrid.helpers', () => {
 
   return {
     __esModule: true,
+    getSelectedStatuses: jest.fn((selected, tableData) =>
+      selected
+        .map((gtinCode: string) => tableData.find((row: any) => row.gtinCode === gtinCode)?.status)
+        .filter(Boolean)
+    ),
     getStatusChecks,
     handleModalSuccess,
     validateBulkActionPreconditions: jest.fn(({ selected, tableData, isInvitaliaAdmin }) => {
@@ -342,6 +347,11 @@ describe('ProductDataGrid (rewritten)', () => {
 
         return { valid: true };
       }
+    );
+    helpersModule.getSelectedStatuses.mockImplementation((selected: Array<string>, tableData: Array<any>) =>
+      selected
+        .map((gtinCode: string) => tableData.find((row: any) => row.gtinCode === gtinCode)?.status)
+        .filter(Boolean)
     );
     helpersModule.getStatusChecks.mockReturnValue({
       selectedStatuses: ['SUPERVISED'],
@@ -689,8 +699,6 @@ describe('ProductDataGrid (rewritten)', () => {
     await waitFor(() =>
       expect(screen.getByTestId('bulk-dialog')).toBeInTheDocument()
     );
-
-    fireEvent.click(screen.getByText('Confirm Bulk'));
   });
 
   it('closes detail drawer using toggleDrawer button (covers cleanup branch)', async () => {

@@ -24,6 +24,7 @@ const defaultProps = {
   setShowMsgRejected: jest.fn(),
   setShowMsgApproved: jest.fn(),
   setShowMsgWaitApproved: jest.fn(),
+  setShowGenericError: jest.fn(),
 };
 
 describe('ProductBulkActionDialog', () => {

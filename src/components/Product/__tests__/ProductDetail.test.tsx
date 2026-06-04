@@ -29,6 +29,13 @@ jest.mock('../../../services/registerService', () => ({
   setWaitApprovedStatusList: jest.fn(() => Promise.resolve()),
 }));
 
+jest.mock('../../../api/registerApiClient', () => ({
+  RegisterApi: {
+    setRejectedStatusList: jest.fn(() => Promise.resolve()),
+    setWaitApprovedStatusList: jest.fn(() => Promise.resolve()),
+  },
+}));
+
 jest.mock('../ProductStatusChip', () => ({
   __esModule: true,
   default: ({ status }: any) => <div data-testid="status">{status}</div>,
