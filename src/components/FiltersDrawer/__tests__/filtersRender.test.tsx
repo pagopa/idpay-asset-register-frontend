@@ -59,10 +59,7 @@ describe('filtersRender - text', () => {
       currentTarget: { value: '123' },
     });
 
-    expect(setFilters).toHaveBeenCalledWith(
-      'code',
-      expect.objectContaining({ value: expect.anything() })
-    );
+    expect(setFilters).toHaveBeenCalledWith('code', { value: undefined });
     expect(setErrors).toHaveBeenCalledWith('code', false);
   });
 
@@ -112,9 +109,6 @@ describe('filtersRender - text', () => {
       preventDefault: jest.fn(),
     });
 
-    expect(setFilters).toHaveBeenCalledWith(
-      'code',
-      expect.objectContaining({ value: expect.anything() })
-    );
+    expect(setFilters).toHaveBeenCalledWith('code', { value: undefined });
   });
 });

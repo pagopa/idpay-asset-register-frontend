@@ -180,10 +180,10 @@ describe('ProductDetail', () => {
       />
     );
 
-    await screen.findByTestId('approvedBtn');
     fireEvent.click(screen.getByTestId('approvedBtn'));
-    await screen.findByTestId('confirm');
     fireEvent.click(screen.getByTestId('confirm'));
+
+    await Promise.resolve();
 
     expect(onUpdate).toHaveBeenCalled();
     expect(onClose).toHaveBeenCalled();
