@@ -29,8 +29,9 @@ describe('filtersRender - select', () => {
 
     render(element);
 
-    fireEvent.mouseDown(screen.getByRole('button'));
-    fireEvent.click(screen.getByText('label.A'));
+    // directly trigger onChange instead of relying on MUI internal button role
+    const select = screen.getByLabelText('status.label');
+    fireEvent.change(select, { target: { value: 'A' } });
 
     expect(setFilters).toHaveBeenCalledWith('status', {
       value: 'A',

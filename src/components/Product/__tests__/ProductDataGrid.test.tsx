@@ -83,7 +83,7 @@ jest.mock('../../FiltersDrawer/FiltersDrawer', () => ({
   default: () => <div data-testid="filters-drawer" />,
 }));
 
-jest.mock('./ProductDataGridView', () => ({
+jest.mock('../ProductDataGridView', () => ({
   __esModule: true,
   default: () => <div data-testid="grid-view" />,
 }));
