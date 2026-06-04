@@ -30,7 +30,8 @@ type Props = {
   isLoading?: boolean;
 };
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_EMAIL_LOCAL_PART_LENGTH = 64;
 const MODAL_BLUE = '#0B3EE3';
 const MODAL_RED = '#D13333';
 
@@ -171,12 +172,48 @@ const modalStyles = {
   },
 };
 
+const hasWhitespace = (value: string) => {
+  for (const char of value) {
+    if (char <= ' ') {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const isValidEmail = (value: string) => {
+  if (value.length > MAX_EMAIL_LENGTH || hasWhitespace(value)) {
+    return false;
+  }
+
+  const atIndex = value.indexOf('@');
+  if (atIndex <= 0 || atIndex !== value.lastIndexOf('@')) {
+    return false;
+  }
+
+  const localPart = value.slice(0, atIndex);
+  const domain = value.slice(atIndex + 1);
+  if (
+    localPart.length > MAX_EMAIL_LOCAL_PART_LENGTH ||
+    domain.length === 0 ||
+    domain.startsWith('.') ||
+    domain.endsWith('.') ||
+    domain.includes('..')
+  ) {
+    return false;
+  }
+
+  const dotIndex = domain.lastIndexOf('.');
+  return dotIndex > 0 && dotIndex < domain.length - 1;
+};
+
 const getEmailError = (value: string, t: (key: string) => string) => {
   if (!value) {
     return t('pages.overview.operativeEmailModal.requiredError');
   }
 
-  if (!EMAIL_REGEX.test(value)) {
+  if (!isValidEmail(value)) {
     return t('pages.overview.operativeEmailModal.invalidEmailError');
   }
 

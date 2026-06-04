@@ -64,6 +64,18 @@ describe('OperativeEmailModal', () => {
     expect(props.onSave).not.toHaveBeenCalled();
   });
 
+  it('rejects malformed emails without using regex backtracking', async () => {
+    const user = userEvent.setup();
+    const { props } = renderModal();
+
+    await user.type(screen.getByLabelText('E-mail'), 'name@@example..com');
+    await user.type(screen.getByLabelText('Conferma e-mail'), 'name@@example..com');
+    await user.click(screen.getByRole('button', { name: 'Salva' }));
+
+    expect(screen.getAllByText('Inserisci un indirizzo e-mail valido')).toHaveLength(2);
+    expect(props.onSave).not.toHaveBeenCalled();
+  });
+
   it('shows mismatch error when emails are different', async () => {
     const user = userEvent.setup();
     const { props } = renderModal();
