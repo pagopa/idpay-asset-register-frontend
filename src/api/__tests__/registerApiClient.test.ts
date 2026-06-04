@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { AxiosError, AxiosHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { RegisterApi, RolePermissionApi } from '../registerApiClient';
 import { registerClient } from '../registerApiClient';
 import {
@@ -55,6 +55,13 @@ jest.mock('../generated/register', () => {
         getBatchNameList: jest.fn(),
         getProducts: jest.fn(),
         getProducersByInitiative: jest.fn(),
+        updateProductStatusApproved: jest.fn(),
+        updateProductStatusWaitApproved: jest.fn(),
+        updateProductStatusSupervised: jest.fn(),
+        updateProductStatusRejected: jest.fn(),
+        updateProductStatusRestored: jest.fn(),
+        getInitiatives: jest.fn(),
+        updateOperativeEmail: jest.fn(),
       },
       products: {
         updateProductStatusApproved: jest.fn(),
@@ -139,6 +146,136 @@ describe('sanitizeHeaders', () => {
     const config = makeConfig();
     const result = requestInterceptor(config);
     expect(result).toBe(config);
+  });
+});
+
+describe('response interceptor - business KO branch', () => {
+  it('rejects when wrapped response contains status KO', async () => {
+    const handlers = (registerClient.instance.interceptors.response as any).handlers;
+    const last = handlers[handlers.length - 1];
+    const successHandler = last.fulfilled;
+
+    const response = {
+      status: 200,
+      data: {
+        value: {
+          status: 'KO',
+          errorKey: 'ERR_KEY',
+          message: 'Failure',
+        },
+      },
+    };
+
+    await expect(successHandler(response as any)).rejects.toMatchObject({
+      message: 'ERR_KEY',
+    });
+  });
+
+  it('rejects with fallback message when no errorKey or message', async () => {
+    const handlers = (registerClient.instance.interceptors.response as any).handlers;
+    const last = handlers[handlers.length - 1];
+    const successHandler = last.fulfilled;
+
+    const response = {
+      status: 200,
+      data: { status: 'KO' },
+    };
+
+    await expect(successHandler(response as any)).rejects.toMatchObject({
+      message: 'Business error',
+    });
+  });
+});
+
+describe('RegisterApi status updaters', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('trims motivation before calling API', async () => {
+    (registerClient.initiatives.updateProductStatusApproved as jest.Mock)
+      .mockResolvedValue({ data: { status: 'OK' } });
+
+    await RegisterApi.setApprovedStatusList(
+      'initi-1',
+      ['gtin1'],
+      'ACTIVE' as any,
+      '  reason  '
+    );
+
+    expect(
+      registerClient.initiatives.updateProductStatusApproved
+    ).toHaveBeenCalledWith(
+      { initiativeId: 'initi-1' },
+      expect.objectContaining({
+        motivation: 'reason',
+      })
+    );
+  });
+
+  it('includes trimmed formalMotivation when required', async () => {
+    (registerClient.initiatives.updateProductStatusRejected as jest.Mock)
+      .mockResolvedValue({ data: { status: 'OK' } });
+
+    await RegisterApi.setRejectedStatusList(
+      'initi-1',
+      ['gtin1'],
+      'ACTIVE' as any,
+      '  reason  ',
+      '  formal  '
+    );
+
+    expect(
+      registerClient.initiatives.updateProductStatusRejected
+    ).toHaveBeenCalledWith(
+      { initiativeId: 'initi-1' },
+      expect.objectContaining({
+        formalMotivation: 'formal',
+      })
+    );
+  });
+
+  it('throws ApiError when business status is KO', async () => {
+    (registerClient.initiatives.updateProductStatusApproved as jest.Mock)
+      .mockResolvedValue({
+        data: {
+          status: 'KO',
+          errorKey: 'BUSINESS_ERR',
+        },
+      });
+
+    await expect(
+      RegisterApi.setApprovedStatusList(
+        'initi-1',
+        ['gtin1'],
+        'ACTIVE' as any,
+        'reason'
+      )
+    ).rejects.toBeDefined();
+  });
+});
+
+describe('RegisterApi.updateOperativeEmail', () => {
+  it('trims operativeEmail before sending', async () => {
+    const res = {
+      data: { result: true },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
+    };
+
+    (registerClient.initiatives.updateOperativeEmail as jest.Mock)
+      .mockResolvedValue(res);
+
+    await RegisterApi.updateOperativeEmail('initi-1', '  mail@test.com  ');
+
+    expect(
+      registerClient.initiatives.updateOperativeEmail
+    ).toHaveBeenCalledWith(
+      { initiativeId: 'initi-1' },
+      { operativeEmail: 'mail@test.com' }
+    );
   });
 });
 
@@ -585,5 +722,99 @@ describe('RegisterApi.getInstitutionById', () => {
     });
 
     await expect(RegisterApi.getInstitutionById(ID)).rejects.toBe(err);
+  });
+});
+
+describe('RegisterApi status updaters', () => {
+  const INIT = 'initi-1';
+  const GTINS = ['g1', 'g2'];
+
+  it('calls approved updater and trims motivation', async () => {
+    const res = { status: 'OK' };
+    (registerClient.initiatives.updateProductStatusApproved as jest.Mock).mockResolvedValue(res);
+
+    const result = await RegisterApi.setApprovedStatusList(
+      INIT,
+      GTINS,
+      'APPROVED' as any,
+      '  motivation  '
+    );
+
+    expect(registerClient.initiatives.updateProductStatusApproved).toHaveBeenCalledWith(
+      { initiativeId: INIT },
+      expect.objectContaining({
+        gtinCodes: GTINS,
+        currentStatus: 'APPROVED',
+        motivation: 'motivation',
+      })
+    );
+    expect(result).toBe(res);
+  });
+
+  it('includes formalMotivation for rejected updater and trims it', async () => {
+    const res = { status: 'OK' };
+    (registerClient.initiatives.updateProductStatusRejected as jest.Mock).mockResolvedValue(res);
+
+    await RegisterApi.setRejectedStatusList(
+      INIT,
+      GTINS,
+      'REJECTED' as any,
+      '  m1  ',
+      '  formal  '
+    );
+
+    expect(registerClient.initiatives.updateProductStatusRejected).toHaveBeenCalledWith(
+      { initiativeId: INIT },
+      expect.objectContaining({
+        gtinCodes: GTINS,
+        currentStatus: 'REJECTED',
+        motivation: 'm1',
+        formalMotivation: 'formal',
+      })
+    );
+  });
+
+  it('throws ApiError when payload status is KO', async () => {
+    (registerClient.initiatives.updateProductStatusApproved as jest.Mock).mockResolvedValue({
+      data: { value: { status: 'KO', errorKey: 'ERR_KEY' } },
+    });
+
+    await expect(
+      RegisterApi.setApprovedStatusList(INIT, GTINS, 'APPROVED' as any, 'm')
+    ).rejects.toBeDefined();
+  });
+
+  it('logs and rethrows on apiMethod error', async () => {
+    const err = new Error('boom');
+    (registerClient.initiatives.updateProductStatusApproved as jest.Mock).mockRejectedValue(err);
+
+    await expect(
+      RegisterApi.setApprovedStatusList(INIT, GTINS, 'APPROVED' as any, 'm')
+    ).rejects.toBe(err);
+  });
+});
+
+describe('RegisterApi.updateOperativeEmail & getMerchantInitiativeList', () => {
+  it('trims operativeEmail before calling API', async () => {
+    const res = mockAxiosResponse({ result: 'ok' });
+    (registerClient.initiatives.updateOperativeEmail as jest.Mock).mockResolvedValue(res);
+
+    const result = await RegisterApi.updateOperativeEmail('initi-1', '  test@mail.com  ');
+
+    expect(registerClient.initiatives.updateOperativeEmail).toHaveBeenCalledWith(
+      { initiativeId: 'initi-1' },
+      { operativeEmail: 'test@mail.com' }
+    );
+    expect(result).toBe(res);
+  });
+
+  it('calls getInitiatives for merchant list', async () => {
+    const res = mockAxiosResponse([{ id: 'i1' }]);
+    (registerClient.initiatives.getInitiatives as jest.Mock).mockResolvedValue(res);
+
+    const result = await RegisterApi.getMerchantInitiativeList();
+
+    expect(registerClient.initiatives.getInitiatives).toHaveBeenCalledWith({});
+    expect(result).toBe(res);
   });
 });
