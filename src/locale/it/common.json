@@ -113,6 +113,26 @@
       "overviewTitleBoxInfoTitleLblSl": "Sede legale",
       "overviewTitleBoxInfoTitleLblPec": "PEC",
       "overviewTitleBoxInfoTitleLblEmailOp": "E-mail operativa",
+      "missingOperativeEmailWarning": "Inserisci l’email operativa per ricevere le notifiche sullo stato dei tuoi prodotti.",
+      "operativeEmailModal": {
+        "title": "E-mail operativa",
+        "description": "L’e-mail indicata sarà utilizzata per la comunicazione interna sullo stato dei prodotti.",
+        "emailLabel": "Inserisci e-mail",
+        "emailPlaceholder": "Inserisci e-mail",
+        "emailAriaLabel": "E-mail",
+        "confirmEmailLabel": "Conferma e-mail",
+        "confirmEmailPlaceholder": "Conferma e-mail",
+        "confirmEmailAriaLabel": "Conferma e-mail",
+        "cancelButton": "Annulla",
+        "saveButton": "Salva",
+        "requiredError": "è obbligatorio inserire l’email per procedere",
+        "invalidEmailError": "l'indirizzo e-mail non è valido",
+        "emailMismatchError": "le e-mail non coincidono",
+        "toast": {
+          "success": "Hai modificato l\u2019email operativa.",
+          "error": "Si \u00e8 verificato un errore, riprova."
+        }
+      },
       "overviewTitleBoxProdTitle": "Prodotti",
       "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
       "overviewTitleBoxProdBtn": "Carica .csv",

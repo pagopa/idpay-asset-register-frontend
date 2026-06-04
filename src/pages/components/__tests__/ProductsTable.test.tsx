@@ -221,6 +221,63 @@ describe('ProductsTable', () => {
     expect(setSelected).toHaveBeenCalled();
   });
 
+  it('keeps selected row unchanged when checking an already selected checkbox', () => {
+    const setSelected = jest.fn((updater) => {
+      expect(updater(['123'])).toEqual(['123']);
+    });
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={setSelected}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('checkbox'));
+    expect(setSelected).toHaveBeenCalled();
+  });
+
+  it('uses fallback keys and custom empty text', () => {
+    render(
+      <ProductsTable
+        tableData={[]}
+        columns={[]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+        emptyData="No products"
+      />
+    );
+
+    expect(screen.getByText('No products')).toBeInTheDocument();
+
+    const fallbackRow = { gtin: 'legacy-gtin', name: 12 } as any;
+    render(
+      <ProductsTable
+        tableData={[fallbackRow]}
+        columns={[{ id: 'name', labelKey: 'name', align: 'right', headerAlign: 'center' }]}
+        order="desc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('12')).toBeInTheDocument();
+  });
+
   it('sortable header inactive branch', () => {
     const sort = jest.fn();
 

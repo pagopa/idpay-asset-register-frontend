@@ -24,7 +24,8 @@ import {
   GetProductsParams,
   GetProductFilesListParams,
   ProducersResponseDTO,
-  InstitutionsResponse,
+  UpdateOperativeEmailDTO,
+  UpdatedOperativeEmailResultDTO,
 } from './generated/register';
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
@@ -390,9 +391,6 @@ export const RegisterApi = {
   getProducers: async (initiativeId: string): Promise<AxiosResponse<ProducersResponseDTO>> =>
     registerClient.initiatives.getProducersByInitiative({ initiativeId }),
 
-  getInstitutionsList: async (): Promise<AxiosResponse<InstitutionsResponse>> =>
-    registerClient.institutions.getInstitutionsList({}),
-
   getInstitutionById: async (institutionId: string): Promise<AxiosResponse<InstitutionResponse>> =>
     registerClient.institutions.retrieveInstitutionById({ institutionId }),
 
@@ -412,4 +410,12 @@ export const RegisterApi = {
 
   getMerchantInitiativeList: async (): Promise<AxiosResponse<Array<InitiativeDTO>>> =>
     await registerClient.initiatives.getInitiatives({}),
+
+  updateOperativeEmail: async (
+    initiativeId: string,
+    operativeEmail: string
+  ): Promise<AxiosResponse<UpdatedOperativeEmailResultDTO>> => {
+    const body: UpdateOperativeEmailDTO = { operativeEmail: operativeEmail.trim() };
+    return await registerClient.initiatives.updateOperativeEmail({ initiativeId }, body);
+  },
 };

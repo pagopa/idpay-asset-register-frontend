@@ -1,15 +1,61 @@
-import React, { useMemo } from 'react';
-import { Box, Paper, Typography, Tooltip } from '@mui/material';
+import React, { useMemo, useState } from 'react';
+import { Box, Paper, Snackbar, SnackbarCloseReason, Typography, Tooltip } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
+import { ButtonNaked, MIAlert } from '@pagopa/mui-italia';
+import { EditOutlined } from '@mui/icons-material';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import OverviewProductionSection from '../components/OverviewProductionSection';
+import OperativeEmailModal from '../components/OperativeEmailModal';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_PROD } from '../../utils/constants';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import { updateOperativeEmail } from '../../services/registerService';
+import { useCurrentInitiative } from '../../hooks/useCurrentInitiative';
+import { useInitiativesQuery } from '../../hooks/useInitiativesQuery';
+
+type ToastState = {
+  open: boolean;
+  severity: 'success' | 'error';
+  key: number;
+};
 
 const Overview: React.FC = () => {
   const { t } = useScopedTranslation();
+  const initiativeId = useCurrentInitiativeId();
+  const currentInitiative = useCurrentInitiative();
+  const { refetch: refetchInitiatives } = useInitiativesQuery();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
+  const [operativeEmailModalOpen, setOperativeEmailModalOpen] = useState(false);
+  const [operativeEmailLoading, setOperativeEmailLoading] = useState(false);
+  const [toast, setToast] = useState<ToastState>({ open: false, severity: 'success', key: 0 });
+  const operativeEmail = currentInitiative?.organizationEmail;
+  const isOperativeEmailMissing =
+    typeof operativeEmail !== 'string' || operativeEmail.trim().length === 0;
+
+  const handleSaveOperativeEmail = (operativeEmail: string) => {
+    if (!initiativeId) {
+      return;
+    }
+
+    setOperativeEmailLoading(true);
+    updateOperativeEmail(initiativeId, operativeEmail)
+      .then(() => refetchInitiatives())
+      .then(() => {
+        setToast((current) => ({ open: true, severity: 'success', key: current.key + 1 }));
+      })
+      .catch(() => {
+        setToast((current) => ({ open: true, severity: 'error', key: current.key + 1 }));
+      })
+      .finally(() => {
+        setOperativeEmailModalOpen(false);
+        setOperativeEmailLoading(false);
+      });
+  };
+
+  const handleCloseToast = (_event?: React.SyntheticEvent | Event, _reason?: SnackbarCloseReason) => {
+    setToast((current) => ({ ...current, open: false }));
+  };
 
   const fields = useMemo(
     () => [
@@ -18,7 +64,7 @@ const Overview: React.FC = () => {
       { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat },
       { label: 'overviewTitleBoxInfoTitleLblSl', value: user?.org_address },
       { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec },
-      { label: 'overviewTitleBoxInfoTitleLblEmailOp', value: user?.org_email },
+      { label: 'overviewTitleBoxInfoTitleLblEmailOp', value: operativeEmail },
     ].map(({ label, value }) => {
       const hasValidValue = typeof value === 'string' && value.length > 0;
 
@@ -31,7 +77,7 @@ const Overview: React.FC = () => {
           : value || EMPTY_DATA,
       };
     }),
-    [user]
+    [user, operativeEmail]
   );
 
   return (
@@ -41,12 +87,18 @@ const Overview: React.FC = () => {
         subTitle={t('pages.overview.overviewTitleDescription')}
         mbTitle={2}
         mtTitle={2}
-        mbSubTitle={5}
+        mbSubTitle={2}
         variantTitle="h4"
         variantSubTitle="body1"
         data-testid="title-overview"
         titleFontSize="42px"
       />
+
+      {isOperativeEmailMissing && (
+        <Box sx={{mb: 3, '& .MuiAlert-message': { fontSize: 16, }, '& .MuiAlert-root': {display: "flex", alignItems: "center", justifyContent: "center" }}}>
+          <MIAlert severity="warning" description={t('pages.overview.missingOperativeEmailWarning')}/>
+        </Box>  
+      )}
 
       <Box
         sx={{
@@ -84,32 +136,83 @@ const Overview: React.FC = () => {
                 rowGap: 2,
               }}
             >
-              {fields.map(({ label, value, hasValidValue, displayValue }) => (
-                <React.Fragment key={label}>
-                  <Box sx={{ gridColumn: 'span 3', alignContent: 'center' }}>
-                    <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
-                  </Box>
-                  <Box sx={{ gridColumn: 'span 9' }}>
-                    {hasValidValue ? (
-                      <Tooltip title={value}>
-                        <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }}>
+              {fields.map(({ label, value, hasValidValue, displayValue }) => {
+                const isOperativeEmail = label === 'overviewTitleBoxInfoTitleLblEmailOp';
+
+                return (
+                  <React.Fragment key={label}>
+                    <Box sx={{ gridColumn: 'span 3', alignContent: 'center' }}>
+                      <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        gridColumn: 'span 9',
+                        display: isOperativeEmail ? 'flex' : 'block',
+                        alignItems: isOperativeEmail ? 'center' : undefined,
+                        justifyContent: isOperativeEmail ? 'space-between' : undefined,
+                        gap: isOperativeEmail ? 2 : undefined,
+                      }}
+                    >
+                      {hasValidValue ? (
+                        <Tooltip title={value}>
+                          <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }}>
+                            {displayValue}
+                          </Typography>
+                        </Tooltip>
+                      ) : (
+                        <Typography variant="body2" sx={{ fontWeight: '600' }}>
                           {displayValue}
                         </Typography>
-                      </Tooltip>
-                    ) : (
-                      <Typography variant="body2" sx={{ fontWeight: '600' }}>
-                        {displayValue}
-                      </Typography>
-                    )}
-                  </Box>
-                </React.Fragment>
-              ))}
+                      )}
+                      {isOperativeEmail && (
+                        <ButtonNaked
+                          aria-label="Modifica e-mail operativa"
+                          onClick={() => setOperativeEmailModalOpen(true)}
+                          size="medium"
+                        >
+                          <EditOutlined color='primary' sx={{ width: 22 }} />
+                        </ButtonNaked>
+                      )}
+                    </Box>
+                  </React.Fragment>
+                );
+              })}
             </Box>
           </Paper>
         </Box>
 
         <OverviewProductionSection />
       </Box>
+
+      <OperativeEmailModal
+        open={operativeEmailModalOpen}
+        onClose={() => setOperativeEmailModalOpen(false)}
+        onSave={handleSaveOperativeEmail}
+        isLoading={operativeEmailLoading}
+      />
+
+      <Snackbar
+        key={toast.key}
+        open={toast.open}
+        autoHideDuration={6000}
+        onClose={handleCloseToast}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        sx={{ zIndex: 9999 }}
+      >
+        <Box
+          sx={{
+            '& .MuiAlert-root': {display: "flex", alignItems: "center", justifyContent: "center" },
+            '& .MuiAlert-message': {
+              fontSize: 16,
+            },
+          }}
+        >
+          <MIAlert
+            severity={toast.severity}
+            description={t(`pages.overview.operativeEmailModal.toast.${toast.severity}`)}
+          />
+        </Box>
+      </Snackbar>
 
       <Paper
         sx={{

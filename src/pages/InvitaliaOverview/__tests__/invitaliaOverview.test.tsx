@@ -22,8 +22,7 @@ import * as reduxHooks from '../../../redux/hooks';
 import * as reduxSlice from '../../../redux/slices/invitaliaSlice';
 import { Provider } from 'react-redux';
 import { createStore } from '../../../redux/store';
-import { InstitutionsResponse, ProducerDTO, ProducersResponseDTO } from '../../../api/generated/register';
-import { useCurrentInitiativeId } from '../../../hooks/useCurrentInitiativeId';
+import { ProducersResponseDTO } from '../../../api/generated/register';
 
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   ...jest.requireActual('@pagopa/selfcare-common-frontend/lib'),
@@ -90,8 +89,8 @@ jest.mock('../institutionsTable', () => (props: any) => {
 });
 
 const mockInstitutions = [
-  { producerId: '1', producerName: 'Alpha' },
-  { producerId: '2', producerName: 'Beta' },
+  { producerId: '1', producerName: 'Alpha', createdAt: '2023-01-01', updatedAt: '2023-01-02' },
+  { producerId: '2', producerName: 'Beta', createdAt: '2023-02-01', updatedAt: '2023-02-02' },
 ] as ProducersResponseDTO['content'];
 
 const mockInstitutionDetail = { institutionId: '1', description: 'Alpha', extra: 'detail' };
@@ -230,14 +229,14 @@ describe('InvitaliaOverview', () => {
 
   it('handles loading state', async () => {
     jest
-      .spyOn(registerService, 'getInstitutionsList')
+      .spyOn(registerService, 'getProducers')
       .mockImplementation(() => new Promise(() => { }));
     renderWithProvider(<InvitaliaOverview />);
     expect(await screen.findByText('Loading...')).toBeInTheDocument();
   });
 
   it('handles error in fetchInstitutions', async () => {
-    jest.spyOn(registerService, 'getInstitutionsList').mockRejectedValue(new Error('fail'));
+    jest.spyOn(registerService, 'getProducers').mockRejectedValue(new Error('fail'));
     renderWithProvider(<InvitaliaOverview />);
     await waitFor(() => {
       expect(screen.getByText('Loaded')).toBeInTheDocument();
