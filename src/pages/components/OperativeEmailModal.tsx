@@ -30,8 +30,9 @@ type Props = {
   isLoading?: boolean;
 };
 
-const MAX_EMAIL_LENGTH = 254;
-const MAX_EMAIL_LOCAL_PART_LENGTH = 64;
+const EMAIL_LOCAL_PART_PATTERN = /^[A-Za-z0-9+_.-]+$/;
+const EMAIL_DOMAIN_LABEL_PATTERN = /^[A-Za-z0-9-]+$/;
+const EMAIL_TLD_PATTERN = /^[A-Za-z]{2,}$/;
 const MODAL_BLUE = '#0B3EE3';
 const MODAL_RED = '#D13333';
 
@@ -172,40 +173,24 @@ const modalStyles = {
   },
 };
 
-const hasWhitespace = (value: string) => {
-  for (const char of value) {
-    if (char <= ' ') {
-      return true;
-    }
-  }
-
-  return false;
-};
-
 const isValidEmail = (value: string) => {
-  if (value.length > MAX_EMAIL_LENGTH || hasWhitespace(value)) {
+  const emailParts = value.split('@');
+  if (emailParts.length !== 2 || !EMAIL_LOCAL_PART_PATTERN.test(emailParts[0])) {
     return false;
   }
 
-  const atIndex = value.indexOf('@');
-  if (atIndex <= 0 || atIndex !== value.lastIndexOf('@')) {
+  const domainLabels = emailParts[1].split('.');
+  if (domainLabels.length < 2) {
     return false;
   }
 
-  const localPart = value.slice(0, atIndex);
-  const domain = value.slice(atIndex + 1);
-  if (
-    localPart.length > MAX_EMAIL_LOCAL_PART_LENGTH ||
-    domain.length === 0 ||
-    domain.startsWith('.') ||
-    domain.endsWith('.') ||
-    domain.includes('..')
-  ) {
-    return false;
-  }
+  const tld = domainLabels[domainLabels.length - 1];
+  const domainPrefixLabels = domainLabels.slice(0, -1);
 
-  const dotIndex = domain.lastIndexOf('.');
-  return dotIndex > 0 && dotIndex < domain.length - 1;
+  return (
+    domainPrefixLabels.every((label) => EMAIL_DOMAIN_LABEL_PATTERN.test(label)) &&
+    EMAIL_TLD_PATTERN.test(tld)
+  );
 };
 
 const getEmailError = (value: string, t: (key: string) => string) => {

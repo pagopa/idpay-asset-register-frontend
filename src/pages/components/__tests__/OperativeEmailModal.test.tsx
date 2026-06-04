@@ -64,12 +64,12 @@ describe('OperativeEmailModal', () => {
     expect(props.onSave).not.toHaveBeenCalled();
   });
 
-  it('rejects malformed emails without using regex backtracking', async () => {
+  it('rejects emails that do not match the backend pattern', async () => {
     const user = userEvent.setup();
     const { props } = renderModal();
 
-    await user.type(screen.getByLabelText('E-mail'), 'name@@example..com');
-    await user.type(screen.getByLabelText('Conferma e-mail'), 'name@@example..com');
+    await user.type(screen.getByLabelText('E-mail'), 'name@example.c');
+    await user.type(screen.getByLabelText('Conferma e-mail'), 'name@example.c');
     await user.click(screen.getByRole('button', { name: 'Salva' }));
 
     expect(screen.getAllByText('Inserisci un indirizzo e-mail valido')).toHaveLength(2);
@@ -98,5 +98,20 @@ describe('OperativeEmailModal', () => {
     await user.click(screen.getByRole('button', { name: 'Salva' }));
 
     expect(onSave).toHaveBeenCalledWith('test@example.com');
+  });
+
+  it('accepts emails with characters allowed by the backend pattern', async () => {
+    const user = userEvent.setup();
+    const onSave = jest.fn();
+    renderModal({ onSave });
+
+    await user.type(screen.getByLabelText('E-mail'), 'test+name_1.2@example-domain.sub.it');
+    await user.type(
+      screen.getByLabelText('Conferma e-mail'),
+      'test+name_1.2@example-domain.sub.it'
+    );
+    await user.click(screen.getByRole('button', { name: 'Salva' }));
+
+    expect(onSave).toHaveBeenCalledWith('test+name_1.2@example-domain.sub.it');
   });
 });
