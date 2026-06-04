@@ -13,6 +13,7 @@ import {
   setRejectedStatusList,
   setRestoredStatusList,
   getBatchFilterList,
+  getProducers,
 } from '../registerService';
 
 jest.mock('../../api/registerApiClient');
@@ -153,7 +154,7 @@ describe('Product Service', () => {
       };
       (RegisterApi.getProductFiles as jest.Mock).mockResolvedValue(mockResponse);
 
-      await getProductFilesList('initi-1', );
+      await getProductFilesList('initi-1',);
 
       expect(RegisterApi.getProductFiles).toHaveBeenCalledWith('initi-1', undefined, undefined);
     });
@@ -281,6 +282,33 @@ describe('Product Service', () => {
     });
   });
 
+  describe('getProducers', () => {
+    it('should get producers list successfully', async () => {
+      const mockResponse = { content: [{ producerId: '1', producerName: 'Inst1' }] };
+      (RegisterApi.getProducers as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await getProducers('init-test');
+
+      expect(result).toEqual(mockResponse);
+      expect(RegisterApi.getProducers).toHaveBeenCalledWith('init-test');
+    });
+
+    it('should handle error and return empty producers list', async () => {
+      const error = new Error('Fetch failed');
+      (RegisterApi.getProducers as jest.Mock).mockRejectedValue(error);
+
+      const result = await getProducers('init-test');
+
+      expect(result).toEqual({
+        content: [],
+        pageNo: 0,
+        pageSize: 0,
+        totalElements: 0,
+        totalPages: 0,
+      });
+    });
+  });
+
   describe('getInstitutionById', () => {
     it('should get institution by id successfully', async () => {
       const mockResponse = { id: '123', name: 'Institution 1' };
@@ -308,6 +336,7 @@ describe('Product Service', () => {
       (RegisterApi.setSupervisionedStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await setSupervisionedStatusList(
+        "init-test",
         ['GTIN1', 'GTIN2'],
         'APPROVED',
         'Status changed'
@@ -315,6 +344,7 @@ describe('Product Service', () => {
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setSupervisionedStatusList).toHaveBeenCalledWith(
+        "init-test",
         ['GTIN1', 'GTIN2'],
         'APPROVED',
         'Status changed'
@@ -325,7 +355,7 @@ describe('Product Service', () => {
       const error = new Error('Status update failed');
       (RegisterApi.setSupervisionedStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setSupervisionedStatusList(['GTIN1'], 'APPROVED', 'test');
+      const result = await setSupervisionedStatusList("init-test", ['GTIN1'], 'APPROVED', 'test');
 
       expect(result).toEqual({});
     });
@@ -336,10 +366,11 @@ describe('Product Service', () => {
       const mockResponse = { success: true };
       (RegisterApi.setApprovedStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await setApprovedStatusList(['GTIN1'], 'SUPERVISED', 'Approved');
+      const result = await setApprovedStatusList("init-test", ['GTIN1'], 'SUPERVISED', 'Approved');
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setApprovedStatusList).toHaveBeenCalledWith(
+        "init-test",
         ['GTIN1'],
         'SUPERVISED',
         'Approved'
@@ -349,7 +380,7 @@ describe('Product Service', () => {
     it('should handle error', async () => {
       (RegisterApi.setApprovedStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
 
-      const result = await setApprovedStatusList(['GTIN1'], 'SUPERVISED', 'Approved');
+      const result = await setApprovedStatusList("init-test", ['GTIN1'], 'SUPERVISED', 'Approved');
 
       expect(result).toEqual({});
     });
@@ -360,10 +391,11 @@ describe('Product Service', () => {
       const mockResponse = { success: true };
       (RegisterApi.setWaitApprovedStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await setWaitApprovedStatusList(['GTIN1'], 'SUPERVISED', 'Waiting');
+      const result = await setWaitApprovedStatusList("init-test", ['GTIN1'], 'SUPERVISED', 'Waiting');
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setWaitApprovedStatusList).toHaveBeenCalledWith(
+        "init-test",
         ['GTIN1'],
         'SUPERVISED',
         'Waiting'
@@ -373,7 +405,7 @@ describe('Product Service', () => {
     it('should handle error', async () => {
       (RegisterApi.setWaitApprovedStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
 
-      const result = await setWaitApprovedStatusList(['GTIN1'], 'SUPERVISED', 'Waiting');
+      const result = await setWaitApprovedStatusList("init-test", ['GTIN1'], 'SUPERVISED', 'Waiting');
 
       expect(result).toEqual({});
     });
@@ -385,6 +417,7 @@ describe('Product Service', () => {
       (RegisterApi.setRejectedStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await setRejectedStatusList(
+        "init-test",
         ['GTIN1'],
         'APPROVED',
         'Rejected reason',
@@ -393,6 +426,7 @@ describe('Product Service', () => {
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setRejectedStatusList).toHaveBeenCalledWith(
+        "init-test",
         ['GTIN1'],
         'APPROVED',
         'Rejected reason',
@@ -403,7 +437,7 @@ describe('Product Service', () => {
     it('should handle error', async () => {
       (RegisterApi.setRejectedStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
 
-      const result = await setRejectedStatusList(['GTIN1'], 'APPROVED', 'reason', 'formal');
+      const result = await setRejectedStatusList("init-test", ['GTIN1'], 'APPROVED', 'reason', 'formal');
 
       expect(result).toEqual({});
     });
@@ -414,10 +448,11 @@ describe('Product Service', () => {
       const mockResponse = { success: true };
       (RegisterApi.setRestoredStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await setRestoredStatusList(['GTIN1'], 'REJECTED', 'Restored');
+      const result = await setRestoredStatusList("init-test", ['GTIN1'], 'REJECTED', 'Restored');
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setRestoredStatusList).toHaveBeenCalledWith(
+        "init-test",
         ['GTIN1'],
         'REJECTED',
         'Restored'
@@ -427,7 +462,7 @@ describe('Product Service', () => {
     it('should handle error', async () => {
       (RegisterApi.setRestoredStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
 
-      const result = await setRestoredStatusList(['GTIN1'], 'REJECTED', 'Restored');
+      const result = await setRestoredStatusList("init-test", ['GTIN1'], 'REJECTED', 'Restored');
 
       expect(result).toEqual({});
     });
