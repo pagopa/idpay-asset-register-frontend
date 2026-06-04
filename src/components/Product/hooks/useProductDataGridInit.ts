@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getInstitutionsList, getBatchFilterList } from '../../../services/registerService';
+import { getBatchFilterList, getProducers } from '../../../services/registerService';
 import { Institution } from '../../../model/Institution';
 import { BatchFilterItems } from '../helpers';
 import { DEBUG_CONSOLE } from '../../../utils/constants';
@@ -10,9 +10,6 @@ type Props = {
   isInvitaliaUser: boolean;
   isInvitaliaAdmin: boolean;
   institutionId?: string;
-  producerFilter: string;
-  setProducerFilter: (v: string) => void;
-  setStatusFilter: (v: string) => void;
   dispatch: any;
   setInstitutionList: (v: Array<Institution>) => any;
 };
@@ -23,17 +20,18 @@ export const useProductDataGridInit = ({
   isInvitaliaUser,
   isInvitaliaAdmin,
   institutionId,
-  producerFilter,
-  setProducerFilter,
   dispatch,
   setInstitutionList,
 }: Props) => {
   const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
+
   const fetchInstitutions = async () => {
     try {
-      const institutionsData = await getInstitutionsList();
+      const institutionsData = await getProducers(initiativeId);
+      const mappedInstitutions: Array<Institution> = (institutionsData.data.content || []).map(({producerId, producerName, createdAt, updatedAt}) =>
+        ({institutionId: producerId || '', description: producerName || '', createdAt: createdAt || '', updatedAt: updatedAt || ''}));
       dispatch(
-        setInstitutionList((institutionsData.data.institutions ?? []) as Array<Institution>)
+        setInstitutionList(mappedInstitutions)
       );
     } catch (error) {
       if (DEBUG_CONSOLE) {
@@ -43,17 +41,11 @@ export const useProductDataGridInit = ({
   };
 
   useEffect(() => {
-    if ((isInvitaliaUser || isInvitaliaAdmin) && organizationId) {
-      setProducerFilter(organizationId);
-    }
-  }, [isInvitaliaUser, isInvitaliaAdmin, organizationId]);
-
-  useEffect(() => {
     if (isInvitaliaAdmin || isInvitaliaUser) {
       void fetchInstitutions();
     }
 
-    const targetId = isInvitaliaUser ? producerFilter || organizationId || '' : organizationId;
+    const targetId = isInvitaliaUser ? institutionId || '' : organizationId;
 
     void getBatchFilterList(initiativeId, targetId)
       .then((res) => {
@@ -65,7 +57,6 @@ export const useProductDataGridInit = ({
   }, [
     isInvitaliaUser,
     isInvitaliaAdmin,
-    producerFilter,
     institutionId,
     organizationId,
     initiativeId,

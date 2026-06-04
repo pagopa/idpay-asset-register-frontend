@@ -18,15 +18,40 @@
       "title": "Elenco informatico degli elettrodomestici"
     }
   },
-  "categories": {
-    "washingmachines": { "label": "Lavatrici" },
-    "tumbledryers": { "label": "Asciugatrici" },
-    "ovens": { "label": "Forni" },
-    "rangehoods": { "label": "Cappe da cucina" },
-    "dishwashers": { "label": "Lavastoviglie" },
-    "washerdriers": { "label": "Lavasciuga" },
-    "refrigeratingappl": { "label": "Apparecchi di refrigerazione" },
-    "cookinghobs": { "label": "Piani cottura" }
+  "category": {
+    "washingmachines": {
+      "label": "Lavatrici"
+    },
+    "tumbledryers": {
+      "label": "Asciugatrici"
+    },
+    "ovens": {
+      "label": "Forni"
+    },
+    "rangehoods": {
+      "label": "Cappe da cucina"
+    },
+    "dishwashers": {
+      "label": "Lavastoviglie"
+    },
+    "washerdriers": {
+      "label": "Lavasciuga"
+    },
+    "refrigeratingappl": {
+      "label": "Apparecchi di refrigerazione"
+    },
+    "cookinghobs": {
+      "label": "Piani cottura"
+    }
+  },
+  "status": {
+    "products": {
+      "UPLOADED": "Da Esaminare",
+      "WAIT_APPROVED": "Da approvare",
+      "SUPERVISED": "Da controllare",
+      "APPROVED": "Approvato",
+      "REJECTED": "Escluso"
+    }
   },
   "tables": {
     "products": {
@@ -37,14 +62,19 @@
         "energyClass": "Classe energetica",
         "eprelCode": "Codice EPREL",
         "status": "Stato",
-        "batchName": "Lotto"
+        "productFileId": "Lotto"
       },
       "filters": {
         "category": "Categoria",
         "status": "Stato",
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
-        "productFileId": "Lotto"
+        "productFileId": "Lotto",
+        "eprelCode": "Codice EPREL",
+        "errors": {
+          "gtinCode": "Il codice deve avere 14 caratteri",
+          "eprelCode": "Il codice deve essere numerico"
+        }
       }
     }
   }

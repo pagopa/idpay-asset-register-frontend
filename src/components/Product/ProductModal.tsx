@@ -30,6 +30,7 @@ import {
   MIN_LENGTH_TEXTFIELD_POPUP,
   MAX_LENGTH_TEXTFIELD_POPUP,
 } from '../../utils/constants';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 
 interface ProductModalProps {
   open: boolean;
@@ -135,6 +136,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   selectedProducts,
   onSuccess,
 }) => {
+  const initiativeId = useCurrentInitiativeId();
   const [motivationInternal, setMotivationInternal] = useState('');
   const [motivationOfficial, setMotivationOfficial] = useState('');
   const [motivationTouched, setMotivationTouched] = useState(false);
@@ -312,7 +314,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
     }
     try {
       onClose(false);
-      await setSupervisionedStatusList(gtinCodes, status, motivationInternal);
+      await setSupervisionedStatusList(initiativeId, gtinCodes, status, motivationInternal);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -345,7 +347,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
     }
     try {
       onClose(false);
-      await setRejectedStatusList(gtinCodes, status, motivationInternal, motivationOfficial);
+      await setRejectedStatusList(initiativeId, gtinCodes, status, motivationInternal, motivationOfficial);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -370,7 +372,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
     }
     try {
       onClose(false);
-      await setRestoredStatusList(gtinCodes, status, motivationInternal);
+      await setRestoredStatusList(initiativeId, gtinCodes, status, motivationInternal);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -388,7 +390,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const callApprovedApi = async () => {
     try {
       onClose(false);
-      await setApprovedStatusList(gtinCodes, status, EMPTY_DATA);
+      await setApprovedStatusList(initiativeId, gtinCodes, status, EMPTY_DATA);
       if (onUpdateTable) {
         onUpdateTable();
       }

@@ -2,107 +2,30 @@ import { renderHook, act } from '@testing-library/react';
 import { useProductFilters } from '../useProductFilters';
 
 describe('useProductFilters', () => {
-  it('initializes filters correctly', () => {
+  it('should create a list of filters', () => {
+    const filters = {
+      testFilter1: { value: 'test value 1', label: 'test label 1' },
+      testFilter2: { value: 'test value 2', label: 'test label 2' }
+    }
     const { result } = renderHook(() =>
-      useProductFilters({
-        institutions: [],
-        batchFilterItems: [],
-      })
+      useProductFilters({ filters })
     );
-
-    expect(result.current.categoryFilter).toBe('');
-    expect(result.current.producerFilter).toBe('');
-    expect(result.current.batchFilter).toBe('');
-  });
-
-  it('updates category filter', () => {
+    expect(result.current.filtersLabel).toBe('test label 1, test label 2')
+  })
+  it('should use value when label is missing', () => {
+    const filters = {
+      testFilter1: { value: 'test value 1' },
+      testFilter2: { value: 'test value 2' }
+    }
     const { result } = renderHook(() =>
-      useProductFilters({
-        institutions: [],
-        batchFilterItems: [],
-      })
+      useProductFilters({ filters })
     );
-
-    act(() => {
-      result.current.setCategoryFilter('TV');
-    });
-
-    expect(result.current.categoryFilter).toBe('TV');
-  });
-
-  it('resets filters', () => {
+    expect(result.current.filtersLabel).toBe('test value 1, test value 2')
+  })
+  it('should return undefined when filters is missing', () => {
     const { result } = renderHook(() =>
-      useProductFilters({
-        institutions: [],
-        batchFilterItems: [],
-      })
+      useProductFilters({filters: undefined})
     );
-
-    act(() => {
-      result.current.setCategoryFilter('TV');
-      result.current.setProducerFilter('ABC');
-      result.current.resetFilters();
-    });
-
-    expect(result.current.categoryFilter).toBe('');
-    expect(result.current.producerFilter).toBe('');
-  });
-
-  it('builds filters label using configured producer and batch labels', () => {
-    const { result } = renderHook(() =>
-      useProductFilters({
-        institutions: [{ institutionId: 'producer-1', description: 'Producer One' }],
-        batchFilterItems: [{ productFileId: 'batch-1', batchName: 'Batch One' }],
-      })
-    );
-
-    act(() => {
-      result.current.setCategoryFilter('  TV  ');
-      result.current.setStatusFilter('APPROVED');
-      result.current.setProducerFilter('producer-1');
-      result.current.setBatchFilter('batch-1');
-      result.current.setEprelCodeFilter(' EPREL123 ');
-      result.current.setGtinCodeFilter('GTIN123');
-    });
-
-    expect(result.current.filtersLabel).toBe(
-      'TV, APPROVED, Producer One, Batch One, EPREL123, GTIN123'
-    );
-  });
-
-  it('uses trimmed producer and batch values when no matching label is found', () => {
-    const { result } = renderHook(() =>
-      useProductFilters({
-        institutions: [{ institutionId: 'producer-1', description: 'Producer One' }],
-        batchFilterItems: [{ productFileId: 'batch-1', batchName: 'Batch One' }],
-      })
-    );
-
-    act(() => {
-      result.current.setProducerFilter('  missing-producer  ');
-      result.current.setBatchFilter('  missing-batch  ');
-    });
-
-    expect(result.current.filtersLabel).toBe('missing-producer, missing-batch');
-  });
-
-  it('ignores blank filter values in filters label', () => {
-    const { result } = renderHook(() =>
-      useProductFilters({
-        institutions: undefined as any,
-        batchFilterItems: undefined as any,
-      })
-    );
-
-    act(() => {
-      result.current.setCategoryFilter('   ');
-      result.current.setStatusFilter('');
-      result.current.setProducerFilter('   ');
-      result.current.setBatchFilter('   ');
-      result.current.setEprelCodeFilter('   ');
-      result.current.setGtinCodeFilter('   ');
-    });
-
-    expect(result.current.filtersLabel).toBe('');
-  });
+    expect(result.current.filtersLabel).toBe(undefined)
+  })
 });
