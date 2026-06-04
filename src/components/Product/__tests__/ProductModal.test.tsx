@@ -35,12 +35,17 @@ jest.mock('../../../services/registerService', () => ({
   setApprovedStatusList: jest.fn(),
 }));
 
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => "init-test"
+}))
+
 import {
   setSupervisionedStatusList,
   setRejectedStatusList,
   setRestoredStatusList,
   setApprovedStatusList,
 } from '../../../services/registerService';
+import { useCurrentInitiativeId } from '../../../hooks/useCurrentInitiativeId';
 
 const mockSetSupervisionedStatusList = setSupervisionedStatusList as unknown as jest.Mock;
 const mockSetRejectedStatusList = setRejectedStatusList as unknown as jest.Mock;
@@ -126,6 +131,7 @@ describe('ProductModal', () => {
 
     await waitFor(() => {
       expect(mockSetSupervisionedStatusList).toHaveBeenCalledWith(
+        "init-test", 
         props.selectedProducts!.map((p) => p.gtinCode),
         props.selectedProducts![0].status,
         'Valid reason'
@@ -178,6 +184,7 @@ describe('ProductModal', () => {
 
     await waitFor(() => {
       expect(mockSetRejectedStatusList).toHaveBeenCalledWith(
+        "init-test", 
         props.selectedProducts!.map((p) => p.gtinCode),
         props.selectedProducts![0].status,
         'Reject reason interna',
@@ -255,6 +262,7 @@ describe('ProductModal', () => {
 
     await waitFor(() => {
       expect(mockSetRestoredStatusList).toHaveBeenCalledWith(
+        "init-test", 
         props.selectedProducts!.map((p) => p.gtinCode),
         props.selectedProducts![0].status,
         'Motivo ripristino'
@@ -300,6 +308,7 @@ describe('ProductModal', () => {
 
     await waitFor(() => {
       expect(mockSetApprovedStatusList).toHaveBeenCalledWith(
+        "init-test", 
         props.selectedProducts!.map((p) => p.gtinCode),
         props.selectedProducts![0].status,
         ''
