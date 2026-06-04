@@ -24,10 +24,8 @@ describe('NewFilter', () => {
     const btn = screen.getByRole('button', { name: /advanced filters/i });
     expect(btn).toBeInTheDocument();
 
-    // Ensure the MUI icon (svg) is present inside the button
     expect(btn.querySelector('svg')).toBeTruthy();
 
-    // Check typical MUI Button classes applied for variant="text" color="primary"
     expect(btn.className).toMatch(/MuiButton-text/);
     expect(btn.className).toMatch(/MuiButton-textPrimary/);
   });

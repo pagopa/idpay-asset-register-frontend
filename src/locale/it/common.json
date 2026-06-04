@@ -30,16 +30,6 @@
     "removeFiltersBtn": "Rimuovi filtri",
     "sendBtn": "Invia",
     "title": "Elenco informatico degli elettrodomestici",
-    "category": {
-      "washingmachines": "Lavatrici",
-      "tumbledryers": "Asciugatrici",
-      "ovens": "Forni",
-      "rangehoods": "Cappe da cucina",
-      "dishwashers": "Lavastoviglie",
-      "washerdriers": "Lavasciuga",
-      "refrigeratingappl": "Apparecchi di refrigerazione",
-      "cookinghobs": "Piani cottura"
-    },
     "advancedFilters": "Filtri avanzati",
     "footer": {
       "a11y": "Accessibilità",
@@ -208,7 +198,7 @@
         "category": "Categoria",
         "status": "Stato",
         "producer": "Produttore",
-        "productFileId": "Lotto",
+        "batch": "Lotto",
         "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN/EAN",
         "manufacturerCode": "Codice produttore",
@@ -224,7 +214,7 @@
         "gtinCode": "Codice GTIN/EAN",
         "productFileId": "Lotto"
       },
-      "category": {
+      "categories": {
         "WASHINGMACHINES": "Lavatrici",
         "WASHERDRIERS": "Lavasciuga",
         "OVENS": "Forni",
@@ -273,7 +263,7 @@
       "eprelCheckDate": "Data verifica EPREL",
       "productSheet": "SCHEDA PRODOTTO",
       "productName": "Nome prodotto",
-      "productFileId": "Lotto",
+      "batchName": "Lotto",
       "eprelCode": "Codice EPREL",
       "gtinCode": "Codice GTIN/EAN",
       "productCode": "Codice prodotto",
@@ -287,6 +277,18 @@
       "motivationFormal": "Notifica ufficiale",
       "restoreProductTitle": "Ripristina prodotto",
       "restoreProductMessage": "Vuoi ripristinare il prodotto segnalato in precedenza?"
+    }
+  },
+  "tables": {
+    "products": {
+      "filters": {
+        "category": "Categoria",
+        "status": "Stato",
+        "producer": "Produttore",
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "productFileId": "Lotto"
+      }
     }
   },
   "roles": {

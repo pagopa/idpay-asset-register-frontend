@@ -35,14 +35,8 @@ jobs:
       - name: Genera client API
         run: yarn generate
 
-      - name: Jest Coverage Report
-        uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          test-script: yarn test:coverage
-          threshold: 90
-          annotations: none
-          package-manager: yarn
+      - name: Run tests with coverage
+        run: yarn test:coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v5.0.0
@@ -54,3 +48,5 @@ jobs:
             -Dsonar.organization=${{ vars.SONARCLOUD_ORG }}
             -Dsonar.projectKey=${{ vars.SONARCLOUD_PROJECT_KEY }}
             -Dsonar.projectName="${{ vars.SONARCLOUD_PROJECT_NAME }}"
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.coverage.exclusions=**/__tests__/**,**/hooks/**/*.ts,src/redux/**

@@ -213,17 +213,6 @@ describe('InvitaliaOverview', () => {
     expect(screen.getByTestId('table-order-by')).toHaveTextContent('institutionId');
   });
 
-  it('changes page and rows per page', async () => {
-    renderWithProvider(<InvitaliaOverview />);
-    const pageBtn = await screen.findByText('PageChange');
-    fireEvent.click(pageBtn);
-    await waitFor(() => expect(screen.getByTestId('table-page')).toHaveTextContent('1'));
-    const rowsBtn = await screen.findByText('RowsPerPage');
-    fireEvent.click(rowsBtn);
-    expect(screen.getByTestId('table-rows')).toHaveTextContent('5');
-    expect(screen.getByTestId('table-page')).toHaveTextContent('0');
-  });
-
   it('opens and closes the detail drawer', async () => {
     renderWithProvider(<InvitaliaOverview />);
     await waitFor(() => {

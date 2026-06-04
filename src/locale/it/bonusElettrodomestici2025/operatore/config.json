@@ -6,110 +6,18 @@
       "operatore": {
         "logicalName": "Produttore",
         "permissions": {
-          "tables": [
-            "products"
-          ]
+          "tables": ["products"]
         }
-      }
-    }
-  },
-  "templates": {
-    "formats": {
-      "csv": {
-        "headers": [
-          "Codice GTIN/EAN",
-          "Codice Prodotto",
-          "Categoria",
-          "Paese di Produzione",
-          "Marca",
-          "Modello"
-        ],
-        "fields": [
-          "GTIN123ABC4567",
-          "SKU98765",
-          "Piano cottura",
-          "IT",
-          "MarcaEsempio",
-          "ModelloX100"
-        ]
-      },
-      "eprel": {
-        "headers": [
-          "Codice EPREL",
-          "Codice GTIN/EAN",
-          "Codice Prodotto",
-          "Categoria",
-          "Paese di Produzione"
-        ],
-        "fields": [
-          "12345",
-          "GTIN01234",
-          "SKU12345",
-          "Lavatrice",
-          "IT"
-        ]
-      }
-    },
-    "category": {
-      "washingmachines": {
-        "label": "category.washingmachines.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "tumbledryers": {
-        "label": "category.tumbledryers.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "ovens": {
-        "label": "category.ovens.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "rangehoods": {
-        "label": "category.rangehoods.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "dishwashers": {
-        "label": "category.dishwashers.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "washerdriers": {
-        "label": "category.washerdriers.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "refrigeratingappl": {
-        "label": "category.refrigeratingappl.label",
-        "format": "eprel",
-        "name": "eprel"
-      },
-      "cookinghobs": {
-        "label": "category.cookinghobs.label",
-        "format": "csv",
-        "name": "cookinghobs"
-      }
-    },
-    "status": {
-      "UPLOADED": {
-        "label": "status.products.UPLOADED",
-        "color": "default"
-      },
-      "APPROVED": {
-        "label": "status.products.APPROVED",
-        "color": "success"
-      },
-      "REJECTED": {
-        "label": "status.products.REJECTED",
-        "color": "error"
       }
     }
   },
   "ui": {
     "tables": {
       "products": {
+        "organizationSource": "user",
+        "bulkRules": {
+          "preventMixedStatus": true
+        },
         "columns": [
           {
             "id": "category",
@@ -137,8 +45,8 @@
             "align": "center"
           },
           {
-            "id": "productFileId",
-            "labelKey": "tables.products.columns.productFileId",
+            "id": "batchName",
+            "labelKey": "tables.products.columns.batchName",
             "sortable": false,
             "align": "left"
           },
@@ -151,107 +59,45 @@
         ],
         "filters": [
           {
-            "id": "status",
-            "type": "select",
-            "labelKey": "tables.products.filters.status"
-          },
-          {
-            "id": "productFileId",
-            "type": "select",
-            "labelKey": "tables.products.filters.productFileId"
-          },
-          {
             "id": "category",
             "type": "select",
             "labelKey": "tables.products.filters.category"
           },
           {
-            "id": "eprelCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.eprelCode",
-            "regEx": "\\d$",
-            "message": "tables.products.filters.errors.eprelCode",
-            "inputProps": {
-              "inputMode": "numeric",
-              "pattern": "\\d$"
-            }
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
           },
           {
             "id": "gtinCode",
             "type": "text",
-            "labelKey": "tables.products.filters.gtinCode",
-            "regEx": "[a-zA-Z0-9]{14}$",
-            "message": "tables.products.filters.errors.gtinCode",
-            "inputProps": {
-              "maxLength": 14
-            }
+            "labelKey": "tables.products.filters.gtinCode"
+          },
+          {
+            "id": "productCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.productCode"
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
           }
         ],
-        "ui": {
-          "filtering": {
-            "enabled": true
-          },
-          "pagination": {
-            "enabled": true,
-            "defaultRowsPerPage": 10,
-            "rowsPerPageOptions": [
-              10,
-              25,
-              50,
-              100
-            ]
-          }
-        },
         "detail": {
           "fields": [
-            {
-              "id": "productName",
-              "labelKey": "pages.productDetail.productName"
-            },
-            {
-              "id": "productFileId",
-              "labelKey": "pages.productDetail.productFileId"
-            },
-            {
-              "id": "registrationDate",
-              "labelKey": "pages.productDetail.eprelCheckDate"
-            },
-            {
-              "id": "eprelCode",
-              "labelKey": "pages.productDetail.eprelCode"
-            },
-            {
-              "id": "gtinCode",
-              "labelKey": "pages.productDetail.gtinCode"
-            },
-            {
-              "id": "productCode",
-              "labelKey": "pages.productDetail.productCode"
-            },
-            {
-              "id": "category",
-              "labelKey": "pages.productDetail.category"
-            },
-            {
-              "id": "brand",
-              "labelKey": "pages.productDetail.brand"
-            },
-            {
-              "id": "model",
-              "labelKey": "pages.productDetail.model"
-            },
-            {
-              "id": "energyClass",
-              "labelKey": "pages.productDetail.energyClass"
-            },
-            {
-              "id": "countryOfProduction",
-              "labelKey": "pages.productDetail.countryOfProduction"
-            },
-            {
-              "id": "capacity",
-              "labelKey": "pages.productDetail.capacity"
-            }
+            { "id": "productName", "labelKey": "pages.productDetail.productName" },
+            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
+            { "id": "registrationDate", "labelKey": "pages.productDetail.eprelCheckDate" },
+            { "id": "eprelCode", "labelKey": "pages.productDetail.eprelCode" },
+            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
+            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
+            { "id": "category", "labelKey": "pages.productDetail.category" },
+            { "id": "brand", "labelKey": "pages.productDetail.brand" },
+            { "id": "model", "labelKey": "pages.productDetail.model" },
+            { "id": "energyClass", "labelKey": "pages.productDetail.energyClass" },
+            { "id": "countryOfProduction", "labelKey": "pages.productDetail.countryOfProduction" },
+            { "id": "capacity", "labelKey": "pages.productDetail.capacity" }
           ]
         }
       }

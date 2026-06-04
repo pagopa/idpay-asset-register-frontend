@@ -1,5 +1,3 @@
-/// <reference types="jest" />
-
 import { buildInitiativeFolderName, getInitiativeBasePath } from '../multiInitiativeBasePath';
 
 describe('multiInitiativeBasePath', () => {
