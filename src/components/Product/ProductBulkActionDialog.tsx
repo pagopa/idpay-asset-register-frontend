@@ -25,6 +25,9 @@ type Props = {
   setShowMsgRejected: (v: boolean) => void;
   setShowMsgApproved: (v: boolean) => void;
   setShowMsgWaitApproved: (v: boolean) => void;
+  setShowMsgSupervised: (v: boolean) => void;
+  setShowMsgRejectedApprovation: (v: boolean) => void;
+  setShowMsgAcceptApprovation: (v: boolean) => void;
   setShowGenericError: (v: boolean) => void;
 };
 
@@ -39,6 +42,9 @@ const ProductBulkActionDialog: React.FC<Props> = ({
   setShowMsgRejected,
   setShowMsgApproved,
   setShowMsgWaitApproved,
+  setShowMsgSupervised,
+  setShowMsgRejectedApprovation,
+  setShowMsgAcceptApprovation,
   setShowGenericError,
 }) => {
   const { t } = useTranslation();
@@ -81,6 +87,9 @@ const ProductBulkActionDialog: React.FC<Props> = ({
         setShowMsgRejected,
         setShowMsgApproved,
         setShowMsgWaitApproved,
+        setShowMsgSupervised,
+        setShowMsgRejectedApprovation,
+        setShowMsgAcceptApprovation,
       });
 
       setShowGenericError(false);
@@ -90,6 +99,9 @@ const ProductBulkActionDialog: React.FC<Props> = ({
       setShowMsgRejected(false);
       setShowMsgApproved(false);
       setShowMsgWaitApproved(false);
+      setShowMsgSupervised(false);
+      setShowMsgRejectedApprovation(false);
+      setShowMsgAcceptApprovation(false);
 
       // Always show generic error as fallback
       setShowGenericError(true);

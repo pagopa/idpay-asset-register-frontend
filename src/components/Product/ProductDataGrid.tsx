@@ -243,6 +243,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [showMsgRejected, setShowMsgRejected] = useState(false);
   const [showMsgApproved, setShowMsgApproved] = useState(false);
   const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
+  const [showMsgSupervised, setShowMsgSupervised] = useState(false);
+  const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
+  const [showMsgAcceptApprovation, setShowMsgAcceptApprovation] = useState(false);
   const [showGenericError, setShowGenericError] = useState(false);
 
   const handleOpenModalWithStatusCheck = (action: string) => {
@@ -356,11 +359,11 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
       <ProductResultMessages
         showMsgWaitApproved={showMsgWaitApproved}
-        showMsgSupervised={false}
+        showMsgSupervised={showMsgSupervised}
         showMsgApproved={showMsgApproved}
-        showMsgAcceptApprovation={false}
+        showMsgAcceptApprovation={showMsgAcceptApprovation}
         showMsgRejected={showMsgRejected}
-        showMsgRejectedApprovation={false}
+        showMsgRejectedApprovation={showMsgRejectedApprovation}
         showMixStatusError={false}
         showYourselfApprovedError={false}
         showGenericError={showGenericError}
@@ -452,6 +455,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           setShowMsgRejected={setShowMsgRejected}
           setShowMsgApproved={setShowMsgApproved}
           setShowMsgWaitApproved={setShowMsgWaitApproved}
+          setShowMsgSupervised={setShowMsgSupervised}
+          setShowMsgRejectedApprovation={setShowMsgRejectedApprovation}
+          setShowMsgAcceptApprovation={setShowMsgAcceptApprovation}
           setShowGenericError={setShowGenericError}
         />
       )}
