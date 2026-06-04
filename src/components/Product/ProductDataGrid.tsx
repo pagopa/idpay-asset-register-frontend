@@ -15,9 +15,11 @@ import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { SelectProps } from '../FiltersDrawer/filtersRender';
 import EmptyListTable from '../../pages/components/EmptyListTable';
+import { RegisterApi } from '../../api/registerApiClient';
+import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 import { useProductsTable } from './hooks/useProductsTable';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
-import { validateBulkActionPreconditions, handleModalSuccess } from './ProductDataGrid.helpers';
+import { validateBulkActionPreconditions, getSelectedStatuses } from './ProductDataGrid.helpers';
 
 import ProductDataGridView from './ProductDataGridView';
 import ProductResultMessages from './ProductResultMessages';
@@ -241,16 +243,12 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [showMsgRejected, setShowMsgRejected] = useState(false);
   const [showMsgApproved, setShowMsgApproved] = useState(false);
   const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
+  const [showMsgSupervised, setShowMsgSupervised] = useState(false);
+  const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
+  const [showMsgAcceptApprovation, setShowMsgAcceptApprovation] = useState(false);
+  const [showGenericError, setShowGenericError] = useState(false);
 
   const handleOpenModalWithStatusCheck = (action: string) => {
-    console.log('[DEBUG] handleOpenModalWithStatusCheck', {
-      action,
-      selected,
-      tableData,
-      roleKey: currentRoleKey,
-      tableConfig,
-    });
-
     const result = validateBulkActionPreconditions({
       selected,
       tableData,
@@ -258,10 +256,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       tableConfig,
     });
 
-    console.log('[DEBUG] validateBulkActionPreconditions result', result);
-
     if (!result.valid) {
-      console.log('[DEBUG] Modal blocked by validation', result.reason);
       return;
     }
 
@@ -364,15 +359,32 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
       <ProductResultMessages
         showMsgWaitApproved={showMsgWaitApproved}
-        showMsgSupervised={false}
+        showMsgSupervised={showMsgSupervised}
         showMsgApproved={showMsgApproved}
-        showMsgAcceptApprovation={false}
+        showMsgAcceptApprovation={showMsgAcceptApprovation}
         showMsgRejected={showMsgRejected}
-        showMsgRejectedApprovation={false}
+        showMsgRejectedApprovation={showMsgRejectedApprovation}
         showMixStatusError={false}
         showYourselfApprovedError={false}
+        showGenericError={showGenericError}
         t={t}
-        getMsgResultByActionType={() => ''}
+        getMsgResultByActionType={(t, actionType) => {
+          switch (actionType) {
+            case PRODUCTS_STATES.WAIT_APPROVED:
+              return t('invitaliaModal.waitApproved.msgResultWaitApproved');
+            case PRODUCTS_STATES.SUPERVISED:
+              return t('invitaliaModal.supervised.msgResultSupervised');
+            case PRODUCTS_STATES.REJECTED:
+              return t('invitaliaModal.rejected.msgResultRejected');
+            case MIDDLE_STATES.REJECT_APPROVATION:
+              return t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation');
+            case MIDDLE_STATES.ACCEPT_APPROVATION:
+            case PRODUCTS_STATES.APPROVED:
+              return t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation');
+            default:
+              return '';
+          }
+        }}
         bottom={80}
       />
 
@@ -384,27 +396,69 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           tableData={tableData}
           isInvitaliaUser={isInvitaliaUser}
           onClose={() => setModalOpen(false)}
-          onConfirm={async () => {
+          onConfirm={async (_action, reason) => {
             if (!modalAction) {
               return;
             }
 
-            handleModalSuccess({
-              selected,
-              tableData,
-              modalAction,
-              isInvitaliaUser,
-              setShowMsgRejected,
-              setShowMsgApproved,
-              setShowMsgWaitApproved,
-            });
+            const selectedStatuses = getSelectedStatuses(selected, tableData);
+            const currentStatus = selectedStatuses[0];
 
-            setModalOpen(false);
-            setSelected([]);
+            if (!currentStatus) {
+              return;
+            }
+
+            switch (modalAction) {
+              case PRODUCTS_STATES.WAIT_APPROVED:
+                await RegisterApi.setWaitApprovedStatusList(
+                  initiativeId,
+                  selected,
+                  currentStatus,
+                  reason || ''
+                );
+                break;
+
+              case PRODUCTS_STATES.APPROVED:
+                await RegisterApi.setApprovedStatusList(
+                  initiativeId,
+                  selected,
+                  currentStatus,
+                  reason || ''
+                );
+                break;
+
+              case PRODUCTS_STATES.SUPERVISED:
+                await RegisterApi.setSupervisionedStatusList(
+                  initiativeId,
+                  selected,
+                  currentStatus,
+                  reason || ''
+                );
+                break;
+
+              case PRODUCTS_STATES.REJECTED:
+              case MIDDLE_STATES.REJECT_APPROVATION:
+                await RegisterApi.setRejectedStatusList(
+                  initiativeId,
+                  selected,
+                  currentStatus,
+                  reason || ''
+                );
+                break;
+
+              default:
+                break;
+            }
+
+            // Success flow is handled inside ProductBulkActionDialog
           }}
           setShowMsgRejected={setShowMsgRejected}
           setShowMsgApproved={setShowMsgApproved}
           setShowMsgWaitApproved={setShowMsgWaitApproved}
+          setShowMsgSupervised={setShowMsgSupervised}
+          setShowMsgRejectedApprovation={setShowMsgRejectedApprovation}
+          setShowMsgAcceptApprovation={setShowMsgAcceptApprovation}
+          setShowGenericError={setShowGenericError}
         />
       )}
 
@@ -433,6 +487,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
               setSelectedProduct(null);
             }}
             onShowRejectedMsg={() => {}}
+            onShowGenericError={() => setShowGenericError(true)}
           />
         </DetailDrawer>
       )}

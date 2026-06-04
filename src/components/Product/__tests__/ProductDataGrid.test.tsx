@@ -28,6 +28,15 @@ jest.mock('../../../hooks/useLogin', () => ({
 }));
 
 jest.mock('../../../services/registerService');
+jest.mock('../../../api/registerApiClient', () => ({
+  __esModule: true,
+  RegisterApi: {
+    setWaitApprovedStatusList: jest.fn().mockResolvedValue({}),
+    setApprovedStatusList: jest.fn().mockResolvedValue({}),
+    setSupervisionedStatusList: jest.fn().mockResolvedValue({}),
+    setRejectedStatusList: jest.fn().mockResolvedValue({}),
+  },
+}));
 jest.mock('../../../helpers');
 jest.mock('../../../hooks/useInitiativeConfig');
 
@@ -120,7 +129,11 @@ jest.mock('../ProductBulkActionDialog', () => ({
     open ? (
       <div data-testid="bulk-dialog">
         <button onClick={onClose}>Close Bulk</button>
-        <button onClick={onConfirm}>Confirm Bulk</button>
+        <button
+          onClick={() => onConfirm?.('ACTION', 'reason')}
+        >
+          Confirm Bulk
+        </button>
       </div>
     ) : null,
 }));
@@ -164,6 +177,11 @@ jest.mock('../ProductDataGrid.helpers', () => {
 
   return {
     __esModule: true,
+    getSelectedStatuses: jest.fn((selected, tableData) =>
+      selected
+        .map((gtinCode: string) => tableData.find((row: any) => row.gtinCode === gtinCode)?.status)
+        .filter(Boolean)
+    ),
     getStatusChecks,
     handleModalSuccess,
     validateBulkActionPreconditions: jest.fn(({ selected, tableData, isInvitaliaAdmin }) => {
@@ -342,6 +360,11 @@ describe('ProductDataGrid (rewritten)', () => {
 
         return { valid: true };
       }
+    );
+    helpersModule.getSelectedStatuses.mockImplementation((selected: Array<string>, tableData: Array<any>) =>
+      selected
+        .map((gtinCode: string) => tableData.find((row: any) => row.gtinCode === gtinCode)?.status)
+        .filter(Boolean)
     );
     helpersModule.getStatusChecks.mockReturnValue({
       selectedStatuses: ['SUPERVISED'],
@@ -574,7 +597,6 @@ describe('ProductDataGrid (rewritten)', () => {
         category: 'Cat',
         status: 'REJECTED',
         productFileId: 'file-1',
-        productFileId: 'file-1',
         batchName: 'Batch A',
       } as any,
       {
@@ -689,8 +711,6 @@ describe('ProductDataGrid (rewritten)', () => {
     await waitFor(() =>
       expect(screen.getByTestId('bulk-dialog')).toBeInTheDocument()
     );
-
-    fireEvent.click(screen.getByText('Confirm Bulk'));
   });
 
   it('closes detail drawer using toggleDrawer button (covers cleanup branch)', async () => {
@@ -706,5 +726,52 @@ describe('ProductDataGrid (rewritten)', () => {
       expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument()
     );
   });
-});
 
+  it('calls correct RegisterApi method on bulk confirm (WAIT_APPROVED)', async () => {
+    const { RegisterApi } = require('../../../api/registerApiClient');
+    const helpersModule = require('../ProductDataGrid.helpers');
+
+    helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
+    helpersModule.getSelectedStatuses.mockReturnValueOnce(['SUPERVISED']);
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1, [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'SUPERVISED',
+      },
+    ]);
+
+    await screen.findByTestId('products-table');
+
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
+    fireEvent.click(await screen.findByText('Confirm Bulk'));
+
+    await waitFor(() =>
+      expect(RegisterApi.setWaitApprovedStatusList).toHaveBeenCalled()
+    );
+  });
+
+  it('calls correct RegisterApi method on bulk confirm (REJECTED)', async () => {
+    const { RegisterApi } = require('../../../api/registerApiClient');
+    const helpersModule = require('../ProductDataGrid.helpers');
+
+    helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
+    helpersModule.getSelectedStatuses.mockReturnValueOnce(['SUPERVISED']);
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+
+    await screen.findByTestId('products-table');
+
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    fireEvent.click(await screen.findByText('Confirm Bulk'));
+
+    await waitFor(() =>
+      expect(RegisterApi.setRejectedStatusList).toHaveBeenCalled()
+    );
+  });
+});

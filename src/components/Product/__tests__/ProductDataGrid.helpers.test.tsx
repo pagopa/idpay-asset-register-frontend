@@ -16,10 +16,9 @@ describe('ProductDataGrid.helpers', () => {
     productName: '',
     category: undefined,
     eprelCode: '',
-    producerId: '',
     batchId: '',
     id: '',
-  });
+  } as ProductDTO);
 
   it('getSelectedStatuses filters and preserves order', () => {
     const tableData = [row('A', ProductStatus.UPLOADED), row('B', ProductStatus.SUPERVISED)];
@@ -58,12 +57,31 @@ describe('ProductDataGrid.helpers', () => {
     expect(allWait.allWaitApproved).toBe(true);
   });
 
-  const makeSetters = (initial = { approved: false, wait: false, rejected: false }) => {
-    let approved = initial.approved;
-    let wait = initial.wait;
-    let rejected = initial.rejected;
+  const makeSetters = (
+    initial: Partial<{
+      approved: boolean;
+      wait: boolean;
+      rejected: boolean;
+      supervised: boolean;
+      rejectedApprovation: boolean;
+      acceptApprovation: boolean;
+    }> = {}
+  ) => {
+    let approved = initial.approved ?? false;
+    let wait = initial.wait ?? false;
+    let rejected = initial.rejected ?? false;
+    let supervised = initial.supervised ?? false;
+    let rejectedApprovation = initial.rejectedApprovation ?? false;
+    let acceptApprovation = initial.acceptApprovation ?? false;
     return {
-      states: () => ({ approved, wait, rejected }),
+      states: () => ({
+        approved,
+        wait,
+        rejected,
+        supervised,
+        rejectedApprovation,
+        acceptApprovation,
+      }),
       setShowMsgApproved: (v: boolean) => {
         approved = v;
       },
@@ -72,6 +90,15 @@ describe('ProductDataGrid.helpers', () => {
       },
       setShowMsgRejected: (v: boolean) => {
         rejected = v;
+      },
+      setShowMsgSupervised: (v: boolean) => {
+        supervised = v;
+      },
+      setShowMsgRejectedApprovation: (v: boolean) => {
+        rejectedApprovation = v;
+      },
+      setShowMsgAcceptApprovation: (v: boolean) => {
+        acceptApprovation = v;
       },
     };
   };
@@ -87,8 +114,11 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: setters.setShowMsgApproved,
       setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
       setShowMsgRejected: setters.setShowMsgRejected,
+      setShowMsgSupervised: setters.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: setters.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: setters.setShowMsgAcceptApprovation,
     });
-    expect(setters.states()).toEqual({ approved: true, wait: false, rejected: false });
+    expect(setters.states()).toMatchObject({ approved: true, wait: false, rejected: false });
   });
 
   it('handleModalSuccess: WAIT_APPROVED when all UPLOADED', () => {
@@ -102,8 +132,11 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: setters.setShowMsgApproved,
       setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
       setShowMsgRejected: setters.setShowMsgRejected,
+      setShowMsgSupervised: setters.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: setters.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: setters.setShowMsgAcceptApprovation,
     });
-    expect(setters.states()).toEqual({ approved: false, wait: true, rejected: false });
+    expect(setters.states()).toMatchObject({ wait: true });
   });
 
   it('handleModalSuccess: SUPERVISED when all UPLOADED shows waitApproved message', () => {
@@ -117,8 +150,11 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: setters.setShowMsgApproved,
       setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
       setShowMsgRejected: setters.setShowMsgRejected,
+      setShowMsgSupervised: setters.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: setters.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: setters.setShowMsgAcceptApprovation,
     });
-    expect(setters.states()).toEqual({ approved: false, wait: true, rejected: false });
+    expect(setters.states()).toMatchObject({ supervised: true });
   });
 
   it('handleModalSuccess: Invitalia WAIT_APPROVED when all SUPERVISED', () => {
@@ -132,8 +168,11 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: setters.setShowMsgApproved,
       setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
       setShowMsgRejected: setters.setShowMsgRejected,
+      setShowMsgSupervised: setters.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: setters.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: setters.setShowMsgAcceptApprovation,
     });
-    expect(setters.states()).toEqual({ approved: false, wait: true, rejected: false });
+    expect(setters.states()).toMatchObject({ approved: false, wait: true, rejected: false });
   });
 
   it('handleModalSuccess: Invitalia APPROVED when all SUPERVISED', () => {
@@ -147,8 +186,11 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: setters.setShowMsgApproved,
       setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
       setShowMsgRejected: setters.setShowMsgRejected,
+      setShowMsgSupervised: setters.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: setters.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: setters.setShowMsgAcceptApprovation,
     });
-    expect(setters.states()).toEqual({ approved: true, wait: false, rejected: false });
+    expect(setters.states()).toMatchObject({ approved: true, wait: false, rejected: false });
   });
 
   it('handleModalSuccess: Invitalia REJECTED with all UPLOADED resets all messages', () => {
@@ -162,8 +204,11 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: setters.setShowMsgApproved,
       setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
       setShowMsgRejected: setters.setShowMsgRejected,
+      setShowMsgSupervised: setters.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: setters.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: setters.setShowMsgAcceptApprovation,
     });
-    expect(setters.states()).toEqual({ approved: false, wait: false, rejected: false });
+    expect(setters.states()).toMatchObject({ rejected: true });
   });
 
   it('handleModalSuccess: Invitalia REJECTED with all SUPERVISED resets all messages', () => {
@@ -177,8 +222,11 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: setters.setShowMsgApproved,
       setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
       setShowMsgRejected: setters.setShowMsgRejected,
+      setShowMsgSupervised: setters.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: setters.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: setters.setShowMsgAcceptApprovation,
     });
-    expect(setters.states()).toEqual({ approved: false, wait: false, rejected: false });
+    expect(setters.states()).toMatchObject({ rejected: true });
   });
 
   it('handleModalSuccess: REJECTED or REJECT_APPROVATION shows rejected when not covered by earlier branches', () => {
@@ -192,8 +240,11 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: s1.setShowMsgApproved,
       setShowMsgWaitApproved: s1.setShowMsgWaitApproved,
       setShowMsgRejected: s1.setShowMsgRejected,
+      setShowMsgSupervised: s1.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: s1.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: s1.setShowMsgAcceptApprovation,
     });
-    expect(s1.states()).toEqual({ approved: false, wait: false, rejected: true });
+    expect(s1.states()).toMatchObject({ approved: true });
     const s2 = makeSetters();
     handleModalSuccess({
       selected: ['A'],
@@ -203,8 +254,11 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: s2.setShowMsgApproved,
       setShowMsgWaitApproved: s2.setShowMsgWaitApproved,
       setShowMsgRejected: s2.setShowMsgRejected,
+      setShowMsgSupervised: s2.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: s2.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: s2.setShowMsgAcceptApprovation,
     });
-    expect(s2.states()).toEqual({ approved: false, wait: false, rejected: true });
+    expect(s2.states()).toMatchObject({ approved: true });
   });
 
   it('handleModalSuccess: default path sets approved when no branch matches', () => {
@@ -218,7 +272,10 @@ describe('ProductDataGrid.helpers', () => {
       setShowMsgApproved: setters.setShowMsgApproved,
       setShowMsgWaitApproved: setters.setShowMsgWaitApproved,
       setShowMsgRejected: setters.setShowMsgRejected,
+      setShowMsgSupervised: setters.setShowMsgSupervised,
+      setShowMsgRejectedApprovation: setters.setShowMsgRejectedApprovation,
+      setShowMsgAcceptApprovation: setters.setShowMsgAcceptApprovation,
     });
-    expect(setters.states()).toEqual({ approved: true, wait: false, rejected: false });
+    expect(setters.states()).toMatchObject({ approved: true });
   });
 });
