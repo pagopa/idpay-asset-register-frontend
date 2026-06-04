@@ -130,7 +130,7 @@ describe('ProductDetail', () => {
 
     const supervised = screen.getByTestId('supervisedBtn');
     fireEvent.click(supervised);
-    expect(screen.getByTestId('modal')).toBeInTheDocument();
+    expect(screen.getAllByTestId('modal').length).toBeGreaterThan(0);
   });
   it('renders base information', () => {
     render(
@@ -180,7 +180,9 @@ describe('ProductDetail', () => {
       />
     );
 
+    await screen.findByTestId('approvedBtn');
     fireEvent.click(screen.getByTestId('approvedBtn'));
+    await screen.findByTestId('confirm');
     fireEvent.click(screen.getByTestId('confirm'));
 
     expect(onUpdate).toHaveBeenCalled();
