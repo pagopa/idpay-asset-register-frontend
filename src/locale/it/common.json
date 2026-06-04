@@ -281,6 +281,9 @@
   },
   "tables": {
     "products": {
+      "columns": {
+        "producer": "Produttore"
+      },
       "filters": {
         "category": "Categoria",
         "status": "Stato",
@@ -387,6 +390,7 @@
   },
   "msgResutlt": {
     "errorMixSelected": "Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato.",
-    "errorYourselfApproved": "Non puoi inviare una richiesta di approvazione a te stesso."
+    "errorYourselfApproved": "Non puoi inviare una richiesta di approvazione a te stesso.",
+    "errorGenericDescription": "Si è verificato un errore. Riprova più tardi"
   }
 }

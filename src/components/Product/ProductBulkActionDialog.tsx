@@ -25,6 +25,7 @@ type Props = {
   setShowMsgRejected: (v: boolean) => void;
   setShowMsgApproved: (v: boolean) => void;
   setShowMsgWaitApproved: (v: boolean) => void;
+  setShowGenericError: (v: boolean) => void;
 };
 
 const ProductBulkActionDialog: React.FC<Props> = ({
@@ -38,6 +39,7 @@ const ProductBulkActionDialog: React.FC<Props> = ({
   setShowMsgRejected,
   setShowMsgApproved,
   setShowMsgWaitApproved,
+  setShowGenericError,
 }) => {
   const { t } = useTranslation();
   const [reason, setReason] = useState('');
@@ -65,20 +67,43 @@ const ProductBulkActionDialog: React.FC<Props> = ({
     if (requireReason && !reason) {
       return;
     }
+
     setLoading(true);
-    await onConfirm(action, reason);
-    handleModalSuccess({
-      selected,
-      tableData,
-      modalAction: action,
-      isInvitaliaUser,
-      setShowMsgRejected,
-      setShowMsgApproved,
-      setShowMsgWaitApproved,
-    });
-    setLoading(false);
-    onClose();
-    setReason('');
+
+    try {
+      await onConfirm(action, reason);
+
+      handleModalSuccess({
+        selected,
+        tableData,
+        modalAction: action,
+        isInvitaliaUser,
+        setShowMsgRejected,
+        setShowMsgApproved,
+        setShowMsgWaitApproved,
+      });
+
+      setShowGenericError(false);
+      onClose();
+    } catch (error) {
+      // Reset all success messages
+      setShowMsgRejected(false);
+      setShowMsgApproved(false);
+      setShowMsgWaitApproved(false);
+
+      // Always show generic error as fallback
+      setShowGenericError(true);
+
+      // Fix focus retention before closing modal (prevents aria-hidden warning)
+      if (document?.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+
+      onClose();
+    } finally {
+      setLoading(false);
+      setReason('');
+    }
   };
 
   return (
