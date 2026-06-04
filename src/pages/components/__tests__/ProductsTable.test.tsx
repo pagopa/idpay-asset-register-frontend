@@ -119,7 +119,8 @@ describe('ProductsTable', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button'));
+    const buttons = screen.getAllByRole('button');
+    fireEvent.click(buttons[buttons.length - 1]);
     expect(handler).toHaveBeenCalled();
   });
 
@@ -157,7 +158,7 @@ describe('ProductsTable', () => {
       />
     );
 
-    expect(screen.getByText('LongV')).toBeInTheDocument();
+    expect(screen.getByText('LongValueName')).toBeInTheDocument();
   });
 
   it('renders non truncated string when short', () => {

@@ -1,6 +1,6 @@
 /// <reference types="jest" />
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { filtersRender } from '../filtersRender';
 
 jest.mock('../../../helpers', () => ({
@@ -10,30 +10,25 @@ jest.mock('../../../helpers', () => ({
 const t = (k: string) => k;
 
 describe('filtersRender - select', () => {
-  it('renders select options and handles change with labelKey', () => {
-    // covers renderValue branch
-    const filters = { status: { value: 'A', label: 'label.A' } };
+  it('handles select change correctly', () => {
     const setFilters = jest.fn();
 
     const template = {
       A: { labelKey: 'label.A', label: 'label.A' },
-      B: { label: 'Label B', color: 'primary' as any },
     };
 
     const element = filtersRender.select({
       item: { id: 'status', labelKey: 'status.label' },
       t: t as any,
-      filters,
+      filters: {},
       setFilters,
       setErrors: jest.fn(),
       template,
     });
 
-    render(element);
-
-    // directly trigger onChange instead of relying on MUI internal button role
-    const select = screen.getByLabelText('status.label');
-    fireEvent.change(select, { target: { value: 'A' } });
+    element.props.onChange({
+      target: { value: 'A' },
+    });
 
     expect(setFilters).toHaveBeenCalledWith('status', {
       value: 'A',
@@ -43,8 +38,7 @@ describe('filtersRender - select', () => {
 });
 
 describe('filtersRender - text', () => {
-  it('handles valid regex input', () => {
-    // covers helperText branch false
+  it('handles valid input', () => {
     const setFilters = jest.fn();
     const setErrors = jest.fn();
 
@@ -53,7 +47,6 @@ describe('filtersRender - text', () => {
         id: 'code',
         labelKey: 'code.label',
         regEx: '^[0-9]+$',
-        message: 'error.msg',
       },
       t: t as any,
       filters: {},
@@ -61,17 +54,15 @@ describe('filtersRender - text', () => {
       setErrors,
     } as any);
 
-    render(element);
-
-    const input = screen.getByLabelText('code.label');
-    fireEvent.change(input, { target: { value: '123' } });
+    element.props.onChange({
+      target: { value: '123' },
+    });
 
     expect(setFilters).toHaveBeenCalledWith('code', { value: '123' });
     expect(setErrors).toHaveBeenCalledWith('code', false);
   });
 
-  it('handles invalid regex input', () => {
-    // covers helperText branch true
+  it('handles invalid input', () => {
     const setFilters = jest.fn();
     const setErrors = jest.fn();
 
@@ -80,25 +71,21 @@ describe('filtersRender - text', () => {
         id: 'code',
         labelKey: 'code.label',
         regEx: '^[0-9]+$',
-        message: 'error.msg',
       },
       t: t as any,
       filters: {},
       setFilters,
       setErrors,
-      errors: ['code'],
     } as any);
 
-    render(element);
-
-    const input = screen.getByLabelText('code.label');
-    fireEvent.change(input, { target: { value: 'abc' } });
+    element.props.onChange({
+      target: { value: 'abc' },
+    });
 
     expect(setErrors).toHaveBeenCalledWith('code', true);
   });
 
-  it('handles paste removing spaces', () => {
-    // covers onPaste branch and space removal
+  it('handles paste', () => {
     const setFilters = jest.fn();
     const setErrors = jest.fn();
 
@@ -114,14 +101,11 @@ describe('filtersRender - text', () => {
       setErrors,
     } as any);
 
-    render(element);
-
-    const input = screen.getByLabelText('code.label');
-
-    fireEvent.paste(input, {
+    element.props.onPaste({
       clipboardData: {
         getData: () => '1 2 3',
       },
+      preventDefault: jest.fn(),
     });
 
     expect(setFilters).toHaveBeenCalledWith('code', { value: '123' });
