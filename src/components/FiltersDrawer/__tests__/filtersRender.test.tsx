@@ -1,6 +1,5 @@
 /// <reference types="jest" />
 import React from 'react';
-import { render, screen } from '@testing-library/react';
 import { filtersRender } from '../filtersRender';
 
 jest.mock('../../../helpers', () => ({
@@ -28,6 +27,7 @@ describe('filtersRender - select', () => {
 
     element.props.onChange({
       target: { value: 'A' },
+      currentTarget: { value: 'A' },
     });
 
     expect(setFilters).toHaveBeenCalledWith('status', {
@@ -56,6 +56,7 @@ describe('filtersRender - text', () => {
 
     element.props.onChange({
       target: { value: '123' },
+      currentTarget: { value: '123' },
     });
 
     expect(setFilters).toHaveBeenCalledWith('code', { value: '123' });
@@ -80,6 +81,7 @@ describe('filtersRender - text', () => {
 
     element.props.onChange({
       target: { value: 'abc' },
+      currentTarget: { value: 'abc' },
     });
 
     expect(setErrors).toHaveBeenCalledWith('code', true);
@@ -87,7 +89,6 @@ describe('filtersRender - text', () => {
 
   it('handles paste', () => {
     const setFilters = jest.fn();
-    const setErrors = jest.fn();
 
     const element = filtersRender.text({
       item: {
@@ -98,7 +99,7 @@ describe('filtersRender - text', () => {
       t: t as any,
       filters: {},
       setFilters,
-      setErrors,
+      setErrors: jest.fn(),
     } as any);
 
     element.props.onPaste({

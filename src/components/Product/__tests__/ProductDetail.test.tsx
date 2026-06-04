@@ -129,7 +129,7 @@ describe('ProductDetail', () => {
     );
 
     const supervised = screen.getByTestId('supervisedBtn');
-    supervised.click();
+    fireEvent.click(supervised);
     expect(screen.getByTestId('modal')).toBeInTheDocument();
   });
   it('renders base information', () => {
