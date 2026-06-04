@@ -9,7 +9,9 @@ import {
   setInstitutionList,
   setInstitution,
 } from '../../redux/slices/invitaliaSlice';
-import { ProductDTO } from '../../api/generated/register';
+import { ProductDTO, ProductStatus } from '../../api/generated/register';
+import { DEBUG_CONSOLE, EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_NAMES } from '../../utils/constants';
+import { setWaitApprovedStatusList } from '../../services/registerService';
 
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
@@ -17,12 +19,11 @@ import { SelectProps } from '../FiltersDrawer/filtersRender';
 import EmptyListTable from '../../pages/components/EmptyListTable';
 import { useProductsTable } from './hooks/useProductsTable';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
-import { validateBulkActionPreconditions, handleModalSuccess } from './ProductDataGrid.helpers';
+import { getStatusChecks } from './ProductDataGrid.helpers';
 
 import ProductDataGridView from './ProductDataGridView';
 import ProductResultMessages from './ProductResultMessages';
 import ProductDetail from './ProductDetail';
-import ProductBulkActionDialog from './ProductBulkActionDialog';
 
 type Props = {
   organizationId: string;
@@ -31,6 +32,8 @@ type Props = {
 import { useResolvedProductTableConfig } from './hooks/useResolvedProductTableConfig';
 import { useEnrichedProductFilters } from './hooks/useEnrichedProductFilters';
 import { useTargetOrganization } from './hooks/useTargetOrganization';
+import ProductModal from './ProductModal';
+import ProductConfirmDialog from './ProductConfirmDialog';
 
 const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const { t } = useScopedTranslation();
@@ -97,7 +100,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(paginationConfig?.defaultRowsPerPage ?? 10);
   const [selected, setSelected] = useState<Array<string>>([]);
-  const refreshKey = useMemo(() => Date.now(), [initiativeId]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -105,6 +108,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
 
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
+    refreshKey,
     initiativeId,
     organizationId: targetId,
     orderBy,
@@ -241,32 +245,44 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [showMsgRejected, setShowMsgRejected] = useState(false);
   const [showMsgApproved, setShowMsgApproved] = useState(false);
   const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
+  const [showMsgSupervised, setShowMsgSupervised] = useState(false);
+  const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
+  const [showMsgAcceptApprovation, setMsgAcceptApprovation] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [showMixStatusError, setShowMixStatusError] = useState(false);
+  const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
+
+  const handleOpenModal = (action: string) => {
+    if (action === PRODUCTS_STATES.WAIT_APPROVED) {
+      setRestoreDialogOpen(true);
+    } else {
+      setModalAction(action);
+      setModalOpen(true);
+    }
+    return Promise.resolve();
+  };
 
   const handleOpenModalWithStatusCheck = (action: string) => {
-    console.log('[DEBUG] handleOpenModalWithStatusCheck', {
-      action,
-      selected,
-      tableData,
-      roleKey: currentRoleKey,
-      tableConfig,
-    });
+    const { selectedStatuses, someUploaded, length } = getStatusChecks(selected, tableData);
 
-    const result = validateBulkActionPreconditions({
-      selected,
-      tableData,
-      roleKey: currentRoleKey,
-      tableConfig,
-    });
-
-    console.log('[DEBUG] validateBulkActionPreconditions result', result);
-
-    if (!result.valid) {
-      console.log('[DEBUG] Modal blocked by validation', result.reason);
+    if (length === 0) {
       return;
     }
 
-    setModalAction(action);
-    setModalOpen(true);
+    if (isInvitaliaAdmin && someUploaded) {
+      setShowYourselfApprovedError(true);
+      setTimeout(() => setShowYourselfApprovedError(false), 3000);
+      return;
+    }
+
+    const uniqueStatuses = Array.from(new Set(selectedStatuses));
+    if (uniqueStatuses.length > 1) {
+      setShowMixStatusError(true);
+      setTimeout(() => setShowMixStatusError(false), 3000);
+      return;
+    }
+
+    void handleOpenModal(action);
   };
 
   function normalizeLegacyColumn(col: any) {
@@ -314,6 +330,65 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const handleListButtonClick = (row: ProductDTO) => {
     setSelectedProduct(row);
     setDetailOpen(true);
+  };
+
+  const callWaitApprovedApi = async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatus,
+    motivation: string
+  ) => {
+    try {
+      await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
+    } catch (error) {
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
+    }
+  };
+
+  const handleConfirmRestore = async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatus,
+    motivation: string
+  ) => {
+    await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
+    setRestoreDialogOpen(false);
+    setShowMsgApproved(true);
+  };
+
+  const resetAllMsgResults = () => {
+    setShowMsgRejected(false);
+    setShowMsgApproved(false);
+    setShowMsgWaitApproved(false);
+    setShowMsgSupervised(false);
+    setShowMsgRejectedApprovation(false);
+    setMsgAcceptApprovation(false);
+  };
+
+  const setMsgResultByAction = (
+    actionType?: string,
+    isInvitaliaUser?: boolean,
+    isInvitaliaAdmin?: boolean
+  ) => {
+    if (actionType === PRODUCTS_STATES.SUPERVISED && isInvitaliaUser) {
+      setShowMsgSupervised(true);
+      return;
+    }
+    if (actionType === PRODUCTS_STATES.WAIT_APPROVED && isInvitaliaUser) {
+      setShowMsgWaitApproved(true);
+      return;
+    }
+    if (actionType === PRODUCTS_STATES.WAIT_APPROVED && isInvitaliaAdmin) {
+      setMsgAcceptApprovation(true);
+      return;
+    }
+    if (actionType === MIDDLE_STATES.REJECT_APPROVATION && isInvitaliaAdmin) {
+      setShowMsgRejectedApprovation(true);
+      return;
+    }
+    if (actionType === PRODUCTS_STATES.REJECTED && isInvitaliaUser) {
+      setShowMsgRejected(true);
+    }
   };
 
   return (
@@ -364,49 +439,82 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
       <ProductResultMessages
         showMsgWaitApproved={showMsgWaitApproved}
-        showMsgSupervised={false}
+        showMsgSupervised={showMsgSupervised}
         showMsgApproved={showMsgApproved}
-        showMsgAcceptApprovation={false}
+        showMsgAcceptApprovation={showMsgAcceptApprovation}
         showMsgRejected={showMsgRejected}
-        showMsgRejectedApprovation={false}
-        showMixStatusError={false}
-        showYourselfApprovedError={false}
+        showMsgRejectedApprovation={showMsgRejectedApprovation}
+        showMixStatusError={showMixStatusError}
+        showYourselfApprovedError={showYourselfApprovedError}
         t={t}
         getMsgResultByActionType={() => ''}
         bottom={80}
       />
 
-      {modalOpen && (
-        <ProductBulkActionDialog
-          open={modalOpen}
-          action={modalAction}
-          selected={selected}
-          tableData={tableData}
-          isInvitaliaUser={isInvitaliaUser}
-          onClose={() => setModalOpen(false)}
-          onConfirm={async () => {
-            if (!modalAction) {
-              return;
+      <ProductModal
+        open={modalOpen}
+        onClose={(cancelled) => {
+          setModalOpen(false);
+          if (cancelled) {
+            resetAllMsgResults();
+          }
+        }}
+        actionType={modalAction}
+        onUpdateTable={() => setRefreshKey(prev => prev + 1)}
+        selectedProducts={
+          tableData
+            .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
+            .map((row) => ({
+              status: row.status as ProductStatus,
+              productName: row.productName,
+              gtinCode: row.gtinCode,
+              category: row.category,
+            })) as Array<{
+              status: ProductStatus;
+              productName?: string;
+              gtinCode: string;
+              category?: string;
+            }>
+        }
+        onSuccess={(actionType) => {
+          setMsgResultByAction(actionType, isInvitaliaUser, isInvitaliaAdmin);
+        }}
+      />
+
+      <ProductConfirmDialog
+        open={restoreDialogOpen}
+        cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
+        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${selected.length
+          })`}
+        title={t('invitaliaModal.waitApproved.listTitle')}
+        message={t('invitaliaModal.waitApproved.description', { L2: USERS_NAMES.INVITALIA_L2 })}
+        onCancel={() => setRestoreDialogOpen(false)}
+        onConfirm={async () => {
+          const currentStatus =
+            (tableData.find((row) => row.gtinCode === selected[0])
+              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
+          try {
+            await handleConfirmRestore(selected, currentStatus, EMPTY_DATA);
+            setRefreshKey(prev => prev + 1);
+            setRestoreDialogOpen(false);
+          } catch (error) {
+            if (DEBUG_CONSOLE) {
+              console.error('Error during restore:', error);
             }
-
-            handleModalSuccess({
-              selected,
-              tableData,
-              modalAction,
-              isInvitaliaUser,
-              setShowMsgRejected,
-              setShowMsgApproved,
-              setShowMsgWaitApproved,
-            });
-
-            setModalOpen(false);
-            setSelected([]);
-          }}
-          setShowMsgRejected={setShowMsgRejected}
-          setShowMsgApproved={setShowMsgApproved}
-          setShowMsgWaitApproved={setShowMsgWaitApproved}
-        />
-      )}
+          }
+        }}
+        onSuccess={() => {
+          resetAllMsgResults();
+          const currentStatus =
+            (tableData.find((row) => row.gtinCode === selected[0])
+              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
+          if (isInvitaliaUser && currentStatus === ProductStatus.UPLOADED) {
+            setShowMsgWaitApproved(true);
+          } else {
+            setShowMsgApproved(true);
+          }
+        }}
+      />
 
       {selectedProduct && (
         <DetailDrawer
@@ -432,7 +540,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
               setDetailOpen(false);
               setSelectedProduct(null);
             }}
-            onShowRejectedMsg={() => {}}
+            onShowRejectedMsg={() => { }}
           />
         </DetailDrawer>
       )}

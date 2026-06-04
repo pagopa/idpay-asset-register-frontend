@@ -5,6 +5,7 @@ import { Order } from '../helpers';
 import { DEBUG_CONSOLE } from '../../../utils/constants';
 
 export type UseProductsTableParams = {
+  refreshKey: number;
   initiativeId: string;
   organizationId: string;
   orderBy: keyof ProductDTO;
@@ -21,6 +22,7 @@ export type UseProductsTableParams = {
 };
 
 export const useProductsTable = ({
+  refreshKey,
   initiativeId,
   organizationId,
   orderBy,
@@ -89,6 +91,7 @@ export const useProductsTable = ({
   useEffect(() => {
     void fetchProducts();
   }, [
+    refreshKey,
     initiativeId,
     organizationId,
     page,
