@@ -269,11 +269,38 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     setModalOpen(true);
   };
 
-  const effectiveColumns = useMemo(() => {
-    const baseCols = tableConfig?.columns ?? [];
-    const hasAction = baseCols.some((c: any) => c.type === 'action');
+  function normalizeLegacyColumn(col: any) {
+    if (
+      typeof col?.labelKey === 'string' &&
+      col.labelKey.startsWith('pages.products.listHeader.')
+    ) {
+      const legacyIdMap: Record<string, string> = {
+        organizationName: 'producer',
+      };
 
-    return hasAction ? baseCols : [...baseCols, { id: '__detail__', labelKey: '', type: 'action' }];
+      const mappedId = legacyIdMap[col.id] ?? col.id;
+
+      return {
+        ...col,
+        labelKey: `tables.products.columns.${mappedId}`,
+      };
+    }
+
+    return col;
+  }
+
+  const effectiveColumns = useMemo(() => {
+    const baseColumns = tableConfig?.columns ?? [];
+
+    const columns = baseColumns.map(normalizeLegacyColumn);
+
+    const hasActionColumn = columns.some((c: any) => c.type === 'action');
+
+    if (hasActionColumn) {
+      return columns;
+    }
+
+    return [...columns, { id: '__detail__', labelKey: '', type: 'action' }];
   }, [tableConfig]);
 
   if (!tableConfig) {
@@ -395,8 +422,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
             open={detailOpen}
             data={selectedProduct}
             detailFields={tableConfig?.detail?.fields}
-            isInvitaliaUser={false}
-            isInvitaliaAdmin={false}
+            isInvitaliaUser={isInvitaliaUser}
+            isInvitaliaAdmin={isInvitaliaAdmin}
             onClose={() => {
               setDetailOpen(false);
               setSelectedProduct(null);

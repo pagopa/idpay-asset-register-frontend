@@ -31,6 +31,7 @@
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
         "category": "Categoria",
+        "producer": "Produttore",
         "status": "Stato",
         "batchName": "Lotto"
       },

@@ -38,7 +38,6 @@ const ProductStatusActionBar: React.FC<Props> = ({
       PRODUCTS_STATES.SUPERVISED
   );
 
-  // Restore legacy logic: Approve only if ALL selected are UPLOADED
   const selectedStatuses = selected.map((selectedKey) => {
     const row = tableData.find(
       (r) =>
@@ -57,17 +56,16 @@ const ProductStatusActionBar: React.FC<Props> = ({
 
   const allWaitApproved = selectedStatuses.every((s) => s === PRODUCTS_STATES.WAIT_APPROVED);
 
-  // Approve -> only if ALL are UPLOADED
-  const disableApprove = selected.length === 0 || !allUploaded;
+  const disableApprove =
+    selected.length === 0 ||
+    (isInvitaliaUser ? !(allUploaded || allSupervised || allWaitApproved) : !allWaitApproved);
 
-  // Supervise (Invitalia) -> only if ALL are APPROVED
-  const disableSupervise = selected.length === 0 || !allApproved;
+  const disableSupervise =
+    selected.length === 0 || !(isInvitaliaUser && (allUploaded || allApproved));
 
-  // Reject:
-  // Invitalia -> ALL APPROVED OR ALL SUPERVISED
-  // L1/L2 -> ALL WAIT_APPROVED
   const disableReject =
-    selected.length === 0 || (isInvitaliaUser ? !(allApproved || allSupervised) : !allWaitApproved);
+    selected.length === 0 ||
+    (isInvitaliaUser ? !(allUploaded || allApproved || allSupervised) : !allWaitApproved);
 
   return (
     <Box display="flex" flexDirection="row" justifyContent="flex-end">

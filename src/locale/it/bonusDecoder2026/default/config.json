@@ -112,6 +112,17 @@
             "labelKey": "tables.products.filters.productFileId"
           }
         ],
+        "selection": {
+          "rules": {
+            "invitalia": ["UPLOADED", "SUPERVISED"],
+            "invitalia_admin": ["WAIT_APPROVED"]
+          }
+        },
+        "defaultFiltersByRole": {
+          "invitalia_admin": {
+            "status": "WAIT_APPROVED"
+          }
+        },
         "detail": {
           "fields": [
             { "id": "productName", "labelKey": "pages.productDetail.productName" },
