@@ -1,5 +1,6 @@
 import React from 'react';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import MsgResult from './MsgResult';
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
   showMsgRejectedApprovation: boolean;
   showMixStatusError: boolean;
   showYourselfApprovedError: boolean;
-  t: any;
+  showGenericError: boolean;
   getMsgResultByActionType: (t: any, actionType?: string) => string;
   bottom: number;
 };
@@ -25,11 +26,12 @@ const ProductResultMessages: React.FC<Props> = ({
   showMsgRejectedApprovation,
   showMixStatusError,
   showYourselfApprovedError,
-  t,
+  showGenericError,
   getMsgResultByActionType,
   bottom,
-}) => (
-  <>
+}) => {
+  const {t} = useScopedTranslation();
+  return <>
     {showMsgWaitApproved && (
       <MsgResult
         severity="success"
@@ -85,7 +87,15 @@ const ProductResultMessages: React.FC<Props> = ({
     {showYourselfApprovedError && (
       <MsgResult severity="error" message={t('msgResutlt.errorYourselfApproved')} bottom={bottom} />
     )}
-  </>
-);
+
+    {showGenericError && (
+      <MsgResult
+        severity="error"
+        message={t('msgResutlt.errorGenericDescription')}
+        bottom={bottom}
+      />
+    )}
+  </>;
+};
 
 export default ProductResultMessages;

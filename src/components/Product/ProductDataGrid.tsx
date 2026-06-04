@@ -10,16 +10,16 @@ import {
   setInstitution,
 } from '../../redux/slices/invitaliaSlice';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
-import { DEBUG_CONSOLE, EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_NAMES } from '../../utils/constants';
+import { DEBUG_CONSOLE, EMPTY_DATA, USERS_NAMES } from '../../utils/constants';
 import { setWaitApprovedStatusList } from '../../services/registerService';
 
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { SelectProps } from '../FiltersDrawer/filtersRender';
 import EmptyListTable from '../../pages/components/EmptyListTable';
+import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 import { useProductsTable } from './hooks/useProductsTable';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
-import { getStatusChecks } from './ProductDataGrid.helpers';
 
 import ProductDataGridView from './ProductDataGridView';
 import ProductResultMessages from './ProductResultMessages';
@@ -34,6 +34,7 @@ import { useEnrichedProductFilters } from './hooks/useEnrichedProductFilters';
 import { useTargetOrganization } from './hooks/useTargetOrganization';
 import ProductModal from './ProductModal';
 import ProductConfirmDialog from './ProductConfirmDialog';
+import { getStatusChecks } from './ProductDataGrid.helpers';
 
 const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const { t } = useScopedTranslation();
@@ -251,6 +252,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [showMixStatusError, setShowMixStatusError] = useState(false);
   const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
+  const [showGenericError, setShowGenericError] = useState(false);
 
   const handleOpenModal = (action: string) => {
     if (action === PRODUCTS_STATES.WAIT_APPROVED) {
@@ -446,8 +448,24 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         showMsgRejectedApprovation={showMsgRejectedApprovation}
         showMixStatusError={showMixStatusError}
         showYourselfApprovedError={showYourselfApprovedError}
-        t={t}
-        getMsgResultByActionType={() => ''}
+        showGenericError={showGenericError}
+        getMsgResultByActionType={(t, actionType) => {
+          switch (actionType) {
+            case PRODUCTS_STATES.WAIT_APPROVED:
+              return t('invitaliaModal.waitApproved.msgResultWaitApproved');
+            case PRODUCTS_STATES.SUPERVISED:
+              return t('invitaliaModal.supervised.msgResultSupervised');
+            case PRODUCTS_STATES.REJECTED:
+              return t('invitaliaModal.rejected.msgResultRejected');
+            case MIDDLE_STATES.REJECT_APPROVATION:
+              return t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation');
+            case MIDDLE_STATES.ACCEPT_APPROVATION:
+            case PRODUCTS_STATES.APPROVED:
+              return t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation');
+            default:
+              return '';
+          }
+        }}
         bottom={80}
       />
 
@@ -541,6 +559,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
               setSelectedProduct(null);
             }}
             onShowRejectedMsg={() => { }}
+            onShowGenericError={() => setShowGenericError(true)}
           />
         </DetailDrawer>
       )}
