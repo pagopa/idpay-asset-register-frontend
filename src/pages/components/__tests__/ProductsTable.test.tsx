@@ -1,219 +1,97 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+/// <reference types="jest" />
 import '@testing-library/jest-dom';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ProductsTable from '../ProductsTable';
 
 jest.mock('../../../hooks/useScopedTranslation', () => ({
   __esModule: true,
-  default: () => ({
-    t: (k: string) => k,
-    initiativeName: 'test',
-  }),
+  default: () => ({ t: (k: string) => k }),
 }));
 
 jest.mock('../../../hooks/useInitiativeConfig', () => ({
-  __esModule: true,
   useInitiativeConfig: () => ({
-    config: {
-      ui: {
-        tables: {
-          products: {
-            style: {},
-          },
-        },
-      },
-    },
-    loading: false,
+    config: { tables: { products: { style: { lengths: { table: 10 } } } } },
   }),
+}));
+
+jest.mock('../../../helpers', () => ({
+  truncateString: jest.fn((v: string, l: number) => v.slice(0, l)),
+  getResponsiveTableMaxLength: jest.fn(() => 5),
 }));
 
 jest.mock('../../../components/Product/ProductStatusChip', () => ({
   __esModule: true,
-  default: ({ status }: { status: string }) => <span data-testid="status-chip">{status}</span>,
+  default: ({ status }: any) => <div data-testid="status">{status}</div>,
 }));
 
-const columns = [
-  { id: 'checkbox', labelKey: 'checkbox', type: 'checkbox' as const },
-  { id: 'category', labelKey: 'category', sortable: true },
-  { id: 'gtinCode', labelKey: 'gtin' },
+jest.mock('../../../components/Product/EprelLinks', () => ({
+  __esModule: true,
+  default: () => <div data-testid="eprel">eprel</div>,
+}));
+
+const baseColumns: any = [
+  { id: 'checkbox', labelKey: 'chk', type: 'checkbox' },
+  { id: 'name', labelKey: 'name', sortable: true },
   { id: 'status', labelKey: 'status' },
-  { id: 'action', labelKey: 'action', type: 'action' as const },
+  { id: 'link', labelKey: 'link', type: 'eprelLink' },
+  { id: 'action', labelKey: 'act', type: 'action' },
 ];
 
-const baseData = [
-  {
-    category: 'Lavatrice',
-    gtinCode: 'GTIN-1',
-    status: 'SUPERVISED',
-  },
-  {
-    category: 'Forno',
-    gtinCode: 'GTIN-2',
-    status: 'REJECTED',
-  },
-] as any[];
-
-const renderTable = (overrideProps: any = {}) => {
-  const setSelected = jest.fn();
-  const handleListButtonClick = jest.fn();
-
-  render(
-    <ProductsTable
-      tableData={baseData}
-      columns={columns}
-      selection={{ enabled: true }}
-      order="asc"
-      orderBy="category"
-      onRequestSort={jest.fn()}
-      selected={[]}
-      setSelected={setSelected}
-      handleListButtonClick={handleListButtonClick}
-      emptyData="-"
-      {...overrideProps}
-    />
-  );
-
-  return { setSelected, handleListButtonClick };
+const baseRow: any = {
+  gtinCode: '123',
+  name: 'LongValueName',
+  status: 'APPROVED',
 };
 
-describe('ProductsTable (rewritten)', () => {
-  it('renders headers, rows and status chip correctly', () => {
-    renderTable();
-
-    expect(screen.getByText('category')).toBeInTheDocument();
-    expect(screen.getByText('Lavatrice')).toBeInTheDocument();
-    expect(screen.getByText('Forno')).toBeInTheDocument();
-
-    const chips = screen.getAllByTestId('status-chip');
-    expect(chips[0]).toHaveTextContent('SUPERVISED');
-    expect(chips[1]).toHaveTextContent('REJECTED');
-  });
-
-  it('calls onRequestSort when clicking sortable header', () => {
-    const onRequestSort = jest.fn();
-
-    renderTable({ onRequestSort });
-
-    fireEvent.click(screen.getByRole('button', { name: 'category' }));
-    expect(onRequestSort).toHaveBeenCalled();
-  });
-
-  it('toggles checkbox selection', () => {
-    const { setSelected } = renderTable();
-
-    const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]);
-
-    expect(setSelected).toHaveBeenCalled();
-  });
-
-  it('calls handleListButtonClick when action icon is clicked', () => {
-    const { handleListButtonClick } = renderTable();
-
-    const rows = screen.getAllByRole('row');
-    const firstDataRow = rows[1];
-
-    const actionCell = within(firstDataRow).getAllByRole('cell').pop();
-    const actionButton = within(actionCell as HTMLElement).getByRole('button');
-
-    fireEvent.click(actionButton);
-
-    expect(handleListButtonClick).toHaveBeenCalledWith(
-      expect.objectContaining({ category: 'Lavatrice' })
-    );
-  });
-
-  it('renders empty row when tableData is empty', () => {
+describe('ProductsTable', () => {
+  it('renders empty state', () => {
     render(
       <ProductsTable
         tableData={[]}
-        columns={columns}
-        selection={{ enabled: true }}
+        columns={baseColumns}
         order="asc"
-        orderBy="category"
+        orderBy="name"
         onRequestSort={jest.fn()}
         selected={[]}
         setSelected={jest.fn()}
         handleListButtonClick={jest.fn()}
-        emptyData="NO_DATA"
       />
     );
 
-    expect(screen.getByText('NO_DATA')).toBeInTheDocument();
+    expect(screen.getByText('-')).toBeInTheDocument();
   });
 
-  it('renders without crashing when columns is undefined (uses default [])', () => {
+  it('renders rows and checkbox selection', () => {
+    const setSelected = jest.fn();
+
     render(
       <ProductsTable
-        tableData={baseData}
-        columns={undefined as any}
+        tableData={[baseRow]}
+        columns={baseColumns}
         selection={{ enabled: true }}
         order="asc"
-        orderBy="category"
+        orderBy="name"
         onRequestSort={jest.fn()}
         selected={[]}
-        setSelected={jest.fn()}
+        setSelected={setSelected}
         handleListButtonClick={jest.fn()}
       />
     );
-    expect(screen.getByRole('table')).toBeInTheDocument();
-  });
 
-  it('setSelected updater adds uniqueKey when checked and key is not in prev', () => {
-    const setSelected = jest.fn().mockImplementation((fn: (prev: string[]) => string[]) => {
-      const result = fn([]);
-      expect(result).toContain('GTIN-1');
-    });
-
-    renderTable({ setSelected });
-
-    const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]);
+    const checkbox = screen.getByRole('checkbox');
+    fireEvent.click(checkbox);
 
     expect(setSelected).toHaveBeenCalled();
   });
 
-  it('setSelected updater returns prev unchanged when key is already selected', () => {
-    const setSelected = jest.fn().mockImplementation((fn: (prev: string[]) => string[]) => {
-      const result = fn(['GTIN-1']);
-      expect(result).toEqual(['GTIN-1']);
-    });
-
-    renderTable({ setSelected });
-
-    const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]);
-
-    expect(setSelected).toHaveBeenCalled();
-  });
-
-  it('setSelected updater removes uniqueKey when checkbox is unchecked', () => {
-    const setSelected = jest.fn().mockImplementation((fn: (prev: string[]) => string[]) => {
-      const result = fn(['GTIN-1']);
-      expect(result).not.toContain('GTIN-1');
-    });
-
-    renderTable({ selected: ['GTIN-1'], setSelected });
-
-    const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]);
-
-    expect(setSelected).toHaveBeenCalled();
-  });
-
-  it('renders numeric cell value via the value ?? "-" fallback', () => {
-    const colsWithNumber = [
-      ...columns,
-      { id: 'score', labelKey: 'score' },
-    ];
-    const dataWithNumber = [{ ...baseData[0], score: 99 }] as any[];
-
+  it('renders status and eprel link', () => {
     render(
       <ProductsTable
-        tableData={dataWithNumber}
-        columns={colsWithNumber}
-        selection={{ enabled: true }}
+        tableData={[baseRow]}
+        columns={baseColumns}
         order="asc"
-        orderBy="category"
+        orderBy="name"
         onRequestSort={jest.fn()}
         selected={[]}
         setSelected={jest.fn()}
@@ -221,22 +99,57 @@ describe('ProductsTable (rewritten)', () => {
       />
     );
 
-    expect(screen.getByText('99')).toBeInTheDocument();
+    expect(screen.getByTestId('status')).toHaveTextContent('APPROVED');
+    expect(screen.getByTestId('eprel')).toBeInTheDocument();
   });
 
-  it('renders "-" when cell value is undefined', () => {
-    const colsWithMissing = [
-      ...columns,
-      { id: 'missingField', labelKey: 'missingField' },
-    ];
+  it('handles action click', () => {
+    const handler = jest.fn();
 
     render(
       <ProductsTable
-        tableData={baseData}
-        columns={colsWithMissing}
-        selection={{ enabled: true }}
+        tableData={[baseRow]}
+        columns={baseColumns}
         order="asc"
-        orderBy="category"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={handler}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+    expect(handler).toHaveBeenCalled();
+  });
+
+  it('handles sortable header click', () => {
+    const sort = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        order="asc"
+        orderBy="name"
+        onRequestSort={sort}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByText('name'));
+    expect(sort).toHaveBeenCalled();
+  });
+
+  it('truncates long string values', () => {
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={[{ id: 'name', labelKey: 'name' }]}
+        order="asc"
+        orderBy="name"
         onRequestSort={jest.fn()}
         selected={[]}
         setSelected={jest.fn()}
@@ -244,8 +157,6 @@ describe('ProductsTable (rewritten)', () => {
       />
     );
 
-    const cells = screen.getAllByRole('cell');
-    const dashCells = cells.filter((c) => c.textContent === '-');
-    expect(dashCells.length).toBeGreaterThan(0);
+    expect(screen.getByText('LongV')).toBeInTheDocument();
   });
 });

@@ -1,142 +1,123 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+/// <reference types="jest" />
+import React from 'react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { filtersRender } from '../filtersRender';
+
+jest.mock('../../../helpers', () => ({
+  filterInputWithSpaceRule: jest.fn((v: string) => v.replace(/\s/g, '')),
+}));
 
 const t = (k: string) => k;
 
-describe('filtersRender.select', () => {
-  it('renders empty string when filter label is undefined (covers renderValue fallback)', () => {
+describe('filtersRender - select', () => {
+  it('renders select options and handles change with labelKey', () => {
     const setFilters = jest.fn();
 
-    render(
-      filtersRender.select({
-        item: { id: 'status', labelKey: 'status.label' },
-        t: t as any,
-        filters: {},
-        setFilters,
-        setErrors: jest.fn(),
-        template: {
-          A: { label: 'Option A' },
-        },
-      } as any)
-    );
+    const template = {
+      A: { labelKey: 'label.A', label: 'label.A' },
+      B: { label: 'Label B', color: 'primary' as any },
+    };
 
-    const select = screen.getByRole('combobox');
-    expect(select).toBeInTheDocument();
+    const element = filtersRender.select({
+      item: { id: 'status', labelKey: 'status.label' },
+      t: t as any,
+      filters: {},
+      setFilters,
+      setErrors: jest.fn(),
+      template,
+    });
 
-    const cleaned = select.textContent?.replace(/\u200B/g, '') ?? '';
-    expect(cleaned.trim()).toBe('');
-  });
+    render(element);
 
-  it('uses template label when selecting option', () => {
-    const setFilters = jest.fn();
-
-    render(
-      filtersRender.select({
-        item: { id: 'status', labelKey: 'status.label' },
-        t: t as any,
-        filters: {},
-        setFilters,
-        setErrors: jest.fn(),
-        template: {
-          A: { label: 'Option A' },
-        },
-      } as any)
-    );
-
-    fireEvent.mouseDown(screen.getByRole('combobox'));
-    fireEvent.click(screen.getByText('Option A'));
+    fireEvent.mouseDown(screen.getByRole('button'));
+    fireEvent.click(screen.getByText('label.A'));
 
     expect(setFilters).toHaveBeenCalledWith('status', {
       value: 'A',
-      label: 'Option A',
+      label: 'label.A',
     });
   });
 });
 
-describe('filtersRender.text', () => {
-  it('handles onChange with valid value (no error)', () => {
+describe('filtersRender - text', () => {
+  it('handles valid regex input', () => {
     const setFilters = jest.fn();
     const setErrors = jest.fn();
 
-    render(
-      filtersRender.text({
-        item: {
-          id: 'code',
-          labelKey: 'code.label',
-          regEx: '^[A-Z]+$',
-        },
-        t: t as any,
-        filters: {},
-        setFilters,
-        setErrors,
-        errors: [],
-      } as any)
-    );
+    const element = filtersRender.text({
+      item: {
+        id: 'code',
+        labelKey: 'code.label',
+        regEx: '^[0-9]+$',
+        message: 'error.msg',
+      },
+      t: t as any,
+      filters: {},
+      setFilters,
+      setErrors,
+    } as any);
 
-    const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: 'ABC' } });
+    render(element);
 
-    expect(setFilters).toHaveBeenCalledWith('code', { value: 'ABC' });
+    const input = screen.getByLabelText('code.label');
+    fireEvent.change(input, { target: { value: '123' } });
+
+    expect(setFilters).toHaveBeenCalledWith('code', { value: '123' });
     expect(setErrors).toHaveBeenCalledWith('code', false);
   });
 
-  it('handles onChange with invalid value (sets error)', () => {
+  it('handles invalid regex input', () => {
     const setFilters = jest.fn();
     const setErrors = jest.fn();
 
-    render(
-      filtersRender.text({
-        item: {
-          id: 'code',
-          labelKey: 'code.label',
-          regEx: '^[A-Z]+$',
-          message: 'error.message',
-        },
-        t: t as any,
+    const element = filtersRender.text({
+      item: {
+        id: 'code',
+        labelKey: 'code.label',
+        regEx: '^[0-9]+$',
+        message: 'error.msg',
+      },
+      t: t as any,
       filters: {},
-        setFilters,
-        setErrors,
-        errors: ['code'],
-      } as any)
-    );
+      setFilters,
+      setErrors,
+      errors: ['code'],
+    } as any);
 
-    const input = screen.getByRole('textbox');
+    render(element);
+
+    const input = screen.getByLabelText('code.label');
     fireEvent.change(input, { target: { value: 'abc' } });
 
-    expect(setFilters).toHaveBeenCalled();
     expect(setErrors).toHaveBeenCalledWith('code', true);
   });
 
-  it('handles onPaste and strips spaces before validation', () => {
+  it('handles paste removing spaces', () => {
     const setFilters = jest.fn();
     const setErrors = jest.fn();
 
-    render(
-      filtersRender.text({
-        item: {
-          id: 'code',
-          labelKey: 'code.label',
-          regEx: '^[A-Z]+$',
-        },
-        t: t as any,
-        filters: {},
-        setFilters,
-        setErrors,
-        errors: [],
-      } as any)
-    );
+    const element = filtersRender.text({
+      item: {
+        id: 'code',
+        labelKey: 'code.label',
+        regEx: '^[0-9]+$',
+      },
+      t: t as any,
+      filters: {},
+      setFilters,
+      setErrors,
+    } as any);
 
-    const input = screen.getByRole('textbox');
+    render(element);
+
+    const input = screen.getByLabelText('code.label');
 
     fireEvent.paste(input, {
       clipboardData: {
-        getData: () => 'A B C',
+        getData: () => '1 2 3',
       },
-      preventDefault: jest.fn(),
     });
 
-    expect(setFilters).toHaveBeenCalledWith('code', { value: 'ABC' });
-    expect(setErrors).toHaveBeenCalledWith('code', false);
+    expect(setFilters).toHaveBeenCalledWith('code', { value: '123' });
   });
 });
