@@ -88,7 +88,7 @@ jest.mock('../ProductDataGridView', () => ({
   default: () => <div data-testid="grid-view" />,
 }));
 
-jest.mock('./ProductResultMessages', () => ({
+jest.mock('../ProductResultMessages', () => ({
   __esModule: true,
   default: () => <div data-testid="result-messages" />,
 }));
