@@ -1,19 +1,44 @@
-import { useEffect, useState } from 'react';
-import { loadItInitiativeConfig } from '../locale/multiInitiativeConfig';
-import { buildNamespaceKey } from '../utils/buildNamespaceKey';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { InitiativeConfig, LegacyInitiativeConfig } from '../model/config/ConfigSchema';
+import {
+  loadInitiativeConfigThunk,
+  selectActiveInitiativeConfig,
+} from '../redux/slices/initiativeConfigSlice';
+import type { AppDispatch, RootState } from '../redux/store';
 import { useCurrentInitiative } from './useCurrentInitiative';
 import { useIDPayUser } from './useIDPayUser';
 
-export const useInitiativeConfig = () => {
+export const useInitiativeConfig = (): {
+  config: LegacyInitiativeConfig | undefined;
+  loading: boolean;
+  configError: unknown;
+} => {
   const initiative = useCurrentInitiative();
   const user = useIDPayUser();
-  const [config, setConfig] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [configError, setConfigError] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const config = useSelector(selectActiveInitiativeConfig) as InitiativeConfig | undefined;
+  const loading = useSelector((state: RootState) => state.initiativeConfig.loading);
+  const configError = useSelector((state: RootState) => state.initiativeConfig.error);
 
-  const mapNewStructureToLegacy = (cfg: any) => {
-    const { roles, templates, ui } = cfg;
+  useEffect(() => {
+    if (!initiative || !user?.org_role) {
+      return;
+    }
 
+    const startDate = (initiative as any)?.startDate;
+
+    void dispatch(
+      loadInitiativeConfigThunk({
+        initiativeName: initiative?.initiativeName,
+        role: user.org_role,
+        startDate,
+      })
+    );
+  }, [initiative, user?.org_role, dispatch]);
+
+  const mapNewStructureToLegacy = (cfg: InitiativeConfig): LegacyInitiativeConfig => {
+    const { roles, templates, ui } = cfg ?? {};
     return {
       role: roles?.name,
       logicalName: roles?.logicalName,
@@ -24,37 +49,13 @@ export const useInitiativeConfig = () => {
     };
   };
 
-  const normalizeConfig = (rawConfig: any) =>
-    rawConfig?.roles ? mapNewStructureToLegacy(rawConfig) : rawConfig;
+  const normalized: LegacyInitiativeConfig | undefined = config?.roles
+    ? mapNewStructureToLegacy(config)
+    : undefined;
 
-  useEffect(() => {
-    if (!initiative || !user?.org_role) {
-      return;
-    }
-
-    setLoading(true);
-
-    const startDate = (initiative as any)?.startDate ?? '';
-
-    const initiativeNamespace =
-      initiative?.initiativeName && startDate
-        ? buildNamespaceKey(initiative.initiativeName, startDate)
-        : (initiative as any)?.displayName ?? initiative?.initiativeId ?? '';
-
-    void loadItInitiativeConfig(initiativeNamespace, user.org_role)
-      .then((cfg) => {
-        if ((cfg as any)?.roleConfigMissing) {
-          setConfigError(true);
-          setConfig(null);
-        } else {
-          setConfig(normalizeConfig(cfg));
-          setConfigError(false);
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [initiative, user?.org_role]);
-
-  return { config, loading, configError };
+  return {
+    config: normalized,
+    loading,
+    configError,
+  };
 };

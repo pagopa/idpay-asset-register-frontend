@@ -1,6 +1,6 @@
 import { paginateInstitutions, sortInstitutions } from '../helpers';
 import { Institution } from '../../../model/Institution';
-import { InstitutionsResponse } from '../../../api/generated/register';
+import { ProducersList } from '../../../model/ProducersList';
 
 const mockInstitutions: Institution[] = [
   {
@@ -35,13 +35,13 @@ const mockInstitutions: Institution[] = [
   },
 ];
 
-const mockInstitutionsResponse: InstitutionsResponse = {
+const mockProducersList: ProducersList = {
   institutions: mockInstitutions,
 };
 
 describe('paginateInstitutions', () => {
   it('should paginate institutions correctly', () => {
-    const result: InstitutionsResponse = paginateInstitutions(mockInstitutionsResponse, 0, 2);
+    const result: ProducersList = paginateInstitutions(mockProducersList, 0, 2);
 
     const institutions = result.institutions as Institution[];
     expect(institutions).toHaveLength(2);
@@ -50,7 +50,7 @@ describe('paginateInstitutions', () => {
   });
 
   it('should return second page correctly', () => {
-    const result = paginateInstitutions(mockInstitutionsResponse, 1, 2);
+    const result = paginateInstitutions(mockProducersList, 1, 2);
 
     const institutions = result.institutions as Institution[];
     expect(institutions).toHaveLength(2);
@@ -59,7 +59,7 @@ describe('paginateInstitutions', () => {
   });
 
   it('should handle last page with fewer items', () => {
-    const result = paginateInstitutions(mockInstitutionsResponse, 2, 2);
+    const result = paginateInstitutions(mockProducersList, 2, 2);
 
     const institutions = result.institutions as Institution[];
     expect(institutions).toHaveLength(1);
@@ -67,7 +67,7 @@ describe('paginateInstitutions', () => {
   });
 
   it('should handle empty page', () => {
-    const result = paginateInstitutions(mockInstitutionsResponse, 10, 2);
+    const result = paginateInstitutions(mockProducersList, 10, 2);
 
     expect(result.institutions).toHaveLength(0);
   });
@@ -79,14 +79,14 @@ describe('paginateInstitutions', () => {
   });
 
   it('should handle undefined institutions', () => {
-    const emptyResponse: InstitutionsResponse = { institutions: undefined as any };
+    const emptyResponse: ProducersList = { institutions: undefined as any };
     const result = paginateInstitutions(emptyResponse, 0, 2);
 
     expect(result.institutions).toHaveLength(0);
   });
 
   it('should handle page 0 with different rowsPerPage', () => {
-    const result = paginateInstitutions(mockInstitutionsResponse, 0, 3);
+    const result = paginateInstitutions(mockProducersList, 0, 3);
 
     const institutions = result.institutions as Institution[];
     expect(institutions).toHaveLength(3);
@@ -162,17 +162,17 @@ describe('sortInstitutions', () => {
     it('should sort DD/MM/YYYY dates in ascending order', () => {
       const result = sortInstitutions(institutionsWithDDMMYYYY, 'asc', 'createdAt');
 
-      expect(result[0].institutionId).toBe('1'); // 15/01/2023
-      expect(result[1].institutionId).toBe('2'); // 20/02/2023
-      expect(result[2].institutionId).toBe('3'); // 10/03/2023
+      expect(result[0].institutionId).toBe('1');
+      expect(result[1].institutionId).toBe('2');
+      expect(result[2].institutionId).toBe('3');
     });
 
     it('should sort DD/MM/YYYY dates in descending order', () => {
       const result = sortInstitutions(institutionsWithDDMMYYYY, 'desc', 'createdAt');
 
-      expect(result[0].institutionId).toBe('3'); // 10/03/2023
-      expect(result[1].institutionId).toBe('2'); // 20/02/2023
-      expect(result[2].institutionId).toBe('1'); // 15/01/2023
+      expect(result[0].institutionId).toBe('3');
+      expect(result[1].institutionId).toBe('2');
+      expect(result[2].institutionId).toBe('1');
     });
   });
 
@@ -211,7 +211,7 @@ describe('sortInstitutions', () => {
 
       expect(result[0].institutionId).toBe('1');
       expect(result[1].institutionId).toBe('2');
-      expect(result[2].institutionId).toBe('3'); // null createdAt goes to end
+      expect(result[2].institutionId).toBe('3');
     });
   });
 
@@ -232,13 +232,13 @@ describe('sortInstitutions', () => {
       {
         institutionId: '3',
         description: 'Test 3',
-        createdAt: '32/13/2023', // invalid DD/MM/YYYY
+        createdAt: '32/13/2023',
         updatedAt: '32/13/2023',
       },
       {
         institutionId: '4',
         description: 'Test 4',
-        createdAt: '15/1/23', // incomplete format
+        createdAt: '15/1/23',
         updatedAt: '15/1/23',
       },
     ];
@@ -299,7 +299,6 @@ describe('sortInstitutions', () => {
 
       const result = sortInstitutions(numericInstitutions, 'asc', 'description');
 
-      // Should sort as strings, not numbers
       expect(result[0].description).toBe('100');
       expect(result[1].description).toBe('20');
       expect(result[2].description).toBe('3');
@@ -325,8 +324,8 @@ describe('sortInstitutions', () => {
 
       const result = sortInstitutions(institutionsWithEmptyDates, 'asc', 'createdAt');
 
-      expect(result[0].institutionId).toBe('1'); // empty string -> 0
-      expect(result[1].institutionId).toBe('2'); // valid date
+      expect(result[0].institutionId).toBe('1');
+      expect(result[1].institutionId).toBe('2');
     });
 
     it('should handle boundary dates in DD/MM/YYYY format', () => {
@@ -347,8 +346,8 @@ describe('sortInstitutions', () => {
 
       const result = sortInstitutions(institutionsWithBoundaryDates, 'asc', 'createdAt');
 
-      expect(result[0].institutionId).toBe('1'); // 01/01/2023
-      expect(result[1].institutionId).toBe('2'); // 31/12/2023
+      expect(result[0].institutionId).toBe('1');
+      expect(result[1].institutionId).toBe('2');
     });
 
     it('NaN case', () => {

@@ -4,49 +4,85 @@ import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { fetchUserFromLocalStorage } from '../../helpers';
-import { USERS_TYPES } from '../../utils/constants';
 import {
   institutionSelector,
   setInstitutionList,
   setInstitution,
-  institutionListSelector,
 } from '../../redux/slices/invitaliaSlice';
 import { ProductDTO } from '../../api/generated/register';
 
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { SelectProps } from '../FiltersDrawer/filtersRender';
+import EmptyListTable from '../../pages/components/EmptyListTable';
+import { RegisterApi } from '../../api/registerApiClient';
+import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 import { useProductsTable } from './hooks/useProductsTable';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
-import { validateBulkActionPreconditions } from './ProductDataGrid.helpers';
+import { validateBulkActionPreconditions, getSelectedStatuses } from './ProductDataGrid.helpers';
 
 import ProductDataGridView from './ProductDataGridView';
 import ProductResultMessages from './ProductResultMessages';
 import ProductDetail from './ProductDetail';
+import ProductBulkActionDialog from './ProductBulkActionDialog';
 
 type Props = {
   organizationId: string;
 };
+
+import { useResolvedProductTableConfig } from './hooks/useResolvedProductTableConfig';
+import { useEnrichedProductFilters } from './hooks/useEnrichedProductFilters';
+import { useTargetOrganization } from './hooks/useTargetOrganization';
 
 const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
   const { config } = useInitiativeConfig();
-  const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({});
-  const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {}) : {};
+  const typedConfig = config as import('../../model/config/ConfigSchema').InitiativeConfig;
+  const { tableConfig, paginationConfig, filtersConfig, templateConfig } =
+    useResolvedProductTableConfig(typedConfig);
 
-  const tableConfig = config?.tables?.products;
-  const paginationConfig = tableConfig?.ui?.pagination;
-  const filtersConfig: Array<Record<string, string>> = config?.tables?.products?.filters;
-  const templateConfig = config?.templates;
+  const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({});
+  const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length
+    ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {})
+    : {};
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
-  const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
+
+  const subRoleConfig = config?.subRoles?.[user?.org_role as string];
+  const hasProductsPermission = subRoleConfig?.permissions?.tables?.includes('products');
+
+  const currentRoleKey = user?.org_role as string | undefined;
+
+  const selectionRules = tableConfig?.selection?.rules ?? {};
+  const currentRoleRules = currentRoleKey ? selectionRules[currentRoleKey] : undefined;
+
+  const isInvitaliaUser = Array.isArray(currentRoleRules) && currentRoleRules.length > 0;
+  const isInvitaliaAdmin =
+    Array.isArray(currentRoleRules) && currentRoleRules.includes('WAIT_APPROVED');
 
   const institution = useSelector(institutionSelector);
-  const institutions = useSelector(institutionListSelector);
+
+  const { targetId } = useTargetOrganization({
+    organizationId,
+    user,
+    filtersValue,
+    institutionId: institution?.institutionId,
+    tableConfig,
+  });
+
+  useEffect(() => {
+    if (organizationId && tableConfig?.organizationSource === 'filter') {
+      setFilters((prev) => ({
+        ...prev,
+        producer: {
+          value: organizationId,
+          label: institution?.description || organizationId,
+        },
+      }));
+    }
+  }, [organizationId, institution?.description, tableConfig]);
 
   const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
@@ -63,16 +99,12 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(paginationConfig?.defaultRowsPerPage ?? 10);
   const [selected, setSelected] = useState<Array<string>>([]);
-  const refreshKey = 0;
+  const refreshKey = useMemo(() => Date.now(), [initiativeId]);
 
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
-
-  const targetId = isInvitaliaUser
-    ? filtersValue?.producer || institution?.institutionId || ''
-    : organizationId || user?.org_id || '';
 
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
     initiativeId,
@@ -81,57 +113,197 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     order,
     page,
     rowsPerPage,
-    ...filtersValue
+    ...filtersValue,
   });
 
-  const batchFilter: Record<string, SelectProps> = useMemo(() =>
-    batchFilterItems.reduce((acc, batch) => {
-      const batchName = batch?.batchName?.replace(".csv", "");
-      return { ...acc, [batch?.productFileId || '']: { label: batchName, value: batchName } };
-    }, {}), [tableData]);
+  // Replace producer label with readable name once products are loaded
+  useEffect(() => {
+    if (
+      organizationId &&
+      filters.producer &&
+      filters.producer.label === organizationId &&
+      tableData?.length > 0
+    ) {
+      const readableName = (tableData[0] as any)?.organizationName;
 
-  const producerFilter: Record<string, SelectProps> | undefined = useMemo(() =>
-    institutions?.reduce((acc, institution) => ({ ...acc, [institution?.institutionId]: { label: institution?.description, value: institution?.institutionId } }), {}),
-    [institutions]);
+      if (readableName) {
+        setFilters((prev) => ({
+          ...prev,
+          producer: {
+            value: organizationId,
+            label: readableName,
+          },
+        }));
+      }
+    }
+  }, [organizationId, tableData]);
+
+  const batchFilter: Record<string, SelectProps> = useMemo(
+    () =>
+      batchFilterItems.reduce((acc, batch) => {
+        const batchName = batch?.batchName?.replace('.csv', '') || '';
+        return {
+          ...acc,
+          [batch?.productFileId || '']: {
+            label: batchName,
+            value: batchName,
+          },
+        };
+      }, {}),
+    [batchFilterItems]
+  );
+
+  const { enrichedFiltersConfig } = useEnrichedProductFilters({
+    typedConfig,
+    filtersConfig,
+    batchFilter,
+    t,
+  });
+
+  // Apply role-based default filters (e.g. L2 -> WAIT_APPROVED)
+  useEffect(() => {
+    if (!currentRoleKey) {
+      return;
+    }
+
+    const roleDefaults = tableConfig?.defaultFiltersByRole?.[currentRoleKey];
+
+    if (!roleDefaults) {
+      return;
+    }
+
+    setFilters((prev) => {
+      // do not override manually set filters
+      if (prev && Object.keys(prev).length > 0 && prev.status) {
+        return prev;
+      }
+
+      const mappedDefaults = Object.entries(roleDefaults).reduce<
+        Record<string, { value: string; label?: string }>
+      >((acc, [key, value]) => {
+        const filterConfigItem = enrichedFiltersConfig?.find((f: any) => f.id === key);
+
+        const label =
+          filterConfigItem?.options && value && filterConfigItem.options[value]
+            ? t(filterConfigItem.options[value].labelKey)
+            : (value as string);
+
+        return {
+          ...acc,
+          [key]: { value: value as string, label },
+        };
+      }, {});
+
+      return {
+        ...mappedDefaults,
+        ...prev,
+      };
+    });
+  }, [currentRoleKey, tableConfig]);
 
   useEffect(() => {
+    // Reset state only when initiative changes
+    setFilters({});
+    setPage(0);
     setSelected([]);
-  }, [tableData]);
+  }, [initiativeId]);
 
   useEffect(() => {
-    if (isInvitaliaAdmin && filtersConfig && templateConfig) {
-      const defaultValues = filtersConfig?.filter((filter) => filter?.defaultValue);
-      if (defaultValues) {
-        const defaultFilters = defaultValues?.reduce((acc, { id, defaultValue }) => {
-          const label = t(templateConfig?.[id]?.[defaultValue]?.label);
-          return ({ ...acc, [id]: { value: defaultValue, label } });
-        }, {} as Record<string, { value: string; label?: string }>);
+    if (enrichedFiltersConfig) {
+      const defaultValues = enrichedFiltersConfig as Array<
+        import('../../model/config/ConfigSchema').FilterConfig
+      >;
+
+      const filteredDefaults = defaultValues.filter((filter) => !!filter?.defaultValue);
+
+      if (filteredDefaults.length > 0) {
+        const defaultFilters = filteredDefaults.reduce<
+          Record<string, { value: string; label?: string }>
+        >((acc, filter) => {
+          const { id, defaultValue, options } = filter;
+
+          const label =
+            options && defaultValue && options[defaultValue]?.labelKey
+              ? t(options[defaultValue].labelKey)
+              : defaultValue;
+
+          return {
+            ...acc,
+            [id]: { value: defaultValue || '', label },
+          };
+        }, {});
+
         setFilters(defaultFilters);
       }
-    };
-  }, [isInvitaliaAdmin, filtersConfig, templateConfig]);
+    }
+  }, [enrichedFiltersConfig, t]);
 
-  const handleOpenModalWithStatusCheck = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalAction, setModalAction] = useState<string | undefined>();
+  const [showMsgRejected, setShowMsgRejected] = useState(false);
+  const [showMsgApproved, setShowMsgApproved] = useState(false);
+  const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
+  const [showMsgSupervised, setShowMsgSupervised] = useState(false);
+  const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
+  const [showMsgAcceptApprovation, setShowMsgAcceptApprovation] = useState(false);
+  const [showGenericError, setShowGenericError] = useState(false);
+
+  const handleOpenModalWithStatusCheck = (action: string) => {
     const result = validateBulkActionPreconditions({
       selected,
       tableData,
-      isInvitaliaAdmin,
+      roleKey: currentRoleKey,
+      tableConfig,
     });
 
     if (!result.valid) {
       return;
     }
+
+    setModalAction(action);
+    setModalOpen(true);
   };
 
-  const effectiveColumns = useMemo(() => {
-    const baseCols = Array.isArray(tableConfig?.columns) ? tableConfig.columns : [];
-    const hasAction = baseCols.some((c: any) => c.type === 'action');
+  function normalizeLegacyColumn(col: any) {
+    if (
+      typeof col?.labelKey === 'string' &&
+      col.labelKey.startsWith('pages.products.listHeader.')
+    ) {
+      const legacyIdMap: Record<string, string> = {
+        organizationName: 'producer',
+      };
 
-    return hasAction ? baseCols : [...baseCols, { id: '__detail__', labelKey: '', type: 'action' }];
+      const mappedId = legacyIdMap[col.id] ?? col.id;
+
+      return {
+        ...col,
+        labelKey: `tables.products.columns.${mappedId}`,
+      };
+    }
+
+    return col;
+  }
+
+  const effectiveColumns = useMemo(() => {
+    const baseColumns = tableConfig?.columns ?? [];
+
+    const columns = baseColumns.map(normalizeLegacyColumn);
+
+    const hasActionColumn = columns.some((c: any) => c.type === 'action');
+
+    if (hasActionColumn) {
+      return columns;
+    }
+
+    return [...columns, { id: '__detail__', labelKey: '', type: 'action' }];
   }, [tableConfig]);
 
   if (!tableConfig) {
     return null;
+  }
+
+  if (!hasProductsPermission) {
+    return <EmptyListTable message="pages.products.noFileLoaded" />;
   }
 
   const handleListButtonClick = (row: ProductDTO) => {
@@ -186,18 +358,109 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       />
 
       <ProductResultMessages
-        showMsgWaitApproved={false}
-        showMsgSupervised={false}
-        showMsgApproved={false}
-        showMsgAcceptApprovation={false}
-        showMsgRejected={false}
-        showMsgRejectedApprovation={false}
+        showMsgWaitApproved={showMsgWaitApproved}
+        showMsgSupervised={showMsgSupervised}
+        showMsgApproved={showMsgApproved}
+        showMsgAcceptApprovation={showMsgAcceptApprovation}
+        showMsgRejected={showMsgRejected}
+        showMsgRejectedApprovation={showMsgRejectedApprovation}
         showMixStatusError={false}
         showYourselfApprovedError={false}
+        showGenericError={showGenericError}
         t={t}
-        getMsgResultByActionType={() => ''}
+        getMsgResultByActionType={(t, actionType) => {
+          switch (actionType) {
+            case PRODUCTS_STATES.WAIT_APPROVED:
+              return t('invitaliaModal.waitApproved.msgResultWaitApproved');
+            case PRODUCTS_STATES.SUPERVISED:
+              return t('invitaliaModal.supervised.msgResultSupervised');
+            case PRODUCTS_STATES.REJECTED:
+              return t('invitaliaModal.rejected.msgResultRejected');
+            case MIDDLE_STATES.REJECT_APPROVATION:
+              return t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation');
+            case MIDDLE_STATES.ACCEPT_APPROVATION:
+            case PRODUCTS_STATES.APPROVED:
+              return t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation');
+            default:
+              return '';
+          }
+        }}
         bottom={80}
       />
+
+      {modalOpen && (
+        <ProductBulkActionDialog
+          open={modalOpen}
+          action={modalAction}
+          selected={selected}
+          tableData={tableData}
+          isInvitaliaUser={isInvitaliaUser}
+          onClose={() => setModalOpen(false)}
+          onConfirm={async (_action, reason) => {
+            if (!modalAction) {
+              return;
+            }
+
+            const selectedStatuses = getSelectedStatuses(selected, tableData);
+            const currentStatus = selectedStatuses[0];
+
+            if (!currentStatus) {
+              return;
+            }
+
+            switch (modalAction) {
+              case PRODUCTS_STATES.WAIT_APPROVED:
+                await RegisterApi.setWaitApprovedStatusList(
+                  initiativeId,
+                  selected,
+                  currentStatus,
+                  reason || ''
+                );
+                break;
+
+              case PRODUCTS_STATES.APPROVED:
+                await RegisterApi.setApprovedStatusList(
+                  initiativeId,
+                  selected,
+                  currentStatus,
+                  reason || ''
+                );
+                break;
+
+              case PRODUCTS_STATES.SUPERVISED:
+                await RegisterApi.setSupervisionedStatusList(
+                  initiativeId,
+                  selected,
+                  currentStatus,
+                  reason || ''
+                );
+                break;
+
+              case PRODUCTS_STATES.REJECTED:
+              case MIDDLE_STATES.REJECT_APPROVATION:
+                await RegisterApi.setRejectedStatusList(
+                  initiativeId,
+                  selected,
+                  currentStatus,
+                  reason || ''
+                );
+                break;
+
+              default:
+                break;
+            }
+
+            // Success flow is handled inside ProductBulkActionDialog
+          }}
+          setShowMsgRejected={setShowMsgRejected}
+          setShowMsgApproved={setShowMsgApproved}
+          setShowMsgWaitApproved={setShowMsgWaitApproved}
+          setShowMsgSupervised={setShowMsgSupervised}
+          setShowMsgRejectedApprovation={setShowMsgRejectedApprovation}
+          setShowMsgAcceptApprovation={setShowMsgAcceptApprovation}
+          setShowGenericError={setShowGenericError}
+        />
+      )}
 
       {selectedProduct && (
         <DetailDrawer
@@ -223,7 +486,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
               setDetailOpen(false);
               setSelectedProduct(null);
             }}
-            onShowRejectedMsg={() => { }}
+            onShowRejectedMsg={() => {}}
+            onShowGenericError={() => setShowGenericError(true)}
           />
         </DetailDrawer>
       )}
@@ -235,8 +499,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         setFilters={setFilters}
         setPage={setPage}
         batchFilterItems={batchFilter}
-        producerFilterItems={producerFilter}
-        filtersConfig={filtersConfig}
+        filtersConfig={enrichedFiltersConfig}
         templateConfig={templateConfig}
       />
     </>

@@ -1,0 +1,150 @@
+import React, { useState } from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  CircularProgress,
+  Box,
+} from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { ProductDTO } from '../../api/generated/register';
+import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
+import { handleModalSuccess } from './ProductDataGrid.helpers';
+
+type Props = {
+  open: boolean;
+  action: string | undefined;
+  selected: Array<string>;
+  tableData: Array<ProductDTO>;
+  isInvitaliaUser: boolean;
+  onClose: () => void;
+  onConfirm: (action: string, reason?: string) => Promise<void>;
+  setShowMsgRejected: (v: boolean) => void;
+  setShowMsgApproved: (v: boolean) => void;
+  setShowMsgWaitApproved: (v: boolean) => void;
+  setShowMsgSupervised: (v: boolean) => void;
+  setShowMsgRejectedApprovation: (v: boolean) => void;
+  setShowMsgAcceptApprovation: (v: boolean) => void;
+  setShowGenericError: (v: boolean) => void;
+};
+
+const ProductBulkActionDialog: React.FC<Props> = ({
+  open,
+  action,
+  selected,
+  tableData,
+  isInvitaliaUser,
+  onClose,
+  onConfirm,
+  setShowMsgRejected,
+  setShowMsgApproved,
+  setShowMsgWaitApproved,
+  setShowMsgSupervised,
+  setShowMsgRejectedApprovation,
+  setShowMsgAcceptApprovation,
+  setShowGenericError,
+}) => {
+  const { t } = useTranslation();
+  const [reason, setReason] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  if (!action) {
+    return null;
+  }
+
+  const actionKeyMap: Record<string, string> = {
+    [PRODUCTS_STATES.SUPERVISED]: 'supervised',
+    [PRODUCTS_STATES.REJECTED]: 'rejected',
+    [PRODUCTS_STATES.WAIT_APPROVED]: 'waitApproved',
+    [MIDDLE_STATES.REJECT_APPROVATION]: 'rejectApprovation',
+    [MIDDLE_STATES.ACCEPT_APPROVATION]: 'acceptApprovation',
+  };
+
+  const modalKey = actionKeyMap[action];
+  const baseKey = `invitaliaModal.${modalKey}`;
+
+  const requireReason =
+    modalKey === 'supervised' || modalKey === 'rejected' || modalKey === 'rejectApprovation';
+
+  const handleConfirm = async () => {
+    if (requireReason && !reason) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await onConfirm(action, reason);
+
+      handleModalSuccess({
+        selected,
+        tableData,
+        modalAction: action,
+        isInvitaliaUser,
+        setShowMsgRejected,
+        setShowMsgApproved,
+        setShowMsgWaitApproved,
+        setShowMsgSupervised,
+        setShowMsgRejectedApprovation,
+        setShowMsgAcceptApprovation,
+      });
+
+      setShowGenericError(false);
+      onClose();
+    } catch (error) {
+      // Reset all success messages
+      setShowMsgRejected(false);
+      setShowMsgApproved(false);
+      setShowMsgWaitApproved(false);
+      setShowMsgSupervised(false);
+      setShowMsgRejectedApprovation(false);
+      setShowMsgAcceptApprovation(false);
+
+      // Always show generic error as fallback
+      setShowGenericError(true);
+
+      // Fix focus retention before closing modal (prevents aria-hidden warning)
+      if (document?.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+
+      onClose();
+    } finally {
+      setLoading(false);
+      setReason('');
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>{t(`${baseKey}.title`)}</DialogTitle>
+      <DialogContent>
+        <Box mb={2}>{t(`${baseKey}.description`, { L2: 'L2' })}</Box>
+        {requireReason && (
+          <TextField
+            fullWidth
+            label={t(`${baseKey}.reasonLabel`)}
+            placeholder={t(`${baseKey}.reasonPlaceholder`)}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            error={!reason}
+            helperText={!reason ? t(`${baseKey}.errorMessage`) : ''}
+            multiline
+            minRows={3}
+          />
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>{t(`${baseKey}.buttonTextCancel`)}</Button>
+        <Button variant="contained" onClick={handleConfirm} disabled={loading}>
+          {loading ? <CircularProgress size={20} /> : t(`${baseKey}.buttonTextConfirm`)}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default ProductBulkActionDialog;

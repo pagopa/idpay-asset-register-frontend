@@ -1,10 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import InstitutionsTable from '../institutionsTable';
 import { Institution } from '../../../model/Institution';
-import { InstitutionsResponse } from '../../../api/generated/register';
+import { ProducersList } from '../../../model/ProducersList';
 import '@testing-library/jest-dom';
 import { createStore } from '../../../redux/store';
 import { Provider } from 'react-redux';
+import { EMPTY_DATA } from '../../../utils/constants';
 
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
@@ -59,12 +60,18 @@ const mockInstitutions: Institution[] = [
     createdAt: '2023-02-01',
     updatedAt: '2023-02-02',
   },
+  {
+    institutionId: '2',
+    description: null,
+    createdAt: '2023-02-01',
+    updatedAt: '2023-02-02',
+  },
 ];
 
 const defaultProps = {
   loading: false,
   error: null,
-  data: { institutions: mockInstitutions } as InstitutionsResponse,
+  data: { institutions: mockInstitutions } as ProducersList,
   page: 0,
   rowsPerPage: 10,
   totalElements: 2,
@@ -116,6 +123,7 @@ describe('InstitutionsTable', () => {
     );
     expect(screen.getByText('Alpha Institution')).toBeInTheDocument();
     expect(screen.getByText('Beta Institution')).toBeInTheDocument();
+    expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
   });
 
   it('calls onRequestSort when header is clicked', () => {

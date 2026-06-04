@@ -6,16 +6,9 @@ import { useMemo, useState } from 'react';
 import FlagIcon from '@mui/icons-material/Flag';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
-import {
-  EMPTY_DATA,
-  // L1_MOTIVATION_OK,
-  MIDDLE_STATES,
-  PRODUCTS_STATES,
-  USERS_TYPES,
-} from '../../utils/constants';
+import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
-import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
-import { DEBUG_CONSOLE } from '../../utils/constants';
+import { RegisterApi } from '../../api/registerApiClient';
 import { statusChangeMessage } from '../../model/Product';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
@@ -41,13 +34,13 @@ const callRejectedApi = async (
   motivation: string,
   formalMotivation: string
 ) => {
-  try {
-    await setRejectedStatusList(initiativeId, gtinCodes, currentStatus, motivation, formalMotivation);
-  } catch (error) {
-    if (DEBUG_CONSOLE) {
-      console.error(error);
-    }
-  }
+  await RegisterApi.setRejectedStatusList(
+    initiativeId,
+    gtinCodes,
+    currentStatus,
+    motivation,
+    formalMotivation
+  );
 };
 
 const callWaitApprovedApi = async (
@@ -56,13 +49,7 @@ const callWaitApprovedApi = async (
   currentStatus: ProductStatus,
   motivation: string
 ) => {
-  try {
-    await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
-  } catch (error) {
-    if (DEBUG_CONSOLE) {
-      console.error(error);
-    }
-  }
+  await RegisterApi.setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
 };
 
 const handleOpenModal = (
@@ -310,7 +297,7 @@ function renderEntry(entry: any, idx: number, detailMaxLength: number) {
 function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps) {
   const { t } = useScopedTranslation();
   const { config } = useInitiativeConfig();
-  const detailMaxLength = config?.ui?.tables?.products?.style?.lengths?.detail ?? 40;
+  const detailMaxLength = config?.tables?.products?.style?.lengths?.detail ?? 40;
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
   const baseRows = getProductInfoRowsConfig(data, t, detailFields);
@@ -368,9 +355,7 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
         return format(new Date(rejectedEntry.updateDate), 'dd/MM/yyyy, HH:mm');
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.log('getFormalMotivationDateLabel error:', error);
-      }
+      // swallow formatting errors silently
     }
     return EMPTY_DATA;
   }
@@ -479,6 +464,7 @@ type ProductDetailProps = Props & {
   onShowSupervisedMsg?: () => void;
   onShowRejectedApprovationMsg?: () => void;
   onShowAcceptApprovationMsg?: () => void;
+  onShowGenericError?: () => void;
 };
 
 export default function ProductDetail({
@@ -494,6 +480,7 @@ export default function ProductDetail({
   onShowSupervisedMsg,
   onShowRejectedApprovationMsg,
   onShowAcceptApprovationMsg,
+  onShowGenericError,
 }: ProductDetailProps) {
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
@@ -502,25 +489,37 @@ export default function ProductDetail({
   const initiativeId = useCurrentInitiativeId();
 
   const handleConfirmRestore = async () => {
-    await handleOpenModal(
-      initiativeId,
-      PRODUCTS_STATES.APPROVED,
-      [data.gtinCode ?? ''],
-      data.status as ProductStatus,
-      EMPTY_DATA,
-      EMPTY_DATA
-    );
-    setRestoreDialogOpen(false);
-    if (typeof onUpdateTable === 'function') {
-      onUpdateTable();
-    }
-    if (typeof onClose === 'function') {
-      onClose();
-    }
-    if (typeof onShowWaitApprovedMsg === 'function') {
-      onShowWaitApprovedMsg();
-    } else if (typeof onShowApprovedMsg === 'function') {
-      onShowApprovedMsg();
+    try {
+      await handleOpenModal(
+        initiativeId,
+        PRODUCTS_STATES.APPROVED,
+        [data.gtinCode ?? ''],
+        data.status as ProductStatus,
+        EMPTY_DATA,
+        EMPTY_DATA
+      );
+
+      setRestoreDialogOpen(false);
+
+      if (typeof onUpdateTable === 'function') {
+        onUpdateTable();
+      }
+      if (typeof onClose === 'function') {
+        onClose();
+      }
+      if (typeof onShowWaitApprovedMsg === 'function') {
+        onShowWaitApprovedMsg();
+      } else if (typeof onShowApprovedMsg === 'function') {
+        onShowApprovedMsg();
+      }
+    } catch (error) {
+      setRestoreDialogOpen(false);
+      if (typeof onClose === 'function') {
+        onClose();
+      }
+      if (typeof onShowGenericError === 'function') {
+        onShowGenericError();
+      }
     }
   };
 

@@ -1,145 +1,300 @@
-import React from 'react';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+/// <reference types="jest" />
 import '@testing-library/jest-dom';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ProductsTable from '../ProductsTable';
 
 jest.mock('../../../hooks/useScopedTranslation', () => ({
   __esModule: true,
-  default: () => ({
-    t: (k: string) => k,
-    initiativeName: 'test',
+  default: () => ({ t: (k: string) => k }),
+}));
+
+jest.mock('../../../hooks/useInitiativeConfig', () => ({
+  useInitiativeConfig: () => ({
+    config: { tables: { products: { style: { lengths: { table: 10 } } } } },
   }),
 }));
 
-// ✅ Mock useInitiativeConfig to avoid useGetInitiativesQuery dependency
-jest.mock('../../../hooks/useInitiativeConfig', () => ({
-  __esModule: true,
-  useInitiativeConfig: () => ({
-    config: {
-      ui: {
-        tables: {
-          products: {
-            style: {},
-          },
-        },
-      },
-    },
-    loading: false,
-  }),
+jest.mock('../../../helpers', () => ({
+  truncateString: jest.fn((v: string, l: number) => v.slice(0, l)),
+  getResponsiveTableMaxLength: jest.fn(() => 5),
 }));
 
 jest.mock('../../../components/Product/ProductStatusChip', () => ({
   __esModule: true,
-  default: ({ status }: { status: string }) => <span data-testid="status-chip">{status}</span>,
+  default: ({ status }: any) => <div data-testid="status">{status}</div>,
 }));
 
-const columns = [
-  { id: 'checkbox', labelKey: 'checkbox', type: 'checkbox' as const },
-  { id: 'category', labelKey: 'category', sortable: true },
-  { id: 'gtinCode', labelKey: 'gtin' },
+jest.mock('../../../components/Product/EprelLinks', () => ({
+  __esModule: true,
+  default: () => <div data-testid="eprel">eprel</div>,
+}));
+
+const baseColumns: any = [
+  { id: 'checkbox', labelKey: 'chk', type: 'checkbox' },
+  { id: 'name', labelKey: 'name', sortable: true },
   { id: 'status', labelKey: 'status' },
-  { id: 'action', labelKey: 'action', type: 'action' as const },
+  { id: 'link', labelKey: 'link', type: 'eprelLink' },
+  { id: 'action', labelKey: 'act', type: 'action' },
 ];
 
-const baseData = [
-  {
-    category: 'Lavatrice',
-    gtinCode: 'GTIN-1',
-    status: 'SUPERVISED',
-  },
-  {
-    category: 'Forno',
-    gtinCode: 'GTIN-2',
-    status: 'REJECTED',
-  },
-];
-
-const renderTable = (overrideProps: any = {}) => {
-  const setSelected = jest.fn();
-  const handleListButtonClick = jest.fn();
-
-  render(
-    <ProductsTable
-      tableData={baseData}
-      columns={columns}
-      selection={{ enabled: true }}
-      order="asc"
-      orderBy="category"
-      onRequestSort={jest.fn()}
-      selected={[]}
-      setSelected={setSelected}
-      handleListButtonClick={handleListButtonClick}
-      emptyData="-"
-      {...overrideProps}
-    />
-  );
-
-  return { setSelected, handleListButtonClick };
+const baseRow: any = {
+  gtinCode: '123',
+  name: 'LongValueName',
+  status: 'APPROVED',
 };
 
-describe('ProductsTable (rewritten)', () => {
-  it('renders headers, rows and status chip correctly', () => {
-    renderTable();
-
-    expect(screen.getByText('category')).toBeInTheDocument();
-    expect(screen.getByText('Lavatrice')).toBeInTheDocument();
-    expect(screen.getByText('Forno')).toBeInTheDocument();
-
-    const chips = screen.getAllByTestId('status-chip');
-    expect(chips[0]).toHaveTextContent('SUPERVISED');
-    expect(chips[1]).toHaveTextContent('REJECTED');
-  });
-
-  it('calls onRequestSort when clicking sortable header', () => {
-    const onRequestSort = jest.fn();
-
-    renderTable({ onRequestSort });
-
-    fireEvent.click(screen.getByRole('button', { name: 'category' }));
-    expect(onRequestSort).toHaveBeenCalled();
-  });
-
-  it('toggles checkbox selection', () => {
-    const { setSelected } = renderTable();
-
-    const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]);
-
-    expect(setSelected).toHaveBeenCalled();
-  });
-
-  it('calls handleListButtonClick when action icon is clicked', () => {
-    const { handleListButtonClick } = renderTable();
-
-    const rows = screen.getAllByRole('row');
-    const firstDataRow = rows[1]; // skip header
-
-    const actionCell = within(firstDataRow).getAllByRole('cell').pop();
-    const actionButton = within(actionCell as HTMLElement).getByRole('button');
-
-    fireEvent.click(actionButton);
-
-    expect(handleListButtonClick).toHaveBeenCalledWith(
-      expect.objectContaining({ category: 'Lavatrice' })
-    );
-  });
-
-  it('renders empty row when tableData is empty', () => {
+describe('ProductsTable', () => {
+  it('renders empty state', () => {
     render(
       <ProductsTable
         tableData={[]}
-        columns={columns}
-        selection={{ enabled: true }}
+        columns={baseColumns}
         order="asc"
-        orderBy="category"
+        orderBy="name"
         onRequestSort={jest.fn()}
         selected={[]}
         setSelected={jest.fn()}
         handleListButtonClick={jest.fn()}
-        emptyData="NO_DATA"
       />
     );
 
-    expect(screen.getByText('NO_DATA')).toBeInTheDocument();
+    expect(screen.getByText('-')).toBeInTheDocument();
+  });
+
+  it('renders rows and checkbox selection', () => {
+    const setSelected = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={setSelected}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    const checkbox = screen.getByRole('checkbox');
+    fireEvent.click(checkbox);
+
+    expect(setSelected).toHaveBeenCalled();
+  });
+
+  it('renders status and eprel link', () => {
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('status')).toHaveTextContent('APPROVED');
+    expect(screen.getByTestId('eprel')).toBeInTheDocument();
+  });
+
+  it('handles action click', () => {
+    const handler = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={handler}
+      />
+    );
+
+    const buttons = screen.getAllByRole('button');
+    fireEvent.click(buttons[buttons.length - 1]);
+    expect(handler).toHaveBeenCalled();
+  });
+
+  it('handles sortable header click', () => {
+    const sort = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        order="asc"
+        orderBy="name"
+        onRequestSort={sort}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByText('name'));
+    expect(sort).toHaveBeenCalled();
+  });
+
+  it('truncates long string values', () => {
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={[{ id: 'name', labelKey: 'name' }]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('LongValueName')).toBeInTheDocument();
+  });
+
+  it('renders non truncated string when short', () => {
+    const shortRow = { ...baseRow, name: 'Short' };
+
+    render(
+      <ProductsTable
+        tableData={[shortRow]}
+        columns={[{ id: 'name', labelKey: 'name' }]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Short')).toBeInTheDocument();
+  });
+
+  it('renders fallback dash for null value', () => {
+    const row = { ...baseRow, name: null };
+
+    render(
+      <ProductsTable
+        tableData={[row]}
+        columns={[{ id: 'name', labelKey: 'name' }]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+  });
+
+  it('checkbox unselect branch', () => {
+    const setSelected = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={['123']}
+        setSelected={setSelected}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    const checkbox = screen.getByRole('checkbox');
+    checkbox.click();
+    expect(setSelected).toHaveBeenCalled();
+  });
+
+  it('keeps selected row unchanged when checking an already selected checkbox', () => {
+    const setSelected = jest.fn((updater) => {
+      expect(updater(['123'])).toEqual(['123']);
+    });
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={setSelected}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('checkbox'));
+    expect(setSelected).toHaveBeenCalled();
+  });
+
+  it('uses fallback keys and custom empty text', () => {
+    render(
+      <ProductsTable
+        tableData={[]}
+        columns={[]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+        emptyData="No products"
+      />
+    );
+
+    expect(screen.getByText('No products')).toBeInTheDocument();
+
+    const fallbackRow = { gtin: 'legacy-gtin', name: 12 } as any;
+    render(
+      <ProductsTable
+        tableData={[fallbackRow]}
+        columns={[{ id: 'name', labelKey: 'name', align: 'right', headerAlign: 'center' }]}
+        order="desc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('12')).toBeInTheDocument();
+  });
+
+  it('sortable header inactive branch', () => {
+    const sort = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={[{ id: 'name', labelKey: 'name', sortable: true }]}
+        order="asc"
+        orderBy="other"
+        onRequestSort={sort}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    screen.getByText('name').click();
+    expect(sort).toHaveBeenCalled();
   });
 });

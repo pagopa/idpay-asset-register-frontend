@@ -80,6 +80,16 @@ describe('ProductConfirmDialog', () => {
       expect(onCancel).toHaveBeenCalledTimes(0);
     });
 
+    it('calls onSuccess after confirm when provided', () => {
+      const onSuccess = jest.fn();
+
+      render(<ProductConfirmDialog {...baseProps} onSuccess={onSuccess} />);
+      fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+      expect(onSuccess).toHaveBeenCalledTimes(1);
+    });
+
     it('handles multiple rapid clicks on buttons', () => {
       render(<ProductConfirmDialog {...baseProps} />);
       const cancelBtn = screen.getByRole('button', { name: 'Cancel' });

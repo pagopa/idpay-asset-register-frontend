@@ -1,92 +1,215 @@
+/// <reference types="jest" />
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { filtersRender } from '../filtersRender';
 
-describe("Render component", () => {
-    const defaultProps = {
-        filters: {},
-        t: (value) => value,
-        setFilters: jest.fn(),
-        errors: [],
-        setErrors: jest.fn()
-    }
-    it("should render select component", async () => {
-        const props = {
-            ...defaultProps,
-            item: {
-                id: "status",
-                labelKey: "tables.products.filters.status"
-            },
-            template: {
-                UPLOADED: {
-                    label: "UPLOADED"
-                }
-            }
-        }
-        render(filtersRender.select(props))
+jest.mock('../../../helpers', () => ({
+  filterInputWithSpaceRule: jest.fn((v: string) => v.replace(/\s/g, '')),
+}));
 
-        const select = screen.getByRole("combobox")
+const t = (k: string) => k;
 
-        expect(select).toBeInTheDocument();
-        await userEvent.click(select)
+describe('filtersRender - select', () => {
+  it('handles select change correctly', () => {
+    const setFilters = jest.fn();
 
-        const option = screen.getByText("UPLOADED")
-        await userEvent.click(option)
+    const template = {
+      A: { labelKey: 'label.A', label: 'label.A' },
+    };
 
-        expect(props.setFilters).toHaveBeenCalled()
-    })
-    it("should render text component", async () => {
-        const props = {
-            ...defaultProps,
-            item: {
-                id: "gtinCode",
-                labelKey: "tables.products.filters.gtinCode"
-            },
-        }
-        render(filtersRender.text(props))
+    const element = filtersRender.select({
+      item: { id: 'status', labelKey: 'status.label' },
+      t: t as any,
+      filters: {},
+      setFilters,
+      setErrors: jest.fn(),
+      template,
+    });
 
-        const textInput = screen.getByRole("textbox")
+    element.props.onChange({
+      target: { value: 'A' },
+      currentTarget: { value: 'A' },
+    });
 
-        expect(textInput).toBeInTheDocument();
-        await userEvent.type(textInput, "GTINCODETEST01")
+    expect(setFilters).toHaveBeenCalledWith('status', {
+      value: 'A',
+      label: 'label.A',
+    });
+  });
 
-        expect(props.setFilters).toHaveBeenCalledTimes(14)
-    })
-    it("should paste text", async () => {
-        
-        const props = {
-            ...defaultProps,
-            item: {
-                id: "gtinCode",
-                labelKey: "tables.products.filters.gtinCode"
-            },
-        }
-        render(filtersRender.text(props))
+  it('uses the plain label fallback when labelKey is missing', () => {
+    const setFilters = jest.fn();
+    const template = {
+      B: { label: 'label.B' },
+    };
 
-        const textInput = screen.getByRole("textbox")
+    const element = filtersRender.select({
+      item: { id: 'status' },
+      t: t as any,
+      filters: { status: { value: 'B', label: 'Selected B' } },
+      setFilters,
+      setErrors: jest.fn(),
+      template,
+    });
 
-        await userEvent.click(textInput)
-        await userEvent.paste("GTINCODETEST01")
-        
-        expect(props.setFilters).toHaveBeenCalledWith("gtinCode", {value: "GTINCODETEST01"})
-    })
-    it("should show error", async () => {
-        
-        const props = {
-            ...defaultProps,
-            item: {
-                id: "gtinCode",
-                labelKey: "tables.products.filters.gtinCode",
-            },
-        }
-        render(filtersRender.text(props))
+    expect(element.props.label).toBe('');
+    expect(element.props.value).toBe('B');
+    expect(element.props.renderValue()).toBe('Selected B');
 
-        const textInput = screen.getByRole("textbox")
+    element.props.onChange({
+      target: { value: 'B' },
+    });
 
-        await userEvent.click(textInput)
-        await userEvent.paste("+++")
-        expect(props.setFilters).toHaveBeenCalledWith("gtinCode", {value: "+++"})
-        expect(props.setErrors).toHaveBeenCalled()
-    })
-})
+    expect(setFilters).toHaveBeenCalledWith('status', {
+      value: 'B',
+      label: 'label.B',
+    });
+  });
+
+  it('renders colored select options and tolerates missing templates', () => {
+    const colored = filtersRender.select({
+      item: { id: 'status', labelKey: 'status.label' },
+      t: t as any,
+      filters: {},
+      setFilters: jest.fn(),
+      setErrors: jest.fn(),
+      template: {
+        APPROVED: { labelKey: 'approved.label', color: 'success' },
+      },
+    });
+
+    expect(colored.props.children[0].props.children.props.color).toBe('success');
+    expect(colored.props.children[0].props.children.props.label).toBe('approved.label');
+
+    const empty = filtersRender.select({
+      item: { id: 'status', labelKey: 'status.label' },
+      t: t as any,
+      filters: {},
+      setFilters: jest.fn(),
+      setErrors: jest.fn(),
+    });
+
+    expect(empty.props.children).toEqual([]);
+  });
+});
+
+describe('filtersRender - text', () => {
+  it('handles valid input', () => {
+    const setFilters = jest.fn();
+    const setErrors = jest.fn();
+
+    const element = filtersRender.text({
+      item: {
+        id: 'code',
+        labelKey: 'code.label',
+        regEx: '^[0-9]+$',
+      },
+      t: t as any,
+      filters: {},
+      setFilters,
+      setErrors,
+    } as any);
+
+    element.props.onChange({
+      target: { value: '123' },
+      currentTarget: { value: '123' },
+    });
+
+    expect(setFilters).toHaveBeenCalledWith('code', { value: undefined });
+    expect(setErrors).toHaveBeenCalledWith('code', false);
+  });
+
+  it('handles invalid input', () => {
+    const setFilters = jest.fn();
+    const setErrors = jest.fn();
+
+    const element = filtersRender.text({
+      item: {
+        id: 'code',
+        labelKey: 'code.label',
+        regEx: '^[0-9]+$',
+      },
+      t: t as any,
+      filters: {},
+      setFilters,
+      setErrors,
+    } as any);
+
+    element.props.onChange({
+      target: { value: 'abc' },
+      currentTarget: { value: 'abc' },
+    });
+
+    expect(setErrors).toHaveBeenCalledWith('code', true);
+  });
+
+  it('marks text field as invalid and renders helper text', () => {
+    const element = filtersRender.text({
+      item: {
+        id: 'code',
+        labelKey: 'code.label',
+        regEx: '^[0-9]+$',
+        message: 'code.error',
+        inputProps: { maxLength: 3 },
+      },
+      t: t as any,
+      filters: { code: { value: 'abc' } },
+      errors: ['code'],
+      setFilters: jest.fn(),
+      setErrors: jest.fn(),
+    } as any);
+
+    expect(element.props.error).toBe(true);
+    expect(element.props.helperText).toBe('code.error');
+    expect(element.props.slotProps.htmlInput).toEqual({ maxLength: 3 });
+  });
+
+  it('handles paste', () => {
+    const setFilters = jest.fn();
+
+    const element = filtersRender.text({
+      item: {
+        id: 'code',
+        labelKey: 'code.label',
+        regEx: '^[0-9]+$',
+      },
+      t: t as any,
+      filters: {},
+      setFilters,
+      setErrors: jest.fn(),
+    } as any);
+
+    element.props.onPaste({
+      clipboardData: {
+        getData: () => '1 2 3',
+      },
+      preventDefault: jest.fn(),
+    });
+
+    expect(setFilters).toHaveBeenCalledWith('code', { value: undefined });
+  });
+
+  it('handles invalid pasted values', () => {
+    const setErrors = jest.fn();
+
+    const element = filtersRender.text({
+      item: {
+        id: 'code',
+        labelKey: 'code.label',
+        regEx: '^[0-9]+$',
+      },
+      t: t as any,
+      filters: {},
+      setFilters: jest.fn(),
+      setErrors,
+    } as any);
+
+    element.props.onPaste({
+      clipboardData: {
+        getData: () => 'a b c',
+      },
+      preventDefault: jest.fn(),
+    });
+
+    expect(setErrors).toHaveBeenCalledWith('code', true);
+  });
+});

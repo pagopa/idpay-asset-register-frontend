@@ -11,6 +11,7 @@ type Props = {
   showMsgRejectedApprovation: boolean;
   showMixStatusError: boolean;
   showYourselfApprovedError: boolean;
+  showGenericError: boolean;
   t: any;
   getMsgResultByActionType: (t: any, actionType?: string) => string;
   bottom: number;
@@ -25,6 +26,7 @@ const ProductResultMessages: React.FC<Props> = ({
   showMsgRejectedApprovation,
   showMixStatusError,
   showYourselfApprovedError,
+  showGenericError,
   t,
   getMsgResultByActionType,
   bottom,
@@ -84,6 +86,14 @@ const ProductResultMessages: React.FC<Props> = ({
 
     {showYourselfApprovedError && (
       <MsgResult severity="error" message={t('msgResutlt.errorYourselfApproved')} bottom={bottom} />
+    )}
+
+    {showGenericError && (
+      <MsgResult
+        severity="error"
+        message={t('msgResutlt.errorGenericDescription')}
+        bottom={bottom}
+      />
     )}
   </>
 );

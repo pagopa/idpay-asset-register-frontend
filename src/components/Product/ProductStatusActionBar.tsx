@@ -38,6 +38,35 @@ const ProductStatusActionBar: React.FC<Props> = ({
       PRODUCTS_STATES.SUPERVISED
   );
 
+  const selectedStatuses = selected.map((selectedKey) => {
+    const row = tableData.find(
+      (r) =>
+        String(r.gtinCode) === String(selectedKey) ||
+        String((r as any).gtin) === String(selectedKey) ||
+        String(r.productCode) === String(selectedKey)
+    );
+    return String(row?.status);
+  });
+
+  const allUploaded = selectedStatuses.every((s) => s === PRODUCTS_STATES.UPLOADED);
+
+  const allApproved = selectedStatuses.every((s) => s === PRODUCTS_STATES.APPROVED);
+
+  const allSupervised = selectedStatuses.every((s) => s === PRODUCTS_STATES.SUPERVISED);
+
+  const allWaitApproved = selectedStatuses.every((s) => s === PRODUCTS_STATES.WAIT_APPROVED);
+
+  const disableApprove =
+    selected.length === 0 ||
+    (isInvitaliaUser ? !(allUploaded || allSupervised || allWaitApproved) : !allWaitApproved);
+
+  const disableSupervise =
+    selected.length === 0 || !(isInvitaliaUser && (allUploaded || allApproved));
+
+  const disableReject =
+    selected.length === 0 ||
+    (isInvitaliaUser ? !(allUploaded || allApproved || allSupervised) : !allWaitApproved);
+
   return (
     <Box display="flex" flexDirection="row" justifyContent="flex-end">
       <Button
@@ -45,11 +74,17 @@ const ProductStatusActionBar: React.FC<Props> = ({
         variant="outlined"
         color="error"
         sx={{ ...buttonStyle }}
-        onClick={() =>
+        disabled={disableReject}
+        onClick={() => {
+          console.log('[DEBUG] Rejected clicked', {
+            selected,
+            isInvitaliaUser,
+            tableData,
+          });
           handleOpenModalWithStatusCheck(
             isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION
-          )
-        }
+          );
+        }}
       >
         {isInvitaliaUser
           ? `${t('invitaliaModal.rejected.buttonText')} (${selected.length})`
@@ -62,7 +97,14 @@ const ProductStatusActionBar: React.FC<Props> = ({
           color="primary"
           variant="outlined"
           sx={{ ...buttonStyle }}
-          onClick={() => handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED)}
+          disabled={disableSupervise}
+          onClick={() => {
+            console.log('[DEBUG] Supervised clicked', {
+              selected,
+              tableData,
+            });
+            handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED);
+          }}
         >
           <FlagIcon />
           {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
@@ -74,20 +116,16 @@ const ProductStatusActionBar: React.FC<Props> = ({
         color="primary"
         variant="contained"
         sx={{ ...buttonStyle }}
-        disabled={
-          selected.length === 0 ||
-          (selected.some(
-            (gtinCode) =>
-              String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
-              PRODUCTS_STATES.WAIT_APPROVED
-          ) &&
-            isInvitaliaUser)
-        }
-        onClick={() =>
+        disabled={disableApprove}
+        onClick={() => {
+          console.log('[DEBUG] WaitApproved clicked', {
+            selected,
+            tableData,
+          });
           handleOpenModalWithStatusCheck(
             isInvitaliaUser ? PRODUCTS_STATES.WAIT_APPROVED : MIDDLE_STATES.ACCEPT_APPROVATION
-          )
-        }
+          );
+        }}
       >
         {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
       </Button>

@@ -23,7 +23,7 @@ jest.mock('../../../api/registerApiClient', () => ({
     getBatchFilterItems: jest.fn(),
   },
 }));
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
@@ -160,6 +160,39 @@ describe('UploadsTable', () => {
     ).toBeInTheDocument();
   });
 
+  it.each(['IN_PROCESS', 'UPLOADED', 'LOADED', 'UNKNOWN'])(
+    'renders upload status icon branch for %s',
+    (uploadStatus) => {
+      renderComponent({
+        loading: false,
+        error: null,
+        data: {
+          content: [
+            {
+              productFileId: `file-${uploadStatus}`,
+              batchName: `Batch ${uploadStatus}`,
+              dateUpload: undefined,
+              findedProductsNumber: undefined,
+              addedProductNumber: 0,
+              uploadStatus,
+            },
+          ],
+        },
+        page: 0,
+        rowsPerPage: 10,
+        totalElements: 1,
+        onPageChange: jest.fn(),
+        onRowsPerPageChange: jest.fn(),
+      });
+
+      expect(screen.getByText(`Batch ${uploadStatus}`)).toBeInTheDocument();
+      expect(screen.getByText('-')).toBeInTheDocument();
+      expect(
+        screen.getByText('0 pages.uploadHistory.uploadHistoryAddedProducts')
+      ).toBeInTheDocument();
+    }
+  );
+
   it('handles product link click', () => {
     renderComponent({
       loading: false,
@@ -190,6 +223,26 @@ describe('UploadsTable', () => {
     fireEvent.click(screen.getByTestId('download-icon'));
 
     expect(registerService.downloadErrorReport).toHaveBeenCalledWith('initiative-1', 'file123');
+  });
+
+  it('swallows download report errors', async () => {
+    jest.spyOn(registerService, 'downloadErrorReport').mockRejectedValueOnce(new Error('fail'));
+
+    renderComponent({
+      loading: false,
+      error: null,
+      data: mockData,
+      page: 0,
+      rowsPerPage: 10,
+      totalElements: 1,
+      onPageChange: jest.fn(),
+      onRowsPerPageChange: jest.fn(),
+    });
+
+    fireEvent.click(screen.getByTestId('download-icon'));
+
+    await waitFor(() => expect(registerService.downloadErrorReport).toHaveBeenCalled());
+    expect(helpers.downloadCsv).not.toHaveBeenCalledWith(undefined, expect.anything());
   });
 
   it('renders empty table message', () => {

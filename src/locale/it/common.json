@@ -30,16 +30,6 @@
     "removeFiltersBtn": "Rimuovi filtri",
     "sendBtn": "Invia",
     "title": "Elenco informatico degli elettrodomestici",
-    "category": {
-      "washingmachines": "Lavatrici",
-      "tumbledryers": "Asciugatrici",
-      "ovens": "Forni",
-      "rangehoods": "Cappe da cucina",
-      "dishwashers": "Lavastoviglie",
-      "washerdriers": "Lavasciuga",
-      "refrigeratingappl": "Apparecchi di refrigerazione",
-      "cookinghobs": "Piani cottura"
-    },
     "advancedFilters": "Filtri avanzati",
     "footer": {
       "a11y": "Accessibilità",
@@ -123,6 +113,27 @@
       "overviewTitleBoxInfoTitleLblSl": "Sede legale",
       "overviewTitleBoxInfoTitleLblPec": "PEC",
       "overviewTitleBoxInfoTitleLblEmailOp": "E-mail operativa",
+      "missingOperativeEmailWarning": "Inserisci l’email operativa per ricevere le notifiche sullo stato dei tuoi prodotti.",
+      "operativeEmailModal": {
+        "title": "E-mail operativa",
+        "description": "L’e-mail indicata sarà utilizzata per la comunicazione interna sullo stato dei prodotti.",
+        "emailLabel": "Inserisci e-mail",
+        "emailPlaceholder": "Inserisci e-mail",
+        "emailAriaLabel": "E-mail",
+        "confirmEmailLabel": "Conferma e-mail",
+        "confirmEmailPlaceholder": "Conferma e-mail",
+        "confirmEmailAriaLabel": "Conferma e-mail",
+        "cancelButton": "Annulla",
+        "saveButton": "Salva",
+        "requiredError": "è obbligatorio inserire l’email per procedere",
+        "invalidEmailError": "l'indirizzo e-mail non è valido",
+        "emailMismatchError": "le e-mail non coincidono",
+        "toast": {
+          "insertedSuccess": "Hai inserito l’email operativa.",
+          "success": "Hai modificato l’email operativa.",
+          "error": "Si è verificato un errore, riprova."
+        }
+      },
       "overviewTitleBoxProdTitle": "Prodotti",
       "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",
       "overviewTitleBoxProdBtn": "Carica .csv",
@@ -208,7 +219,7 @@
         "category": "Categoria",
         "status": "Stato",
         "producer": "Produttore",
-        "productFileId": "Lotto",
+        "batch": "Lotto",
         "eprelCode": "Codice EPREL",
         "gtinCode": "Codice GTIN/EAN",
         "manufacturerCode": "Codice produttore",
@@ -224,7 +235,7 @@
         "gtinCode": "Codice GTIN/EAN",
         "productFileId": "Lotto"
       },
-      "category": {
+      "categories": {
         "WASHINGMACHINES": "Lavatrici",
         "WASHERDRIERS": "Lavasciuga",
         "OVENS": "Forni",
@@ -273,7 +284,7 @@
       "eprelCheckDate": "Data verifica EPREL",
       "productSheet": "SCHEDA PRODOTTO",
       "productName": "Nome prodotto",
-      "productFileId": "Lotto",
+      "batchName": "Lotto",
       "eprelCode": "Codice EPREL",
       "gtinCode": "Codice GTIN/EAN",
       "productCode": "Codice prodotto",
@@ -287,6 +298,21 @@
       "motivationFormal": "Notifica ufficiale",
       "restoreProductTitle": "Ripristina prodotto",
       "restoreProductMessage": "Vuoi ripristinare il prodotto segnalato in precedenza?"
+    }
+  },
+  "tables": {
+    "products": {
+      "columns": {
+        "producer": "Produttore"
+      },
+      "filters": {
+        "category": "Categoria",
+        "status": "Stato",
+        "producer": "Produttore",
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "productFileId": "Lotto"
+      }
     }
   },
   "roles": {
@@ -385,6 +411,7 @@
   },
   "msgResutlt": {
     "errorMixSelected": "Per completare l'azione, tutti gli elementi selezionati devono avere lo stesso stato.",
-    "errorYourselfApproved": "Non puoi inviare una richiesta di approvazione a te stesso."
+    "errorYourselfApproved": "Non puoi inviare una richiesta di approvazione a te stesso.",
+    "errorGenericDescription": "Si è verificato un errore. Riprova più tardi"
   }
 }
