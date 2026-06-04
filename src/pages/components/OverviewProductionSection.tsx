@@ -304,7 +304,11 @@ const UploadsTable: React.FC<{
   );
 };
 
-const OverviewProductionSection: React.FC = () => {
+type Props = {
+  isOperativeEmailMissing?: boolean;
+};
+
+const OverviewProductionSection: React.FC<Props> = () => {
   const { t } = useScopedTranslation();
   const onExit = useUnloadEventOnExit();
   const initiativeId = useCurrentInitiativeId();

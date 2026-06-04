@@ -42,6 +42,20 @@ describe('multiInitiativeConfig', () => {
 
       expect(getLogicalRoleName(config, 'role_a')).toBe('SUB_ROLE_A');
     });
+
+    it('falls back to role logicalName when subRole has no override', () => {
+      const config = {
+        roles: {
+          logicalName: 'BASE_ROLE',
+          subRoles: {
+            role_a: {},
+          },
+        },
+      } as any;
+
+      expect(getLogicalRoleName(config, 'role_a')).toBe('BASE_ROLE');
+      expect(getLogicalRoleName({} as any, 'role_a')).toBeUndefined();
+    });
   });
 
   describe('loadItInitiativeConfig', () => {

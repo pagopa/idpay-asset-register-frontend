@@ -1,5 +1,5 @@
 import { Institution } from '../../model/Institution';
-import { InstitutionsResponse } from '../../api/generated/register';
+import { ProducersList } from '../../model/ProducersList';
 
 export type Order = 'asc' | 'desc';
 export type Value = string;
@@ -19,10 +19,10 @@ export interface HeadCell {
 }
 
 export const paginateInstitutions = (
-  data: InstitutionsResponse | null,
+  data: ProducersList | null,
   page: number,
   rowsPerPage: number
-): InstitutionsResponse => {
+): ProducersList => {
   const institutions = data?.institutions ?? [];
 
   return {

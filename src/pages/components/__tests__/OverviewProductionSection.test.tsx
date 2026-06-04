@@ -194,6 +194,18 @@ describe('OverviewProductionSection', () => {
     });
   });
 
+  it('keeps upload button enabled when operative email is missing', async () => {
+    mockGetProductFilesList.mockResolvedValue({ data: { content: [] } });
+
+    render(
+      <TestWrapper>
+        <OverviewProductionSection isOperativeEmailMissing />
+      </TestWrapper>
+    );
+
+    expect(await screen.findByRole('button', { name: /carica prodotti/i })).toBeEnabled();
+  });
+
   it('navigates to uploads history with the current initiative id', async () => {
     mockGetProductFilesList.mockResolvedValue({
       data: {
