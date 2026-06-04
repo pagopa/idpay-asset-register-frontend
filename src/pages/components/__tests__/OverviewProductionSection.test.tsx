@@ -194,7 +194,7 @@ describe('OverviewProductionSection', () => {
     });
   });
 
-  it('disables upload button when operative email is missing', async () => {
+  it('keeps upload button enabled when operative email is missing', async () => {
     mockGetProductFilesList.mockResolvedValue({ data: { content: [] } });
 
     render(
@@ -203,7 +203,7 @@ describe('OverviewProductionSection', () => {
       </TestWrapper>
     );
 
-    expect(await screen.findByRole('button', { name: /carica prodotti/i })).toBeDisabled();
+    expect(await screen.findByRole('button', { name: /carica prodotti/i })).toBeEnabled();
   });
 
   it('navigates to uploads history with the current initiative id', async () => {

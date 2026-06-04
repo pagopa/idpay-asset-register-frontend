@@ -5,7 +5,6 @@ import {
   downloadErrorReport,
   getProductFilesList,
   getProducts,
-  getInstitutionsList,
   getInstitutionById,
   setSupervisionedStatusList,
   setApprovedStatusList,
@@ -258,27 +257,6 @@ describe('Product Service', () => {
         totalElements: 0,
         totalPages: 0,
       });
-    });
-  });
-
-  describe('getInstitutionsList', () => {
-    it('should get institutions list successfully', async () => {
-      const mockResponse = { institutions: [{ id: '1', name: 'Inst1' }] };
-      (RegisterApi.getInstitutionsList as jest.Mock).mockResolvedValue(mockResponse);
-
-      const result = await getInstitutionsList();
-
-      expect(result).toEqual(mockResponse);
-      expect(RegisterApi.getInstitutionsList).toHaveBeenCalled();
-    });
-
-    it('should handle error and return empty institutions list', async () => {
-      const error = new Error('Fetch failed');
-      (RegisterApi.getInstitutionsList as jest.Mock).mockRejectedValue(error);
-
-      const result = await getInstitutionsList();
-
-      expect(result).toEqual({ institutions: [] });
     });
   });
 

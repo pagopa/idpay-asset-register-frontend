@@ -7,7 +7,8 @@ import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import DetailDrawer from '../../components/DetailDrawer/DetailDrawer';
 import { getInstitutionById, getProducers } from '../../services/registerService';
-import { InstitutionsResponse, ProducersResponseDTO } from '../../api/generated/register';
+import { ProducersResponseDTO } from '../../api/generated/register';
+import { ProducersList } from '../../model/ProducersList';
 import { InstitutionResponse } from '../../api/generated/register';
 import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
@@ -24,7 +25,7 @@ const InvitaliaOverview: React.FC = () => {
   const initiativeId = useCurrentInitiativeId();
   const { t } = useScopedTranslation();
   const dispatch = useAppDispatch();
-  const [institutions, setInstitutions] = useState<InstitutionsResponse>({
+  const [institutions, setInstitutions] = useState<ProducersList>({
     institutions: [],
   });
   const [institutionData, setInstitutionData] = useState<InstitutionResponse>({});
@@ -88,7 +89,7 @@ const InvitaliaOverview: React.FC = () => {
     return sortedInstitutions.slice(start, end);
   }, [sortedInstitutions, page, rowsPerPage]);
 
-  const tableData: InstitutionsResponse = {
+  const tableData: ProducersList = {
     institutions: paginatedInstitutions,
   };
 

@@ -137,7 +137,11 @@
         "saveButton": "Salva",
         "requiredError": "è obbligatorio inserire l’email per procedere",
         "invalidEmailError": "l'indirizzo e-mail non è valido",
-        "emailMismatchError": "le e-mail non coincidono"
+        "emailMismatchError": "le e-mail non coincidono",
+        "toast": {
+          "success": "Hai modificato l\u2019email operativa.",
+          "error": "Si \u00e8 verificato un errore, riprova."
+        }
       },
       "overviewTitleBoxProdTitle": "Prodotti",
       "overviewTitleBoxProdDescription": "Inserisci i tuoi prodotti direttamente sul portale.",

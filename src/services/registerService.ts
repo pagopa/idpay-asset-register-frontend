@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { RegisterApi } from '../api/registerApiClient';
-import { BatchList, InstitutionsResponse, ProducersResponseDTO, ProductsUpdateDTO, UploadProductListParams } from '../api/generated/register';
+import { BatchList, ProducersResponseDTO, ProductsUpdateDTO, UploadProductListParams } from '../api/generated/register';
 import { RegisterUploadResponseDTO } from '../api/generated/register';
 import { CsvDTO } from '../api/generated/register';
 import { UploadsListDTO } from '../api/generated/register';
@@ -8,6 +8,7 @@ import { InstitutionResponse } from '../api/generated/register';
 import { ProductListDTO } from '../api/generated/register';
 import { ProductStatus } from '../api/generated/register';
 import { InitiativeDTO } from '../api/generated/register';
+import { UpdatedOperativeEmailResultDTO } from '../api/generated/register';
 import { DEBUG_CONSOLE } from '../utils/constants';
 
 export const uploadProductList = async (
@@ -302,15 +303,6 @@ export const getProducts = async (
   }
 };
 
-export const getInstitutionsList = async (): Promise<AxiosResponse<InstitutionsResponse>> => {
-  try {
-    return await RegisterApi.getInstitutionsList();
-  } catch (error: any) {
-    logProductError('RegisterApi.getInstitutionsList', error);
-    return { institutions: [] } as unknown as AxiosResponse<InstitutionsResponse>;
-  }
-};
-
 export const getProducers = async (initiativeId: string): Promise<AxiosResponse<ProducersResponseDTO>> => {
   try {
     return await RegisterApi.getProducers(initiativeId);
@@ -437,5 +429,17 @@ export const getMerchantInitiativeList = async (): Promise<AxiosResponse<Array<I
       headers: {},
       config: {},
     } as unknown as AxiosResponse<Array<InitiativeDTO>>;
+  }
+};
+
+export const updateOperativeEmail = async (
+  initiativeId: string,
+  operativeEmail: string
+): Promise<AxiosResponse<UpdatedOperativeEmailResultDTO>> => {
+  try {
+    return await RegisterApi.updateOperativeEmail(initiativeId, operativeEmail);
+  } catch (error: any) {
+    logProductError('RegisterApi.updateOperativeEmail', error);
+    throw error;
   }
 };

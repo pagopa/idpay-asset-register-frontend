@@ -1,6 +1,6 @@
 import { paginateInstitutions, sortInstitutions } from '../helpers';
 import { Institution } from '../../../model/Institution';
-import { InstitutionsResponse } from '../../../api/generated/register';
+import { ProducersList } from '../../../model/ProducersList';
 
 const mockInstitutions: Institution[] = [
   {
@@ -35,13 +35,13 @@ const mockInstitutions: Institution[] = [
   },
 ];
 
-const mockInstitutionsResponse: InstitutionsResponse = {
+const mockProducersList: ProducersList = {
   institutions: mockInstitutions,
 };
 
 describe('paginateInstitutions', () => {
   it('should paginate institutions correctly', () => {
-    const result: InstitutionsResponse = paginateInstitutions(mockInstitutionsResponse, 0, 2);
+    const result: ProducersList = paginateInstitutions(mockProducersList, 0, 2);
 
     const institutions = result.institutions as Institution[];
     expect(institutions).toHaveLength(2);
@@ -50,7 +50,7 @@ describe('paginateInstitutions', () => {
   });
 
   it('should return second page correctly', () => {
-    const result = paginateInstitutions(mockInstitutionsResponse, 1, 2);
+    const result = paginateInstitutions(mockProducersList, 1, 2);
 
     const institutions = result.institutions as Institution[];
     expect(institutions).toHaveLength(2);
@@ -59,7 +59,7 @@ describe('paginateInstitutions', () => {
   });
 
   it('should handle last page with fewer items', () => {
-    const result = paginateInstitutions(mockInstitutionsResponse, 2, 2);
+    const result = paginateInstitutions(mockProducersList, 2, 2);
 
     const institutions = result.institutions as Institution[];
     expect(institutions).toHaveLength(1);
@@ -67,7 +67,7 @@ describe('paginateInstitutions', () => {
   });
 
   it('should handle empty page', () => {
-    const result = paginateInstitutions(mockInstitutionsResponse, 10, 2);
+    const result = paginateInstitutions(mockProducersList, 10, 2);
 
     expect(result.institutions).toHaveLength(0);
   });
@@ -79,14 +79,14 @@ describe('paginateInstitutions', () => {
   });
 
   it('should handle undefined institutions', () => {
-    const emptyResponse: InstitutionsResponse = { institutions: undefined as any };
+    const emptyResponse: ProducersList = { institutions: undefined as any };
     const result = paginateInstitutions(emptyResponse, 0, 2);
 
     expect(result.institutions).toHaveLength(0);
   });
 
   it('should handle page 0 with different rowsPerPage', () => {
-    const result = paginateInstitutions(mockInstitutionsResponse, 0, 3);
+    const result = paginateInstitutions(mockProducersList, 0, 3);
 
     const institutions = result.institutions as Institution[];
     expect(institutions).toHaveLength(3);

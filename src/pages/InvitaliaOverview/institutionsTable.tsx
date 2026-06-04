@@ -23,8 +23,8 @@ import { formatDateWithoutHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
-import { InstitutionsResponse } from '../../api/generated/register';
 import ROUTES from '../../routes';
+import { ProducersList } from '../../model/ProducersList';
 import { setInstitution } from '../../redux/slices/invitaliaSlice';
 import EmptyListTable from '../components/EmptyListTable';
 import { buildRoute } from '../../components/SideMenu/SideMenu';
@@ -94,7 +94,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 type InstitutionsTableProps = {
   loading: boolean;
   error: string | null;
-  data: InstitutionsResponse;
+  data: ProducersList;
   page: number;
   rowsPerPage: number;
   totalElements: number;

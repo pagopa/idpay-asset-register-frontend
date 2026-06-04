@@ -1,10 +1,15 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
 import { fetchUserFromLocalStorage, truncateString } from '../../../helpers';
 import '@testing-library/jest-dom';
 import Overview from '../overview';
+import { useCurrentInitiative } from '../../../hooks/useCurrentInitiative';
+import { updateOperativeEmail } from '../../../services/registerService';
+import { useCurrentInitiativeId } from '../../../hooks/useCurrentInitiativeId';
+
+const mockRefetchInitiatives = jest.fn();
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -47,6 +52,14 @@ jest.mock('../../components/OverviewProductionSection', () => {
   };
 });
 
+jest.mock('../../components/OperativeEmailModal', () => {
+  return function OperativeEmailModal(props: any) {
+    return props.open ? (
+      <button onClick={() => props.onSave('new-operative@test.it')}>Save operative email</button>
+    ) : null;
+  };
+});
+
 jest.mock('../../../utils/constants', () => ({
   emptyData: 'N/A',
   maxLengthOverviewProd: 20,
@@ -64,12 +77,46 @@ const renderWithTheme = (component: React.ReactElement) => {
 };
 
 jest.mock('../../../redux/api/initiativesApi', () => ({
-  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
+  useGetInitiativesQuery: () => ({
+    data: [],
+    isLoading: false,
+    isError: false,
+    refetch: mockRefetchInitiatives,
+  }),
 }));
+
+jest.mock('../../../hooks/useCurrentInitiative', () => ({
+  useCurrentInitiative: jest.fn(),
+}));
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: jest.fn(),
+}));
+
+jest.mock('../../../services/registerService', () => ({
+  updateOperativeEmail: jest.fn(),
+}));
+
+const mockUseCurrentInitiative = useCurrentInitiative as jest.MockedFunction<
+  typeof useCurrentInitiative
+>;
+const mockUseCurrentInitiativeId = useCurrentInitiativeId as jest.MockedFunction<
+  typeof useCurrentInitiativeId
+>;
+const mockUpdateOperativeEmail = updateOperativeEmail as jest.MockedFunction<
+  typeof updateOperativeEmail
+>;
 
 describe('Overview Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockRefetchInitiatives.mockResolvedValue({ data: [] });
+    mockUpdateOperativeEmail.mockResolvedValue({} as any);
+    mockUseCurrentInitiativeId.mockReturnValue('initiative-1');
+    mockUseCurrentInitiative.mockReturnValue({
+      initiativeId: 'initiative-1',
+      organizationEmail: 'initiative@test.it',
+    });
   });
 
   const mockUserData = {
@@ -172,6 +219,7 @@ describe('Overview Component', () => {
   describe('Empty Data Handling Tests', () => {
     it('should display empty data placeholder when user data is null', () => {
       mockFetchUserFromLocalStorage.mockReturnValue(null);
+      mockUseCurrentInitiative.mockReturnValue(undefined);
 
       renderWithTheme(<Overview />);
 
@@ -196,6 +244,7 @@ describe('Overview Component', () => {
       };
 
       mockFetchUserFromLocalStorage.mockReturnValue(emptyUser);
+      mockUseCurrentInitiative.mockReturnValue(undefined);
 
       renderWithTheme(<Overview />);
 
@@ -220,6 +269,7 @@ describe('Overview Component', () => {
       };
 
       mockFetchUserFromLocalStorage.mockReturnValue(partialUser);
+      mockUseCurrentInitiative.mockReturnValue(undefined);
 
       renderWithTheme(<Overview />);
 
@@ -270,8 +320,41 @@ describe('Overview Component', () => {
 
       expect(mockTruncateString).toHaveBeenNthCalledWith(1, 'Test Org', undefined);
       expect(mockTruncateString).toHaveBeenNthCalledWith(2, 'Via Test 123', undefined);
-      expect(mockTruncateString).toHaveBeenNthCalledWith(3, 'test@email.it', undefined);
+      expect(mockTruncateString).toHaveBeenNthCalledWith(3, 'initiative@test.it', undefined);
       expect(mockTruncateString).toHaveBeenCalledTimes(3);
+    });
+
+    it('should display operative email from current initiative instead of local storage', () => {
+      mockFetchUserFromLocalStorage.mockReturnValue({
+        ...mockUserData,
+        org_email: 'token-email@test.it',
+      });
+      mockUseCurrentInitiative.mockReturnValue({
+        initiativeId: 'initiative-1',
+        organizationEmail: 'initiative-email@test.it',
+      });
+
+      renderWithTheme(<Overview />);
+
+      expect(screen.getByLabelText('initiative-email@test.it')).toBeInTheDocument();
+      expect(screen.queryByLabelText('token-email@test.it')).not.toBeInTheDocument();
+    });
+
+    it('should refetch initiatives after updating operative email', async () => {
+      mockFetchUserFromLocalStorage.mockReturnValue(mockUserData);
+
+      renderWithTheme(<Overview />);
+
+      fireEvent.click(screen.getByLabelText('Modifica e-mail operativa'));
+      fireEvent.click(screen.getByText('Save operative email'));
+
+      await waitFor(() => {
+        expect(mockUpdateOperativeEmail).toHaveBeenCalledWith(
+          'initiative-1',
+          'new-operative@test.it'
+        );
+        expect(mockRefetchInitiatives).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
@@ -303,6 +386,7 @@ describe('Overview Component', () => {
   describe('Error Handling Tests', () => {
     it('should handle when fetchUserFromLocalStorage returns undefined', () => {
       mockFetchUserFromLocalStorage.mockReturnValue(undefined);
+      mockUseCurrentInitiative.mockReturnValue(undefined);
 
       renderWithTheme(<Overview />);
 

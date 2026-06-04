@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import InstitutionsTable from '../institutionsTable';
 import { Institution } from '../../../model/Institution';
-import { InstitutionsResponse } from '../../../api/generated/register';
+import { ProducersList } from '../../../model/ProducersList';
 import '@testing-library/jest-dom';
 import { createStore } from '../../../redux/store';
 import { Provider } from 'react-redux';
@@ -64,7 +64,7 @@ const mockInstitutions: Institution[] = [
 const defaultProps = {
   loading: false,
   error: null,
-  data: { institutions: mockInstitutions } as InstitutionsResponse,
+  data: { institutions: mockInstitutions } as ProducersList,
   page: 0,
   rowsPerPage: 10,
   totalElements: 2,

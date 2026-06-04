@@ -54,6 +54,7 @@ jest.mock('../generated/register', () => {
         downloadErrorReport: jest.fn(),
         getBatchNameList: jest.fn(),
         getProducts: jest.fn(),
+        getProducersByInitiative: jest.fn(),
       },
       products: {
         updateProductStatusApproved: jest.fn(),
@@ -64,7 +65,6 @@ jest.mock('../generated/register', () => {
       },
       institutions: {
         retrieveInstitutionById: jest.fn(),
-        getInstitutionsList: jest.fn(),
       },
     })),
   };
@@ -543,21 +543,24 @@ describe('RegisterApi.downloadErrorReport', () => {
   });
 });
 
-describe('RegisterApi.getInstitutionsList', () => {
+describe('RegisterApi.getProducers', () => {
   it('returns the API response on success', async () => {
-    const res = mockAxiosResponse({ institutions: [] });
-    (registerClient.institutions.getInstitutionsList as jest.Mock).mockReturnValue(res);
+    const res = mockAxiosResponse({ content: [] });
+    (registerClient.initiatives.getProducersByInitiative as jest.Mock).mockReturnValue(res);
 
-    expect(await RegisterApi.getInstitutionsList()).toBe(res);
+    expect(await RegisterApi.getProducers('initi-1')).toBe(res);
+    expect(registerClient.initiatives.getProducersByInitiative).toHaveBeenCalledWith({
+      initiativeId: 'initi-1',
+    });
   });
 
   it('rejects on error', async () => {
     const err = new Error('fail');
-    (registerClient.institutions.getInstitutionsList as jest.Mock).mockImplementation(() => {
+    (registerClient.initiatives.getProducersByInitiative as jest.Mock).mockImplementation(() => {
       throw err;
     });
 
-    await expect(RegisterApi.getInstitutionsList()).rejects.toBe(err);
+    await expect(RegisterApi.getProducers('initi-1')).rejects.toBe(err);
   });
 });
 

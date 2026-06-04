@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -26,6 +27,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   onSave: (email: string) => void;
+  isLoading?: boolean;
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,6 +69,7 @@ const modalStyles = {
   },
   content: {
     p: 0,
+    overflow: 'visible',
   },
   description: {
     mb: 3.5,
@@ -102,7 +105,7 @@ const modalStyles = {
       fontFamily: 'Titillium Web',
       fontSize: 18,
       lineHeight: '24px',
-      fontWeight: 700,
+      fontWeight: 600,
     },
     '& .MuiInputLabel-root': {
       fontFamily: 'Titillium Web',
@@ -137,7 +140,7 @@ const modalStyles = {
   },
   errorIcon: {
     color: MODAL_RED,
-    fontSize: 24,
+    fontSize: 26,
   },
   actions: {
     p: 0,
@@ -180,7 +183,7 @@ const getEmailError = (value: string, t: (key: string) => string) => {
   return undefined;
 };
 
-const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave }) => {
+const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave, isLoading = false }) => {
   const { t } = useScopedTranslation();
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
@@ -236,6 +239,7 @@ const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave }) => {
       <IconButton
         aria-label={t('common.closeBtn')}
         onClick={onClose}
+        disabled={isLoading}
         sx={modalStyles.closeButton}
       >
         <CloseIcon fontSize="large" />
@@ -258,6 +262,7 @@ const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave }) => {
               fullWidth
               label={t('pages.overview.operativeEmailModal.emailLabel')}
               value={email}
+              disabled={isLoading}
               onChange={(event) => setEmail(event.target.value)}
               onFocus={() => setEmailFocused(true)}
               onBlur={() => setEmailFocused(false)}
@@ -289,6 +294,7 @@ const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave }) => {
               fullWidth
               label={t('pages.overview.operativeEmailModal.confirmEmailLabel')}
               value={confirmEmail}
+              disabled={isLoading}
               onChange={(event) => setConfirmEmail(event.target.value)}
               onFocus={() => setConfirmEmailFocused(true)}
               onBlur={() => setConfirmEmailFocused(false)}
@@ -321,14 +327,24 @@ const OperativeEmailModal: React.FC<Props> = ({ open, onClose, onSave }) => {
         <ButtonNaked
           component="button"
           onClick={onClose}
+          disabled={isLoading}
           size="medium"
           sx={modalStyles.cancelButton}
           weight="default"
         >
           {t('pages.overview.operativeEmailModal.cancelButton')}
         </ButtonNaked>
-        <Button variant="contained" onClick={handleSave} sx={modalStyles.saveButton}>
-          {t('pages.overview.operativeEmailModal.saveButton')}
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={isLoading}
+          sx={modalStyles.saveButton}
+        >
+          {isLoading ? (
+            <CircularProgress color="inherit" size={22} />
+          ) : (
+            t('pages.overview.operativeEmailModal.saveButton')
+          )}
         </Button>
       </DialogActions>
     </Dialog>
