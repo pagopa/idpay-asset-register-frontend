@@ -11,6 +11,8 @@ const t = (k: string) => k;
 
 describe('filtersRender - select', () => {
   it('renders select options and handles change with labelKey', () => {
+    // covers renderValue branch
+    const filters = { status: { value: 'A', label: 'label.A' } };
     const setFilters = jest.fn();
 
     const template = {
@@ -21,7 +23,7 @@ describe('filtersRender - select', () => {
     const element = filtersRender.select({
       item: { id: 'status', labelKey: 'status.label' },
       t: t as any,
-      filters: {},
+      filters,
       setFilters,
       setErrors: jest.fn(),
       template,
@@ -42,6 +44,7 @@ describe('filtersRender - select', () => {
 
 describe('filtersRender - text', () => {
   it('handles valid regex input', () => {
+    // covers helperText branch false
     const setFilters = jest.fn();
     const setErrors = jest.fn();
 
@@ -68,6 +71,7 @@ describe('filtersRender - text', () => {
   });
 
   it('handles invalid regex input', () => {
+    // covers helperText branch true
     const setFilters = jest.fn();
     const setErrors = jest.fn();
 
@@ -94,6 +98,7 @@ describe('filtersRender - text', () => {
   });
 
   it('handles paste removing spaces', () => {
+    // covers onPaste branch and space removal
     const setFilters = jest.fn();
     const setErrors = jest.fn();
 

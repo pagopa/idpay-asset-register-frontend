@@ -73,6 +73,65 @@ const baseData: any = {
 };
 
 describe('ProductDetail', () => {
+  it('renders supervised buttons for invitalia user', () => {
+    render(
+      <ProductDetail
+        open
+        data={{ ...baseData, status: 'SUPERVISED' }}
+        isInvitaliaUser
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('acceptApprovationBtn')).toBeInTheDocument();
+    expect(screen.getByTestId('rejectApprovationBtn')).toBeInTheDocument();
+  });
+
+  it('renders admin buttons for WAIT_APPROVED', () => {
+    render(
+      <ProductDetail
+        open
+        data={{ ...baseData, status: 'WAIT_APPROVED' }}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('supervisedBtn')).toBeInTheDocument();
+    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
+  });
+
+  it('does not render action section when not invitalia', () => {
+    render(
+      <ProductDetail
+        open
+        data={baseData}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.queryByTestId('approvedBtn')).not.toBeInTheDocument();
+  });
+
+  it('handles supervision modal branch', () => {
+    render(
+      <ProductDetail
+        open
+        data={{ ...baseData, status: 'UPLOADED' }}
+        isInvitaliaUser
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    const supervised = screen.getByTestId('supervisedBtn');
+    supervised.click();
+    expect(screen.getByTestId('modal')).toBeInTheDocument();
+  });
   it('renders base information', () => {
     render(
       <ProductDetail

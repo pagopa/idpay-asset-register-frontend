@@ -2,7 +2,6 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import ProductDataGrid from '../ProductDataGrid';
 
 jest.mock('react-redux', () => ({
   useDispatch: () => jest.fn(),
@@ -16,21 +15,6 @@ jest.mock('../../../hooks/useScopedTranslation', () => ({
 
 jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
   useCurrentInitiativeId: () => 'initiative-1',
-}));
-
-jest.mock('../../../hooks/useInitiativeConfig', () => ({
-  useInitiativeConfig: () => ({
-    config: {
-      tables: {
-        products: {},
-      },
-      subRoles: {
-        ADMIN: {
-          permissions: { tables: ['products'] },
-        },
-      },
-    },
-  }),
 }));
 
 jest.mock('../hooks/useResolvedProductTableConfig', () => ({
@@ -94,8 +78,67 @@ jest.mock('../ProductResultMessages', () => ({
 }));
 
 describe('ProductDataGrid', () => {
-  it('renders grid view when permission exists', () => {
+  afterEach(() => {
+    jest.resetModules();
+  });
+
+  it('renders grid when permission exists', async () => {
+    jest.doMock('../../../hooks/useInitiativeConfig', () => ({
+      useInitiativeConfig: () => ({
+        config: {
+          tables: { products: {} },
+          subRoles: {
+            ADMIN: { permissions: { tables: ['products'] } },
+          },
+        },
+      }),
+    }));
+
+    const ProductDataGrid = (await import('../ProductDataGrid')).default;
     render(<ProductDataGrid organizationId="org-1" />);
     expect(screen.getByTestId('grid-view')).toBeInTheDocument();
+  });
+
+  it('renders empty state when no permission', async () => {
+    jest.doMock('../../../hooks/useInitiativeConfig', () => ({
+      useInitiativeConfig: () => ({
+        config: {
+          tables: { products: {} },
+          subRoles: {
+            ADMIN: { permissions: { tables: [] } },
+          },
+        },
+      }),
+    }));
+
+    const ProductDataGrid = (await import('../ProductDataGrid')).default;
+    render(<ProductDataGrid organizationId="org-1" />);
+    expect(screen.queryByTestId('grid-view')).not.toBeInTheDocument();
+  });
+
+  it('returns null when tableConfig is undefined', async () => {
+    jest.doMock('../../../hooks/useInitiativeConfig', () => ({
+      useInitiativeConfig: () => ({
+        config: {
+          tables: { products: {} },
+          subRoles: {
+            ADMIN: { permissions: { tables: ['products'] } },
+          },
+        },
+      }),
+    }));
+
+    jest.doMock('../hooks/useResolvedProductTableConfig', () => ({
+      useResolvedProductTableConfig: () => ({
+        tableConfig: undefined,
+        paginationConfig: {},
+        filtersConfig: [],
+        templateConfig: {},
+      }),
+    }));
+
+    const ProductDataGrid = (await import('../ProductDataGrid')).default;
+    const { container } = render(<ProductDataGrid organizationId="org-1" />);
+    expect(container.firstChild).toBeNull();
   });
 });

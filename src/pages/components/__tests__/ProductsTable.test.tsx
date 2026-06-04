@@ -159,4 +159,84 @@ describe('ProductsTable', () => {
 
     expect(screen.getByText('LongV')).toBeInTheDocument();
   });
+
+  it('renders non truncated string when short', () => {
+    const shortRow = { ...baseRow, name: 'Short' };
+
+    render(
+      <ProductsTable
+        tableData={[shortRow]}
+        columns={[{ id: 'name', labelKey: 'name' }]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Short')).toBeInTheDocument();
+  });
+
+  it('renders fallback dash for null value', () => {
+    const row = { ...baseRow, name: null };
+
+    render(
+      <ProductsTable
+        tableData={[row]}
+        columns={[{ id: 'name', labelKey: 'name' }]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+  });
+
+  it('checkbox unselect branch', () => {
+    const setSelected = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={['123']}
+        setSelected={setSelected}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    const checkbox = screen.getByRole('checkbox');
+    checkbox.click();
+    expect(setSelected).toHaveBeenCalled();
+  });
+
+  it('sortable header inactive branch', () => {
+    const sort = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={[{ id: 'name', labelKey: 'name', sortable: true }]}
+        order="asc"
+        orderBy="other"
+        onRequestSort={sort}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    screen.getByText('name').click();
+    expect(sort).toHaveBeenCalled();
+  });
 });

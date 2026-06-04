@@ -45,6 +45,7 @@ describe('multiInitiativeConfig', () => {
   });
 
   describe('loadItInitiativeConfig', () => {
+    // role normalization and fallback branches are covered by functional calls below
     beforeEach(() => {
       jest.resetModules();
     });
