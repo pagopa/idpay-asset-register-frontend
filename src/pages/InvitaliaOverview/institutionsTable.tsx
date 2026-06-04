@@ -182,7 +182,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
                   onClick={() => goToInstitutionPage(row)}
                   sx={{ textDecoration: 'none' }}
                 >
-                  <Typography variant="body2" sx={{ fontWeight: 'fontWeightBold', color: theme.palette.primary.main}}>
+                  <Typography variant="body2" sx={{ fontWeight: theme.typography.fontWeightBold, color: theme.palette.primary.main}}>
                     {row.description}
                   </Typography>
                 </Link> :
