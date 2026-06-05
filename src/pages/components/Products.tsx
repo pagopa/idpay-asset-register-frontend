@@ -2,8 +2,11 @@ import ProductDataGrid from '../../components/Product/ProductDataGrid';
 
 type Props = {
   organizationId: string;
+  organizationLabel?: string;
 };
 
-const Products = ({ organizationId }: Props) => <ProductDataGrid organizationId={organizationId} />;
+const Products = ({ organizationId, organizationLabel }: Props) => (
+  <ProductDataGrid organizationId={organizationId} organizationLabel={organizationLabel} />
+);
 
 export default Products;

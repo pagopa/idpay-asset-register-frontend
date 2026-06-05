@@ -168,14 +168,29 @@ const Overview: React.FC = () => {
                         gridColumn: 'span 9',
                         display: isOperativeEmail ? 'flex' : 'block',
                         alignItems: isOperativeEmail ? 'center' : undefined,
-                        justifyContent: isOperativeEmail ? 'space-between' : undefined,
+                        minWidth: isOperativeEmail ? 0 : undefined,
                         gap: isOperativeEmail ? 2 : undefined,
                       }}
                     >
                       {hasValidValue ? (
                         <Tooltip title={value}>
-                          <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: '600' }}>
-                            {displayValue}
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              cursor: 'pointer',
+                              fontWeight: '600',
+                              ...(isOperativeEmail
+                                ? {
+                                    flex: 1,
+                                    minWidth: 0,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                  }
+                                : {}),
+                            }}
+                          >
+                            {isOperativeEmail ? value : displayValue}
                           </Typography>
                         </Tooltip>
                       ) : (
@@ -188,6 +203,7 @@ const Overview: React.FC = () => {
                           aria-label="Modifica e-mail operativa"
                           onClick={() => setOperativeEmailModalOpen(true)}
                           size="medium"
+                          sx={{ flexShrink: 0 }}
                         >
                           <EditOutlined color='primary' sx={{ width: 22 }} />
                         </ButtonNaked>
