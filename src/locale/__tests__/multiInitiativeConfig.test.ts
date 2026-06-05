@@ -1,121 +1,80 @@
 /// <reference types="jest" />
 
 import { loadItInitiativeConfig, getLogicalRoleName } from '../multiInitiativeConfig';
+import defaultConfig from '../it/default/config.json';
 
-jest.mock('../config/mergeConfigs', () => ({
-  mergeConfigs: jest.fn((a: any, b: any) => ({ ...a, ...b })),
-}));
-
-jest.mock('../config/permissionFilter', () => ({
-  applySubRolePermissions: jest.fn((config: any) => config),
-}));
-
-jest.mock('../multiInitiativeBasePath', () => ({
-  getInitiativeBasePath: jest.fn(() => './it/testInitiative/'),
-}));
-
-jest.mock('../../utils/constants', () => ({
-  DEBUG_CONSOLE: false,
-  DEFAULT_INITIATIVE_NAMESPACE: 'default',
-}));
-
-describe('multiInitiativeConfig', () => {
+describe('multiInitiativeConfig – real runtime aligned', () => {
   describe('getLogicalRoleName', () => {
-    it('returns undefined if config is falsy', () => {
+    it('covers all logical branches', () => {
       expect(getLogicalRoleName(undefined as any)).toBeUndefined();
-    });
 
-    it('returns default logicalName when no role provided', () => {
-      const config = { roles: { logicalName: 'BASE_ROLE' } } as any;
-      expect(getLogicalRoleName(config)).toBe('BASE_ROLE');
-    });
+      const base = { roles: { logicalName: 'BASE' } } as any;
+      expect(getLogicalRoleName(base)).toBe('BASE');
 
-    it('returns subRole logicalName when present', () => {
-      const config = {
+      const withSub = {
         roles: {
-          logicalName: 'BASE_ROLE',
+          logicalName: 'BASE',
           subRoles: {
-            role_a: { logicalName: 'SUB_ROLE_A' },
+            role_a: { logicalName: 'SUB_A' },
           },
         },
       } as any;
 
-      expect(getLogicalRoleName(config, 'role_a')).toBe('SUB_ROLE_A');
-    });
+      expect(getLogicalRoleName(withSub, 'role_a')).toBe('SUB_A');
 
-    it('falls back to role logicalName when subRole has no override', () => {
-      const config = {
+      const withoutOverride = {
         roles: {
-          logicalName: 'BASE_ROLE',
+          logicalName: 'BASE',
           subRoles: {
             role_a: {},
           },
         },
       } as any;
 
-      expect(getLogicalRoleName(config, 'role_a')).toBe('BASE_ROLE');
-      expect(getLogicalRoleName({} as any, 'role_a')).toBeUndefined();
+      expect(getLogicalRoleName(withoutOverride, 'role_a')).toBe('BASE');
     });
   });
 
   describe('loadItInitiativeConfig', () => {
-    // role normalization and fallback branches are covered by functional calls below
-    beforeEach(() => {
-      jest.resetModules();
-    });
-
-    it('returns empty object if initiativeName is undefined', async () => {
+    it('returns {} when initiativeName is undefined', async () => {
       const result = await loadItInitiativeConfig(undefined);
       expect(result).toEqual({});
     });
 
-    it('loads initiative default config', async () => {
-      jest.doMock(
-        '../it/testInitiative/default/config.json',
-        () => ({
-          default: { ui: { tables: { test: true } } },
-        }),
-        { virtual: true }
-      );
-
-      const result = await loadItInitiativeConfig('testInitiative');
-      // dynamic import is not executed in test environment, expect fallback {}
+    it('returns {} for unknown initiative with fallback disabled', async () => {
+      const result = await loadItInitiativeConfig('missing', undefined, false);
       expect(result).toEqual({});
     });
 
-    it.skip('falls back to global default on missing initiative', async () => {
+    it('returns global default when initiative missing and fallback enabled', async () => {
+      const result = await loadItInitiativeConfig('missing');
+      expect(result).toEqual(defaultConfig);
+    });
+
+    it('returns global default when initiative does not have its own config', async () => {
+      const result = await loadItInitiativeConfig('test');
+      expect(result).toEqual(defaultConfig);
+    });
+
+    it('returns filtered global default when role provided', async () => {
+      const result = await loadItInitiativeConfig('test', 'admin_full');
+
+      expect(result.roles).toBeDefined();
+      expect(result.ui).toBeDefined();
+      expect(result.ui?.tables).toEqual({});
+    });
+
+    it('propagates unexpected errors', async () => {
+      jest.resetModules();
       jest.doMock('../multiInitiativeBasePath', () => ({
-        getInitiativeBasePath: jest.fn(() => './it/missingInitiative/'),
+        getInitiativeBasePath: () => {
+          throw new Error('boom');
+        },
       }));
 
-      jest.doMock(
-        '../it/default/config.json',
-        () => ({
-          default: { global: true },
-        }),
-        { virtual: true }
-      );
+      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
 
-      const result = await loadItInitiativeConfig('missingInitiative');
-      // fallback not triggered in test environment
-      expect(result).toEqual({});
-    });
-
-    it('returns empty object when fallback disabled', async () => {
-      const result = await loadItInitiativeConfig('missingInitiative', undefined, false);
-      expect(result).toEqual({});
-    });
-
-    it('throws unexpected errors', async () => {
-      jest.doMock(
-        '../it/testInitiative/default/config.json',
-        () => {
-          throw new Error('Unexpected');
-        },
-        { virtual: true }
-      );
-
-      await expect(loadItInitiativeConfig('testInitiative')).rejects.toThrow();
+      await expect(fresh('test')).rejects.toThrow('boom');
     });
   });
 });

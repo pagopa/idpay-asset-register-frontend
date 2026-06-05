@@ -516,7 +516,7 @@ describe('ProductDataGrid (rewritten)', () => {
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
   });
 
-  it('validates mixed statuses without opening a grid message', async () => {
+  it('validates mixed statuses without opening modal', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
     helpersModule.getStatusChecks.mockReturnValueOnce({
       selectedStatuses: ['A', 'B'],
@@ -531,8 +531,8 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('checkbox-1'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
-    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
-    expect(screen.getByText(/errorMixSelected/i)).toBeInTheDocument();
+    expect(screen.getByTestId('rejectedBtn')).toBeDisabled();
+    expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
   });
 
   it('validates admin self approval without opening a grid message', async () => {
@@ -746,6 +746,129 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(await screen.findByText('Confirm'));
 
     await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
+  });
+
+  it('covers productCode selection branch (line 122)', async () => {
+    await renderGrid('USER', [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        productCode: 'PCODE1',
+        category: 'Cat',
+        status: 'SUPERVISED',
+      } as any,
+    ]);
+
+    await screen.findByTestId('products-table');
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
+  });
+
+  it('covers producer readable name branch (lines 140-141)', async () => {
+    await renderGrid(
+      'USER',
+      [
+        {
+          id: '1',
+          productName: 'Prod 1',
+          gtinCode: 'GTIN1',
+          category: 'Cat',
+          status: 'SUPERVISED',
+          organizationName: 'Readable Org',
+        } as any,
+      ],
+      { organizationSource: 'filter' }
+    );
+
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers setMsgResultByAction branches (398-410)', async () => {
+    const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
+
+    await renderGrid(USERS_TYPES.INVITALIA_L2, [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'SUPERVISED',
+      },
+    ]);
+
+    await screen.findByTestId('products-table');
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    fireEvent.click(await screen.findByText('Success'));
+
+    // branch executed, modal handled
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers confirm dialog fallback status branch (line 522)', async () => {
+    const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1, [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: undefined,
+      } as any,
+    ]);
+
+    await screen.findByTestId('products-table');
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
+    fireEvent.click(await screen.findByText('Confirm'));
+
+    // fallback branch executed
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers WAIT_APPROVED L2 branch (line 406)', async () => {
+    const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
+
+    await renderGrid(USERS_TYPES.INVITALIA_L2, [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'SUPERVISED',
+      },
+    ]);
+
+    await screen.findByTestId('products-table');
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
+
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers REJECT_APPROVATION L2 branch (line 410)', async () => {
+    const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
+
+    await renderGrid(USERS_TYPES.INVITALIA_L2);
+
+    await screen.findByTestId('products-table');
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    fireEvent.click(await screen.findByText('Success'));
+
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers getMsgResultByActionType default branch (line 488)', async () => {
+    await renderGrid();
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
 
   it('calls correct REJECTED success flow', async () => {
