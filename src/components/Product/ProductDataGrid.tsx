@@ -212,6 +212,13 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   }, [initiativeId, tableData]);
 
   useEffect(() => {
+    if (paginationConfig?.defaultRowsPerPage) {
+      setRowsPerPage(paginationConfig.defaultRowsPerPage);
+    }
+    setPage(0);
+  }, [initiativeId, paginationConfig]);
+
+  useEffect(() => {
     if (enrichedFiltersConfig) {
       const defaultValues = enrichedFiltersConfig as Array<
         import('../../model/config/ConfigSchema').FilterConfig
@@ -476,7 +483,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           }
         }}
         actionType={modalAction}
-        onUpdateTable={() => setRefreshKey(prev => prev + 1)}
+        onUpdateTable={() => setRefreshKey((prev) => prev + 1)}
         selectedProducts={
           tableData
             .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
@@ -511,7 +518,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
               ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
           try {
             await handleConfirmRestore(selected, currentStatus, EMPTY_DATA);
-            setRefreshKey(prev => prev + 1);
+            setRefreshKey((prev) => prev + 1);
             setRestoreDialogOpen(false);
           } catch (error) {
             if (DEBUG_CONSOLE) {
@@ -555,7 +562,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
             onUpdateTable={() => {
               setDetailOpen(false);
               setSelectedProduct(null);
-              setRefreshKey(prev => prev + 1);
+              setRefreshKey((prev) => prev + 1);
             }}
             onShowApprovedMsg={() => {
               setShowMsgApproved(true);

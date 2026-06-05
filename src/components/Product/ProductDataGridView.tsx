@@ -106,7 +106,9 @@ const ProductDataGridView: React.FC<Props> = ({
               backgroundColor: `${theme.palette.primary.main} !important`,
             }}
             onDelete={handleDeleteFiltersButtonClick}
-            deleteIcon={<CloseIcon sx={{ color: `${theme.palette.primary.contrastText} !important` }} />}
+            deleteIcon={
+              <CloseIcon sx={{ color: `${theme.palette.primary.contrastText} !important` }} />
+            }
           />
         ) : (
           <span />
@@ -138,8 +140,9 @@ const ProductDataGridView: React.FC<Props> = ({
           </Box>
         )}
 
-        {tableData?.length > 0 && !hookLoading && (
+        {!hookLoading && paginationConfig && Array.isArray(paginationConfig.rowsPerPageOptions) && (
           <TablePagination
+            key={`${paginationConfig.rowsPerPageOptions.join('-')}`}
             sx={{ backgroundColor: 'transparent' }}
             component="div"
             count={itemsQty || 0}
@@ -147,7 +150,7 @@ const ProductDataGridView: React.FC<Props> = ({
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={paginationConfig?.rowsPerPageOptions ?? [10, 25, 50, 100]}
+            rowsPerPageOptions={paginationConfig.rowsPerPageOptions}
             labelRowsPerPage={t('pages.products.elementsPerPage')}
             labelDisplayedRows={() =>
               `${paginatorFrom} - ${paginatorTo} ${t(
