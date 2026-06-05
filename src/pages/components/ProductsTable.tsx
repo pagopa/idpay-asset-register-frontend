@@ -71,23 +71,23 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   // eslint-disable-next-line sonarjs/cognitive-complexity
   const renderCellContent = (col: ColumnConfig, row: ProductDTO) => {
     if (col.type === 'checkbox' && selection?.enabled) {
-      const uniqueKey = String(
-        (row as any).gtinCode ??
-        (row as any).gtin ??
-        row.productCode ??
-        `${col.id}-${JSON.stringify(row)}`
-      );
+
+  const handleCheckboxClick = (gtinCode: string) => {
+    setSelected((prevSelected) =>
+      prevSelected.includes(gtinCode)
+        ? prevSelected.filter((code) => code !== gtinCode)
+        : [...prevSelected, gtinCode]
+    );
+  };
 
       return (
         <Checkbox
-          checked={selected.includes(uniqueKey)}
+          checked={!!row.gtinCode && selected.includes(row?.gtinCode)}
           onChange={(e) => {
             e.stopPropagation();
-            setSelected((prevSelected) =>
-              prevSelected.includes(uniqueKey)
-                ? prevSelected.filter((code) => code !== uniqueKey)
-                : [...prevSelected, uniqueKey]
-            );
+            if(row?.gtinCode) {
+              handleCheckboxClick(row.gtinCode);
+            }
           }}
         />
       );

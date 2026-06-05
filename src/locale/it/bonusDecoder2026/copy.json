@@ -41,6 +41,14 @@
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
         "productFileId": "Lotto"
+      },
+      "invitaliaModal": {
+        "waitApproved": {
+          "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nel Registro dei beni."
+        },
+        "acceptApprovation": {
+          "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nel Registro dei beni."
+        }
       }
     }
   }

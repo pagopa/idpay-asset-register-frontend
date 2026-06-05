@@ -119,7 +119,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   const selectedProductsList = useMemo(() =>
     tableData
-      .filter((row) => (row.productCode && selected.includes(row.productCode)) || (row.gtinCode && selected.includes(row.gtinCode)) )
+      .filter((row) => (row.productCode && selected.includes(row.productCode)) || (row.gtinCode && selected.includes(row.gtinCode)))
       .map((row) => ({
         status: row.status as ProductStatus,
         productName: row.productName,
@@ -222,7 +222,12 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     setFilters({});
     setPage(0);
     setSelected([]);
-  }, [initiativeId, tableData]);
+  }, [initiativeId]);
+
+
+  useEffect(() => {
+    setSelected([]);
+  }, [tableData]);
 
   useEffect(() => {
     if (paginationConfig?.defaultRowsPerPage) {

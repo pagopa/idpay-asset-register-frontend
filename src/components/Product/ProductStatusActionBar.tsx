@@ -33,64 +33,82 @@ const ProductStatusActionBar: React.FC<Props> = ({
   }
 
   const isSomeSupervised = selected.some(
-    (gtinCode) =>
-      String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
+    (code) =>
+      String(tableData.find((row) => row.gtinCode === code)?.status) ===
       PRODUCTS_STATES.SUPERVISED
   );
 
+  const isSomeWaitApproved = selected.some(
+    (code) =>
+      String(tableData.find((row) => row.gtinCode === code)?.status) ===
+      PRODUCTS_STATES.WAIT_APPROVED);
+
+  const isSomeRejected = selected.some(
+    (code) =>
+      String(tableData.find((row) => row.gtinCode === code)?.status) ===
+      PRODUCTS_STATES.REJECTED);
+
+  const isSomeApproved = selected.some(
+    (code) =>
+      String(tableData.find((row) => row.gtinCode === code)?.status) ===
+      PRODUCTS_STATES.APPROVED);
+
   return (
-        <Box display="flex" flexDirection="row" justifyContent="flex-end">
-          <Button
-            data-testid="rejectedBtn"
-            variant="outlined"
-            color="error"
-            sx={{ ...buttonStyle }}
-            onClick={() => {
-              handleOpenModalWithStatusCheck(
-                isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION
-              );
-            }}
-          >
-            {isInvitaliaUser
-              ? `${t('invitaliaModal.rejected.buttonText')} (${selected.length})`
-              : `${t('invitaliaModal.rejectApprovation.buttonText')} (${selected.length})`}
-          </Button>
-          {isInvitaliaUser && !isSomeSupervised && (
-            <Button
-              data-testid="supervisedBtn"
-              color="primary"
-              variant="outlined"
-              sx={{ ...buttonStyle }}
-              onClick={() => {
-                handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED);
-              }}
-            >
-              <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
-            </Button>
-          )}
-          <Button
-            data-testid="waitApprovedBtn"
-            color="primary"
-            variant="contained"
-            sx={{ ...buttonStyle }}
-            disabled={
-              selected.length === 0 ||
-              (selected.some(
-                (gtinCode) =>
-                  String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
-                  PRODUCTS_STATES.WAIT_APPROVED
-              ) &&
-                isInvitaliaUser)
-            }
-            onClick={() => {
-              handleOpenModalWithStatusCheck(
-                isInvitaliaUser ? PRODUCTS_STATES.WAIT_APPROVED : MIDDLE_STATES.ACCEPT_APPROVATION
-              );
-            }}
-          >
-            {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
-          </Button>
-        </Box>
+    <Box display="flex" flexDirection="row" justifyContent="flex-end">
+      <Button
+        data-testid="rejectedBtn"
+        variant="outlined"
+        color="error"
+        sx={{ ...buttonStyle }}
+        disabled={
+          selected.length === 0 ||
+          ((isSomeWaitApproved || isSomeRejected || isSomeApproved) && isInvitaliaUser)
+        }
+        onClick={() => {
+          handleOpenModalWithStatusCheck(
+            isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION
+          );
+        }}
+      >
+        {isInvitaliaUser
+          ? `${t('invitaliaModal.rejected.buttonText')} (${selected.length})`
+          : `${t('invitaliaModal.rejectApprovation.buttonText')} (${selected.length})`}
+      </Button>
+      {isInvitaliaUser && !isSomeSupervised && (
+        <Button
+          data-testid="supervisedBtn"
+          color="primary"
+          variant="outlined"
+          sx={{ ...buttonStyle }}
+          disabled={
+            selected.length === 0 ||
+            ((isSomeWaitApproved || isSomeRejected || isSomeApproved) && isInvitaliaUser)
+          }
+          onClick={() => {
+            handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED);
+          }}
+        >
+          <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
+        </Button>
+      )}
+      <Button
+        data-testid="waitApprovedBtn"
+        color="primary"
+        variant="contained"
+        sx={{ ...buttonStyle }}
+        disabled={
+          selected.length === 0 ||
+          ((isSomeWaitApproved || isSomeRejected || isSomeApproved) && isInvitaliaUser)
+        }
+        onClick={() => {
+          handleOpenModalWithStatusCheck(
+            isInvitaliaUser ? PRODUCTS_STATES.WAIT_APPROVED : MIDDLE_STATES.ACCEPT_APPROVATION
+          );
+        }}
+      >
+        {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
+      </Button>
+    </Box>
   );
 };
 
