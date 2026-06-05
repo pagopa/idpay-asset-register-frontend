@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Paper, Typography, Tooltip } from '@mui/material';
+import { Alert, Box, Paper, Typography, Tooltip } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
 import { ButtonNaked } from '@pagopa/mui-italia';
@@ -110,7 +110,13 @@ const Overview: React.FC = () => {
       />
 
       {isOperativeEmailMissing && (
-        <MsgResult severity="warning" message={t('pages.overview.missingOperativeEmailWarning')} />
+        <Box sx={{mb: 3, '& .MuiAlert-message': { fontSize: 16, }, '& .MuiAlert-root': {display: "flex", alignItems: "center", justifyContent: "flex-start" }}}>
+          <Alert severity="warning" variant='outlined'>
+            <Typography>
+              {t('pages.overview.missingOperativeEmailWarning')}
+            </Typography>
+          </Alert>
+        </Box>
       )}
 
       <Box
