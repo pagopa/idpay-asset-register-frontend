@@ -73,29 +73,25 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     if (col.type === 'checkbox' && selection?.enabled) {
       const uniqueKey = String(
         (row as any).gtinCode ??
-          (row as any).gtin ??
-          row.productCode ??
-          `${col.id}-${JSON.stringify(row)}`
+        (row as any).gtin ??
+        row.productCode ??
+        `${col.id}-${JSON.stringify(row)}`
       );
 
       return (
         <Checkbox
           checked={selected.includes(uniqueKey)}
-          onChange={(e, checked) => {
+          onChange={(e) => {
             e.stopPropagation();
-
-            setSelected((prev) =>
-              checked
-                ? prev.includes(uniqueKey)
-                  ? prev
-                  : [...prev, uniqueKey]
-                : prev.filter((c) => c !== uniqueKey)
+            setSelected((prevSelected) =>
+              prevSelected.includes(uniqueKey)
+                ? prevSelected.filter((code) => code !== uniqueKey)
+                : [...prevSelected, uniqueKey]
             );
           }}
         />
       );
     }
-
     if (col.type === 'action') {
       return (
         <IconButton size="small" onClick={() => handleListButtonClick(row)}>
