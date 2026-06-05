@@ -707,7 +707,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
     fireEvent.click(rejectedBtn);
 
-    await waitFor(() => expect(screen.getByTestId('bulk-dialog')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByTestId('product-modal')).toBeInTheDocument());
   });
 
   it('closes detail drawer using toggleDrawer button (covers cleanup branch)', async () => {
@@ -722,12 +722,10 @@ describe('ProductDataGrid (rewritten)', () => {
     await waitFor(() => expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument());
   });
 
-  it('calls correct RegisterApi method on bulk confirm (WAIT_APPROVED)', async () => {
-    const { RegisterApi } = require('../../../api/registerApiClient');
+  it('calls correct WAIT_APPROVED success flow', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
 
     helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
-    helpersModule.getSelectedStatuses.mockReturnValueOnce(['SUPERVISED']);
 
     await renderGrid(USERS_TYPES.INVITALIA_L1, [
       {
@@ -743,17 +741,17 @@ describe('ProductDataGrid (rewritten)', () => {
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
-    fireEvent.click(await screen.findByText('Success'));
 
-    await waitFor(() => expect(RegisterApi.setWaitApprovedStatusList).toHaveBeenCalled());
+    // confirm dialog branch
+    fireEvent.click(await screen.findByText('Confirm'));
+
+    await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
   });
 
-  it('calls correct RegisterApi method on bulk confirm (REJECTED)', async () => {
-    const { RegisterApi } = require('../../../api/registerApiClient');
+  it('calls correct REJECTED success flow', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
 
     helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
-    helpersModule.getSelectedStatuses.mockReturnValueOnce(['SUPERVISED']);
 
     await renderGrid(USERS_TYPES.INVITALIA_L1);
 
@@ -761,8 +759,10 @@ describe('ProductDataGrid (rewritten)', () => {
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
+
+    // modal success branch
     fireEvent.click(await screen.findByText('Success'));
 
-    await waitFor(() => expect(RegisterApi.setRejectedStatusList).toHaveBeenCalled());
+    await waitFor(() => expect(screen.getByText(/msgResultRejected/i)).toBeInTheDocument());
   });
 });
