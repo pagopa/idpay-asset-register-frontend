@@ -403,7 +403,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       setShowMsgWaitApproved(true);
       return;
     }
-    if (actionType === PRODUCTS_STATES.WAIT_APPROVED && isInvitaliaAdmin) {
+    if (actionType === MIDDLE_STATES.ACCEPT_APPROVATION && isInvitaliaAdmin) {
       setMsgAcceptApprovation(true);
       return;
     }
@@ -420,6 +420,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     <>
       <ProductDataGridView
         isInvitaliaUser={isInvitaliaUser}
+        isInvitaliaAdmin={isInvitaliaAdmin}
         tableData={tableData}
         hookLoading={loading}
         itemsQty={itemsQty ?? 0}
@@ -472,23 +473,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         showMixStatusError={showMixStatusError}
         showYourselfApprovedError={showYourselfApprovedError}
         showGenericError={showGenericError}
-        getMsgResultByActionType={(t, actionType) => {
-          switch (actionType) {
-            case PRODUCTS_STATES.WAIT_APPROVED:
-              return t('invitaliaModal.waitApproved.msgResultWaitApproved');
-            case PRODUCTS_STATES.SUPERVISED:
-              return t('invitaliaModal.supervised.msgResultSupervised');
-            case PRODUCTS_STATES.REJECTED:
-              return t('invitaliaModal.rejected.msgResultRejected');
-            case MIDDLE_STATES.REJECT_APPROVATION:
-              return t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation');
-            case MIDDLE_STATES.ACCEPT_APPROVATION:
-            case PRODUCTS_STATES.APPROVED:
-              return t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation');
-            default:
-              return '';
-          }
-        }}
         bottom={80}
       />
 

@@ -139,3 +139,10 @@ export const handleModalSuccess = ({
 
   activate(setShowMsgApproved);
 };
+
+export const checkSomeStatus = (selected: Array<string>, tableData: Array<ProductDTO>, status: keyof typeof PRODUCTS_STATES) =>
+  selected.some(
+    (code) =>
+      String(tableData.find((row) => row.gtinCode === code)?.status) ===
+      PRODUCTS_STATES[status]
+  );

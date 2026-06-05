@@ -1,5 +1,4 @@
 import React from 'react';
-import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import MsgResult from './MsgResult';
 
@@ -13,7 +12,6 @@ type Props = {
   showMixStatusError: boolean;
   showYourselfApprovedError: boolean;
   showGenericError: boolean;
-  getMsgResultByActionType: (t: any, actionType?: string) => string;
   bottom: number;
 };
 
@@ -27,7 +25,6 @@ const ProductResultMessages: React.FC<Props> = ({
   showMixStatusError,
   showYourselfApprovedError,
   showGenericError,
-  getMsgResultByActionType,
   bottom,
 }) => {
   const {t} = useScopedTranslation();
@@ -35,7 +32,7 @@ const ProductResultMessages: React.FC<Props> = ({
     {showMsgWaitApproved && (
       <MsgResult
         severity="success"
-        message={getMsgResultByActionType(t, PRODUCTS_STATES.WAIT_APPROVED)}
+        message={t('invitaliaModal.waitApproved.msgResultWaitApproved')}
         bottom={bottom}
       />
     )}
@@ -43,7 +40,7 @@ const ProductResultMessages: React.FC<Props> = ({
     {showMsgSupervised && (
       <MsgResult
         severity="success"
-        message={getMsgResultByActionType(t, PRODUCTS_STATES.SUPERVISED)}
+        message={t('invitaliaModal.supervised.msgResultSupervised')}
         bottom={bottom}
       />
     )}
@@ -51,7 +48,7 @@ const ProductResultMessages: React.FC<Props> = ({
     {showMsgApproved && (
       <MsgResult
         severity="success"
-        message={getMsgResultByActionType(t, PRODUCTS_STATES.WAIT_APPROVED)}
+        message={t('invitaliaModal.waitApproved.msgResultWaitApproved')}
         bottom={bottom}
       />
     )}
@@ -59,7 +56,7 @@ const ProductResultMessages: React.FC<Props> = ({
     {showMsgAcceptApprovation && (
       <MsgResult
         severity="success"
-        message={getMsgResultByActionType(t, MIDDLE_STATES.ACCEPT_APPROVATION)}
+        message={t('invitaliaModal.rejectApprovation.msgResultAcceptApprovation')}
         bottom={bottom}
       />
     )}
@@ -67,7 +64,7 @@ const ProductResultMessages: React.FC<Props> = ({
     {showMsgRejected && (
       <MsgResult
         severity="success"
-        message={getMsgResultByActionType(t, PRODUCTS_STATES.REJECTED)}
+        message={t('invitaliaModal.rejected.msgResultRejected')}
         bottom={bottom}
       />
     )}
@@ -75,7 +72,7 @@ const ProductResultMessages: React.FC<Props> = ({
     {showMsgRejectedApprovation && (
       <MsgResult
         severity="success"
-        message={getMsgResultByActionType(t, MIDDLE_STATES.REJECT_APPROVATION)}
+        message={t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation')}
         bottom={bottom}
       />
     )}

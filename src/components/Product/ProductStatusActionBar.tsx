@@ -4,11 +4,13 @@ import FlagIcon from '@mui/icons-material/Flag';
 import { ProductDTO } from '../../api/generated/register';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
+import { checkSomeStatus } from './ProductDataGrid.helpers';
 
 type Props = {
   tableData: Array<ProductDTO>;
   selected: Array<string>;
   isInvitaliaUser: boolean;
+  isInvitaliaAdmin: boolean;
   hookLoading: boolean;
   handleOpenModalWithStatusCheck: (action: string) => void;
 };
@@ -20,10 +22,12 @@ const buttonStyle = {
   marginRight: 2,
 };
 
+// eslint-disable-next-line complexity
 const ProductStatusActionBar: React.FC<Props> = ({
   tableData,
   selected,
   isInvitaliaUser,
+  isInvitaliaAdmin,
   hookLoading,
   handleOpenModalWithStatusCheck,
 }) => {
@@ -32,26 +36,14 @@ const ProductStatusActionBar: React.FC<Props> = ({
     return null;
   }
 
-  const isSomeSupervised = selected.some(
-    (code) =>
-      String(tableData.find((row) => row.gtinCode === code)?.status) ===
-      PRODUCTS_STATES.SUPERVISED
-  );
+  const isSomeSupervised = checkSomeStatus(selected, tableData, PRODUCTS_STATES.SUPERVISED);
+  const isSomeWaitApproved = checkSomeStatus(selected, tableData, PRODUCTS_STATES.WAIT_APPROVED);
+  const isSomeRejected = checkSomeStatus(selected, tableData, PRODUCTS_STATES.REJECTED);
+  const isSomeApproved = checkSomeStatus(selected, tableData, PRODUCTS_STATES.APPROVED);
+  const isSomeUploaded = checkSomeStatus(selected, tableData, PRODUCTS_STATES.UPLOADED);
 
-  const isSomeWaitApproved = selected.some(
-    (code) =>
-      String(tableData.find((row) => row.gtinCode === code)?.status) ===
-      PRODUCTS_STATES.WAIT_APPROVED);
-
-  const isSomeRejected = selected.some(
-    (code) =>
-      String(tableData.find((row) => row.gtinCode === code)?.status) ===
-      PRODUCTS_STATES.REJECTED);
-
-  const isSomeApproved = selected.some(
-    (code) =>
-      String(tableData.find((row) => row.gtinCode === code)?.status) ===
-      PRODUCTS_STATES.APPROVED);
+  const userCheck = (isSomeWaitApproved || isSomeRejected || isSomeApproved) && isInvitaliaUser;
+  const adminCheck = (isSomeUploaded || isSomeRejected || isSomeApproved || isSomeSupervised) && isInvitaliaAdmin;
 
   return (
     <Box display="flex" flexDirection="row" justifyContent="flex-end">
@@ -62,7 +54,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
         sx={{ ...buttonStyle }}
         disabled={
           selected.length === 0 ||
-          ((isSomeWaitApproved || isSomeRejected || isSomeApproved) && isInvitaliaUser)
+          (userCheck || adminCheck)
         }
         onClick={() => {
           handleOpenModalWithStatusCheck(
@@ -82,7 +74,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
           sx={{ ...buttonStyle }}
           disabled={
             selected.length === 0 ||
-            ((isSomeWaitApproved || isSomeRejected || isSomeApproved) && isInvitaliaUser)
+            (userCheck || adminCheck)
           }
           onClick={() => {
             handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED);
@@ -98,7 +90,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
         sx={{ ...buttonStyle }}
         disabled={
           selected.length === 0 ||
-          ((isSomeWaitApproved || isSomeRejected || isSomeApproved) && isInvitaliaUser)
+          (userCheck || adminCheck)
         }
         onClick={() => {
           handleOpenModalWithStatusCheck(

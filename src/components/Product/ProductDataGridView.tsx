@@ -14,6 +14,7 @@ import { useProductFilters } from './hooks/useProductFilters';
 
 type Props = {
   isInvitaliaUser: boolean;
+  isInvitaliaAdmin: boolean;
   tableData: Array<ProductDTO>;
   hookLoading: boolean;
   itemsQty: number;
@@ -41,6 +42,7 @@ type Props = {
 
 const ProductDataGridView: React.FC<Props> = ({
   isInvitaliaUser,
+  isInvitaliaAdmin,
   tableData,
   hookLoading,
   itemsQty,
@@ -90,6 +92,7 @@ const ProductDataGridView: React.FC<Props> = ({
             tableData={tableData}
             selected={selected}
             isInvitaliaUser={isInvitaliaUser}
+            isInvitaliaAdmin={isInvitaliaAdmin}
             hookLoading={hookLoading}
             handleOpenModalWithStatusCheck={handleOpenModalWithStatusCheck}
           />
