@@ -10,7 +10,7 @@ import {
   setInstitution,
 } from '../../redux/slices/invitaliaSlice';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
-import { DEBUG_CONSOLE, EMPTY_DATA, USERS_NAMES } from '../../utils/constants';
+import { DEBUG_CONSOLE, EMPTY_DATA, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
 import { setWaitApprovedStatusList } from '../../services/registerService';
 
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
@@ -57,12 +57,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   const currentRoleKey = user?.org_role as string | undefined;
 
-  const selectionRules = tableConfig?.selection?.rules ?? {};
-  const currentRoleRules = currentRoleKey ? selectionRules[currentRoleKey] : undefined;
+  const role = user?.org_role?.toLowerCase();
 
-  const isInvitaliaUser = Array.isArray(currentRoleRules) && currentRoleRules.length > 0;
-  const isInvitaliaAdmin =
-    Array.isArray(currentRoleRules) && currentRoleRules.includes('WAIT_APPROVED');
+  const isInvitaliaUser = role === USERS_TYPES.INVITALIA_L1;
+  const isInvitaliaAdmin = role === USERS_TYPES.INVITALIA_L2;
 
   const institution = useSelector(institutionSelector);
 
@@ -501,7 +499,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         }
         onSuccess={(actionType) => {
           setMsgResultByAction(actionType, isInvitaliaUser, isInvitaliaAdmin);
-        }} />
+        }}
+      />
 
       <ProductConfirmDialog
         open={restoreDialogOpen}
