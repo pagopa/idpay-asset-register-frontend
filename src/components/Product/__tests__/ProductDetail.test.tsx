@@ -69,10 +69,16 @@ jest.mock('../ProductConfirmDialog', () => ({
         <button onClick={() => onSuccess?.('WAIT_APPROVED')} data-testid="success-wait">
           success wait
         </button>
-        <button onClick={() => onSuccess?.('REJECT_APPROVATION')} data-testid="success-reject-approval">
+        <button
+          onClick={() => onSuccess?.('REJECT_APPROVATION')}
+          data-testid="success-reject-approval"
+        >
           success reject approval
         </button>
-        <button onClick={() => onSuccess?.('ACCEPT_APPROVATION')} data-testid="success-accept-approval">
+        <button
+          onClick={() => onSuccess?.('ACCEPT_APPROVATION')}
+          data-testid="success-accept-approval"
+        >
           success accept approval
         </button>
       </div>
@@ -380,7 +386,9 @@ describe('ProductDetail', () => {
           ...baseData,
           status: 'REJECTED',
           formalMotivation: 'Operator visible reason',
-          statusChangeChronology: [{ targetStatus: 'REJECTED', updateDate: '2024-02-03T09:15:00Z' }],
+          statusChangeChronology: [
+            { targetStatus: 'REJECTED', updateDate: '2024-02-03T09:15:00Z' },
+          ],
         }}
         isInvitaliaUser={false}
         isInvitaliaAdmin={false}
@@ -503,8 +511,8 @@ describe('ProductDetail', () => {
   });
 
   it('handles confirm restore error branch and shows generic error', async () => {
-    const { RegisterApi } = require('../../../api/registerApiClient');
-    RegisterApi.setWaitApprovedStatusList.mockImplementationOnce(() =>
+    const registerService = require('../../../services/registerService');
+    registerService.setWaitApprovedStatusList.mockImplementationOnce(() =>
       Promise.reject(new Error('error'))
     );
 

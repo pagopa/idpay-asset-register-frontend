@@ -34,13 +34,7 @@ const callRejectedApi = async (
   motivation: string,
   formalMotivation: string
 ) => {
-  await setRejectedStatusList(
-    initiativeId,
-    gtinCodes,
-    currentStatus,
-    motivation,
-    formalMotivation
-  );
+  await setRejectedStatusList(initiativeId, gtinCodes, currentStatus, motivation, formalMotivation);
 };
 
 const callWaitApprovedApi = async (
@@ -643,7 +637,7 @@ export default function ProductDetail({
             />
           </List>
         </Box>
-        {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
+        {isInvitaliaUser && data.status === 'SUPERVISED' && (
           <Paper
             elevation={3}
             sx={{
@@ -679,7 +673,7 @@ export default function ProductDetail({
             </Button>
           </Paper>
         )}
-        {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
+        {isInvitaliaUser && data.status === 'UPLOADED' && (
           <Paper
             elevation={3}
             sx={{
@@ -726,7 +720,7 @@ export default function ProductDetail({
             </Button>
           </Paper>
         )}
-        {isInvitaliaAdmin && String(data.status) === PRODUCTS_STATES.WAIT_APPROVED && (
+        {isInvitaliaAdmin && data.status === 'WAIT_APPROVED' && (
           <Paper
             elevation={3}
             sx={{

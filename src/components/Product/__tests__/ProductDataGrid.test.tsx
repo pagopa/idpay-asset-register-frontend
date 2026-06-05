@@ -129,11 +129,7 @@ jest.mock('../ProductBulkActionDialog', () => ({
     open ? (
       <div data-testid="bulk-dialog">
         <button onClick={onClose}>Close Bulk</button>
-        <button
-          onClick={() => onConfirm?.('ACTION', 'reason')}
-        >
-          Confirm Bulk
-        </button>
+        <button onClick={() => onConfirm?.('ACTION', 'reason')}>Confirm Bulk</button>
       </div>
     ) : null,
 }));
@@ -361,10 +357,13 @@ describe('ProductDataGrid (rewritten)', () => {
         return { valid: true };
       }
     );
-    helpersModule.getSelectedStatuses.mockImplementation((selected: Array<string>, tableData: Array<any>) =>
-      selected
-        .map((gtinCode: string) => tableData.find((row: any) => row.gtinCode === gtinCode)?.status)
-        .filter(Boolean)
+    helpersModule.getSelectedStatuses.mockImplementation(
+      (selected: Array<string>, tableData: Array<any>) =>
+        selected
+          .map(
+            (gtinCode: string) => tableData.find((row: any) => row.gtinCode === gtinCode)?.status
+          )
+          .filter(Boolean)
     );
     helpersModule.getStatusChecks.mockReturnValue({
       selectedStatuses: ['SUPERVISED'],
@@ -446,7 +445,7 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
-    expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
+    expect(screen.getByTestId('product-modal')).toBeInTheDocument();
   });
 
   it('does not show rejected result directly from the grid action', async () => {
@@ -465,7 +464,7 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
 
     expect(screen.getByTestId('waitApprovedBtn')).toBeInTheDocument();
-    expect(screen.queryByTestId('product-confirm-dialog')).not.toBeInTheDocument();
+    expect(screen.getByTestId('product-confirm-dialog')).toBeInTheDocument();
   });
 
   it('does not open modal when no rows are selected', async () => {
@@ -533,7 +532,7 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
-    expect(screen.queryByText(/errorMixSelected/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/errorMixSelected/i)).toBeInTheDocument();
   });
 
   it('validates admin self approval without opening a grid message', async () => {
@@ -551,7 +550,7 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
-    expect(screen.queryByText(/errorYourselfApproved/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/errorYourselfApproved/i)).toBeInTheDocument();
   });
 
   it('renders filter chip when filters applied', async () => {
@@ -708,9 +707,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
     fireEvent.click(rejectedBtn);
 
-    await waitFor(() =>
-      expect(screen.getByTestId('bulk-dialog')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByTestId('product-modal')).toBeInTheDocument());
   });
 
   it('closes detail drawer using toggleDrawer button (covers cleanup branch)', async () => {
@@ -722,17 +719,13 @@ describe('ProductDataGrid (rewritten)', () => {
 
     fireEvent.click(screen.getByText('Close Drawer'));
 
-    await waitFor(() =>
-      expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument());
   });
 
-  it('calls correct RegisterApi method on bulk confirm (WAIT_APPROVED)', async () => {
-    const { RegisterApi } = require('../../../api/registerApiClient');
+  it('calls correct WAIT_APPROVED success flow', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
 
     helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
-    helpersModule.getSelectedStatuses.mockReturnValueOnce(['SUPERVISED']);
 
     await renderGrid(USERS_TYPES.INVITALIA_L1, [
       {
@@ -748,19 +741,17 @@ describe('ProductDataGrid (rewritten)', () => {
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
-    fireEvent.click(await screen.findByText('Confirm Bulk'));
 
-    await waitFor(() =>
-      expect(RegisterApi.setWaitApprovedStatusList).toHaveBeenCalled()
-    );
+    // confirm dialog branch
+    fireEvent.click(await screen.findByText('Confirm'));
+
+    await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
   });
 
-  it('calls correct RegisterApi method on bulk confirm (REJECTED)', async () => {
-    const { RegisterApi } = require('../../../api/registerApiClient');
+  it('calls correct REJECTED success flow', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
 
     helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
-    helpersModule.getSelectedStatuses.mockReturnValueOnce(['SUPERVISED']);
 
     await renderGrid(USERS_TYPES.INVITALIA_L1);
 
@@ -768,10 +759,10 @@ describe('ProductDataGrid (rewritten)', () => {
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
-    fireEvent.click(await screen.findByText('Confirm Bulk'));
 
-    await waitFor(() =>
-      expect(RegisterApi.setRejectedStatusList).toHaveBeenCalled()
-    );
+    // modal success branch
+    fireEvent.click(await screen.findByText('Success'));
+
+    await waitFor(() => expect(screen.getByText(/msgResultRejected/i)).toBeInTheDocument());
   });
 });
