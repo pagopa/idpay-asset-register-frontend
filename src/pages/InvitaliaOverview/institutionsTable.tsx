@@ -136,7 +136,11 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   const goToInstitutionPage = (institution: Institution) => {
     dispatch(setInstitution(institution));
     navigate(buildRoute(ROUTES.INVITALIA_PRODUCTS_LIST, initiativeId ?? ''), {
-      state: { organizationId: institution.institutionId },
+      state: {
+        organizationId: institution.institutionId,
+        organizationLabel: institution.description,
+        sourceInitiativeId: initiativeId,
+      },
     });
   };
 
