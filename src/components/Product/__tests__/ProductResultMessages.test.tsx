@@ -1,6 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import ProductResultMessages from '../ProductResultMessages';
 
+jest.mock('../../../hooks/useScopedTranslation', () => ({
+  __esModule: true,
+  default: () => ({ t: (k: string) => `t:${k}` }),
+}));
+
 jest.mock('../MsgResult', () => ({
   __esModule: true,
   default: ({ severity, message, bottom }: any) => (
@@ -22,6 +27,7 @@ const baseProps = {
   showMsgRejectedApprovation: false,
   showMixStatusError: false,
   showYourselfApprovedError: false,
+  showGenericError: false,
   t,
   getMsgResultByActionType,
   bottom: 80,
