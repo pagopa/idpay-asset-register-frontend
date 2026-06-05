@@ -4,10 +4,10 @@ import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@mui/material/styles';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
-import { useTranslation } from 'react-i18next';
 import EmptyListTable from '../../pages/components/EmptyListTable';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { ProductDTO } from '../../api/generated/register';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import NewFilter from './NewFilter';
 import ProductStatusActionBar from './ProductStatusActionBar';
 import { useProductFilters } from './hooks/useProductFilters';
@@ -65,7 +65,7 @@ const ProductDataGridView: React.FC<Props> = ({
   handleToggleFiltersDrawer,
   handleOpenModalWithStatusCheck,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useScopedTranslation();
   const { filtersLabel } = useProductFilters({ filters });
   const theme = useTheme();
   return (

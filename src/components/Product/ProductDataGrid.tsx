@@ -209,7 +209,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     setFilters({});
     setPage(0);
     setSelected([]);
-  }, [initiativeId]);
+  }, [initiativeId, tableData]);
 
   useEffect(() => {
     if (enrichedFiltersConfig) {
@@ -254,6 +254,30 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
   const [showGenericError, setShowGenericError] = useState(false);
 
+  const callWaitApprovedApi = async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatus,
+    motivation: string
+  ) => {
+    try {
+      await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
+    } catch (error) {
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
+    }
+  };
+
+  const handleConfirmRestore = async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatus,
+    motivation: string
+  ) => {
+    await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
+    setRestoreDialogOpen(false);
+    setShowMsgApproved(true);
+  };
+
   const handleOpenModal = (action: string) => {
     if (action === PRODUCTS_STATES.WAIT_APPROVED) {
       setRestoreDialogOpen(true);
@@ -261,7 +285,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       setModalAction(action);
       setModalOpen(true);
     }
-    return Promise.resolve();
   };
 
   const handleOpenModalWithStatusCheck = (action: string) => {
@@ -283,8 +306,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       setTimeout(() => setShowMixStatusError(false), 3000);
       return;
     }
-
-    void handleOpenModal(action);
+    handleOpenModal(action);
   };
 
   function normalizeLegacyColumn(col: any) {
@@ -332,30 +354,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const handleListButtonClick = (row: ProductDTO) => {
     setSelectedProduct(row);
     setDetailOpen(true);
-  };
-
-  const callWaitApprovedApi = async (
-    gtinCodes: Array<string>,
-    currentStatus: ProductStatus,
-    motivation: string
-  ) => {
-    try {
-      await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
-    } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-    }
-  };
-
-  const handleConfirmRestore = async (
-    gtinCodes: Array<string>,
-    currentStatus: ProductStatus,
-    motivation: string
-  ) => {
-    await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
-    setRestoreDialogOpen(false);
-    setShowMsgApproved(true);
   };
 
   const resetAllMsgResults = () => {
@@ -488,22 +486,22 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
               gtinCode: row.gtinCode,
               category: row.category,
             })) as Array<{
-              status: ProductStatus;
-              productName?: string;
-              gtinCode: string;
-              category?: string;
-            }>
+            status: ProductStatus;
+            productName?: string;
+            gtinCode: string;
+            category?: string;
+          }>
         }
         onSuccess={(actionType) => {
           setMsgResultByAction(actionType, isInvitaliaUser, isInvitaliaAdmin);
-        }}
-      />
+        }} />
 
       <ProductConfirmDialog
         open={restoreDialogOpen}
         cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
-        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${selected.length
-          })`}
+        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${
+          selected.length
+        })`}
         title={t('invitaliaModal.waitApproved.listTitle')}
         message={t('invitaliaModal.waitApproved.description', { L2: USERS_NAMES.INVITALIA_L2 })}
         onCancel={() => setRestoreDialogOpen(false)}
