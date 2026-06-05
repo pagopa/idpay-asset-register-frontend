@@ -557,8 +557,41 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
             onUpdateTable={() => {
               setDetailOpen(false);
               setSelectedProduct(null);
+              setRefreshKey(prev => prev + 1);
             }}
-            onShowRejectedMsg={() => { }}
+            onShowApprovedMsg={() => {
+              setShowMsgApproved(true);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowRejectedMsg={() => {
+              setShowMsgRejected(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+            }}
+            onShowWaitApprovedMsg={() => {
+              setShowMsgWaitApproved(true);
+              setShowMsgApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowSupervisedMsg={() => {
+              setShowMsgSupervised(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowRejectedApprovationMsg={() => {
+              setShowMsgRejectedApprovation(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowAcceptApprovationMsg={() => {
+              setMsgAcceptApprovation(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
             onShowGenericError={() => setShowGenericError(true)}
           />
         </DetailDrawer>
