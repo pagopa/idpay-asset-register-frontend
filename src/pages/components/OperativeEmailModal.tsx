@@ -80,7 +80,7 @@ const modalStyles = {
   },
   textField: {
     '& .MuiOutlinedInput-root': {
-      height: 40,
+      height: 48,
       borderRadius: '8px',
       backgroundColor: 'white',
     },
@@ -108,7 +108,7 @@ const modalStyles = {
       fontWeight: 600,
       backgroundColor: 'white',
       px: 0.5,
-      transform: 'translate(50px, 6px) scale(1)',
+      transform: 'translate(50px, 11px) scale(1)',
     },
     '& .MuiInputLabel-root.MuiInputLabel-shrink': {
       transform: 'translate(14px, -9px) scale(0.75)',
@@ -152,7 +152,7 @@ const modalStyles = {
   },
   saveButton: {
     backgroundColor: MODAL_PRIMARY_COLOR,
-    height: 40,
+    height: 44,
     borderRadius: '8px',
     fontFamily: 'Titillium Web',
     fontSize: 15,
