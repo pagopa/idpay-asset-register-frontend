@@ -40,6 +40,15 @@ jest.mock('../../../api/registerApiClient', () => ({
 jest.mock('../../../helpers');
 jest.mock('../../../hooks/useInitiativeConfig');
 
+jest.mock('../../../hooks/useScopedTranslation', () => ({
+  __esModule: true,
+  default: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'en' },
+    isLoading: false,
+  }),
+}));
+
 jest.mock('../hooks/useResolvedProductTableConfig', () => ({
   __esModule: true,
   useResolvedProductTableConfig: jest.fn(),
