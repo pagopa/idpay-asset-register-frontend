@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { AxiosError, AxiosHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { RegisterApi, RolePermissionApi, registerClient } from '../registerApiClient';
-import { storageTokenOps, storageUserOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
-import { store } from '../../redux/store';
-import { appStateActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice';
-import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
+import { AxiosHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { RegisterApi, registerClient } from '../registerApiClient';
+import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
+
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/utils/storage', () => ({
   storageTokenOps: { read: jest.fn(() => 'token') },
@@ -12,7 +10,7 @@ jest.mock('@pagopa/selfcare-common-frontend/lib/utils/storage', () => ({
 }));
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/config/env', () => ({
-  CONFIG: { URL_FE: { LOGIN: 'http://login' } },
+  CONFIG: { URL_FE: { LOGIN: 'https://login' } },
 }));
 
 jest.mock('../../redux/store', () => ({
@@ -24,7 +22,7 @@ jest.mock('@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice', () 
 }));
 
 jest.mock('../../utils/env', () => ({
-  ENV: { API_TIMEOUT_MS: { OPERATION: 1000 }, URL_API: { OPERATION: 'http://base' } },
+  ENV: { API_TIMEOUT_MS: { OPERATION: 1000 }, URL_API: { OPERATION: 'https://base' } },
 }));
 
 jest.mock('../../utils/constants', () => ({

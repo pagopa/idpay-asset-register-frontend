@@ -28,6 +28,8 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
+        env:
+          YARN_ENABLE_SCRIPTS: false
         run: |
           corepack enable
           yarn install --frozen-lockfile --check-files
