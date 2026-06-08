@@ -1,9 +1,15 @@
-/// <reference types="jest" />
-
 import { loadItInitiativeConfig, getLogicalRoleName } from '../multiInitiativeConfig';
 import defaultConfig from '../it/default/config.json';
 
 describe('multiInitiativeConfig – real runtime aligned', () => {
+  afterEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+    jest.dontMock('../config/permissionFilter');
+    jest.dontMock('../config/mergeConfigs');
+    jest.dontMock('../multiInitiativeBasePath');
+  });
+
   describe('getLogicalRoleName', () => {
     it('covers all logical branches', () => {
       expect(getLogicalRoleName(undefined as any)).toBeUndefined();
@@ -62,6 +68,75 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
       expect(result.roles).toBeDefined();
       expect(result.ui).toBeDefined();
       expect(result.ui?.tables).toEqual({});
+    });
+
+    it('falls back to initiative default when role-specific config is missing', async () => {
+      const result = await loadItInitiativeConfig(
+        'bonusElettrodomestici',
+        'missing_full',
+        true,
+        '2025-01-01'
+      );
+
+      expect(result).toMatchObject({
+        roles: expect.any(Object),
+        templates: expect.any(Object),
+        ui: expect.any(Object),
+      });
+      expect(result).not.toEqual(defaultConfig);
+    });
+
+    it('returns {} when loader resolves to an invalid config shape', async () => {
+      jest.doMock('../config/permissionFilter', () => ({
+        applySubRolePermissions: jest.fn().mockReturnValue(null),
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
+
+      await expect(fresh('default')).resolves.toEqual({});
+    });
+
+    it('returns {} when role-specific loader resolves to an invalid config shape', async () => {
+      jest.doMock('../config/permissionFilter', () => ({
+        applySubRolePermissions: jest.fn().mockReturnValue('invalid-config'),
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
+
+      await expect(fresh('bonusDecoder', 'invitalia_admin', true, '2026-01-01')).resolves.toEqual(
+        {}
+      );
+    });
+
+    it('logs the normalized role when debug console is enabled', async () => {
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+
+      jest.doMock('../../utils/constants', () => ({
+        DEBUG_CONSOLE: true,
+        DEFAULT_INITIATIVE_NAMESPACE: 'default',
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
+
+      await fresh('bonusDecoder', 'invitalia_admin', true, '2026-01-01');
+
+      expect(consoleSpy).toHaveBeenCalledWith('role normalized:', 'invitalia');
+
+      consoleSpy.mockRestore();
+    });
+
+    it('propagates unexpected errors from initiative default loading', async () => {
+      jest.doMock('../config/mergeConfigs', () => ({
+        mergeConfigs: jest.fn(() => {
+          throw new Error('merge boom');
+        }),
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
+
+      await expect(fresh('bonusDecoder', undefined, true, '2026-01-01')).rejects.toThrow(
+        'merge boom'
+      );
     });
 
     it('propagates unexpected errors', async () => {
