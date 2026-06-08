@@ -1,5 +1,6 @@
-import { loadItInitiativeConfig, getLogicalRoleName } from '../multiInitiativeConfig';
 import defaultConfig from '../it/default/config.json';
+
+const importMultiInitiativeConfig = async () => import('../multiInitiativeConfig');
 
 describe('multiInitiativeConfig – real runtime aligned', () => {
   afterEach(() => {
@@ -11,7 +12,9 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
   });
 
   describe('getLogicalRoleName', () => {
-    it('covers all logical branches', () => {
+    it('covers all logical branches', async () => {
+      const { getLogicalRoleName } = await importMultiInitiativeConfig();
+
       expect(getLogicalRoleName(undefined as any)).toBeUndefined();
 
       const base = { roles: { logicalName: 'BASE' } } as any;
@@ -43,26 +46,36 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
   describe('loadItInitiativeConfig', () => {
     it('returns {} when initiativeName is undefined', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
       const result = await loadItInitiativeConfig(undefined);
       expect(result).toEqual({});
     });
 
     it('returns {} for unknown initiative with fallback disabled', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
       const result = await loadItInitiativeConfig('missing', undefined, false);
       expect(result).toEqual({});
     });
 
     it('returns global default when initiative missing and fallback enabled', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
       const result = await loadItInitiativeConfig('missing');
       expect(result).toEqual(defaultConfig);
     });
 
     it('returns global default when initiative does not have its own config', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
       const result = await loadItInitiativeConfig('test');
       expect(result).toEqual(defaultConfig);
     });
 
     it('returns filtered global default when role provided', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
       const result = await loadItInitiativeConfig('test', 'admin_full');
 
       expect(result.roles).toBeDefined();
@@ -71,6 +84,8 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
     });
 
     it('falls back to initiative default when role-specific config is missing', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
       const result = await loadItInitiativeConfig(
         'bonusElettrodomestici',
         'missing_full',
@@ -91,7 +106,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
         applySubRolePermissions: jest.fn().mockReturnValue(null),
       }));
 
-      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
       await expect(fresh('default')).resolves.toEqual({});
     });
@@ -101,7 +116,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
         applySubRolePermissions: jest.fn().mockReturnValue('invalid-config'),
       }));
 
-      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
       await expect(fresh('bonusDecoder', 'invitalia_admin', true, '2026-01-01')).resolves.toEqual(
         {}
@@ -116,7 +131,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
         DEFAULT_INITIATIVE_NAMESPACE: 'default',
       }));
 
-      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
       await fresh('bonusDecoder', 'invitalia_admin', true, '2026-01-01');
 
@@ -132,7 +147,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
         }),
       }));
 
-      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
       await expect(fresh('bonusDecoder', undefined, true, '2026-01-01')).rejects.toThrow(
         'merge boom'
@@ -147,7 +162,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
         },
       }));
 
-      const { loadItInitiativeConfig: fresh } = await import('../multiInitiativeConfig');
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
       await expect(fresh('test')).rejects.toThrow('boom');
     });
