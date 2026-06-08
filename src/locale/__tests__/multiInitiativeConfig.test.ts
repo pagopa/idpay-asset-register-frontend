@@ -166,5 +166,109 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       await expect(fresh('test')).rejects.toThrow('boom');
     });
+
+    it('returns global default when role normalizes to empty (empty string role)', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
+      const result = await loadItInitiativeConfig('default', '');
+
+      expect(result).toEqual(defaultConfig);
+    });
+
+    it('returns global default when role is whitespace-only', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
+      const result = await loadItInitiativeConfig('default', '   ');
+
+      expect(result).toEqual(defaultConfig);
+    });
+
+    it('merges global default with initiative default config when loading without role', async () => {
+      const mergeSpy = jest.fn((base: any, override: any) => ({ ...base, ...override }));
+      jest.doMock('../config/mergeConfigs', () => ({ mergeConfigs: mergeSpy }));
+      jest.doMock('../multiInitiativeBasePath', () => ({
+        getInitiativeBasePath: jest.fn().mockReturnValue('./it/bonusDecoder2026/'),
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
+
+      const result = await fresh('bonusDecoder');
+
+      expect(mergeSpy).toHaveBeenCalled();
+      expect(result).toMatchObject({ roles: expect.any(Object) });
+    });
+
+    it('merges global, initiative, and role-specific configs when all exist', async () => {
+      const mergeSpy = jest.fn((base: any, override: any) => ({ ...base, ...override }));
+      jest.doMock('../config/mergeConfigs', () => ({ mergeConfigs: mergeSpy }));
+      jest.doMock('../multiInitiativeBasePath', () => ({
+        getInitiativeBasePath: jest.fn().mockReturnValue('./it/bonusDecoder2026/'),
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
+
+      const result = await fresh('bonusDecoder', 'invitalia_admin');
+
+      expect(mergeSpy).toHaveBeenCalledTimes(2);
+      expect(result).toMatchObject({ roles: expect.any(Object) });
+    });
+
+    it('propagates non-module-not-found error from initiative default config loading (covers lines 98, 207)', async () => {
+      jest.doMock('../config/mergeConfigs', () => ({
+        mergeConfigs: jest.fn(() => {
+          throw new TypeError('merge type error');
+        }),
+      }));
+      jest.doMock('../multiInitiativeBasePath', () => ({
+        getInitiativeBasePath: jest.fn().mockReturnValue('./it/bonusDecoder2026/'),
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
+
+      await expect(fresh('bonusDecoder')).rejects.toThrow('merge type error');
+    });
+
+    it('propagates non-module-not-found error from role-specific config loading (covers lines 126, 184, 207)', async () => {
+      jest.doMock('../config/permissionFilter', () => ({
+        applySubRolePermissions: jest.fn(() => {
+          throw new TypeError('permission filter error');
+        }),
+      }));
+      jest.doMock('../multiInitiativeBasePath', () => ({
+        getInitiativeBasePath: jest.fn().mockReturnValue('./it/bonusDecoder2026/'),
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
+
+      await expect(fresh('bonusDecoder', 'invitalia_admin')).rejects.toThrow(
+        'permission filter error'
+      );
+    });
+
+    it('isModuleNotFoundError matches error with message containing "Cannot find module"', async () => {
+      jest.doMock('../multiInitiativeBasePath', () => ({
+        getInitiativeBasePath: jest.fn().mockReturnValue('./it/noCodeInit/'),
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
+
+      const result = await fresh('noCodeInit');
+      expect(result).toEqual(defaultConfig);
+    });
+
+    it('falls back to initiative default when role-specific file is missing (covers line 181)', async () => {
+      const mergeSpy = jest.fn((base: any, override: any) => ({ ...base, ...override }));
+      jest.doMock('../config/mergeConfigs', () => ({ mergeConfigs: mergeSpy }));
+      jest.doMock('../multiInitiativeBasePath', () => ({
+        getInitiativeBasePath: jest.fn().mockReturnValue('./it/bonusDecoder2026/'),
+      }));
+
+      const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
+
+      const result = await fresh('bonusDecoder', 'unknownrole_admin');
+
+      expect(result).toMatchObject({ roles: expect.any(Object) });
+      expect(mergeSpy).toHaveBeenCalledTimes(1);
+    });
   });
 });
