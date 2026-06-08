@@ -133,11 +133,10 @@ describe('ProductDataGridView', () => {
 
     expect(screen.getByText('FILTER_LABEL')).toBeInTheDocument();
 
-    const deleteIcon = screen.getByRole('button');
+    const deleteIcon = screen.getByTestId('CloseIcon');
     fireEvent.click(deleteIcon);
 
-    // verify that the filter chip is rendered (delete handler wiring is delegated to inner component)
-    expect(screen.getByText(/./)).toBeInTheDocument();
+    expect(screen.getByText('FILTER_LABEL')).toBeInTheDocument();
   });
 
   it('renders pagination when configured', () => {
