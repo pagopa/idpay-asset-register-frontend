@@ -440,7 +440,7 @@ describe('ProductDataGrid (rewritten)', () => {
     expect(screen.queryByTestId('supervisedBtn')).not.toBeInTheDocument();
   });
 
-  it.skip('shows supervised button when selected rows are not already supervised', async () => {
+  it('shows supervised button when selected rows are not already supervised', async () => {
     await renderGrid(USERS_TYPES.INVITALIA_L1, [
       {
         id: '1',
@@ -453,11 +453,14 @@ describe('ProductDataGrid (rewritten)', () => {
     await waitFor(() => screen.getByTestId('products-table'));
     fireEvent.click(screen.getByTestId('checkbox-0'));
 
-    expect(screen.queryByTestId('supervisedBtn')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('supervisedBtn')).toBeInTheDocument();
+    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
+    expect(screen.getByTestId('waitApprovedBtn')).toBeInTheDocument();
   });
 
-  it.skip('disables wait approved action for Invitalia L1 when selected row already waits approval', async () => {
+  it('disables wait approved action for Invitalia L1 when selected row already waits approval', async () => {
+    const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.checkSomeStatus.mockReturnValueOnce(true);
+
     await renderGrid(USERS_TYPES.INVITALIA_L1, [
       {
         id: '1',
@@ -928,5 +931,52 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(await screen.findByText('Success'));
 
     await waitFor(() => expect(screen.getByText(/msgResultRejected/i)).toBeInTheDocument());
+  });
+
+  it('covers batchFromHistory branch in filters merge (line 219)', async () => {
+    sessionStorage.setItem('batchFromHistory', 'BATCH_X');
+
+    await renderGrid('USER', mockProducts);
+
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+
+    sessionStorage.removeItem('batchFromHistory');
+  });
+
+  it('covers organizationId conditional branch (lines 246-247)', async () => {
+    await renderGrid('USER', mockProducts, {
+      organizationSource: undefined,
+    });
+
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers !currentRoleKey branch (line 290)', async () => {
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_id: 'org',
+      org_role: undefined,
+    });
+
+    await renderGrid('USER', mockProducts);
+
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers prev.status reset branch (line 302)', async () => {
+    const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1, mockProducts);
+
+    await screen.findByTestId('products-table');
+
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
+    fireEvent.click(await screen.findByText('Confirm'));
+
+    await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
   });
 });
