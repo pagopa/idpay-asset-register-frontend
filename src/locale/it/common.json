@@ -312,7 +312,10 @@
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
         "eprelCode": "Codice EPREL",
-        "productFileId": "Lotto"
+        "productFileId": "Lotto",
+        "errors": {
+          "eprelCode": "Il codice EPREL deve essere numerico"
+        }
       }
     }
   },
