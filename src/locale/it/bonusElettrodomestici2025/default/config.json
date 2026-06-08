@@ -147,6 +147,11 @@
             "id": "productCode",
             "type": "text",
             "labelKey": "tables.products.filters.productCode"
+          },
+          {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode"
           }
         ],
         "selection": {

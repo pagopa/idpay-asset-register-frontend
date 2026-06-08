@@ -79,6 +79,11 @@
             "labelKey": "tables.products.filters.productCode"
           },
           {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode"
+          },
+          {
             "id": "productFileId",
             "type": "select",
             "labelKey": "tables.products.filters.productFileId"
