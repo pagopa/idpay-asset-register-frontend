@@ -26,18 +26,7 @@ describe('validateBulkActionPreconditions - config driven', () => {
     expect(result.reason).toBe('EMPTY');
   });
 
-  test('blocks mixed status when preventMixedStatus true', () => {
-    const result = validateBulkActionPreconditions({
-      selected: ['1', '2'],
-      tableData,
-      roleKey: 'invitalia',
-    });
-
-    expect(result.valid).toBe(false);
-    expect(result.reason).toBe('MIXED_STATUS');
-  });
-
-  test('blocks mixed status when preventMixedStatus false because current logic always rejects mixed statuses', () => {
+  test('blocks rows with mixed statuses', () => {
     const result = validateBulkActionPreconditions({
       selected: ['1', '2'],
       tableData,
