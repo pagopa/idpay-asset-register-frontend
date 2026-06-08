@@ -56,7 +56,7 @@ const ProductResultMessages: React.FC<Props> = ({
     {showMsgAcceptApprovation && (
       <MsgResult
         severity="success"
-        message={t('invitaliaModal.rejectApprovation.msgResultAcceptApprovation')}
+        message={t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation')}
         bottom={bottom}
       />
     )}

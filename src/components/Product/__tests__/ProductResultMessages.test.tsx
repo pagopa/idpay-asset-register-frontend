@@ -15,9 +15,6 @@ jest.mock('../MsgResult', () => ({
   ),
 }));
 
-const t = (key: string) => `t:${key}`;
-const getMsgResultByActionType = jest.fn((_t, actionType) => `msg:${actionType}`);
-
 const baseProps = {
   showMsgWaitApproved: false,
   showMsgSupervised: false,
@@ -28,17 +25,10 @@ const baseProps = {
   showMixStatusError: false,
   showYourselfApprovedError: false,
   showGenericError: false,
-  t,
-  getMsgResultByActionType,
   bottom: 80,
 };
 
 describe('ProductResultMessages', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    getMsgResultByActionType.mockImplementation((_t, actionType) => `msg:${actionType}`);
-  });
-
   it('renders nothing when all flags are false', () => {
     render(<ProductResultMessages {...baseProps} />);
 
@@ -57,13 +47,14 @@ describe('ProductResultMessages', () => {
         showMsgRejectedApprovation
         showMixStatusError
         showYourselfApprovedError
+        showGenericError
       />
     );
 
-    expect(screen.getAllByTestId('msg-result')).toHaveLength(8);
-    expect(screen.getAllByText(/success:msg:/)).toHaveLength(6);
+    expect(screen.getAllByTestId('msg-result')).toHaveLength(9);
+    expect(screen.getAllByText(/success:t:/)).toHaveLength(6);
     expect(screen.getByText('error:t:msgResutlt.errorMixSelected:80')).toBeInTheDocument();
     expect(screen.getByText('error:t:msgResutlt.errorYourselfApproved:80')).toBeInTheDocument();
-    expect(getMsgResultByActionType).toHaveBeenCalledTimes(6);
+    expect(screen.getByText('error:t:msgResutlt.errorGenericDescription:80')).toBeInTheDocument();
   });
 });

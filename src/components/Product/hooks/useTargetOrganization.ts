@@ -5,7 +5,6 @@ type Params = {
   organizationId: string;
   user: any;
   filtersValue: Record<string, any>;
-  institutionId?: string;
   tableConfig?: ProductTableConfig;
 };
 
@@ -13,7 +12,6 @@ export function useTargetOrganization({
   organizationId,
   user,
   filtersValue,
-  institutionId,
   tableConfig,
 }: Params) {
   const organizationSource = tableConfig?.organizationSource;
@@ -32,11 +30,11 @@ export function useTargetOrganization({
     }
 
     if (organizationSource === 'filter') {
-      return filtersValue?.producer || institutionId || '';
+      return filtersValue?.producer || organizationId || '';
     }
 
     return '';
-  }, [organizationSource, filtersValue, institutionId, organizationId, user]);
+  }, [organizationSource, filtersValue, organizationId, user]);
 
   return {
     targetId,
