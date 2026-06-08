@@ -104,19 +104,27 @@ const loadRoleSpecificConfig = async (
   normalizedRole: string,
   role?: string
 ): Promise<InitiativeTablesConfig> => {
-  const globalMod = await import(`./it/${DEFAULT_INITIATIVE_NAMESPACE}/config.json`);
-  const globalConfig = (globalMod as { default?: InitiativeTablesConfig }).default ?? {};
+  try {
+    const globalMod = await import(`./it/${DEFAULT_INITIATIVE_NAMESPACE}/config.json`);
+    const globalConfig = (globalMod as { default?: InitiativeTablesConfig }).default ?? {};
 
-  const defaultMod = await import(`${basePath}default/config.json`);
-  const initiativeDefault = (defaultMod as { default?: InitiativeTablesConfig }).default ?? {};
+    const defaultMod = await import(`${basePath}default/config.json`);
+    const initiativeDefault = (defaultMod as { default?: InitiativeTablesConfig }).default ?? {};
 
-  const roleMod = await import(`${basePath}${normalizedRole}/config.json`);
-  const roleConfig = (roleMod as { default?: InitiativeTablesConfig }).default ?? {};
+    const roleMod = await import(`${basePath}${normalizedRole}/config.json`);
+    const roleConfig = (roleMod as { default?: InitiativeTablesConfig }).default ?? {};
 
-  const mergedInitiative = mergeConfigs(globalConfig, initiativeDefault);
-  const merged = mergeConfigs(mergedInitiative, roleConfig);
+    const mergedInitiative = mergeConfigs(globalConfig, initiativeDefault);
+    const merged = mergeConfigs(mergedInitiative, roleConfig);
 
-  return applySubRolePermissions(merged, resolveSubRole(role));
+    return applySubRolePermissions(merged, resolveSubRole(role));
+  } catch (error: any) {
+    if (isModuleNotFoundError(error)) {
+      throw new InitiativeNotFoundError(basePath);
+    }
+
+    throw error;
+  }
 };
 
 const resolveAndValidate = async (
@@ -162,21 +170,19 @@ const executeInitiativeLoad = async (
     console.log('role normalized:', normalizedRole);
   }
 
-  const loader = normalizedRole
-    ? async () => {
-        try {
-          return await loadRoleSpecificConfig(basePath, normalizedRole, role);
-        } catch (error) {
-          if (error instanceof InitiativeNotFoundError || isModuleNotFoundError(error)) {
-            return loadWithoutRole();
-          }
+  if (!normalizedRole) {
+    return resolveAndValidate(loadWithoutRole);
+  }
 
-          throw error;
-        }
-      }
-    : loadWithoutRole;
+  try {
+    return await resolveAndValidate(() => loadRoleSpecificConfig(basePath, normalizedRole, role));
+  } catch (error) {
+    if (error instanceof InitiativeNotFoundError || isModuleNotFoundError(error)) {
+      return resolveAndValidate(loadWithoutRole);
+    }
 
-  return resolveAndValidate(loader);
+    throw error;
+  }
 };
 
 export const loadItInitiativeConfig = async (
