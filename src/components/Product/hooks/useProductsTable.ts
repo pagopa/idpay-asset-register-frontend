@@ -12,6 +12,7 @@ export type UseProductsTableParams = {
   order: Order;
   page: number;
   rowsPerPage: number;
+  enabled?: boolean;
   organizationSource?: string;
   category?: string;
   producer?: string;
@@ -30,6 +31,7 @@ export const useProductsTable = ({
   order,
   page,
   rowsPerPage,
+  enabled = true,
   organizationSource,
   category,
   producer,
@@ -50,6 +52,9 @@ export const useProductsTable = ({
     try {
       setLoading(true);
 
+      // UAT storico: lo status veniva passato già tradotto (UI value)
+      const translatedStatus = status ? status : undefined;
+
       const res = await getProducts(
         initiativeId,
         organizationId,
@@ -57,7 +62,7 @@ export const useProductsTable = ({
         rowsPerPage,
         `${orderBy},${order}`,
         category?.toUpperCase(),
-        status || undefined,
+        translatedStatus,
         eprelCode,
         gtinCode,
         productCode,
@@ -91,6 +96,10 @@ export const useProductsTable = ({
   };
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     if (organizationSource === 'filter' && !organizationId && !productFileId) {
       setLoading(false);
       setTableData([]);
@@ -114,6 +123,7 @@ export const useProductsTable = ({
     status,
     gtinCode,
     organizationSource,
+    enabled,
   ]);
 
   return {

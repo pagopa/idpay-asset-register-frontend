@@ -9,7 +9,7 @@ export const getSelectedStatuses = (
     .map((selectedKey) => {
       const match = tableData.find((row) => {
         const rowKey = String(
-          (row as any).gtinCode ?? (row as any).gtin ?? (row as any).productCode ?? ''
+          (row as any).productCode ?? (row as any).gtinCode ?? (row as any).gtin ?? ''
         );
         return rowKey === String(selectedKey);
       });
@@ -138,7 +138,13 @@ export const checkSomeStatus = (
   tableData: Array<ProductDTO>,
   status: keyof typeof PRODUCTS_STATES
 ) =>
-  selected.some(
-    (code) =>
-      String(tableData.find((row) => row.gtinCode === code)?.status) === PRODUCTS_STATES[status]
-  );
+  selected.some((code) => {
+    const match = tableData.find((row) => {
+      const rowKey = String(
+        (row as any).gtinCode ?? (row as any).gtin ?? (row as any).productCode ?? ''
+      );
+      return rowKey === String(code);
+    });
+
+    return String(match?.status) === PRODUCTS_STATES[status];
+  });

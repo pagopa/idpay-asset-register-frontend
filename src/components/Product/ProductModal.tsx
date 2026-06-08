@@ -16,8 +16,8 @@ import useScopedTranslation from '../../hooks/useScopedTranslation';
 import {
   setSupervisionedStatusList,
   setRejectedStatusList,
-  setRestoredStatusList,
   setApprovedStatusList,
+  setWaitApprovedStatusList,
 } from '../../services/registerService';
 import { filterInputWithSpaceRule } from '../../helpers';
 import { ProductStatus } from '../../api/generated/register';
@@ -347,7 +347,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
     }
     try {
       onClose(false);
-      await setRejectedStatusList(initiativeId, gtinCodes, status, motivationInternal, motivationOfficial);
+      await setRejectedStatusList(
+        initiativeId,
+        gtinCodes,
+        status,
+        motivationInternal,
+        motivationOfficial
+      );
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -362,6 +368,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
     }
   };
 
+  /**
+   * NOT USED (PRD bonusElettrodomestici2025)
+   * Transizione WAIT_APPROVED → UPLOADED non prevista dal workflow ufficiale.
+   * Manteniamo il codice commentato per compatibilità multi‑iniziativa futura.
+   */
+  /*
   const callRestoredApi = async () => {
     if (
       motivationInternal.trim().length < MIN_LENGTH_TEXTFIELD_POPUP ||
@@ -386,11 +398,30 @@ const ProductModal: React.FC<ProductModalProps> = ({
       onClose(false);
     }
   };
+  */
 
   const callApprovedApi = async () => {
     try {
       onClose(false);
       await setApprovedStatusList(initiativeId, gtinCodes, status, EMPTY_DATA);
+      if (onUpdateTable) {
+        onUpdateTable();
+      }
+      if (typeof onSuccess === 'function') {
+        onSuccess(actionType);
+      }
+    } catch (error) {
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
+      onClose(false);
+    }
+  };
+
+  const callWaitApprovedApi = async () => {
+    try {
+      onClose(false);
+      await setWaitApprovedStatusList(initiativeId, gtinCodes, status, EMPTY_DATA);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -469,7 +500,19 @@ const ProductModal: React.FC<ProductModalProps> = ({
             sx={{
               ...buttonStyle,
             }}
-            onClick={callRestoredApi}
+            onClick={callRejectedApi}
+          >
+            {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
+          </Button>
+        )}
+        {actionType === PRODUCTS_STATES.WAIT_APPROVED && (
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              ...buttonStyle,
+            }}
+            onClick={callWaitApprovedApi}
           >
             {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
           </Button>

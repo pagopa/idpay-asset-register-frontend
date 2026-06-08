@@ -33,6 +33,9 @@
             "status": "WAIT_APPROVED"
           }
         },
+        "actionPolicies": {
+          "preventSameStatusTransition": true
+        },
         "selection": {
           "enabled": true,
           "rules": {
@@ -101,24 +104,19 @@
             "labelKey": "tables.products.filters.category"
           },
           {
-            "id": "status",
-            "type": "select",
-            "labelKey": "tables.products.filters.status"
-          },
-          {
             "id": "producer",
             "type": "select",
             "labelKey": "tables.products.filters.producer"
           },
           {
-            "id": "gtinCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.gtinCode"
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
           },
           {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
           },
           {
             "id": "eprelCode",
@@ -129,9 +127,9 @@
             "inputProps": { "maxLength": 12 }
           },
           {
-            "id": "productFileId",
-            "type": "select",
-            "labelKey": "tables.products.filters.productFileId"
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode"
           }
         ],
         "detail": {

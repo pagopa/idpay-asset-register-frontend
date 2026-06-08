@@ -69,14 +69,9 @@
             "labelKey": "tables.products.filters.status"
           },
           {
-            "id": "gtinCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.gtinCode"
-          },
-          {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
           },
           {
             "id": "eprelCode",
@@ -87,9 +82,9 @@
             "inputProps": { "maxLength": 12 }
           },
           {
-            "id": "productFileId",
-            "type": "select",
-            "labelKey": "tables.products.filters.productFileId"
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode"
           }
         ],
         "detail": {

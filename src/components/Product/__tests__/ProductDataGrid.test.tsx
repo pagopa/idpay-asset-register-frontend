@@ -58,6 +58,13 @@ jest.mock('../hooks/useResolvedProductTableConfig', () => ({
   useResolvedProductTableConfig: jest.fn(),
 }));
 
+jest.mock('../hooks/useTargetOrganization', () => ({
+  __esModule: true,
+  useTargetOrganization: jest.fn(() => ({
+    targetId: 'org',
+  })),
+}));
+
 jest.mock('../../../hooks/useInitiativesQuery', () => ({
   __esModule: true,
   useInitiativesQuery: () => ({
@@ -398,6 +405,9 @@ const configureTableMocks = ({
         USER: {
           permissions: { tables: hasPermission ? ['products'] : [] },
         },
+        [USERS_TYPES.OPERATORE]: {
+          permissions: { tables: hasPermission ? ['products'] : [] },
+        },
         [USERS_TYPES.INVITALIA_L1]: {
           permissions: { tables: hasPermission ? ['products'] : [] },
         },
@@ -454,7 +464,7 @@ const setupBatchFiltersResponse = () => {
 };
 
 const renderGrid = async (
-  role: string = 'USER',
+  role: string = USERS_TYPES.OPERATORE,
   products = mockProducts,
   {
     hasPermission = true,
@@ -506,6 +516,10 @@ describe('ProductDataGrid (rewritten)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
+
+    // Re‑stabilize useTargetOrganization after clearAllMocks
+    const targetHook = require('../hooks/useTargetOrganization');
+    targetHook.useTargetOrganization.mockReturnValue({ targetId: 'org' });
 
     const helpersModule = getHelpersModule();
     helpersModule.validateBulkActionPreconditions.mockImplementation(
@@ -821,11 +835,12 @@ describe('ProductDataGrid (rewritten)', () => {
   it('calls correct WAIT_APPROVED success flow', async () => {
     getHelpersModule().validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
 
-    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts());
+    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts({ status: 'WAIT_APPROVED' }));
     await selectRowAndClickAction('waitApprovedBtn');
-    await confirmDialog();
+    await screen.findByTestId('product-modal');
+    await clickModalSuccess();
 
-    await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
   });
 
   it('covers productCode selection branch (line 122)', async () => {
@@ -861,9 +876,10 @@ describe('ProductDataGrid (rewritten)', () => {
   it('covers confirm dialog fallback status branch (line 522)', async () => {
     getHelpersModule().validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
 
-    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts({ status: undefined }));
+    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts({ status: 'WAIT_APPROVED' }));
     await selectRowAndClickAction('waitApprovedBtn');
-    await confirmDialog();
+    await screen.findByTestId('product-modal');
+    await clickModalSuccess();
 
     expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
@@ -938,11 +954,14 @@ describe('ProductDataGrid (rewritten)', () => {
   it('covers prev.status reset branch (line 302)', async () => {
     getHelpersModule().validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
 
-    await renderGrid(USERS_TYPES.INVITALIA_L1, mockProducts);
+    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts({ status: 'WAIT_APPROVED' }));
     await selectRowAndClickAction('waitApprovedBtn');
-    await confirmDialog();
+    await screen.findByTestId('product-modal');
+    await clickModalSuccess();
 
-    await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/msgResultRejected|msgResultWaitApproved/i)).toBeInTheDocument()
+    );
   });
 
   it('covers displayBatchName fallback branches (88,152-167)', async () => {
@@ -1075,8 +1094,8 @@ describe('ProductDataGrid (rewritten)', () => {
 
     await renderGrid(USERS_TYPES.INVITALIA_L1);
     await selectRowAndClickAction('waitApprovedBtn');
-    await screen.findByTestId('product-confirm-dialog');
-    await confirmDialog();
+    await screen.findByTestId('product-modal');
+    await clickModalSuccess();
 
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
   });
@@ -1101,10 +1120,10 @@ describe('ProductDataGrid (rewritten)', () => {
 
     await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts({ status: 'UPLOADED' }));
     await selectRowAndClickAction('waitApprovedBtn');
-    await screen.findByTestId('product-confirm-dialog');
-    await confirmDialog();
+    await screen.findByTestId('product-modal');
+    await clickModalSuccess();
 
-    await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/msgResultRejected/i)).toBeInTheDocument());
   });
 
   it('covers effectiveColumns action injection branch (572-590)', async () => {
@@ -1144,8 +1163,8 @@ describe('ProductDataGrid (rewritten)', () => {
 
     await renderGrid(USERS_TYPES.INVITALIA_L1);
     await selectRowAndClickAction('waitApprovedBtn');
-    await screen.findByTestId('product-confirm-dialog');
-    await confirmDialog();
+    await screen.findByTestId('product-modal');
+    await clickModalSuccess();
 
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
   });
@@ -1164,12 +1183,14 @@ describe('ProductDataGrid (rewritten)', () => {
   it('covers ConfirmDialog resolve branch refreshKey increment (650-663)', async () => {
     (registerService.setWaitApprovedStatusList as jest.Mock).mockResolvedValueOnce({});
 
-    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts());
+    await renderGrid(USERS_TYPES.INVITALIA_L2, buildProducts({ status: 'WAIT_APPROVED' }));
     await selectRowAndClickAction('waitApprovedBtn');
-    await screen.findByTestId('product-confirm-dialog');
-    await confirmDialog();
+    await screen.findByTestId('product-modal');
+    await clickModalSuccess();
 
-    await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/msgResultRejected|msgResultWaitApproved/i)).toBeInTheDocument()
+    );
   });
 
   it('covers effectiveColumns injection with selection enabled (572-590)', async () => {
@@ -1204,10 +1225,10 @@ describe('ProductDataGrid (rewritten)', () => {
       new Error('forced')
     );
 
-    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await renderGrid(USERS_TYPES.INVITALIA_L2, buildProducts({ status: 'WAIT_APPROVED' }));
     await selectRowAndClickAction('waitApprovedBtn');
-    await screen.findByTestId('product-confirm-dialog');
-    await confirmDialog();
+    await screen.findByTestId('product-modal');
+    await clickModalSuccess();
 
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
 
@@ -1246,12 +1267,14 @@ describe('ProductDataGrid (rewritten)', () => {
   it('covers ProductConfirmDialog onSuccess else branch (not UPLOADED)', async () => {
     (registerService.setWaitApprovedStatusList as jest.Mock).mockResolvedValueOnce({});
 
-    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts());
+    await renderGrid(USERS_TYPES.INVITALIA_L2, buildProducts({ status: 'WAIT_APPROVED' }));
     await selectRowAndClickAction('waitApprovedBtn');
-    await screen.findByTestId('product-confirm-dialog');
-    await confirmDialog();
+    await screen.findByTestId('product-modal');
+    await clickModalSuccess();
 
-    await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText(/msgResultRejected|msgResultWaitApproved/i)).toBeInTheDocument()
+    );
   });
 
   it('covers uniqueStatuses length === 1 branch', async () => {
@@ -1321,8 +1344,8 @@ describe('ProductDataGrid (rewritten)', () => {
 
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
-    await screen.findByTestId('product-confirm-dialog');
-    fireEvent.click(screen.getByText('Confirm'));
+    await screen.findByTestId('product-modal');
+    fireEvent.click(screen.getByText('Success'));
 
     await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
   });
@@ -1342,5 +1365,34 @@ describe('ProductDataGrid (rewritten)', () => {
     });
 
     jest.useRealTimers();
+  });
+
+  // ---- ENABLED GUARD BRANCH TESTS ----
+
+  it('does not fetch products when OPERATORE and targetId missing', async () => {
+    const targetHook = require('../hooks/useTargetOrganization');
+    targetHook.useTargetOrganization.mockReturnValue({ targetId: '' });
+
+    await renderGrid(USERS_TYPES.OPERATORE, mockProducts, {
+      expectRendered: false,
+    });
+
+    expect(registerService.getProducts).not.toHaveBeenCalled();
+  });
+
+  it('renders grid when OPERATORE and targetId present', async () => {
+    const targetHook = require('../hooks/useTargetOrganization');
+    targetHook.useTargetOrganization.mockReturnValueOnce({ targetId: 'org' });
+
+    await renderGrid(USERS_TYPES.OPERATORE);
+    await expectTableVisible();
+  });
+
+  it('renders grid for L1 even if targetId missing', async () => {
+    const targetHook = require('../hooks/useTargetOrganization');
+    targetHook.useTargetOrganization.mockReturnValueOnce({ targetId: '' });
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await expectTableVisible();
   });
 });

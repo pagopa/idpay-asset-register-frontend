@@ -51,6 +51,10 @@ export interface ProductTableConfig {
     }
   >;
 
+  actionPolicies?: {
+    preventSameStatusTransition?: boolean;
+  };
+
   defaultFiltersByRole?: Record<string, Record<string, string>>;
 
   columns: Array<ColumnConfig>;

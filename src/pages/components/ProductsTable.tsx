@@ -18,7 +18,13 @@ import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import ProductStatusChip from '../../components/Product/ProductStatusChip';
 import EprelLinks from '../../components/Product/EprelLinks';
-import { truncateString, getResponsiveTableMaxLength } from '../../helpers';
+import {
+  truncateString,
+  getResponsiveTableMaxLength,
+  fetchUserFromLocalStorage,
+} from '../../helpers';
+import { USERS_TYPES } from '../../utils/constants';
+import { ProductStatus } from '../../api/generated/register';
 
 interface ColumnConfig {
   id: string;
@@ -49,7 +55,6 @@ interface ProductsTableProps {
 const ProductsTable: React.FC<ProductsTableProps> = ({
   tableData,
   columns = [],
-  selection,
   order,
   orderBy,
   onRequestSort,
@@ -61,6 +66,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   const { t } = useScopedTranslation();
   const { config } = useInitiativeConfig();
   const theme = useTheme();
+  const user = React.useMemo(() => fetchUserFromLocalStorage(), []);
 
   const rowBg = theme.palette.background.paper;
   const rowHoverBg = theme.palette.action.hover;
@@ -79,25 +85,43 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     __detail__: '5%',
   };
 
+  const isCheckboxDisabled = (row: ProductDTO) => {
+    const role = user?.org_role;
+    const status = row.status as ProductStatus | undefined;
+
+    if (role === USERS_TYPES.INVITALIA_L2) {
+      return String(status) !== ProductStatus.WAIT_APPROVED;
+    }
+
+    if (role === USERS_TYPES.INVITALIA_L1) {
+      return status !== ProductStatus.UPLOADED && status !== ProductStatus.SUPERVISED;
+    }
+
+    // Produttore (OPERATORE) in UAT poteva selezionare righe secondo stato,
+    // quindi non disabilitiamo di default la checkbox per ruoli diversi da L1/L2
+    return false;
+  };
+
   // eslint-disable-next-line sonarjs/cognitive-complexity
   const renderCellContent = (col: ColumnConfig, row: ProductDTO) => {
-    if (col.type === 'checkbox' && selection?.enabled) {
-      const handleCheckboxClick = (gtinCode: string) => {
-        setSelected((prevSelected) =>
-          prevSelected.includes(gtinCode)
-            ? prevSelected.filter((code) => code !== gtinCode)
-            : [...prevSelected, gtinCode]
-        );
-      };
+    if (col.type === 'checkbox' || col.id === 'select') {
+      const rowIdentifier =
+        (row.productCode as string | undefined) ?? (row.gtinCode as string | undefined);
 
+      const disabled = isCheckboxDisabled(row);
       return (
         <Checkbox
-          checked={!!row.gtinCode && selected.includes(row?.gtinCode)}
-          onChange={(e) => {
-            e.stopPropagation();
-            if (row?.gtinCode) {
-              handleCheckboxClick(row.gtinCode);
+          disabled={disabled}
+          checked={rowIdentifier ? selected.includes(rowIdentifier) : false}
+          onChange={(_, checked) => {
+            if (!rowIdentifier) {
+              return;
             }
+            setSelected((prevSelected) =>
+              checked
+                ? [...prevSelected, rowIdentifier]
+                : prevSelected.filter((c) => c !== rowIdentifier)
+            );
           }}
         />
       );
@@ -186,40 +210,49 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
               <TableCell colSpan={(columns || []).length}>{emptyData ?? '-'}</TableCell>
             </TableRow>
           )}
-          {tableData.map((row, index) => (
-            <TableRow
-              key={(row as any).gtin ?? row.gtinCode ?? index}
-              hover
-              sx={{
-                backgroundColor: rowBg,
-                borderTop: `${rowBorderWidth} solid ${rowBorderColor}`,
-                borderBottom: `${rowBorderWidth} solid ${rowBorderColor}`,
-                '&:hover': {
-                  backgroundColor: rowHoverBg,
-                },
-              }}
-            >
-              {(columns || []).map((col) => (
-                <TableCell
-                  key={col.id}
-                  align={col.align ?? 'left'}
-                  sx={{
-                    borderTop: `${rowBorderWidth} solid ${rowBorderColor}`,
-                    borderBottom: `${rowBorderWidth} solid ${rowBorderColor}`,
-                    pt: 2,
-                    pb: 2,
-                    ...(col.id === 'status' && {
-                      verticalAlign: 'middle',
+          {tableData.map((row, index) => {
+            const rowIdentifier =
+              (row.productCode as string | undefined) ?? (row.gtinCode as string | undefined);
+
+            const uniqueKey = `${rowIdentifier ?? 'row'}-${row.batchName ?? 'batch'}-${
+              row.registrationDate ?? index
+            }`;
+
+            return (
+              <TableRow
+                key={uniqueKey}
+                hover
+                sx={{
+                  backgroundColor: rowBg,
+                  borderTop: `${rowBorderWidth} solid ${rowBorderColor}`,
+                  borderBottom: `${rowBorderWidth} solid ${rowBorderColor}`,
+                  '&:hover': {
+                    backgroundColor: rowHoverBg,
+                  },
+                }}
+              >
+                {(columns || []).map((col) => (
+                  <TableCell
+                    key={col.id}
+                    align={col.align ?? 'left'}
+                    sx={{
+                      borderTop: `${rowBorderWidth} solid ${rowBorderColor}`,
+                      borderBottom: `${rowBorderWidth} solid ${rowBorderColor}`,
                       pt: 2,
-                      pb: '10px',
-                    }),
-                  }}
-                >
-                  {renderCellContent(col, row)}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+                      pb: 2,
+                      ...(col.id === 'status' && {
+                        verticalAlign: 'middle',
+                        pt: 2,
+                        pb: '10px',
+                      }),
+                    }}
+                  >
+                    {renderCellContent(col, row)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>

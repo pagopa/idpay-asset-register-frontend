@@ -79,7 +79,9 @@ const ProductDataGridView: React.FC<Props> = ({
           <TitleBox
             title={t('pages.products.title')}
             subTitle={
-              isInvitaliaUser ? t('pages.products.subtitleL1L2') : t('pages.products.subtitle')
+              isInvitaliaUser || isInvitaliaAdmin
+                ? t('pages.products.subtitleL1L2')
+                : t('pages.products.subtitle')
             }
             mtTitle={2}
             mbSubTitle={5}
@@ -134,7 +136,7 @@ const ProductDataGridView: React.FC<Props> = ({
               key={refreshKey}
               tableData={tableData}
               columns={effectiveColumns}
-              selection={tableConfig?.selection}
+              selection={tableConfig?.selection ?? { enabled: true }}
               order={order}
               orderBy={orderBy}
               onRequestSort={onRequestSort}

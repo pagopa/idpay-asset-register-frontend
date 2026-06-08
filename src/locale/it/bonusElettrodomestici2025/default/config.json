@@ -120,6 +120,17 @@
         ],
         "filters": [
           {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category",
+            "useInitiativeCategories": true
+          },
+          {
+            "id": "producer",
+            "type": "select",
+            "labelKey": "tables.products.filters.producer"
+          },
+          {
             "id": "status",
             "type": "select",
             "labelKey": "tables.products.filters.status"
@@ -130,10 +141,12 @@
             "labelKey": "tables.products.filters.productFileId"
           },
           {
-            "id": "category",
-            "type": "select",
-            "labelKey": "tables.products.filters.category",
-            "useInitiativeCategories": true
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^[0-9]{1,12}$",
+            "message": "tables.products.filters.errors.eprelCode",
+            "inputProps": { "maxLength": 12 }
           },
           {
             "id": "gtinCode",
@@ -142,19 +155,6 @@
             "regEx": "^[a-zA-Z0-9]{1,14}$",
             "message": "tables.products.filters.errors.gtinCode",
             "inputProps": { "maxLength": 14 }
-          },
-          {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
-          },
-          {
-            "id": "eprelCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.eprelCode",
-            "regEx": "^[0-9]{1,12}$",
-            "message": "tables.products.filters.errors.eprelCode",
-            "inputProps": { "maxLength": 12 }
           }
         ],
         "selection": {
@@ -167,6 +167,9 @@
           "invitalia_admin": {
             "status": "WAIT_APPROVED"
           }
+        },
+        "actionPolicies": {
+          "preventSameStatusTransition": true
         },
         "detail": {
           "fields": [
