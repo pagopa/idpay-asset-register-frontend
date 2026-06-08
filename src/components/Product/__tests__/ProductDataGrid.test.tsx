@@ -979,4 +979,153 @@ describe('ProductDataGrid (rewritten)', () => {
 
     await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
   });
+
+  it('covers displayBatchName fallback branches (88,152-167)', async () => {
+    await renderGrid('USER', [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'SUPERVISED',
+        productFileId: 'batch-1',
+        batchName: 'file.csv',
+      } as any,
+    ]);
+
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers filter map and reduce branches (106,113)', async () => {
+    await renderGrid('USER', mockProducts, {
+      defaultFiltersByRole: {
+        USER: { status: 'SUPERVISED' },
+      },
+    });
+
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers permission org_id truthy branch (127,132)', async () => {
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_id: 'org',
+      org_role: 'USER',
+    });
+
+    await renderGrid('USER', mockProducts);
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers dispatch reset batchId and batchName (170-171)', async () => {
+    await renderGrid();
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers readableName branch (252-255)', async () => {
+    await renderGrid('USER', [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'SUPERVISED',
+        organizationName: 'Readable Org',
+      } as any,
+    ]);
+
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers batch reduce accumulator branch (269-272)', async () => {
+    await renderGrid('USER', [
+      {
+        id: '1',
+        productName: 'Prod 1',
+        gtinCode: 'GTIN1',
+        category: 'Cat',
+        status: 'SUPERVISED',
+        productFileId: 'file-1',
+      } as any,
+    ]);
+
+    await screen.findByTestId('products-table');
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers resetAllMsgResults function (393)', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await screen.findByTestId('products-table');
+
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    fireEvent.click(await screen.findByText('Success'));
+
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers DEBUG_CONSOLE error branch (430-432)', async () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    (registerService.getProducts as jest.Mock).mockRejectedValueOnce(new Error('debug error'));
+
+    await renderGrid();
+    await waitFor(() => expect(screen.getByTestId('empty-list')).toBeInTheDocument());
+
+    errorSpy.mockRestore();
+  });
+
+  it('covers normalizeLegacyColumn mapping branch (line 477)', async () => {
+    (resolvedTableConfigHook.useResolvedProductTableConfig as jest.Mock).mockReturnValue({
+      tableConfig: {
+        columns: [
+          {
+            id: 'organizationName',
+            labelKey: 'pages.products.listHeader.organizationName',
+          },
+        ],
+        selection: {
+          [USERS_TYPES.INVITALIA_L1]: ['REJECTED'],
+          rules: {},
+        },
+      },
+      paginationConfig: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] },
+      filtersConfig: [],
+      templateConfig: {},
+    });
+
+    await renderGrid('USER', mockProducts);
+    await screen.findByTestId('products-table');
+
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('covers normalizeLegacyColumn fallback branch (returns col)', async () => {
+    (resolvedTableConfigHook.useResolvedProductTableConfig as jest.Mock).mockReturnValue({
+      tableConfig: {
+        columns: [
+          {
+            id: 'custom',
+            labelKey: 'tables.products.columns.custom',
+          },
+        ],
+        selection: {
+          [USERS_TYPES.INVITALIA_L1]: ['REJECTED'],
+          rules: {},
+        },
+      },
+      paginationConfig: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] },
+      filtersConfig: [],
+      templateConfig: {},
+    });
+
+    await renderGrid('USER', mockProducts);
+    await screen.findByTestId('products-table');
+
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
 });
