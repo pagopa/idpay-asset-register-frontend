@@ -1,11 +1,13 @@
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { I18nextProvider } from 'react-i18next';
 import i18n from 'i18next';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+
 import ProductDataGrid from '../ProductDataGrid';
+
 import * as registerService from '../../../services/registerService';
 import * as helpers from '../../../helpers';
 import * as useInitiativeConfigHook from '../../../hooks/useInitiativeConfig';
@@ -189,6 +191,12 @@ jest.mock('../ProductDataGrid.helpers', () => {
     ),
     getStatusChecks,
     handleModalSuccess,
+    checkSomeStatus: jest.fn((selected, tableData, status) =>
+      selected.some(
+        (code: string) =>
+          String(tableData.find((row: any) => row.gtinCode === code)?.status) === status
+      )
+    ),
     validateBulkActionPreconditions: jest.fn(({ selected, tableData, isInvitaliaAdmin }) => {
       const {
         selectedStatuses = [],
@@ -340,6 +348,10 @@ describe('ProductDataGrid (rewritten)', () => {
     i18n.init({ resources: {}, lng: 'en', interpolation: { escapeValue: false } });
   });
 
+  afterEach(() => {
+    cleanup();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
@@ -379,6 +391,13 @@ describe('ProductDataGrid (rewritten)', () => {
       someUploaded: false,
       length: 1,
     });
+    helpersModule.checkSomeStatus.mockImplementation(
+      (selected: Array<string>, tableData: Array<any>, status: string) =>
+        selected.some(
+          (code: string) =>
+            String(tableData.find((row: any) => row.gtinCode === code)?.status) === status
+        )
+    );
   });
 
   it('renders table when products exist', async () => {
@@ -546,6 +565,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('validates admin self approval without opening a grid message', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.checkSomeStatus.mockReturnValue(false);
     helpersModule.getStatusChecks.mockReturnValueOnce({
       selectedStatuses: ['UPLOADED'],
       someUploaded: true,
@@ -796,6 +816,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('covers setMsgResultByAction branches (398-410)', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.checkSomeStatus.mockReturnValue(false);
     helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
 
     await renderGrid(USERS_TYPES.INVITALIA_L2, [
@@ -842,6 +863,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('covers WAIT_APPROVED L2 branch (line 406)', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.checkSomeStatus.mockReturnValue(false);
     helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
 
     await renderGrid(USERS_TYPES.INVITALIA_L2, [
@@ -863,6 +885,7 @@ describe('ProductDataGrid (rewritten)', () => {
 
   it('covers REJECT_APPROVATION L2 branch (line 410)', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
+    helpersModule.checkSomeStatus.mockReturnValue(false);
     helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
 
     await renderGrid(USERS_TYPES.INVITALIA_L2);
@@ -883,6 +906,7 @@ describe('ProductDataGrid (rewritten)', () => {
   it('calls correct REJECTED success flow', async () => {
     const helpersModule = require('../ProductDataGrid.helpers');
 
+    helpersModule.checkSomeStatus.mockReturnValue(false);
     helpersModule.validateBulkActionPreconditions.mockReturnValueOnce({ valid: true });
 
     await renderGrid(USERS_TYPES.INVITALIA_L1);
