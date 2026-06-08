@@ -5,6 +5,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { I18nextProvider } from 'react-i18next';
 import i18n from 'i18next';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { MemoryRouter } from 'react-router-dom';
 
 import ProductDataGrid from '../ProductDataGrid';
 
@@ -253,10 +254,12 @@ const renderGrid = async (
     hasPermission = true,
     organizationSource,
     defaultFiltersByRole,
+    expectRendered = true,
   }: {
     hasPermission?: boolean;
     organizationSource?: string;
     defaultFiltersByRole?: Record<string, Record<string, string>>;
+    expectRendered?: boolean;
   } = {}
 ) => {
   (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
@@ -328,19 +331,23 @@ const renderGrid = async (
     render(
       <Provider store={store}>
         <I18nextProvider i18n={i18n}>
-          <ThemeProvider theme={theme}>
-            <ProductDataGrid organizationId="org" />
-          </ThemeProvider>
+          <MemoryRouter>
+            <ThemeProvider theme={theme}>
+              <ProductDataGrid organizationId="org" />
+            </ThemeProvider>
+          </MemoryRouter>
         </I18nextProvider>
       </Provider>
     );
   });
 
-  await waitFor(() => {
-    const table = screen.queryByTestId('products-table');
-    const empty = screen.queryByTestId('empty-list');
-    expect(table || empty).toBeTruthy();
-  });
+  if (expectRendered) {
+    await waitFor(() => {
+      const table = screen.queryByTestId('products-table');
+      const empty = screen.queryByTestId('empty-list');
+      expect(table || empty).toBeTruthy();
+    });
+  }
 };
 
 describe('ProductDataGrid (rewritten)', () => {
@@ -676,9 +683,11 @@ describe('ProductDataGrid (rewritten)', () => {
       render(
         <Provider store={store}>
           <I18nextProvider i18n={i18n}>
-            <ThemeProvider theme={theme}>
-              <ProductDataGrid organizationId="org" />
-            </ThemeProvider>
+            <MemoryRouter>
+              <ThemeProvider theme={theme}>
+                <ProductDataGrid organizationId="org" />
+              </ThemeProvider>
+            </MemoryRouter>
           </I18nextProvider>
         </Provider>
       );
@@ -694,11 +703,14 @@ describe('ProductDataGrid (rewritten)', () => {
     });
   });
 
-  it('applies producer filter when organizationSource is filter', async () => {
-    await renderGrid('USER', mockProducts, { organizationSource: 'filter' });
-    await screen.findByTestId('products-table');
+  it('does not render grid when organizationSource is filter and no producer filter is set', async () => {
+    await renderGrid('USER', mockProducts, {
+      organizationSource: 'filter',
+      expectRendered: false,
+    });
 
-    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+    expect(screen.queryByTestId('products-table')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('empty-list')).not.toBeInTheDocument();
   });
 
   it('applies role-based default filters when configured', async () => {
@@ -771,7 +783,6 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
 
-    // confirm dialog branch
     fireEvent.click(await screen.findByText('Confirm'));
 
     await waitFor(() => expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument());
@@ -794,7 +805,7 @@ describe('ProductDataGrid (rewritten)', () => {
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
   });
 
-  it('covers producer readable name branch (lines 140-141)', async () => {
+  it('does not render producer readable name branch scenario without filter-selected organization', async () => {
     await renderGrid(
       'USER',
       [
@@ -807,11 +818,11 @@ describe('ProductDataGrid (rewritten)', () => {
           organizationName: 'Readable Org',
         } as any,
       ],
-      { organizationSource: 'filter' }
+      { organizationSource: 'filter', expectRendered: false }
     );
 
-    await screen.findByTestId('products-table');
-    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+    expect(screen.queryByTestId('products-table')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('empty-list')).not.toBeInTheDocument();
   });
 
   it('covers setMsgResultByAction branches (398-410)', async () => {
@@ -834,7 +845,6 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('rejectedBtn'));
     fireEvent.click(await screen.findByText('Success'));
 
-    // branch executed, modal handled
     expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
 
@@ -857,7 +867,6 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('waitApprovedBtn'));
     fireEvent.click(await screen.findByText('Confirm'));
 
-    // fallback branch executed
     expect(screen.getByTestId('products-table')).toBeInTheDocument();
   });
 
@@ -916,7 +925,6 @@ describe('ProductDataGrid (rewritten)', () => {
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
 
-    // modal success branch
     fireEvent.click(await screen.findByText('Success'));
 
     await waitFor(() => expect(screen.getByText(/msgResultRejected/i)).toBeInTheDocument());

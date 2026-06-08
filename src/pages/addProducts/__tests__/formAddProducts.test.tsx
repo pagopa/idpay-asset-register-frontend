@@ -191,6 +191,27 @@ describe('FormAddProducts', () => {
     useDropzone.mockReturnValue(mockDropzone);
   };
 
+  const selectCategory = async (
+    categoryIdentifier: string = 'category-option-cookinghobs',
+    by: 'testId' | 'text' = 'testId'
+  ) => {
+    const categorySelect = screen.getByRole('combobox');
+    fireEvent.mouseDown(categorySelect);
+
+    await waitFor(() => {
+      const option =
+        by === 'text'
+          ? screen.getByText(categoryIdentifier)
+          : screen.getByTestId(categoryIdentifier);
+      fireEvent.click(option);
+    });
+  };
+
+  const getDropzoneOptions = () => {
+    const { useDropzone } = require('react-dropzone');
+    return useDropzone.mock.calls[0][0];
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     setupMocks();
@@ -332,12 +353,7 @@ describe('FormAddProducts', () => {
       const ref = React.createRef<any>();
       render(<FormAddProducts {...defaultProps} ref={ref} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByText('Piani cottura');
-        fireEvent.click(option);
-      });
+      await selectCategory();
 
       const result = await ref.current.validateForm();
       expect(result).toBe(false);
@@ -348,12 +364,7 @@ describe('FormAddProducts', () => {
       const props = { ...defaultProps, fileAccepted: true };
       render(<FormAddProducts {...props} ref={ref} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByText('Piani cottura');
-        fireEvent.click(option);
-      });
+      await selectCategory('Piani cottura', 'text');
 
       const result = await ref.current.validateForm();
       expect(result).toBe(true);
@@ -448,12 +459,7 @@ describe('FormAddProducts', () => {
     it('handles onFileDialogOpen with valid category', async () => {
       render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+      await selectCategory();
 
       const { useDropzone } = require('react-dropzone');
       const dropzoneOptions = useDropzone.mock.calls[0][0];
@@ -507,15 +513,9 @@ describe('FormAddProducts', () => {
 
       render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+      await selectCategory();
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+      const dropzoneOptions = getDropzoneOptions();
 
       await act(async () => {
         await dropzoneOptions.onDropAccepted([mockFile]);
@@ -532,15 +532,9 @@ describe('FormAddProducts', () => {
 
       render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+      await selectCategory();
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+      const dropzoneOptions = getDropzoneOptions();
 
       await act(async () => {
         await dropzoneOptions.onDropAccepted([mockFile]);
@@ -556,15 +550,9 @@ describe('FormAddProducts', () => {
 
       render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+      await selectCategory();
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+      const dropzoneOptions = getDropzoneOptions();
 
       await act(async () => {
         await dropzoneOptions.onDropAccepted([mockFile]);
@@ -613,7 +601,6 @@ describe('FormAddProducts', () => {
       const { useDropzone } = require('react-dropzone');
       const dropzoneOptions = useDropzone.mock.calls[0][0];
 
-      // details branch
       (uploadProductListVerify as jest.Mock).mockRejectedValueOnce({
         details: { errorKey: 'ERR_KEY' },
       });
@@ -621,7 +608,6 @@ describe('FormAddProducts', () => {
         await dropzoneOptions.onDropAccepted([mockFile]);
       });
 
-      // response.data branch
       (uploadProductListVerify as jest.Mock).mockRejectedValueOnce({
         response: { data: { status: 'ERROR' } },
       });
@@ -629,7 +615,6 @@ describe('FormAddProducts', () => {
         await dropzoneOptions.onDropAccepted([mockFile]);
       });
 
-      // fallback branch
       (uploadProductListVerify as jest.Mock).mockRejectedValueOnce({});
       await act(async () => {
         await dropzoneOptions.onDropAccepted([mockFile]);
@@ -683,12 +668,7 @@ describe('FormAddProducts', () => {
       });
       render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+      await selectCategory();
 
       const continueBtn = screen.getByTestId('continue-button-test');
       await userEvent.click(continueBtn);
@@ -713,12 +693,7 @@ describe('FormAddProducts', () => {
       const props = { ...defaultProps, fileAccepted: true };
       render(<FormAddProducts {...props} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+      await selectCategory();
 
       const continueBtn = screen.getByTestId('continue-button-test');
       await userEvent.click(continueBtn);
@@ -745,12 +720,7 @@ describe('FormAddProducts', () => {
       const props = { ...defaultProps, fileAccepted: true };
       render(<FormAddProducts {...props} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+      await selectCategory();
 
       const continueBtn = screen.getByTestId('continue-button-test');
       await userEvent.click(continueBtn);
@@ -772,12 +742,7 @@ describe('FormAddProducts', () => {
       const props = { ...defaultProps, fileAccepted: true };
       render(<FormAddProducts {...props} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      await waitFor(() => {
-        const option = screen.getByTestId('category-option-cookinghobs');
-        fireEvent.click(option);
-      });
+      await selectCategory();
 
       const continueBtn = screen.getByTestId('continue-button-test');
       await userEvent.click(continueBtn);
@@ -1054,13 +1019,9 @@ describe('FormAddProducts', () => {
 
       render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      const option = await screen.findByTestId('category-option-cookinghobs');
-      fireEvent.click(option);
+      await selectCategory();
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+      const dropzoneOptions = getDropzoneOptions();
 
       await act(async () => {
         await dropzoneOptions.onDropAccepted([mockFile]);
@@ -1078,13 +1039,9 @@ describe('FormAddProducts', () => {
 
       render(<FormAddProducts {...defaultProps} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      const option = await screen.findByTestId('category-option-cookinghobs');
-      fireEvent.click(option);
+      await selectCategory();
 
-      const { useDropzone } = require('react-dropzone');
-      const dropzoneOptions = useDropzone.mock.calls[0][0];
+      const dropzoneOptions = getDropzoneOptions();
 
       await act(async () => {
         await dropzoneOptions.onDropAccepted([mockFile]);
@@ -1109,10 +1066,7 @@ describe('FormAddProducts', () => {
       const props = { ...defaultProps, fileAccepted: true };
       render(<FormAddProducts {...props} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      const option = await screen.findByTestId('category-option-cookinghobs');
-      fireEvent.click(option);
+      await selectCategory();
 
       const continueBtn = screen.getByTestId('continue-button-test');
       await userEvent.click(continueBtn);
@@ -1135,10 +1089,7 @@ describe('FormAddProducts', () => {
       const props = { ...defaultProps, fileAccepted: true };
       render(<FormAddProducts {...props} />);
 
-      const categorySelect = screen.getByRole('combobox');
-      fireEvent.mouseDown(categorySelect);
-      const option = await screen.findByTestId('category-option-cookinghobs');
-      fireEvent.click(option);
+      await selectCategory();
 
       const continueBtn = screen.getByTestId('continue-button-test');
       await userEvent.click(continueBtn);

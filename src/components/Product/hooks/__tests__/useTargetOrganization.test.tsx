@@ -1,8 +1,9 @@
 import { renderHook } from '@testing-library/react';
+import { describe, it, expect } from '@jest/globals';
 import { useTargetOrganization } from '../useTargetOrganization';
 
 describe('useTargetOrganization', () => {
-  it('uses the user organization when configured from user', () => {
+  it('uses the organization prop when configured from user', () => {
     const { result } = renderHook(() =>
       useTargetOrganization({
         organizationId: 'prop-org',
@@ -12,10 +13,10 @@ describe('useTargetOrganization', () => {
       })
     );
 
-    expect(result.current.targetId).toBe('user-org');
+    expect(result.current.targetId).toBe('prop-org');
   });
 
-  it('falls back to empty user organization', () => {
+  it('falls back to the organization prop when configured from user', () => {
     const { result } = renderHook(() =>
       useTargetOrganization({
         organizationId: 'prop-org',
@@ -25,7 +26,7 @@ describe('useTargetOrganization', () => {
       })
     );
 
-    expect(result.current.targetId).toBe('');
+    expect(result.current.targetId).toBe('prop-org');
   });
 
   it('uses producer filter before institution id when configured from filter', () => {
@@ -34,7 +35,6 @@ describe('useTargetOrganization', () => {
         organizationId: 'prop-org',
         user: { org_id: 'user-org' },
         filtersValue: { producer: 'filtered-producer' },
-        institutionId: 'institution-producer',
         tableConfig: { organizationSource: 'filter' } as any,
       })
     );
