@@ -562,6 +562,7 @@ const ProductDataGrid: React.FC<Props> = ({
         order={order}
         orderBy={orderBy}
         filters={effectiveFilters}
+        enrichedFiltersConfig={enrichedFiltersConfig}
         selected={selected}
         effectiveColumns={effectiveColumns}
         paginationConfig={paginationConfig}
