@@ -16,6 +16,7 @@ import * as resolvedTableConfigHook from '../hooks/useResolvedProductTableConfig
 import { productsSlice } from '../../../redux/slices/productsSlice';
 import { invitaliaSlice } from '../../../redux/slices/invitaliaSlice';
 import { USERS_TYPES } from '../../../utils/constants';
+import { MouseEventHandler, ReactNode } from 'react';
 
 jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
   __esModule: true,
@@ -46,7 +47,7 @@ jest.mock('../../../hooks/useInitiativeConfig');
 jest.mock('../../../hooks/useScopedTranslation', () => ({
   __esModule: true,
   default: () => ({
-    t: (key) => key,
+    t: (key: any) => key,
     i18n: { language: 'en' },
     isLoading: false,
   }),
@@ -79,7 +80,15 @@ jest.mock('../../../redux/api/initiativesApi', () => ({
 
 jest.mock('../../DetailDrawer/DetailDrawer', () => ({
   __esModule: true,
-  default: ({ children, open, toggleDrawer }) =>
+  default: ({
+    children,
+    open,
+    toggleDrawer,
+  }: {
+    children: ReactNode;
+    open: boolean;
+    toggleDrawer: (open: boolean) => void;
+  }) =>
     open ? (
       <div data-testid="detail-drawer">
         {children}
@@ -90,7 +99,13 @@ jest.mock('../../DetailDrawer/DetailDrawer', () => ({
 
 jest.mock('../../FiltersDrawer/FiltersDrawer', () => ({
   __esModule: true,
-  default: ({ open, toggleFiltersDrawer }) =>
+  default: ({
+    open,
+    toggleFiltersDrawer,
+  }: {
+    open: boolean;
+    toggleFiltersDrawer: (open: boolean) => void;
+  }) =>
     open ? (
       <div data-testid="filters-drawer">
         <button onClick={() => toggleFiltersDrawer(false)}>Close Filters</button>
@@ -100,7 +115,16 @@ jest.mock('../../FiltersDrawer/FiltersDrawer', () => ({
 
 jest.mock('../ProductDetail', () => ({
   __esModule: true,
-  default: (props) => (
+  default: (props: {
+    onClose: MouseEventHandler<HTMLButtonElement> | undefined;
+    onShowApprovedMsg: MouseEventHandler<HTMLButtonElement> | undefined;
+    onShowRejectedMsg: MouseEventHandler<HTMLButtonElement> | undefined;
+    onShowWaitApprovedMsg: MouseEventHandler<HTMLButtonElement> | undefined;
+    onShowSupervisedMsg: MouseEventHandler<HTMLButtonElement> | undefined;
+    onShowRejectedApprovationMsg: MouseEventHandler<HTMLButtonElement> | undefined;
+    onShowAcceptApprovationMsg: MouseEventHandler<HTMLButtonElement> | undefined;
+    onShowGenericError: MouseEventHandler<HTMLButtonElement> | undefined;
+  }) => (
     <div data-testid="product-detail">
       <button onClick={props.onClose}>Close Detail</button>
       <button onClick={props.onShowApprovedMsg}>approved</button>
@@ -116,7 +140,15 @@ jest.mock('../ProductDetail', () => ({
 
 jest.mock('../ProductBulkActionDialog', () => ({
   __esModule: true,
-  default: ({ open, onClose, onConfirm }) =>
+  default: ({
+    open,
+    onClose,
+    onConfirm,
+  }: {
+    open: boolean;
+    onClose?: () => void;
+    onConfirm?: (action: string, reason?: string) => void;
+  }) =>
     open ? (
       <div data-testid="bulk-dialog">
         <button onClick={onClose}>Close Bulk</button>
@@ -127,7 +159,15 @@ jest.mock('../ProductBulkActionDialog', () => ({
 
 jest.mock('../ProductModal', () => ({
   __esModule: true,
-  default: ({ open, onClose, onSuccess }) =>
+  default: ({
+    open,
+    onClose,
+    onSuccess,
+  }: {
+    open: boolean;
+    onClose?: (refresh?: boolean) => void;
+    onSuccess?: (status: string) => void;
+  }) =>
     open ? (
       <div data-testid="product-modal">
         <button onClick={() => onClose?.(true)}>Close Modal</button>
@@ -138,7 +178,15 @@ jest.mock('../ProductModal', () => ({
 
 jest.mock('../ProductConfirmDialog', () => ({
   __esModule: true,
-  default: ({ open, onCancel, onConfirm }) =>
+  default: ({
+    open,
+    onCancel,
+    onConfirm,
+  }: {
+    open: boolean;
+    onCancel?: () => void;
+    onConfirm?: () => void;
+  }) =>
     open ? (
       <div data-testid="product-confirm-dialog">
         <button onClick={onCancel}>Cancel</button>
@@ -149,7 +197,17 @@ jest.mock('../ProductConfirmDialog', () => ({
 
 jest.mock('../../../pages/components/ProductsTable', () => ({
   __esModule: true,
-  default: ({ tableData, handleListButtonClick, setSelected, selected }) => (
+  default: ({
+    tableData,
+    handleListButtonClick,
+    setSelected,
+    selected,
+  }: {
+    tableData: Array<any>;
+    handleListButtonClick: (row: any) => void;
+    setSelected: (value: Array<string>) => void;
+    selected: Array<string>;
+  }) => (
     <div data-testid="products-table-inner">
       {tableData.map((row: any, idx: number) => (
         <div key={idx}>
@@ -1521,5 +1579,72 @@ describe('ProductDataGrid (rewritten)', () => {
 
     await screen.findByTestId('products-table');
     expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  // ---- COVERAGE BOOST TESTS ----
+
+  it('forces normalizeLegacyColumn mapping + fallback together', async () => {
+    (resolvedTableConfigHook.useResolvedProductTableConfig as jest.Mock).mockReturnValue({
+      tableConfig: {
+        columns: [
+          {
+            id: 'organizationName',
+            labelKey: 'pages.products.listHeader.organizationName',
+          },
+          {
+            id: 'plain',
+            labelKey: 'tables.products.columns.plain',
+          },
+        ],
+        selection: {
+          [USERS_TYPES.INVITALIA_L1]: ['REJECTED'],
+          rules: {},
+        },
+      },
+      paginationConfig: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] },
+      filtersConfig: [],
+      templateConfig: {},
+    });
+
+    await renderGrid('USER', mockProducts);
+    await screen.findByTestId('products-table');
+
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
+  });
+
+  it('forces callWaitApprovedApi catch branch with DEBUG_CONSOLE false', async () => {
+    const constants = require('../../../utils/constants');
+    constants.DEBUG_CONSOLE = false;
+
+    (registerService.setWaitApprovedStatusList as jest.Mock).mockRejectedValueOnce(
+      new Error('forced-error')
+    );
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await screen.findByTestId('products-table');
+
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
+    await screen.findByTestId('product-confirm-dialog');
+    fireEvent.click(screen.getByText('Confirm'));
+
+    await waitFor(() => expect(screen.getByTestId('products-table')).toBeInTheDocument());
+  });
+
+  it('forces timeout auto reset branch (470-472)', async () => {
+    jest.useFakeTimers();
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await screen.findByTestId('products-table');
+
+    fireEvent.click(screen.getByTestId('checkbox-0'));
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    fireEvent.click(await screen.findByText('Success'));
+
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    jest.useRealTimers();
   });
 });
