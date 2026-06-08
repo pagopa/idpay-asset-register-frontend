@@ -184,9 +184,9 @@ const ProductDataGrid: React.FC<Props> = ({
     () =>
       redirectProducer
         ? {
-            producer: redirectProducer,
-            ...filters,
-          }
+          producer: redirectProducer,
+          ...filters,
+        }
         : filters,
     [filters, redirectProducer]
   );
@@ -218,7 +218,7 @@ const ProductDataGrid: React.FC<Props> = ({
 
   useEffect(() => {
     setSelected([]);
-  }, [filtersSignature, targetId]);
+  }, [filtersSignature, targetId, refreshKey]);
 
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -386,6 +386,29 @@ const ProductDataGrid: React.FC<Props> = ({
   const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
   const [showGenericError, setShowGenericError] = useState(false);
 
+  const resetAllMsgResults = () => {
+    setShowMsgRejected(false);
+    setShowMsgApproved(false);
+    setShowMsgWaitApproved(false);
+    setShowMsgSupervised(false);
+    setShowMsgRejectedApprovation(false);
+    setMsgAcceptApprovation(false);
+  };
+
+  useEffect(() => {
+    const isMsg = showMsgRejected || showMsgApproved || showMsgWaitApproved || showMsgSupervised || showMsgRejectedApprovation || showMsgAcceptApprovation;
+    if (isMsg) {
+      setTimeout(() => resetAllMsgResults(), 3000);
+    }
+  }, [
+    showMsgRejected,
+    showMsgApproved,
+    showMsgWaitApproved,
+    showMsgSupervised,
+    showMsgRejectedApprovation,
+    showMsgAcceptApprovation
+  ]);
+
   const callWaitApprovedApi = async (
     gtinCodes: Array<string>,
     currentStatus: ProductStatus,
@@ -486,15 +509,6 @@ const ProductDataGrid: React.FC<Props> = ({
   const handleListButtonClick = (row: ProductDTO) => {
     setSelectedProduct(row);
     setDetailOpen(true);
-  };
-
-  const resetAllMsgResults = () => {
-    setShowMsgRejected(false);
-    setShowMsgApproved(false);
-    setShowMsgWaitApproved(false);
-    setShowMsgSupervised(false);
-    setShowMsgRejectedApprovation(false);
-    setMsgAcceptApprovation(false);
   };
 
   const setMsgResultByAction = (
