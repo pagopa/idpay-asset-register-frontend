@@ -211,6 +211,8 @@ const getEmailError = (value: string, t: (key: string) => string) => {
   return undefined;
 };
 
+const normalizeEmail = (value: string) => value.trim().toLowerCase();
+
 const OperativeEmailModal: React.FC<Props> = ({
   open,
   onClose,
@@ -236,12 +238,12 @@ const OperativeEmailModal: React.FC<Props> = ({
   }, [initialEmail, open]);
 
   const validate = () => {
-    const trimmedEmail = email.trim();
-    const trimmedConfirmEmail = confirmEmail.trim();
-    const emailError = getEmailError(trimmedEmail, t);
+    const normalizedEmail = normalizeEmail(email);
+    const normalizedConfirmEmail = normalizeEmail(confirmEmail);
+    const emailError = getEmailError(normalizedEmail, t);
     const confirmEmailError =
-      getEmailError(trimmedConfirmEmail, t) ||
-      (trimmedEmail !== trimmedConfirmEmail
+      getEmailError(normalizedConfirmEmail, t) ||
+      (normalizedEmail !== normalizedConfirmEmail
         ? t('pages.overview.operativeEmailModal.emailMismatchError')
         : undefined);
     const errors: FieldErrors = {
@@ -258,7 +260,7 @@ const OperativeEmailModal: React.FC<Props> = ({
       return;
     }
 
-    onSave(email.trim());
+    onSave(normalizeEmail(email));
   };
 
   return (

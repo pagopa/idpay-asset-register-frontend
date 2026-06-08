@@ -111,12 +111,12 @@ describe('OperativeEmailModal', () => {
     expect(props.onSave).not.toHaveBeenCalled();
   });
 
-  it('saves the trimmed email when both fields are valid and matching', async () => {
+  it('compares emails case-insensitively and saves the normalized email', async () => {
     const user = userEvent.setup();
     const onSave = jest.fn();
     renderModal({ onSave });
 
-    await fillEmailsAndSave(user, ' test@example.com ', ' test@example.com ');
+    await fillEmailsAndSave(user, ' Test@Example.COM ', ' test@example.com ');
 
     expect(onSave).toHaveBeenCalledWith('test@example.com');
   });
