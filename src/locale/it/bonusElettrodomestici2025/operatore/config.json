@@ -79,6 +79,14 @@
             "labelKey": "tables.products.filters.productCode"
           },
           {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^[0-9]{1,12}$",
+            "message": "tables.products.filters.errors.eprelCode",
+            "inputProps": { "maxLength": 12 }
+          },
+          {
             "id": "productFileId",
             "type": "select",
             "labelKey": "tables.products.filters.productFileId"

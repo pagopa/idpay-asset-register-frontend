@@ -26,7 +26,7 @@ export const uploadProductList = async (
       }
       console.error('Error in RegisterApi.uploadProductList:', error);
     }
-    return {} as AxiosResponse<RegisterUploadResponseDTO>;
+    throw error;
   }
 };
 
@@ -45,7 +45,7 @@ export const uploadProductListVerify = async (
       }
       console.error('Error in RegisterApi.uploadProductListVerify:', error);
     }
-    return {} as AxiosResponse<RegisterUploadResponseDTO>;
+    throw error;
   }
 };
 

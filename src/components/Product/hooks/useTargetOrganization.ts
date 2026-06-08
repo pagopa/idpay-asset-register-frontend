@@ -18,7 +18,15 @@ export function useTargetOrganization({
 
   const targetId = useMemo(() => {
     if (organizationSource === 'user') {
-      return user?.org_id || '';
+      if (organizationId) {
+        return organizationId;
+      }
+
+      if (filtersValue?.producer) {
+        return filtersValue.producer;
+      }
+
+      return '';
     }
 
     if (organizationSource === 'filter') {

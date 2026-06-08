@@ -1,24 +1,25 @@
 /**
- * Initiative configuration loading schema
+ * Multi-initiative configuration loader.
+ *
+ * Merge order (deterministic):
+ *   1. Global default
+ *   2. Initiative default
+ *   3. Role override
+ *   4. Sub-role permissions filter
  *
  * Folder structure:
  *
  * src/locale/it/
- * ├── default/                         → global emergency fallback
- * │
+ * ├── default/                  → global base configuration
  * └── <initiativeName>/
- *     ├── default/config.json          → base configuration for the initiative
- *     ├── operatore/config.json        → role override (merged over default)
- *     └── invitalia/config.json        → role override (merged over default)
+ *     ├── default/config.json   → initiative overrides
+ *     └── <role>/config.json    → role overrides
  *
- * Loading logic:
- * 1. Load initiative default config
- * 2. If role exists → load role config and merge over initiative default
- * 3. Apply sub-role permissions filtering (tables visibility)
- * 4. If initiative fails → fallback to global default
+ * If initiative is missing, fallback to global default.
  *
- * This file must preserve loading order to avoid regressions.
+ * IMPORTANT: The merge order must not change.
  */
+
 import { DEBUG_CONSOLE, DEFAULT_INITIATIVE_NAMESPACE } from '../utils/constants';
 import { InitiativeNotFoundError } from './config/errors';
 import { mergeConfigs } from './config/mergeConfigs';
@@ -40,6 +41,8 @@ export type InitiativeTablesConfig = {
 
 const validateInitiativeConfig = (config: unknown): config is InitiativeTablesConfig =>
   Boolean(config && typeof config === 'object');
+const isModuleNotFoundError = (error: any): boolean =>
+  error?.code === 'MODULE_NOT_FOUND' || error?.message?.includes('Cannot find module');
 
 const normalizeRole = (role?: string): string | undefined => {
   const r = role?.trim().toLowerCase();
@@ -78,14 +81,17 @@ const loadInitiativeDefaultConfig = async (
   role?: string
 ): Promise<InitiativeTablesConfig> => {
   try {
-    const mod = await import(`${basePath}default/config.json`);
-    const config = (mod as { default?: InitiativeTablesConfig }).default ?? {};
-    return applySubRolePermissions(config, resolveSubRole(role));
-  } catch (error: any) {
-    const isModuleNotFound =
-      error?.code === 'MODULE_NOT_FOUND' || error?.message?.includes('Cannot find module');
+    const globalMod = await import(`./it/${DEFAULT_INITIATIVE_NAMESPACE}/config.json`);
+    const globalConfig = (globalMod as { default?: InitiativeTablesConfig }).default ?? {};
 
-    if (isModuleNotFound) {
+    const mod = await import(`${basePath}default/config.json`);
+    const initiativeConfig = (mod as { default?: InitiativeTablesConfig }).default ?? {};
+
+    const merged = mergeConfigs(globalConfig, initiativeConfig);
+
+    return applySubRolePermissions(merged, resolveSubRole(role));
+  } catch (error: any) {
+    if (isModuleNotFoundError(error)) {
       throw new InitiativeNotFoundError(basePath);
     }
 
@@ -98,15 +104,27 @@ const loadRoleSpecificConfig = async (
   normalizedRole: string,
   role?: string
 ): Promise<InitiativeTablesConfig> => {
-  const roleMod = await import(`${basePath}${normalizedRole}/config.json`);
-  const roleConfig = (roleMod as { default?: InitiativeTablesConfig }).default ?? {};
+  try {
+    const globalMod = await import(`./it/${DEFAULT_INITIATIVE_NAMESPACE}/config.json`);
+    const globalConfig = (globalMod as { default?: InitiativeTablesConfig }).default ?? {};
 
-  const defaultMod = await import(`${basePath}default/config.json`);
-  const initiativeDefault = (defaultMod as { default?: InitiativeTablesConfig }).default ?? {};
+    const defaultMod = await import(`${basePath}default/config.json`);
+    const initiativeDefault = (defaultMod as { default?: InitiativeTablesConfig }).default ?? {};
 
-  const merged = mergeConfigs(initiativeDefault, roleConfig);
+    const roleMod = await import(`${basePath}${normalizedRole}/config.json`);
+    const roleConfig = (roleMod as { default?: InitiativeTablesConfig }).default ?? {};
 
-  return applySubRolePermissions(merged, resolveSubRole(role));
+    const mergedInitiative = mergeConfigs(globalConfig, initiativeDefault);
+    const merged = mergeConfigs(mergedInitiative, roleConfig);
+
+    return applySubRolePermissions(merged, resolveSubRole(role));
+  } catch (error: any) {
+    if (isModuleNotFoundError(error)) {
+      throw new InitiativeNotFoundError(basePath);
+    }
+
+    throw error;
+  }
 };
 
 const resolveAndValidate = async (
@@ -143,7 +161,7 @@ const executeInitiativeLoad = async (
       : loadInitiativeDefaultConfig(basePath, role);
 
   if (typeof role !== 'string') {
-    return resolveAndValidate(() => loadInitiativeDefaultConfig(basePath));
+    return resolveAndValidate(loadWithoutRole);
   }
 
   const normalizedRole = normalizeRole(role);
@@ -152,17 +170,19 @@ const executeInitiativeLoad = async (
     console.log('role normalized:', normalizedRole);
   }
 
-  const loader = normalizedRole
-    ? async () => {
-        try {
-          return await loadRoleSpecificConfig(basePath, normalizedRole, role);
-        } catch {
-          return loadWithoutRole();
-        }
-      }
-    : loadWithoutRole;
+  if (!normalizedRole) {
+    return resolveAndValidate(loadWithoutRole);
+  }
 
-  return resolveAndValidate(loader);
+  try {
+    return await resolveAndValidate(() => loadRoleSpecificConfig(basePath, normalizedRole, role));
+  } catch (error) {
+    if (error instanceof InitiativeNotFoundError || isModuleNotFoundError(error)) {
+      return resolveAndValidate(loadWithoutRole);
+    }
+
+    throw error;
+  }
 };
 
 export const loadItInitiativeConfig = async (
@@ -178,19 +198,10 @@ export const loadItInitiativeConfig = async (
   const basePath = resolveBasePathSafe(initiativeName, startDate);
   const safeInitiativeName = basePath.replace('./it/', '').replace('/', '');
 
-  if (DEBUG_CONSOLE) {
-    console.log('initiativeName raw:', initiativeName);
-    console.log('initiativeFolder used:', safeInitiativeName);
-    console.log('role raw:', role);
-  }
-
   try {
     return await executeInitiativeLoad(basePath, safeInitiativeName, role);
   } catch (error) {
     if (error instanceof InitiativeNotFoundError) {
-      if (DEBUG_CONSOLE) {
-        console.log(error.message);
-      }
       return handleFallback(initiativeName, role, allowFallback);
     }
     throw error;

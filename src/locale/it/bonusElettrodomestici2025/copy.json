@@ -19,14 +19,30 @@
     }
   },
   "categories": {
-    "washingmachines": { "label": "Lavatrici" },
-    "tumbledryers": { "label": "Asciugatrici" },
-    "ovens": { "label": "Forni" },
-    "rangehoods": { "label": "Cappe da cucina" },
-    "dishwashers": { "label": "Lavastoviglie" },
-    "washerdriers": { "label": "Lavasciuga" },
-    "refrigeratingappl": { "label": "Apparecchi di refrigerazione" },
-    "cookinghobs": { "label": "Piani cottura" }
+    "washingmachines": {
+      "label": "Lavatrici"
+    },
+    "tumbledryers": {
+      "label": "Asciugatrici"
+    },
+    "ovens": {
+      "label": "Forni"
+    },
+    "rangehoods": {
+      "label": "Cappe da cucina"
+    },
+    "dishwashers": {
+      "label": "Lavastoviglie"
+    },
+    "washerdriers": {
+      "label": "Lavasciuga"
+    },
+    "refrigeratingappl": {
+      "label": "Apparecchi di refrigerazione"
+    },
+    "cookinghobs": {
+      "label": "Piani cottura"
+    }
   },
   "tables": {
     "products": {
@@ -46,6 +62,14 @@
         "productCode": "Codice prodotto",
         "productFileId": "Lotto"
       }
+    }
+  },
+  "invitaliaModal": {
+    "waitApproved": {
+      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'Elenco informatico degli elettrodomestici."
+    },
+    "acceptApprovation": {
+      "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nell'Elenco informatico degli elettrodomestici."
     }
   }
 }

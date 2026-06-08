@@ -36,17 +36,13 @@ export const getStatusChecks = (selected: Array<string>, tableData: Array<Produc
   };
 };
 
-import { ProductTableConfig } from '../../model/config/ConfigSchema';
-
 export const validateBulkActionPreconditions = ({
   selected,
   tableData,
-  tableConfig,
 }: {
   selected: Array<string>;
   tableData: Array<ProductDTO>;
   roleKey?: string;
-  tableConfig?: ProductTableConfig;
 }) => {
   const { selectedStatuses, length } = getStatusChecks(selected, tableData);
 
@@ -54,11 +50,8 @@ export const validateBulkActionPreconditions = ({
     return { valid: false, reason: 'EMPTY' };
   }
 
-  const bulkRules = tableConfig?.bulkRules;
-  const preventMixed = bulkRules?.preventMixedStatus ?? true;
-
   const uniqueStatuses = Array.from(new Set(selectedStatuses));
-  if (preventMixed && uniqueStatuses.length > 1) {
+  if (uniqueStatuses.length > 1) {
     return { valid: false, reason: 'MIXED_STATUS' };
   }
 
@@ -139,3 +132,13 @@ export const handleModalSuccess = ({
 
   activate(setShowMsgApproved);
 };
+
+export const checkSomeStatus = (
+  selected: Array<string>,
+  tableData: Array<ProductDTO>,
+  status: keyof typeof PRODUCTS_STATES
+) =>
+  selected.some(
+    (code) =>
+      String(tableData.find((row) => row.gtinCode === code)?.status) === PRODUCTS_STATES[status]
+  );

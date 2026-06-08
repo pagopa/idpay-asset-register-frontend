@@ -18,7 +18,7 @@ jest.mock('@pagopa/selfcare-common-frontend/lib/utils/storage', () => ({
 }));
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/config/env', () => ({
-  CONFIG: { URL_FE: { LOGIN: 'http://login' } },
+  CONFIG: { URL_FE: { LOGIN: 'https://login' } },
 }));
 
 const loadResolver = (debugConsole: boolean) => {
@@ -69,7 +69,7 @@ describe('resolveApiErrorStatus', () => {
     });
     expect(mockDispatch).toHaveBeenCalledWith(expect.objectContaining({ id: 'tokenNotValid' }));
     expect(mockDeleteUser).toHaveBeenCalledTimes(1);
-    expect(mockAssign).toHaveBeenCalledWith('http://login');
+    expect(mockAssign).toHaveBeenCalledWith('https://login');
   });
 
   it.each([

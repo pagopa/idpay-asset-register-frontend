@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
@@ -9,6 +10,9 @@ import {
   setInstitutionList,
   setInstitution,
 } from '../../redux/slices/invitaliaSlice';
+import { ProductStatus } from '../../api/generated/register';
+import { DEBUG_CONSOLE, EMPTY_DATA, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
+import { setWaitApprovedStatusList } from '../../services/registerService';
 import {
   batchIdSelector,
   batchNameSelector,
@@ -21,16 +25,13 @@ import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
 import { SelectProps } from '../FiltersDrawer/filtersRender';
 import EmptyListTable from '../../pages/components/EmptyListTable';
-import { RegisterApi } from '../../api/registerApiClient';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 import { useProductsTable } from './hooks/useProductsTable';
 import { useProductDataGridInit } from './hooks/useProductDataGridInit';
-import { validateBulkActionPreconditions, getSelectedStatuses } from './ProductDataGrid.helpers';
 
 import ProductDataGridView from './ProductDataGridView';
 import ProductResultMessages from './ProductResultMessages';
 import ProductDetail from './ProductDetail';
-import ProductBulkActionDialog from './ProductBulkActionDialog';
 
 type Props = {
   organizationId: string;
@@ -40,10 +41,13 @@ type Props = {
 import { useResolvedProductTableConfig } from './hooks/useResolvedProductTableConfig';
 import { useEnrichedProductFilters } from './hooks/useEnrichedProductFilters';
 import { useTargetOrganization } from './hooks/useTargetOrganization';
+import ProductModal from './ProductModal';
+import ProductConfirmDialog from './ProductConfirmDialog';
+import { getStatusChecks } from './ProductDataGrid.helpers';
 
 const ProductDataGrid: React.FC<Props> = ({
   organizationId,
-  organizationLabel,
+  organizationLabel: _organizationLabel,
 }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
@@ -54,26 +58,21 @@ const ProductDataGrid: React.FC<Props> = ({
     useResolvedProductTableConfig(typedConfig);
 
   const [activeOrganizationId, setActiveOrganizationId] = useState(organizationId);
-  const [redirectProducer, setRedirectProducer] = useState<{
-    value: string;
-    label?: string;
-  } | null>(null);
-  const [lastRedirectOrganizationId, setLastRedirectOrganizationId] = useState<string | null>(null);
-  const [redirectProducerManuallyCleared, setRedirectProducerManuallyCleared] = useState(false);
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
+
+  const location = useLocation();
+  const batchFromHistory = (location.state as any)?.batchId;
 
   const subRoleConfig = config?.subRoles?.[user?.org_role as string];
   const hasProductsPermission = subRoleConfig?.permissions?.tables?.includes('products');
 
   const currentRoleKey = user?.org_role as string | undefined;
 
-  const selectionRules = tableConfig?.selection?.rules ?? {};
-  const currentRoleRules = currentRoleKey ? selectionRules[currentRoleKey] : undefined;
+  const role = user?.org_role?.toLowerCase();
 
-  const isInvitaliaUser = Array.isArray(currentRoleRules) && currentRoleRules.length > 0;
-  const isInvitaliaAdmin =
-    Array.isArray(currentRoleRules) && currentRoleRules.includes('WAIT_APPROVED');
+  const isInvitaliaUser = role === USERS_TYPES.INVITALIA_L1;
+  const isInvitaliaAdmin = role === USERS_TYPES.INVITALIA_L2;
 
   const institution = useSelector(institutionSelector);
   const batchId = useSelector(batchIdSelector);
@@ -96,12 +95,24 @@ const ProductDataGrid: React.FC<Props> = ({
     };
   }, [batchId, batchName]);
 
-  const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>(
-    initialBatchFilters
+  const [filters, setFilters] =
+    useState<Record<string, { value: string; label?: string }>>(initialBatchFilters);
+
+  const effectiveFilters = useMemo(() => filters, [filters]);
+
+  const filtersSignature = useMemo(
+    () =>
+      Object.entries(effectiveFilters)
+        .map(([key, obj]) => `${key}:${obj?.value}`)
+        .join('|'),
+    [effectiveFilters]
   );
 
-  const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length
-    ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {})
+  const filtersValue: typeof filters & { producer?: string } = Object.keys(effectiveFilters).length
+    ? Object.entries(effectiveFilters)?.reduce(
+        (acc, [key, obj]) => ({ ...acc, [key]: obj?.value }),
+        {}
+      )
     : {};
 
   const { targetId } = useTargetOrganization({
@@ -111,7 +122,32 @@ const ProductDataGrid: React.FC<Props> = ({
     tableConfig,
   });
 
+  const isReady = useMemo(() => {
+    if (tableConfig?.organizationSource === 'user') {
+      return !!user?.org_id;
+    }
+
+    if (tableConfig?.organizationSource === 'filter') {
+      if (isInvitaliaAdmin) {
+        return true;
+      }
+      return !!institution?.institutionId;
+    }
+
+    return true;
+  }, [tableConfig?.organizationSource, user?.org_id, isInvitaliaAdmin, institution?.institutionId]);
+
   useEffect(() => {
+    if (organizationId && tableConfig?.organizationSource === 'filter') {
+      setFilters((prev) => ({
+        ...prev,
+        producer: {
+          value: organizationId,
+          label: institution?.description || organizationId,
+        },
+      }));
+    }
+
     if (batchId) {
       const displayBatchName = batchName?.replace(/\.csv$/i, '') || batchName || batchId;
 
@@ -134,69 +170,17 @@ const ProductDataGrid: React.FC<Props> = ({
       dispatch(setBatchId(''));
       dispatch(setBatchName(''));
     }
-  }, [batchId, batchName, dispatch]);
 
-  useEffect(() => {
-    if (tableConfig?.organizationSource !== 'filter' || !organizationId) {
-      return;
+    if (batchFromHistory) {
+      setFilters((prev) => ({
+        ...prev,
+        batch: {
+          value: batchFromHistory,
+          label: batchFromHistory,
+        },
+      }));
     }
-
-    if (redirectProducerManuallyCleared && lastRedirectOrganizationId === organizationId) {
-      return;
-    }
-
-    setRedirectProducer({
-      value: organizationId,
-      label: organizationLabel || organizationId,
-    });
-    setActiveOrganizationId(organizationId);
-    setLastRedirectOrganizationId(organizationId);
-    setRedirectProducerManuallyCleared(false);
-  }, [
-    organizationId,
-    organizationLabel,
-    lastRedirectOrganizationId,
-    redirectProducerManuallyCleared,
-    tableConfig,
-  ]);
-
-  const [trackedInitiativeId, setTrackedInitiativeId] = useState(initiativeId);
-
-  useEffect(() => {
-    if (trackedInitiativeId === initiativeId) {
-      return;
-    }
-
-    setFilters({});
-    setActiveOrganizationId(organizationId);
-    setRedirectProducer(null);
-    setLastRedirectOrganizationId(null);
-    setRedirectProducerManuallyCleared(false);
-    setPage(0);
-    setSelected([]);
-    setTrackedInitiativeId(initiativeId);
-    dispatch(setBatchId(''));
-    dispatch(setBatchName(''));
-  }, [initiativeId, organizationId, trackedInitiativeId]);
-
-  const effectiveFilters = useMemo(
-    () =>
-      redirectProducer
-        ? {
-            producer: redirectProducer,
-            ...filters,
-          }
-        : filters,
-    [filters, redirectProducer]
-  );
-
-  const filtersSignature = useMemo(
-    () =>
-      Object.entries(effectiveFilters)
-        .map(([key, value]) => `${key}:${value.value}`)
-        .join('|'),
-    [effectiveFilters]
-  );
+  }, [organizationId, institution?.description, tableConfig, batchFromHistory, batchId, batchName]);
 
   const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
@@ -213,11 +197,11 @@ const ProductDataGrid: React.FC<Props> = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(paginationConfig?.defaultRowsPerPage ?? 10);
   const [selected, setSelected] = useState<Array<string>>([]);
-  const refreshKey = useMemo(() => Date.now(), [initiativeId]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     setSelected([]);
-  }, [filtersSignature, targetId]);
+  }, [filtersSignature, targetId, refreshKey]);
 
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -225,18 +209,37 @@ const ProductDataGrid: React.FC<Props> = ({
   const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
 
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
+    refreshKey,
     initiativeId,
     organizationId: targetId,
     orderBy,
     order,
     page,
     rowsPerPage,
-    ...Object.fromEntries(
-      Object.entries(effectiveFilters)
-        .filter(([key]) => key !== 'producer')
-        .map(([key, value]) => [key, value.value])
-    ),
+    ...(batchFromHistory ? { batch: batchFromHistory } : organizationId ? {} : filtersValue),
   });
+
+  const selectedProductsList = useMemo(
+    () =>
+      tableData
+        .filter(
+          (row) =>
+            (row.productCode && selected.includes(row.productCode)) ||
+            (row.gtinCode && selected.includes(row.gtinCode))
+        )
+        .map((row) => ({
+          status: row.status as ProductStatus,
+          productName: row.productName,
+          gtinCode: row.gtinCode,
+          category: row.category,
+        })) as Array<{
+        status: ProductStatus;
+        productName?: string;
+        gtinCode: string;
+        category?: string;
+      }>,
+    [selected, tableData]
+  );
 
   // Replace producer label with readable name once products are loaded
   useEffect(() => {
@@ -324,6 +327,24 @@ const ProductDataGrid: React.FC<Props> = ({
   }, [currentRoleKey, tableConfig]);
 
   useEffect(() => {
+    // Reset state only when initiative changes
+    setFilters({});
+    setPage(0);
+    setSelected([]);
+  }, [initiativeId]);
+
+  useEffect(() => {
+    setSelected([]);
+  }, [tableData]);
+
+  useEffect(() => {
+    if (paginationConfig?.defaultRowsPerPage) {
+      setRowsPerPage(paginationConfig.defaultRowsPerPage);
+    }
+    setPage(0);
+  }, [initiativeId, paginationConfig]);
+
+  useEffect(() => {
     if (enrichedFiltersConfig) {
       const defaultValues = enrichedFiltersConfig as Array<
         import('../../model/config/ConfigSchema').FilterConfig
@@ -363,23 +384,94 @@ const ProductDataGrid: React.FC<Props> = ({
   const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
   const [showMsgSupervised, setShowMsgSupervised] = useState(false);
   const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
-  const [showMsgAcceptApprovation, setShowMsgAcceptApprovation] = useState(false);
+  const [showMsgAcceptApprovation, setMsgAcceptApprovation] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [showMixStatusError, setShowMixStatusError] = useState(false);
+  const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
   const [showGenericError, setShowGenericError] = useState(false);
 
-  const handleOpenModalWithStatusCheck = (action: string) => {
-    const result = validateBulkActionPreconditions({
-      selected,
-      tableData,
-      roleKey: currentRoleKey,
-      tableConfig,
-    });
+  const resetAllMsgResults = () => {
+    setShowMsgRejected(false);
+    setShowMsgApproved(false);
+    setShowMsgWaitApproved(false);
+    setShowMsgSupervised(false);
+    setShowMsgRejectedApprovation(false);
+    setMsgAcceptApprovation(false);
+  };
 
-    if (!result.valid) {
+  useEffect(() => {
+    const isMsg =
+      showMsgRejected ||
+      showMsgApproved ||
+      showMsgWaitApproved ||
+      showMsgSupervised ||
+      showMsgRejectedApprovation ||
+      showMsgAcceptApprovation;
+    if (isMsg) {
+      setTimeout(() => resetAllMsgResults(), 3000);
+    }
+  }, [
+    showMsgRejected,
+    showMsgApproved,
+    showMsgWaitApproved,
+    showMsgSupervised,
+    showMsgRejectedApprovation,
+    showMsgAcceptApprovation,
+  ]);
+
+  const callWaitApprovedApi = async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatus,
+    motivation: string
+  ) => {
+    try {
+      await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
+    } catch (error) {
+      if (DEBUG_CONSOLE) {
+        console.error(error);
+      }
+    }
+  };
+
+  const handleConfirmRestore = async (
+    gtinCodes: Array<string>,
+    currentStatus: ProductStatus,
+    motivation: string
+  ) => {
+    await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
+    setRestoreDialogOpen(false);
+    setShowMsgApproved(true);
+  };
+
+  const handleOpenModal = (action: string) => {
+    if (action === PRODUCTS_STATES.WAIT_APPROVED) {
+      setRestoreDialogOpen(true);
+    } else {
+      setModalAction(action);
+      setModalOpen(true);
+    }
+  };
+
+  const handleOpenModalWithStatusCheck = (action: string) => {
+    const { selectedStatuses, someUploaded, length } = getStatusChecks(selected, tableData);
+
+    if (length === 0) {
       return;
     }
 
-    setModalAction(action);
-    setModalOpen(true);
+    if (isInvitaliaAdmin && someUploaded) {
+      setShowYourselfApprovedError(true);
+      setTimeout(() => setShowYourselfApprovedError(false), 3000);
+      return;
+    }
+
+    const uniqueStatuses = Array.from(new Set(selectedStatuses));
+    if (uniqueStatuses.length > 1) {
+      setShowMixStatusError(true);
+      setTimeout(() => setShowMixStatusError(false), 3000);
+      return;
+    }
+    handleOpenModal(action);
   };
 
   function normalizeLegacyColumn(col: any) {
@@ -416,7 +508,7 @@ const ProductDataGrid: React.FC<Props> = ({
     return [...columns, { id: '__detail__', labelKey: '', type: 'action' }];
   }, [tableConfig]);
 
-  if (!tableConfig) {
+  if (!tableConfig || !isReady) {
     return null;
   }
 
@@ -429,10 +521,37 @@ const ProductDataGrid: React.FC<Props> = ({
     setDetailOpen(true);
   };
 
+  const setMsgResultByAction = (
+    actionType?: string,
+    isInvitaliaUser?: boolean,
+    isInvitaliaAdmin?: boolean
+  ) => {
+    if (actionType === PRODUCTS_STATES.SUPERVISED && isInvitaliaUser) {
+      setShowMsgSupervised(true);
+      return;
+    }
+    if (actionType === PRODUCTS_STATES.WAIT_APPROVED && isInvitaliaUser) {
+      setShowMsgWaitApproved(true);
+      return;
+    }
+    if (actionType === MIDDLE_STATES.ACCEPT_APPROVATION && isInvitaliaAdmin) {
+      setMsgAcceptApprovation(true);
+      return;
+    }
+    if (actionType === MIDDLE_STATES.REJECT_APPROVATION && isInvitaliaAdmin) {
+      setShowMsgRejectedApprovation(true);
+      return;
+    }
+    if (actionType === PRODUCTS_STATES.REJECTED && isInvitaliaUser) {
+      setShowMsgRejected(true);
+    }
+  };
+
   return (
     <>
       <ProductDataGridView
         isInvitaliaUser={isInvitaliaUser}
+        isInvitaliaAdmin={isInvitaliaAdmin}
         tableData={tableData}
         hookLoading={loading}
         itemsQty={itemsQty ?? 0}
@@ -443,6 +562,7 @@ const ProductDataGrid: React.FC<Props> = ({
         order={order}
         orderBy={orderBy}
         filters={effectiveFilters}
+        enrichedFiltersConfig={enrichedFiltersConfig}
         selected={selected}
         effectiveColumns={effectiveColumns}
         paginationConfig={paginationConfig}
@@ -462,9 +582,7 @@ const ProductDataGrid: React.FC<Props> = ({
         }}
         handleDeleteFiltersButtonClick={() => {
           setFilters({});
-          setRedirectProducer(null);
           setActiveOrganizationId('');
-          setRedirectProducerManuallyCleared(true);
           setPage(0);
           setSelected([]);
           dispatch(setBatchId(''));
@@ -489,103 +607,63 @@ const ProductDataGrid: React.FC<Props> = ({
         showMsgAcceptApprovation={showMsgAcceptApprovation}
         showMsgRejected={showMsgRejected}
         showMsgRejectedApprovation={showMsgRejectedApprovation}
-        showMixStatusError={false}
-        showYourselfApprovedError={false}
+        showMixStatusError={showMixStatusError}
+        showYourselfApprovedError={showYourselfApprovedError}
         showGenericError={showGenericError}
-        t={t}
-        getMsgResultByActionType={(t, actionType) => {
-          switch (actionType) {
-            case PRODUCTS_STATES.WAIT_APPROVED:
-              return t('invitaliaModal.waitApproved.msgResultWaitApproved');
-            case PRODUCTS_STATES.SUPERVISED:
-              return t('invitaliaModal.supervised.msgResultSupervised');
-            case PRODUCTS_STATES.REJECTED:
-              return t('invitaliaModal.rejected.msgResultRejected');
-            case MIDDLE_STATES.REJECT_APPROVATION:
-              return t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation');
-            case MIDDLE_STATES.ACCEPT_APPROVATION:
-            case PRODUCTS_STATES.APPROVED:
-              return t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation');
-            default:
-              return '';
-          }
-        }}
         bottom={80}
       />
 
-      {modalOpen && (
-        <ProductBulkActionDialog
-          open={modalOpen}
-          action={modalAction}
-          selected={selected}
-          tableData={tableData}
-          isInvitaliaUser={isInvitaliaUser}
-          onClose={() => setModalOpen(false)}
-          onConfirm={async (_action, reason) => {
-            if (!modalAction) {
-              return;
+      <ProductModal
+        open={modalOpen}
+        onClose={(cancelled) => {
+          setModalOpen(false);
+          if (cancelled) {
+            resetAllMsgResults();
+          }
+        }}
+        actionType={modalAction}
+        onUpdateTable={() => setRefreshKey((prev) => prev + 1)}
+        selectedProducts={selectedProductsList}
+        onSuccess={(actionType) => {
+          setMsgResultByAction(actionType, isInvitaliaUser, isInvitaliaAdmin);
+        }}
+      />
+
+      <ProductConfirmDialog
+        open={restoreDialogOpen}
+        cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
+        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${
+          selected.length
+        })`}
+        title={t('invitaliaModal.waitApproved.listTitle')}
+        message={t('invitaliaModal.waitApproved.description', { L2: USERS_NAMES.INVITALIA_L2 })}
+        onCancel={() => setRestoreDialogOpen(false)}
+        onConfirm={async () => {
+          const currentStatus =
+            (tableData.find((row) => row.gtinCode === selected[0])
+              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
+          try {
+            await handleConfirmRestore(selected, currentStatus, EMPTY_DATA);
+            setRefreshKey((prev) => prev + 1);
+            setRestoreDialogOpen(false);
+          } catch (error) {
+            if (DEBUG_CONSOLE) {
+              console.error('Error during restore:', error);
             }
-
-            const selectedStatuses = getSelectedStatuses(selected, tableData);
-            const currentStatus = selectedStatuses[0];
-
-            if (!currentStatus) {
-              return;
-            }
-
-            switch (modalAction) {
-              case PRODUCTS_STATES.WAIT_APPROVED:
-                await RegisterApi.setWaitApprovedStatusList(
-                  initiativeId,
-                  selected,
-                  currentStatus,
-                  reason || ''
-                );
-                break;
-
-              case PRODUCTS_STATES.APPROVED:
-                await RegisterApi.setApprovedStatusList(
-                  initiativeId,
-                  selected,
-                  currentStatus,
-                  reason || ''
-                );
-                break;
-
-              case PRODUCTS_STATES.SUPERVISED:
-                await RegisterApi.setSupervisionedStatusList(
-                  initiativeId,
-                  selected,
-                  currentStatus,
-                  reason || ''
-                );
-                break;
-
-              case PRODUCTS_STATES.REJECTED:
-              case MIDDLE_STATES.REJECT_APPROVATION:
-                await RegisterApi.setRejectedStatusList(
-                  initiativeId,
-                  selected,
-                  currentStatus,
-                  reason || ''
-                );
-                break;
-
-              default:
-                break;
-            }
-
-            // Success flow is handled inside ProductBulkActionDialog
-          }}
-          setShowMsgRejected={setShowMsgRejected}
-          setShowMsgApproved={setShowMsgApproved}
-          setShowMsgWaitApproved={setShowMsgWaitApproved}
-          setShowMsgSupervised={setShowMsgSupervised}
-          setShowMsgRejectedApprovation={setShowMsgRejectedApprovation}
-          setShowMsgAcceptApprovation={setShowMsgAcceptApprovation}
-          setShowGenericError={setShowGenericError}
-        />
-      )}
+          }
+        }}
+        onSuccess={() => {
+          resetAllMsgResults();
+          const currentStatus =
+            (tableData.find((row) => row.gtinCode === selected[0])
+              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
+          if (isInvitaliaUser && currentStatus === ProductStatus.UPLOADED) {
+            setShowMsgWaitApproved(true);
+          } else {
+            setShowMsgApproved(true);
+          }
+        }}
+      />
 
       {selectedProduct && (
         <DetailDrawer
@@ -610,8 +688,41 @@ const ProductDataGrid: React.FC<Props> = ({
             onUpdateTable={() => {
               setDetailOpen(false);
               setSelectedProduct(null);
+              setRefreshKey((prev) => prev + 1);
             }}
-            onShowRejectedMsg={() => {}}
+            onShowApprovedMsg={() => {
+              setShowMsgApproved(true);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowRejectedMsg={() => {
+              setShowMsgRejected(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+            }}
+            onShowWaitApprovedMsg={() => {
+              setShowMsgWaitApproved(true);
+              setShowMsgApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowSupervisedMsg={() => {
+              setShowMsgSupervised(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowRejectedApprovationMsg={() => {
+              setShowMsgRejectedApprovation(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowAcceptApprovationMsg={() => {
+              setMsgAcceptApprovation(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
             onShowGenericError={() => setShowGenericError(true)}
           />
         </DetailDrawer>

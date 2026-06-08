@@ -101,12 +101,13 @@
   "ui": {
     "tables": {
       "products": {
-        "bulkRules": {
-          "preventMixedStatus": true
-        },
         "columns": [
           { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
-          { "id": "producer", "labelKey": "tables.products.columns.producer", "sortable": true },
+          {
+            "id": "organizationName",
+            "labelKey": "tables.products.columns.producer",
+            "sortable": true
+          },
           {
             "id": "energyClass",
             "labelKey": "tables.products.columns.energyClass",
@@ -146,6 +147,14 @@
             "id": "productCode",
             "type": "text",
             "labelKey": "tables.products.filters.productCode"
+          },
+          {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^[0-9]{1,12}$",
+            "message": "tables.products.filters.errors.eprelCode",
+            "inputProps": { "maxLength": 12 }
           }
         ],
         "selection": {

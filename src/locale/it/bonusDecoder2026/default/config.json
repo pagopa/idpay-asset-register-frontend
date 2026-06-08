@@ -59,9 +59,6 @@
   "ui": {
     "tables": {
       "products": {
-        "bulkRules": {
-          "preventMixedStatus": true
-        },
         "columns": [
           {
             "id": "gtinCode",

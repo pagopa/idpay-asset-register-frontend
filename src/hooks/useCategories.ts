@@ -64,7 +64,7 @@ const buildCategories = (
           return [normalizedKey, { label }];
         }
 
-        const csvNamespace = applyTemplateValues(templateContent, label);
+        const csvNamespace = applyTemplateValues(templateContent, normalizedKey);
         const csvFile = createCsv(csvNamespace);
 
         return [

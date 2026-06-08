@@ -20,7 +20,7 @@
   "ui": {
     "tables": {
       "products": {
-        "organizationSource": "filter",
+        "organizationSource": "user",
         "bulkRules": {
           "preventMixedStatus": true,
           "allowedStatusesByRole": {
@@ -119,6 +119,14 @@
             "id": "productCode",
             "type": "text",
             "labelKey": "tables.products.filters.productCode"
+          },
+          {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^[0-9]{1,12}$",
+            "message": "tables.products.filters.errors.eprelCode",
+            "inputProps": { "maxLength": 12 }
           },
           {
             "id": "productFileId",

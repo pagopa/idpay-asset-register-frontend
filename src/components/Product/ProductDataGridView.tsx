@@ -4,16 +4,17 @@ import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@mui/material/styles';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
-import { useTranslation } from 'react-i18next';
 import EmptyListTable from '../../pages/components/EmptyListTable';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { ProductDTO } from '../../api/generated/register';
+import useScopedTranslation from '../../hooks/useScopedTranslation';
 import NewFilter from './NewFilter';
 import ProductStatusActionBar from './ProductStatusActionBar';
 import { useProductFilters } from './hooks/useProductFilters';
 
 type Props = {
   isInvitaliaUser: boolean;
+  isInvitaliaAdmin: boolean;
   tableData: Array<ProductDTO>;
   hookLoading: boolean;
   itemsQty: number;
@@ -24,6 +25,7 @@ type Props = {
   order: any;
   orderBy: keyof ProductDTO;
   filters: Record<string, { value: string; label?: string }>;
+  enrichedFiltersConfig?: Array<{ id: string }>;
   selected: Array<string>;
   effectiveColumns: Array<any>;
   paginationConfig: any;
@@ -41,6 +43,7 @@ type Props = {
 
 const ProductDataGridView: React.FC<Props> = ({
   isInvitaliaUser,
+  isInvitaliaAdmin,
   tableData,
   hookLoading,
   itemsQty,
@@ -51,6 +54,7 @@ const ProductDataGridView: React.FC<Props> = ({
   order,
   orderBy,
   filters,
+  enrichedFiltersConfig,
   selected,
   effectiveColumns,
   paginationConfig,
@@ -65,8 +69,8 @@ const ProductDataGridView: React.FC<Props> = ({
   handleToggleFiltersDrawer,
   handleOpenModalWithStatusCheck,
 }) => {
-  const { t } = useTranslation();
-  const { filtersLabel } = useProductFilters({ filters });
+  const { t } = useScopedTranslation();
+  const { filtersLabel } = useProductFilters({ filters, enrichedFiltersConfig });
   const theme = useTheme();
   return (
     <>
@@ -90,6 +94,7 @@ const ProductDataGridView: React.FC<Props> = ({
             tableData={tableData}
             selected={selected}
             isInvitaliaUser={isInvitaliaUser}
+            isInvitaliaAdmin={isInvitaliaAdmin}
             hookLoading={hookLoading}
             handleOpenModalWithStatusCheck={handleOpenModalWithStatusCheck}
           />
@@ -106,7 +111,9 @@ const ProductDataGridView: React.FC<Props> = ({
               backgroundColor: `${theme.palette.primary.main} !important`,
             }}
             onDelete={handleDeleteFiltersButtonClick}
-            deleteIcon={<CloseIcon sx={{ color: `${theme.palette.primary.contrastText} !important` }} />}
+            deleteIcon={
+              <CloseIcon sx={{ color: `${theme.palette.primary.contrastText} !important` }} />
+            }
           />
         ) : (
           <span />
@@ -138,8 +145,9 @@ const ProductDataGridView: React.FC<Props> = ({
           </Box>
         )}
 
-        {tableData?.length > 0 && !hookLoading && (
+        {!hookLoading && paginationConfig && Array.isArray(paginationConfig.rowsPerPageOptions) && (
           <TablePagination
+            key={`${paginationConfig.rowsPerPageOptions.join('-')}`}
             sx={{ backgroundColor: 'transparent' }}
             component="div"
             count={itemsQty || 0}
@@ -147,7 +155,7 @@ const ProductDataGridView: React.FC<Props> = ({
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={paginationConfig?.rowsPerPageOptions ?? [10, 25, 50, 100]}
+            rowsPerPageOptions={paginationConfig.rowsPerPageOptions}
             labelRowsPerPage={t('pages.products.elementsPerPage')}
             labelDisplayedRows={() =>
               `${paginatorFrom} - ${paginatorTo} ${t(

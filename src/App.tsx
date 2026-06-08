@@ -162,8 +162,6 @@ const SecuredRoutes = withLogin(
       return <></>;
     }
 
-    // Handle malformed URLs (e.g. "...//storico-caricamenti") as an error case
-    // (show alert, then redirect HOME), matching the flow chart behavior.
     if (isMalformedPathname(location.pathname, routes.HOME)) {
       return (
         <Layout>

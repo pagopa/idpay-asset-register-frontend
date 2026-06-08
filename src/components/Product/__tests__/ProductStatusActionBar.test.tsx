@@ -4,243 +4,158 @@ import ProductStatusActionBar from '../ProductStatusActionBar';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../../utils/constants';
 import { ProductDTO } from '../../../api/generated/register';
 
-const mockT = (key: string) => key;
+jest.mock('../../../hooks/useScopedTranslation', () => ({
+  __esModule: true,
+  default: () => ({ t: (k: string) => k }),
+}));
 
 const buildProduct = (status: string, gtin: string): ProductDTO =>
   ({
     gtinCode: gtin,
     status,
-    productName: 'Test Product',
-    category: 'Test',
+    productName: 'Test',
+    category: 'Cat',
   } as unknown as ProductDTO);
 
-describe('ProductStatusActionBar', () => {
-  it('does not render when no selection', () => {
-    const { container } = render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.SUPERVISED, '1')]}
-        selected={[]}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={jest.fn()}
-      />
-    );
+describe('ProductStatusActionBar – 100% coverage', () => {
+  const renderBar = (props: Partial<React.ComponentProps<typeof ProductStatusActionBar>> = {}) => {
+    const defaultProps = {
+      tableData: [buildProduct(PRODUCTS_STATES.UPLOADED, '1')],
+      selected: ['1'],
+      isInvitaliaUser: true,
+      isInvitaliaAdmin: false,
+      hookLoading: false,
+      handleOpenModalWithStatusCheck: jest.fn(),
+    };
 
-    expect(container.firstChild).toBeNull();
+    return render(<ProductStatusActionBar {...defaultProps} {...props} />);
+  };
+
+  describe('render guards', () => {
+    it('returns null when no tableData', () => {
+      const { container } = renderBar({ tableData: [] });
+      expect(container.firstChild).toBeNull();
+    });
+
+    it('returns null when loading', () => {
+      const { container } = renderBar({ hookLoading: true });
+      expect(container.firstChild).toBeNull();
+    });
+
+    it('returns null when no selection', () => {
+      const { container } = renderBar({ selected: [] });
+      expect(container.firstChild).toBeNull();
+    });
   });
 
-  it('does not render when loading', () => {
-    const { container } = render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.UPLOADED, '1')]}
-        selected={['1']}
-        isInvitaliaUser={true}
-        hookLoading={true}
-        t={mockT}
-        handleOpenModalWithStatusCheck={jest.fn()}
-      />
-    );
+  describe('Invitalia user – normal state (UPLOADED)', () => {
+    it('renders all three buttons enabled', () => {
+      renderBar();
 
-    expect(container.firstChild).toBeNull();
+      expect(screen.getByTestId('rejectedBtn')).toBeEnabled();
+      expect(screen.getByTestId('waitApprovedBtn')).toBeEnabled();
+      expect(screen.getByTestId('supervisedBtn')).toBeEnabled();
+    });
+
+    it('calls correct actions', () => {
+      const handler = jest.fn();
+      renderBar({ handleOpenModalWithStatusCheck: handler });
+
+      fireEvent.click(screen.getByTestId('rejectedBtn'));
+      fireEvent.click(screen.getByTestId('supervisedBtn'));
+      fireEvent.click(screen.getByTestId('waitApprovedBtn'));
+
+      expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.REJECTED);
+      expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.SUPERVISED);
+      expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.WAIT_APPROVED);
+    });
   });
 
-  it('does not render when table data is empty', () => {
-    const { container } = render(
-      <ProductStatusActionBar
-        tableData={[]}
-        selected={['1']}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={jest.fn()}
-      />
-    );
+  describe('Invitalia user – disabled states', () => {
+    it('disables buttons when status WAIT_APPROVED', () => {
+      renderBar({
+        tableData: [buildProduct(PRODUCTS_STATES.WAIT_APPROVED, '1')],
+      });
 
-    expect(container.firstChild).toBeNull();
+      expect(screen.getByTestId('rejectedBtn')).toBeDisabled();
+      expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
+    });
+
+    it('disables buttons when status REJECTED', () => {
+      renderBar({
+        tableData: [buildProduct(PRODUCTS_STATES.REJECTED, '1')],
+      });
+
+      expect(screen.getByTestId('rejectedBtn')).toBeDisabled();
+      expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
+    });
+
+    it('disables buttons when status APPROVED', () => {
+      renderBar({
+        tableData: [buildProduct(PRODUCTS_STATES.APPROVED, '1')],
+      });
+
+      expect(screen.getByTestId('rejectedBtn')).toBeDisabled();
+      expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
+    });
+
+    it('does not render supervised button when already supervised', () => {
+      renderBar({
+        tableData: [buildProduct(PRODUCTS_STATES.SUPERVISED, '1')],
+      });
+
+      expect(screen.queryByTestId('supervisedBtn')).not.toBeInTheDocument();
+    });
   });
 
-  it('renders action buttons when items selected (Invitalia user)', () => {
-    render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.UPLOADED, '1')]}
-        selected={['1']}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={jest.fn()}
-      />
-    );
+  describe('Non Invitalia user', () => {
+    it('does not render supervised button', () => {
+      renderBar({ isInvitaliaUser: false });
 
-    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
-    expect(screen.getByTestId('waitApprovedBtn')).toBeInTheDocument();
+      expect(screen.queryByTestId('supervisedBtn')).not.toBeInTheDocument();
+    });
+
+    it('uses middle states on click', () => {
+      const handler = jest.fn();
+      renderBar({
+        isInvitaliaUser: false,
+        handleOpenModalWithStatusCheck: handler,
+      });
+
+      fireEvent.click(screen.getByTestId('rejectedBtn'));
+      fireEvent.click(screen.getByTestId('waitApprovedBtn'));
+
+      expect(handler).toHaveBeenCalledWith(MIDDLE_STATES.REJECT_APPROVATION);
+      expect(handler).toHaveBeenCalledWith(MIDDLE_STATES.ACCEPT_APPROVATION);
+    });
   });
 
-  it('renders admin actions correctly', () => {
-    const handler = jest.fn();
+  describe('multiple selections – mixed statuses logic', () => {
+    it('disables when one of selected is WAIT_APPROVED', () => {
+      renderBar({
+        tableData: [
+          buildProduct(PRODUCTS_STATES.UPLOADED, '1'),
+          buildProduct(PRODUCTS_STATES.WAIT_APPROVED, '2'),
+        ],
+        selected: ['1', '2'],
+      });
 
-    render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.UPLOADED, '1')]}
-        selected={['1']}
-        isInvitaliaUser={false}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={handler}
-      />
-    );
+      expect(screen.getByTestId('rejectedBtn')).toBeDisabled();
+      expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
+    });
 
-    fireEvent.click(screen.getByTestId('rejectedBtn'));
-    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
+    it('keeps enabled if none are blocking states', () => {
+      renderBar({
+        tableData: [
+          buildProduct(PRODUCTS_STATES.UPLOADED, '1'),
+          buildProduct(PRODUCTS_STATES.UPLOADED, '2'),
+        ],
+        selected: ['1', '2'],
+      });
 
-    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
-    expect(screen.getByTestId('waitApprovedBtn')).toBeInTheDocument();
-  });
-
-  it('calls handler with correct action for Invitalia user', () => {
-    const handler = jest.fn();
-
-    render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.UPLOADED, '1')]}
-        selected={['1']}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={handler}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
-
-    expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.WAIT_APPROVED);
-  });
-
-  it('calls all enabled Invitalia actions for uploaded products', () => {
-    const handler = jest.fn();
-
-    render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.UPLOADED, '1')]}
-        selected={['1']}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={handler}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId('rejectedBtn'));
-    fireEvent.click(screen.getByTestId('supervisedBtn'));
-    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
-
-    expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.REJECTED);
-    expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.SUPERVISED);
-    expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.WAIT_APPROVED);
-  });
-
-  it('uses middle states for non Invitalia approval users on wait approved rows', () => {
-    const handler = jest.fn();
-
-    render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.WAIT_APPROVED, '1')]}
-        selected={['1']}
-        isInvitaliaUser={false}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={handler}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId('rejectedBtn'));
-    fireEvent.click(screen.getByTestId('waitApprovedBtn'));
-
-    expect(handler).toHaveBeenCalledWith(MIDDLE_STATES.REJECT_APPROVATION);
-    expect(handler).toHaveBeenCalledWith(MIDDLE_STATES.ACCEPT_APPROVATION);
-  });
-
-  it('matches selected rows by gtin and productCode fallbacks', () => {
-    const handler = jest.fn();
-    const tableData = [
-      {
-        gtin: 'legacy-gtin',
-        productCode: 'product-code',
-        status: PRODUCTS_STATES.APPROVED,
-      },
-    ] as unknown as Array<ProductDTO>;
-
-    const { rerender } = render(
-      <ProductStatusActionBar
-        tableData={tableData}
-        selected={['legacy-gtin']}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={handler}
-      />
-    );
-
-    expect(screen.getByTestId('supervisedBtn')).not.toBeDisabled();
-
-    rerender(
-      <ProductStatusActionBar
-        tableData={tableData}
-        selected={['product-code']}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={handler}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId('supervisedBtn'));
-    expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.SUPERVISED);
-  });
-
-  it('disables actions that are not valid for the selected statuses', () => {
-    render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.REJECTED, '1')]}
-        selected={['1']}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={jest.fn()}
-      />
-    );
-
-    expect(screen.getByTestId('supervisedBtn')).toBeDisabled();
-    expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
-  });
-
-  it.skip('disables waitApproved button if already WAIT_APPROVED for Invitalia user', () => {
-    render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.WAIT_APPROVED, '1')]}
-        selected={['1']}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={jest.fn()}
-      />
-    );
-
-    expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
-  });
-
-  it('does not render supervised button if product already supervised', () => {
-    render(
-      <ProductStatusActionBar
-        tableData={[buildProduct(PRODUCTS_STATES.SUPERVISED, '1')]}
-        selected={['1']}
-        isInvitaliaUser={true}
-        hookLoading={false}
-        t={mockT}
-        handleOpenModalWithStatusCheck={jest.fn()}
-      />
-    );
-
-    expect(screen.queryByTestId('supervisedBtn')).not.toBeInTheDocument();
+      expect(screen.getByTestId('rejectedBtn')).toBeEnabled();
+      expect(screen.getByTestId('waitApprovedBtn')).toBeEnabled();
+      expect(screen.getByTestId('supervisedBtn')).toBeEnabled();
+    });
   });
 });

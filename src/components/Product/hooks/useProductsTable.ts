@@ -5,12 +5,14 @@ import { Order } from '../helpers';
 import { DEBUG_CONSOLE } from '../../../utils/constants';
 
 export type UseProductsTableParams = {
+  refreshKey: number;
   initiativeId: string;
   organizationId: string;
   orderBy: keyof ProductDTO;
   order: Order;
   page: number;
   rowsPerPage: number;
+  organizationSource?: string;
   category?: string;
   producer?: string;
   productFileId?: string;
@@ -21,12 +23,14 @@ export type UseProductsTableParams = {
 };
 
 export const useProductsTable = ({
+  refreshKey,
   initiativeId,
   organizationId,
   orderBy,
   order,
   page,
   rowsPerPage,
+  organizationSource,
   category,
   producer,
   productFileId,
@@ -87,8 +91,15 @@ export const useProductsTable = ({
   };
 
   useEffect(() => {
+    if (organizationSource === 'filter' && !organizationId && !productFileId) {
+      setLoading(false);
+      setTableData([]);
+      return;
+    }
+
     void fetchProducts();
   }, [
+    refreshKey,
     initiativeId,
     organizationId,
     page,
@@ -102,6 +113,7 @@ export const useProductsTable = ({
     eprelCode,
     status,
     gtinCode,
+    organizationSource,
   ]);
 
   return {
