@@ -10,9 +10,16 @@ import {
   setInstitutionList,
   setInstitution,
 } from '../../redux/slices/invitaliaSlice';
-import { ProductDTO, ProductStatus } from '../../api/generated/register';
+import { ProductStatus } from '../../api/generated/register';
 import { DEBUG_CONSOLE, EMPTY_DATA, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
 import { setWaitApprovedStatusList } from '../../services/registerService';
+import {
+  batchIdSelector,
+  batchNameSelector,
+  setBatchId,
+  setBatchName,
+} from '../../redux/slices/productsSlice';
+import { ProductDTO } from '../../api/generated/register';
 
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
 import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
@@ -28,6 +35,7 @@ import ProductDetail from './ProductDetail';
 
 type Props = {
   organizationId: string;
+  organizationLabel?: string;
 };
 
 import { useResolvedProductTableConfig } from './hooks/useResolvedProductTableConfig';
@@ -37,7 +45,10 @@ import ProductModal from './ProductModal';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import { getStatusChecks } from './ProductDataGrid.helpers';
 
-const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
+const ProductDataGrid: React.FC<Props> = ({
+  organizationId,
+  organizationLabel: _organizationLabel,
+}) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
@@ -46,10 +57,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const { tableConfig, paginationConfig, filtersConfig, templateConfig } =
     useResolvedProductTableConfig(typedConfig);
 
-  const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({});
-  const filtersValue: typeof filters & { producer?: string } = Object.keys(filters).length
-    ? Object.entries(filters)?.reduce((acc, [key, obj]) => ({ ...acc, [key]: obj?.value }), {})
-    : {};
+  const [activeOrganizationId, setActiveOrganizationId] = useState(organizationId);
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
@@ -67,12 +75,50 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const isInvitaliaAdmin = role === USERS_TYPES.INVITALIA_L2;
 
   const institution = useSelector(institutionSelector);
+  const batchId = useSelector(batchIdSelector);
+  const batchName = useSelector(batchNameSelector);
+  const initialBatchFilters = useMemo<Record<string, { value: string; label?: string }>>((): Record<
+    string,
+    { value: string; label?: string }
+  > => {
+    if (!batchId) {
+      return {};
+    }
+
+    const displayBatchName = batchName?.replace(/\.csv$/i, '') || batchName || batchId;
+
+    return {
+      productFileId: {
+        value: batchId,
+        label: displayBatchName,
+      },
+    };
+  }, [batchId, batchName]);
+
+  const [filters, setFilters] =
+    useState<Record<string, { value: string; label?: string }>>(initialBatchFilters);
+
+  const effectiveFilters = useMemo(() => filters, [filters]);
+
+  const filtersSignature = useMemo(
+    () =>
+      Object.entries(effectiveFilters)
+        .map(([key, obj]) => `${key}:${obj?.value}`)
+        .join('|'),
+    [effectiveFilters]
+  );
+
+  const filtersValue: typeof filters & { producer?: string } = Object.keys(effectiveFilters).length
+    ? Object.entries(effectiveFilters)?.reduce(
+        (acc, [key, obj]) => ({ ...acc, [key]: obj?.value }),
+        {}
+      )
+    : {};
 
   const { targetId } = useTargetOrganization({
-    organizationId,
+    organizationId: activeOrganizationId,
     user,
     filtersValue,
-    institutionId: institution?.institutionId,
     tableConfig,
   });
 
@@ -102,6 +148,29 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       }));
     }
 
+    if (batchId) {
+      const displayBatchName = batchName?.replace(/\.csv$/i, '') || batchName || batchId;
+
+      setPage(0);
+      setSelected([]);
+      setFilters((prev) => {
+        if (prev.productFileId?.value === batchId) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          productFileId: {
+            value: batchId,
+            label: displayBatchName,
+          },
+        };
+      });
+
+      dispatch(setBatchId(''));
+      dispatch(setBatchName(''));
+    }
+
     if (batchFromHistory) {
       setFilters((prev) => ({
         ...prev,
@@ -111,7 +180,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         },
       }));
     }
-  }, [organizationId, institution?.description, tableConfig, batchFromHistory]);
+  }, [organizationId, institution?.description, tableConfig, batchFromHistory, batchId, batchName]);
 
   const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
@@ -129,6 +198,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [rowsPerPage, setRowsPerPage] = useState(paginationConfig?.defaultRowsPerPage ?? 10);
   const [selected, setSelected] = useState<Array<string>>([]);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    setSelected([]);
+  }, [filtersSignature, targetId, refreshKey]);
 
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -193,7 +266,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const batchFilter: Record<string, SelectProps> = useMemo(
     () =>
       batchFilterItems.reduce((acc, batch) => {
-        const batchName = batch?.batchName?.replace('.csv', '') || '';
+        const batchName = batch?.batchName?.replace(/\.csv$/i, '') || '';
         return {
           ...acc,
           [batch?.productFileId || '']: {
@@ -296,12 +369,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           };
         }, {});
 
-        setFilters((prev) => {
-          if (prev && Object.keys(prev).length > 0) {
-            return prev;
-          }
-          return defaultFilters;
-        });
+        setFilters((prev) => ({
+          ...defaultFilters,
+          ...prev,
+        }));
       }
     }
   }, [enrichedFiltersConfig, t]);
@@ -318,6 +389,35 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
   const [showMixStatusError, setShowMixStatusError] = useState(false);
   const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
   const [showGenericError, setShowGenericError] = useState(false);
+
+  const resetAllMsgResults = () => {
+    setShowMsgRejected(false);
+    setShowMsgApproved(false);
+    setShowMsgWaitApproved(false);
+    setShowMsgSupervised(false);
+    setShowMsgRejectedApprovation(false);
+    setMsgAcceptApprovation(false);
+  };
+
+  useEffect(() => {
+    const isMsg =
+      showMsgRejected ||
+      showMsgApproved ||
+      showMsgWaitApproved ||
+      showMsgSupervised ||
+      showMsgRejectedApprovation ||
+      showMsgAcceptApprovation;
+    if (isMsg) {
+      setTimeout(() => resetAllMsgResults(), 3000);
+    }
+  }, [
+    showMsgRejected,
+    showMsgApproved,
+    showMsgWaitApproved,
+    showMsgSupervised,
+    showMsgRejectedApprovation,
+    showMsgAcceptApprovation,
+  ]);
 
   const callWaitApprovedApi = async (
     gtinCodes: Array<string>,
@@ -421,15 +521,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     setDetailOpen(true);
   };
 
-  const resetAllMsgResults = () => {
-    setShowMsgRejected(false);
-    setShowMsgApproved(false);
-    setShowMsgWaitApproved(false);
-    setShowMsgSupervised(false);
-    setShowMsgRejectedApprovation(false);
-    setMsgAcceptApprovation(false);
-  };
-
   const setMsgResultByAction = (
     actionType?: string,
     isInvitaliaUser?: boolean,
@@ -470,8 +561,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         rowsPerPage={rowsPerPage}
         order={order}
         orderBy={orderBy}
-        filters={filters}
-        enrichedFiltersConfig={enrichedFiltersConfig}
+        filters={effectiveFilters}
         selected={selected}
         effectiveColumns={effectiveColumns}
         paginationConfig={paginationConfig}
@@ -491,6 +581,11 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         }}
         handleDeleteFiltersButtonClick={() => {
           setFilters({});
+          setActiveOrganizationId('');
+          setPage(0);
+          setSelected([]);
+          dispatch(setBatchId(''));
+          dispatch(setBatchName(''));
           dispatch(
             setInstitution({
               institutionId: '',
