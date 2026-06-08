@@ -41,6 +41,8 @@ export type InitiativeTablesConfig = {
 
 const validateInitiativeConfig = (config: unknown): config is InitiativeTablesConfig =>
   Boolean(config && typeof config === 'object');
+const isModuleNotFoundError = (error: any): boolean =>
+  error?.code === 'MODULE_NOT_FOUND' || error?.message?.includes('Cannot find module');
 
 const normalizeRole = (role?: string): string | undefined => {
   const r = role?.trim().toLowerCase();
@@ -89,10 +91,7 @@ const loadInitiativeDefaultConfig = async (
 
     return applySubRolePermissions(merged, resolveSubRole(role));
   } catch (error: any) {
-    const isModuleNotFound =
-      error?.code === 'MODULE_NOT_FOUND' || error?.message?.includes('Cannot find module');
-
-    if (isModuleNotFound) {
+    if (isModuleNotFoundError(error)) {
       throw new InitiativeNotFoundError(basePath);
     }
 
@@ -154,7 +153,7 @@ const executeInitiativeLoad = async (
       : loadInitiativeDefaultConfig(basePath, role);
 
   if (typeof role !== 'string') {
-    return resolveAndValidate(() => loadInitiativeDefaultConfig(basePath));
+    return resolveAndValidate(loadWithoutRole);
   }
 
   const normalizedRole = normalizeRole(role);
@@ -167,8 +166,12 @@ const executeInitiativeLoad = async (
     ? async () => {
         try {
           return await loadRoleSpecificConfig(basePath, normalizedRole, role);
-        } catch {
-          return loadWithoutRole();
+        } catch (error) {
+          if (error instanceof InitiativeNotFoundError || isModuleNotFoundError(error)) {
+            return loadWithoutRole();
+          }
+
+          throw error;
         }
       }
     : loadWithoutRole;
