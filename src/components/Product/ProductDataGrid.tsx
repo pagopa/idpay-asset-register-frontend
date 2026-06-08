@@ -282,7 +282,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     rowsPerPage,
     enabled,
     organizationSource: tableConfig?.organizationSource,
-    ...(batchFromHistory ? { batch: batchFromHistory } : organizationId ? {} : filtersValue),
+    ...(batchFromHistory ? { batch: batchFromHistory } : { ...filtersValue }),
   });
 
   /* --------------------------------------------------------------------------

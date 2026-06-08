@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { ProductTableConfig } from '../../../model/config/ConfigSchema';
+import { USERS_TYPES } from '../../../utils/constants';
 
 type Params = {
   organizationId: string;
@@ -8,12 +9,7 @@ type Params = {
   tableConfig?: ProductTableConfig;
 };
 
-export function useTargetOrganization({
-  organizationId,
-  user,
-  filtersValue,
-  tableConfig,
-}: Params) {
+export function useTargetOrganization({ organizationId, user, filtersValue, tableConfig }: Params) {
   const organizationSource = tableConfig?.organizationSource;
 
   const targetId = useMemo(() => {
@@ -22,8 +18,8 @@ export function useTargetOrganization({
         return organizationId;
       }
 
-      if (filtersValue?.producer) {
-        return filtersValue.producer;
+      if (user?.org_role === USERS_TYPES.OPERATORE && user?.org_id) {
+        return user.org_id;
       }
 
       return '';
