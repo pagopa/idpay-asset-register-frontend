@@ -12,6 +12,7 @@ export type UseProductsTableParams = {
   order: Order;
   page: number;
   rowsPerPage: number;
+  organizationSource?: string;
   category?: string;
   producer?: string;
   productFileId?: string;
@@ -29,6 +30,7 @@ export const useProductsTable = ({
   order,
   page,
   rowsPerPage,
+  organizationSource,
   category,
   producer,
   productFileId,
@@ -89,6 +91,12 @@ export const useProductsTable = ({
   };
 
   useEffect(() => {
+    if (organizationSource === 'filter' && !organizationId && !productFileId) {
+      setLoading(false);
+      setTableData([]);
+      return;
+    }
+
     void fetchProducts();
   }, [
     refreshKey,
@@ -105,6 +113,7 @@ export const useProductsTable = ({
     eprelCode,
     status,
     gtinCode,
+    organizationSource,
   ]);
 
   return {

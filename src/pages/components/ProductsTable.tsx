@@ -68,24 +68,34 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   const rowBorderWidth = '1px';
   const headerTextColor = theme.palette.text.primary;
 
+  const columnWidthMap: Record<string, string> = {
+    select: '5%',
+    category: '15%',
+    organizationName: '20%',
+    gtinCode: '20%',
+    batchName: '25%',
+    status: '10%',
+    actions: '5%',
+    __detail__: '5%',
+  };
+
   // eslint-disable-next-line sonarjs/cognitive-complexity
   const renderCellContent = (col: ColumnConfig, row: ProductDTO) => {
     if (col.type === 'checkbox' && selection?.enabled) {
-
-  const handleCheckboxClick = (gtinCode: string) => {
-    setSelected((prevSelected) =>
-      prevSelected.includes(gtinCode)
-        ? prevSelected.filter((code) => code !== gtinCode)
-        : [...prevSelected, gtinCode]
-    );
-  };
+      const handleCheckboxClick = (gtinCode: string) => {
+        setSelected((prevSelected) =>
+          prevSelected.includes(gtinCode)
+            ? prevSelected.filter((code) => code !== gtinCode)
+            : [...prevSelected, gtinCode]
+        );
+      };
 
       return (
         <Checkbox
           checked={!!row.gtinCode && selected.includes(row?.gtinCode)}
           onChange={(e) => {
             e.stopPropagation();
-            if(row?.gtinCode) {
+            if (row?.gtinCode) {
               handleCheckboxClick(row.gtinCode);
             }
           }}
@@ -134,8 +144,14 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   };
 
   return (
-    <TableContainer>
-      <Table size="small">
+    <TableContainer sx={{ overflowX: 'hidden' }}>
+      <Table
+        size="small"
+        sx={{
+          tableLayout: 'fixed',
+          width: '100%',
+        }}
+      >
         <TableHead>
           <TableRow>
             {(columns || []).map((col) => (
@@ -145,6 +161,8 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                 sx={{
                   fontWeight: 600,
                   color: headerTextColor,
+                  width: columnWidthMap[col.id] ?? 'auto',
+                  whiteSpace: col.id === 'status' ? 'nowrap' : 'normal',
                 }}
               >
                 {col.sortable ? (

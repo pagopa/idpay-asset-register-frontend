@@ -50,6 +50,7 @@ const baseProps = {
   order: 'asc',
   orderBy: 'name' as keyof ProductDTO,
   filters: {},
+  enrichedFiltersConfig: [],
   selected: [],
   effectiveColumns: [],
   paginationConfig: undefined,

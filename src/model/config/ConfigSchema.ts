@@ -43,11 +43,6 @@ export interface ProductTableConfig {
     rules?: Record<string, Array<string>>;
   };
 
-  bulkRules?: {
-    preventMixedStatus?: boolean;
-    allowedStatusesByRole?: Record<string, Array<string>>;
-  };
-
   statusBehavior?: Record<
     string,
     {

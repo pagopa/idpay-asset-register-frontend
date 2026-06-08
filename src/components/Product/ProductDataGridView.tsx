@@ -25,6 +25,7 @@ type Props = {
   order: any;
   orderBy: keyof ProductDTO;
   filters: Record<string, { value: string; label?: string }>;
+  enrichedFiltersConfig?: Array<{ id: string }>;
   selected: Array<string>;
   effectiveColumns: Array<any>;
   paginationConfig: any;
@@ -53,6 +54,7 @@ const ProductDataGridView: React.FC<Props> = ({
   order,
   orderBy,
   filters,
+  enrichedFiltersConfig,
   selected,
   effectiveColumns,
   paginationConfig,
@@ -68,7 +70,7 @@ const ProductDataGridView: React.FC<Props> = ({
   handleOpenModalWithStatusCheck,
 }) => {
   const { t } = useScopedTranslation();
-  const { filtersLabel } = useProductFilters({ filters });
+  const { filtersLabel } = useProductFilters({ filters, enrichedFiltersConfig });
   const theme = useTheme();
   return (
     <>

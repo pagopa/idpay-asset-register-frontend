@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
@@ -52,6 +53,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
+  const location = useLocation();
+  const batchFromHistory = (location.state as any)?.batchId;
+
   const subRoleConfig = config?.subRoles?.[user?.org_role as string];
   const hasProductsPermission = subRoleConfig?.permissions?.tables?.includes('products');
 
@@ -72,6 +76,21 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     tableConfig,
   });
 
+  const isReady = useMemo(() => {
+    if (tableConfig?.organizationSource === 'user') {
+      return !!user?.org_id;
+    }
+
+    if (tableConfig?.organizationSource === 'filter') {
+      if (isInvitaliaAdmin) {
+        return true;
+      }
+      return !!institution?.institutionId;
+    }
+
+    return true;
+  }, [tableConfig?.organizationSource, user?.org_id, isInvitaliaAdmin, institution?.institutionId]);
+
   useEffect(() => {
     if (organizationId && tableConfig?.organizationSource === 'filter') {
       setFilters((prev) => ({
@@ -82,7 +101,17 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         },
       }));
     }
-  }, [organizationId, institution?.description, tableConfig]);
+
+    if (batchFromHistory) {
+      setFilters((prev) => ({
+        ...prev,
+        batch: {
+          value: batchFromHistory,
+          label: batchFromHistory,
+        },
+      }));
+    }
+  }, [organizationId, institution?.description, tableConfig, batchFromHistory]);
 
   const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
@@ -114,23 +143,30 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     order,
     page,
     rowsPerPage,
-    ...filtersValue,
+    ...(batchFromHistory ? { batch: batchFromHistory } : organizationId ? {} : filtersValue),
   });
 
-  const selectedProductsList = useMemo(() =>
-    tableData
-      .filter((row) => (row.productCode && selected.includes(row.productCode)) || (row.gtinCode && selected.includes(row.gtinCode)))
-      .map((row) => ({
-        status: row.status as ProductStatus,
-        productName: row.productName,
-        gtinCode: row.gtinCode,
-        category: row.category,
-      })) as Array<{
+  const selectedProductsList = useMemo(
+    () =>
+      tableData
+        .filter(
+          (row) =>
+            (row.productCode && selected.includes(row.productCode)) ||
+            (row.gtinCode && selected.includes(row.gtinCode))
+        )
+        .map((row) => ({
+          status: row.status as ProductStatus,
+          productName: row.productName,
+          gtinCode: row.gtinCode,
+          category: row.category,
+        })) as Array<{
         status: ProductStatus;
         productName?: string;
         gtinCode: string;
         category?: string;
-      }>, [selected, tableData]);
+      }>,
+    [selected, tableData]
+  );
 
   // Replace producer label with readable name once products are loaded
   useEffect(() => {
@@ -224,7 +260,6 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     setSelected([]);
   }, [initiativeId]);
 
-
   useEffect(() => {
     setSelected([]);
   }, [tableData]);
@@ -261,7 +296,12 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
           };
         }, {});
 
-        setFilters(defaultFilters);
+        setFilters((prev) => {
+          if (prev && Object.keys(prev).length > 0) {
+            return prev;
+          }
+          return defaultFilters;
+        });
       }
     }
   }, [enrichedFiltersConfig, t]);
@@ -368,7 +408,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
     return [...columns, { id: '__detail__', labelKey: '', type: 'action' }];
   }, [tableConfig]);
 
-  if (!tableConfig) {
+  if (!tableConfig || !isReady) {
     return null;
   }
 
@@ -431,6 +471,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
         order={order}
         orderBy={orderBy}
         filters={filters}
+        enrichedFiltersConfig={enrichedFiltersConfig}
         selected={selected}
         effectiveColumns={effectiveColumns}
         paginationConfig={paginationConfig}
@@ -495,8 +536,9 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId }) => {
       <ProductConfirmDialog
         open={restoreDialogOpen}
         cancelButtonText={t('invitaliaModal.waitApproved.buttonTextCancel')}
-        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${selected.length
-          })`}
+        confirmButtonText={`${t('invitaliaModal.waitApproved.buttonTextConfirm')} (${
+          selected.length
+        })`}
         title={t('invitaliaModal.waitApproved.listTitle')}
         message={t('invitaliaModal.waitApproved.description', { L2: USERS_NAMES.INVITALIA_L2 })}
         onCancel={() => setRestoreDialogOpen(false)}
