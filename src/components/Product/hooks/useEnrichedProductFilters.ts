@@ -63,11 +63,11 @@ export function useEnrichedProductFilters({ isInvitalia, typedConfig, filtersCon
             ...(isInvitalia ? {
               SUPERVISED: {
                 labelKey: 'chip.productStatusLabel.supervised',
-                color: 'info',
+                color: 'primary',
               },
               WAIT_APPROVED: {
                 labelKey: 'chip.productStatusLabel.waitApproved',
-                color: 'warning',
+                color: 'info',
               }
             } : {}),
             UPLOADED: {
