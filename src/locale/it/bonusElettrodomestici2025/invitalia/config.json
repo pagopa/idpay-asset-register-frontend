@@ -20,7 +20,7 @@
   "ui": {
     "tables": {
       "products": {
-        "organizationSource": "user",
+        "organizationSource": "filter",
         "bulkRules": {
           "preventMixedStatus": true,
           "allowedStatusesByRole": {
@@ -58,7 +58,7 @@
             "id": "organizationName",
             "labelKey": "pages.products.listHeader.producer",
             "type": "derived",
-            "sortable": false,
+            "sortable": true,
             "align": "left"
           },
           {
@@ -96,11 +96,6 @@
         ],
         "filters": [
           {
-            "id": "category",
-            "type": "select",
-            "labelKey": "tables.products.filters.category"
-          },
-          {
             "id": "status",
             "type": "select",
             "labelKey": "tables.products.filters.status"
@@ -111,14 +106,14 @@
             "labelKey": "tables.products.filters.producer"
           },
           {
-            "id": "gtinCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.gtinCode"
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
           },
           {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
           },
           {
             "id": "eprelCode",
@@ -129,9 +124,12 @@
             "inputProps": { "maxLength": 12 }
           },
           {
-            "id": "productFileId",
-            "type": "select",
-            "labelKey": "tables.products.filters.productFileId"
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
           }
         ],
         "detail": {

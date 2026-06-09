@@ -47,7 +47,7 @@
           {
             "id": "batchName",
             "labelKey": "tables.products.columns.batchName",
-            "sortable": false,
+            "sortable": true,
             "align": "left"
           },
           {
@@ -59,24 +59,19 @@
         ],
         "filters": [
           {
-            "id": "category",
-            "type": "select",
-            "labelKey": "tables.products.filters.category"
-          },
-          {
             "id": "status",
             "type": "select",
             "labelKey": "tables.products.filters.status"
           },
           {
-            "id": "gtinCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.gtinCode"
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
           },
           {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
           },
           {
             "id": "eprelCode",
@@ -87,9 +82,9 @@
             "inputProps": { "maxLength": 12 }
           },
           {
-            "id": "productFileId",
-            "type": "select",
-            "labelKey": "tables.products.filters.productFileId"
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode"
           }
         ],
         "detail": {

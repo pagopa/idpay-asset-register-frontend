@@ -314,7 +314,8 @@
         "eprelCode": "Codice EPREL",
         "productFileId": "Lotto",
         "errors": {
-          "eprelCode": "Il codice EPREL deve essere numerico"
+          "eprelCode": "Il codice EPREL deve essere numerico",
+          "gtinCode": "Il codice deve avere 14 caratteri"
         }
       }
     }

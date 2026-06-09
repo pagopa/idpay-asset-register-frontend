@@ -115,7 +115,7 @@
           },
           { "id": "eprelCode", "labelKey": "tables.products.columns.eprelCode", "sortable": true },
           { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
-          { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": false },
+          { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": true },
           { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true }
         ],
         "filters": [

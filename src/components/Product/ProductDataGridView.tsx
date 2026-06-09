@@ -30,6 +30,7 @@ type Props = {
   effectiveColumns: Array<any>;
   paginationConfig: any;
   tableConfig: any;
+  selectionAllowedStatuses?: Array<string>;
   refreshKey: number;
   onRequestSort: any;
   handleListButtonClick: any;
@@ -59,6 +60,7 @@ const ProductDataGridView: React.FC<Props> = ({
   effectiveColumns,
   paginationConfig,
   tableConfig,
+  selectionAllowedStatuses,
   refreshKey,
   onRequestSort,
   handleListButtonClick,
@@ -135,6 +137,7 @@ const ProductDataGridView: React.FC<Props> = ({
               tableData={tableData}
               columns={effectiveColumns}
               selection={tableConfig?.selection}
+              selectionAllowedStatuses={selectionAllowedStatuses}
               order={order}
               orderBy={orderBy}
               onRequestSort={onRequestSort}
