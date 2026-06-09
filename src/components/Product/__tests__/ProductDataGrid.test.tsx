@@ -102,13 +102,36 @@ jest.mock('../../FiltersDrawer/FiltersDrawer', () => ({
   default: ({
     open,
     toggleFiltersDrawer,
+    setFilters,
+    filters,
   }: {
     open: boolean;
     toggleFiltersDrawer: (open: boolean) => void;
+    setFilters?: (filters: Record<string, { value: string; label?: string }>) => void;
+    filters?: Record<string, { value: string; label?: string }>;
   }) =>
     open ? (
-      <div data-testid="filters-drawer">
+      <div data-testid="filters-drawer" data-filters={Object.keys(filters ?? {}).join(',')}>
         <button onClick={() => toggleFiltersDrawer?.(false)}>Close Filters</button>
+        <button onClick={() => setFilters?.({})}>Apply Empty Filters</button>
+        <button
+          onClick={() =>
+            setFilters?.({
+              category: { value: 'satellitare', label: 'Satellitare' },
+            })
+          }
+        >
+          Apply Category Filter
+        </button>
+        <button
+          onClick={() =>
+            setFilters?.({
+              producer: { value: 'producer-org', label: 'Producer Org' },
+            })
+          }
+        >
+          Apply Producer Filter
+        </button>
       </div>
     ) : null,
 }));
@@ -124,9 +147,11 @@ jest.mock('../ProductDetail', () => ({
     onShowRejectedApprovationMsg: MouseEventHandler<HTMLButtonElement> | undefined;
     onShowAcceptApprovationMsg: MouseEventHandler<HTMLButtonElement> | undefined;
     onShowGenericError: MouseEventHandler<HTMLButtonElement> | undefined;
+    onUpdateTable: MouseEventHandler<HTMLButtonElement> | undefined;
   }) => (
     <div data-testid="product-detail">
       <button onClick={props.onClose}>Close Detail</button>
+      <button onClick={props.onUpdateTable}>Update Detail</button>
       <button onClick={props.onShowApprovedMsg}>approved</button>
       <button onClick={props.onShowRejectedMsg}>rejected</button>
       <button onClick={props.onShowWaitApprovedMsg}>wait</button>
@@ -163,15 +188,23 @@ jest.mock('../ProductModal', () => ({
     open,
     onClose,
     onSuccess,
+    onUpdateTable,
   }: {
     open: boolean;
     onClose?: (refresh?: boolean) => void;
     onSuccess?: (status: string) => void;
+    onUpdateTable?: () => void;
   }) =>
     open ? (
       <div data-testid="product-modal">
         <button onClick={() => onClose?.(true)}>Close Modal</button>
+        <button onClick={() => onClose?.(false)}>Close Modal Without Reset</button>
+        <button onClick={() => onUpdateTable?.()}>Update Modal Table</button>
         <button onClick={() => onSuccess?.('REJECTED')}>Success</button>
+        <button onClick={() => onSuccess?.('SUPERVISED')}>Success Supervised</button>
+        <button onClick={() => onSuccess?.('WAIT_APPROVED')}>Success Wait Approved</button>
+        <button onClick={() => onSuccess?.('ACCEPT_APPROVATION')}>Success Accept</button>
+        <button onClick={() => onSuccess?.('REJECT_APPROVATION')}>Success Reject Approval</button>
       </div>
     ) : null,
 }));
@@ -182,15 +215,18 @@ jest.mock('../ProductConfirmDialog', () => ({
     open,
     onCancel,
     onConfirm,
+    onSuccess,
   }: {
     open: boolean;
     onCancel?: () => void;
     onConfirm?: () => void;
+    onSuccess?: () => void;
   }) =>
     open ? (
       <div data-testid="product-confirm-dialog">
         <button onClick={onCancel}>Cancel</button>
         <button onClick={onConfirm}>Confirm</button>
+        <button onClick={onSuccess}>Success Confirm</button>
       </div>
     ) : null,
 }));
@@ -199,38 +235,61 @@ jest.mock('../../../pages/components/ProductsTable', () => ({
   __esModule: true,
   default: ({
     tableData,
+    columns,
+    onRequestSort,
     handleListButtonClick,
     setSelected,
     selected,
   }: {
     tableData: Array<any>;
+    columns: Array<any>;
+    onRequestSort?: (event: React.MouseEvent<unknown>, property: any) => void;
     handleListButtonClick: (row: any) => void;
     setSelected: (value: Array<string>) => void;
     selected: Array<string>;
-  }) => (
-    <div data-testid="products-table-inner">
-      {tableData.map((row: any, idx: number) => (
-        <div key={idx}>
-          <span>{row.productName}</span>
-          <button data-testid={`detail-btn-${idx}`} onClick={() => handleListButtonClick(row)}>
-            Details
-          </button>
-          <input
-            type="checkbox"
-            data-testid={`checkbox-${idx}`}
-            checked={selected.includes(row.gtinCode)}
-            onChange={(e) => {
-              if (e.target.checked) {
-                setSelected([...selected, row.gtinCode]);
-              } else {
-                setSelected(selected.filter((x: string) => x !== row.gtinCode));
-              }
-            }}
-          />
-        </div>
-      ))}
-    </div>
-  ),
+  }) => {
+    const { getProductRowKey } = require('../ProductDataGrid.helpers');
+
+    return (
+      <div data-testid="products-table-inner">
+        {columns
+          .filter((column: any) => column.sortable)
+          .map((column: any) => (
+            <button
+              key={column.id}
+              data-testid={`sort-${column.id}`}
+              onClick={(event) => onRequestSort?.(event, column.id)}
+            >
+              {column.labelKey}
+            </button>
+          ))}
+        {tableData.map((row: any, idx: number) => {
+          const rowKey = getProductRowKey(row);
+
+          return (
+            <div key={idx}>
+              <span>{row.productName}</span>
+              <button data-testid={`detail-btn-${idx}`} onClick={() => handleListButtonClick(row)}>
+                Details
+              </button>
+              <input
+                type="checkbox"
+                data-testid={`checkbox-${idx}`}
+                checked={selected.includes(rowKey)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelected([...selected, rowKey]);
+                  } else {
+                    setSelected(selected.filter((x: string) => x !== rowKey));
+                  }
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  },
 }));
 
 jest.mock('../../../pages/components/EmptyListTable', () => ({
@@ -330,13 +389,27 @@ const buildProducts = (...overrides: Array<ProductOverride>) =>
 
 const getHelpersModule = () => require('../ProductDataGrid.helpers');
 
-const renderProductGrid = (store = createStore()) =>
+const renderProductGrid = (
+  store = createStore(),
+  {
+    organizationId = 'org',
+    organizationLabel,
+    initialEntries = ['/'],
+  }: {
+    organizationId?: string;
+    organizationLabel?: string;
+    initialEntries?: Array<any>;
+  } = {}
+) =>
   render(
     <Provider store={store}>
       <I18nextProvider i18n={i18n}>
-        <MemoryRouter>
+        <MemoryRouter initialEntries={initialEntries}>
           <ThemeProvider theme={theme}>
-            <ProductDataGrid organizationId="org" />
+            <ProductDataGrid
+              organizationId={organizationId}
+              organizationLabel={organizationLabel}
+            />
           </ThemeProvider>
         </MemoryRouter>
       </I18nextProvider>
@@ -392,11 +465,13 @@ const configureTableMocks = ({
   organizationSource,
   defaultFiltersByRole,
   columns = [],
+  filtersConfig = [],
 }: {
   hasPermission?: boolean;
   organizationSource?: string;
   defaultFiltersByRole?: Record<string, Record<string, string>>;
   columns?: Array<Record<string, any>>;
+  filtersConfig?: Array<Record<string, any>>;
 } = {}) => {
   (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockReturnValue({
     config: {
@@ -442,7 +517,7 @@ const configureTableMocks = ({
       defaultFiltersByRole,
     },
     paginationConfig: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] },
-    filtersConfig: [],
+    filtersConfig,
     templateConfig: {},
   });
 };
@@ -453,9 +528,9 @@ const setupProductsResponse = (products = mockProducts) => {
   });
 };
 
-const setupBatchFiltersResponse = () => {
+const setupBatchFiltersResponse = (batchFilterItems: Array<Record<string, any>> = []) => {
   (registerService.getBatchFilterList as jest.Mock).mockResolvedValue({
-    data: [],
+    data: batchFilterItems,
   });
 };
 
@@ -468,12 +543,22 @@ const renderGrid = async (
     defaultFiltersByRole,
     expectRendered = true,
     columns = [],
+    filtersConfig = [],
+    organizationId = 'org',
+    organizationLabel,
+    initialEntries,
+    batchFilterItems = [],
   }: {
     hasPermission?: boolean;
     organizationSource?: string;
     defaultFiltersByRole?: Record<string, Record<string, string>>;
     expectRendered?: boolean;
     columns?: Array<Record<string, any>>;
+    filtersConfig?: Array<Record<string, any>>;
+    organizationId?: string;
+    organizationLabel?: string;
+    initialEntries?: Array<any>;
+    batchFilterItems?: Array<Record<string, any>>;
   } = {}
 ) => {
   (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
@@ -481,14 +566,20 @@ const renderGrid = async (
     org_role: role,
   });
 
-  configureTableMocks({ hasPermission, organizationSource, defaultFiltersByRole, columns });
+  configureTableMocks({
+    hasPermission,
+    organizationSource,
+    defaultFiltersByRole,
+    columns,
+    filtersConfig,
+  });
   setupProductsResponse(products);
-  setupBatchFiltersResponse();
+  setupBatchFiltersResponse(batchFilterItems);
 
   localStorage.setItem('token', 'fake-token');
 
   await act(async () => {
-    renderProductGrid();
+    renderProductGrid(undefined, { organizationId, organizationLabel, initialEntries });
   });
 
   if (expectRendered) {
@@ -506,12 +597,16 @@ describe('ProductDataGrid (rewritten)', () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     cleanup();
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
+    require('../../../hooks/useCurrentInitiativeId').useCurrentInitiativeId.mockReturnValue(
+      'init-1'
+    );
 
     const helpersModule = getHelpersModule();
     helpersModule.validateBulkActionPreconditions.mockImplementation(
@@ -1123,8 +1218,6 @@ describe('ProductDataGrid (rewritten)', () => {
   });
 
   it('covers admin self approval timeout branch (470-472)', async () => {
-    jest.useFakeTimers();
-
     getHelpersModule().getStatusChecks.mockReturnValueOnce({
       selectedStatuses: ['UPLOADED'],
       someUploaded: true,
@@ -1133,6 +1226,8 @@ describe('ProductDataGrid (rewritten)', () => {
 
     await renderGrid(USERS_TYPES.INVITALIA_L2);
     await expectTableVisible();
+
+    jest.useFakeTimers();
 
     selectRow();
     clickActionButton('rejectedBtn');
@@ -1285,6 +1380,228 @@ describe('ProductDataGrid (rewritten)', () => {
     await expectTableVisible();
   });
 
+  it('applies batch id from redux as productFileId filter', async () => {
+    const store = createStore();
+    store.dispatch(productsSlice.actions.setBatchId('batch-1'));
+    store.dispatch(productsSlice.actions.setBatchName('upload.csv'));
+
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_id: 'org',
+      org_role: 'USER',
+    });
+    configureTableMocks();
+    setupProductsResponse(mockProducts);
+    setupBatchFiltersResponse();
+
+    await act(async () => {
+      renderProductGrid(store);
+    });
+
+    await expectTableVisible();
+    await waitFor(() =>
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some(
+          (call) => call[10] === 'batch-1'
+        )
+      ).toBe(true)
+    );
+    expect(store.getState().products.batchId).toBe('');
+    expect(store.getState().products.batchName).toBe('');
+  });
+
+  it('applies batch id from navigation state as productFileId filter', async () => {
+    await renderGrid('USER', mockProducts, {
+      initialEntries: [{ pathname: '/', state: { batchId: 'history-batch' } }],
+    });
+
+    await expectTableVisible();
+    await waitFor(() =>
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some(
+          (call) => call[10] === 'history-batch'
+        )
+      ).toBe(true)
+    );
+  });
+
+  it('applies drawer filters and redirect producer filter', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1, mockProducts, {
+      organizationSource: 'filter',
+      organizationLabel: 'Producer Org',
+    });
+
+    await openFiltersDrawer();
+    expect(screen.getByTestId('filters-drawer').getAttribute('data-filters')).toContain(
+      'producer'
+    );
+
+    fireEvent.click(screen.getByText('Apply Category Filter'));
+    await waitFor(() =>
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some(
+          (call) => call[5] === 'SATELLITARE'
+        )
+      ).toBe(true)
+    );
+
+    fireEvent.click(screen.getByText('Apply Producer Filter'));
+    await waitFor(() =>
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some(
+          (call) => call[1] === 'producer-org'
+        )
+      ).toBe(true)
+    );
+
+    fireEvent.click(screen.getByText('Apply Empty Filters'));
+    await expectTableVisible();
+  });
+
+  it('applies role default filters to product API params', async () => {
+    await renderGrid('USER', mockProducts, {
+      defaultFiltersByRole: {
+        USER: { status: 'SUPERVISED' },
+      },
+      filtersConfig: [{ id: 'status' }],
+    });
+
+    await expectTableVisible();
+    await waitFor(() =>
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some(
+          (call) => call[6] === 'SUPERVISED'
+        )
+      ).toBe(true)
+    );
+  });
+
+  it('builds product file filters from batch filter API response', async () => {
+    await renderGrid('USER', mockProducts, {
+      filtersConfig: [{ id: 'productFileId' }],
+      batchFilterItems: [{ productFileId: 'file-1', batchName: 'file.csv' }],
+    });
+
+    await openFiltersDrawer();
+    expect(screen.getByTestId('filters-drawer')).toBeInTheDocument();
+  });
+
+  it('updates product sorting when clicking a sortable column', async () => {
+    await renderGrid('USER', mockProducts, {
+      columns: [{ id: 'category', labelKey: 'tables.products.columns.category', sortable: true }],
+    });
+
+    await expectTableVisible();
+
+    fireEvent.click(screen.getByTestId('sort-category'));
+
+    await waitFor(() =>
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some(
+          (call) => call[4] === 'category,desc'
+        )
+      ).toBe(true)
+    );
+  });
+
+  it('does not render while user organization source is not ready', async () => {
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_id: '',
+      org_role: 'USER',
+    });
+    configureTableMocks({ organizationSource: 'user' });
+    setupProductsResponse(mockProducts);
+    setupBatchFiltersResponse();
+
+    await act(async () => {
+      renderProductGrid();
+    });
+
+    expect(screen.queryByTestId('products-table')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('empty-list')).not.toBeInTheDocument();
+  });
+
+  it('selects products using productCode when gtin is missing', async () => {
+    await renderGrid(
+      USERS_TYPES.INVITALIA_L1,
+      buildProducts({ gtinCode: undefined, gtin: undefined, productCode: 'PCODE1' })
+    );
+
+    await selectRowAndClickAction('rejectedBtn');
+    expect(screen.getByTestId('product-modal')).toBeInTheDocument();
+  });
+
+  it('covers L1 modal success branches', async () => {
+    const helpersModule = getHelpersModule();
+    helpersModule.checkSomeStatus.mockReturnValue(false);
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await selectRowAndClickAction('rejectedBtn');
+
+    jest.useFakeTimers();
+
+    fireEvent.click(screen.getByText('Success Supervised'));
+    expect(screen.getByText(/msgResultSupervised/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Success Wait Approved'));
+    expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Update Modal Table'));
+    fireEvent.click(screen.getByText('Close Modal Without Reset'));
+    expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
+
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    jest.useRealTimers();
+  });
+
+  it('covers L2 modal success branches', async () => {
+    const helpersModule = getHelpersModule();
+    helpersModule.checkSomeStatus.mockReturnValue(false);
+
+    await renderGrid(USERS_TYPES.INVITALIA_L2);
+    await selectRowAndClickAction('waitApprovedBtn');
+
+    jest.useFakeTimers();
+
+    fireEvent.click(screen.getByText('Success Accept'));
+    expect(screen.getByText(/msgResultAcceptApprovation/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Success Reject Approval'));
+    expect(screen.getByText(/msgResultRejectedApprovation/i)).toBeInTheDocument();
+
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    jest.useRealTimers();
+  });
+
+  it('covers confirm dialog success and cancel callbacks', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts({ status: 'UPLOADED' }));
+    await selectRowAndClickAction('waitApprovedBtn');
+
+    jest.useFakeTimers();
+
+    fireEvent.click(screen.getByText('Success Confirm'));
+    expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Cancel'));
+    expect(screen.queryByTestId('product-confirm-dialog')).not.toBeInTheDocument();
+
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    jest.useRealTimers();
+  });
+
+  it('covers detail drawer update callback', async () => {
+    await renderGrid();
+    await openDetailDrawer();
+
+    fireEvent.click(screen.getByText('Update Detail'));
+    await waitFor(() => expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument());
+  });
+
   // ---- COVERAGE BOOST TESTS ----
 
   it('forces normalizeLegacyColumn mapping + fallback together', async () => {
@@ -1336,14 +1653,14 @@ describe('ProductDataGrid (rewritten)', () => {
   });
 
   it('forces timeout auto reset branch (470-472)', async () => {
-    jest.useFakeTimers();
-
     await renderGrid(USERS_TYPES.INVITALIA_L1);
     await screen.findByTestId('products-table');
 
+    jest.useFakeTimers();
+
     fireEvent.click(screen.getByTestId('checkbox-0'));
     fireEvent.click(screen.getByTestId('rejectedBtn'));
-    fireEvent.click(await screen.findByText('Success'));
+    fireEvent.click(screen.getByText('Success'));
 
     act(() => {
       jest.runAllTimers();
