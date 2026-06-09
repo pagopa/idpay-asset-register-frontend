@@ -7,6 +7,14 @@ type ProductStatusChipProps = {
 
 const chipSx = {
   mb: 1,
+  minWidth: 104,
+  justifyContent: 'center',
+  whiteSpace: 'nowrap',
+  '& .MuiChip-label': {
+    overflow: 'visible',
+    textOverflow: 'clip',
+    whiteSpace: 'nowrap',
+  },
 };
 
 export default function ProductStatusChip({ status }: ProductStatusChipProps) {
