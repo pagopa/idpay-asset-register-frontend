@@ -47,7 +47,7 @@
           {
             "id": "batchName",
             "labelKey": "tables.products.columns.batchName",
-            "sortable": false,
+            "sortable": true,
             "align": "left"
           },
           {
