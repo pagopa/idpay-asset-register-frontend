@@ -241,12 +241,18 @@ jest.mock('../../../pages/components/EmptyListTable', () => ({
 jest.mock('../ProductDataGrid.helpers', () => {
   const getStatusChecks = jest.fn();
   const handleModalSuccess = jest.fn();
+  const getProductRowKey = (row: any) =>
+    String(row.gtinCode ?? row.gtin ?? row.productCode ?? row.eprelCode ?? '');
 
   return {
     __esModule: true,
+    getProductRowKey,
     getSelectedStatuses: jest.fn((selected, tableData) =>
       selected
-        .map((gtinCode: string) => tableData.find((row: any) => row.gtinCode === gtinCode)?.status)
+        .map(
+          (selectedKey: string) =>
+            tableData.find((row: any) => getProductRowKey(row) === selectedKey)?.status
+        )
         .filter(Boolean)
     ),
     getStatusChecks,
@@ -254,7 +260,7 @@ jest.mock('../ProductDataGrid.helpers', () => {
     checkSomeStatus: jest.fn((selected, tableData, status) =>
       selected.some(
         (code: string) =>
-          String(tableData.find((row: any) => row.gtinCode === code)?.status) === status
+          String(tableData.find((row: any) => getProductRowKey(row) === code)?.status) === status
       )
     ),
     validateBulkActionPreconditions: jest.fn(({ selected, tableData, isInvitaliaAdmin }) => {
@@ -533,7 +539,9 @@ describe('ProductDataGrid (rewritten)', () => {
       (selected: Array<string>, tableData: Array<any>) =>
         selected
           .map(
-            (gtinCode: string) => tableData.find((row: any) => row.gtinCode === gtinCode)?.status
+            (selectedKey: string) =>
+              tableData.find((row: any) => helpersModule.getProductRowKey(row) === selectedKey)
+                ?.status
           )
           .filter(Boolean)
     );
@@ -546,7 +554,9 @@ describe('ProductDataGrid (rewritten)', () => {
       (selected: Array<string>, tableData: Array<any>, status: string) =>
         selected.some(
           (code: string) =>
-            String(tableData.find((row: any) => row.gtinCode === code)?.status) === status
+            String(
+              tableData.find((row: any) => helpersModule.getProductRowKey(row) === code)?.status
+            ) === status
         )
     );
   });
@@ -781,13 +791,12 @@ describe('ProductDataGrid (rewritten)', () => {
     await expectEmptyListVisible();
   });
 
-  it('does not render grid when organizationSource is filter and no producer filter is set', async () => {
+  it('renders grid when organizationSource is filter and no producer filter is set', async () => {
     await renderGrid('USER', mockProducts, {
       organizationSource: 'filter',
-      expectRendered: false,
     });
 
-    expect(screen.queryByTestId('products-table')).not.toBeInTheDocument();
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
     expect(screen.queryByTestId('empty-list')).not.toBeInTheDocument();
   });
 
@@ -836,13 +845,12 @@ describe('ProductDataGrid (rewritten)', () => {
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
   });
 
-  it('does not render producer readable name branch scenario without filter-selected organization', async () => {
+  it('renders producer readable name branch scenario without filter-selected organization', async () => {
     await renderGrid('USER', buildProducts({ organizationName: 'Readable Org' }), {
       organizationSource: 'filter',
-      expectRendered: false,
     });
 
-    expect(screen.queryByTestId('products-table')).not.toBeInTheDocument();
+    expect(screen.getByTestId('products-table')).toBeInTheDocument();
     expect(screen.queryByTestId('empty-list')).not.toBeInTheDocument();
   });
 

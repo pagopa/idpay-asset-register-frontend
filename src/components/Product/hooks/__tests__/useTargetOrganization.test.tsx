@@ -3,7 +3,7 @@ import { describe, it, expect } from '@jest/globals';
 import { useTargetOrganization } from '../useTargetOrganization';
 
 describe('useTargetOrganization', () => {
-  it('uses the organization prop when configured from user', () => {
+  it('uses the user organization when configured from user', () => {
     const { result } = renderHook(() =>
       useTargetOrganization({
         organizationId: 'prop-org',
@@ -13,10 +13,10 @@ describe('useTargetOrganization', () => {
       })
     );
 
-    expect(result.current.targetId).toBe('prop-org');
+    expect(result.current.targetId).toBe('user-org');
   });
 
-  it('falls back to the organization prop when configured from user', () => {
+  it('returns empty value when configured from user and user organization is missing', () => {
     const { result } = renderHook(() =>
       useTargetOrganization({
         organizationId: 'prop-org',
@@ -26,7 +26,7 @@ describe('useTargetOrganization', () => {
       })
     );
 
-    expect(result.current.targetId).toBe('prop-org');
+    expect(result.current.targetId).toBe('');
   });
 
   it('uses producer filter before institution id when configured from filter', () => {
