@@ -1,18 +1,32 @@
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 
+const getFirstValuedField = (...values: Array<unknown>) =>
+  values.find((value) => {
+    if (typeof value === 'string') {
+      return value.trim().length > 0;
+    }
+
+    return value !== undefined && value !== null;
+  });
+
+export const getProductRowKey = (row: ProductDTO) =>
+  String(
+    getFirstValuedField(
+      (row as any).gtinCode,
+      (row as any).gtin,
+      (row as any).productCode,
+      (row as any).eprelCode
+    ) ?? ''
+  );
+
 export const getSelectedStatuses = (
   selected: Array<string>,
   tableData: Array<ProductDTO>
 ): Array<ProductStatus> =>
   selected
     .map((selectedKey) => {
-      const match = tableData.find((row) => {
-        const rowKey = String(
-          (row as any).gtinCode ?? (row as any).gtin ?? (row as any).productCode ?? ''
-        );
-        return rowKey === String(selectedKey);
-      });
+      const match = tableData.find((row) => getProductRowKey(row) === String(selectedKey));
 
       return match?.status;
     })
@@ -140,5 +154,6 @@ export const checkSomeStatus = (
 ) =>
   selected.some(
     (code) =>
-      String(tableData.find((row) => row.gtinCode === code)?.status) === PRODUCTS_STATES[status]
+      String(tableData.find((row) => getProductRowKey(row) === code)?.status) ===
+      PRODUCTS_STATES[status]
   );
