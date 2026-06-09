@@ -1,18 +1,32 @@
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 
+const getFirstValuedField = (...values: Array<unknown>) =>
+  values.find((value) => {
+    if (typeof value === 'string') {
+      return value.trim().length > 0;
+    }
+
+    return value !== undefined && value !== null;
+  });
+
+export const getProductRowKey = (row: ProductDTO) =>
+  String(
+    getFirstValuedField(
+      (row as any).gtinCode,
+      (row as any).gtin,
+      (row as any).productCode,
+      (row as any).eprelCode
+    ) ?? ''
+  );
+
 export const getSelectedStatuses = (
   selected: Array<string>,
   tableData: Array<ProductDTO>
 ): Array<ProductStatus> =>
   selected
     .map((selectedKey) => {
-      const match = tableData.find((row) => {
-        const rowKey = String(
-          (row as any).gtinCode ?? (row as any).gtin ?? (row as any).productCode ?? ''
-        );
-        return rowKey === String(selectedKey);
-      });
+      const match = tableData.find((row) => getProductRowKey(row) === String(selectedKey));
 
       return match?.status;
     })
@@ -36,17 +50,13 @@ export const getStatusChecks = (selected: Array<string>, tableData: Array<Produc
   };
 };
 
-import { ProductTableConfig } from '../../model/config/ConfigSchema';
-
 export const validateBulkActionPreconditions = ({
   selected,
   tableData,
-  tableConfig,
 }: {
   selected: Array<string>;
   tableData: Array<ProductDTO>;
   roleKey?: string;
-  tableConfig?: ProductTableConfig;
 }) => {
   const { selectedStatuses, length } = getStatusChecks(selected, tableData);
 
@@ -54,11 +64,8 @@ export const validateBulkActionPreconditions = ({
     return { valid: false, reason: 'EMPTY' };
   }
 
-  const bulkRules = tableConfig?.bulkRules;
-  const preventMixed = bulkRules?.preventMixedStatus ?? true;
-
   const uniqueStatuses = Array.from(new Set(selectedStatuses));
-  if (preventMixed && uniqueStatuses.length > 1) {
+  if (uniqueStatuses.length > 1) {
     return { valid: false, reason: 'MIXED_STATUS' };
   }
 
@@ -139,3 +146,14 @@ export const handleModalSuccess = ({
 
   activate(setShowMsgApproved);
 };
+
+export const checkSomeStatus = (
+  selected: Array<string>,
+  tableData: Array<ProductDTO>,
+  status: keyof typeof PRODUCTS_STATES
+) =>
+  selected.some(
+    (code) =>
+      String(tableData.find((row) => getProductRowKey(row) === code)?.status) ===
+      PRODUCTS_STATES[status]
+  );

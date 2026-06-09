@@ -59,9 +59,6 @@
   "ui": {
     "tables": {
       "products": {
-        "bulkRules": {
-          "preventMixedStatus": true
-        },
         "columns": [
           {
             "id": "gtinCode",
@@ -81,7 +78,7 @@
           {
             "id": "batchName",
             "labelKey": "tables.products.columns.batchName",
-            "sortable": false
+            "sortable": true
           }
         ],
         "filters": [

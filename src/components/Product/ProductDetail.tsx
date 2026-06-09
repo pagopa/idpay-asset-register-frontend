@@ -8,10 +8,10 @@ import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
-import { RegisterApi } from '../../api/registerApiClient';
 import { statusChangeMessage } from '../../model/Product';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -34,13 +34,7 @@ const callRejectedApi = async (
   motivation: string,
   formalMotivation: string
 ) => {
-  await RegisterApi.setRejectedStatusList(
-    initiativeId,
-    gtinCodes,
-    currentStatus,
-    motivation,
-    formalMotivation
-  );
+  await setRejectedStatusList(initiativeId, gtinCodes, currentStatus, motivation, formalMotivation);
 };
 
 const callWaitApprovedApi = async (
@@ -49,7 +43,7 @@ const callWaitApprovedApi = async (
   currentStatus: ProductStatus,
   motivation: string
 ) => {
-  await RegisterApi.setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
+  await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
 };
 
 const handleOpenModal = (
@@ -643,7 +637,7 @@ export default function ProductDetail({
             />
           </List>
         </Box>
-        {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
+        {isInvitaliaUser && data.status === 'SUPERVISED' && (
           <Paper
             elevation={3}
             sx={{
@@ -679,7 +673,7 @@ export default function ProductDetail({
             </Button>
           </Paper>
         )}
-        {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
+        {isInvitaliaUser && data.status === 'UPLOADED' && (
           <Paper
             elevation={3}
             sx={{
@@ -726,7 +720,7 @@ export default function ProductDetail({
             </Button>
           </Paper>
         )}
-        {isInvitaliaAdmin && String(data.status) === PRODUCTS_STATES.WAIT_APPROVED && (
+        {isInvitaliaAdmin && data.status === 'WAIT_APPROVED' && (
           <Paper
             elevation={3}
             sx={{

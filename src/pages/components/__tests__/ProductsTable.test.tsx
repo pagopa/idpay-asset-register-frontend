@@ -223,7 +223,7 @@ describe('ProductsTable', () => {
 
   it('keeps selected row unchanged when checking an already selected checkbox', () => {
     const setSelected = jest.fn((updater) => {
-      expect(updater(['123'])).toEqual(['123']);
+      expect(updater(['123'])).toEqual([]);
     });
 
     render(

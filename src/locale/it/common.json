@@ -311,7 +311,12 @@
         "producer": "Produttore",
         "gtinCode": "Codice GTIN/EAN",
         "productCode": "Codice prodotto",
-        "productFileId": "Lotto"
+        "eprelCode": "Codice EPREL",
+        "productFileId": "Lotto",
+        "errors": {
+          "eprelCode": "Il codice EPREL deve essere numerico",
+          "gtinCode": "Il codice deve avere 14 caratteri"
+        }
       }
     }
   },
@@ -366,7 +371,7 @@
     },
     "waitApproved": {
       "title": "Approva",
-      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'elenco informatico degli elettrodomestici.",
+      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nel registro dei beni.",
       "listTitle": "Richiedi approvazione",
       "reasonLabel": "Richiedi approvazione",
       "reasonPlaceholder": "Richiedi approvazione",
@@ -390,7 +395,7 @@
     },
     "acceptApprovation": {
       "title": "Approva prodotti",
-      "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nell’elenco informatico degli elettrodomestici.",
+      "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nel registro dei beni.",
       "listTitle": "",
       "reasonLabel": "",
       "reasonPlaceholder": "",

@@ -47,7 +47,7 @@
           {
             "id": "batchName",
             "labelKey": "tables.products.columns.batchName",
-            "sortable": false,
+            "sortable": true,
             "align": "left"
           },
           {
@@ -59,29 +59,32 @@
         ],
         "filters": [
           {
-            "id": "category",
-            "type": "select",
-            "labelKey": "tables.products.filters.category"
-          },
-          {
             "id": "status",
             "type": "select",
             "labelKey": "tables.products.filters.status"
           },
           {
-            "id": "gtinCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.gtinCode"
-          },
-          {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
-          },
-          {
             "id": "productFileId",
             "type": "select",
             "labelKey": "tables.products.filters.productFileId"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^[0-9]{1,12}$",
+            "message": "tables.products.filters.errors.eprelCode",
+            "inputProps": { "maxLength": 12 }
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode"
           }
         ],
         "detail": {

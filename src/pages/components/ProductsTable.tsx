@@ -15,10 +15,9 @@ import { Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { ProductDTO } from '../../api/generated/register';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
-import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import ProductStatusChip from '../../components/Product/ProductStatusChip';
 import EprelLinks from '../../components/Product/EprelLinks';
-import { truncateString, getResponsiveTableMaxLength } from '../../helpers';
+import { getProductRowKey } from '../../components/Product/ProductDataGrid.helpers';
 
 interface ColumnConfig {
   id: string;
@@ -37,6 +36,7 @@ interface ProductsTableProps {
   tableData: Array<ProductDTO>;
   columns: Array<ColumnConfig>;
   selection?: SelectionConfig;
+  selectionAllowedStatuses?: Array<string>;
   order: 'asc' | 'desc';
   orderBy: string;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof ProductDTO) => void;
@@ -50,6 +50,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   tableData,
   columns = [],
   selection,
+  selectionAllowedStatuses,
   order,
   orderBy,
   onRequestSort,
@@ -59,7 +60,6 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   emptyData,
 }) => {
   const { t } = useScopedTranslation();
-  const { config } = useInitiativeConfig();
   const theme = useTheme();
 
   const rowBg = theme.palette.background.paper;
@@ -68,34 +68,54 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   const rowBorderWidth = '1px';
   const headerTextColor = theme.palette.text.primary;
 
+  const columnWidthMap: Record<string, string> = {
+    select: '5%',
+    checkbox: '5%',
+    category: '16%',
+    organizationName: '16%',
+    producer: '16%',
+    energyClass: '10%',
+    eprelCode: '12%',
+    gtinCode: '13%',
+    productCode: '16%',
+    batchName: '19%',
+    status: '14%',
+    actions: '5%',
+    __detail__: '5%',
+  };
+  const utilityColumns = ['select', 'checkbox', 'status', 'actions', '__detail__'];
+  const isUtilityColumn = (columnId: string) => utilityColumns.includes(columnId);
+  const isBatchColumn = (columnId: string) => columnId === 'batchName';
+  const shouldWrapColumn = (columnId: string) =>
+    !isUtilityColumn(columnId) && !isBatchColumn(columnId);
+
   // eslint-disable-next-line sonarjs/cognitive-complexity
   const renderCellContent = (col: ColumnConfig, row: ProductDTO) => {
     if (col.type === 'checkbox' && selection?.enabled) {
-      const uniqueKey = String(
-        (row as any).gtinCode ??
-          (row as any).gtin ??
-          row.productCode ??
-          `${col.id}-${JSON.stringify(row)}`
-      );
+      const rowKey = getProductRowKey(row);
+      const isSelectableStatus =
+        !selectionAllowedStatuses?.length ||
+        (!!row.status && selectionAllowedStatuses.includes(String(row.status)));
 
       return (
         <Checkbox
-          checked={selected.includes(uniqueKey)}
-          onChange={(e, checked) => {
+          checked={!!rowKey && selected.includes(rowKey)}
+          disabled={!rowKey || !isSelectableStatus}
+          onChange={(e) => {
             e.stopPropagation();
+            if (!rowKey) {
+              return;
+            }
 
-            setSelected((prev) =>
-              checked
-                ? prev.includes(uniqueKey)
-                  ? prev
-                  : [...prev, uniqueKey]
-                : prev.filter((c) => c !== uniqueKey)
+            setSelected((prevSelected) =>
+              prevSelected.includes(rowKey)
+                ? prevSelected.filter((code) => code !== rowKey)
+                : [...prevSelected, rowKey]
             );
           }}
         />
       );
     }
-
     if (col.type === 'action') {
       return (
         <IconButton size="small" onClick={() => handleListButtonClick(row)}>
@@ -120,17 +140,37 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     const value = (row as any)[col.id];
 
     if (typeof value === 'string') {
-      const maxLength = getResponsiveTableMaxLength(config);
-      const shouldTruncate = value.length > maxLength;
+      if (isBatchColumn(col.id)) {
+        return (
+          <Tooltip title={value}>
+            <span
+              style={{
+                display: 'block',
+                maxWidth: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {value}
+            </span>
+          </Tooltip>
+        );
+      }
 
-      return shouldTruncate ? (
-        <Tooltip title={value}>
-          <span style={{ display: 'block', width: '100%' }}>
-            {truncateString(value, maxLength)}
-          </span>
-        </Tooltip>
-      ) : (
-        value
+      return (
+        <span
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            overflow: 'visible',
+            overflowWrap: 'anywhere',
+            textOverflow: 'clip',
+            whiteSpace: shouldWrapColumn(col.id) ? 'normal' : 'nowrap',
+          }}
+        >
+          {value}
+        </span>
       );
     }
 
@@ -138,8 +178,14 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   };
 
   return (
-    <TableContainer>
-      <Table size="small">
+    <TableContainer sx={{ overflowX: 'hidden' }}>
+      <Table
+        size="small"
+        sx={{
+          tableLayout: 'fixed',
+          width: '100%',
+        }}
+      >
         <TableHead>
           <TableRow>
             {(columns || []).map((col) => (
@@ -149,6 +195,12 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                 sx={{
                   fontWeight: 600,
                   color: headerTextColor,
+                  width: columnWidthMap[col.id] ?? 'auto',
+                  whiteSpace: isUtilityColumn(col.id) ? 'nowrap' : 'normal',
+                  overflow: 'visible',
+                  overflowWrap: 'anywhere',
+                  textOverflow: 'clip',
+                  lineHeight: 1.2,
                 }}
               >
                 {col.sortable ? (
@@ -156,6 +208,14 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                     active={orderBy === col.id}
                     direction={orderBy === col.id ? order : 'asc'}
                     onClick={(e) => onRequestSort(e, col.id as keyof ProductDTO)}
+                    sx={{
+                      whiteSpace: 'normal',
+                      overflow: 'visible',
+                      textOverflow: 'clip',
+                      '& .MuiTableSortLabel-icon': {
+                        flexShrink: 0,
+                      },
+                    }}
                   >
                     {t(col.labelKey)}
                   </TableSortLabel>
@@ -174,7 +234,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
           )}
           {tableData.map((row, index) => (
             <TableRow
-              key={(row as any).gtin ?? row.gtinCode ?? index}
+              key={getProductRowKey(row) || index}
               hover
               sx={{
                 backgroundColor: rowBg,
@@ -194,6 +254,11 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                     borderBottom: `${rowBorderWidth} solid ${rowBorderColor}`,
                     pt: 2,
                     pb: 2,
+                    width: columnWidthMap[col.id] ?? 'auto',
+                    overflow: isBatchColumn(col.id) ? 'hidden' : 'visible',
+                    overflowWrap: shouldWrapColumn(col.id) ? 'anywhere' : 'normal',
+                    textOverflow: isBatchColumn(col.id) ? 'ellipsis' : 'clip',
+                    whiteSpace: shouldWrapColumn(col.id) ? 'normal' : 'nowrap',
                     ...(col.id === 'status' && {
                       verticalAlign: 'middle',
                       pt: 2,

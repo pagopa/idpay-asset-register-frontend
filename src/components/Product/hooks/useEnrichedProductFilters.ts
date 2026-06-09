@@ -9,9 +9,10 @@ type Params = {
   filtersConfig: any;
   batchFilter: Record<string, SelectProps>;
   t: TFunction;
+  isInvitalia: boolean;
 };
 
-export function useEnrichedProductFilters({ typedConfig, filtersConfig, batchFilter, t }: Params) {
+export function useEnrichedProductFilters({ isInvitalia, typedConfig, filtersConfig, batchFilter, t }: Params) {
   const institutionList = useSelector((state: any) => state.invitalia?.institutionList);
   const buildCategoryOptions = () => {
     const configCategories = typedConfig.categories;
@@ -41,6 +42,7 @@ export function useEnrichedProductFilters({ typedConfig, filtersConfig, batchFil
     );
   };
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const enrichedFiltersConfig = useMemo(() => {
     if (!filtersConfig) {
       return filtersConfig;
@@ -58,21 +60,23 @@ export function useEnrichedProductFilters({ typedConfig, filtersConfig, batchFil
         return {
           ...filter,
           options: {
+            ...(isInvitalia ? {
+              SUPERVISED: {
+                labelKey: 'chip.productStatusLabel.supervised',
+                color: 'info',
+              },
+              WAIT_APPROVED: {
+                labelKey: 'chip.productStatusLabel.waitApproved',
+                color: 'warning',
+              }
+            } : {}),
             UPLOADED: {
               labelKey: 'chip.productStatusLabel.uploaded',
               color: 'default',
             },
-            WAIT_APPROVED: {
-              labelKey: 'chip.productStatusLabel.waitApproved',
-              color: 'warning',
-            },
             APPROVED: {
               labelKey: 'chip.productStatusLabel.approved',
               color: 'success',
-            },
-            SUPERVISED: {
-              labelKey: 'chip.productStatusLabel.supervised',
-              color: 'info',
             },
             REJECTED: {
               labelKey: 'chip.productStatusLabel.rejected',
@@ -89,8 +93,8 @@ export function useEnrichedProductFilters({ typedConfig, filtersConfig, batchFil
       if (filter.id === 'producer') {
         const producerOptions = institutionList
           ? Object.fromEntries(
-              institutionList.map((item: any) => [item.institutionId, { label: item.description }])
-            )
+            institutionList.map((item: any) => [item.institutionId, { label: item.description }])
+          )
           : {};
 
         return { ...filter, options: producerOptions };

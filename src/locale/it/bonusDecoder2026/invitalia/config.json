@@ -58,7 +58,7 @@
             "id": "organizationName",
             "labelKey": "pages.products.listHeader.producer",
             "type": "derived",
-            "sortable": false,
+            "sortable": true,
             "align": "left"
           },
           {
@@ -89,11 +89,6 @@
         ],
         "filters": [
           {
-            "id": "category",
-            "type": "select",
-            "labelKey": "tables.products.filters.category"
-          },
-          {
             "id": "status",
             "type": "select",
             "labelKey": "tables.products.filters.status"
@@ -104,19 +99,22 @@
             "labelKey": "tables.products.filters.producer"
           },
           {
-            "id": "gtinCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.gtinCode"
-          },
-          {
-            "id": "productCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.productCode"
-          },
-          {
             "id": "productFileId",
             "type": "select",
             "labelKey": "tables.products.filters.productFileId"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
           }
         ]
       }

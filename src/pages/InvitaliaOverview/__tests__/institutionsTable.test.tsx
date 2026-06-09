@@ -61,10 +61,10 @@ const mockInstitutions: Institution[] = [
     updatedAt: '2023-02-02',
   },
   {
-    institutionId: '2',
-    description: null,
-    createdAt: '2023-02-01',
-    updatedAt: '2023-02-02',
+    institutionId: '3',
+    description: EMPTY_DATA,
+    createdAt: '2023-03-01',
+    updatedAt: '2023-03-02',
   },
 ];
 
@@ -148,9 +148,12 @@ describe('InstitutionsTable', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Alpha Institution' }));
 
-    expect(mockNavigate).toHaveBeenCalledWith(
-      '/home/initiative-1/lista-prodotti',
-      { state: { organizationId: '1' } }
-    );
+    expect(mockNavigate).toHaveBeenCalledWith('/home/initiative-1/lista-prodotti', {
+      state: {
+        organizationId: '1',
+        organizationLabel: 'Alpha Institution',
+        sourceInitiativeId: 'initiative-1',
+      },
+    });
   });
 });

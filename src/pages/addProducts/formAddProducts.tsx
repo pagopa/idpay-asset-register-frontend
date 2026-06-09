@@ -118,8 +118,12 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
           formik.values.category.toUpperCase() as UploadProductListParams['category']
         );
         handleUploadResponse(res.data, files[0]);
-      } catch (error) {
-        handleUploadErrorAndRejectFile({ status: undefined });
+      } catch (error: any) {
+        const apiErrorDetails = error?.details;
+        const axiosData = error?.response?.data;
+        const data = apiErrorDetails ?? axiosData;
+
+        handleUploadErrorAndRejectFile(data ?? { status: undefined });
       }
     };
 
@@ -133,8 +137,10 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       }
     };
 
-    const handleUploadErrorAndRejectFile = (res: Partial<{ status: string }>) => {
-      if (res.status) {
+    const handleUploadErrorAndRejectFile = (res: any) => {
+      if (res?.errorKey) {
+        errorHandling.handleUploadError(res);
+      } else if (res?.status) {
         errorHandling.handleUploadError(res);
       } else {
         errorHandling.handleGenericError();
@@ -204,8 +210,16 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
       try {
         await uploadFileAndNavigate();
-      } catch (error) {
-        handleFileProcessingError();
+      } catch (error: any) {
+        const apiErrorDetails = error?.details;
+        const axiosData = error?.response?.data;
+        const data = apiErrorDetails ?? axiosData;
+
+        if (data) {
+          handleUploadErrorAndRejectFile(data);
+        } else {
+          handleFileProcessingError();
+        }
       }
     };
 

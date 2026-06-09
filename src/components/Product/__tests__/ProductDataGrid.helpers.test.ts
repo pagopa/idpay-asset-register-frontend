@@ -1,4 +1,3 @@
-/// <reference types="jest" />
 import { describe, test, expect } from '@jest/globals';
 import { validateBulkActionPreconditions } from '../ProductDataGrid.helpers';
 import { ProductDTO } from '../../../api/generated/register';
@@ -21,59 +20,30 @@ describe('validateBulkActionPreconditions - config driven', () => {
       selected: [],
       tableData,
       roleKey: 'invitalia',
-      tableConfig: { columns: [] } as any,
     });
 
     expect(result.valid).toBe(false);
     expect(result.reason).toBe('EMPTY');
   });
 
-  test('blocks mixed status when preventMixedStatus true', () => {
+  test('blocks rows with mixed statuses', () => {
     const result = validateBulkActionPreconditions({
       selected: ['1', '2'],
       tableData,
       roleKey: 'invitalia',
-      tableConfig: {
-        bulkRules: {
-          preventMixedStatus: true,
-        },
-      } as any,
     });
 
     expect(result.valid).toBe(false);
     expect(result.reason).toBe('MIXED_STATUS');
   });
 
-  test('allows mixed status when preventMixedStatus false', () => {
-    const result = validateBulkActionPreconditions({
-      selected: ['1', '2'],
-      tableData,
-      roleKey: 'invitalia',
-      tableConfig: {
-        bulkRules: {
-          preventMixedStatus: false,
-        },
-      } as any,
-    });
-
-    expect(result.valid).toBe(true);
-  });
-
-  test('blocks when status not allowed for role', () => {
+  test('allows when status not allowed for role because role config is currently ignored', () => {
     const result = validateBulkActionPreconditions({
       selected: ['1'],
       tableData,
       roleKey: 'invitalia_admin',
-      tableConfig: {
-        bulkRules: {
-          allowedStatusesByRole: {
-            invitalia_admin: ['WAIT_APPROVED'],
-          },
-        },
-      } as any,
     });
 
-    // current config-driven logic allows this combination
     expect(result.valid).toBe(true);
   });
 
@@ -82,13 +52,6 @@ describe('validateBulkActionPreconditions - config driven', () => {
       selected: ['2'],
       tableData,
       roleKey: 'invitalia_admin',
-      tableConfig: {
-        bulkRules: {
-          allowedStatusesByRole: {
-            invitalia_admin: ['WAIT_APPROVED'],
-          },
-        },
-      } as any,
     });
 
     expect(result.valid).toBe(true);
