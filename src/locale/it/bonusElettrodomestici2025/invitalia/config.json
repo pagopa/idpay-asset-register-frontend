@@ -58,7 +58,7 @@
             "id": "organizationName",
             "labelKey": "pages.products.listHeader.producer",
             "type": "derived",
-            "sortable": false,
+            "sortable": true,
             "align": "left"
           },
           {
