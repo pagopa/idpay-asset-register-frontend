@@ -102,7 +102,9 @@ const ProductDataGrid: React.FC<Props> = ({
   }, [batchId, batchName]);
 
   const [filters, setFilters] =
-    useState<Record<string, { value: string; label?: string }>>(initialBatchFilters);
+    useState<Record<string, { value: string; label?: string }>>(
+      { ...initialBatchFilters, ...(isInvitaliaAdmin ? {status: {value: PRODUCTS_STATES.WAIT_APPROVED, label: t('chip.productStatusLabel.waitApproved')}} : {})}
+    );
 
   const effectiveFilters = useMemo(
     () => (redirectProducer ? { producer: redirectProducer, ...filters } : filters),
