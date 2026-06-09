@@ -1,5 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { initiativeConfigReducer, loadInitiativeConfigThunk } from '../initiativeConfigSlice';
+import {
+  clearInitiativeConfig,
+  initiativeConfigReducer,
+  loadInitiativeConfigThunk,
+  selectActiveInitiativeConfig,
+} from '../initiativeConfigSlice';
 import * as loader from '../../../locale/multiInitiativeConfig';
 
 jest.mock('../../../locale/multiInitiativeConfig');
@@ -72,5 +77,53 @@ describe('initiativeConfigSlice', () => {
 
     const state = store.getState().initiativeConfig;
     expect(state.error).toBe(true);
+  });
+
+  it('should build a key when optional load parameters are missing', async () => {
+    const store = createTestStore();
+    const config = { test: true } as any;
+
+    mockedLoader.loadItInitiativeConfig.mockResolvedValue(config);
+
+    await (store.dispatch as any)(loadInitiativeConfigThunk({}));
+
+    expect(mockedLoader.loadItInitiativeConfig).toHaveBeenCalledWith(
+      undefined,
+      undefined,
+      true,
+      undefined
+    );
+    expect(store.getState().initiativeConfig.byKey.__).toEqual(config);
+  });
+
+  it('should clear loaded initiative config', async () => {
+    const store = createTestStore();
+    mockedLoader.loadItInitiativeConfig.mockResolvedValue({ test: true } as any);
+
+    await (store.dispatch as any)(
+      loadInitiativeConfigThunk({ initiativeName: 'Bonus Decoder' })
+    );
+    store.dispatch(clearInitiativeConfig());
+
+    expect(store.getState().initiativeConfig).toEqual({
+      byKey: {},
+      loading: false,
+      error: false,
+      activeKey: null,
+    });
+  });
+
+  it('should select the active config or return null when none is active', async () => {
+    const store = createTestStore();
+    const config = { test: true } as any;
+
+    expect(selectActiveInitiativeConfig(store.getState() as any)).toBeNull();
+
+    mockedLoader.loadItInitiativeConfig.mockResolvedValue(config);
+    await (store.dispatch as any)(
+      loadInitiativeConfigThunk({ initiativeName: 'Bonus Decoder' })
+    );
+
+    expect(selectActiveInitiativeConfig(store.getState() as any)).toEqual(config);
   });
 });
