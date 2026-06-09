@@ -329,6 +329,7 @@ const ProductDataGrid: React.FC<Props> = ({
   );
 
   const { enrichedFiltersConfig } = useEnrichedProductFilters({
+    isInvitalia: isInvitaliaAdmin || isInvitaliaUser,
     typedConfig,
     filtersConfig,
     batchFilter,
