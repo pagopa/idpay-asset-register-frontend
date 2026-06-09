@@ -43,11 +43,11 @@ import { useEnrichedProductFilters } from './hooks/useEnrichedProductFilters';
 import { useTargetOrganization } from './hooks/useTargetOrganization';
 import ProductModal from './ProductModal';
 import ProductConfirmDialog from './ProductConfirmDialog';
-import { getStatusChecks } from './ProductDataGrid.helpers';
+import { getProductRowKey, getStatusChecks } from './ProductDataGrid.helpers';
 
 const ProductDataGrid: React.FC<Props> = ({
   organizationId,
-  organizationLabel: _organizationLabel,
+  organizationLabel,
 }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
@@ -58,6 +58,12 @@ const ProductDataGrid: React.FC<Props> = ({
     useResolvedProductTableConfig(typedConfig);
 
   const [activeOrganizationId, setActiveOrganizationId] = useState(organizationId);
+  const [redirectProducer, setRedirectProducer] = useState<{
+    value: string;
+    label?: string;
+  } | null>(null);
+  const [lastRedirectOrganizationId, setLastRedirectOrganizationId] = useState<string | null>(null);
+  const [redirectProducerManuallyCleared, setRedirectProducerManuallyCleared] = useState(false);
 
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
@@ -98,7 +104,10 @@ const ProductDataGrid: React.FC<Props> = ({
   const [filters, setFilters] =
     useState<Record<string, { value: string; label?: string }>>(initialBatchFilters);
 
-  const effectiveFilters = useMemo(() => filters, [filters]);
+  const effectiveFilters = useMemo(
+    () => (redirectProducer ? { producer: redirectProducer, ...filters } : filters),
+    [filters, redirectProducer]
+  );
 
   const filtersSignature = useMemo(
     () =>
@@ -121,33 +130,26 @@ const ProductDataGrid: React.FC<Props> = ({
     filtersValue,
     tableConfig,
   });
+  const queryOrganizationId = effectiveFilters.producer?.value || targetId;
+  const apiFilters = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(effectiveFilters)
+          .filter(([key]) => key !== 'producer')
+          .map(([key, value]) => [key, value.value])
+      ),
+    [effectiveFilters]
+  );
 
   const isReady = useMemo(() => {
     if (tableConfig?.organizationSource === 'user') {
       return !!user?.org_id;
     }
 
-    if (tableConfig?.organizationSource === 'filter') {
-      if (isInvitaliaAdmin) {
-        return true;
-      }
-      return !!institution?.institutionId;
-    }
-
     return true;
-  }, [tableConfig?.organizationSource, user?.org_id, isInvitaliaAdmin, institution?.institutionId]);
+  }, [tableConfig?.organizationSource, user?.org_id]);
 
   useEffect(() => {
-    if (organizationId && tableConfig?.organizationSource === 'filter') {
-      setFilters((prev) => ({
-        ...prev,
-        producer: {
-          value: organizationId,
-          label: institution?.description || organizationId,
-        },
-      }));
-    }
-
     if (batchId) {
       const displayBatchName = batchName?.replace(/\.csv$/i, '') || batchName || batchId;
 
@@ -172,15 +174,47 @@ const ProductDataGrid: React.FC<Props> = ({
     }
 
     if (batchFromHistory) {
-      setFilters((prev) => ({
-        ...prev,
-        batch: {
-          value: batchFromHistory,
-          label: batchFromHistory,
-        },
-      }));
+      setFilters((prev) => {
+        if (prev.productFileId?.value === batchFromHistory) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          productFileId: {
+            value: batchFromHistory,
+            label: batchFromHistory,
+          },
+        };
+      });
     }
-  }, [organizationId, institution?.description, tableConfig, batchFromHistory, batchId, batchName]);
+  }, [batchFromHistory, batchId, batchName, dispatch]);
+
+  useEffect(() => {
+    if ((!isInvitaliaUser && !isInvitaliaAdmin) || !organizationId) {
+      return;
+    }
+
+    if (redirectProducerManuallyCleared && lastRedirectOrganizationId === organizationId) {
+      return;
+    }
+
+    setRedirectProducer({
+      value: organizationId,
+      label: organizationLabel || institution?.description || organizationId,
+    });
+    setActiveOrganizationId(organizationId);
+    setLastRedirectOrganizationId(organizationId);
+    setRedirectProducerManuallyCleared(false);
+  }, [
+    isInvitaliaUser,
+    isInvitaliaAdmin,
+    organizationId,
+    organizationLabel,
+    institution?.description,
+    lastRedirectOrganizationId,
+    redirectProducerManuallyCleared,
+  ]);
 
   const { batchFilterItems } = useProductDataGridInit({
     initiativeId,
@@ -192,6 +226,8 @@ const ProductDataGrid: React.FC<Props> = ({
     setInstitutionList,
   });
 
+  const [trackedInitiativeId, setTrackedInitiativeId] = useState(initiativeId);
+
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
   const [page, setPage] = useState(0);
@@ -201,7 +237,25 @@ const ProductDataGrid: React.FC<Props> = ({
 
   useEffect(() => {
     setSelected([]);
-  }, [filtersSignature, targetId, refreshKey]);
+  }, [filtersSignature, queryOrganizationId, refreshKey]);
+
+  useEffect(() => {
+    if (trackedInitiativeId === initiativeId) {
+      return;
+    }
+
+    setFilters({});
+    setActiveOrganizationId(organizationId);
+    setRedirectProducer(null);
+    setLastRedirectOrganizationId(null);
+    setRedirectProducerManuallyCleared(false);
+    setPage(0);
+    setSelected([]);
+    setTrackedInitiativeId(initiativeId);
+    dispatch(setBatchId(''));
+    dispatch(setBatchName(''));
+    dispatch(setInstitution({ institutionId: '', createdAt: '', updatedAt: '', description: '' }));
+  }, [initiativeId, organizationId, trackedInitiativeId, dispatch]);
 
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -211,26 +265,22 @@ const ProductDataGrid: React.FC<Props> = ({
   const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
     refreshKey,
     initiativeId,
-    organizationId: targetId,
+    organizationId: queryOrganizationId,
     orderBy,
     order,
     page,
     rowsPerPage,
-    ...(batchFromHistory ? { batch: batchFromHistory } : organizationId ? {} : filtersValue),
+    ...apiFilters,
   });
 
   const selectedProductsList = useMemo(
     () =>
       tableData
-        .filter(
-          (row) =>
-            (row.productCode && selected.includes(row.productCode)) ||
-            (row.gtinCode && selected.includes(row.gtinCode))
-        )
+        .filter((row) => selected.includes(getProductRowKey(row)))
         .map((row) => ({
           status: row.status as ProductStatus,
           productName: row.productName,
-          gtinCode: row.gtinCode,
+          gtinCode: getProductRowKey(row),
           category: row.category,
         })) as Array<{
         status: ProductStatus;
@@ -325,17 +375,6 @@ const ProductDataGrid: React.FC<Props> = ({
       };
     });
   }, [currentRoleKey, tableConfig]);
-
-  useEffect(() => {
-    // Reset state only when initiative changes
-    setFilters({});
-    setPage(0);
-    setSelected([]);
-  }, [initiativeId]);
-
-  useEffect(() => {
-    setSelected([]);
-  }, [tableData]);
 
   useEffect(() => {
     if (paginationConfig?.defaultRowsPerPage) {
@@ -516,9 +555,58 @@ const ProductDataGrid: React.FC<Props> = ({
     return <EmptyListTable message="pages.products.noFileLoaded" />;
   }
 
+  const selectionAllowedStatuses = currentRoleKey
+    ? tableConfig?.selection?.rules?.[currentRoleKey]
+    : undefined;
+
   const handleListButtonClick = (row: ProductDTO) => {
     setSelectedProduct(row);
     setDetailOpen(true);
+  };
+
+  const clearAppliedFilters = () => {
+    setFilters({});
+    setRedirectProducer(null);
+    setLastRedirectOrganizationId(organizationId || null);
+    setRedirectProducerManuallyCleared(true);
+    setActiveOrganizationId('');
+    setPage(0);
+    setSelected([]);
+    dispatch(setBatchId(''));
+    dispatch(setBatchName(''));
+    dispatch(
+      setInstitution({
+        institutionId: '',
+        createdAt: '',
+        updatedAt: '',
+        description: '',
+      })
+    );
+  };
+
+  const handleApplyDrawerFilters = (
+    nextFilters: Record<string, { value: string; label?: string }>
+  ) => {
+    setFilters(nextFilters);
+    setPage(0);
+    setSelected([]);
+
+    if (Object.keys(nextFilters).length === 0) {
+      clearAppliedFilters();
+      return;
+    }
+
+    if (!nextFilters.producer) {
+      setRedirectProducer(null);
+      setLastRedirectOrganizationId(organizationId || null);
+      setRedirectProducerManuallyCleared(true);
+      setActiveOrganizationId('');
+      return;
+    }
+
+    setRedirectProducer(null);
+    setLastRedirectOrganizationId(null);
+    setRedirectProducerManuallyCleared(false);
   };
 
   const setMsgResultByAction = (
@@ -567,6 +655,7 @@ const ProductDataGrid: React.FC<Props> = ({
         effectiveColumns={effectiveColumns}
         paginationConfig={paginationConfig}
         tableConfig={tableConfig}
+        selectionAllowedStatuses={selectionAllowedStatuses}
         refreshKey={refreshKey}
         onRequestSort={(_event: React.MouseEvent<unknown>, prop: keyof ProductDTO) => {
           const isAsc = orderBy === prop && order === 'asc';
@@ -580,22 +669,7 @@ const ProductDataGrid: React.FC<Props> = ({
           setRowsPerPage(parseInt(e.target.value, 10));
           setPage(0);
         }}
-        handleDeleteFiltersButtonClick={() => {
-          setFilters({});
-          setActiveOrganizationId('');
-          setPage(0);
-          setSelected([]);
-          dispatch(setBatchId(''));
-          dispatch(setBatchName(''));
-          dispatch(
-            setInstitution({
-              institutionId: '',
-              createdAt: '',
-              updatedAt: '',
-              description: '',
-            })
-          );
-        }}
+        handleDeleteFiltersButtonClick={clearAppliedFilters}
         handleToggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
         handleOpenModalWithStatusCheck={handleOpenModalWithStatusCheck}
       />
@@ -640,7 +714,7 @@ const ProductDataGrid: React.FC<Props> = ({
         onCancel={() => setRestoreDialogOpen(false)}
         onConfirm={async () => {
           const currentStatus =
-            (tableData.find((row) => row.gtinCode === selected[0])
+            (tableData.find((row) => getProductRowKey(row) === selected[0])
               ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
           try {
             await handleConfirmRestore(selected, currentStatus, EMPTY_DATA);
@@ -655,7 +729,7 @@ const ProductDataGrid: React.FC<Props> = ({
         onSuccess={() => {
           resetAllMsgResults();
           const currentStatus =
-            (tableData.find((row) => row.gtinCode === selected[0])
+            (tableData.find((row) => getProductRowKey(row) === selected[0])
               ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
           if (isInvitaliaUser && currentStatus === ProductStatus.UPLOADED) {
             setShowMsgWaitApproved(true);
@@ -731,8 +805,8 @@ const ProductDataGrid: React.FC<Props> = ({
       <FiltersDrawer
         open={filtersDrawerOpen}
         toggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
-        filters={filters}
-        setFilters={setFilters}
+        filters={effectiveFilters}
+        setFilters={handleApplyDrawerFilters}
         setPage={setPage}
         batchFilterItems={batchFilter}
         filtersConfig={enrichedFiltersConfig}

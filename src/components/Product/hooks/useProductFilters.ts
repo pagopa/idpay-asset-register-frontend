@@ -5,7 +5,10 @@ type UseProductFiltersParams = {
   enrichedFiltersConfig?: Array<{ id: string }>;
 };
 
-export const useProductFilters = ({ filters, enrichedFiltersConfig }: UseProductFiltersParams) => {
+export const useProductFilters = ({
+  filters,
+  enrichedFiltersConfig,
+}: UseProductFiltersParams) => {
   const filtersLabel = useMemo(() => {
     if (!filters || Object.keys(filters).length === 0) {
       return undefined;
@@ -24,10 +27,17 @@ export const useProductFilters = ({ filters, enrichedFiltersConfig }: UseProduct
         })
         .filter((v) => !!v);
 
-      return values.length > 0 ? values.join(', ') : undefined;
+      if (values.length > 0) {
+        return values.join(', ');
+      }
     }
 
-    return undefined;
+    const fallbackLabel = Object.values(filters)
+      .map((filter) => normalize(filter.label ?? filter.value))
+      .filter((v) => !!v)
+      .join(', ');
+
+    return fallbackLabel || undefined;
   }, [filters, enrichedFiltersConfig]);
 
   return { filtersLabel };

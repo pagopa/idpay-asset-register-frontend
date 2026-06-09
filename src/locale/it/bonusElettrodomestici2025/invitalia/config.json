@@ -20,7 +20,7 @@
   "ui": {
     "tables": {
       "products": {
-        "organizationSource": "user",
+        "organizationSource": "filter",
         "bulkRules": {
           "preventMixedStatus": true,
           "allowedStatusesByRole": {
