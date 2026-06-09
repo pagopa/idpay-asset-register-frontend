@@ -73,7 +73,7 @@ describe('useEnrichedProductFilters', () => {
           }),
           WAIT_APPROVED: expect.objectContaining({
             labelKey: 'chip.productStatusLabel.waitApproved',
-            color: 'warning',
+            color: 'info',
           }),
         }),
       },
