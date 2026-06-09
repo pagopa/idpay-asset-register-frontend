@@ -19,6 +19,7 @@ describe('useEnrichedProductFilters', () => {
   it('returns undefined config when filters are not configured', () => {
     const { result } = renderHook(() =>
       useEnrichedProductFilters({
+        isInvitalia: false,
         typedConfig: {} as any,
         filtersConfig: undefined,
         batchFilter: {},
@@ -36,6 +37,7 @@ describe('useEnrichedProductFilters', () => {
 
     const { result } = renderHook(() =>
       useEnrichedProductFilters({
+        isInvitalia: true,
         typedConfig: {
           categories: {
             fridge: { labelKey: 'categories.fridge.label' },
@@ -90,6 +92,7 @@ describe('useEnrichedProductFilters', () => {
   it('builds category options from template categories when initiative categories are missing', () => {
     const { result } = renderHook(() =>
       useEnrichedProductFilters({
+        isInvitalia: false,
         typedConfig: {
           templates: {
             categories: {
@@ -115,6 +118,7 @@ describe('useEnrichedProductFilters', () => {
 
     const { result } = renderHook(() =>
       useEnrichedProductFilters({
+        isInvitalia: false,
         typedConfig: {} as any,
         filtersConfig: [{ id: 'producer' }],
         batchFilter: {},
@@ -123,5 +127,22 @@ describe('useEnrichedProductFilters', () => {
     );
 
     expect(result.current.enrichedFiltersConfig).toEqual([{ id: 'producer', options: {} }]);
+  });
+
+  it('excludes Invitalia-only statuses for non-Invitalia users', () => {
+    const { result } = renderHook(() =>
+      useEnrichedProductFilters({
+        isInvitalia: false,
+        typedConfig: {} as any,
+        filtersConfig: [{ id: 'status' }],
+        batchFilter: {},
+        t,
+      })
+    );
+
+    expect(result.current.enrichedFiltersConfig?.[0].options).not.toHaveProperty(
+      'WAIT_APPROVED'
+    );
+    expect(result.current.enrichedFiltersConfig?.[0].options).not.toHaveProperty('SUPERVISED');
   });
 });
