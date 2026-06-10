@@ -197,7 +197,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
                   width: columnWidthMap[col.id] ?? 'auto',
                   whiteSpace: isUtilityColumn(col.id) ? 'nowrap' : 'normal',
                   overflow: 'visible',
-                  overflowWrap: 'anywhere',
+                  overflowWrap: 'normal',
                   textOverflow: 'clip',
                   lineHeight: 1.2,
                 }}
