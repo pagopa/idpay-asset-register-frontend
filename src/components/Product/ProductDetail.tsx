@@ -139,7 +139,7 @@ function mapDetailFieldToRowConfig(
   const label =
     field.id === 'registrationDate' && isCookinghobs
       ? 'pages.productDetail.checkDate'
-      : field.labelKey ?? defaultDetailLabelKeys[field.id] ?? field.id;
+      : field.labelKey ?? defaultDetailLabelKeys[field.id];
 
   return isProductSheet ? {
     label: '',
