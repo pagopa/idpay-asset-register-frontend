@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 import FlagIcon from '@mui/icons-material/Flag';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
-import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
+import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, PRODUCT_CATEGORIES, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { statusChangeMessage } from '../../model/Product';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
@@ -130,7 +130,7 @@ function mapDetailFieldToRowConfig(
 ): RowConfig {
   const value = data[field.id as keyof ProductDTO];
   const hasValue = value !== undefined && value !== null && value !== '';
-  const isCookinghobs = data?.category?.toLowerCase() === 'piano cottura';
+  const isCookinghobs = data?.category?.toLowerCase() === PRODUCT_CATEGORIES.COOKING_HOBS.toLowerCase();
   const label =
     field.id === 'registrationDate' && isCookinghobs
       ? 'pages.productDetail.checkDate'
@@ -263,7 +263,7 @@ type ProductInfoRowsProps = {
 };
 
 function renderEntry(entry: any, idx: number, detailMaxLength: number) {
-  const operator = entry?.role ? `Produttore ${entry.role}` : 'Produttore';
+  const operator = entry?.role ? `${USERS_NAMES.OPERATORE} ${entry.role}` : USERS_NAMES.OPERATORE;
   const dateLabel = entry?.updateDate
     ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
     : EMPTY_DATA;
@@ -361,7 +361,9 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
 
   function getFormalMotivationOperator(user: any, chronology: Array<any>) {
     if (user?.org_role !== USERS_TYPES.OPERATORE) {
-      return chronology[0]?.role ? `Produttore ${chronology[0].role}` : 'Produttore';
+      return chronology[0]?.role
+        ? `${USERS_NAMES.OPERATORE} ${chronology[0].role}`
+        : USERS_NAMES.OPERATORE;
     }
     return '';
   }
