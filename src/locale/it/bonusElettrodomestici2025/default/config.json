@@ -170,8 +170,8 @@
         },
         "detail": {
           "fields": [
-            { "id": "productName", "labelKey": "pages.productDetail.productName" },
-            { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
+            { "id": "productName"},
+            { "id": "batchName" },
             { "id": "productSheet"},
             { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
             { "id": "productCode", "labelKey": "pages.productDetail.productCode" },

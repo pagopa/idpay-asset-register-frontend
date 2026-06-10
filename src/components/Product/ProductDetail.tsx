@@ -108,8 +108,9 @@ const mapBaseRowToRowConfig = (
   sx: row.sx,
 });
 
+// batchName & productName no label ''
 const defaultDetailLabelKeys: Record<string, string> = {
-  batchName: 'pages.productDetail.batchName',
+  batchName: '',
   brand: 'pages.productDetail.brand',
   capacity: 'pages.productDetail.capacity',
   category: 'pages.productDetail.category',
@@ -119,7 +120,7 @@ const defaultDetailLabelKeys: Record<string, string> = {
   gtinCode: 'pages.productDetail.gtinCode',
   model: 'pages.productDetail.model',
   productCode: 'pages.productDetail.productCode',
-  productName: 'pages.productDetail.productName',
+  productName: '',
   registrationDate: 'pages.productDetail.eprelCheckDate',
   status: 'pages.productDetail.status',
 };
