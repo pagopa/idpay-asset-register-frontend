@@ -118,91 +118,75 @@ const baseData: any = {
   capacity: '100L',
 };
 
+type RenderDetailOptions = {
+  data?: any;
+  isInvitaliaUser?: boolean;
+  isInvitaliaAdmin?: boolean;
+  detailFields?: Array<any>;
+  onShowRejectedMsg?: any;
+  [extraProp: string]: any;
+};
+
+const renderDetail = (options: RenderDetailOptions = {}) => {
+  const {
+    data = baseData,
+    isInvitaliaUser = false,
+    isInvitaliaAdmin = false,
+    detailFields,
+    onShowRejectedMsg = jest.fn(),
+    ...rest
+  } = options;
+
+  return render(
+    <ProductDetail
+      open
+      data={data}
+      detailFields={detailFields}
+      isInvitaliaUser={isInvitaliaUser}
+      isInvitaliaAdmin={isInvitaliaAdmin}
+      onShowRejectedMsg={onShowRejectedMsg}
+      {...rest}
+    />
+  );
+};
+
 describe('ProductDetail', () => {
   it('renders supervised buttons for invitalia user', () => {
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'SUPERVISED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({ data: { ...baseData, status: 'SUPERVISED' }, isInvitaliaUser: true });
 
     expect(screen.getByTestId('acceptApprovationBtn')).toBeInTheDocument();
     expect(screen.getByTestId('rejectApprovationBtn')).toBeInTheDocument();
   });
 
   it('renders admin buttons for WAIT_APPROVED', () => {
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'WAIT_APPROVED' }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({ data: { ...baseData, status: 'WAIT_APPROVED' }, isInvitaliaAdmin: true });
 
     expect(screen.getByTestId('supervisedBtn')).toBeInTheDocument();
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
   });
 
   it('does not render action section when not invitalia', () => {
-    render(
-      <ProductDetail
-        open
-        data={baseData}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail();
 
     expect(screen.queryByTestId('approvedBtn')).not.toBeInTheDocument();
   });
 
   it('handles supervision modal branch', () => {
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({ data: { ...baseData, status: 'UPLOADED' }, isInvitaliaUser: true });
 
-    const supervised = screen.getByTestId('supervisedBtn');
-    fireEvent.click(supervised);
+    fireEvent.click(screen.getByTestId('supervisedBtn'));
     expect(screen.getAllByTestId('modal').length).toBeGreaterThan(0);
   });
+
   it('renders base information', () => {
-    render(
-      <ProductDetail
-        open
-        data={baseData}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail();
 
     expect(screen.getByTestId('status')).toHaveTextContent('UPLOADED');
     expect(screen.getByText('Product A')).toBeInTheDocument();
   });
 
   it('renders action buttons for invitalia user', () => {
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({ data: { ...baseData, status: 'UPLOADED' }, isInvitaliaUser: true });
 
     expect(screen.getByTestId('approvedBtn')).toBeInTheDocument();
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
@@ -213,18 +197,13 @@ describe('ProductDetail', () => {
     const onClose = jest.fn();
     const onWait = jest.fn();
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onUpdateTable={onUpdate}
-        onClose={onClose}
-        onShowWaitApprovedMsg={onWait}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'UPLOADED' },
+      isInvitaliaUser: true,
+      onUpdateTable: onUpdate,
+      onClose,
+      onShowWaitApprovedMsg: onWait,
+    });
 
     fireEvent.click(screen.getByTestId('approvedBtn'));
     fireEvent.click(screen.getByTestId('confirm'));
@@ -237,15 +216,7 @@ describe('ProductDetail', () => {
   });
 
   it('renders formal motivation when present', () => {
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, formalMotivation: 'Reason', status: 'REJECTED' }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({ data: { ...baseData, formalMotivation: 'Reason', status: 'REJECTED' } });
 
     expect(screen.getByText('Reason')).toBeInTheDocument();
   });
@@ -255,18 +226,13 @@ describe('ProductDetail', () => {
     const onClose = jest.fn();
     const onWait = jest.fn();
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onUpdateTable={onUpdate}
-        onClose={onClose}
-        onShowWaitApprovedMsg={onWait}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'UPLOADED' },
+      isInvitaliaUser: true,
+      onUpdateTable: onUpdate,
+      onClose,
+      onShowWaitApprovedMsg: onWait,
+    });
 
     fireEvent.click(screen.getByTestId('approvedBtn'));
     fireEvent.click(screen.getByTestId('confirm'));
@@ -281,16 +247,11 @@ describe('ProductDetail', () => {
   it('falls back to approved message when wait-approved callback is missing', async () => {
     const onApproved = jest.fn();
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'SUPERVISED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onShowApprovedMsg={onApproved}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'SUPERVISED' },
+      isInvitaliaUser: true,
+      onShowApprovedMsg: onApproved,
+    });
 
     fireEvent.click(screen.getByTestId('acceptApprovationBtn'));
     fireEvent.click(screen.getByTestId('confirm'));
@@ -301,20 +262,13 @@ describe('ProductDetail', () => {
   });
 
   it('renders configured detail fields with formatted and empty values', () => {
-    render(
-      <ProductDetail
-        open
-        data={baseData}
-        detailFields={[
-          { id: 'productName', labelKey: 'custom.productName' },
-          { id: 'registrationDate' },
-          { id: 'missingField' },
-        ]}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      detailFields: [
+        { id: 'productName', labelKey: 'custom.productName' },
+        { id: 'registrationDate' },
+        { id: 'missingField' },
+      ],
+    });
 
     expect(screen.getByText('custom.productName')).toBeInTheDocument();
     expect(screen.getByText('01/01/2024')).toBeInTheDocument();
@@ -322,29 +276,15 @@ describe('ProductDetail', () => {
   });
 
   it('renders motivation chronology and skips empty motivations', () => {
-    render(
-      <ProductDetail
-        open
-        data={{
-          ...baseData,
-          statusChangeChronology: [
-            {
-              role: 'L1',
-              updateDate: '2024-01-02T10:30:00Z',
-              motivation: 'Needs review',
-            },
-            {
-              role: 'L2',
-              updateDate: '2024-01-03T10:30:00Z',
-              motivation: '   ',
-            },
-          ],
-        }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: {
+        ...baseData,
+        statusChangeChronology: [
+          { role: 'L1', updateDate: '2024-01-02T10:30:00Z', motivation: 'Needs review' },
+          { role: 'L2', updateDate: '2024-01-03T10:30:00Z', motivation: '   ' },
+        ],
+      },
+    });
 
     expect(screen.getByText('pages.productDetail.motivation')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Needs review')).toBeInTheDocument();
@@ -352,25 +292,15 @@ describe('ProductDetail', () => {
   });
 
   it('renders formal motivation header for non-operator users', () => {
-    render(
-      <ProductDetail
-        open
-        data={{
-          ...baseData,
-          formalMotivation: 'Formal reason',
-          statusChangeChronology: [
-            {
-              role: 'L2',
-              targetStatus: 'REJECTED',
-              updateDate: '2024-02-03T09:15:00Z',
-            },
-          ],
-        }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: {
+        ...baseData,
+        formalMotivation: 'Formal reason',
+        statusChangeChronology: [
+          { role: 'L2', targetStatus: 'REJECTED', updateDate: '2024-02-03T09:15:00Z' },
+        ],
+      },
+    });
 
     expect(screen.getByDisplayValue('Formal reason')).toBeInTheDocument();
   });
@@ -379,22 +309,14 @@ describe('ProductDetail', () => {
     const { fetchUserFromLocalStorage } = require('../../../helpers');
     fetchUserFromLocalStorage.mockReturnValueOnce({ org_role: 'operatore' });
 
-    render(
-      <ProductDetail
-        open
-        data={{
-          ...baseData,
-          status: 'REJECTED',
-          formalMotivation: 'Operator visible reason',
-          statusChangeChronology: [
-            { targetStatus: 'REJECTED', updateDate: '2024-02-03T09:15:00Z' },
-          ],
-        }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: {
+        ...baseData,
+        status: 'REJECTED',
+        formalMotivation: 'Operator visible reason',
+        statusChangeChronology: [{ targetStatus: 'REJECTED', updateDate: '2024-02-03T09:15:00Z' }],
+      },
+    });
 
     expect(screen.getByDisplayValue('Operator visible reason')).toBeInTheDocument();
   });
@@ -403,17 +325,12 @@ describe('ProductDetail', () => {
     const onUpdate = jest.fn();
     const onClose = jest.fn();
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onUpdateTable={onUpdate}
-        onClose={onClose}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'UPLOADED' },
+      isInvitaliaUser: true,
+      onUpdateTable: onUpdate,
+      onClose,
+    });
 
     fireEvent.click(screen.getByTestId('supervisedBtn'));
     fireEvent.click(screen.getByTestId('close-modal-confirmed'));
@@ -426,17 +343,12 @@ describe('ProductDetail', () => {
     const onUpdate = jest.fn();
     const onClose = jest.fn();
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'WAIT_APPROVED' }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin
-        onUpdateTable={onUpdate}
-        onClose={onClose}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'WAIT_APPROVED' },
+      isInvitaliaAdmin: true,
+      onUpdateTable: onUpdate,
+      onClose,
+    });
 
     fireEvent.click(screen.getByTestId('supervisedBtn'));
     fireEvent.click(screen.getByTestId('close-modal-cancelled'));
@@ -454,15 +366,11 @@ describe('ProductDetail', () => {
       onShowRejectedMsg: jest.fn(),
     };
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        {...callbacks}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'UPLOADED' },
+      isInvitaliaUser: true,
+      ...callbacks,
+    });
 
     fireEvent.click(screen.getByTestId(buttonId));
     fireEvent.click(screen.getByTestId(successId));
@@ -473,16 +381,11 @@ describe('ProductDetail', () => {
   it('fires admin accept-approval success callback', () => {
     const onShowAcceptApprovationMsg = jest.fn();
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'WAIT_APPROVED' }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin
-        onShowAcceptApprovationMsg={onShowAcceptApprovationMsg}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'WAIT_APPROVED' },
+      isInvitaliaAdmin: true,
+      onShowAcceptApprovationMsg,
+    });
 
     fireEvent.click(screen.getByTestId('supervisedBtn'));
     fireEvent.click(screen.getByTestId('modal-success'));
@@ -493,16 +396,11 @@ describe('ProductDetail', () => {
   it('fires rejected-approval success callback for admin rejection', () => {
     const onShowRejectedApprovationMsg = jest.fn();
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'WAIT_APPROVED' }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin
-        onShowRejectedApprovationMsg={onShowRejectedApprovationMsg}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'WAIT_APPROVED' },
+      isInvitaliaAdmin: true,
+      onShowRejectedApprovationMsg,
+    });
 
     fireEvent.click(screen.getByTestId('rejectedBtn'));
     fireEvent.click(screen.getByTestId('modal-success'));
@@ -519,17 +417,12 @@ describe('ProductDetail', () => {
     const onClose = jest.fn();
     const onShowGenericError = jest.fn();
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onClose={onClose}
-        onShowGenericError={onShowGenericError}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'UPLOADED' },
+      isInvitaliaUser: true,
+      onClose,
+      onShowGenericError,
+    });
 
     fireEvent.click(screen.getByTestId('approvedBtn'));
     fireEvent.click(screen.getByTestId('confirm'));
@@ -541,15 +434,7 @@ describe('ProductDetail', () => {
   });
 
   it('cancels confirm dialog when onCancel fired', () => {
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({ data: { ...baseData, status: 'UPLOADED' }, isInvitaliaUser: true });
 
     fireEvent.click(screen.getByTestId('approvedBtn'));
     expect(screen.getByTestId('confirm-dialog')).toBeInTheDocument();
@@ -568,18 +453,13 @@ describe('ProductDetail', () => {
       onShowSupervisedMsg: jest.fn(),
       onShowRejectedApprovationMsg: jest.fn(),
       onShowAcceptApprovationMsg: jest.fn(),
-      onShowRejectedMsg: jest.fn(),
     };
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        {...callbacks}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'UPLOADED' },
+      isInvitaliaUser: true,
+      ...callbacks,
+    });
 
     fireEvent.click(screen.getByTestId('approvedBtn'));
     fireEvent.click(screen.getByTestId(successId));
@@ -588,96 +468,56 @@ describe('ProductDetail', () => {
   });
 
   it('does not invoke message callbacks when none provided in handleSuccess', () => {
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={undefined as any}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'UPLOADED' },
+      isInvitaliaUser: true,
+      onShowRejectedMsg: undefined,
+    });
 
     fireEvent.click(screen.getByTestId('approvedBtn'));
     fireEvent.click(screen.getByTestId('success-wait'));
   });
 
   it('renders cooking hobs check date label for registrationDate field', () => {
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, category: 'Piano cottura' }}
-        detailFields={[{ id: 'registrationDate' }]}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, category: 'Piano cottura' },
+      detailFields: [{ id: 'registrationDate' }],
+    });
 
     expect(screen.getByText('pages.productDetail.checkDate')).toBeInTheDocument();
     expect(screen.getByText('01/01/2024')).toBeInTheDocument();
   });
 
   it('renders productSheet header field', () => {
-    render(
-      <ProductDetail
-        open
-        data={baseData}
-        detailFields={[{ id: 'productSheet' }]}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({ detailFields: [{ id: 'productSheet' }] });
 
     expect(screen.getByText('pages.productDetail.productSheet')).toBeInTheDocument();
   });
 
   it('renders formal motivation header with role for non-operator user', () => {
-    render(
-      <ProductDetail
-        open
-        data={{
-          ...baseData,
-          status: 'REJECTED',
-          formalMotivation: 'Formal reason with role',
-          statusChangeChronology: [
-            {
-              role: 'L2',
-              targetStatus: 'REJECTED',
-              updateDate: '2024-02-03T09:15:00Z',
-            },
-          ],
-        }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: {
+        ...baseData,
+        status: 'REJECTED',
+        formalMotivation: 'Formal reason with role',
+        statusChangeChronology: [
+          { role: 'L2', targetStatus: 'REJECTED', updateDate: '2024-02-03T09:15:00Z' },
+        ],
+      },
+    });
 
     expect(screen.getByDisplayValue('Formal reason with role')).toBeInTheDocument();
   });
 
   it('renders formal motivation header without role for non-operator user', () => {
-    render(
-      <ProductDetail
-        open
-        data={{
-          ...baseData,
-          status: 'REJECTED',
-          formalMotivation: 'Formal reason no role',
-          statusChangeChronology: [
-            {
-              targetStatus: 'REJECTED',
-              updateDate: 'invalid-date',
-            },
-          ],
-        }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: {
+        ...baseData,
+        status: 'REJECTED',
+        formalMotivation: 'Formal reason no role',
+        statusChangeChronology: [{ targetStatus: 'REJECTED', updateDate: 'invalid-date' }],
+      },
+    });
 
     expect(screen.getByDisplayValue('Formal reason no role')).toBeInTheDocument();
   });
@@ -686,17 +526,12 @@ describe('ProductDetail', () => {
     const onUpdate = jest.fn();
     const onClose = jest.fn();
 
-    render(
-      <ProductDetail
-        open
-        data={{ ...baseData, status: 'UPLOADED' }}
-        isInvitaliaUser
-        isInvitaliaAdmin={false}
-        onUpdateTable={onUpdate}
-        onClose={onClose}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'UPLOADED' },
+      isInvitaliaUser: true,
+      onUpdateTable: onUpdate,
+      onClose,
+    });
 
     fireEvent.click(screen.getByTestId('rejectedBtn'));
     const closeButtons = screen.getAllByTestId('close-modal-confirmed');
@@ -707,25 +542,14 @@ describe('ProductDetail', () => {
   });
 
   it('renders formal motivation with chronology missing updateDate (invalid date branch)', () => {
-    render(
-      <ProductDetail
-        open
-        data={{
-          ...baseData,
-          status: 'REJECTED',
-          formalMotivation: 'No date reason',
-          statusChangeChronology: [
-            {
-              role: 'L2',
-              targetStatus: 'REJECTED',
-            },
-          ],
-        }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: {
+        ...baseData,
+        status: 'REJECTED',
+        formalMotivation: 'No date reason',
+        statusChangeChronology: [{ role: 'L2', targetStatus: 'REJECTED' }],
+      },
+    });
 
     expect(screen.getByDisplayValue('No date reason')).toBeInTheDocument();
   });
@@ -734,19 +558,9 @@ describe('ProductDetail', () => {
     const { fetchUserFromLocalStorage } = require('../../../helpers');
     fetchUserFromLocalStorage.mockReturnValueOnce({ org_role: 'operatore' });
 
-    render(
-      <ProductDetail
-        open
-        data={{
-          ...baseData,
-          status: 'UPLOADED',
-          formalMotivation: 'Hidden reason',
-        }}
-        isInvitaliaUser={false}
-        isInvitaliaAdmin={false}
-        onShowRejectedMsg={jest.fn()}
-      />
-    );
+    renderDetail({
+      data: { ...baseData, status: 'UPLOADED', formalMotivation: 'Hidden reason' },
+    });
 
     expect(screen.queryByDisplayValue('Hidden reason')).not.toBeInTheDocument();
   });
