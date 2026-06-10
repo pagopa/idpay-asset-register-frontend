@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import FlagIcon from '@mui/icons-material/Flag';
+import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, PRODUCT_CATEGORIES, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
@@ -146,7 +146,7 @@ function mapDetailFieldToRowConfig(
     value: t('pages.productDetail.productSheet'),
     labelVariant: 'body2',
     valueVariant: 'body2',
-    sx: { mt: 4, mb: 2, fontWeight: 700 },
+    sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
   } : {
     label: t(label),
     value:
@@ -247,7 +247,7 @@ function getProductInfoRowsConfig(
     value: t('pages.productDetail.productSheet'),
     labelVariant: 'body2',
     valueVariant: 'body2',
-    sx: { mt: 4, mb: 2, fontWeight: 700 },
+    sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
   };
 
   const firstTwoRows = baseRows.slice(0, 2).map((row) => mapBaseRowToRowConfig(row, data));
@@ -333,8 +333,8 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
             <ProductInfoRow
               label={t('pages.productDetail.motivation')}
               labelVariant="overline"
-              sx={{ marginTop: 3, fontWeight: 700 }}
-              labelColor="#17324D"
+              sx={{ marginTop: 3, fontWeight: theme.typography.fontWeightBold }}
+              labelColor={theme.palette.text.primary}
               value={
                 <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
                   {filteredChronology.map((entry, idx) =>
@@ -411,8 +411,8 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
           <ProductInfoRow
             label={t('pages.productDetail.motivationFormal')}
             labelVariant="overline"
-            sx={{ marginTop: 3, fontWeight: 700 }}
-            labelColor="#17324D"
+            sx={{ marginTop: 3, fontWeight: theme.typography.fontWeightBold }}
+            labelColor={theme.palette.text.primary}
             value={
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
