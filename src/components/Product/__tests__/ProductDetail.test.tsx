@@ -540,6 +540,196 @@ describe('ProductDetail', () => {
     expect(onShowGenericError).toHaveBeenCalled();
   });
 
+  it('cancels confirm dialog when onCancel fired', () => {
+    render(
+      <ProductDetail
+        open
+        data={{ ...baseData, status: 'UPLOADED' }}
+        isInvitaliaUser
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('approvedBtn'));
+    expect(screen.getByTestId('confirm-dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('cancel-confirm'));
+    expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['success-wait', 'onShowWaitApprovedMsg'],
+    ['success-supervised', 'onShowSupervisedMsg'],
+    ['success-reject-approval', 'onShowRejectedApprovationMsg'],
+    ['success-accept-approval', 'onShowAcceptApprovationMsg'],
+  ])('fires confirm dialog onSuccess branch %s', (successId, callbackName) => {
+    const callbacks: any = {
+      onShowWaitApprovedMsg: jest.fn(),
+      onShowSupervisedMsg: jest.fn(),
+      onShowRejectedApprovationMsg: jest.fn(),
+      onShowAcceptApprovationMsg: jest.fn(),
+      onShowRejectedMsg: jest.fn(),
+    };
+
+    render(
+      <ProductDetail
+        open
+        data={{ ...baseData, status: 'UPLOADED' }}
+        isInvitaliaUser
+        isInvitaliaAdmin={false}
+        {...callbacks}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('approvedBtn'));
+    fireEvent.click(screen.getByTestId(successId));
+
+    expect(callbacks[callbackName]).toHaveBeenCalled();
+  });
+
+  it('does not invoke message callbacks when none provided in handleSuccess', () => {
+    render(
+      <ProductDetail
+        open
+        data={{ ...baseData, status: 'UPLOADED' }}
+        isInvitaliaUser
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={undefined as any}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('approvedBtn'));
+    fireEvent.click(screen.getByTestId('success-wait'));
+  });
+
+  it('renders cooking hobs check date label for registrationDate field', () => {
+    render(
+      <ProductDetail
+        open
+        data={{ ...baseData, category: 'Piano cottura' }}
+        detailFields={[{ id: 'registrationDate' }]}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('pages.productDetail.checkDate')).toBeInTheDocument();
+    expect(screen.getByText('01/01/2024')).toBeInTheDocument();
+  });
+
+  it('renders productSheet header field', () => {
+    render(
+      <ProductDetail
+        open
+        data={baseData}
+        detailFields={[{ id: 'productSheet' }]}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('pages.productDetail.productSheet')).toBeInTheDocument();
+  });
+
+  it('renders formal motivation header with role for non-operator user', () => {
+    render(
+      <ProductDetail
+        open
+        data={{
+          ...baseData,
+          status: 'REJECTED',
+          formalMotivation: 'Formal reason with role',
+          statusChangeChronology: [
+            {
+              role: 'L2',
+              targetStatus: 'REJECTED',
+              updateDate: '2024-02-03T09:15:00Z',
+            },
+          ],
+        }}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByDisplayValue('Formal reason with role')).toBeInTheDocument();
+  });
+
+  it('renders formal motivation header without role for non-operator user', () => {
+    render(
+      <ProductDetail
+        open
+        data={{
+          ...baseData,
+          status: 'REJECTED',
+          formalMotivation: 'Formal reason no role',
+          statusChangeChronology: [
+            {
+              targetStatus: 'REJECTED',
+              updateDate: 'invalid-date',
+            },
+          ],
+        }}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByDisplayValue('Formal reason no role')).toBeInTheDocument();
+  });
+
+  it('handles exclude modal close by invoking update/close callbacks', () => {
+    const onUpdate = jest.fn();
+    const onClose = jest.fn();
+
+    render(
+      <ProductDetail
+        open
+        data={{ ...baseData, status: 'UPLOADED' }}
+        isInvitaliaUser
+        isInvitaliaAdmin={false}
+        onUpdateTable={onUpdate}
+        onClose={onClose}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    const closeButtons = screen.getAllByTestId('close-modal-confirmed');
+    fireEvent.click(closeButtons[closeButtons.length - 1]);
+
+    expect(onUpdate).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('renders formal motivation with chronology missing updateDate (invalid date branch)', () => {
+    render(
+      <ProductDetail
+        open
+        data={{
+          ...baseData,
+          status: 'REJECTED',
+          formalMotivation: 'No date reason',
+          statusChangeChronology: [
+            {
+              role: 'L2',
+              targetStatus: 'REJECTED',
+            },
+          ],
+        }}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByDisplayValue('No date reason')).toBeInTheDocument();
+  });
+
   it('does not render formal motivation for operator when not rejected', () => {
     const { fetchUserFromLocalStorage } = require('../../../helpers');
     fetchUserFromLocalStorage.mockReturnValueOnce({ org_role: 'operatore' });
