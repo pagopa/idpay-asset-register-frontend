@@ -130,9 +130,14 @@ function mapDetailFieldToRowConfig(
 ): RowConfig {
   const value = data[field.id as keyof ProductDTO];
   const hasValue = value !== undefined && value !== null && value !== '';
+  const isCookinghobs = data?.category?.toLowerCase() === 'piano cottura';
+  const label =
+    field.id === 'registrationDate' && isCookinghobs
+      ? 'pages.productDetail.checkDate'
+      : field.labelKey ?? defaultDetailLabelKeys[field.id] ?? field.id;
 
   return {
-    label: t(field.labelKey ?? defaultDetailLabelKeys[field.id] ?? field.id),
+    label: t(label),
     value:
       field.id === 'registrationDate' && hasValue
         ? String(format(new Date(String(value)), 'dd/MM/yyyy'))
