@@ -137,6 +137,7 @@
             { "id": "productName", "labelKey": "pages.productDetail.productName" },
             { "id": "batchName", "labelKey": "pages.productDetail.batchName" },
             { "id": "registrationDate", "labelKey": "pages.productDetail.eprelCheckDate" },
+            { "id": "productSheet"},
             { "id": "eprelCode", "labelKey": "pages.productDetail.eprelCode" },
             { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
             { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
