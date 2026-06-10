@@ -10,7 +10,7 @@ import {
   Checkbox,
   IconButton,
 } from '@mui/material';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { ProductDTO } from '../../api/generated/register';
@@ -119,10 +119,9 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     if (col.type === 'action') {
       return (
         <IconButton size="small" onClick={() => handleListButtonClick(row)}>
-          <ChevronRightIcon
+          <ArrowForwardIosIcon
             sx={{
-              color: theme.palette.primary.main,
-              fontSize: 18,
+              color: theme.palette.primary.main
             }}
           />
         </IconButton>
