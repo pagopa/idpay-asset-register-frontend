@@ -1,4 +1,5 @@
-import { ListItem, Box, Typography } from '@mui/material';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ListItem, Box, Typography, Tooltip } from '@mui/material';
 import { CopyToClipboardButton } from '@pagopa/mui-italia';
 
 type DrawerItemProps = {
@@ -8,6 +9,25 @@ type DrawerItemProps = {
 };
 
 const DrawerItem: React.FC<DrawerItemProps> = ({ itemHeader, itemValue, copyable = false }) => {
+  const valueRef = useRef<HTMLSpanElement | null>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  const checkOverflow = () => {
+    const el = valueRef.current;
+    if (el) {
+      setIsOverflowing(el.scrollWidth > el.clientWidth);
+    }
+  };
+
+  useLayoutEffect(() => {
+    checkOverflow();
+  }, [itemValue]);
+
+  useEffect(() => {
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, []);
+
   const handleCopyButtonClick = async () => {
     try {
       await navigator.clipboard.writeText(itemValue);
@@ -29,9 +49,11 @@ const DrawerItem: React.FC<DrawerItemProps> = ({ itemHeader, itemValue, copyable
               pr: 2,
             }}
           >
-            <Typography noWrap fontWeight={'600'}>
-              {itemValue}
-            </Typography>
+            <Tooltip title={isOverflowing ? itemValue : ''} placement="top" arrow>
+              <Typography ref={valueRef} noWrap fontWeight={'600'}>
+                {itemValue}
+              </Typography>
+            </Tooltip>
           </Box>
           {copyable && (
             <Box>
