@@ -514,7 +514,7 @@ components:
       properties:
         operativeEmail:
           type: string
-          format: email
+          pattern: ^(?=.{1,255}$)[A-Za-z0-9]([A-Za-z0-9+_-]*(\.[A-Za-z0-9+_-]+)*)?@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$
           maxLength: 255
     UserPermissionDTO:
       title: UserPermissionDTO
@@ -526,6 +526,7 @@ components:
             - operatore
             - invitalia
             - invitalia_admin
+            - support
         permissions:
           type: array
           items:

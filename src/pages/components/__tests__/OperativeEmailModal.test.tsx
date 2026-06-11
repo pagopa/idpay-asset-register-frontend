@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import OperativeEmailModal from '../OperativeEmailModal';
@@ -35,6 +35,20 @@ jest.mock('../../../hooks/useScopedTranslation', () => ({
     isLoading: false,
   }),
 }));
+
+jest.mock('../../../hooks/useInitiativeConfig', () => {
+  const defaultConfig = jest.requireActual('../../../locale/it/default/config.json');
+
+  return {
+    useInitiativeConfig: () => ({
+      config: {
+        validation: defaultConfig.validation,
+      },
+      loading: false,
+      configError: undefined,
+    }),
+  };
+});
 
 const renderModal = (props?: Partial<React.ComponentProps<typeof OperativeEmailModal>>) => {
   const defaultProps: React.ComponentProps<typeof OperativeEmailModal> = {
@@ -91,11 +105,30 @@ describe('OperativeEmailModal', () => {
     expect(getConfirmEmailInput()).toHaveValue('');
   });
 
-  it('rejects emails that do not match the backend pattern', async () => {
+  it.each([
+    'name@example.c',
+    '.name@example.com',
+    'name.@example.com',
+    'na..me@example.com',
+    'name,part@example.com',
+  ])('rejects email that does not match the backend pattern: %s', async (invalidEmail) => {
     const user = userEvent.setup();
     const { props } = renderModal();
 
-    await fillEmailsAndSave(user, 'name@example.c', 'name@example.c');
+    await fillEmailsAndSave(user, invalidEmail, invalidEmail);
+
+    expect(screen.getAllByText(invalidEmailError)).toHaveLength(2);
+    expect(props.onSave).not.toHaveBeenCalled();
+  });
+
+  it('rejects an email longer than 255 characters', async () => {
+    const user = userEvent.setup();
+    const { props } = renderModal();
+    const invalidEmail = `${'a'.repeat(244)}@example.com`;
+
+    fireEvent.change(getEmailInput(), { target: { value: invalidEmail } });
+    fireEvent.change(getConfirmEmailInput(), { target: { value: invalidEmail } });
+    await user.click(getSaveButton());
 
     expect(screen.getAllByText(invalidEmailError)).toHaveLength(2);
     expect(props.onSave).not.toHaveBeenCalled();
@@ -125,9 +158,22 @@ describe('OperativeEmailModal', () => {
     const user = userEvent.setup();
     const onSave = jest.fn();
     renderModal({ onSave });
-    const validEmail = 'test+name_1.2@example-domain.sub.it';
+    const validEmail = 'test+name_1-2.3@example-domain.sub.it';
 
     await fillEmailsAndSave(user, validEmail, validEmail);
+
+    expect(onSave).toHaveBeenCalledWith(validEmail);
+  });
+
+  it('accepts an email exactly 255 characters long', async () => {
+    const user = userEvent.setup();
+    const onSave = jest.fn();
+    renderModal({ onSave });
+    const validEmail = `${'a'.repeat(243)}@example.com`;
+
+    fireEvent.change(getEmailInput(), { target: { value: validEmail } });
+    fireEvent.change(getConfirmEmailInput(), { target: { value: validEmail } });
+    await user.click(getSaveButton());
 
     expect(onSave).toHaveBeenCalledWith(validEmail);
   });
