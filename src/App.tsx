@@ -94,8 +94,22 @@ const InvitaliaRoutes = () => (
     <Route path="lista-prodotti" element={<RedirectHomeWithErrorAlert />} />
     <Route path="produttori" element={<RedirectHomeWithErrorAlert />} />
     <Route path=":initiativeId" element={<RedirectHomeWithErrorAlert />} />
-    <Route path=":initiativeId/panoramica" element={<InvitaliaProductsList />} />
-    <Route path=":initiativeId/lista-prodotti" element={<InvitaliaProductsList />} />
+    <Route
+      path=":initiativeId/panoramica"
+      element={
+        <WithInitiativeGuard>
+          <InvitaliaProductsList />
+        </WithInitiativeGuard>
+      }
+    />
+    <Route
+      path=":initiativeId/lista-prodotti"
+      element={
+        <WithInitiativeGuard>
+          <InvitaliaProductsList />
+        </WithInitiativeGuard>
+      }
+    />
     <Route
       path=":initiativeId/produttori"
       element={
@@ -125,7 +139,8 @@ const SecuredRoutes = withLogin(
       user?.org_role as USERS_TYPES
     );
     const institution = useSelector(institutionSelector);
-    const organizationId = user?.org_role === USERS_TYPES.OPERATORE ? user?.org_id : institution?.institutionId || '';
+    const organizationId =
+      user?.org_role === USERS_TYPES.OPERATORE ? user?.org_id : institution?.institutionId || '';
 
     /*
     if (UPCOMING_INITIATIVE_DAY) {
