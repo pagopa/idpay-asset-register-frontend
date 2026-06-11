@@ -3,6 +3,7 @@ import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { InstitutionResponse } from '../../api/generated/register';
+import { buildAddress } from '../../utils/functions';
 import DrawerHeader from './DrawerHeader';
 import DrawerSubHeader from './DrawerSubHeader';
 import DrawerItem from './DrawerItem';
@@ -13,6 +14,7 @@ type ManufacturerDetailProps = {
 
 const ManufacturerDetail: React.FC<ManufacturerDetailProps> = ({ data }) => {
   const { t } = useScopedTranslation();
+
 
   return (
     <Box sx={{ width: 400, pl: 2 }} role="presentation" data-testid="manufacturer-detail">
@@ -34,7 +36,7 @@ const ManufacturerDetail: React.FC<ManufacturerDetailProps> = ({ data }) => {
         />
         <DrawerItem
           itemHeader={t('pages.invitaliaProductsList.sedeLegale')}
-          itemValue={data?.address ?? ''}
+          itemValue={buildAddress(data)}
         />
         <DrawerItem
           itemHeader={t('pages.invitaliaProductsList.pec')}

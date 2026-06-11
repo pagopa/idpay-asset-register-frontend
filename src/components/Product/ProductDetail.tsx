@@ -4,9 +4,10 @@ import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import FlagIcon from '@mui/icons-material/Flag';
+import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
-import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_TYPES } from '../../utils/constants';
+import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, PRODUCT_CATEGORIES, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { statusChangeMessage } from '../../model/Product';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
@@ -97,9 +98,9 @@ const mapBaseRowToRowConfig = (
   label: row.label,
   value:
     row.dataKey &&
-    data[row.dataKey as keyof ProductDTO] !== undefined &&
-    data[row.dataKey as keyof ProductDTO] !== null &&
-    data[row.dataKey as keyof ProductDTO] !== ''
+      data[row.dataKey as keyof ProductDTO] !== undefined &&
+      data[row.dataKey as keyof ProductDTO] !== null &&
+      data[row.dataKey as keyof ProductDTO] !== ''
       ? String(data[row.dataKey as keyof ProductDTO])
       : EMPTY_DATA,
   labelVariant: row.labelVariant,
@@ -107,8 +108,9 @@ const mapBaseRowToRowConfig = (
   sx: row.sx,
 });
 
+// batchName & productName no label ''
 const defaultDetailLabelKeys: Record<string, string> = {
-  batchName: 'pages.productDetail.batchName',
+  batchName: '',
   brand: 'pages.productDetail.brand',
   capacity: 'pages.productDetail.capacity',
   category: 'pages.productDetail.category',
@@ -118,11 +120,12 @@ const defaultDetailLabelKeys: Record<string, string> = {
   gtinCode: 'pages.productDetail.gtinCode',
   model: 'pages.productDetail.model',
   productCode: 'pages.productDetail.productCode',
-  productName: 'pages.productDetail.productName',
+  productName: '',
   registrationDate: 'pages.productDetail.eprelCheckDate',
   status: 'pages.productDetail.status',
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function mapDetailFieldToRowConfig(
   field: ProductDetailFieldConfig,
   data: ProductDTO,
@@ -130,15 +133,28 @@ function mapDetailFieldToRowConfig(
 ): RowConfig {
   const value = data[field.id as keyof ProductDTO];
   const hasValue = value !== undefined && value !== null && value !== '';
+  const isCookinghobs = data?.category?.toLowerCase() === PRODUCT_CATEGORIES.COOKING_HOBS.toLowerCase();
+  const isProductSheet = field.id === 'productSheet';
 
-  return {
-    label: t(field.labelKey ?? defaultDetailLabelKeys[field.id] ?? field.id),
+  const label =
+    field.id === 'registrationDate' && isCookinghobs
+      ? 'pages.productDetail.checkDate'
+      : field.labelKey ?? defaultDetailLabelKeys[field.id];
+
+  return isProductSheet ? {
+    label: '',
+    value: t('pages.productDetail.productSheet'),
+    labelVariant: 'body2',
+    valueVariant: 'body2',
+    sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
+  } : {
+    label: t(label),
     value:
       field.id === 'registrationDate' && hasValue
         ? String(format(new Date(String(value)), 'dd/MM/yyyy'))
         : hasValue
-        ? String(value)
-        : EMPTY_DATA,
+          ? String(value)
+          : EMPTY_DATA,
     valueVariant: field.id === 'productName' ? 'h6' : undefined,
     sx:
       field.id === 'productName' || field.id === 'batchName'
@@ -164,67 +180,75 @@ function getProductInfoRowsConfig(
     sx?: SxProps<Theme>;
     isTranslation?: boolean;
   }> = [
-    {
-      label: '',
-      dataKey: 'productName',
-      valueVariant: 'h6',
-      sx: { mb: 1, maxWidth: 350, wordWrap: 'break-word' },
-    },
-    {
-      label: '',
-      dataKey: 'batchName',
-      labelVariant: 'body2',
-      valueVariant: 'body2',
-    },
-    {
-      label: t('pages.productDetail.eprelCheckDate'),
-      dataKey: 'registrationDate',
-    },
-    {
-      label: '',
-      dataKey: null,
-      labelVariant: 'body2',
-      valueVariant: 'body2',
-      sx: { mt: 4, mb: 2 },
-      isTranslation: true,
-    },
-    {
-      label: t('pages.productDetail.eprelCode'),
-      dataKey: 'eprelCode',
-    },
-    {
-      label: t('pages.productDetail.gtinCode'),
-      dataKey: 'gtinCode',
-    },
-    {
-      label: t('pages.productDetail.productCode'),
-      dataKey: 'productCode',
-    },
-    {
-      label: t('pages.productDetail.category'),
-      dataKey: 'category',
-    },
-    {
-      label: t('pages.productDetail.brand'),
-      dataKey: 'brand',
-    },
-    {
-      label: t('pages.productDetail.model'),
-      dataKey: 'model',
-    },
-    {
-      label: t('pages.productDetail.energyClass'),
-      dataKey: 'energyClass',
-    },
-    {
-      label: t('pages.productDetail.countryOfProduction'),
-      dataKey: 'countryOfProduction',
-    },
-    {
-      label: t('pages.productDetail.capacity'),
-      dataKey: 'capacity',
-    },
-  ];
+      {
+        label: '',
+        dataKey: 'productName',
+        valueVariant: 'h6',
+        sx: { mb: 1, maxWidth: 350, wordWrap: 'break-word' },
+      },
+      {
+        label: '',
+        dataKey: 'batchName',
+        labelVariant: 'body2',
+        valueVariant: 'body2',
+      },
+      {
+        label: t('pages.productDetail.eprelCheckDate'),
+        dataKey: 'registrationDate',
+      },
+      {
+        label: '',
+        dataKey: null,
+        labelVariant: 'body2',
+        valueVariant: 'body2',
+        sx: { mt: 4, mb: 2 },
+        isTranslation: true,
+      },
+      {
+        label: t('pages.productDetail.eprelCode'),
+        dataKey: 'eprelCode',
+      },
+      {
+        label: t('pages.productDetail.gtinCode'),
+        dataKey: 'gtinCode',
+      },
+      {
+        label: t('pages.productDetail.productCode'),
+        dataKey: 'productCode',
+      },
+      {
+        label: t('pages.productDetail.category'),
+        dataKey: 'category',
+      },
+      {
+        label: t('pages.productDetail.brand'),
+        dataKey: 'brand',
+      },
+      {
+        label: t('pages.productDetail.model'),
+        dataKey: 'model',
+      },
+      {
+        label: t('pages.productDetail.energyClass'),
+        dataKey: 'energyClass',
+      },
+      {
+        label: t('pages.productDetail.countryOfProduction'),
+        dataKey: 'countryOfProduction',
+      },
+      {
+        label: t('pages.productDetail.capacity'),
+        dataKey: 'capacity',
+      },
+    ];
+
+  const productSheetRow: RowConfig = {
+    label: '',
+    value: t('pages.productDetail.productSheet'),
+    labelVariant: 'body2',
+    valueVariant: 'body2',
+    sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
+  };
 
   const firstTwoRows = baseRows.slice(0, 2).map((row) => mapBaseRowToRowConfig(row, data));
 
@@ -235,14 +259,6 @@ function getProductInfoRowsConfig(
     value: data?.registrationDate
       ? String(format(new Date(data?.registrationDate), 'dd/MM/yyyy'))
       : EMPTY_DATA,
-  };
-
-  const productSheetRow: RowConfig = {
-    label: '',
-    value: t('pages.productDetail.productSheet'),
-    labelVariant: 'body2',
-    valueVariant: 'body2',
-    sx: { mt: 4, mb: 2, fontWeight: 700 },
   };
 
   const remainingRows = baseRows.slice(4).map((row) => mapBaseRowToRowConfig(row, data));
@@ -258,7 +274,7 @@ type ProductInfoRowsProps = {
 };
 
 function renderEntry(entry: any, idx: number, detailMaxLength: number) {
-  const operator = entry?.role ? `Produttore ${entry.role}` : 'Produttore';
+  const operator = entry?.role ? `${USERS_NAMES.OPERATORE} ${entry.role}` : USERS_NAMES.OPERATORE;
   const dateLabel = entry?.updateDate
     ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
     : EMPTY_DATA;
@@ -312,24 +328,24 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
   const motivationRow =
     user?.org_role !== USERS_TYPES.OPERATORE && hasMotivations
       ? ({
-          renderCustom(this: RowConfig) {
-            return (
-              <ProductInfoRow
-                label={t('pages.productDetail.motivation')}
-                labelVariant="overline"
-                sx={{ marginTop: 3, fontWeight: 700 }}
-                labelColor="#17324D"
-                value={
-                  <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                    {filteredChronology.map((entry, idx) =>
-                      renderEntry(entry, idx, detailMaxLength)
-                    )}
-                  </Box>
-                }
-              />
-            );
-          },
-        } as RowConfig & { renderCustom?: () => JSX.Element })
+        renderCustom(this: RowConfig) {
+          return (
+            <ProductInfoRow
+              label={t('pages.productDetail.motivation')}
+              labelVariant="overline"
+              sx={{ marginTop: 3, fontWeight: theme.typography.fontWeightBold }}
+              labelColor={theme.palette.text.primary}
+              value={
+                <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                  {filteredChronology.map((entry, idx) =>
+                    renderEntry(entry, idx, detailMaxLength)
+                  )}
+                </Box>
+              }
+            />
+          );
+        },
+      } as RowConfig & { renderCustom?: () => JSX.Element })
       : null;
 
   function isValidDateString(date: string | undefined): boolean {
@@ -356,7 +372,9 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
 
   function getFormalMotivationOperator(user: any, chronology: Array<any>) {
     if (user?.org_role !== USERS_TYPES.OPERATORE) {
-      return chronology[0]?.role ? `Produttore ${chronology[0].role}` : 'Produttore';
+      return chronology[0]?.role
+        ? `${USERS_NAMES.OPERATORE} ${chronology[0].role}`
+        : USERS_NAMES.OPERATORE;
     }
     return '';
   }
@@ -384,42 +402,42 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
   const formalMotivationRow = !displayFormalMotivation(user?.org_role, data.status)
     ? null
     : ({
-        renderCustom(this: RowConfig) {
-          const dateLabel = getFormalMotivationDateLabel(chronology);
-          const operator = getFormalMotivationOperator(user, chronology);
-          const header = getFormalMotivationHeader(user, dateLabel, operator);
+      renderCustom(this: RowConfig) {
+        const dateLabel = getFormalMotivationDateLabel(chronology);
+        const operator = getFormalMotivationOperator(user, chronology);
+        const header = getFormalMotivationHeader(user, dateLabel, operator);
 
-          return (
-            <ProductInfoRow
-              label={t('pages.productDetail.motivationFormal')}
-              labelVariant="overline"
-              sx={{ marginTop: 3, fontWeight: 700 }}
-              labelColor="#17324D"
-              value={
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
-                    <Box component="span" sx={{ width: '100%' }}>
-                      {header && header.trim() !== '' && (
-                        <Typography variant="body1" color="textSecondary">
-                          {truncateString(header, detailMaxLength)}
-                        </Typography>
-                      )}
-                      <TextareaAutosize
-                        maxRows={10}
-                        value={formalMotivationText}
-                        readOnly
-                        aria-label="Motivazione formale"
-                        name="formalMotivation"
-                        className="product-detail-textarea"
-                      />
-                    </Box>
+        return (
+          <ProductInfoRow
+            label={t('pages.productDetail.motivationFormal')}
+            labelVariant="overline"
+            sx={{ marginTop: 3, fontWeight: theme.typography.fontWeightBold }}
+            labelColor={theme.palette.text.primary}
+            value={
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
+                  <Box component="span" sx={{ width: '100%' }}>
+                    {header && header.trim() !== '' && (
+                      <Typography variant="body1" color="textSecondary">
+                        {truncateString(header, detailMaxLength)}
+                      </Typography>
+                    )}
+                    <TextareaAutosize
+                      maxRows={10}
+                      value={formalMotivationText}
+                      readOnly
+                      aria-label="Motivazione formale"
+                      name="formalMotivation"
+                      className="product-detail-textarea"
+                    />
                   </Box>
                 </Box>
-              }
-            />
-          );
-        },
-      } as RowConfig & { renderCustom?: () => JSX.Element });
+              </Box>
+            }
+          />
+        );
+      },
+    } as RowConfig & { renderCustom?: () => JSX.Element });
 
   const extraRows = [
     ...(motivationRow ? [motivationRow] : []),
@@ -534,7 +552,7 @@ export default function ProductDetail({
     }
   };
 
-  const resetAllMsgs = () => {};
+  const resetAllMsgs = () => { };
 
   const setMsgByActionType = (actionType?: string) => {
     if (actionType === PRODUCTS_STATES.SUPERVISED && typeof onShowSupervisedMsg === 'function') {

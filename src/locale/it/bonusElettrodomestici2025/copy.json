@@ -51,7 +51,7 @@
         "productCode": "Codice prodotto",
         "category": "Categoria",
         "energyClass": "Classe energetica",
-        "eprelCode": "Codice EPREL",
+        "eprelCode": "EPREL",
         "status": "Stato",
         "batchName": "Lotto"
       },

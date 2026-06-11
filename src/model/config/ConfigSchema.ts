@@ -89,6 +89,12 @@ export interface TemplatesConfig {
   formats?: Record<string, unknown>;
 }
 
+export interface ValidationConfig {
+  operativeEmail?: {
+    regEx: string;
+  };
+}
+
 export interface InitiativeConfig {
   roles: RolesConfig;
   categories?: Record<
@@ -100,6 +106,7 @@ export interface InitiativeConfig {
     }
   >;
   templates?: TemplatesConfig;
+  validation?: ValidationConfig;
   ui: InitiativeUIConfig;
 }
 
@@ -109,6 +116,7 @@ export interface LegacyInitiativeConfig {
   subRoles?: RolesConfig['subRoles'];
   errors?: RolesConfig['errors'];
   templates?: TemplatesConfig;
+  validation?: ValidationConfig;
   tables?: {
     products: ProductTableConfig;
   };

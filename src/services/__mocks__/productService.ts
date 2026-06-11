@@ -13,7 +13,7 @@ export const mockedPartyProducts: Array<Product> = [
     roles: [
       {
         partyRole: 'MANAGER',
-        roleKey: 'referente-legale', // TODO use real product role
+        roleKey: 'referente-legale',
       },
     ],
     activationDateTime: new Date(2021, 1, 1),

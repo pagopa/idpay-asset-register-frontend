@@ -53,7 +53,7 @@ describe('filtersRender - select', () => {
 
     expect(element.props.label).toBe('');
     expect(element.props.value).toBe('B');
-    expect(element.props.renderValue()).toBe('Selected B');
+    expect(element.props.renderValue().props.children).toBe('Selected B');
 
     element.props.onChange({
       target: { value: 'B' },

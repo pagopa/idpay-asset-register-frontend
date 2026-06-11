@@ -38,13 +38,14 @@ export const useInitiativeConfig = (): {
   }, [initiative, user?.org_role, dispatch]);
 
   const mapNewStructureToLegacy = (cfg: InitiativeConfig): LegacyInitiativeConfig => {
-    const { roles, templates, ui } = cfg ?? {};
+    const { roles, templates, validation, ui } = cfg ?? {};
     return {
       role: roles?.name,
       logicalName: roles?.logicalName,
       subRoles: roles?.subRoles,
       errors: roles?.errors,
       templates,
+      validation,
       tables: ui?.tables,
     };
   };

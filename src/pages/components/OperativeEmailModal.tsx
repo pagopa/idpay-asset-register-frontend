@@ -16,6 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ErrorIcon from '@mui/icons-material/Report';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { ButtonNaked } from '@pagopa/mui-italia';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 
 type FieldErrors = {
@@ -164,47 +165,15 @@ const modalStyles = {
   },
 };
 
-const isAsciiAlpha = (char: string) =>
-  (char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z');
+const isValidEmail = (value: string, pattern?: string) =>
+  Boolean(pattern && RegExp(pattern).test(value));
 
-const isAsciiDigit = (char: string) => char >= '0' && char <= '9';
-
-const areAllCharsAllowed = (value: string, isAllowedChar: (char: string) => boolean) =>
-  value.length > 0 && Array.from(value).every(isAllowedChar);
-
-const isAllowedLocalPartChar = (char: string) =>
-  isAsciiAlpha(char) || isAsciiDigit(char) || ['+', '_', '.', '-'].includes(char);
-
-const isAllowedDomainLabelChar = (char: string) =>
-  isAsciiAlpha(char) || isAsciiDigit(char) || char === '-';
-
-const isValidEmail = (value: string) => {
-  const emailParts = value.split('@');
-  if (emailParts.length !== 2 || !areAllCharsAllowed(emailParts[0], isAllowedLocalPartChar)) {
-    return false;
-  }
-
-  const domainLabels = emailParts[1].split('.');
-  if (domainLabels.length < 2) {
-    return false;
-  }
-
-  const tld = domainLabels[domainLabels.length - 1];
-  const domainPrefixLabels = domainLabels.slice(0, -1);
-
-  return (
-    domainPrefixLabels.every((label) => areAllCharsAllowed(label, isAllowedDomainLabelChar)) &&
-    tld.length >= 2 &&
-    areAllCharsAllowed(tld, isAsciiAlpha)
-  );
-};
-
-const getEmailError = (value: string, t: (key: string) => string) => {
+const getEmailError = (value: string, pattern: string | undefined, t: (key: string) => string) => {
   if (!value) {
     return t('pages.overview.operativeEmailModal.requiredError');
   }
 
-  if (!isValidEmail(value)) {
+  if (!isValidEmail(value, pattern)) {
     return t('pages.overview.operativeEmailModal.invalidEmailError');
   }
 
@@ -221,6 +190,8 @@ const OperativeEmailModal: React.FC<Props> = ({
   isLoading = false,
 }) => {
   const { t } = useScopedTranslation();
+  const { config } = useInitiativeConfig();
+  const operativeEmailPattern = config?.validation?.operativeEmail?.regEx;
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [emailFocused, setEmailFocused] = useState(false);
@@ -240,9 +211,9 @@ const OperativeEmailModal: React.FC<Props> = ({
   const validate = () => {
     const normalizedEmail = normalizeEmail(email);
     const normalizedConfirmEmail = normalizeEmail(confirmEmail);
-    const emailError = getEmailError(normalizedEmail, t);
+    const emailError = getEmailError(normalizedEmail, operativeEmailPattern, t);
     const confirmEmailError =
-      getEmailError(normalizedConfirmEmail, t) ||
+      getEmailError(normalizedConfirmEmail, operativeEmailPattern, t) ||
       (normalizedEmail !== normalizedConfirmEmail
         ? t('pages.overview.operativeEmailModal.emailMismatchError')
         : undefined);

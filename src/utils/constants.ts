@@ -1,4 +1,6 @@
-export const testToken = '';
+import type { ProductDTO } from '../api/generated/register';
+
+export const testToken = "";
 
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
 export const DEFAULT_INITIATIVE_NAMESPACE = 'default';
@@ -30,7 +32,6 @@ export enum USERS_TYPES {
   INVITALIA_L1 = 'invitalia',
   INVITALIA_L2 = 'invitalia_admin',
 }
-// Deprecation imminent, to be removed in favor of config.json
 export enum USERS_NAMES {
   OPERATORE = 'Operatore',
   INVITALIA_L1 = 'L1',
@@ -57,3 +58,16 @@ export const MIN_LENGTH_TEXTFIELD_POPUP = 2;
 export const MAX_LENGTH_TEXTFIELD_POPUP = 200;
 
 export const UPCOMING_INITIATIVE_DAY = '20/10/2025';
+
+type ProductCategory = NonNullable<ProductDTO['category']>;
+
+export const PRODUCT_CATEGORIES = {
+  WASHING_MACHINE: 'Lavatrice',
+  WASHER_DRYER: 'Lavasciuga',
+  COOKING_HOBS: 'Piano cottura',
+  REFRIGERATING_APPLIANCE: 'Apparecchio di refrigerazione',
+  TUMBLE_DRYER: 'Asciugatrice',
+  DISHWASHER: 'Lavastoviglie',
+  RANGE_HOOD: 'Cappa da cucina',
+  OVEN: 'Forno',
+} as const satisfies Record<string, ProductCategory>;
