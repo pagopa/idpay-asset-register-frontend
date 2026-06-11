@@ -69,6 +69,7 @@
         ],
         "detail": {
           "fields": [
+            { "id": "productSheet"},
             { "id": "gtinCode" },
             { "id": "productCode" },
             { "id": "brand" },

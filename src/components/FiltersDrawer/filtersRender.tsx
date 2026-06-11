@@ -1,4 +1,4 @@
-import { Chip, ChipProps, MenuItem, Select, TextField } from '@mui/material';
+import { Box, Chip, ChipProps, MenuItem, Select, TextField } from '@mui/material';
 import { TFunction } from 'i18next';
 import { filterInputWithSpaceRule } from '../../helpers';
 
@@ -39,8 +39,18 @@ export const filtersRender: Record<
           PaperProps: { style: { maxHeight: 350 } },
         }}
         value={filters?.[id]?.value ?? ''}
-        renderValue={() => filters?.[id]?.label ?? ''}
-        sx={{ paddingRight: '38px !important' }}
+        renderValue={() => (
+          <Box
+            sx={{
+              maxWidth: '95%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {filters?.[id]?.label ?? ''}
+          </Box>
+        )}
         onChange={(e) =>
           setFilters(id, {
             value: e.target.value,
