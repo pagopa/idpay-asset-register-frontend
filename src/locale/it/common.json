@@ -282,6 +282,7 @@
     },
     "productDetail": {
       "eprelCheckDate": "Data verifica EPREL",
+      "checkDate": "Data verifica",
       "productSheet": "SCHEDA PRODOTTO",
       "productName": "Nome prodotto",
       "batchName": "Lotto",
