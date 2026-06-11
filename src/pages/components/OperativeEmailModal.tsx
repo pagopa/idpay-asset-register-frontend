@@ -164,40 +164,10 @@ const modalStyles = {
   },
 };
 
-const isAsciiAlpha = (char: string) =>
-  (char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z');
+const OPERATIVE_EMAIL_PATTERN =
+  /^(?=.{1,255}$)[A-Za-z0-9]([A-Za-z0-9+_,-]*(\.[A-Za-z0-9+_,-]+)*)?@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
 
-const isAsciiDigit = (char: string) => char >= '0' && char <= '9';
-
-const areAllCharsAllowed = (value: string, isAllowedChar: (char: string) => boolean) =>
-  value.length > 0 && Array.from(value).every(isAllowedChar);
-
-const isAllowedLocalPartChar = (char: string) =>
-  isAsciiAlpha(char) || isAsciiDigit(char) || ['+', '_', '.', '-'].includes(char);
-
-const isAllowedDomainLabelChar = (char: string) =>
-  isAsciiAlpha(char) || isAsciiDigit(char) || char === '-';
-
-const isValidEmail = (value: string) => {
-  const emailParts = value.split('@');
-  if (emailParts.length !== 2 || !areAllCharsAllowed(emailParts[0], isAllowedLocalPartChar)) {
-    return false;
-  }
-
-  const domainLabels = emailParts[1].split('.');
-  if (domainLabels.length < 2) {
-    return false;
-  }
-
-  const tld = domainLabels[domainLabels.length - 1];
-  const domainPrefixLabels = domainLabels.slice(0, -1);
-
-  return (
-    domainPrefixLabels.every((label) => areAllCharsAllowed(label, isAllowedDomainLabelChar)) &&
-    tld.length >= 2 &&
-    areAllCharsAllowed(tld, isAsciiAlpha)
-  );
-};
+const isValidEmail = (value: string) => OPERATIVE_EMAIL_PATTERN.test(value);
 
 const getEmailError = (value: string, t: (key: string) => string) => {
   if (!value) {
