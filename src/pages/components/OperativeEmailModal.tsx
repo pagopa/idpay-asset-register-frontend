@@ -16,6 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ErrorIcon from '@mui/icons-material/Report';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { ButtonNaked } from '@pagopa/mui-italia';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 
 type FieldErrors = {
@@ -164,18 +165,15 @@ const modalStyles = {
   },
 };
 
-// NOSONAR
-const OPERATIVE_EMAIL_PATTERN =
-  /^(?=.{1,255}$)[A-Za-z0-9]([A-Za-z0-9+_,-]*(\.[A-Za-z0-9+_,-]+)*)?@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+const isValidEmail = (value: string, pattern?: string) =>
+  Boolean(pattern && RegExp(pattern).test(value));
 
-const isValidEmail = (value: string) => OPERATIVE_EMAIL_PATTERN.test(value);
-
-const getEmailError = (value: string, t: (key: string) => string) => {
+const getEmailError = (value: string, pattern: string | undefined, t: (key: string) => string) => {
   if (!value) {
     return t('pages.overview.operativeEmailModal.requiredError');
   }
 
-  if (!isValidEmail(value)) {
+  if (!isValidEmail(value, pattern)) {
     return t('pages.overview.operativeEmailModal.invalidEmailError');
   }
 
@@ -192,6 +190,8 @@ const OperativeEmailModal: React.FC<Props> = ({
   isLoading = false,
 }) => {
   const { t } = useScopedTranslation();
+  const { config } = useInitiativeConfig();
+  const operativeEmailPattern = config?.validation?.operativeEmail?.regEx;
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [emailFocused, setEmailFocused] = useState(false);
@@ -211,9 +211,9 @@ const OperativeEmailModal: React.FC<Props> = ({
   const validate = () => {
     const normalizedEmail = normalizeEmail(email);
     const normalizedConfirmEmail = normalizeEmail(confirmEmail);
-    const emailError = getEmailError(normalizedEmail, t);
+    const emailError = getEmailError(normalizedEmail, operativeEmailPattern, t);
     const confirmEmailError =
-      getEmailError(normalizedConfirmEmail, t) ||
+      getEmailError(normalizedConfirmEmail, operativeEmailPattern, t) ||
       (normalizedEmail !== normalizedConfirmEmail
         ? t('pages.overview.operativeEmailModal.emailMismatchError')
         : undefined);

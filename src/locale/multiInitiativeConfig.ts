@@ -34,6 +34,11 @@ export type InitiativeTablesConfig = {
     errors?: Record<string, unknown>;
   };
   templates?: Record<string, unknown>;
+  validation?: {
+    operativeEmail?: {
+      regEx?: string;
+    };
+  };
   ui?: {
     tables?: Record<string, unknown>;
   };
