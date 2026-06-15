@@ -403,7 +403,7 @@ describe('ProductDetail', () => {
     clickSequence('approvedBtn', 'confirm');
     await screen.findByTestId('approvedBtn');
 
-    expect(onClose).toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
     expect(onShowGenericError).toHaveBeenCalled();
   });
 
@@ -414,32 +414,6 @@ describe('ProductDetail', () => {
     expect(screen.getByTestId('confirm-dialog')).toBeInTheDocument();
     fireEvent.click(screen.getByTestId('cancel-confirm'));
     expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
-  });
-
-  it.each([
-    ['success-wait', 'onShowWaitApprovedMsg'],
-    ['success-supervised', 'onShowSupervisedMsg'],
-    ['success-reject-approval', 'onShowRejectedApprovationMsg'],
-    ['success-accept-approval', 'onShowAcceptApprovationMsg'],
-  ])('fires confirm dialog onSuccess branch %s', (successId, callbackName) => {
-    const callbacks: any = {
-      onShowWaitApprovedMsg: jest.fn(),
-      onShowSupervisedMsg: jest.fn(),
-      onShowRejectedApprovationMsg: jest.fn(),
-      onShowAcceptApprovationMsg: jest.fn(),
-    };
-
-    renderDetail({ ...invitaliaUploaded, ...callbacks });
-
-    clickSequence('approvedBtn', successId);
-
-    expect(callbacks[callbackName]).toHaveBeenCalled();
-  });
-
-  it('does not invoke message callbacks when none provided in handleSuccess', () => {
-    renderDetail({ ...invitaliaUploaded, onShowRejectedMsg: undefined });
-
-    clickSequence('approvedBtn', 'success-wait');
   });
 
   it('renders cooking hobs check date label for registrationDate field', () => {

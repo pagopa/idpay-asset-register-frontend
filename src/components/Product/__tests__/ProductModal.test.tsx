@@ -142,16 +142,17 @@ describe('ProductModal', () => {
     });
   });
 
-  test('SUPERVISED: error flow closes but does not update table or call onSuccess', async () => {
+  test('SUPERVISED: error flow shows generic error without success', async () => {
     mockSetSupervisionedStatusList.mockRejectedValueOnce(new Error('boom'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'SUPERVISED' });
     await userEvent.type(screen.getByRole('textbox'), 'Reason');
     await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
 
     await waitFor(() => {
-      expect(onClose).toHaveBeenCalledTimes(2);
+      expect(onClose).not.toHaveBeenCalled();
       expect(onUpdateTable).not.toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
+      expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
     });
   });
 
@@ -196,7 +197,7 @@ describe('ProductModal', () => {
     });
   });
 
-  test('REJECTED: error flow closes but does not update table or call onSuccess', async () => {
+  test('REJECTED: error flow shows generic error without success', async () => {
     mockSetRejectedStatusList.mockRejectedValueOnce(new Error('fail'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'REJECTED' });
     const textboxes = screen.getAllByRole('textbox');
@@ -206,9 +207,10 @@ describe('ProductModal', () => {
     await userEvent.click(confirm);
 
     await waitFor(() => {
-      expect(onClose).toHaveBeenCalledTimes(2);
+      expect(onClose).not.toHaveBeenCalled();
       expect(onUpdateTable).not.toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
+      expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
     });
   });
 
@@ -282,16 +284,17 @@ describe('ProductModal', () => {
     expect(mockSetRestoredStatusList).not.toHaveBeenCalled();
   });
 
-  test('REJECT_APPROVATION: error flow closes but does not update table or call onSuccess', async () => {
+  test('REJECT_APPROVATION: error flow shows generic error without success', async () => {
     mockSetRestoredStatusList.mockRejectedValueOnce(new Error('fail'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'REJECT_APPROVATION' });
     await userEvent.type(screen.getByRole('textbox'), 'Motivo');
     await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
 
     await waitFor(() => {
-      expect(onClose).toHaveBeenCalledTimes(2);
+      expect(onClose).not.toHaveBeenCalled();
       expect(onUpdateTable).not.toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
+      expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
     });
   });
 
@@ -319,15 +322,16 @@ describe('ProductModal', () => {
     });
   });
 
-  test('ACCEPT_APPROVATION: error flow closes but does not update table or call onSuccess', async () => {
+  test('ACCEPT_APPROVATION: error flow shows generic error without success', async () => {
     mockSetApprovedStatusList.mockRejectedValueOnce(new Error('fail'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'ACCEPT_APPROVATION' });
     await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
 
     await waitFor(() => {
-      expect(onClose).toHaveBeenCalledTimes(2);
+      expect(onClose).not.toHaveBeenCalled();
       expect(onUpdateTable).not.toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
+      expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
     });
   });
 

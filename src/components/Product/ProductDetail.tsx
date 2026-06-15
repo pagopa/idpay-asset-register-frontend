@@ -525,10 +525,6 @@ export default function ProductDetail({
         onShowApprovedMsg();
       }
     } catch (error) {
-      setRestoreDialogOpen(false);
-      if (typeof onClose === 'function') {
-        onClose();
-      }
       if (typeof onShowGenericError === 'function') {
         onShowGenericError();
       }
@@ -785,7 +781,6 @@ export default function ProductDetail({
           })}
           onCancel={() => setRestoreDialogOpen(false)}
           onConfirm={handleConfirmRestore}
-          onSuccess={handleSuccess}
         />
 
         <ProductModal

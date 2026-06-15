@@ -31,6 +31,7 @@ import {
   MAX_LENGTH_TEXTFIELD_POPUP,
 } from '../../utils/constants';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import MsgResult from './MsgResult';
 
 interface ProductModalProps {
   open: boolean;
@@ -141,6 +142,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const [motivationOfficial, setMotivationOfficial] = useState('');
   const [motivationTouched, setMotivationTouched] = useState(false);
   const [motivationOfficialTouched, setMotivationOfficialTouched] = useState(false);
+  const [errorToastKey, setErrorToastKey] = useState(0);
 
   const isValidAlphanumeric = (value: string) => {
     const matches = value.match(/[a-zA-Z0-9]/g);
@@ -153,9 +155,17 @@ const ProductModal: React.FC<ProductModalProps> = ({
       setMotivationOfficial('');
       setMotivationTouched(false);
       setMotivationOfficialTouched(false);
+      setErrorToastKey(0);
     }
   }, [open]);
   const { t } = useScopedTranslation();
+
+  const showGenericError = (error: unknown) => {
+    if (DEBUG_CONSOLE) {
+      console.error(error);
+    }
+    setErrorToastKey((key) => key + 1);
+  };
 
   const renderMotivationField = (config: any) => {
     const showError =
@@ -313,8 +323,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      onClose(false);
       await setSupervisionedStatusList(initiativeId, gtinCodes, status, motivationInternal);
+      onClose(false);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -322,10 +332,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-      onClose(false);
+      showGenericError(error);
     }
   };
 
@@ -346,8 +353,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      onClose(false);
       await setRejectedStatusList(initiativeId, gtinCodes, status, motivationInternal, motivationOfficial);
+      onClose(false);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -355,10 +362,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-      onClose(false);
+      showGenericError(error);
     }
   };
 
@@ -371,8 +375,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
-      onClose(false);
       await setRestoredStatusList(initiativeId, gtinCodes, status, motivationInternal);
+      onClose(false);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -380,17 +384,14 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-      onClose(false);
+      showGenericError(error);
     }
   };
 
   const callApprovedApi = async () => {
     try {
-      onClose(false);
       await setApprovedStatusList(initiativeId, gtinCodes, status, EMPTY_DATA);
+      onClose(false);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -398,10 +399,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-      onClose(false);
+      showGenericError(error);
     }
   };
 
@@ -410,13 +408,22 @@ const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={() => onClose(true)}
-      PaperProps={{
-        sx: modalStyles.dialogPaper,
-      }}
-    >
+    <>
+      {errorToastKey > 0 && (
+        <MsgResult
+          key={errorToastKey}
+          severity="error"
+          message={t('msgResutlt.errorGenericDescription')}
+          bottom={80}
+        />
+      )}
+      <Dialog
+        open={open}
+        onClose={() => onClose(true)}
+        PaperProps={{
+          sx: modalStyles.dialogPaper,
+        }}
+      >
       <DialogTitle sx={modalStyles.dialogTitle}>{config?.title || ''}</DialogTitle>
 
       <DialogContent sx={{ p: 0 }}>
@@ -490,7 +497,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
           <CloseIcon />
         </IconButton>
       </DialogActions>
-    </Dialog>
+      </Dialog>
+    </>
   );
 };
 
