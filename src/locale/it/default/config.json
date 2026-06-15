@@ -6,7 +6,7 @@
       "default": {
         "logicalName": "Fallback Default",
         "permissions": {
-          "tables": ["products"]
+          "tables": []
         }
       }
     },
@@ -36,51 +36,6 @@
           "enabled": true,
           "defaultRowsPerPage": 10,
           "rowsPerPageOptions": [10, 25, 50, 100]
-        },
-        "bulkRules": {
-          "preventMixedStatus": true
-        },
-        "columns": [
-          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode" },
-          { "id": "productCode", "labelKey": "tables.products.columns.productCode" },
-          { "id": "category", "labelKey": "tables.products.columns.category" },
-          { "id": "status", "labelKey": "tables.products.columns.status" },
-          { "id": "batchName", "labelKey": "tables.products.columns.batchName" }
-        ],
-        "filters": [
-          {
-            "id": "category",
-            "type": "select",
-            "labelKey": "tables.products.filters.category"
-          },
-          {
-            "id": "status",
-            "type": "select",
-            "labelKey": "tables.products.filters.status"
-          },
-          {
-            "id": "gtinCode",
-            "type": "text",
-            "labelKey": "tables.products.filters.gtinCode",
-            "regEx": "^[a-zA-Z0-9]{1,14}$",
-            "message": "tables.products.filters.errors",
-            "inputProps": { "maxLength": 14 }
-          },
-          {
-            "id": "productFileId",
-            "type": "select",
-            "labelKey": "tables.products.filters.productFileId"
-          }
-        ],
-        "detail": {
-          "fields": [
-            { "id": "productSheet"},
-            { "id": "gtinCode" },
-            { "id": "productCode" },
-            { "id": "brand" },
-            { "id": "model" },
-            { "id": "status" }
-          ]
         }
       }
     }

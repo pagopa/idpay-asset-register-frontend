@@ -1,0 +1,115 @@
+{
+  "roles": {
+    "name": "support",
+    "logicalName": "Supporto",
+    "subRoles": {
+      "support": {
+        "logicalName": "Supporto",
+        "permissions": {
+          "tables": ["products"]
+        }
+      }
+    }
+  },
+  "templates": {
+    "functions":{
+      "enableTemplateUpload":false   
+    }
+   },
+  "ui": {
+    "tables": {
+      "products": {
+        "organizationSource": "user",
+        "bulkRules": {
+          "preventMixedStatus": true
+        },
+        "columns": [
+          {
+            "id": "category",
+            "labelKey": "tables.products.columns.category",
+            "sortable": true,
+            "align": "left"
+          },
+          {
+            "id": "energyClass",
+            "labelKey": "tables.products.columns.energyClass",
+            "sortable": true,
+            "align": "center"
+          },
+          {
+            "id": "eprelCode",
+            "labelKey": "tables.products.columns.eprelCode",
+            "type": "eprelLink",
+            "sortable": true,
+            "align": "center"
+          },
+          {
+            "id": "gtinCode",
+            "labelKey": "tables.products.columns.gtinCode",
+            "sortable": true,
+            "align": "center"
+          },
+          {
+            "id": "batchName",
+            "labelKey": "tables.products.columns.batchName",
+            "sortable": true,
+            "align": "left"
+          },
+          {
+            "id": "status",
+            "labelKey": "tables.products.columns.status",
+            "sortable": true,
+            "align": "left"
+          }
+        ],
+        "filters": [
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^[0-9]{1,12}$",
+            "message": "tables.products.filters.errors.eprelCode",
+            "inputProps": { "maxLength": 12 }
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode"
+          }
+        ],
+        "detail": {
+          "fields": [
+            { "id": "productName"},
+            { "id": "batchName" },
+            { "id": "registrationDate", "labelKey": "pages.productDetail.eprelCheckDate" },
+            { "id": "productSheet"},
+            { "id": "eprelCode", "labelKey": "pages.productDetail.eprelCode" },
+            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
+            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
+            { "id": "category", "labelKey": "pages.productDetail.category" },
+            { "id": "brand", "labelKey": "pages.productDetail.brand" },
+            { "id": "model", "labelKey": "pages.productDetail.model" },
+            { "id": "energyClass", "labelKey": "pages.productDetail.energyClass" },
+            { "id": "countryOfProduction", "labelKey": "pages.productDetail.countryOfProduction" },
+            { "id": "capacity", "labelKey": "pages.productDetail.capacity" }
+          ]
+        }
+      }
+    }
+  }
+}

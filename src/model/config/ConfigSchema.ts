@@ -87,6 +87,9 @@ export interface RolesConfig {
 export interface TemplatesConfig {
   categories?: Record<string, unknown>;
   formats?: Record<string, unknown>;
+  functions?: {
+    enableTemplateUpload?: boolean;
+  };
 }
 
 export interface ValidationConfig {

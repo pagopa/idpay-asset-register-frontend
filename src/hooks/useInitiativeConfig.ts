@@ -28,9 +28,17 @@ export const useInitiativeConfig = (): {
 
     const startDate = (initiative as any)?.startDate;
 
+    // ✅ TEMP MOCK: force "operatore" → "support" (remove after testing)
+    /* const effectiveRole =
+      user?.org_role === 'operatore'
+        ? 'support'
+        : user?.org_role;
+        */
+
     void dispatch(
       loadInitiativeConfigThunk({
         initiativeName: initiative?.initiativeName,
+        // role: effectiveRole,
         role: user.org_role,
         startDate,
       })
