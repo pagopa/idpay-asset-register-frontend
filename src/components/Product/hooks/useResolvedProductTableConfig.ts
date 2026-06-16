@@ -30,7 +30,7 @@ export function useResolvedProductTableConfig(
 ) {
   const tableConfig = resolveTableConfig(config);
 
-  if (DEBUG_CONSOLE) {
+  if (DEBUG_CONSOLE && tableConfig) {
     const columns = tableConfig?.columns;
     const filters = tableConfig?.filters;
     const detailFields = tableConfig?.detail?.fields;
@@ -42,7 +42,8 @@ export function useResolvedProductTableConfig(
       !Array.isArray(filters)
         ? 'filters (must be array)'
         : null,
-      !Array.isArray(detailFields) || detailFields.length === 0
+      tableConfig?.detail &&
+      (!Array.isArray(detailFields) || detailFields.length === 0)
         ? 'detail.fields (must be non-empty array)'
         : null,
     ].filter((e): e is string => Boolean(e));

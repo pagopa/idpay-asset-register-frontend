@@ -47,6 +47,21 @@ export const useInitiativeConfig = (): {
 
   const mapNewStructureToLegacy = (cfg: InitiativeConfig): LegacyInitiativeConfig => {
     const { roles, templates, validation, ui } = cfg ?? {};
+
+    const activeRole = roles?.name;
+    const allowedTables = activeRole
+      ? roles?.subRoles?.[activeRole]?.permissions?.tables
+      : undefined;
+
+    const filteredTables =
+      ui?.tables && allowedTables
+        ? (Object.fromEntries(
+            Object.entries(ui.tables).filter(([key]) =>
+              allowedTables.includes(key)
+            )
+          ) as LegacyInitiativeConfig['tables'])
+        : ui?.tables;
+
     return {
       role: roles?.name,
       logicalName: roles?.logicalName,
@@ -54,7 +69,7 @@ export const useInitiativeConfig = (): {
       errors: roles?.errors,
       templates,
       validation,
-      tables: ui?.tables,
+      tables: filteredTables,
     };
   };
 

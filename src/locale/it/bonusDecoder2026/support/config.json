@@ -6,7 +6,7 @@
       "support": {
         "logicalName": "Supporto",
         "permissions": {
-          "tables": ["products"]
+          "tables": ["products", "historyUpload","overviewInfo"]
         }
       }
     }
@@ -64,6 +64,16 @@
             "labelKey": "tables.products.filters.productCode"
           }
         ]
+      },
+      "historyUpload":{
+          "functions":{
+            "enableDownloadReport":false
+          }
+      },
+      "overviewInfo":{
+        "functions":{
+          "enableModifyEmail":false
+        }
       }
     }
   }

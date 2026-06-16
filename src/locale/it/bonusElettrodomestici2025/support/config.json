@@ -6,7 +6,7 @@
       "support": {
         "logicalName": "Supporto",
         "permissions": {
-          "tables": ["products"]
+          "tables": ["products","historyUpload","overviewInfo"]
         }
       }
     }
@@ -108,6 +108,16 @@
             { "id": "countryOfProduction", "labelKey": "pages.productDetail.countryOfProduction" },
             { "id": "capacity", "labelKey": "pages.productDetail.capacity" }
           ]
+        }
+      },
+      "historyUpload":{
+          "functions":{
+            "enableDownloadReport":false
+          }
+      },
+      "overviewInfo":{
+        "functions":{
+          "enableModifyEmail":false
         }
       }
     }

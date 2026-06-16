@@ -325,7 +325,8 @@
     "admin": "Amministratore",
     "operatore": "Operatore",
     "invitalia": "Operatore",
-    "invitalia_admin": "Operatore"
+    "invitalia_admin": "Operatore",
+    "support": "Assistenza"
   },
   "session": {
     "expired": {
