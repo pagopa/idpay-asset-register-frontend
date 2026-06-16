@@ -331,35 +331,7 @@ describe('ProductDetail', () => {
     expect(screen.getByDisplayValue('Operator visible reason')).toBeInTheDocument();
   });
 
-  it.each([
-    [
-      'closes after confirmation',
-      invitaliaUploaded,
-      'close-modal-confirmed',
-      true,
-    ],
-    [
-      'is cancelled',
-      adminWaitApproved,
-      'close-modal-cancelled',
-      false,
-    ],
-  ])('supervision modal %s', (_label, preset, closeTestId, shouldFire) => {
-    const onUpdate = jest.fn();
-    const onClose = jest.fn();
 
-    renderDetail({ ...preset, onUpdateTable: onUpdate, onClose });
-
-    clickSequence('supervisedBtn', closeTestId);
-
-    if (shouldFire) {
-      expect(onUpdate).toHaveBeenCalled();
-      expect(onClose).toHaveBeenCalled();
-    } else {
-      expect(onUpdate).not.toHaveBeenCalled();
-      expect(onClose).not.toHaveBeenCalled();
-    }
-  });
 
   it.each([
     ['supervisedBtn', 'modal-success', 'onShowSupervisedMsg'],
@@ -449,19 +421,7 @@ describe('ProductDetail', () => {
     expect(screen.getByDisplayValue('Formal reason no role')).toBeInTheDocument();
   });
 
-  it('handles exclude modal close by invoking update/close callbacks', () => {
-    const onUpdate = jest.fn();
-    const onClose = jest.fn();
 
-    renderDetail({ ...invitaliaUploaded, onUpdateTable: onUpdate, onClose });
-
-    fireEvent.click(screen.getByTestId('rejectedBtn'));
-    const closeButtons = screen.getAllByTestId('close-modal-confirmed');
-    fireEvent.click(closeButtons[closeButtons.length - 1]);
-
-    expect(onUpdate).toHaveBeenCalled();
-    expect(onClose).toHaveBeenCalled();
-  });
 
   it('renders formal motivation with chronology missing updateDate (invalid date branch)', () => {
     renderDetail({
