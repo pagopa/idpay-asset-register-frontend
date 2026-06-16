@@ -525,6 +525,7 @@ export default function ProductDetail({
         onShowApprovedMsg();
       }
     } catch (error) {
+      setRestoreDialogOpen(false);
       if (typeof onShowGenericError === 'function') {
         onShowGenericError();
       }

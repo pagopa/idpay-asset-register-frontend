@@ -738,6 +738,7 @@ const ProductDataGrid: React.FC<Props> = ({
               console.error('Error during restore:', error);
             }
             resetAllMsgResults();
+            setRestoreDialogOpen(false);
             setShowGenericError((key) => key + 1);
           }
         }}

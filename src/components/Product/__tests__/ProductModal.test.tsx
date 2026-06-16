@@ -142,14 +142,14 @@ describe('ProductModal', () => {
     });
   });
 
-  test('SUPERVISED: error flow shows generic error without success', async () => {
+  test('SUPERVISED: error flow closes modal and shows generic error without success', async () => {
     mockSetSupervisionedStatusList.mockRejectedValueOnce(new Error('boom'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'SUPERVISED' });
     await userEvent.type(screen.getByRole('textbox'), 'Reason');
     await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
 
     await waitFor(() => {
-      expect(onClose).not.toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalledWith(true);
       expect(onUpdateTable).not.toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
       expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
@@ -197,7 +197,7 @@ describe('ProductModal', () => {
     });
   });
 
-  test('REJECTED: error flow shows generic error without success', async () => {
+  test('REJECTED: error flow closes modal and shows generic error without success', async () => {
     mockSetRejectedStatusList.mockRejectedValueOnce(new Error('fail'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'REJECTED' });
     const textboxes = screen.getAllByRole('textbox');
@@ -207,7 +207,7 @@ describe('ProductModal', () => {
     await userEvent.click(confirm);
 
     await waitFor(() => {
-      expect(onClose).not.toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalledWith(true);
       expect(onUpdateTable).not.toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
       expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
@@ -284,14 +284,14 @@ describe('ProductModal', () => {
     expect(mockSetRestoredStatusList).not.toHaveBeenCalled();
   });
 
-  test('REJECT_APPROVATION: error flow shows generic error without success', async () => {
+  test('REJECT_APPROVATION: error flow closes modal and shows generic error without success', async () => {
     mockSetRestoredStatusList.mockRejectedValueOnce(new Error('fail'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'REJECT_APPROVATION' });
     await userEvent.type(screen.getByRole('textbox'), 'Motivo');
     await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
 
     await waitFor(() => {
-      expect(onClose).not.toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalledWith(true);
       expect(onUpdateTable).not.toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
       expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
@@ -322,17 +322,38 @@ describe('ProductModal', () => {
     });
   });
 
-  test('ACCEPT_APPROVATION: error flow shows generic error without success', async () => {
+  test('ACCEPT_APPROVATION: error flow closes modal and shows generic error without success', async () => {
     mockSetApprovedStatusList.mockRejectedValueOnce(new Error('fail'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'ACCEPT_APPROVATION' });
     await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
 
     await waitFor(() => {
-      expect(onClose).not.toHaveBeenCalled();
+      expect(onClose).toHaveBeenCalledWith(true);
       expect(onUpdateTable).not.toHaveBeenCalled();
       expect(onSuccess).not.toHaveBeenCalled();
       expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
     });
+  });
+
+  test('clears stale generic error when selection is emptied before selecting again', async () => {
+    mockSetApprovedStatusList.mockRejectedValueOnce(new Error('fail'));
+    const { rerender, props } = renderModal({ actionType: 'ACCEPT_APPROVATION' });
+
+    await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
+    });
+
+    rerender(<ProductModal {...props} open={false} selectedProducts={[]} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('msgResutlt.errorGenericDescription')).not.toBeInTheDocument();
+    });
+
+    rerender(<ProductModal {...props} open={false} selectedProducts={defaultProducts} />);
+
+    expect(screen.queryByText('msgResutlt.errorGenericDescription')).not.toBeInTheDocument();
   });
 
   test('state resets when modal reopens (open prop effect)', async () => {

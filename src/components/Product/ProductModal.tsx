@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -143,13 +143,14 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const [motivationTouched, setMotivationTouched] = useState(false);
   const [motivationOfficialTouched, setMotivationOfficialTouched] = useState(false);
   const [errorToastKey, setErrorToastKey] = useState(0);
+  const selectedProductsLength = selectedProducts?.length ?? 0;
 
   const isValidAlphanumeric = (value: string) => {
     const matches = value.match(/[a-zA-Z0-9]/g);
     return matches !== null && matches.length >= 2;
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
       setMotivationInternal('');
       setMotivationOfficial('');
@@ -158,6 +159,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
       setErrorToastKey(0);
     }
   }, [open]);
+
+  useEffect(() => {
+    if (selectedProductsLength === 0) {
+      setErrorToastKey(0);
+    }
+  }, [selectedProductsLength]);
   const { t } = useScopedTranslation();
 
   const showGenericError = (error: unknown) => {
@@ -165,6 +172,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       console.error(error);
     }
     setErrorToastKey((key) => key + 1);
+    onClose(true);
   };
 
   const renderMotivationField = (config: any) => {
@@ -308,7 +316,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const config = MODAL_CONFIG[actionType as keyof typeof MODAL_CONFIG];
 
-  if (!selectedProducts || selectedProducts.length === 0) {
+  if (!selectedProducts || selectedProductsLength === 0) {
     return null;
   }
   const gtinCodes = selectedProducts.map((p) => p.gtinCode);
