@@ -532,23 +532,6 @@ export default function ProductDetail({
     }
   };
 
-  const handleModalClose = (
-    setModalOpen: (open: boolean) => void,
-    showRejectedMsg?: boolean,
-    confirmed?: boolean
-  ) => {
-    setModalOpen(false);
-    if (typeof onUpdateTable === 'function') {
-      onUpdateTable();
-    }
-    if (typeof onClose === 'function') {
-      onClose();
-    }
-    if (showRejectedMsg && confirmed && typeof onShowRejectedMsg === 'function') {
-      onShowRejectedMsg();
-    }
-  };
-
   const resetAllMsgs = () => { };
 
   const setMsgByActionType = (actionType?: string) => {
@@ -786,17 +769,7 @@ export default function ProductDetail({
 
         <ProductModal
           open={supervisionModalOpen}
-          onClose={(cancelled) => {
-            setSupervisionModalOpen(false);
-            if (!cancelled) {
-              if (typeof onUpdateTable === 'function') {
-                onUpdateTable();
-              }
-              if (typeof onClose === 'function') {
-                onClose();
-              }
-            }
-          }}
+          onClose={() => setSupervisionModalOpen(false)}
           actionType={
             isInvitaliaUser ? PRODUCTS_STATES.SUPERVISED : MIDDLE_STATES.ACCEPT_APPROVATION
           }
@@ -817,7 +790,7 @@ export default function ProductDetail({
         />
         <ProductModal
           open={excludeModalOpen}
-          onClose={() => handleModalClose(setExcludeModalOpen, true)}
+          onClose={() => setExcludeModalOpen(false)}
           actionType={isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION}
           onUpdateTable={onUpdateTable}
           selectedProducts={[
