@@ -13,6 +13,9 @@ export interface FilterConfig {
   message?: string;
   inputProps?: Record<string, unknown>;
   options?: Record<string, { labelKey: string }>;
+  filtersBehavior?: {
+    statusOptionsByRole?: Record<string, Array<string>>;
+  };
 }
 
 export interface DetailFieldConfig {

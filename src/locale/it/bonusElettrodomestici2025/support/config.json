@@ -66,7 +66,12 @@
           {
             "id": "status",
             "type": "select",
-            "labelKey": "tables.products.filters.status"
+            "labelKey": "tables.products.filters.status",
+            "filtersBehavior": {
+              "statusOptionsByRole": {
+                "support": ["SUPERVISED","UPLOADED","WAIT_APPROVED", "APPROVED", "REJECTED"]
+              }
+            }
           },
           {
             "id": "productFileId",

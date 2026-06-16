@@ -340,6 +340,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
     filtersConfig,
     batchFilter,
     t,
+    currentRoleKey,
   });
 
   // Apply role-based default filters (e.g. L2 -> WAIT_APPROVED)
