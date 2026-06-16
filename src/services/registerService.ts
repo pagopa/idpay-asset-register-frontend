@@ -339,7 +339,7 @@ export const setSupervisionedStatusList = async (
     return await RegisterApi.setSupervisionedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setSupervisionedStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 
@@ -353,7 +353,7 @@ export const setApprovedStatusList = async (
     return await RegisterApi.setApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setApprovedStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 export const setWaitApprovedStatusList = async (
@@ -366,7 +366,7 @@ export const setWaitApprovedStatusList = async (
     return await RegisterApi.setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setWaitApprovedStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 
@@ -387,7 +387,7 @@ export const setRejectedStatusList = async (
     );
   } catch (error: any) {
     logProductError('RegisterApi.setRejectedStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 
@@ -401,7 +401,7 @@ export const setRestoredStatusList = async (
     return await RegisterApi.setRestoredStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setRestoredStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 

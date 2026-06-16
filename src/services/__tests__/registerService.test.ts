@@ -336,18 +336,13 @@ describe('Product Service', () => {
       );
     });
 
-    it('should handle error and return empty object', async () => {
+    it('should rethrow an error', async () => {
       const error = new Error('Status update failed');
       (RegisterApi.setSupervisionedStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setSupervisionedStatusList(
-        'init-test',
-        ['GTIN1'],
-        ProductStatus.APPROVED,
-        'test'
-      );
-
-      expect(result).toEqual({});
+      await expect(
+        setSupervisionedStatusList('init-test', ['GTIN1'], ProductStatus.APPROVED, 'test')
+      ).rejects.toBe(error);
     });
   });
 
@@ -373,16 +368,12 @@ describe('Product Service', () => {
     });
 
     it('should handle error', async () => {
-      (RegisterApi.setApprovedStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
+      const error = new Error('Failed');
+      (RegisterApi.setApprovedStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setApprovedStatusList(
-        'init-test',
-        ['GTIN1'],
-        ProductStatus.SUPERVISED,
-        'Approved'
-      );
-
-      expect(result).toEqual({});
+      await expect(
+        setApprovedStatusList('init-test', ['GTIN1'], ProductStatus.SUPERVISED, 'Approved')
+      ).rejects.toBe(error);
     });
   });
 
@@ -408,16 +399,12 @@ describe('Product Service', () => {
     });
 
     it('should handle error', async () => {
-      (RegisterApi.setWaitApprovedStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
+      const error = new Error('Failed');
+      (RegisterApi.setWaitApprovedStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setWaitApprovedStatusList(
-        'init-test',
-        ['GTIN1'],
-        ProductStatus.SUPERVISED,
-        'Waiting'
-      );
-
-      expect(result).toEqual({});
+      await expect(
+        setWaitApprovedStatusList('init-test', ['GTIN1'], ProductStatus.SUPERVISED, 'Waiting')
+      ).rejects.toBe(error);
     });
   });
 
@@ -445,17 +432,18 @@ describe('Product Service', () => {
     });
 
     it('should handle error', async () => {
-      (RegisterApi.setRejectedStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
+      const error = new Error('Failed');
+      (RegisterApi.setRejectedStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setRejectedStatusList(
-        'init-test',
-        ['GTIN1'],
-        ProductStatus.APPROVED,
-        'reason',
-        'formal'
-      );
-
-      expect(result).toEqual({});
+      await expect(
+        setRejectedStatusList(
+          'init-test',
+          ['GTIN1'],
+          ProductStatus.APPROVED,
+          'reason',
+          'formal'
+        )
+      ).rejects.toBe(error);
     });
   });
 
@@ -481,16 +469,12 @@ describe('Product Service', () => {
     });
 
     it('should handle error', async () => {
-      (RegisterApi.setRestoredStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
+      const error = new Error('Failed');
+      (RegisterApi.setRestoredStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setRestoredStatusList(
-        'init-test',
-        ['GTIN1'],
-        ProductStatus.REJECTED,
-        'Restored'
-      );
-
-      expect(result).toEqual({});
+      await expect(
+        setRestoredStatusList('init-test', ['GTIN1'], ProductStatus.REJECTED, 'Restored')
+      ).rejects.toBe(error);
     });
   });
 
