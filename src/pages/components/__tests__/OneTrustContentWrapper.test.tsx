@@ -1,4 +1,4 @@
-import './pageComponentsCommonMocks';
+import './pageComponentsCommonMocks.setup';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';
 import OneTrustContentWrapper from '../OneTrustContentWrapper';
 

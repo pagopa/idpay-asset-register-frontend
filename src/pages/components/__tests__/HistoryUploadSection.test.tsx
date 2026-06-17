@@ -1,4 +1,4 @@
-import './pageComponentsCommonMocks';
+import './pageComponentsCommonMocks.setup';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -6,7 +6,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as registerService from '../../../services/registerService';
 import * as helpers from '../../addProducts/helpers';
-import * as redux from 'react-redux';
 import UploadsTable from '../HistoryUploadSection';
 import '@testing-library/jest-dom';
 
