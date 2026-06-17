@@ -30,6 +30,7 @@ import { delay } from '../../helpers';
 import { buildRoute } from '../../components/SideMenu/SideMenu';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { useCategories } from '../../hooks/useCategories';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { downloadCsv } from './helpers';
 import FileUploadSection from './fileUploadSection';
 
@@ -45,7 +46,8 @@ export type FormAddProductsRef = {
 const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
   // eslint-disable-next-line sonarjs/cognitive-complexity
   ({ fileAccepted, setFileAccepted }, ref) => {
-    const {categories} = useCategories();
+    const { categories } = useCategories();
+    const { config } = useInitiativeConfig();
     const { t } = useScopedTranslation();
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();
@@ -53,6 +55,8 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
     const fileState = useFileState();
     const errorHandling = useErrorHandling(t);
+
+    const isTemplateUploadEnabled = config?.templates?.functions?.enableTemplateUpload !== false;
 
     const validationSchema = Yup.object().shape({
       category: Yup.string().required(t('validation.categoryRequired')),
@@ -153,6 +157,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
       maxFiles: 1,
       maxSize: 2097152,
       accept: { 'text/csv': ['.csv'] },
+      disabled: !isTemplateUploadEnabled,
       onFileDialogOpen: () => {
         if (!isCategoryValid()) {
           errorHandling.showCategoryError();
@@ -228,7 +233,6 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         throw new Error('No file available');
       }
 
-
       const res = await uploadProductList(
         initiativeId,
         fileState.currentFile,
@@ -237,7 +241,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
       if (res.status === 200) {
         await delay(1000);
-        onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ""), { replace: true }));
+        onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ''), { replace: true }));
       } else {
         handleUploadErrorAndRejectFile(res.data);
       }
@@ -305,15 +309,16 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
                 inputProps={{ 'data-testid': 'selectTimeParam-test' }}
                 data-testid="category-label"
               >
-                { categories && Object.entries(categories).map(([key, value]) => (
-                  <MenuItem
-                    key={`category-select-${key}`}
-                    value={key}
-                    data-testid={`category-option-${key}`}
-                  >
-                    {value.label}
-                  </MenuItem>
-                ))}
+                {categories &&
+                  Object.entries(categories).map(([key, value]) => (
+                    <MenuItem
+                      key={`category-select-${key}`}
+                      value={key}
+                      data-testid={`category-option-${key}`}
+                    >
+                      {value.label}
+                    </MenuItem>
+                  ))}
               </Select>
               <FormHelperText
                 error={formik.touched.category && Boolean(formik.errors.category)}
@@ -341,6 +346,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
               formikCategory={formik.values.category}
               csvTemplate={categories?.[formik.values.category]?.csv}
               t={t}
+              disabled={!isTemplateUploadEnabled}
             />
           </Box>
         </Paper>
@@ -355,12 +361,21 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
         >
           <Button
             variant="outlined"
-            onClick={() => onExit(() => navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ""), { replace: true }))}
+            onClick={() =>
+              onExit(() =>
+                navigate(buildRoute(ROUTES.OVERVIEW, initiativeId ?? ''), { replace: true })
+              )
+            }
             data-testid="cancel-button-test"
           >
             {t('common.backBtn')}
           </Button>
-          <Button variant="contained" onClick={handleContinue} data-testid="continue-button-test">
+          <Button
+            variant="contained"
+            onClick={handleContinue}
+            disabled={!isTemplateUploadEnabled}
+            data-testid="continue-button-test"
+          >
             {t('common.continueBtn')}
           </Button>
         </Box>

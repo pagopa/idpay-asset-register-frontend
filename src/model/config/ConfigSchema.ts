@@ -13,6 +13,9 @@ export interface FilterConfig {
   message?: string;
   inputProps?: Record<string, unknown>;
   options?: Record<string, { labelKey: string }>;
+  filtersBehavior?: {
+    statusOptionsByRole?: Record<string, Array<string>>;
+  };
 }
 
 export interface DetailFieldConfig {
@@ -60,10 +63,24 @@ export interface ProductTableConfig {
   };
 }
 
+export interface HistoryUploadTableConfig {
+  functions?: {
+    enableDownloadReport?: boolean;
+  };
+}
+
+export interface OverviewInfoTableConfig {
+  functions?: {
+    enableModifyEmail?: boolean;
+  };
+}
+
 export interface InitiativeUIConfig {
   resolutionUpscaling?: number;
   tables: {
     products: ProductTableConfig;
+    historyUpload?: HistoryUploadTableConfig;
+    overviewInfo?: OverviewInfoTableConfig;
   };
 }
 
@@ -87,6 +104,9 @@ export interface RolesConfig {
 export interface TemplatesConfig {
   categories?: Record<string, unknown>;
   formats?: Record<string, unknown>;
+  functions?: {
+    enableTemplateUpload?: boolean;
+  };
 }
 
 export interface ValidationConfig {
@@ -94,6 +114,7 @@ export interface ValidationConfig {
     regEx: string;
   };
 }
+
 
 export interface InitiativeConfig {
   roles: RolesConfig;
@@ -119,5 +140,7 @@ export interface LegacyInitiativeConfig {
   validation?: ValidationConfig;
   tables?: {
     products: ProductTableConfig;
+    historyUpload?: HistoryUploadTableConfig;
+    overviewInfo?: OverviewInfoTableConfig;
   };
 }

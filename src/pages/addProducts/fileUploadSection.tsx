@@ -23,6 +23,7 @@ const FileUploadSection = ({
   formikCategory,
   csvTemplate,
   t,
+  disabled,
 }: any) => {
   if (fileIsLoading) {
     return <LoadingFile message={t('pages.addProducts.form.fileUpload.fileIsLoading')} />;
@@ -60,7 +61,14 @@ const FileUploadSection = ({
           gridTemplateColumns: 'repeat(12, 1fr)',
         }}
       >
-        <Box sx={initUploadBoxStyle} {...getRootProps({ className: 'dropzone' })}>
+        <Box
+          sx={{
+            ...initUploadBoxStyle,
+            opacity: disabled ? 0.5 : 1,
+            pointerEvents: disabled ? 'none' : 'auto',
+          }}
+          {...getRootProps({ className: 'dropzone' })}
+        >
           <input {...getInputProps()} data-testid="drop-input" onClick={onInputClick} />
           <InitUploadBox
             text={t('pages.addProducts.form.fileUpload.dragAreaText')}

@@ -14,6 +14,7 @@ import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { updateOperativeEmail } from '../../services/registerService';
 import { useCurrentInitiative } from '../../hooks/useCurrentInitiative';
 import { useInitiativesQuery } from '../../hooks/useInitiativesQuery';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 
 type ToastState = {
   open: boolean;
@@ -27,7 +28,10 @@ const Overview: React.FC = () => {
   const initiativeId = useCurrentInitiativeId();
   const currentInitiative = useCurrentInitiative();
   const { refetch: refetchInitiatives } = useInitiativesQuery();
+  const { config } = useInitiativeConfig();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
+
+  const isModifyEmailEnabled = config?.tables?.overviewInfo?.functions?.enableModifyEmail !== false;
   const [operativeEmailModalOpen, setOperativeEmailModalOpen] = useState(false);
   const [operativeEmailLoading, setOperativeEmailLoading] = useState(false);
   const [toast, setToast] = useState<ToastState>({
@@ -73,25 +77,26 @@ const Overview: React.FC = () => {
   };
 
   const fields = useMemo(
-    () => [
-      { label: 'overviewTitleBoxInfoTitleLblRs', value: user?.org_name },
-      { label: 'overviewTitleBoxInfoTitleLblCf', value: user?.org_taxcode },
-      { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat },
-      { label: 'overviewTitleBoxInfoTitleLblSl', value: user?.org_address },
-      { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec },
-      { label: 'overviewTitleBoxInfoTitleLblEmailOp', value: operativeEmail },
-    ].map(({ label, value }) => {
-      const hasValidValue = typeof value === 'string' && value.length > 0;
+    () =>
+      [
+        { label: 'overviewTitleBoxInfoTitleLblRs', value: user?.org_name },
+        { label: 'overviewTitleBoxInfoTitleLblCf', value: user?.org_taxcode },
+        { label: 'overviewTitleBoxInfoTitleLblPiva', value: user?.org_vat },
+        { label: 'overviewTitleBoxInfoTitleLblSl', value: user?.org_address },
+        { label: 'overviewTitleBoxInfoTitleLblPec', value: user?.org_pec },
+        { label: 'overviewTitleBoxInfoTitleLblEmailOp', value: operativeEmail },
+      ].map(({ label, value }) => {
+        const hasValidValue = typeof value === 'string' && value.length > 0;
 
-      return {
-        label,
-        value,
-        hasValidValue,
-        displayValue: hasValidValue
-          ? truncateString(value as string, MAX_LENGTH_OVERVIEW_PROD)
-          : value || EMPTY_DATA,
-      };
-    }),
+        return {
+          label,
+          value,
+          hasValidValue,
+          displayValue: hasValidValue
+            ? truncateString(value as string, MAX_LENGTH_OVERVIEW_PROD)
+            : value || EMPTY_DATA,
+        };
+      }),
     [user, operativeEmail]
   );
 
@@ -110,11 +115,19 @@ const Overview: React.FC = () => {
       />
 
       {isOperativeEmailMissing && (
-        <Box sx={{mb: 3, '& .MuiAlert-message': { fontSize: 16, }, '& .MuiAlert-root': {display: "flex", alignItems: "center", justifyContent: "flex-start" }}}>
-          <Alert severity="warning" variant='outlined'>
-            <Typography>
-              {t('pages.overview.missingOperativeEmailWarning')}
-            </Typography>
+        <Box
+          sx={{
+            mb: 3,
+            '& .MuiAlert-message': { fontSize: 16 },
+            '& .MuiAlert-root': {
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+            },
+          }}
+        >
+          <Alert severity="warning" variant="outlined">
+            <Typography>{t('pages.overview.missingOperativeEmailWarning')}</Typography>
           </Alert>
         </Box>
       )}
@@ -201,11 +214,15 @@ const Overview: React.FC = () => {
                       {isOperativeEmail && (
                         <ButtonNaked
                           aria-label="Modifica e-mail operativa"
-                          onClick={() => setOperativeEmailModalOpen(true)}
+                          onClick={() => isModifyEmailEnabled && setOperativeEmailModalOpen(true)}
                           size="medium"
                           sx={{ flexShrink: 0 }}
+                          disabled={!isModifyEmailEnabled}
                         >
-                          <EditOutlined color='primary' sx={{ width: 22 }} />
+                          <EditOutlined
+                            color={isModifyEmailEnabled ? 'primary' : 'disabled'}
+                            sx={{ width: 22 }}
+                          />
                         </ButtonNaked>
                       )}
                     </Box>
