@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { theme } from '@pagopa/mui-italia';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -28,7 +29,7 @@ const dialogStyles = {
     padding: 0,
     marginBottom: 2,
     fontFamily: 'Titillium Web',
-    fontWeight: 700,
+    fontWeight: theme.typography.fontWeightBold,
     fontSize: 24,
   },
   dialogContent: {

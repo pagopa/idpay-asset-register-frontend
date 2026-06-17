@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import TuneIcon from '@mui/icons-material/Tune';
+import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 
 type NewFilterProps = {
@@ -24,7 +25,7 @@ const NewFilter: React.FC<NewFilterProps> = ({ onClick }) => {
         color="primary"
         sx={{
           minWidth: 'auto',
-          fontWeight: 'bold',
+          fontWeight: theme.typography.fontWeightBold,
         }}
       >
         <TuneIcon fontSize="small" />

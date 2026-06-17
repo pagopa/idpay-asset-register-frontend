@@ -10,6 +10,7 @@ import {
   Button,
 } from '@mui/material';
 import FlagIcon from '@mui/icons-material/Flag';
+import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import {
   setSupervisionedStatusList,
@@ -69,13 +70,13 @@ const modalStyles = {
     padding: 0,
     marginBottom: 2,
     fontFamily: 'Titillium Web',
-    fontWeight: 700,
+    fontWeight: theme.typography.fontWeightBold,
     fontSize: 24,
   },
   descriptionText: {
     marginBottom: 2,
     fontFamily: 'Titillium Web',
-    fontWeight: 400,
+    fontWeight: theme.typography.fontWeightRegular,
     fontSize: 18,
     lineHeight: '24px',
   },
@@ -87,7 +88,7 @@ const modalStyles = {
   },
   productText: {
     fontFamily: 'Titillium Web',
-    fontWeight: 400,
+    fontWeight: theme.typography.fontWeightRegular,
     fontSize: 18,
     marginBottom: 1,
   },

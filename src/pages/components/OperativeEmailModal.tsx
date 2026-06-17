@@ -15,7 +15,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import ErrorIcon from '@mui/icons-material/Report';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import { ButtonNaked } from '@pagopa/mui-italia';
+import { ButtonNaked, theme } from '@pagopa/mui-italia';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 
@@ -63,7 +63,7 @@ const modalStyles = {
     fontFamily: 'Titillium Web',
     fontSize: 24,
     color: "text.primary",
-    fontWeight: 700,
+    fontWeight: theme.typography.fontWeightBold,
   },
   content: {
     p: 0,
@@ -145,7 +145,7 @@ const modalStyles = {
   },
   cancelButton: {
     color: MODAL_PRIMARY_COLOR,
-    fontWeight: 700,
+    fontWeight: theme.typography.fontWeightBold,
     fontSize: 15,
     '&:hover': {
       color: MODAL_PRIMARY_COLOR,
