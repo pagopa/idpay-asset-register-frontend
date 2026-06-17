@@ -206,6 +206,201 @@ describe('OverviewProductionSection', () => {
     expect(await screen.findByRole('button', { name: /carica prodotti/i })).toBeEnabled();
   });
 
+  it('renders PARTIAL status chip', async () => {
+    mockGetProductFilesList.mockResolvedValue({
+      data: {
+        content: [
+          {
+            productFileId: '1',
+            batchName: 'Batch 1',
+            uploadStatus: 'PARTIAL',
+            dateUpload: '2023-07-15T10:30:45Z',
+          },
+        ],
+      },
+    });
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+    expect(await screen.findByText('Parziale')).toBeInTheDocument();
+  });
+
+  it('renders unknown status chip with raw status label (default branch)', async () => {
+    mockGetProductFilesList.mockResolvedValue({
+      data: {
+        content: [
+          {
+            productFileId: '1',
+            batchName: 'Batch 1',
+            uploadStatus: 'SOMETHING_ELSE',
+            dateUpload: '2023-07-15T10:30:45Z',
+          },
+        ],
+      },
+    });
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+    expect(await screen.findByText('SOMETHING_ELSE')).toBeInTheDocument();
+  });
+
+  it('renders EMPTY_DATA chip when uploadStatus is missing (nullish coalescing)', async () => {
+    mockGetProductFilesList.mockResolvedValue({
+      data: {
+        content: [
+          {
+            productFileId: '1',
+            batchName: 'Batch 1',
+            uploadStatus: undefined,
+            dateUpload: '2023-07-15T10:30:45Z',
+          },
+        ],
+      },
+    });
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+    await waitFor(() => {
+      expect(screen.getByText('stato caricamenti')).toBeInTheDocument();
+    });
+  });
+
+  it('renders EMPTY_DATA in the date cell when dateUpload is missing', async () => {
+    mockGetProductFilesList.mockResolvedValue({
+      data: {
+        content: [
+          {
+            productFileId: '1',
+            batchName: 'Batch 1',
+            uploadStatus: 'LOADED',
+            dateUpload: undefined,
+          },
+        ],
+      },
+    });
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+    // Ultimo caricamento block uses EMPTY_DATA when firstUploadDate is undefined
+    await waitFor(() => {
+      expect(screen.getByText('Ultimo caricamento')).toBeInTheDocument();
+    });
+  });
+
+  it('falls back to EMPTY_DATA when dateUpload is an invalid date string', async () => {
+    mockGetProductFilesList.mockResolvedValue({
+      data: {
+        content: [
+          {
+            productFileId: '1',
+            batchName: 'Batch 1',
+            uploadStatus: 'LOADED',
+            dateUpload: 'not-a-date',
+          },
+        ],
+      },
+    });
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Ultimo caricamento')).toBeInTheDocument();
+    });
+  });
+
+  it('renders IN_PROCESS variant with EMPTY_DATA when dateUpload is missing', async () => {
+    mockGetProductFilesList.mockResolvedValue({
+      data: {
+        content: [
+          {
+            productFileId: '1',
+            batchName: 'Batch 1',
+            uploadStatus: 'IN_PROCESS',
+            dateUpload: undefined,
+          },
+        ],
+      },
+    });
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Ultimo caricamento')).toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: /carica prodotti/i })).toBeDisabled();
+  });
+
+  it('does not navigate from the upload button when initiativeId is missing', async () => {
+    mockUseCurrentInitiativeId.mockReturnValue(undefined);
+    mockGetProductFilesList.mockResolvedValue({ data: { content: [] } });
+    const user = userEvent.setup();
+
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+
+    await user.click(await screen.findByRole('button', { name: /carica prodotti/i }));
+
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockOnExit).not.toHaveBeenCalled();
+  });
+
+  it('does not navigate from the "all uploads" link when initiativeId is missing', async () => {
+    mockUseCurrentInitiativeId.mockReturnValue(undefined);
+    mockGetProductFilesList.mockResolvedValue({
+      data: {
+        content: [
+          {
+            productFileId: '1',
+            batchName: 'Batch 1',
+            uploadStatus: 'LOADED',
+            dateUpload: '2023-07-15T10:30:45Z',
+          },
+        ],
+      },
+    });
+    const user = userEvent.setup();
+
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+
+    await user.click(await screen.findByRole('button', { name: /vedi i caricamenti/i }));
+
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('renders the error state when getProductFilesList rejects', async () => {
+    mockGetProductFilesList.mockRejectedValue(new Error('boom'));
+
+    render(
+      <TestWrapper>
+        <OverviewProductionSection />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Carica i tuoi prodotti per iniziare')).toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: /carica prodotti/i })).toBeDisabled();
+  });
+
   it('navigates to uploads history with the current initiative id', async () => {
     mockGetProductFilesList.mockResolvedValue({
       data: {
