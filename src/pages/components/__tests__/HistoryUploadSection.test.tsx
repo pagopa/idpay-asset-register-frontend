@@ -1,28 +1,4 @@
-jest.mock('../../../utils/env', () => ({
-  __esModule: true,
-  ENV: {
-    URL_API: {
-      OPERATION: 'https://mock-api/register',
-    },
-    API_TIMEOUT_MS: {
-      OPERATION: 5000,
-    },
-  },
-}));
-jest.mock('../../../routes', () => ({
-  __esModule: true,
-  default: {
-    HOME: '/home',
-    PRODUCTS: '/home/:initiativeId/prodotti',
-  },
-  BASE_ROUTE: '/base',
-}));
-jest.mock('../../../api/registerApiClient', () => ({
-  RegisterApi: {
-    getProducts: jest.fn(),
-    getBatchFilterItems: jest.fn(),
-  },
-}));
+import '../__mocks__/pageComponentsCommonMocks';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 jest.mock('../../../hooks/useIDPayUser', () => ({
@@ -37,7 +13,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as registerService from '../../../services/registerService';
 import * as helpers from '../../addProducts/helpers';
-import * as redux from 'react-redux';
 import UploadsTable from '../HistoryUploadSection';
 import '@testing-library/jest-dom';
 
