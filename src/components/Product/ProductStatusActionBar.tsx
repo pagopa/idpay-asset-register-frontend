@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import FlagIcon from '@mui/icons-material/Flag';
+import { theme } from '@pagopa/mui-italia';
 import { ProductDTO } from '../../api/generated/register';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
@@ -17,7 +18,7 @@ type Props = {
 
 const buttonStyle = {
   height: 48,
-  fontWeight: 700,
+  fontWeight: theme.typography.fontWeightBold,
   fontSize: 16,
   marginRight: 2,
 };

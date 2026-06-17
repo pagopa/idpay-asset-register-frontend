@@ -94,6 +94,7 @@ jest.mock('@pagopa/mui-italia', () => ({
       {children}
     </button>
   ),
+  theme: { typography: { fontWeightBold: 700 } },
 }));
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor', () => ({
