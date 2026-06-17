@@ -85,19 +85,11 @@ export function useEnrichedProductFilters({ isInvitalia, typedConfig, filtersCon
         currentRoleKey as string
       ] as Array<string> | undefined;
 
-    if (currentRoleKey === USERS_TYPES.SUPPORT && roleStatusConfig) {
+    if (roleStatusConfig) {
       return roleStatusConfig.reduce<Record<string, any>>((acc, key) => {
         const option = (baseOptions as Record<string, any>)[key];
         return option ? { ...acc, [key]: option } : acc;
       }, {});
-    }
-
-    if (roleStatusConfig) {
-      return Object.fromEntries(
-        Object.entries(baseOptions).filter(([key]) =>
-          roleStatusConfig.includes(key)
-        )
-      );
     }
 
     return baseOptions;
