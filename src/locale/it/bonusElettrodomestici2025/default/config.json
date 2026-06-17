@@ -57,6 +57,7 @@
     }
   },
   "templates": {
+    "useNameAsCategoryValue": true,
     "formats": {
       "csv": {
         "headers": [
@@ -84,18 +85,18 @@
           "Categoria",
           "Paese di Produzione"
         ],
-        "fields": ["12345", "GTIN01234", "SKU12345", "Lavatrice", "IT"]
+        "fields": ["12345", "GTIN01234", "SKU12345", "{{category}}", "IT"]
       }
     },
     "categories": {
-      "washingmachines": { "format": "eprel", "name": "eprel" },
-      "tumbledryers": { "format": "eprel", "name": "eprel" },
-      "ovens": { "format": "eprel", "name": "eprel" },
-      "rangehoods": { "format": "eprel", "name": "eprel" },
-      "dishwashers": { "format": "eprel", "name": "eprel" },
-      "washerdriers": { "format": "eprel", "name": "eprel" },
-      "refrigeratingappl": { "format": "eprel", "name": "eprel" },
-      "cookinghobs": { "format": "csv", "name": "cookinghobs" }
+      "washingmachines": { "format": "eprel", "name": "Lavatrice" },
+      "tumbledryers": { "format": "eprel", "name": "Asciugatrice" },
+      "ovens": { "format": "eprel", "name": "Forno" },
+      "rangehoods": { "format": "eprel", "name": "Cappa da cucina" },
+      "dishwashers": { "format": "eprel", "name": "Lavastoviglie" },
+      "washerdriers": { "format": "eprel", "name": "Lavasciuga" },
+      "refrigeratingappl": { "format": "eprel", "name": "Apparecchio di refrigerazione" },
+      "cookinghobs": { "format": "csv", "name": "Piano cottura" }
     }
   },
   "ui": {
