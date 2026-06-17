@@ -1,4 +1,4 @@
-import './pageComponentsCommonMocks.setup';
+import '../__mocks__/pageComponentsCommonMocks';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 jest.mock('../../../hooks/useIDPayUser', () => ({
