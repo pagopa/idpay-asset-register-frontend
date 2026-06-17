@@ -5,6 +5,12 @@ import { createTheme } from '@mui/material/styles';
 import { fetchUserFromLocalStorage, truncateString } from '../../../helpers';
 import '@testing-library/jest-dom';
 import Overview from '../overview';
+
+jest.mock('react-redux', () => ({
+  Provider: ({ children }: any) => children,
+  useDispatch: () => jest.fn(),
+  useSelector: () => ({}),
+}));
 import { useCurrentInitiative } from '../../../hooks/useCurrentInitiative';
 import { updateOperativeEmail } from '../../../services/registerService';
 import { useCurrentInitiativeId } from '../../../hooks/useCurrentInitiativeId';
@@ -14,7 +20,7 @@ const mockRefetchInitiatives = jest.fn();
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      const translations: { [key: string]: string } = {
+      const translations: Record<string, string> = {
         'pages.overview.overviewTitle': 'Panoramica',
         'pages.overview.overviewTitleDescription': 'Descrizione della panoramica',
         'pages.overview.overviewTitleBoxInfo': 'Informazioni Organizzazione',
@@ -27,22 +33,19 @@ jest.mock('react-i18next', () => ({
         'pages.overview.missingOperativeEmailWarning':
           "Inserisci l'e-mail operativa per poter caricare i prodotti.",
       };
-      return translations[key] || key;
+      return translations[key] ?? key;
     },
   }),
-  withTranslation: () => (Component: any) => {
-    Component.defaultProps = { ...(Component.defaultProps || {}), t: (k: string) => k };
-    return Component;
-  },
+  withTranslation: () => (Component: any) => Component,
 }));
 
 jest.mock('../../../helpers', () => ({
   fetchUserFromLocalStorage: jest.fn(),
-  truncateString: jest.fn((str, maxLength) => {
-    if (str && str.length > maxLength) {
+  truncateString: jest.fn((str?: string, maxLength?: number) => {
+    if (str && maxLength && str.length > maxLength) {
       return str.substring(0, maxLength) + '...';
     }
-    return str;
+    return str ?? '';
   }),
 }));
 
@@ -76,12 +79,17 @@ const renderWithTheme = (component: React.ReactElement) => {
   return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
 };
 
+jest.mock('@reduxjs/toolkit/query/react', () => ({
+  createApi: jest.fn(),
+  fetchBaseQuery: jest.fn(),
+}));
+
 jest.mock('../../../redux/api/initiativesApi', () => ({
   useGetInitiativesQuery: () => ({
     data: [],
     isLoading: false,
     isError: false,
-    refetch: mockRefetchInitiatives,
+    refetch: jest.fn(),
   }),
 }));
 
@@ -181,11 +189,11 @@ describe('Overview Component', () => {
     it('should display user data with tooltips when data is available and truncated', () => {
       mockFetchUserFromLocalStorage.mockReturnValue(mockUserData);
 
-      mockTruncateString.mockImplementation((str, maxLength) => {
-        if (str && str.length > maxLength) {
+      mockTruncateString.mockImplementation((str?: string, maxLength?: number) => {
+        if (str && maxLength && str.length > maxLength) {
           return str.substring(0, maxLength) + '...';
         }
-        return str;
+        return str ?? '';
       });
 
       renderWithTheme(<Overview />);
@@ -243,7 +251,7 @@ describe('Overview Component', () => {
         org_email: undefined,
       };
 
-      mockFetchUserFromLocalStorage.mockReturnValue(emptyUser);
+      mockFetchUserFromLocalStorage.mockReturnValue(emptyUser as any);
       mockUseCurrentInitiative.mockReturnValue(undefined);
 
       renderWithTheme(<Overview />);
@@ -268,7 +276,7 @@ describe('Overview Component', () => {
         org_email: undefined,
       };
 
-      mockFetchUserFromLocalStorage.mockReturnValue(partialUser);
+      mockFetchUserFromLocalStorage.mockReturnValue(partialUser as any);
       mockUseCurrentInitiative.mockReturnValue(undefined);
 
       renderWithTheme(<Overview />);
@@ -314,7 +322,7 @@ describe('Overview Component', () => {
         org_email: 'test@email.it',
       };
 
-      mockFetchUserFromLocalStorage.mockReturnValue(userWithSomeEmptyFields);
+      mockFetchUserFromLocalStorage.mockReturnValue(userWithSomeEmptyFields as any);
 
       renderWithTheme(<Overview />);
 
@@ -385,7 +393,7 @@ describe('Overview Component', () => {
 
   describe('Error Handling Tests', () => {
     it('should handle when fetchUserFromLocalStorage returns undefined', () => {
-      mockFetchUserFromLocalStorage.mockReturnValue(undefined);
+      mockFetchUserFromLocalStorage.mockReturnValue(undefined as any);
       mockUseCurrentInitiative.mockReturnValue(undefined);
 
       renderWithTheme(<Overview />);
