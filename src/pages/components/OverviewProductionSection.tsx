@@ -19,7 +19,7 @@ import {
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
 import { useNavigate } from 'react-router-dom';
-import { ButtonNaked } from '@pagopa/mui-italia';
+import { ButtonNaked, theme } from '@pagopa/mui-italia';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { ArrowForward } from '@mui/icons-material';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
@@ -92,7 +92,7 @@ const UploadInfoBox: React.FC<{
   const initiativeId = useCurrentInitiativeId();
 
   const onClick = () => {
-    if (!initiativeId) { return; };
+    if (!initiativeId) { return; }
 
     onExit(() =>
       navigate(
@@ -214,7 +214,7 @@ const UploadsTable: React.FC<{
                         display: 'block',
                         width: '100%',
                         textAlign: 'left',
-                        fontWeight: 700,
+                        fontWeight: theme.typography.fontWeightBold,
                         letterSpacing: 1,
                         mb: 2,
                       }}
@@ -269,7 +269,7 @@ const UploadsTable: React.FC<{
             endIcon={<ArrowForward />}
             size="medium"
             onClick={() => {
-              if (!initiativeId) {return;};
+              if (!initiativeId) {return;}
 
               onExit(() =>
                 navigate(

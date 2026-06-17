@@ -8,10 +8,9 @@ import {
   Typography,
   TextField,
   Button,
-  IconButton,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import FlagIcon from '@mui/icons-material/Flag';
+import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import {
   setSupervisionedStatusList,
@@ -71,13 +70,13 @@ const modalStyles = {
     padding: 0,
     marginBottom: 2,
     fontFamily: 'Titillium Web',
-    fontWeight: 700,
+    fontWeight: theme.typography.fontWeightBold,
     fontSize: 24,
   },
   descriptionText: {
     marginBottom: 2,
     fontFamily: 'Titillium Web',
-    fontWeight: 400,
+    fontWeight: theme.typography.fontWeightRegular,
     fontSize: 18,
     lineHeight: '24px',
   },
@@ -89,7 +88,7 @@ const modalStyles = {
   },
   productText: {
     fontFamily: 'Titillium Web',
-    fontWeight: 400,
+    fontWeight: theme.typography.fontWeightRegular,
     fontSize: 18,
     marginBottom: 1,
   },
@@ -501,9 +500,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
             {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
           </Button>
         )}
-        <IconButton aria-label="close" onClick={handleCloseWithUpdate} sx={modalStyles.closeButton}>
-          <CloseIcon />
-        </IconButton>
       </DialogActions>
       </Dialog>
     </>

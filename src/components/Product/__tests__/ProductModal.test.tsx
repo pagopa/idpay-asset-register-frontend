@@ -212,15 +212,12 @@ describe('ProductModal', () => {
     await expectErrorFlow({ onClose, onUpdateTable, onSuccess, values: ['Reason'] });
   });
 
-  test('SUPERVISED: Cancel button and Close icon call onClose', async () => {
+  test('SUPERVISED: Cancel button calls onClose', async () => {
     const { onClose } = renderModal({ actionType: 'SUPERVISED' });
     await userEvent.click(
       screen.getByRole('button', { name: 'invitaliaModal.supervised.buttonTextCancel' })
     );
     expect(onClose).toHaveBeenCalledTimes(1);
-
-    await userEvent.click(screen.getByRole('button', { name: /close/i }));
-    expect(onClose).toHaveBeenCalledTimes(2);
   });
 
   test('REJECTED: renders dedicated UI, validates both fields, calls API, closes, updates table, calls onSuccess', async () => {

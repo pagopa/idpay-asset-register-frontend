@@ -17,7 +17,7 @@ const EprelLinks: React.FC<EprelLinkProps> = ({ row }) => {
       href={linkEprel ?? ''}
       target="_blank"
       rel="noopener"
-      sx={{ fontWeight: 'fontWeightBold', color: theme.palette.primary.main }}
+      sx={{ fontWeight: theme.typography.fontWeightBold, color: theme.palette.primary.main }}
     >
       {eprelCode}
     </Link>
