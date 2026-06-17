@@ -142,10 +142,10 @@
       "allUploadsLink": "Vedi i caricamenti"
     },
     "invitaliaOverview": {
-      "overviewTitle": "Panoramica",
+      "overviewTitle": "Produttori",
       "manufacturerMenuItem": "Produttori",
       "manufacturerSheet": "Scheda produttore",
-      "overviewTitleDescription": "Consulta i prodotti caricati dai produttori con i relativi dettagli.",
+      "overviewTitleDescription": "Consulta l’elenco dei produttori e i relativi dettagli.",
       "noInstitutionsFound": "Non ci sono produttori.",
       "rowsPerPage": "Righe per pagina",
       "tablePaginationFrom": "di",
