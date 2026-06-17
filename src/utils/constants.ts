@@ -29,11 +29,13 @@ export enum USERS_TYPES {
   OPERATORE = 'operatore',
   INVITALIA_L1 = 'invitalia',
   INVITALIA_L2 = 'invitalia_admin',
+  SUPPORT = 'support',
 }
 export enum USERS_NAMES {
   OPERATORE = 'Operatore',
   INVITALIA_L1 = 'L1',
   INVITALIA_L2 = 'L2',
+  SUPPORT = 'Support',
 }
 
 export const EMPTY_DATA = '-';

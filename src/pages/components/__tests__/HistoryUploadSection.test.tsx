@@ -1,5 +1,12 @@
 import './pageComponentsCommonMocks.setup';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+
+jest.mock('../../../hooks/useIDPayUser', () => ({
+  useIDPayUser: () => ({
+    id: 'test-user',
+    fiscalCode: 'RSSMRA80A01H501U',
+  }),
+}));
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
@@ -13,10 +20,7 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
-  withTranslation: () => (Component: any) => {
-    Component.defaultProps = { ...(Component.defaultProps || {}), t: (k: string) => k };
-    return Component;
-  },
+  withTranslation: () => (Component: any) => Component,
 }));
 
 jest.mock('../../../services/registerService', () => ({
@@ -40,6 +44,12 @@ jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
   useCurrentInitiativeId: () => 'initiative-1',
 }));
 
+jest.mock('../../../hooks/useInitiativeConfig', () => ({
+  useInitiativeConfig: () => ({
+    initiativeConfig: {},
+  }),
+}));
+
 const mockDispatch = jest.fn();
 
 jest.mock('react-redux', () => ({
@@ -48,12 +58,19 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.spyOn(registerService, 'downloadErrorReport').mockResolvedValue({
-  data: 'csv content',
+  data: {} as any,
   filename: 'report.csv',
-});
+} as any);
 jest.spyOn(helpers, 'downloadCsv').mockImplementation(() => {});
 
-const store = configureStore({ reducer: () => ({}) });
+const store = configureStore({
+  reducer: () => ({
+    initiativeConfig: {
+      activeKey: null,
+      byKey: {},
+    },
+  }),
+});
 const theme = createTheme();
 
 const renderComponent = (props: any) =>

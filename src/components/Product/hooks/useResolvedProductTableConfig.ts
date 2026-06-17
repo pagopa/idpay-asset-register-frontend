@@ -22,8 +22,40 @@ function resolveTableConfig(config?: FullConfig): ProductTableConfig | undefined
   return undefined;
 }
 
-export function useResolvedProductTableConfig(config?: FullConfig) {
+import { DEBUG_CONSOLE } from '../../../utils/constants';
+
+export function useResolvedProductTableConfig(
+  config?: FullConfig,
+  initiativeName?: string
+) {
   const tableConfig = resolveTableConfig(config);
+
+  if (DEBUG_CONSOLE && tableConfig) {
+    const columns = tableConfig?.columns;
+    const filters = tableConfig?.filters;
+    const detailFields = tableConfig?.detail?.fields;
+
+    const errors: Array<string> = [
+      !Array.isArray(columns) || columns.length === 0
+        ? 'columns (must be non-empty array)'
+        : null,
+      !Array.isArray(filters)
+        ? 'filters (must be array)'
+        : null,
+      tableConfig?.detail &&
+      (!Array.isArray(detailFields) || detailFields.length === 0)
+        ? 'detail.fields (must be non-empty array)'
+        : null,
+    ].filter((e): e is string => Boolean(e));
+
+    if (errors.length > 0) {
+      console.warn(
+        `[CONFIG WARNING] Products table misconfigured for initiative "${initiativeName}". Missing: ${errors.join(
+          ', '
+        )}`
+      );
+    }
+  }
 
   const paginationConfig = tableConfig?.pagination;
   const filtersConfig = tableConfig?.filters;
