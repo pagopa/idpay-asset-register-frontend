@@ -8,9 +8,7 @@ import {
   Typography,
   TextField,
   Button,
-  IconButton,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import FlagIcon from '@mui/icons-material/Flag';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import {
@@ -501,9 +499,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
             {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
           </Button>
         )}
-        <IconButton aria-label="close" onClick={handleCloseWithUpdate} sx={modalStyles.closeButton}>
-          <CloseIcon />
-        </IconButton>
       </DialogActions>
       </Dialog>
     </>
