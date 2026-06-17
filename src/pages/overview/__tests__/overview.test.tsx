@@ -6,6 +6,15 @@ import { fetchUserFromLocalStorage, truncateString } from '../../../helpers';
 import '@testing-library/jest-dom';
 import Overview from '../overview';
 
+jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
+  TitleBox: () => <div data-testid="title-box" />,
+}));
+
+jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
+  TitleBox: () => <div data-testid="title-box" />,
+  ErrorBoundary: ({ children }: any) => <>{children}</>,
+}));
+
 jest.mock('react-redux', () => ({
   Provider: ({ children }: any) => children,
   useDispatch: () => jest.fn(),
