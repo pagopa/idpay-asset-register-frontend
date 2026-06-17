@@ -7,7 +7,7 @@ import FlagIcon from '@mui/icons-material/Flag';
 import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
-import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, PRODUCT_CATEGORIES, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
+import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { statusChangeMessage } from '../../model/Product';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
@@ -125,51 +125,82 @@ const defaultDetailLabelKeys: Record<string, string> = {
   status: 'pages.productDetail.status',
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
+const isCategoryMatch = (category: string | undefined, cookingHobsLabel?: string): boolean => {
+  if (!category || !cookingHobsLabel) {return false;}
+  return category.toLowerCase() === cookingHobsLabel.toLowerCase();
+};
+
+const getFieldLabel = (
+  field: ProductDetailFieldConfig,
+  isCookinghobs: boolean
+): string => {
+  if (field.id === 'registrationDate' && isCookinghobs) {
+    return 'pages.productDetail.checkDate';
+  }
+  return field.labelKey ?? defaultDetailLabelKeys[field.id];
+};
+
+const formatFieldValue = (
+  fieldId: string,
+  value: any,
+  hasValue: boolean
+): string => {
+  if (!hasValue) {
+    return EMPTY_DATA;
+  }
+  if (fieldId === 'registrationDate') {
+    return String(format(new Date(String(value)), 'dd/MM/yyyy'));
+  }
+  return String(value);
+};
+
+const getFieldVariant = (fieldId: string): ProductInfoValueVariant =>
+  fieldId === 'productName' ? 'h6' : undefined;
+
+const getFieldSx = (fieldId: string): SxProps<Theme> | undefined => {
+  if (fieldId === 'productName' || fieldId === 'batchName') {
+    return { mb: 1, maxWidth: 350, wordWrap: 'break-word' };
+  }
+  return undefined;
+};
+
 function mapDetailFieldToRowConfig(
   field: ProductDetailFieldConfig,
   data: ProductDTO,
-  t: any
+  t: any,
+  cookingHobsLabel?: string
 ): RowConfig {
   const value = data[field.id as keyof ProductDTO];
   const hasValue = value !== undefined && value !== null && value !== '';
-  const isCookinghobs = data?.category?.toLowerCase() === PRODUCT_CATEGORIES.COOKING_HOBS.toLowerCase();
+  const isCookinghobs = isCategoryMatch(data?.category, cookingHobsLabel);
   const isProductSheet = field.id === 'productSheet';
 
-  const label =
-    field.id === 'registrationDate' && isCookinghobs
-      ? 'pages.productDetail.checkDate'
-      : field.labelKey ?? defaultDetailLabelKeys[field.id];
+  if (isProductSheet) {
+    return {
+      label: '',
+      value: t('pages.productDetail.productSheet'),
+      labelVariant: 'body2',
+      valueVariant: 'body2',
+      sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
+    };
+  }
 
-  return isProductSheet ? {
-    label: '',
-    value: t('pages.productDetail.productSheet'),
-    labelVariant: 'body2',
-    valueVariant: 'body2',
-    sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
-  } : {
-    label: t(label),
-    value:
-      field.id === 'registrationDate' && hasValue
-        ? String(format(new Date(String(value)), 'dd/MM/yyyy'))
-        : hasValue
-          ? String(value)
-          : EMPTY_DATA,
-    valueVariant: field.id === 'productName' ? 'h6' : undefined,
-    sx:
-      field.id === 'productName' || field.id === 'batchName'
-        ? { mb: 1, maxWidth: 350, wordWrap: 'break-word' }
-        : undefined,
+  return {
+    label: t(getFieldLabel(field, isCookinghobs)),
+    value: formatFieldValue(field.id, value, hasValue),
+    valueVariant: getFieldVariant(field.id),
+    sx: getFieldSx(field.id),
   };
 }
 
 function getProductInfoRowsConfig(
   data: ProductDTO,
   t: any,
-  detailFields?: Array<ProductDetailFieldConfig>
+  detailFields?: Array<ProductDetailFieldConfig>,
+  cookingHobsLabel?: string
 ): Array<RowConfig | DividerConfig> {
   if (detailFields?.length) {
-    return detailFields.map((field) => mapDetailFieldToRowConfig(field, data, t));
+    return detailFields.map((field) => mapDetailFieldToRowConfig(field, data, t, cookingHobsLabel));
   }
 
   const baseRows: Array<{
@@ -310,7 +341,9 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
   const detailMaxLength = config?.tables?.products?.style?.lengths?.detail ?? 40;
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
-  const baseRows = getProductInfoRowsConfig(data, t, detailFields);
+  const cookingHobsLabel = (config?.templates?.categories as any)?.cookinghobs?.name;
+
+  const baseRows = getProductInfoRowsConfig(data, t, detailFields, cookingHobsLabel);
 
   const chronology = ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
   const filteredChronology = chronology.filter(
