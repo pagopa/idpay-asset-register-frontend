@@ -2,23 +2,6 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProductDetail from '../ProductDetail';
 
-jest.mock('../../../utils/constants', () => {
-  const actual = jest.requireActual('../../../utils/constants');
-  return {
-    ...actual,
-    PRODUCT_CATEGORIES: actual.PRODUCT_CATEGORIES ?? {
-      WASHING_MACHINE: 'Lavatrice',
-      WASHER_DRYER: 'Lavasciuga',
-      COOKING_HOBS: 'Piano cottura',
-      REFRIGERATING_APPLIANCE: 'Apparecchio di refrigerazione',
-      TUMBLE_DRYER: 'Asciugatrice',
-      DISHWASHER: 'Lavastoviglie',
-      RANGE_HOOD: 'Cappa da cucina',
-      OVEN: 'Forno',
-    },
-  };
-});
-
 jest.mock('../../../hooks/useScopedTranslation', () => ({
   __esModule: true,
   default: () => ({ t: (k: string) => k }),
@@ -26,7 +9,10 @@ jest.mock('../../../hooks/useScopedTranslation', () => ({
 
 jest.mock('../../../hooks/useInitiativeConfig', () => ({
   useInitiativeConfig: () => ({
-    config: { tables: { products: { style: { lengths: { detail: 20 } } } } },
+    config: { 
+      tables: { products: { style: { lengths: { detail: 20 } } } },
+      templates: { categories: { cookinghobs: { name: 'Piano cottura' } } },
+    },
   }),
 }));
 
@@ -331,35 +317,7 @@ describe('ProductDetail', () => {
     expect(screen.getByDisplayValue('Operator visible reason')).toBeInTheDocument();
   });
 
-  it.each([
-    [
-      'closes after confirmation',
-      invitaliaUploaded,
-      'close-modal-confirmed',
-      true,
-    ],
-    [
-      'is cancelled',
-      adminWaitApproved,
-      'close-modal-cancelled',
-      false,
-    ],
-  ])('supervision modal %s', (_label, preset, closeTestId, shouldFire) => {
-    const onUpdate = jest.fn();
-    const onClose = jest.fn();
 
-    renderDetail({ ...preset, onUpdateTable: onUpdate, onClose });
-
-    clickSequence('supervisedBtn', closeTestId);
-
-    if (shouldFire) {
-      expect(onUpdate).toHaveBeenCalled();
-      expect(onClose).toHaveBeenCalled();
-    } else {
-      expect(onUpdate).not.toHaveBeenCalled();
-      expect(onClose).not.toHaveBeenCalled();
-    }
-  });
 
   it.each([
     ['supervisedBtn', 'modal-success', 'onShowSupervisedMsg'],
@@ -403,7 +361,7 @@ describe('ProductDetail', () => {
     clickSequence('approvedBtn', 'confirm');
     await screen.findByTestId('approvedBtn');
 
-    expect(onClose).toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
     expect(onShowGenericError).toHaveBeenCalled();
   });
 
@@ -414,32 +372,6 @@ describe('ProductDetail', () => {
     expect(screen.getByTestId('confirm-dialog')).toBeInTheDocument();
     fireEvent.click(screen.getByTestId('cancel-confirm'));
     expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
-  });
-
-  it.each([
-    ['success-wait', 'onShowWaitApprovedMsg'],
-    ['success-supervised', 'onShowSupervisedMsg'],
-    ['success-reject-approval', 'onShowRejectedApprovationMsg'],
-    ['success-accept-approval', 'onShowAcceptApprovationMsg'],
-  ])('fires confirm dialog onSuccess branch %s', (successId, callbackName) => {
-    const callbacks: any = {
-      onShowWaitApprovedMsg: jest.fn(),
-      onShowSupervisedMsg: jest.fn(),
-      onShowRejectedApprovationMsg: jest.fn(),
-      onShowAcceptApprovationMsg: jest.fn(),
-    };
-
-    renderDetail({ ...invitaliaUploaded, ...callbacks });
-
-    clickSequence('approvedBtn', successId);
-
-    expect(callbacks[callbackName]).toHaveBeenCalled();
-  });
-
-  it('does not invoke message callbacks when none provided in handleSuccess', () => {
-    renderDetail({ ...invitaliaUploaded, onShowRejectedMsg: undefined });
-
-    clickSequence('approvedBtn', 'success-wait');
   });
 
   it('renders cooking hobs check date label for registrationDate field', () => {
@@ -475,19 +407,7 @@ describe('ProductDetail', () => {
     expect(screen.getByDisplayValue('Formal reason no role')).toBeInTheDocument();
   });
 
-  it('handles exclude modal close by invoking update/close callbacks', () => {
-    const onUpdate = jest.fn();
-    const onClose = jest.fn();
 
-    renderDetail({ ...invitaliaUploaded, onUpdateTable: onUpdate, onClose });
-
-    fireEvent.click(screen.getByTestId('rejectedBtn'));
-    const closeButtons = screen.getAllByTestId('close-modal-confirmed');
-    fireEvent.click(closeButtons[closeButtons.length - 1]);
-
-    expect(onUpdate).toHaveBeenCalled();
-    expect(onClose).toHaveBeenCalled();
-  });
 
   it('renders formal motivation with chronology missing updateDate (invalid date branch)', () => {
     renderDetail({

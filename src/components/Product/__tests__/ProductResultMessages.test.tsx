@@ -24,7 +24,7 @@ const baseProps = {
   showMsgRejectedApprovation: false,
   showMixStatusError: false,
   showYourselfApprovedError: false,
-  showGenericError: false,
+  showGenericError: 0,
   bottom: 80,
 };
 
@@ -47,7 +47,7 @@ describe('ProductResultMessages', () => {
         showMsgRejectedApprovation
         showMixStatusError
         showYourselfApprovedError
-        showGenericError
+        showGenericError={1}
       />
     );
 

@@ -24,11 +24,88 @@ const applyTemplateValues = (templateContent: TemplateContentType, category: str
   fields: templateContent.fields.map((field) => field.replace('{{category}}', category)),
 });
 
+const resolveCategoryTemplateValue = (
+  normalizedKey: string,
+  templatesCategories?: Record<string, any>,
+  useNameAsCategoryValue?: boolean
+): string => {
+  if (!useNameAsCategoryValue) {
+    return normalizedKey;
+  }
+  return (
+    templatesCategories?.[normalizedKey]?.name ??
+    templatesCategories?.[normalizedKey.toLowerCase()]?.name ??
+    normalizedKey
+  );
+};
+
+const resolveLabel = (
+  isNew: boolean,
+  category: any,
+  normalizedKey: string,
+  t: (key: string) => string,
+  templatesCategories?: Record<string, any>
+): string => {
+  const labelKey = isNew ? category.labelKey : `categories.${normalizedKey.toLowerCase()}.label`;
+  const translated = t(labelKey);
+  const resolvedFromTranslation =
+    translated && translated !== labelKey ? translated : undefined;
+  const resolvedFromTemplate = templatesCategories?.[normalizedKey]?.name;
+  return resolvedFromTranslation ?? resolvedFromTemplate ?? normalizedKey;
+};
+
+const buildCategoryEntry = (
+  key: string,
+  category: any,
+  formats: TemplatesConfig | undefined,
+  t: (key: string) => string,
+  templatesCategories?: Record<string, any>,
+  useNameAsCategoryValue?: boolean
+): [string, CategoryType] | null => {
+  const normalizedKey = key.toUpperCase();
+  const isNew = !!category?.labelKey;
+  const enabledUpload = isNew ? category?.enabledIn?.upload !== false : true;
+  if (!enabledUpload) {
+    return null;
+  }
+
+  const label = resolveLabel(isNew, category, normalizedKey, t, templatesCategories);
+
+  const templateFormat: FormatKey = isNew
+    ? category.templateFormat
+    : (category?.format as FormatKey);
+
+  const templateContent = formats?.[templateFormat];
+  if (!templateContent) {
+    return [normalizedKey, { label }];
+  }
+
+  const categoryTemplateValue = resolveCategoryTemplateValue(
+    normalizedKey,
+    templatesCategories,
+    useNameAsCategoryValue
+  );
+  const csvNamespace = applyTemplateValues(templateContent, categoryTemplateValue);
+  const csvFile = createCsv(csvNamespace);
+
+  return [
+    normalizedKey,
+    {
+      label,
+      csv: {
+        name: `${normalizedKey}_template.csv`,
+        file: csvFile,
+      },
+    },
+  ];
+};
+
 const buildCategories = (
   categoriesConfig: any,
   formats: TemplatesConfig | undefined,
   t: (key: string) => string,
-  templatesCategories?: Record<string, any>
+  templatesCategories?: Record<string, any>,
+  useNameAsCategoryValue?: boolean
 ): Record<string, CategoryType> => {
   if (!categoriesConfig) {
     return {};
@@ -36,48 +113,16 @@ const buildCategories = (
 
   return Object.fromEntries(
     Object.entries(categoriesConfig as Record<string, any>)
-      .map(([key, category]) => {
-        const normalizedKey = key.toUpperCase();
-        const isNew = !!category?.labelKey;
-        const enabledUpload = isNew ? category?.enabledIn?.upload !== false : true;
-        if (!enabledUpload) {
-          return null;
-        }
-
-        const labelKey = isNew
-          ? category.labelKey
-          : `categories.${normalizedKey.toLowerCase()}.label`;
-        const translated = t(labelKey);
-        const resolvedFromTranslation =
-          translated && translated !== labelKey ? translated : undefined;
-
-        const resolvedFromTemplate = templatesCategories?.[normalizedKey]?.name;
-
-        const label = resolvedFromTranslation ?? resolvedFromTemplate ?? normalizedKey;
-
-        const templateFormat: FormatKey = isNew
-          ? category.templateFormat
-          : (category?.format as FormatKey);
-
-        const templateContent = formats?.[templateFormat];
-        if (!templateContent) {
-          return [normalizedKey, { label }];
-        }
-
-        const csvNamespace = applyTemplateValues(templateContent, normalizedKey);
-        const csvFile = createCsv(csvNamespace);
-
-        return [
-          normalizedKey,
-          {
-            label,
-            csv: {
-              name: `${normalizedKey}_template.csv`,
-              file: csvFile,
-            },
-          },
-        ];
-      })
+      .map(([key, category]) =>
+        buildCategoryEntry(
+          key,
+          category,
+          formats,
+          t,
+          templatesCategories,
+          useNameAsCategoryValue
+        )
+      )
       .filter(Boolean) as Array<[string, CategoryType]>
   );
 };
@@ -101,7 +146,16 @@ export const useCategories = () => {
   const formats = config?.templates?.formats as TemplatesConfig | undefined;
 
   const templatesCategories = (config?.templates?.categories as Record<string, any>) || {};
-  const categories = buildCategories(categoriesConfig, formats, t, templatesCategories);
+  const useNameAsCategoryValue = Boolean(
+    (config?.templates as any)?.useNameAsCategoryValue
+  );
+  const categories = buildCategories(
+    categoriesConfig,
+    formats,
+    t,
+    templatesCategories,
+    useNameAsCategoryValue
+  );
 
   return { categories };
 };

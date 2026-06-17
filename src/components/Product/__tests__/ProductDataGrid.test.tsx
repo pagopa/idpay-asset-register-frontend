@@ -1582,10 +1582,11 @@ describe('ProductDataGrid (rewritten)', () => {
 
     jest.useFakeTimers();
 
-    fireEvent.click(screen.getByText('Success Confirm'));
-    expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Confirm'));
+    await waitFor(() =>
+      expect(screen.getByText(/msgResultWaitApproved/i)).toBeInTheDocument()
+    );
 
-    fireEvent.click(screen.getByText('Cancel'));
     expect(screen.queryByTestId('product-confirm-dialog')).not.toBeInTheDocument();
 
     act(() => {
