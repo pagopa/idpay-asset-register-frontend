@@ -2,23 +2,6 @@ import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProductDetail from '../ProductDetail';
 
-jest.mock('../../../utils/constants', () => {
-  const actual = jest.requireActual('../../../utils/constants');
-  return {
-    ...actual,
-    PRODUCT_CATEGORIES: actual.PRODUCT_CATEGORIES ?? {
-      WASHING_MACHINE: 'Lavatrice',
-      WASHER_DRYER: 'Lavasciuga',
-      COOKING_HOBS: 'Piano cottura',
-      REFRIGERATING_APPLIANCE: 'Apparecchio di refrigerazione',
-      TUMBLE_DRYER: 'Asciugatrice',
-      DISHWASHER: 'Lavastoviglie',
-      RANGE_HOOD: 'Cappa da cucina',
-      OVEN: 'Forno',
-    },
-  };
-});
-
 jest.mock('../../../hooks/useScopedTranslation', () => ({
   __esModule: true,
   default: () => ({ t: (k: string) => k }),
@@ -26,7 +9,10 @@ jest.mock('../../../hooks/useScopedTranslation', () => ({
 
 jest.mock('../../../hooks/useInitiativeConfig', () => ({
   useInitiativeConfig: () => ({
-    config: { tables: { products: { style: { lengths: { detail: 20 } } } } },
+    config: { 
+      tables: { products: { style: { lengths: { detail: 20 } } } },
+      templates: { categories: { cookinghobs: { name: 'Piano cottura' } } },
+    },
   }),
 }));
 
