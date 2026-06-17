@@ -435,7 +435,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [showMixStatusError, setShowMixStatusError] = useState(false);
   const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
-  const [showGenericError, setShowGenericError] = useState(false);
+  const [showGenericError, setShowGenericError] = useState(0);
 
   const resetAllMsgResults = () => {
     setShowMsgRejected(false);
@@ -466,18 +466,21 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
     showMsgAcceptApprovation,
   ]);
 
+  useEffect(() => {
+    if (showGenericError === 0) {
+      return undefined;
+    }
+
+    const timer = setTimeout(() => setShowGenericError(0), 5000);
+    return () => clearTimeout(timer);
+  }, [showGenericError]);
+
   const callWaitApprovedApi = async (
     gtinCodes: Array<string>,
     currentStatus: ProductStatus,
     motivation: string
   ) => {
-    try {
-      await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
-    } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-    }
+    await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   };
 
   const handleConfirmRestore = async (
@@ -487,10 +490,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
   ) => {
     await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
     setRestoreDialogOpen(false);
-    setShowMsgApproved(true);
   };
 
   const handleOpenModal = (action: string) => {
+    setShowGenericError(0);
     if (action === PRODUCTS_STATES.WAIT_APPROVED) {
       setRestoreDialogOpen(true);
     } else {
@@ -568,6 +571,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
     : undefined;
 
   const handleListButtonClick = (row: ProductDTO) => {
+    setShowGenericError(0);
     setSelectedProduct(row);
     setDetailOpen(true);
   };
@@ -728,21 +732,19 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
             await handleConfirmRestore(selected, currentStatus, EMPTY_DATA);
             setRefreshKey((prev) => prev + 1);
             setRestoreDialogOpen(false);
+            resetAllMsgResults();
+            if (isInvitaliaUser && currentStatus === ProductStatus.UPLOADED) {
+              setShowMsgWaitApproved(true);
+            } else {
+              setShowMsgApproved(true);
+            }
           } catch (error) {
             if (DEBUG_CONSOLE) {
               console.error('Error during restore:', error);
             }
-          }
-        }}
-        onSuccess={() => {
-          resetAllMsgResults();
-          const currentStatus =
-            (tableData.find((row) => getProductRowKey(row) === selected[0])
-              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
-          if (isInvitaliaUser && currentStatus === ProductStatus.UPLOADED) {
-            setShowMsgWaitApproved(true);
-          } else {
-            setShowMsgApproved(true);
+            resetAllMsgResults();
+            setRestoreDialogOpen(false);
+            setShowGenericError((key) => key + 1);
           }
         }}
       />
@@ -805,7 +807,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
               setShowMsgWaitApproved(false);
               setShowMsgRejected(false);
             }}
-            onShowGenericError={() => setShowGenericError(true)}
+            onShowGenericError={() => setShowGenericError((key) => key + 1)}
           />
         </DetailDrawer>
       )}
