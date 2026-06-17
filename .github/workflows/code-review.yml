@@ -52,3 +52,4 @@ jobs:
             -Dsonar.projectName="${{ vars.SONARCLOUD_PROJECT_NAME }}"
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.coverage.exclusions=**/__tests__/**,**/hooks/**/*.ts,src/redux/**,src/**/__mocks__/**
+            -Dsonar.exclusions=src/**/__mocks__/**,**/__mocks__/**

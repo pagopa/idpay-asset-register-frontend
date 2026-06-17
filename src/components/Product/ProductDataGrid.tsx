@@ -45,10 +45,7 @@ import ProductModal from './ProductModal';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import { getProductRowKey, getStatusChecks } from './ProductDataGrid.helpers';
 
-const ProductDataGrid: React.FC<Props> = ({
-  organizationId,
-  organizationLabel,
-}) => {
+const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
@@ -70,12 +67,12 @@ const ProductDataGrid: React.FC<Props> = ({
   const location = useLocation();
   const batchFromHistory = (location.state as any)?.batchId;
 
-  const subRoleConfig = config?.subRoles?.[user?.org_role as string];
-  const hasProductsPermission = subRoleConfig?.permissions?.tables?.includes('products');
-
   const currentRoleKey = user?.org_role as string | undefined;
 
-  const role = user?.org_role?.toLowerCase();
+  const subRoleConfig = config?.subRoles?.[currentRoleKey as string];
+  const hasProductsPermission = subRoleConfig?.permissions?.tables?.includes('products');
+
+  const role = currentRoleKey?.toLowerCase();
 
   const isInvitaliaUser = role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = role === USERS_TYPES.INVITALIA_L2;
@@ -101,10 +98,17 @@ const ProductDataGrid: React.FC<Props> = ({
     };
   }, [batchId, batchName]);
 
-  const [filters, setFilters] =
-    useState<Record<string, { value: string; label?: string }>>(
-      { ...initialBatchFilters, ...(isInvitaliaAdmin ? {status: {value: PRODUCTS_STATES.WAIT_APPROVED, label: t('chip.productStatusLabel.waitApproved')}} : {})}
-    );
+  const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({
+    ...initialBatchFilters,
+    ...(isInvitaliaAdmin
+      ? {
+          status: {
+            value: PRODUCTS_STATES.WAIT_APPROVED,
+            label: t('chip.productStatusLabel.waitApproved'),
+          },
+        }
+      : {}),
+  });
 
   const effectiveFilters = useMemo(
     () => (redirectProducer ? { producer: redirectProducer, ...filters } : filters),
@@ -336,6 +340,7 @@ const ProductDataGrid: React.FC<Props> = ({
     filtersConfig,
     batchFilter,
     t,
+    currentRoleKey,
   });
 
   // Apply role-based default filters (e.g. L2 -> WAIT_APPROVED)

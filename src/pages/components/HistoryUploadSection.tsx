@@ -31,6 +31,7 @@ import { UploadsListDTO } from '../../api/generated/register';
 import { UploadDTO } from '../../api/generated/register';
 import { buildRoute } from '../../components/SideMenu/SideMenu';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import EmptyListTable from './EmptyListTable';
 
 const rowTableStyle = {
@@ -99,6 +100,9 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   const navigate = useNavigate();
   const { t } = useScopedTranslation();
   const initiativeId = useCurrentInitiativeId();
+  const { config } = useInitiativeConfig();
+  const isDownloadReportEnabled =
+    config?.tables?.historyUpload?.functions?.enableDownloadReport !== false;
 
   const handleDownloadReport = async (idReport: string) => {
     try {
@@ -119,7 +123,26 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
   const handleLinkProducts = (batchName: string, productFileId: string) => {
     dispatch(setBatchName(batchName));
     dispatch(setBatchId(productFileId));
-    navigate(buildRoute(ROUTES.PRODUCTS, initiativeId ?? ""), { replace: true });
+    navigate(buildRoute(ROUTES.PRODUCTS, initiativeId ?? ''), { replace: true });
+  };
+
+  const renderDownloadIcon = (row: UploadDTO) => {
+    if (row.uploadStatus !== 'PARTIAL') {
+      return null;
+    }
+
+    return (
+      <DownloadIcon
+        color={isDownloadReportEnabled ? 'primary' : 'disabled'}
+        sx={{
+          verticalAlign: 'middle',
+          cursor: isDownloadReportEnabled ? 'pointer' : 'default',
+          pointerEvents: isDownloadReportEnabled ? 'auto' : 'none',
+        }}
+        onClick={() => handleDownloadReport(row?.productFileId?.toString() || '')}
+        data-testid="download-icon"
+      />
+    );
   };
 
   if (loading) {
@@ -225,14 +248,7 @@ const UploadsTable: React.FC<UploadsTableProps> = ({
                 )}
               </TableCell>
               <TableCell align="right" sx={styleRightRow}>
-                {row.uploadStatus === 'PARTIAL' && (
-                  <DownloadIcon
-                    color="primary"
-                    sx={{ verticalAlign: 'middle' }}
-                    onClick={() => handleDownloadReport(row?.productFileId?.toString() || '')}
-                    data-testid="download-icon"
-                  />
-                )}
+                {renderDownloadIcon(row)}
               </TableCell>
             </TableRow>
           ))}

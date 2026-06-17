@@ -3,32 +3,29 @@
 import { loadItNamespace } from '../multiInitiativeI18n';
 
 describe('multiInitiativeI18n – loadItNamespace', () => {
-  it('loads common namespace', async () => {
-    const result = await loadItNamespace('common');
+  const expectNamespaceToLoad = async (namespace: string) => {
+    const result = await loadItNamespace(namespace);
     expect(result).toBeDefined();
     expect(typeof result).toBe('object');
-  });
+  };
 
-  it('loads default namespace file', async () => {
-    const result = await loadItNamespace('default/common');
-    expect(result).toBeDefined();
-    expect(typeof result).toBe('object');
-  });
-
-  it('loads initiative namespace when file exists', async () => {
-    // usa un namespace reale presente sotto src/locale/it
-    const result = await loadItNamespace('bonusDecoder2026/operatore');
-    expect(result).toBeDefined();
-    expect(typeof result).toBe('object');
-  });
-
-  it('returns empty object when namespace format is invalid', async () => {
-    const result = await loadItNamespace('invalidNamespace');
+  const expectNamespaceToBeEmpty = async (namespace: string) => {
+    const result = await loadItNamespace(namespace);
     expect(result).toEqual({});
+  };
+
+  it.each([
+    ['common namespace', 'common'],
+    ['default namespace file', 'default/common'],
+    ['initiative namespace when file exists', 'bonusDecoder2026/operatore'],
+  ])('loads %s', async (_, namespace) => {
+    await expectNamespaceToLoad(namespace);
   });
 
-  it('returns empty object when file does not exist', async () => {
-    const result = await loadItNamespace('unknownInitiative/unknownFile');
-    expect(result).toEqual({});
+  it.each([
+    ['namespace format is invalid', 'invalidNamespace'],
+    ['file does not exist', 'unknownInitiative/unknownFile'],
+  ])('returns empty object when %s', async (_, namespace) => {
+    await expectNamespaceToBeEmpty(namespace);
   });
 });
