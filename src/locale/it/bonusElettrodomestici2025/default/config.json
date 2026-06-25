@@ -89,14 +89,14 @@
       }
     },
     "categories": {
-      "washingmachines": { "format": "eprel", "name": "Lavatrice" },
-      "tumbledryers": { "format": "eprel", "name": "Asciugatrice" },
-      "ovens": { "format": "eprel", "name": "Forno" },
-      "rangehoods": { "format": "eprel", "name": "Cappa da cucina" },
-      "dishwashers": { "format": "eprel", "name": "Lavastoviglie" },
-      "washerdriers": { "format": "eprel", "name": "Lavasciuga" },
-      "refrigeratingappl": { "format": "eprel", "name": "Apparecchio di refrigerazione" },
-      "cookinghobs": { "format": "csv", "name": "Piano cottura" }
+      "washingmachines": { "format": "eprel", "name": "Lavatrice", "fileName": "Lavatrici_template.csv" },
+      "tumbledryers": { "format": "eprel", "name": "Asciugatrice", "fileName": "Asciugatrici_template.csv" },
+      "ovens": { "format": "eprel", "name": "Forno", "fileName": "Forni_template.csv" },
+      "rangehoods": { "format": "eprel", "name": "Cappa da cucina", "fileName": "Cappe_da_cucina_template.csv" },
+      "dishwashers": { "format": "eprel", "name": "Lavastoviglie", "fileName": "Lavastoviglie_template.csv" },
+      "washerdriers": { "format": "eprel", "name": "Lavasciuga", "fileName": "Lavasciuga_template.csv" },
+      "refrigeratingappl": { "format": "eprel", "name": "Apparecchio di refrigerazione", "fileName": "Apparecchi_di_refrigerazione_template.csv" },
+      "cookinghobs": { "format": "csv", "name": "Piano cottura", "fileName": "Piani_cottura_template.csv" }
     }
   },
   "ui": {
