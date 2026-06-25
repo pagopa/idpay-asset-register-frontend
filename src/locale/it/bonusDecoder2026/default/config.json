@@ -49,11 +49,11 @@
       }
     },
     "categories": {
-      "DS": { "format": "csv", "name": "Satellitare" },
-      "DT": { "format": "csv", "name": "Terrestre" },
-      "DTC": { "format": "csv", "name": "Terrestre via cavo" },
-      "DTS": { "format": "csv", "name": "Terrestre e Satellitare" },
-      "DTSC": { "format": "csv", "name": "Terrestre, Satellitare e via cavo" }
+      "DS": { "format": "csv", "name": "Satellitare", "fileName": "DS_template.csv" },
+      "DT": { "format": "csv", "name": "Terrestre", "fileName": "DT_template.csv" },
+      "DTC": { "format": "csv", "name": "Terrestre via cavo", "fileName": "DTC_template.csv" },
+      "DTS": { "format": "csv", "name": "Terrestre e Satellitare", "fileName": "DTS_template.csv" },
+      "DTSC": { "format": "csv", "name": "Terrestre, Satellitare e via cavo", "fileName": "DTSC_template.csv" }
     }
   },
   "ui": {

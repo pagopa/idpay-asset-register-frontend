@@ -39,6 +39,19 @@ const resolveCategoryTemplateValue = (
   );
 };
 
+const resolveTemplateFileName = (
+  normalizedKey: string,
+  templatesCategories?: Record<string, any>
+): string => {
+  const configuredFileName =
+    templatesCategories?.[normalizedKey]?.fileName ??
+    templatesCategories?.[normalizedKey.toLowerCase()]?.fileName;
+  if (typeof configuredFileName === 'string' && configuredFileName.trim().length > 0) {
+    return configuredFileName;
+  }
+  return `${normalizedKey}_template.csv`;
+};
+
 const resolveLabel = (
   isNew: boolean,
   category: any,
@@ -93,7 +106,7 @@ const buildCategoryEntry = (
     {
       label,
       csv: {
-        name: `${normalizedKey}_template.csv`,
+        name: resolveTemplateFileName(normalizedKey, templatesCategories),
         file: csvFile,
       },
     },

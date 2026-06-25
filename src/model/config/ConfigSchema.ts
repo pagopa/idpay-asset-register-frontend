@@ -101,8 +101,15 @@ export interface RolesConfig {
   };
 }
 
+export interface TemplateCategoryConfig {
+  format?: 'csv' | 'eprel';
+  name?: string;
+  fileName?: string;
+}
+
 export interface TemplatesConfig {
-  categories?: Record<string, unknown>;
+  useNameAsCategoryValue?: boolean;
+  categories?: Record<string, TemplateCategoryConfig>;
   formats?: Record<string, unknown>;
   functions?: {
     enableTemplateUpload?: boolean;
