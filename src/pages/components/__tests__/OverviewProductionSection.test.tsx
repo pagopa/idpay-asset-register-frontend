@@ -192,7 +192,6 @@ describe('OverviewProductionSection', () => {
   it('renders EMPTY_DATA in the date cell when dateUpload is missing', async () => {
     mockUploadsResponse([singleUpload({ dateUpload: undefined })]);
     renderSection();
-    // Ultimo caricamento block uses EMPTY_DATA when firstUploadDate is undefined
     await waitFor(() => {
       expect(screen.getByText('Ultimo caricamento')).toBeInTheDocument();
     });
