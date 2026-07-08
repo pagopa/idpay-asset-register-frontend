@@ -87,7 +87,7 @@ describe('Test suite for initiativeList page', () => {
     fireEvent.click(screen.getByTestId('initiative-btn-test'));
 
     expect(mockNavigate).toHaveBeenCalledWith(
-      '/elenco-informatico-elettrodomestici/initiative-1/panoramica'
+      '/registro-dei-beni/initiative-1/panoramica'
     );
   });
 
@@ -98,7 +98,7 @@ describe('Test suite for initiativeList page', () => {
     fireEvent.click(screen.getByTestId('initiative-btn-test'));
 
     expect(mockNavigate).toHaveBeenCalledWith(
-      '/elenco-informatico-elettrodomestici/initiative-1/lista-prodotti'
+      '/registro-dei-beni/initiative-1/lista-prodotti'
     );
   });
 });

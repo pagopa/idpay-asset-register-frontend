@@ -132,7 +132,7 @@ describe('ENV config', () => {
 
     const { ENV } = require('../env');
 
-    expect(ENV.PUBLIC_URL).toBe('/elenco-informatico-elettrodomestici');
+    expect(ENV.PUBLIC_URL).toBe('/registro-dei-beni');
     expect(ENV.URL_API.OPERATION).toBe('https://mock-api/register');
     expect(ENV.API_TIMEOUT_MS.OPERATION).toBe(5000);
     expect(ENV.ANALYTCS.ENABLE).toBe(true);
@@ -159,6 +159,6 @@ describe('ENV config', () => {
 
     const { ENV } = require('../env');
 
-    expect(ENV.PUBLIC_URL).toBe('/elenco-informatico-elettrodomestici');
+    expect(ENV.PUBLIC_URL).toBe('/registro-dei-beni');
   });
 });
