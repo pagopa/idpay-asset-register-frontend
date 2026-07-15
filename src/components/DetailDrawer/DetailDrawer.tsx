@@ -16,8 +16,18 @@ export default function DetailDrawer({ open, toggleDrawer, children }: Props) {
       open={open}
       onClose={() => toggleDrawer(false)}
       data-testid="detail-drawer"
+      PaperProps={{
+        sx: {
+          width: 405,
+          maxWidth: '100vw',
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        },
+      }}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'row-reverse', padding: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row-reverse', flexShrink: 0, padding: 1 }}>
         <IconButton
           data-testid="open-detail-button"
           onClick={() => toggleDrawer(false)}
