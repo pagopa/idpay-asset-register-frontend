@@ -22,6 +22,7 @@ import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
 import EmptyListTable from '../components/EmptyListTable';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { getFirstInitiativeMenuItem } from '../../components/SideMenu/sideMenuConfig';
+import { EMPTY_DATA } from '../../utils/constants';
 
 type StatusEnum = InitiativeDTO['status'];
 const PUBLISHED: StatusEnum = 'PUBLISHED';
@@ -52,10 +53,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       label: 'Creata da',
     },
     {
-      id: 'spendingPeriod',
+      id: 'createdAt',
       numeric: false,
       disablePadding: false,
-      label: 'Periodo di validità',
+      label: 'Data di adesione',
     },
     {
       id: 'status',
@@ -76,11 +77,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
-              active={orderBy === headCell.id && headCell.id !== 'spendingPeriod'}
+              active={orderBy === headCell.id && headCell.id !== 'createdAt'}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-              hideSortIcon={headCell.id === 'spendingPeriod'}
-              disabled={headCell.id === 'spendingPeriod'}
+              hideSortIcon={headCell.id === 'createdAt'}
+              disabled={headCell.id === 'createdAt'}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -117,9 +118,9 @@ const InitiativesList = () => {
         initiativeId: item.initiativeId || '',
         initiativeName: item.initiativeName || '',
         organizationName: item.organizationName || '',
-        spendingPeriod: `${
-          item.startDate ? new Date(item.startDate).toLocaleDateString('fr-FR') : ''
-        } - ${item.endDate ? new Date(item.endDate).toLocaleDateString('fr-FR') : ''}`,
+        createdAt: item.createdAt
+          ? new Date(item.createdAt).toLocaleDateString('it-IT')
+          : EMPTY_DATA,
         serviceId: item.serviceId || '',
         status: (item.status as StatusEnum) ?? '',
         id: index,
@@ -261,7 +262,7 @@ const InitiativesList = () => {
                           </Box>
                         </TableCell>
                         <TableCell>{row.organizationName !== "" && row.organizationName !== null ? row.organizationName : "-"}</TableCell>
-                        <TableCell>{row.spendingPeriod}</TableCell>
+                        <TableCell>{row.createdAt}</TableCell>
                         <TableCell>{renderInitiativeStatus(row.status as StatusEnum)}</TableCell>
                       </TableRow>
                     );

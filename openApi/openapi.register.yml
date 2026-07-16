@@ -1228,6 +1228,14 @@ components:
           maxLength: 255
           nullable: true
           description: Initiative end date
+        createdAt:
+          type: string
+          format: date-time
+          description: Date when the point of sale was linked to the initiative
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update date of the link
         enabled:
           type: boolean
           description: Indicates whether the initiative is enabled for the organization
