@@ -75,6 +75,7 @@ type RowConfig = {
   type?: 'row';
   label: string;
   value: string;
+  truncate?: boolean;
   labelVariant?: ProductInfoRowVariant;
   valueVariant?: ProductInfoValueVariant;
   sx?: SxProps<Theme>;
@@ -182,6 +183,7 @@ function mapDetailFieldToRowConfig(
     return {
       label: '',
       value: t('pages.productDetail.productSheet'),
+      truncate: false,
       labelVariant: 'body2',
       valueVariant: 'body2',
       sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
@@ -279,6 +281,7 @@ function getProductInfoRowsConfig(
   const productSheetRow: RowConfig = {
     label: '',
     value: t('pages.productDetail.productSheet'),
+    truncate: false,
     labelVariant: 'body2',
     valueVariant: 'body2',
     sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
@@ -496,7 +499,13 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
             value={<span>{(row as RowConfig).value}</span>}
             labelVariant={(row as RowConfig).labelVariant}
             valueVariant={(row as RowConfig).valueVariant}
-            maxValueLines={(row as RowConfig).valueVariant === 'h6' ? 2 : 1}
+            maxValueLines={
+              (row as RowConfig).truncate === false
+                ? undefined
+                : (row as RowConfig).valueVariant === 'h6'
+                ? 2
+                : 1
+            }
             sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
           />
         )
