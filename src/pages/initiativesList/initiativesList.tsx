@@ -22,6 +22,7 @@ import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
 import EmptyListTable from '../components/EmptyListTable';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { getFirstInitiativeMenuItem } from '../../components/SideMenu/sideMenuConfig';
+import { EMPTY_DATA } from '../../utils/constants';
 
 type StatusEnum = InitiativeDTO['status'];
 const PUBLISHED: StatusEnum = 'PUBLISHED';
@@ -117,7 +118,9 @@ const InitiativesList = () => {
         initiativeId: item.initiativeId || '',
         initiativeName: item.initiativeName || '',
         organizationName: item.organizationName || '',
-        createdAt: item.createdAt ? new Date(item.createdAt).toLocaleDateString('it-IT') : '',
+        createdAt: item.createdAt
+          ? new Date(item.createdAt).toLocaleDateString('it-IT')
+          : EMPTY_DATA,
         serviceId: item.serviceId || '',
         status: (item.status as StatusEnum) ?? '',
         id: index,
