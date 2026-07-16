@@ -43,6 +43,12 @@ describe('Test suite for initiativeList page', () => {
     renderWithContext(<InitiativesList />);
   });
 
+  test('Shows a dash when the adhesion date is missing', () => {
+    renderWithContext(<InitiativesList />, store);
+
+    expect(screen.getByText('-')).toBeTruthy();
+  });
+
   test('User searches an initiative by name that shows results', async () => {
     renderWithContext(<InitiativesList />, store);
     const searchField = screen.getByTestId('search-initiatives') as HTMLInputElement;
