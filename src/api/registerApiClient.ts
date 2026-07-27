@@ -1,19 +1,14 @@
-import { appStateActions } from '@pagopa/selfcare-common-frontend/lib/redux/slices/appStateSlice';
-import {
-  storageTokenOps,
-  storageUserOps,
-} from '@pagopa/selfcare-common-frontend/lib/utils/storage';
-import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
+import { storageTokenOps } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
 import { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { store } from '../redux/store';
 import { ENV } from '../utils/env';
 import { DEBUG_CONSOLE } from '../utils/constants';
+import { resolveApiErrorStatus } from '../utils/resolveApiErrorStatus';
+import { ApiError } from './ApiError';
 import {
   Api,
   BatchList,
   CsvDTO,
   InstitutionResponse,
-  InstitutionsResponse,
   PortalConsentDTO,
   ProductDTO,
   ProductListDTO,
@@ -26,6 +21,11 @@ import {
   UserPermissionDTO,
   VerifyProductListParams,
   InitiativeDTO,
+  GetProductsParams,
+  GetProductFilesListParams,
+  ProducersResponseDTO,
+  UpdateOperativeEmailDTO,
+  UpdatedOperativeEmailResultDTO,
 } from './generated/register';
 
 const sanitizeHeaders = (config: InternalAxiosRequestConfig, token: string) => {
@@ -61,61 +61,51 @@ internalAxios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 });
 
 internalAxios.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      onRedirectToLogin();
+  (response: AxiosResponse) => {
+    const rawData: any = response?.data;
+    // Support both plain response and wrapped response (e.g. { value: {...} })
+    const data: any = rawData?.value ?? rawData;
+
+    // Centralized business error handling (status === 'KO')
+    if (data && typeof data === 'object' && 'status' in data && data.status === 'KO') {
+      const errorKey = data?.errorKey;
+      const message = errorKey || data?.message || 'Business error';
+
+      const apiError = new ApiError(response.status ?? 200, message, errorKey, data);
+
+      resolveApiErrorStatus(apiError);
+
+      return Promise.reject(apiError);
     }
-    return Promise.reject(error);
+
+    return response;
+  },
+  (error: AxiosError) => {
+    const status = error.response?.status ?? 500;
+    const data: any = error.response?.data;
+
+    const message = data?.message || data?.detail || error.message || 'Unexpected API error';
+    const code = data?.code;
+
+    const apiError = new ApiError(status, message, code, data);
+
+    resolveApiErrorStatus(apiError);
+
+    return Promise.reject(apiError);
   }
 );
 
-const onRedirectToLogin = () => {
-  store.dispatch(
-    appStateActions.addError({
-      id: 'tokenNotValid',
-      error: new Error(),
-      techDescription: 'token expired or not valid',
-      toNotify: false,
-      blocking: false,
-      displayableTitle: 'Redirecting you to the login page',
-      displayableDescription: 'Your session has expired',
-    })
-  );
-
-  storageUserOps.delete();
-  window.location.assign(CONFIG.URL_FE.LOGIN);
-};
-
 export const RolePermissionApi = {
-  userPermission: async (): Promise<AxiosResponse<UserPermissionDTO>> => {
-    try {
-      return await registerClient.permissions.userPermission({});
-    } catch (error) {
-      logApiError(error, 'userPermission');
-      return {} as AxiosResponse<UserPermissionDTO>;
-    }
-  },
+  userPermission: async (): Promise<AxiosResponse<UserPermissionDTO>> =>
+    await registerClient.permissions.userPermission({}),
 
-  getPortalConsent: async (): Promise<AxiosResponse<PortalConsentDTO>> => {
-    try {
-      return await registerClient.consent.getPortalConsent({});
-    } catch (error) {
-      logApiError(error, 'getPortalConsent');
-      return {} as AxiosResponse<PortalConsentDTO>;
-    }
-  },
+  getPortalConsent: async (): Promise<AxiosResponse<PortalConsentDTO>> =>
+    await registerClient.consent.getPortalConsent({}),
 
   savePortalConsent: async (
     versionId: string | undefined
-  ): Promise<AxiosResponse<void> | undefined> => {
-    try {
-      return await registerClient.consent.savePortalConsent({ versionId });
-    } catch (error) {
-      logApiError(error, 'savePortalConsent');
-      return;
-    }
-  },
+  ): Promise<AxiosResponse<void> | undefined> =>
+    await registerClient.consent.savePortalConsent({ versionId }),
 };
 
 function buildParams(params: Record<string, any>) {
@@ -211,17 +201,28 @@ function logIoTsValidationErrors(error: any, originalResponse?: any) {
 }
 
 type StatusUpdater = (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string,
   formalMotivation?: string
 ) => Promise<ProductsUpdateDTO>;
 
+function extractBusinessPayload(result: any): any {
+  const raw: any = result?.data ?? result;
+  return raw?.value ?? raw;
+}
+
 function makeStatusUpdater(
-  apiMethod: (data: ProductsUpdateDTO, params?: RequestParams) => Promise<any>,
+  apiMethod: (
+    { initiativeId }: any,
+    data: ProductsUpdateDTO,
+    params?: RequestParams
+  ) => Promise<any>,
   needsFormalMotivation = false
 ): StatusUpdater {
   return async (
+    initiativeId: string,
     gtinCodes: Array<string>,
     currentStatus: ProductStatus,
     motivation: string,
@@ -247,17 +248,30 @@ function makeStatusUpdater(
             currentStatus,
             motivation: typeof motivation === 'string' ? motivation.trim() : motivation,
           };
-      const result = await apiMethod(body);
+
+      const result = await apiMethod({ initiativeId }, body);
+      const payload = extractBusinessPayload(result);
+
+      if (payload?.status === 'KO') {
+        throw new ApiError(
+          200,
+          payload?.errorKey || payload?.message || 'Business error',
+          payload?.errorKey,
+          payload
+        );
+      }
+
       return result ?? {};
     } catch (error) {
       logApiError(error, 'makeStatusUpdater');
-      return {} as ProductsUpdateDTO;
+      throw error;
     }
   };
 }
 
 export const RegisterApi = {
   getProduct: async (
+    initiativeId: string,
     xOrganizationSelected: string,
     page?: number,
     size?: number,
@@ -270,6 +284,7 @@ export const RegisterApi = {
     productFileId?: string
   ): Promise<ProductDTO | undefined> => {
     const params = buildParams({
+      initiativeId,
       organizationId: xOrganizationSelected,
       page,
       size,
@@ -280,21 +295,18 @@ export const RegisterApi = {
       gtinCode,
       productCode,
       productFileId,
-    });
-    try {
-      const productListValidation = await registerClient.products.getProducts(params);
-      const productList = (productListValidation as any)?.value ?? {};
-      const content = productList?.content ?? [];
-      if (Array.isArray(content) && content.length > 0) {
-        return content[0];
-      }
-      return undefined;
-    } catch (error) {
-      return { status: 200, value: { content: [] } } as unknown as ProductDTO;
+    }) as GetProductsParams;
+    const productListValidation = await registerClient.initiatives.getProducts(params);
+    const productList = (productListValidation as any)?.value ?? {};
+    const content = productList?.content ?? [];
+    if (Array.isArray(content) && content.length > 0) {
+      return content[0];
     }
+    return undefined;
   },
 
   getProductList: async (
+    initiativeId: string,
     xOrganizationSelected: string,
     page?: number,
     size?: number,
@@ -307,6 +319,7 @@ export const RegisterApi = {
     productFileId?: string
   ): Promise<AxiosResponse<ProductListDTO>> => {
     const params = buildParams({
+      initiativeId,
       organizationId: xOrganizationSelected,
       page,
       size,
@@ -317,64 +330,54 @@ export const RegisterApi = {
       gtinCode,
       productCode,
       productFileId,
-    });
-    try {
-      return await registerClient.products.getProducts(params);
-    } catch (error) {
-      return { content: [] } as unknown as AxiosResponse<ProductListDTO>;
-    }
+    }) as GetProductsParams;
+
+    return await registerClient.initiatives.getProducts(params);
   },
 
-  getProductFiles: async (page?: number, size?: number): Promise<AxiosResponse<UploadsListDTO>> => {
-    const params = buildParams({ page, size });
-    try {
-      return await registerClient.productFiles.getProductFilesList(params);
-    } catch (error) {
-      return { status: 200, value: { content: [] } } as unknown as AxiosResponse<UploadsListDTO>;
-    }
+  getProductFiles: async (
+    initiativeId: string,
+    page?: number,
+    size?: number
+  ): Promise<AxiosResponse<UploadsListDTO>> => {
+    const params = buildParams({ initiativeId, page, size }) as GetProductFilesListParams;
+    return await registerClient.initiatives.getProductFilesList(params);
   },
 
-  getBatchFilterItems: async (xOrganizationSelected: string): Promise<AxiosResponse<BatchList>> => {
+  getBatchFilterItems: async (
+    initiativeId: string,
+    xOrganizationSelected: string
+  ): Promise<AxiosResponse<BatchList>> => {
     const trimmed = (xOrganizationSelected ?? '').trim();
     const params: Record<string, string> = {};
     if (trimmed) {
       // eslint-disable-next-line functional/immutable-data
       params['x-organization-selected'] = trimmed;
     }
-    try {
-      return await registerClient.productFiles.getBatchNameList(params);
-    } catch (error) {
-      return [] as unknown as AxiosResponse<BatchList>;
-    }
+    return await registerClient.initiatives.getBatchNameList({ initiativeId, ...params });
   },
 
   uploadProductList: async (
+    initiativeId: string,
     csv: File,
     category: UploadProductListParams['category']
-  ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
-    try {
-      return await registerClient.productFiles.uploadProductList({ category }, { csv });
-    } catch (error) {
-      logApiError(error, 'uploadProductList');
-      return {} as AxiosResponse<RegisterUploadResponseDTO>;
-    }
-  },
+  ): Promise<AxiosResponse<RegisterUploadResponseDTO>> =>
+    await registerClient.initiatives.uploadProductList({ initiativeId, category }, { csv }),
   uploadProductListVerify: async (
+    initiativeId: string,
     csv: File,
     category: VerifyProductListParams['category']
-  ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
-    try {
-      return await registerClient.productFiles.verifyProductList({ category }, { csv });
-    } catch (error) {
-      logApiError(error, 'uploadProductListVerify');
-      return {} as AxiosResponse<RegisterUploadResponseDTO>;
-    }
-  },
+  ): Promise<AxiosResponse<RegisterUploadResponseDTO>> =>
+    await registerClient.initiatives.verifyProductList({ initiativeId, category }, { csv }),
   downloadErrorReport: async (
+    initiativeId: string,
     productFileId: string
   ): Promise<{ data: CsvDTO; filename: string; warning?: string }> => {
     try {
-      const response = await registerClient.productFiles.downloadErrorReport({ productFileId });
+      const response = await registerClient.initiatives.downloadErrorReport({
+        initiativeId,
+        productFileId,
+      });
       return {
         data: response.data,
         filename: extractFileNameFromHeaders(response?.headers),
@@ -385,55 +388,34 @@ export const RegisterApi = {
     }
   },
 
-  getInstitutionsList: async (): Promise<AxiosResponse<InstitutionsResponse>> => {
-    try {
-      return registerClient.institutions.getInstitutionsList({});
-    } catch (error) {
-      return {
-        status: 200,
-        value: { institutions: [] },
-      } as unknown as AxiosResponse<InstitutionsResponse>;
-    }
-  },
+  getProducers: async (initiativeId: string): Promise<AxiosResponse<ProducersResponseDTO>> =>
+    registerClient.initiatives.getProducersByInitiative({ initiativeId }),
 
-  getInstitutionById: async (
-    institutionId: string
-  ): Promise<AxiosResponse<InstitutionResponse>> => {
-    try {
-      return registerClient.institutions.retrieveInstitutionById({ institutionId });
-    } catch (error) {
-      return {
-        status: 200,
-        value: { institutions: [] },
-      } as unknown as AxiosResponse<InstitutionResponse>;
-    }
-  },
+  getInstitutionById: async (institutionId: string): Promise<AxiosResponse<InstitutionResponse>> =>
+    registerClient.institutions.retrieveInstitutionById({ institutionId }),
 
   setSupervisionedStatusList: makeStatusUpdater(
-    registerClient.products.updateProductStatusSupervised
+    registerClient.initiatives.updateProductStatusSupervised
   ),
-  setApprovedStatusList: makeStatusUpdater(registerClient.products.updateProductStatusApproved),
+  setApprovedStatusList: makeStatusUpdater(registerClient.initiatives.updateProductStatusApproved),
+
   setWaitApprovedStatusList: makeStatusUpdater(
-    registerClient.products.updateProductStatusWaitApproved
+    registerClient.initiatives.updateProductStatusWaitApproved
   ),
   setRejectedStatusList: makeStatusUpdater(
-    registerClient.products.updateProductStatusRejected,
+    registerClient.initiatives.updateProductStatusRejected,
     true
   ),
-  setRestoredStatusList: makeStatusUpdater(registerClient.products.updateProductStatusRestored),
+  setRestoredStatusList: makeStatusUpdater(registerClient.initiatives.updateProductStatusRestored),
 
-  getMerchantInitiativeList: async (): Promise<AxiosResponse<Array<InitiativeDTO>>> => {
-    try {
-      return await registerClient.initiatives.getInitiatives({});
-    } catch (error) {
-      logApiError(error, 'getMerchantInitiativeList');
-      return {
-        data: [],
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {},
-      } as unknown as AxiosResponse<Array<InitiativeDTO>>;
-    }
+  getMerchantInitiativeList: async (): Promise<AxiosResponse<Array<InitiativeDTO>>> =>
+    await registerClient.initiatives.getInitiatives({}),
+
+  updateOperativeEmail: async (
+    initiativeId: string,
+    operativeEmail: string
+  ): Promise<AxiosResponse<UpdatedOperativeEmailResultDTO>> => {
+    const body: UpdateOperativeEmailDTO = { operativeEmail: operativeEmail.trim() };
+    return await registerClient.initiatives.updateOperativeEmail({ initiativeId }, body);
   },
 };

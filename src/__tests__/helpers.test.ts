@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+
 import {
   formattedCurrency,
   formatDate,
@@ -10,8 +12,11 @@ import {
   fetchUserFromLocalStorage,
   initUploadBoxStyle,
   initUploadHelperBoxStyle,
-  getTablePrLength,
-  useResponsiveMaxLength,
+  filterInputWithSpaceRule,
+  cleanTrailingSpace,
+  getResponsiveTableMaxLength,
+  delay,
+  createCsv,
   isOnOrBeforeDate,
   customExitAction,
 } from '../helpers';
@@ -194,75 +199,19 @@ describe('Additional tests for 100% coverage', () => {
     expect(formatDateWithHours('invalid-date')).toBe(EMPTY_DATA);
   });
 
-  test('getTablePrLength with window defined', () => {
-    const originalWindow = global.window;
-
-    Object.defineProperty(global, 'window', {
-      value: { innerWidth: 1920 }, // assumendo RESOLUTION_UPSCALING sia < 1920
-      writable: true,
-    });
-
-    const resultLarge = getTablePrLength();
-    expect(typeof resultLarge).toBe('number');
-
-    Object.defineProperty(global, 'window', {
-      value: { innerWidth: 800 },
-      writable: true,
-    });
-
-    const resultSmall = getTablePrLength();
-    expect(typeof resultSmall).toBe('number');
-
-    global.window = originalWindow;
+  test('formatDateWithHours with invalid object-like value', () => {
+    expect(formatDateWithHours({} as any)).toBe(EMPTY_DATA);
   });
 
-  test('getTablePrLength without window', () => {
-    const originalWindow = global.window;
-    delete global.window;
+  test('formatDateWithHours handles date formatting with missing formatter parts', () => {
+    const originalDateTimeFormat = Intl.DateTimeFormat;
+    (Intl as any).DateTimeFormat = jest.fn(() => ({
+      formatToParts: () => [{ type: 'day', value: '01' }],
+    }));
 
-    const result = getTablePrLength();
-    expect(typeof result).toBe('number');
+    expect(formatDateWithHours(new Date('2022-10-01T14:05:30.000Z'))).toBe('01//, ::');
 
-    global.window = originalWindow;
-  });
-
-  test('useResponsiveMaxLength with different breakpoints', () => {
-    const mockTheme = {
-      breakpoints: {
-        only: jest.fn(),
-      },
-    };
-
-    const { useTheme, useMediaQuery } = require('@mui/material');
-
-    useTheme.mockReturnValue(mockTheme);
-
-    useMediaQuery.mockReturnValue(true);
-    mockTheme.breakpoints.only.mockReturnValue('(max-width:599.95px)');
-    useMediaQuery.mockImplementation((query) => query === '(max-width:599.95px)');
-
-    const resultXs = useResponsiveMaxLength();
-    expect(resultXs).toBe(15);
-
-    useMediaQuery.mockImplementation((query) => query.includes('sm'));
-    const resultSm = useResponsiveMaxLength();
-    expect(resultSm).toBe(70);
-
-    useMediaQuery.mockImplementation((query) => query.includes('md'));
-    const resultMd = useResponsiveMaxLength();
-    expect(resultMd).toBe(70);
-
-    useMediaQuery.mockImplementation((query) => query.includes('lg'));
-    const resultLg = useResponsiveMaxLength();
-    expect(resultLg).toBe(70);
-
-    useMediaQuery.mockImplementation((query) => query.includes('xl'));
-    const resultXl = useResponsiveMaxLength();
-    expect(resultXl).toBe(70);
-
-    useMediaQuery.mockReturnValue(false);
-    const resultDefault = useResponsiveMaxLength();
-    expect(resultDefault).toBe(70);
+    (Intl as any).DateTimeFormat = originalDateTimeFormat;
   });
 
   test('isOnOrBeforeDate with undefined', () => {
@@ -349,6 +298,80 @@ describe('Additional tests for 100% coverage', () => {
 
   test('formattedCurrency with custom symbol', () => {
     expect(formattedCurrency(undefined, 'N/A')).toBe('N/A');
+  });
+
+  test('filterInputWithSpaceRule removes spaces until enough alphanumeric chars are present', () => {
+    expect(filterInputWithSpaceRule(' a ')).toBe('a');
+    expect(filterInputWithSpaceRule('  ab   cd  ')).toBe('ab cd ');
+    expect(filterInputWithSpaceRule('ab  cd')).toBe('ab cd');
+  });
+
+  test('cleanTrailingSpace removes only one final space', () => {
+    expect(cleanTrailingSpace('abc ')).toBe('abc');
+    expect(cleanTrailingSpace('abc')).toBe('abc');
+  });
+
+  test('getResponsiveTableMaxLength falls back when configured values are missing', () => {
+    Object.defineProperty(window, 'innerWidth', { value: 1600, configurable: true });
+    expect(
+      getResponsiveTableMaxLength({
+        ui: {
+          resolutionUpscaling: 1200,
+          tables: { products: { style: { lengths: {} } } },
+        },
+      })
+    ).toBe(45);
+
+    Object.defineProperty(window, 'innerWidth', { value: 800, configurable: true });
+    expect(
+      getResponsiveTableMaxLength({
+        ui: {
+          resolutionUpscaling: 1200,
+          tables: { products: { style: { lengths: {} } } },
+        },
+      })
+    ).toBe(30);
+  });
+
+  test('getResponsiveTableMaxLength handles missing and responsive configs', () => {
+    expect(getResponsiveTableMaxLength({})).toBe(45);
+
+    const originalInnerWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { value: 1600, configurable: true });
+    expect(
+      getResponsiveTableMaxLength({
+        ui: {
+          resolutionUpscaling: 1200,
+          tables: { products: { style: { lengths: { maxTable: 80, minTable: 20 } } } },
+        },
+      })
+    ).toBe(80);
+
+    Object.defineProperty(window, 'innerWidth', { value: 800, configurable: true });
+    expect(
+      getResponsiveTableMaxLength({
+        ui: {
+          resolutionUpscaling: 1200,
+          tables: { products: { style: { lengths: { maxTable: 80, minTable: 20 } } } },
+        },
+      })
+    ).toBe(20);
+    Object.defineProperty(window, 'innerWidth', { value: originalInnerWidth, configurable: true });
+  });
+
+  test('delay resolves and createCsv builds an object url', async () => {
+    jest.useFakeTimers();
+    const promise = delay(50);
+    jest.advanceTimersByTime(50);
+    await promise;
+    jest.useRealTimers();
+
+    Object.defineProperty(URL, 'createObjectURL', {
+      value: jest.fn(() => 'blob:url'),
+      configurable: true,
+    });
+    expect(createCsv({ headers: ['a', 'b'], fields: ['1', '2'] })).toBe('blob:url');
+    expect(URL.createObjectURL).toHaveBeenCalled();
   });
 });
 

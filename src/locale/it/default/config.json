@@ -1,0 +1,43 @@
+{
+  "roles": {
+    "name": "default",
+    "logicalName": "Fallback Default",
+    "subRoles": {
+      "default": {
+        "logicalName": "Fallback Default",
+        "permissions": {
+          "tables": []
+        }
+      }
+    },
+    "errors": {
+      "profileNotConfigured": "pages.products.profileNotConfigured"
+    }
+  },
+  "templates": {},
+  "validation": {
+    "operativeEmail": {
+      "regEx": "^(?=.{1,255}$)[A-Za-z0-9]([A-Za-z0-9+_-]*(\\.[A-Za-z0-9+_-]+)*)?@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$"
+    }
+  },
+  "ui": {
+    "resolutionUpscaling": 1440,
+    "tables": {
+      "products": {
+        "style": {
+          "maxTableHeight": 700,
+          "lengths": {
+            "detail": 40,
+            "minTable": 30,
+            "maxTable": 45
+          }
+        },
+        "pagination": {
+          "enabled": true,
+          "defaultRowsPerPage": 10,
+          "rowsPerPageOptions": [10, 25, 50, 100]
+        }
+      }
+    }
+  }
+}

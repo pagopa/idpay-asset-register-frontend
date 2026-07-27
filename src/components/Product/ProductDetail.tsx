@@ -4,21 +4,15 @@ import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import FlagIcon from '@mui/icons-material/Flag';
+import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
-import {
-  EMPTY_DATA,
-  // L1_MOTIVATION_OK,
-  MAX_LENGTH_DETAILL_PR,
-  MIDDLE_STATES,
-  PRODUCTS_STATES,
-  USERS_NAMES,
-  USERS_TYPES,
-} from '../../utils/constants';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
+import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
-import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
-import { DEBUG_CONSOLE } from '../../utils/constants';
 import { statusChangeMessage } from '../../model/Product';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -27,6 +21,7 @@ import ProductStatusChip from './ProductStatusChip';
 type Props = {
   open: boolean;
   data: ProductDTO;
+  detailFields?: Array<ProductDetailFieldConfig>;
   isInvitaliaUser: boolean;
   isInvitaliaAdmin: boolean;
   onUpdateTable?: () => void;
@@ -34,35 +29,26 @@ type Props = {
   children?: React.ReactNode;
 };
 const callRejectedApi = async (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string,
   formalMotivation: string
 ) => {
-  try {
-    await setRejectedStatusList(gtinCodes, currentStatus, motivation, formalMotivation);
-  } catch (error) {
-    if (DEBUG_CONSOLE) {
-      console.error(error);
-    }
-  }
+  await setRejectedStatusList(initiativeId, gtinCodes, currentStatus, motivation, formalMotivation);
 };
 
 const callWaitApprovedApi = async (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string
 ) => {
-  try {
-    await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
-  } catch (error) {
-    if (DEBUG_CONSOLE) {
-      console.error(error);
-    }
-  }
+  await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
 };
 
 const handleOpenModal = (
+  initiativeId: string,
   action: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
@@ -70,9 +56,9 @@ const handleOpenModal = (
   formalMotivation: string
 ) => {
   if (action === PRODUCTS_STATES.REJECTED) {
-    return callRejectedApi(gtinCodes, currentStatus, motivation, formalMotivation);
+    return callRejectedApi(initiativeId, gtinCodes, currentStatus, motivation, formalMotivation);
   } else if (action === PRODUCTS_STATES.APPROVED) {
-    return callWaitApprovedApi(gtinCodes, currentStatus, motivation);
+    return callWaitApprovedApi(initiativeId, gtinCodes, currentStatus, motivation);
   }
   return Promise.resolve();
 };
@@ -80,10 +66,16 @@ const handleOpenModal = (
 type ProductInfoRowVariant = 'body2' | 'body1' | undefined;
 type ProductInfoValueVariant = 'h6' | 'body2' | undefined;
 
+export type ProductDetailFieldConfig = {
+  id: string;
+  labelKey?: string;
+};
+
 type RowConfig = {
   type?: 'row';
   label: string;
   value: string;
+  truncate?: boolean;
   labelVariant?: ProductInfoRowVariant;
   valueVariant?: ProductInfoValueVariant;
   sx?: SxProps<Theme>;
@@ -107,9 +99,9 @@ const mapBaseRowToRowConfig = (
   label: row.label,
   value:
     row.dataKey &&
-    data[row.dataKey as keyof ProductDTO] !== undefined &&
-    data[row.dataKey as keyof ProductDTO] !== null &&
-    data[row.dataKey as keyof ProductDTO] !== ''
+      data[row.dataKey as keyof ProductDTO] !== undefined &&
+      data[row.dataKey as keyof ProductDTO] !== null &&
+      data[row.dataKey as keyof ProductDTO] !== ''
       ? String(data[row.dataKey as keyof ProductDTO])
       : EMPTY_DATA,
   labelVariant: row.labelVariant,
@@ -117,7 +109,105 @@ const mapBaseRowToRowConfig = (
   sx: row.sx,
 });
 
-function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | DividerConfig> {
+// batchName & productName no label ''
+const defaultDetailLabelKeys: Record<string, string> = {
+  batchName: '',
+  brand: 'pages.productDetail.brand',
+  capacity: 'pages.productDetail.capacity',
+  category: 'pages.productDetail.category',
+  countryOfProduction: 'pages.productDetail.countryOfProduction',
+  energyClass: 'pages.productDetail.energyClass',
+  eprelCode: 'pages.productDetail.eprelCode',
+  gtinCode: 'pages.productDetail.gtinCode',
+  model: 'pages.productDetail.model',
+  productCode: 'pages.productDetail.productCode',
+  productName: '',
+  registrationDate: 'pages.productDetail.eprelCheckDate',
+  status: 'pages.productDetail.status',
+};
+
+const isCategoryMatch = (category: string | undefined, cookingHobsLabel?: string): boolean => {
+  if (!category || !cookingHobsLabel) {return false;}
+  return category.toLowerCase() === cookingHobsLabel.toLowerCase();
+};
+
+const getFieldLabel = (
+  field: ProductDetailFieldConfig,
+  isCookinghobs: boolean
+): string => {
+  if (field.id === 'registrationDate' && isCookinghobs) {
+    return 'pages.productDetail.checkDate';
+  }
+  return field.labelKey ?? defaultDetailLabelKeys[field.id];
+};
+
+const formatFieldValue = (
+  fieldId: string,
+  value: any,
+  hasValue: boolean
+): string => {
+  if (!hasValue) {
+    return EMPTY_DATA;
+  }
+  if (fieldId === 'registrationDate') {
+    return String(format(new Date(String(value)), 'dd/MM/yyyy'));
+  }
+  return String(value);
+};
+
+const getFieldVariant = (fieldId: string): ProductInfoValueVariant =>
+  fieldId === 'productName' ? 'h6' : undefined;
+
+const getFieldSx = (fieldId: string): SxProps<Theme> | undefined => {
+  if (fieldId === 'productName') {
+    return { mb: 1 };
+  }
+  if (fieldId === 'batchName') {
+    return { mb: 1 };
+  }
+  return undefined;
+};
+
+function mapDetailFieldToRowConfig(
+  field: ProductDetailFieldConfig,
+  data: ProductDTO,
+  t: any,
+  cookingHobsLabel?: string
+): RowConfig {
+  const value = data[field.id as keyof ProductDTO];
+  const hasValue = value !== undefined && value !== null && value !== '';
+  const isCookinghobs = isCategoryMatch(data?.category, cookingHobsLabel);
+  const isProductSheet = field.id === 'productSheet';
+
+  if (isProductSheet) {
+    return {
+      label: '',
+      value: t('pages.productDetail.productSheet'),
+      truncate: false,
+      labelVariant: 'body2',
+      valueVariant: 'body2',
+      sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
+    };
+  }
+
+  return {
+    label: t(getFieldLabel(field, isCookinghobs)),
+    value: formatFieldValue(field.id, value, hasValue),
+    valueVariant: getFieldVariant(field.id),
+    sx: getFieldSx(field.id),
+  };
+}
+
+function getProductInfoRowsConfig(
+  data: ProductDTO,
+  t: any,
+  detailFields?: Array<ProductDetailFieldConfig>,
+  cookingHobsLabel?: string
+): Array<RowConfig | DividerConfig> {
+  if (detailFields?.length) {
+    return detailFields.map((field) => mapDetailFieldToRowConfig(field, data, t, cookingHobsLabel));
+  }
+
   const baseRows: Array<{
     label: string;
     dataKey: keyof ProductDTO | null;
@@ -126,67 +216,76 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
     sx?: SxProps<Theme>;
     isTranslation?: boolean;
   }> = [
-    {
-      label: '',
-      dataKey: 'productName',
-      valueVariant: 'h6',
-      sx: { mb: 1, maxWidth: 350, wordWrap: 'break-word' },
-    },
-    {
-      label: '',
-      dataKey: 'batchName',
-      labelVariant: 'body2',
-      valueVariant: 'body2',
-    },
-    {
-      label: t('pages.productDetail.eprelCheckDate'),
-      dataKey: 'registrationDate',
-    },
-    {
-      label: '',
-      dataKey: null,
-      labelVariant: 'body2',
-      valueVariant: 'body2',
-      sx: { mt: 4, mb: 2 },
-      isTranslation: true,
-    },
-    {
-      label: t('pages.productDetail.eprelCode'),
-      dataKey: 'eprelCode',
-    },
-    {
-      label: t('pages.productDetail.gtinCode'),
-      dataKey: 'gtinCode',
-    },
-    {
-      label: t('pages.productDetail.productCode'),
-      dataKey: 'productCode',
-    },
-    {
-      label: t('pages.productDetail.category'),
-      dataKey: 'category',
-    },
-    {
-      label: t('pages.productDetail.brand'),
-      dataKey: 'brand',
-    },
-    {
-      label: t('pages.productDetail.model'),
-      dataKey: 'model',
-    },
-    {
-      label: t('pages.productDetail.energyClass'),
-      dataKey: 'energyClass',
-    },
-    {
-      label: t('pages.productDetail.countryOfProduction'),
-      dataKey: 'countryOfProduction',
-    },
-    {
-      label: t('pages.productDetail.capacity'),
-      dataKey: 'capacity',
-    },
-  ];
+      {
+        label: '',
+        dataKey: 'productName',
+        valueVariant: 'h6',
+        sx: { mb: 1 },
+      },
+      {
+        label: '',
+        dataKey: 'batchName',
+        labelVariant: 'body2',
+        valueVariant: 'body2',
+      },
+      {
+        label: t('pages.productDetail.eprelCheckDate'),
+        dataKey: 'registrationDate',
+      },
+      {
+        label: '',
+        dataKey: null,
+        labelVariant: 'body2',
+        valueVariant: 'body2',
+        sx: { mt: 4, mb: 2 },
+        isTranslation: true,
+      },
+      {
+        label: t('pages.productDetail.eprelCode'),
+        dataKey: 'eprelCode',
+      },
+      {
+        label: t('pages.productDetail.gtinCode'),
+        dataKey: 'gtinCode',
+      },
+      {
+        label: t('pages.productDetail.productCode'),
+        dataKey: 'productCode',
+      },
+      {
+        label: t('pages.productDetail.category'),
+        dataKey: 'category',
+      },
+      {
+        label: t('pages.productDetail.brand'),
+        dataKey: 'brand',
+      },
+      {
+        label: t('pages.productDetail.model'),
+        dataKey: 'model',
+      },
+      {
+        label: t('pages.productDetail.energyClass'),
+        dataKey: 'energyClass',
+      },
+      {
+        label: t('pages.productDetail.countryOfProduction'),
+        dataKey: 'countryOfProduction',
+      },
+      {
+        label: t('pages.productDetail.capacity'),
+        dataKey: 'capacity',
+      },
+    ];
+
+  const productSheetRow: RowConfig = {
+    label: '',
+    value: t('pages.productDetail.productSheet'),
+    truncate: false,
+    labelVariant: 'body2',
+    valueVariant: 'body2',
+    sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
+  };
 
   const firstTwoRows = baseRows.slice(0, 2).map((row) => mapBaseRowToRowConfig(row, data));
 
@@ -199,14 +298,6 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
       : EMPTY_DATA,
   };
 
-  const productSheetRow: RowConfig = {
-    label: '',
-    value: t('pages.productDetail.productSheet'),
-    labelVariant: 'body2',
-    valueVariant: 'body2',
-    sx: { mt: 4, mb: 2, fontWeight: 700 },
-  };
-
   const remainingRows = baseRows.slice(4).map((row) => mapBaseRowToRowConfig(row, data));
 
   return [...firstTwoRows, divider, dateRow, productSheetRow, ...remainingRows];
@@ -214,11 +305,12 @@ function getProductInfoRowsConfig(data: ProductDTO, t: any): Array<RowConfig | D
 
 type ProductInfoRowsProps = {
   data: ProductDTO;
+  detailFields?: Array<ProductDetailFieldConfig>;
   currentStatus: ProductStatus;
   children?: React.ReactNode;
 };
 
-function renderEntry(entry: any, idx: number) {
+function renderEntry(entry: any, idx: number, detailMaxLength: number) {
   const operator = entry?.role ? `${USERS_NAMES.OPERATORE} ${entry.role}` : USERS_NAMES.OPERATORE;
   const dateLabel = entry?.updateDate
     ? format(new Date(entry.updateDate), 'dd/MM/yyyy, HH:mm')
@@ -234,7 +326,7 @@ function renderEntry(entry: any, idx: number) {
     <Box key={`${header}-${idx}`} sx={{ mb: 2, width: '100%' }}>
       <Box component="span" sx={{ width: '100%' }}>
         <Typography variant="body1" color="textSecondary">
-          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
+          {truncateString(header, detailMaxLength)}
         </Typography>
         <TextareaAutosize
           maxRows={10}
@@ -249,11 +341,15 @@ function renderEntry(entry: any, idx: number) {
   );
 }
 
-function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
+function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps) {
   const { t } = useScopedTranslation();
+  const { config } = useInitiativeConfig();
+  const detailMaxLength = config?.tables?.products?.style?.lengths?.detail ?? 40;
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
-  const baseRows = getProductInfoRowsConfig(data, t);
+  const cookingHobsLabel = (config?.templates?.categories as any)?.cookinghobs?.name;
+
+  const baseRows = getProductInfoRowsConfig(data, t, detailFields, cookingHobsLabel);
 
   const chronology = ((data as any)?.statusChangeChronology as Array<statusChangeMessage>) || [];
   const filteredChronology = chronology.filter(
@@ -271,22 +367,24 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const motivationRow =
     user?.org_role !== USERS_TYPES.OPERATORE && hasMotivations
       ? ({
-          renderCustom(this: RowConfig) {
-            return (
-              <ProductInfoRow
-                label={t('pages.productDetail.motivation')}
-                labelVariant="overline"
-                sx={{ marginTop: 3, fontWeight: 700 }}
-                labelColor="#17324D"
-                value={
-                  <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
-                    {filteredChronology.map((entry, idx) => renderEntry(entry, idx))}
-                  </Box>
-                }
-              />
-            );
-          },
-        } as RowConfig & { renderCustom?: () => JSX.Element })
+        renderCustom(this: RowConfig) {
+          return (
+            <ProductInfoRow
+              label={t('pages.productDetail.motivation')}
+              labelVariant="overline"
+              sx={{ marginTop: 3, fontWeight: theme.typography.fontWeightBold }}
+              labelColor={theme.palette.text.primary}
+              value={
+                <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+                  {filteredChronology.map((entry, idx) =>
+                    renderEntry(entry, idx, detailMaxLength)
+                  )}
+                </Box>
+              }
+            />
+          );
+        },
+      } as RowConfig & { renderCustom?: () => JSX.Element })
       : null;
 
   function isValidDateString(date: string | undefined): boolean {
@@ -306,9 +404,7 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
         return format(new Date(rejectedEntry.updateDate), 'dd/MM/yyyy, HH:mm');
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.log('getFormalMotivationDateLabel error:', error);
-      }
+      // swallow formatting errors silently
     }
     return EMPTY_DATA;
   }
@@ -345,42 +441,42 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
   const formalMotivationRow = !displayFormalMotivation(user?.org_role, data.status)
     ? null
     : ({
-        renderCustom(this: RowConfig) {
-          const dateLabel = getFormalMotivationDateLabel(chronology);
-          const operator = getFormalMotivationOperator(user, chronology);
-          const header = getFormalMotivationHeader(user, dateLabel, operator);
+      renderCustom(this: RowConfig) {
+        const dateLabel = getFormalMotivationDateLabel(chronology);
+        const operator = getFormalMotivationOperator(user, chronology);
+        const header = getFormalMotivationHeader(user, dateLabel, operator);
 
-          return (
-            <ProductInfoRow
-              label={t('pages.productDetail.motivationFormal')}
-              labelVariant="overline"
-              sx={{ marginTop: 3, fontWeight: 700 }}
-              labelColor="#17324D"
-              value={
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
-                    <Box component="span" sx={{ width: '100%' }}>
-                      {header && header.trim() !== '' && (
-                        <Typography variant="body1" color="textSecondary">
-                          {truncateString(header, MAX_LENGTH_DETAILL_PR)}
-                        </Typography>
-                      )}
-                      <TextareaAutosize
-                        maxRows={10}
-                        value={formalMotivationText}
-                        readOnly
-                        aria-label="Motivazione formale"
-                        name="formalMotivation"
-                        className="product-detail-textarea"
-                      />
-                    </Box>
+        return (
+          <ProductInfoRow
+            label={t('pages.productDetail.motivationFormal')}
+            labelVariant="overline"
+            sx={{ marginTop: 3, fontWeight: theme.typography.fontWeightBold }}
+            labelColor={theme.palette.text.primary}
+            value={
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>
+                  <Box component="span" sx={{ width: '100%' }}>
+                    {header && header.trim() !== '' && (
+                      <Typography variant="body1" color="textSecondary">
+                        {truncateString(header, detailMaxLength)}
+                      </Typography>
+                    )}
+                    <TextareaAutosize
+                      maxRows={10}
+                      value={formalMotivationText}
+                      readOnly
+                      aria-label="Motivazione formale"
+                      name="formalMotivation"
+                      className="product-detail-textarea"
+                    />
                   </Box>
                 </Box>
-              }
-            />
-          );
-        },
-      } as RowConfig & { renderCustom?: () => JSX.Element });
+              </Box>
+            }
+          />
+        );
+      },
+    } as RowConfig & { renderCustom?: () => JSX.Element });
 
   const extraRows = [
     ...(motivationRow ? [motivationRow] : []),
@@ -403,6 +499,13 @@ function ProductInfoRows({ data, children }: ProductInfoRowsProps) {
             value={<span>{(row as RowConfig).value}</span>}
             labelVariant={(row as RowConfig).labelVariant}
             valueVariant={(row as RowConfig).valueVariant}
+            maxValueLines={
+              (row as RowConfig).truncate === false
+                ? undefined
+                : (row as RowConfig).valueVariant === 'h6'
+                ? 2
+                : 1
+            }
             sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
           />
         )
@@ -419,10 +522,12 @@ type ProductDetailProps = Props & {
   onShowSupervisedMsg?: () => void;
   onShowRejectedApprovationMsg?: () => void;
   onShowAcceptApprovationMsg?: () => void;
+  onShowGenericError?: () => void;
 };
 
 export default function ProductDetail({
   data,
+  detailFields,
   isInvitaliaUser,
   isInvitaliaAdmin,
   onUpdateTable,
@@ -433,52 +538,47 @@ export default function ProductDetail({
   onShowSupervisedMsg,
   onShowRejectedApprovationMsg,
   onShowAcceptApprovationMsg,
+  onShowGenericError,
 }: ProductDetailProps) {
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [excludeModalOpen, setExcludeModalOpen] = useState(false);
   const [supervisionModalOpen, setSupervisionModalOpen] = useState(false);
   const { t } = useScopedTranslation();
+  const initiativeId = useCurrentInitiativeId();
 
   const handleConfirmRestore = async () => {
-    await handleOpenModal(
-      PRODUCTS_STATES.APPROVED,
-      [data.gtinCode ?? ''],
-      data.status as ProductStatus,
-      EMPTY_DATA,
-      EMPTY_DATA
-    );
-    setRestoreDialogOpen(false);
-    if (typeof onUpdateTable === 'function') {
-      onUpdateTable();
-    }
-    if (typeof onClose === 'function') {
-      onClose();
-    }
-    if (typeof onShowWaitApprovedMsg === 'function') {
-      onShowWaitApprovedMsg();
-    } else if (typeof onShowApprovedMsg === 'function') {
-      onShowApprovedMsg();
+    try {
+      await handleOpenModal(
+        initiativeId,
+        PRODUCTS_STATES.APPROVED,
+        [data.gtinCode ?? ''],
+        data.status as ProductStatus,
+        EMPTY_DATA,
+        EMPTY_DATA
+      );
+
+      setRestoreDialogOpen(false);
+
+      if (typeof onUpdateTable === 'function') {
+        onUpdateTable();
+      }
+      if (typeof onClose === 'function') {
+        onClose();
+      }
+      if (typeof onShowWaitApprovedMsg === 'function') {
+        onShowWaitApprovedMsg();
+      } else if (typeof onShowApprovedMsg === 'function') {
+        onShowApprovedMsg();
+      }
+    } catch (error) {
+      setRestoreDialogOpen(false);
+      if (typeof onShowGenericError === 'function') {
+        onShowGenericError();
+      }
     }
   };
 
-  const handleModalClose = (
-    setModalOpen: (open: boolean) => void,
-    showRejectedMsg?: boolean,
-    confirmed?: boolean
-  ) => {
-    setModalOpen(false);
-    if (typeof onUpdateTable === 'function') {
-      onUpdateTable();
-    }
-    if (typeof onClose === 'function') {
-      onClose();
-    }
-    if (showRejectedMsg && confirmed && typeof onShowRejectedMsg === 'function') {
-      onShowRejectedMsg();
-    }
-  };
-
-  const resetAllMsgs = () => {};
+  const resetAllMsgs = () => { };
 
   const setMsgByActionType = (actionType?: string) => {
     if (actionType === PRODUCTS_STATES.SUPERVISED && typeof onShowSupervisedMsg === 'function') {
@@ -545,7 +645,8 @@ export default function ProductDetail({
           margin-bottom: 16px !important;
         }
         .product-detail-textarea {
-          width: 374px;
+          width: 100%;
+          max-width: 100%;
           box-sizing: border-box;
           resize: none;
           font-family: 'Titillium Web';
@@ -561,23 +662,30 @@ export default function ProductDetail({
       `}</style>
       <Box
         sx={{
-          minWidth: 400,
+          width: '100%',
+          minWidth: 0,
+          boxSizing: 'border-box',
           pl: 2,
           display: 'flex',
           flexDirection: 'column',
-          height: '100vh',
+          flex: '1 1 0',
+          minHeight: 0,
           overflow: 'hidden',
         }}
         role="presentation"
         data-testid="product-detail"
       >
-        <Box sx={{ flex: '1 1 0', overflowY: 'auto' }}>
+        <Box sx={{ flex: '1 1 0', minWidth: 0, overflowY: 'auto', overflowX: 'hidden' }}>
           <List>
             <ProductStatusChip status={data.status} />
-            <ProductInfoRows data={data} currentStatus={data.status as ProductStatus} />
+            <ProductInfoRows
+              data={data}
+              detailFields={detailFields}
+              currentStatus={data.status as ProductStatus}
+            />
           </List>
         </Box>
-        {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.SUPERVISED && (
+        {isInvitaliaUser && data.status === 'SUPERVISED' && (
           <Paper
             elevation={3}
             sx={{
@@ -613,7 +721,7 @@ export default function ProductDetail({
             </Button>
           </Paper>
         )}
-        {isInvitaliaUser && String(data.status) === PRODUCTS_STATES.UPLOADED && (
+        {isInvitaliaUser && data.status === 'UPLOADED' && (
           <Paper
             elevation={3}
             sx={{
@@ -660,7 +768,7 @@ export default function ProductDetail({
             </Button>
           </Paper>
         )}
-        {isInvitaliaAdmin && String(data.status) === PRODUCTS_STATES.WAIT_APPROVED && (
+        {isInvitaliaAdmin && data.status === 'WAIT_APPROVED' && (
           <Paper
             elevation={3}
             sx={{
@@ -703,26 +811,15 @@ export default function ProductDetail({
           confirmButtonText={t('invitaliaModal.waitApproved.buttonTextConfirm')}
           title={t('invitaliaModal.waitApproved.listTitle')}
           message={t('invitaliaModal.waitApproved.description', {
-            L2: USERS_NAMES.INVITALIA_L2,
+            L2: 'L2',
           })}
           onCancel={() => setRestoreDialogOpen(false)}
           onConfirm={handleConfirmRestore}
-          onSuccess={handleSuccess}
         />
 
         <ProductModal
           open={supervisionModalOpen}
-          onClose={(cancelled) => {
-            setSupervisionModalOpen(false);
-            if (!cancelled) {
-              if (typeof onUpdateTable === 'function') {
-                onUpdateTable();
-              }
-              if (typeof onClose === 'function') {
-                onClose();
-              }
-            }
-          }}
+          onClose={() => setSupervisionModalOpen(false)}
           actionType={
             isInvitaliaUser ? PRODUCTS_STATES.SUPERVISED : MIDDLE_STATES.ACCEPT_APPROVATION
           }
@@ -743,7 +840,7 @@ export default function ProductDetail({
         />
         <ProductModal
           open={excludeModalOpen}
-          onClose={() => handleModalClose(setExcludeModalOpen, true)}
+          onClose={() => setExcludeModalOpen(false)}
           actionType={isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION}
           onUpdateTable={onUpdateTable}
           selectedProducts={[

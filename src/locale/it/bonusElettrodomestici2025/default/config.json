@@ -1,0 +1,187 @@
+{
+  "roles": {
+    "name": "default",
+    "logicalName": "Utente Standard",
+    "subRoles": {
+      "default": {
+        "logicalName": "Utente Standard",
+        "permissions": {
+          "tables": ["products"]
+        }
+      }
+    },
+    "errors": {
+      "profileNotConfigured": "pages.products.profileNotConfigured"
+    }
+  },
+  "categories": {
+    "WASHINGMACHINES": {
+      "labelKey": "categories.lavatrice",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "WASHERDRIERS": {
+      "labelKey": "categories.lavasciuga",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "OVENS": {
+      "labelKey": "categories.forno",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "RANGEHOODS": {
+      "labelKey": "categories.cappa",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "DISHWASHERS": {
+      "labelKey": "categories.lavastoviglie",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "TUMBLEDRYERS": {
+      "labelKey": "categories.asciugatrice",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "REFRIGERATINGAPPL": {
+      "labelKey": "categories.refrigerazione",
+      "templateFormat": "eprel",
+      "enabledIn": { "upload": true, "filters": true }
+    },
+    "COOKINGHOBS": {
+      "labelKey": "categories.pianoCottura",
+      "templateFormat": "csv",
+      "enabledIn": { "upload": true, "filters": true }
+    }
+  },
+  "templates": {
+    "useNameAsCategoryValue": true,
+    "formats": {
+      "csv": {
+        "headers": [
+          "Codice GTIN/EAN",
+          "Codice Prodotto",
+          "Categoria",
+          "Paese di Produzione",
+          "Marca",
+          "Modello"
+        ],
+        "fields": [
+          "GTIN123ABC4567",
+          "SKU98765",
+          "Piano cottura",
+          "IT",
+          "MarcaEsempio",
+          "ModelloX100"
+        ]
+      },
+      "eprel": {
+        "headers": [
+          "Codice EPREL",
+          "Codice GTIN/EAN",
+          "Codice Prodotto",
+          "Categoria",
+          "Paese di Produzione"
+        ],
+        "fields": ["12345", "GTIN01234", "SKU12345", "{{category}}", "IT"]
+      }
+    },
+    "categories": {
+      "washingmachines": { "format": "eprel", "name": "Lavatrice", "fileName": "Lavatrici_template.csv" },
+      "tumbledryers": { "format": "eprel", "name": "Asciugatrice", "fileName": "Asciugatrici_template.csv" },
+      "ovens": { "format": "eprel", "name": "Forno", "fileName": "Forni_template.csv" },
+      "rangehoods": { "format": "eprel", "name": "Cappa da cucina", "fileName": "Cappe_da_cucina_template.csv" },
+      "dishwashers": { "format": "eprel", "name": "Lavastoviglie", "fileName": "Lavastoviglie_template.csv" },
+      "washerdriers": { "format": "eprel", "name": "Lavasciuga", "fileName": "Lavasciuga_template.csv" },
+      "refrigeratingappl": { "format": "eprel", "name": "Apparecchio di refrigerazione", "fileName": "Apparecchi_di_refrigerazione_template.csv" },
+      "cookinghobs": { "format": "csv", "name": "Piano cottura", "fileName": "Piani_cottura_template.csv" }
+    }
+  },
+  "ui": {
+    "tables": {
+      "products": {
+        "columns": [
+          { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
+          {
+            "id": "organizationName",
+            "labelKey": "tables.products.columns.producer",
+            "sortable": true
+          },
+          {
+            "id": "energyClass",
+            "labelKey": "tables.products.columns.energyClass",
+            "sortable": true
+          },
+          { "id": "eprelCode", "labelKey": "tables.products.columns.eprelCode", "sortable": true },
+          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
+          { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": true },
+          { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true }
+        ],
+        "filters": [
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status"
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category",
+            "useInitiativeCategories": true
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
+          },
+          {
+            "id": "productCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.productCode"
+          },
+          {
+            "id": "eprelCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.eprelCode",
+            "regEx": "^[0-9]{1,12}$",
+            "message": "tables.products.filters.errors.eprelCode",
+            "inputProps": { "maxLength": 12 }
+          }
+        ],
+        "selection": {
+          "rules": {
+            "invitalia": ["UPLOADED", "SUPERVISED"],
+            "invitalia_admin": ["WAIT_APPROVED"]
+          }
+        },
+        "defaultFiltersByRole": {
+          "invitalia_admin": {
+            "status": "WAIT_APPROVED"
+          }
+        },
+        "detail": {
+          "fields": [
+            { "id": "productName"},
+            { "id": "batchName" },
+            { "id": "productSheet"},
+            { "id": "gtinCode", "labelKey": "pages.productDetail.gtinCode" },
+            { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
+            { "id": "brand", "labelKey": "pages.productDetail.brand" },
+            { "id": "model", "labelKey": "pages.productDetail.model" },
+            { "id": "status", "labelKey": "pages.productDetail.status" }
+          ]
+        }
+      }
+    }
+  }
+}

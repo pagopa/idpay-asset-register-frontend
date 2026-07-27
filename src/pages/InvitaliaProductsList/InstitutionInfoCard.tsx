@@ -7,6 +7,7 @@ import { InstitutionResponse } from '../../api/generated/register';
 import { getInstitutionById } from '../../services/registerService';
 import { institutionSelector } from '../../redux/slices/invitaliaSlice';
 import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_INVIT, DEBUG_CONSOLE } from '../../utils/constants';
+import { buildAddress } from '../../utils/functions';
 
 const InstitutionInfoCard: React.FC = () => {
   const { t } = useScopedTranslation();
@@ -34,31 +35,10 @@ const InstitutionInfoCard: React.FC = () => {
     { label: 'piva', value: institutionInfo?.vatNumber, truncate: true },
   ];
 
-  const buildAddress = () => {
-    if (!institutionInfo) {
-      return '';
-    }
-
-    const { address, zipCode, city, county } = institutionInfo;
-
-    if (!address && !zipCode && !city && !county) {
-      return '';
-    }
-
-    const parts = [
-      address ?? '',
-      zipCode ? `, ${zipCode}` : '',
-      city ? ` ${city}` : '',
-      county ? ` (${county})` : '',
-    ];
-
-    return parts.join('').trim();
-  };
-
   const rightColumn = [
     {
       label: 'sedeLegale',
-      value: buildAddress(),
+      value: buildAddress(institutionInfo),
       truncate: true,
     },
     { label: 'pec', value: institutionInfo?.digitalAddress, truncate: true },

@@ -1,12 +1,35 @@
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
 
+const getFirstValuedField = (...values: Array<unknown>) =>
+  values.find((value) => {
+    if (typeof value === 'string') {
+      return value.trim().length > 0;
+    }
+
+    return value !== undefined && value !== null;
+  });
+
+export const getProductRowKey = (row: ProductDTO) =>
+  String(
+    getFirstValuedField(
+      (row as any).gtinCode,
+      (row as any).gtin,
+      (row as any).productCode,
+      (row as any).eprelCode
+    ) ?? ''
+  );
+
 export const getSelectedStatuses = (
   selected: Array<string>,
   tableData: Array<ProductDTO>
 ): Array<ProductStatus> =>
   selected
-    .map((gtinCode) => tableData.find((row) => row.gtinCode === gtinCode)?.status)
+    .map((selectedKey) => {
+      const match = tableData.find((row) => getProductRowKey(row) === String(selectedKey));
+
+      return match?.status;
+    })
     .filter((status): status is ProductStatus => status !== undefined);
 
 export const isAllStatus = (statuses: Array<string>, status: string) =>
@@ -27,6 +50,28 @@ export const getStatusChecks = (selected: Array<string>, tableData: Array<Produc
   };
 };
 
+export const validateBulkActionPreconditions = ({
+  selected,
+  tableData,
+}: {
+  selected: Array<string>;
+  tableData: Array<ProductDTO>;
+  roleKey?: string;
+}) => {
+  const { selectedStatuses, length } = getStatusChecks(selected, tableData);
+
+  if (length === 0) {
+    return { valid: false, reason: 'EMPTY' };
+  }
+
+  const uniqueStatuses = Array.from(new Set(selectedStatuses));
+  if (uniqueStatuses.length > 1) {
+    return { valid: false, reason: 'MIXED_STATUS' };
+  }
+
+  return { valid: true };
+};
+
 export const handleModalSuccess = ({
   selected,
   tableData,
@@ -35,6 +80,9 @@ export const handleModalSuccess = ({
   setShowMsgRejected,
   setShowMsgApproved,
   setShowMsgWaitApproved,
+  setShowMsgSupervised,
+  setShowMsgRejectedApprovation,
+  setShowMsgAcceptApprovation,
 }: {
   selected: Array<string>;
   tableData: Array<ProductDTO>;
@@ -43,8 +91,11 @@ export const handleModalSuccess = ({
   setShowMsgRejected: (v: boolean) => void;
   setShowMsgApproved: (v: boolean) => void;
   setShowMsgWaitApproved: (v: boolean) => void;
+  setShowMsgSupervised: (v: boolean) => void;
+  setShowMsgRejectedApprovation: (v: boolean) => void;
+  setShowMsgAcceptApprovation: (v: boolean) => void;
 }) => {
-  const selectedStatuses = getSelectedStatuses(selected, tableData);
+  const { selectedStatuses } = getStatusChecks(selected, tableData);
   const allUploaded = isAllStatus(selectedStatuses, PRODUCTS_STATES.UPLOADED);
   const allSupervised = isAllStatus(selectedStatuses, PRODUCTS_STATES.SUPERVISED);
 
@@ -52,63 +103,57 @@ export const handleModalSuccess = ({
     setShowMsgApproved(false);
     setShowMsgWaitApproved(false);
     setShowMsgRejected(false);
+    setShowMsgSupervised(false);
+    setShowMsgRejectedApprovation(false);
+    setShowMsgAcceptApprovation(false);
   };
 
-  if (modalAction === PRODUCTS_STATES.APPROVED && allUploaded) {
-    setShowMsgApproved(true);
-    setShowMsgWaitApproved(false);
-    setShowMsgRejected(false);
+  const activate = (setter: (v: boolean) => void) => {
+    resetMsgs();
+    setter(true);
+  };
+
+  const baseMap: Record<string, (v: boolean) => void> = {
+    [PRODUCTS_STATES.APPROVED]: setShowMsgApproved,
+    [PRODUCTS_STATES.WAIT_APPROVED]: setShowMsgWaitApproved,
+    [PRODUCTS_STATES.SUPERVISED]: setShowMsgSupervised,
+    [PRODUCTS_STATES.REJECTED]: setShowMsgRejected,
+    [MIDDLE_STATES.REJECT_APPROVATION]: setShowMsgRejectedApprovation,
+    [MIDDLE_STATES.ACCEPT_APPROVATION]: setShowMsgAcceptApprovation,
+  };
+
+  const setter = modalAction ? baseMap[modalAction] : undefined;
+
+  if (!setter) {
+    activate(setShowMsgApproved);
     return;
   }
 
-  if (modalAction === PRODUCTS_STATES.WAIT_APPROVED && allUploaded) {
-    setShowMsgWaitApproved(true);
-    setShowMsgApproved(false);
-    setShowMsgRejected(false);
+  if (allUploaded) {
+    activate(setter);
     return;
   }
 
-  if (modalAction === PRODUCTS_STATES.SUPERVISED && allUploaded) {
-    setShowMsgWaitApproved(true);
-    setShowMsgApproved(false);
-    setShowMsgRejected(false);
+  if (isInvitaliaUser && allSupervised) {
+    activate(setter);
     return;
   }
 
-  if (isInvitaliaUser && modalAction === PRODUCTS_STATES.WAIT_APPROVED && allSupervised) {
-    setShowMsgWaitApproved(true);
-    setShowMsgApproved(false);
-    setShowMsgRejected(false);
-    return;
-  }
-
-  if (isInvitaliaUser && modalAction === PRODUCTS_STATES.APPROVED && allSupervised) {
-    setShowMsgApproved(true);
-    setShowMsgWaitApproved(false);
-    setShowMsgRejected(false);
-    return;
-  }
-
-  if (
-    isInvitaliaUser &&
-    modalAction === PRODUCTS_STATES.REJECTED &&
-    (allUploaded || allSupervised)
-  ) {
+  if (isInvitaliaUser && modalAction === PRODUCTS_STATES.REJECTED) {
     resetMsgs();
     return;
   }
 
-  if (
-    modalAction === PRODUCTS_STATES.REJECTED ||
-    modalAction === MIDDLE_STATES.REJECT_APPROVATION
-  ) {
-    setShowMsgRejected(true);
-    setShowMsgApproved(false);
-    setShowMsgWaitApproved(false);
-    return;
-  }
-
-  setShowMsgApproved(true);
-  setShowMsgWaitApproved(false);
-  setShowMsgRejected(false);
+  activate(setShowMsgApproved);
 };
+
+export const checkSomeStatus = (
+  selected: Array<string>,
+  tableData: Array<ProductDTO>,
+  status: keyof typeof PRODUCTS_STATES
+) =>
+  selected.some(
+    (code) =>
+      String(tableData.find((row) => getProductRowKey(row) === code)?.status) ===
+      PRODUCTS_STATES[status]
+  );

@@ -1,17 +1,21 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
 import '@testing-library/jest-dom';
 import AddProducts from '../addProducts';
+import { ENV } from '../../../utils/env';
+
+let mockCurrentInitiativeId: string | undefined = 'initiative-1';
 
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
   ENV: {
     URL_FE: {
       LOGOUT: 'https://mock-logout-url.com',
+      EIE_MANUAL: 'https://mock-manual-url.com/manual.pdf',
     },
     URL_API: {
       OPERATION: 'https://mock-api/register',
@@ -90,6 +94,7 @@ jest.mock('@pagopa/mui-italia', () => ({
       {children}
     </button>
   ),
+  theme: { typography: { fontWeightBold: 700 } },
 }));
 
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor', () => ({
@@ -97,7 +102,7 @@ jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor'
 }));
 
 jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
-  useCurrentInitiativeId: () => 'initiative-1',
+  useCurrentInitiativeId: () => mockCurrentInitiativeId,
 }));
 
 jest.mock('../../../hooks/useCurrentInitiative', () => ({
@@ -154,6 +159,8 @@ jest.mock('../../../redux/api/initiativesApi', () => ({
 describe('AddProducts Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockCurrentInitiativeId = 'initiative-1';
+    ENV.URL_FE.EIE_MANUAL = 'https://mock-manual-url.com/manual.pdf';
     mockOnExit.mockImplementation((callback) => callback());
     mockValidateForm.mockResolvedValue(true);
   });
@@ -272,6 +279,22 @@ describe('AddProducts Component', () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
+  test('does not start exit navigation without an initiative id', async () => {
+    const user = userEvent.setup();
+    mockCurrentInitiativeId = undefined;
+
+    render(
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
+    );
+
+    await user.click(screen.getByTestId('back-button-test'));
+
+    expect(mockOnExit).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   test('formRef is properly connected to FormAddProducts', () => {
     render(
       <TestWrapper>
@@ -319,7 +342,19 @@ describe('AddProducts Component', () => {
   });
 
   test('manual link click is not prevented when EIE_MANUAL is defined', async () => {
-    const user = userEvent.setup();
+    render(
+      <TestWrapper>
+        <AddProducts />
+      </TestWrapper>
+    );
+
+    const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
+
+    expect(fireEvent.click(manualLink)).toBe(true);
+  });
+
+  test('manual link click is prevented when EIE_MANUAL is missing', () => {
+    ENV.URL_FE.EIE_MANUAL = undefined as any;
 
     render(
       <TestWrapper>
@@ -329,9 +364,7 @@ describe('AddProducts Component', () => {
 
     const manualLink = screen.getByRole('link', { name: /vai al manuale/i });
 
-    await user.click(manualLink);
-
-    expect(manualLink).toBeInTheDocument();
+    expect(fireEvent.click(manualLink)).toBe(false);
   });
 
   test('manual link navigates correctly when EIE_MANUAL is defined', async () => {

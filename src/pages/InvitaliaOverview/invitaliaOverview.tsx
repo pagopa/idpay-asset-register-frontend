@@ -6,8 +6,9 @@ import { AxiosResponse } from 'axios';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { DEBUG_CONSOLE } from '../../utils/constants';
 import DetailDrawer from '../../components/DetailDrawer/DetailDrawer';
-import { getInstitutionsList, getInstitutionById } from '../../services/registerService';
-import { InstitutionsResponse } from '../../api/generated/register';
+import { getInstitutionById, getProducers } from '../../services/registerService';
+import { ProducersResponseDTO } from '../../api/generated/register';
+import { ProducersList } from '../../model/ProducersList';
 import { InstitutionResponse } from '../../api/generated/register';
 import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
@@ -15,14 +16,16 @@ import { setInstitutionList } from '../../redux/slices/invitaliaSlice';
 import { useAppDispatch } from '../../redux/hooks';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { filterInputWithSpaceRule } from '../../helpers';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import InstitutionsTable from './institutionsTable';
 import { sortInstitutions } from './helpers';
 import ManufacturerDetail from './ManufacturerDetail';
 
 const InvitaliaOverview: React.FC = () => {
+  const initiativeId = useCurrentInitiativeId();
   const { t } = useScopedTranslation();
   const dispatch = useAppDispatch();
-  const [institutions, setInstitutions] = useState<InstitutionsResponse>({
+  const [institutions, setInstitutions] = useState<ProducersList>({
     institutions: [],
   });
   const [institutionData, setInstitutionData] = useState<InstitutionResponse>({});
@@ -42,15 +45,17 @@ const InvitaliaOverview: React.FC = () => {
 
   const fetchInstitutions = async () => {
     try {
-      const institutionsData: AxiosResponse<InstitutionsResponse> = await getInstitutionsList();
-      setInstitutions({ institutions: institutionsData.data.institutions || [] });
+      const institutionsData: AxiosResponse<ProducersResponseDTO> = await getProducers(initiativeId);
+      const mappedInstitutions: Array<Institution> = (institutionsData.data.content || []).map(({producerId, producerName, createdAt, updatedAt}) =>
+        ({institutionId: producerId || '', description: producerName || '', createdAt: createdAt || '', updatedAt: updatedAt || ''}));
+      setInstitutions({ institutions: mappedInstitutions });
 
-      const institutionsDataFilteredByUser = (institutionsData.data.institutions || []).filter(
+      const institutionsDataFilteredByUser = (mappedInstitutions).filter(
         (institution) => institution.institutionId !== user?.org_id
       );
       setInstitutions({ institutions: institutionsDataFilteredByUser });
 
-      const institutionList = institutionsData.data.institutions;
+      const institutionList = mappedInstitutions;
       if (dispatch) {
         dispatch(setInstitutionList(institutionList as Array<Institution>));
       }
@@ -84,7 +89,7 @@ const InvitaliaOverview: React.FC = () => {
     return sortedInstitutions.slice(start, end);
   }, [sortedInstitutions, page, rowsPerPage]);
 
-  const tableData: InstitutionsResponse = {
+  const tableData: ProducersList = {
     institutions: paginatedInstitutions,
   };
 

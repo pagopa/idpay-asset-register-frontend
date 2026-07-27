@@ -13,6 +13,7 @@ import {
   TableSortLabel,
   Typography,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import { visuallyHidden } from '@mui/utils';
 import React, { useEffect } from 'react';
@@ -23,13 +24,14 @@ import { formatDateWithoutHours } from '../../helpers';
 import { usePagination } from '../../hooks/usePagination';
 import { Order } from '../../components/Product/helpers';
 import { Institution } from '../../model/Institution';
-import { InstitutionsResponse } from '../../api/generated/register';
 import ROUTES from '../../routes';
+import { ProducersList } from '../../model/ProducersList';
 import { setInstitution } from '../../redux/slices/invitaliaSlice';
 import EmptyListTable from '../components/EmptyListTable';
 import { buildRoute } from '../../components/SideMenu/SideMenu';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { useAppDispatch } from '../../redux/hooks';
+import { EMPTY_DATA } from '../../utils/constants';
 import { EnhancedTableProps, HeadCell } from './helpers';
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -94,7 +96,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 type InstitutionsTableProps = {
   loading: boolean;
   error: string | null;
-  data: InstitutionsResponse;
+  data: ProducersList;
   page: number;
   rowsPerPage: number;
   totalElements: number;
@@ -125,6 +127,7 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const initiativeId = useCurrentInitiativeId();
+  const theme = useTheme();
 
   useEffect(() => {
     dispatch(setInstitution({} as Institution));
@@ -132,7 +135,13 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
 
   const goToInstitutionPage = (institution: Institution) => {
     dispatch(setInstitution(institution));
-    navigate(buildRoute(ROUTES.INVITALIA_PRODUCTS_LIST, initiativeId ?? ""),);
+    navigate(buildRoute(ROUTES.INVITALIA_PRODUCTS_LIST, initiativeId ?? ''), {
+      state: {
+        organizationId: institution.institutionId,
+        organizationLabel: institution.description,
+        sourceInitiativeId: initiativeId,
+      },
+    });
   };
 
   if (loading) {
@@ -170,16 +179,21 @@ const InstitutionsTable: React.FC<InstitutionsTableProps> = ({
         {((data.institutions as Array<Institution>) ?? []).map((row: Institution) => (
           <TableRow key={row.institutionId}>
             <TableCell>
-              <Link
-                underline="hover"
-                component="button"
-                onClick={() => goToInstitutionPage(row)}
-                sx={{ textDecoration: 'none' }}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 'fontWeightBold', color: '#0062C3' }}>
-                  {row.description}
+              {row.description ?
+                <Link
+                  underline="hover"
+                  component="button"
+                  onClick={() => goToInstitutionPage(row)}
+                  sx={{ textDecoration: 'none' }}
+                >
+                  <Typography variant="body2" sx={{ fontWeight: theme.typography.fontWeightBold, color: theme.palette.primary.main}}>
+                    {row.description}
+                  </Typography>
+                </Link> :
+                <Typography variant="body2">
+                  {EMPTY_DATA}
                 </Typography>
-              </Link>
+              }
             </TableCell>
             <TableCell>{formatDateWithoutHours(row.createdAt.toString())}</TableCell>
             <TableCell>{formatDateWithoutHours(row.updatedAt.toString())}</TableCell>

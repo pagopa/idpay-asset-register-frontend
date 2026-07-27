@@ -1,22 +1,23 @@
 import { AxiosResponse } from 'axios';
 import { RegisterApi } from '../api/registerApiClient';
-import { BatchList, ProductsUpdateDTO, UploadProductListParams } from '../api/generated/register';
+import { BatchList, ProducersResponseDTO, ProductsUpdateDTO, UploadProductListParams } from '../api/generated/register';
 import { RegisterUploadResponseDTO } from '../api/generated/register';
 import { CsvDTO } from '../api/generated/register';
 import { UploadsListDTO } from '../api/generated/register';
-import { InstitutionsResponse } from '../api/generated/register';
 import { InstitutionResponse } from '../api/generated/register';
 import { ProductListDTO } from '../api/generated/register';
 import { ProductStatus } from '../api/generated/register';
 import { InitiativeDTO } from '../api/generated/register';
+import { UpdatedOperativeEmailResultDTO } from '../api/generated/register';
 import { DEBUG_CONSOLE } from '../utils/constants';
 
 export const uploadProductList = async (
+  initiativeId: string,
   csv: File,
   category: UploadProductListParams['category']
 ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
   try {
-    return await RegisterApi.uploadProductList(csv, category);
+    return await RegisterApi.uploadProductList(initiativeId, csv, category);
   } catch (error: any) {
     if (DEBUG_CONSOLE) {
       const errorKey = error?.response?.data?.errorKey;
@@ -25,16 +26,17 @@ export const uploadProductList = async (
       }
       console.error('Error in RegisterApi.uploadProductList:', error);
     }
-    return {} as AxiosResponse<RegisterUploadResponseDTO>;
+    throw error;
   }
 };
 
 export const uploadProductListVerify = async (
+  initiativeId: string,
   csv: File,
   category: UploadProductListParams['category']
 ): Promise<AxiosResponse<RegisterUploadResponseDTO>> => {
   try {
-    return await RegisterApi.uploadProductListVerify(csv, category);
+    return await RegisterApi.uploadProductListVerify(initiativeId, csv, category);
   } catch (error: any) {
     if (DEBUG_CONSOLE) {
       const errorKey = error?.response?.data?.errorKey;
@@ -43,15 +45,16 @@ export const uploadProductListVerify = async (
       }
       console.error('Error in RegisterApi.uploadProductListVerify:', error);
     }
-    return {} as AxiosResponse<RegisterUploadResponseDTO>;
+    throw error;
   }
 };
 
 export const downloadErrorReport = async (
+  initiativeId: string,
   productFileId: string
 ): Promise<{ data: CsvDTO; filename: string }> => {
   try {
-    return await RegisterApi.downloadErrorReport(productFileId);
+    return await RegisterApi.downloadErrorReport(initiativeId, productFileId);
   } catch (error: any) {
     if (DEBUG_CONSOLE) {
       const errorKey = error?.response?.data?.errorKey;
@@ -65,11 +68,12 @@ export const downloadErrorReport = async (
 };
 
 export const getProductFilesList = async (
+  initiativeId: string,
   page?: number,
   size?: number
 ): Promise<AxiosResponse<UploadsListDTO>> => {
   try {
-    return await RegisterApi.getProductFiles(page, size);
+    return await RegisterApi.getProductFiles(initiativeId, page, size);
   } catch (error: any) {
     logProductError('RegisterApi.getProductFiles', error);
     return {
@@ -252,6 +256,7 @@ function logProductError(nameService: string, error: any) {
 }
 
 export const getProducts = async (
+  initiativeId: string,
   organizationId: string,
   page?: number,
   size?: number,
@@ -265,6 +270,7 @@ export const getProducts = async (
 ): Promise<AxiosResponse<ProductListDTO>> => {
   try {
     const result = await RegisterApi.getProductList(
+      initiativeId,
       organizationId,
       page,
       size,
@@ -297,12 +303,18 @@ export const getProducts = async (
   }
 };
 
-export const getInstitutionsList = async (): Promise<AxiosResponse<InstitutionsResponse>> => {
+export const getProducers = async (initiativeId: string): Promise<AxiosResponse<ProducersResponseDTO>> => {
   try {
-    return await RegisterApi.getInstitutionsList();
+    return await RegisterApi.getProducers(initiativeId);
   } catch (error: any) {
     logProductError('RegisterApi.getInstitutionsList', error);
-    return { institutions: [] } as unknown as AxiosResponse<InstitutionsResponse>;
+    return {
+      content: [],
+      pageNo: 0,
+      pageSize: 0,
+      totalElements: 0,
+      totalPages: 0,
+    } as unknown as AxiosResponse<ProducersResponseDTO>;
   }
 };
 
@@ -318,44 +330,48 @@ export const getInstitutionById = async (
 };
 
 export const setSupervisionedStatusList = async (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    return await RegisterApi.setSupervisionedStatusList(gtinCodes, currentStatus, motivation);
+    return await RegisterApi.setSupervisionedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setSupervisionedStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 
 export const setApprovedStatusList = async (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    return await RegisterApi.setApprovedStatusList(gtinCodes, currentStatus, motivation);
+    return await RegisterApi.setApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setApprovedStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 export const setWaitApprovedStatusList = async (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    return await RegisterApi.setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
+    return await RegisterApi.setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setWaitApprovedStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 
 export const setRejectedStatusList = async (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string,
@@ -363,6 +379,7 @@ export const setRejectedStatusList = async (
 ): Promise<ProductsUpdateDTO> => {
   try {
     return await RegisterApi.setRejectedStatusList(
+      initiativeId,
       gtinCodes,
       currentStatus,
       motivation,
@@ -370,28 +387,30 @@ export const setRejectedStatusList = async (
     );
   } catch (error: any) {
     logProductError('RegisterApi.setRejectedStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 
 export const setRestoredStatusList = async (
+  initiativeId: string,
   gtinCodes: Array<string>,
   currentStatus: ProductStatus,
   motivation: string
 ): Promise<ProductsUpdateDTO> => {
   try {
-    return await RegisterApi.setRestoredStatusList(gtinCodes, currentStatus, motivation);
+    return await RegisterApi.setRestoredStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   } catch (error: any) {
     logProductError('RegisterApi.setRestoredStatusList', error);
-    return {} as ProductsUpdateDTO;
+    throw error;
   }
 };
 
 export const getBatchFilterList = async (
+  initiativeId: string,
   xOrganizationSelected: string
 ): Promise<AxiosResponse<BatchList>> => {
   try {
-    return await RegisterApi.getBatchFilterItems(xOrganizationSelected);
+    return await RegisterApi.getBatchFilterItems(initiativeId, xOrganizationSelected);
   } catch (error: any) {
     logProductError('RegisterApi.getBatchFilterItems', error);
     return [] as unknown as AxiosResponse<BatchList>;
@@ -410,5 +429,17 @@ export const getMerchantInitiativeList = async (): Promise<AxiosResponse<Array<I
       headers: {},
       config: {},
     } as unknown as AxiosResponse<Array<InitiativeDTO>>;
+  }
+};
+
+export const updateOperativeEmail = async (
+  initiativeId: string,
+  operativeEmail: string
+): Promise<AxiosResponse<UpdatedOperativeEmailResultDTO>> => {
+  try {
+    return await RegisterApi.updateOperativeEmail(initiativeId, operativeEmail);
+  } catch (error: any) {
+    logProductError('RegisterApi.updateOperativeEmail', error);
+    throw error;
   }
 };

@@ -50,7 +50,7 @@ const WithInitiativeGuard: React.FC<WithInitiativeGuardProps> = ({ children }) =
   }
 
   // 5️⃣ State OK
-  return <>{children}</>;
+  return <div key={initiativeId}>{children}</div>;
 };
 
 export default WithInitiativeGuard;

@@ -3,6 +3,11 @@ import OverviewHistoryUpload from '../uploadsHistory';
 import { getProductFilesList } from '../../../services/registerService';
 import '@testing-library/jest-dom';
 
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'init-1',
+}));
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
@@ -134,7 +139,7 @@ describe('OverviewHistoryUpload', () => {
     render(<OverviewHistoryUpload />);
 
     await waitFor(() => {
-      expect(mockGetProductFilesList).toHaveBeenCalledWith(0, 8);
+      expect(mockGetProductFilesList).toHaveBeenCalledWith('init-1', 0, 8);
     });
   });
 

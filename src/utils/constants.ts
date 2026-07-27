@@ -1,7 +1,9 @@
 export const testToken = '';
 
 const IS_DEVELOP = process.env.NODE_ENV === 'development';
-export const DEBUG_CONSOLE = true;
+export const DEFAULT_INITIATIVE_NAMESPACE = 'default';
+
+export const DEBUG_CONSOLE = false;
 export const MOCK_USER = IS_DEVELOP;
 export const LOG_REDUX_ACTIONS = false;
 
@@ -9,7 +11,6 @@ export const LOADING_TASK_LOGIN_CHECK = 'LOGIN_CHECK';
 export const LOADING_TASK_SEARCH_PARTIES = 'SEARCH_PARTIES';
 export const LOADING_TASK_SEARCH_PARTY = 'SEARCH_PARTY';
 export const LOADING_TASK_SEARCH_PRODUCTS = 'SEARCH_PRODUCTS';
-
 
 export enum PRODUCTS_STATES {
   UPLOADED = 'UPLOADED',
@@ -28,46 +29,32 @@ export enum USERS_TYPES {
   OPERATORE = 'operatore',
   INVITALIA_L1 = 'invitalia',
   INVITALIA_L2 = 'invitalia_admin',
+  SUPPORT = 'support',
 }
-
 export enum USERS_NAMES {
   OPERATORE = 'Operatore',
   INVITALIA_L1 = 'L1',
   INVITALIA_L2 = 'L2',
+  SUPPORT = 'Support',
 }
 
 export const EMPTY_DATA = '-';
 // export const L1_MOTIVATION_OK = 'Da approvare';
 // export const L2_MOTIVATION_OK = 'Approvato';
-export const MAX_TABLE_HEIGHT = 700;
-export const PAGINATION_ROWS_PRODUCTS = [10, 25, 50, 100];
+/* export const MAX_TABLE_HEIGHT = 700; */
+// export const PAGINATION_ROWS_PRODUCTS = [10, 25, 50, 100];
 export const PAGINATION_ROWS_UPLOADS = 20;
 
 export const MAX_LENGTH_EMAIL: number = 40;
 export const MAX_LENGTH_OVERVIEW_PROD: number = 75;
 export const MAX_LENGTH_OVERVIEW_INVIT: number = 140;
 
-export const MAX_LENGTH_DETAILL_PR: number = 40;
-export const MIN_LENGTH_TABLE_PR: number = 30;
-export const MAX_LENGTH_TABLE_PR: number = 45;
-export const RESOLUTION_UPSCALING = 1440;
+/* export const MAX_LENGTH_DETAILL_PR: number = 40; */
+/* export const MIN_LENGTH_TABLE_PR: number = 30; */
+/* export const MAX_LENGTH_TABLE_PR: number = 45; */
+/* export const RESOLUTION_UPSCALING = 1440; */
 
 export const MIN_LENGTH_TEXTFIELD_POPUP = 2;
 export const MAX_LENGTH_TEXTFIELD_POPUP = 200;
 
-export const UPCOMING_INITIATIVE_DAY = "20/10/2025";
-
-export const MOCKED_INITIATIVES_LIST = [
-  {
-    initiativeId: '68dd003ccce8c534d1da22bc',
-    initiativeName: 'Bonus Elettrodomestici',
-  },
-  {
-    initiativeId: '68dd003ccce8c534d1da22bb',
-    initiativeName: 'Bonus Elettrodomestici 2',
-  },
-  {
-    initiativeId: '68dd003ccce8c534d1da22ba',
-    initiativeName: 'Bonus Elettrodomestici - Verifica gestione ISEE - Caso 1',
-  },
-];
+export const UPCOMING_INITIATIVE_DAY = '20/10/2025';

@@ -2,7 +2,7 @@
   "commons": {
     "title": "Elenco informatico degli elettrodomestici"
   },
-  "pages" : {
+  "pages": {
     "addProducts": {
       "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Elettrodomestici. I prodotti che non superano i controlli EPREL saranno automaticamente esclusi. Dopo il caricamento, potrai visualizzarli nella sezione ",
       "manualLink": "https://developer.pagopa.it/pari/guides/bonuselettrodomestici-manuale-tecnico-produttore"
@@ -19,47 +19,57 @@
     }
   },
   "categories": {
-    "washingmachines": "Lavatrici",
-    "tumbledryers": "Asciugatrici",
-    "ovens": "Forni",
-    "rangehoods": "Cappe da cucina",
-    "dishwashers": "Lavastoviglie",
-    "washerdriers": "Lavasciuga",
-    "refrigeratingappl": "Apparecchi di refrigerazione",
-    "cookinghobs": "Piani cottura"
+    "washingmachines": {
+      "label": "Lavatrici"
+    },
+    "tumbledryers": {
+      "label": "Asciugatrici"
+    },
+    "ovens": {
+      "label": "Forni"
+    },
+    "rangehoods": {
+      "label": "Cappe da cucina"
+    },
+    "dishwashers": {
+      "label": "Lavastoviglie"
+    },
+    "washerdriers": {
+      "label": "Lavasciuga"
+    },
+    "refrigeratingappl": {
+      "label": "Apparecchi di refrigerazione"
+    },
+    "cookinghobs": {
+      "label": "Piani cottura"
+    }
   },
-  "csv": {
-    "headers": [
-      "Codice GTIN/EAN",
-      "Codice Prodotto",
-      "Categoria",
-      "Paese di Produzione",
-      "Marca",
-      "Modello"
-    ],
-    "fields": [
-      "GTIN123ABC4567",
-      "SKU98765",
-      "Piano cottura",
-      "IT",
-      "MarcaEsempio",
-      "ModelloX100"
-    ]
+  "tables": {
+    "products": {
+      "columns": {
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "category": "Categoria",
+        "energyClass": "Classe energetica",
+        "eprelCode": "EPREL",
+        "status": "Stato",
+        "batchName": "Lotto"
+      },
+      "filters": {
+        "category": "Categoria",
+        "status": "Stato",
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "productFileId": "Lotto"
+      }
+    }
   },
-  "eprel": {
-    "headers": [
-      "Codice EPREL",
-      "Codice GTIN/EAN",
-      "Codice Prodotto",
-      "Categoria",
-      "Paese di Produzione"
-    ],
-    "fields": [
-      "12345",
-      "GTIN01234",
-      "SKU12345",
-      "Lavatrice",
-      "IT"
-    ]
+  "invitaliaModal": {
+    "waitApproved": {
+      "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nell'Elenco informatico degli elettrodomestici."
+    },
+    "acceptApprovation": {
+      "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nell'Elenco informatico degli elettrodomestici."
+    }
   }
 }

@@ -10,6 +10,8 @@ jest.mock('../../../utils/env', () => ({
   },
 }));
 
+const sortAlphabetically = (a: string, b: string) => a.localeCompare(b);
+
 describe('FooterConfig', () => {
   describe('pagoPALink', () => {
     it('deve contenere href corretto da ENV', () => {
@@ -109,10 +111,10 @@ describe('FooterConfig', () => {
 
     it('ogni lingua deve avere le stesse chiavi', () => {
       const languages = ['it', 'en', 'fr', 'de', 'sl'];
-      const firstKeys = Object.keys(LANGUAGES.it).sort();
+      const firstKeys = Object.keys(LANGUAGES.it).sort(sortAlphabetically);
 
       languages.forEach((lang) => {
-        const keys = Object.keys(LANGUAGES[lang as keyof typeof LANGUAGES]).sort();
+        const keys = Object.keys(LANGUAGES[lang as keyof typeof LANGUAGES]).sort(sortAlphabetically);
         expect(keys).toEqual(firstKeys);
       });
     });

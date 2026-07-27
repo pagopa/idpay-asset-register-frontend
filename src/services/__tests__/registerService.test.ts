@@ -5,7 +5,6 @@ import {
   downloadErrorReport,
   getProductFilesList,
   getProducts,
-  getInstitutionsList,
   getInstitutionById,
   setSupervisionedStatusList,
   setApprovedStatusList,
@@ -13,7 +12,9 @@ import {
   setRejectedStatusList,
   setRestoredStatusList,
   getBatchFilterList,
+  getProducers,
 } from '../registerService';
+import { ProductStatus } from '../../api/generated/register';
 
 jest.mock('../../api/registerApiClient');
 jest.mock('../../utils/constants', () => ({
@@ -22,7 +23,7 @@ jest.mock('../../utils/constants', () => ({
 
 describe('Product Service', () => {
   const mockFile = new File(['content'], 'test.csv', { type: 'text/csv' });
-  const mockCategory = 'test-category';
+  const mockCategory = 'WASHINGMACHINES' as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -40,28 +41,29 @@ describe('Product Service', () => {
       const mockResponse = { id: '123', status: 'success' };
       (RegisterApi.uploadProductList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await uploadProductList(mockFile, mockCategory);
+      const result = await uploadProductList('initi-1', mockFile, mockCategory);
 
       expect(result).toEqual(mockResponse);
-      expect(RegisterApi.uploadProductList).toHaveBeenCalledWith(mockFile, mockCategory);
+      expect(RegisterApi.uploadProductList).toHaveBeenCalledWith('initi-1', mockFile, mockCategory);
     });
 
-    it('should handle error and return empty object', async () => {
+    it('should handle error and rethrow', async () => {
       const error = new Error('Upload failed');
       (RegisterApi.uploadProductList as jest.Mock).mockRejectedValue(error);
 
-      const result = await uploadProductList(mockFile, mockCategory);
+      await expect(uploadProductList('initi-1', mockFile, mockCategory)).rejects.toThrow(
+        'Upload failed'
+      );
 
-      expect(result).toEqual({});
       expect(console.error).toHaveBeenCalled();
     });
 
-    it('should handle non-Error objects', async () => {
+    it('should handle non-Error objects and rethrow', async () => {
       (RegisterApi.uploadProductList as jest.Mock).mockRejectedValue('String error');
 
-      const result = await uploadProductList(mockFile, mockCategory);
-
-      expect(result).toEqual({});
+      await expect(uploadProductList('initi-1', mockFile, mockCategory)).rejects.toBe(
+        'String error'
+      );
     });
   });
 
@@ -70,19 +72,24 @@ describe('Product Service', () => {
       const mockResponse = { id: '123', verified: true };
       (RegisterApi.uploadProductListVerify as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await uploadProductListVerify(mockFile, mockCategory);
+      const result = await uploadProductListVerify('initi-1', mockFile, mockCategory);
 
       expect(result).toEqual(mockResponse);
-      expect(RegisterApi.uploadProductListVerify).toHaveBeenCalledWith(mockFile, mockCategory);
+      expect(RegisterApi.uploadProductListVerify).toHaveBeenCalledWith(
+        'initi-1',
+        mockFile,
+        mockCategory
+      );
     });
 
-    it('should handle error and return empty object', async () => {
+    it('should handle error and rethrow', async () => {
       const error = new Error('Verify failed');
       (RegisterApi.uploadProductListVerify as jest.Mock).mockRejectedValue(error);
 
-      const result = await uploadProductListVerify(mockFile, mockCategory);
+      await expect(uploadProductListVerify('initi-1', mockFile, mockCategory)).rejects.toThrow(
+        'Verify failed'
+      );
 
-      expect(result).toEqual({});
       expect(console.error).toHaveBeenCalled();
     });
   });
@@ -94,17 +101,17 @@ describe('Product Service', () => {
       const mockResponse = { data: mockData, filename: mockFilename };
       (RegisterApi.downloadErrorReport as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await downloadErrorReport('file-123');
+      const result = await downloadErrorReport('initi-1', 'file-123');
 
       expect(result).toEqual(mockResponse);
-      expect(RegisterApi.downloadErrorReport).toHaveBeenCalledWith('file-123');
+      expect(RegisterApi.downloadErrorReport).toHaveBeenCalledWith('initi-1', 'file-123');
     });
 
     it('should handle error and return empty data', async () => {
       const error = new Error('Download failed');
       (RegisterApi.downloadErrorReport as jest.Mock).mockRejectedValue(error);
 
-      const result = await downloadErrorReport('file-123');
+      const result = await downloadErrorReport('initi-1', 'file-123');
 
       expect(result).toEqual({ data: {}, filename: '' });
       expect(console.error).toHaveBeenCalled();
@@ -122,17 +129,17 @@ describe('Product Service', () => {
       };
       (RegisterApi.getProductFiles as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await getProductFilesList(1, 10);
+      const result = await getProductFilesList('initi-1', 1, 10);
 
       expect(result).toEqual(mockResponse);
-      expect(RegisterApi.getProductFiles).toHaveBeenCalledWith(1, 10);
+      expect(RegisterApi.getProductFiles).toHaveBeenCalledWith('initi-1', 1, 10);
     });
 
     it('should handle error and return empty list', async () => {
       const error = new Error('Fetch failed');
       (RegisterApi.getProductFiles as jest.Mock).mockRejectedValue(error);
 
-      const result = await getProductFilesList();
+      const result = await getProductFilesList('initi-1');
 
       expect(result).toEqual({
         content: [],
@@ -153,9 +160,9 @@ describe('Product Service', () => {
       };
       (RegisterApi.getProductFiles as jest.Mock).mockResolvedValue(mockResponse);
 
-      await getProductFilesList();
+      await getProductFilesList('initi-1');
 
-      expect(RegisterApi.getProductFiles).toHaveBeenCalledWith(undefined, undefined);
+      expect(RegisterApi.getProductFiles).toHaveBeenCalledWith('initi-1', undefined, undefined);
     });
   });
 
@@ -173,12 +180,13 @@ describe('Product Service', () => {
       (RegisterApi.getProductList as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await getProducts(
+        'initi-1',
         organizationId,
         1,
         10,
         'name',
         'category1',
-        'APPROVED',
+        ProductStatus.APPROVED,
         'EPREL123',
         'GTIN456',
         'PROD789',
@@ -187,12 +195,13 @@ describe('Product Service', () => {
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.getProductList).toHaveBeenCalledWith(
+        'initi-1',
         organizationId,
         1,
         10,
         'name',
         'category1',
-        'APPROVED',
+        ProductStatus.APPROVED,
         'EPREL123',
         'GTIN456',
         'PROD789',
@@ -210,10 +219,11 @@ describe('Product Service', () => {
       };
       (RegisterApi.getProductList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await getProducts(organizationId);
+      const result = await getProducts('initi-1', organizationId);
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.getProductList).toHaveBeenCalledWith(
+        'initi-1',
         organizationId,
         undefined,
         undefined,
@@ -230,7 +240,7 @@ describe('Product Service', () => {
     it('should handle null response and return default object', async () => {
       (RegisterApi.getProductList as jest.Mock).mockResolvedValue(null);
 
-      const result = await getProducts(organizationId);
+      const result = await getProducts('initi-1', organizationId);
 
       expect(result).toEqual({
         content: [],
@@ -245,7 +255,7 @@ describe('Product Service', () => {
       const error = new Error('API failed');
       (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
 
-      const result = await getProducts(organizationId);
+      const result = await getProducts('initi-1', organizationId);
 
       expect(result).toEqual({
         content: [],
@@ -257,24 +267,30 @@ describe('Product Service', () => {
     });
   });
 
-  describe('getInstitutionsList', () => {
-    it('should get institutions list successfully', async () => {
-      const mockResponse = { institutions: [{ id: '1', name: 'Inst1' }] };
-      (RegisterApi.getInstitutionsList as jest.Mock).mockResolvedValue(mockResponse);
+  describe('getProducers', () => {
+    it('should get producers list successfully', async () => {
+      const mockResponse = { content: [{ producerId: '1', producerName: 'Inst1' }] };
+      (RegisterApi.getProducers as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await getInstitutionsList();
+      const result = await getProducers('init-test');
 
       expect(result).toEqual(mockResponse);
-      expect(RegisterApi.getInstitutionsList).toHaveBeenCalled();
+      expect(RegisterApi.getProducers).toHaveBeenCalledWith('init-test');
     });
 
-    it('should handle error and return empty institutions list', async () => {
+    it('should handle error and return empty producers list', async () => {
       const error = new Error('Fetch failed');
-      (RegisterApi.getInstitutionsList as jest.Mock).mockRejectedValue(error);
+      (RegisterApi.getProducers as jest.Mock).mockRejectedValue(error);
 
-      const result = await getInstitutionsList();
+      const result = await getProducers('init-test');
 
-      expect(result).toEqual({ institutions: [] });
+      expect(result).toEqual({
+        content: [],
+        pageNo: 0,
+        pageSize: 0,
+        totalElements: 0,
+        totalPages: 0,
+      });
     });
   });
 
@@ -305,26 +321,28 @@ describe('Product Service', () => {
       (RegisterApi.setSupervisionedStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await setSupervisionedStatusList(
+        'init-test',
         ['GTIN1', 'GTIN2'],
-        'APPROVED',
+        ProductStatus.APPROVED,
         'Status changed'
       );
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setSupervisionedStatusList).toHaveBeenCalledWith(
+        'init-test',
         ['GTIN1', 'GTIN2'],
         'APPROVED',
         'Status changed'
       );
     });
 
-    it('should handle error and return empty object', async () => {
+    it('should rethrow an error', async () => {
       const error = new Error('Status update failed');
       (RegisterApi.setSupervisionedStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setSupervisionedStatusList(['GTIN1'], 'APPROVED', 'test');
-
-      expect(result).toEqual({});
+      await expect(
+        setSupervisionedStatusList('init-test', ['GTIN1'], ProductStatus.APPROVED, 'test')
+      ).rejects.toBe(error);
     });
   });
 
@@ -333,22 +351,29 @@ describe('Product Service', () => {
       const mockResponse = { success: true };
       (RegisterApi.setApprovedStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await setApprovedStatusList(['GTIN1'], 'SUPERVISED', 'Approved');
+      const result = await setApprovedStatusList(
+        'init-test',
+        ['GTIN1'],
+        ProductStatus.SUPERVISED,
+        'Approved'
+      );
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setApprovedStatusList).toHaveBeenCalledWith(
+        'init-test',
         ['GTIN1'],
-        'SUPERVISED',
+        ProductStatus.SUPERVISED,
         'Approved'
       );
     });
 
     it('should handle error', async () => {
-      (RegisterApi.setApprovedStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
+      const error = new Error('Failed');
+      (RegisterApi.setApprovedStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setApprovedStatusList(['GTIN1'], 'SUPERVISED', 'Approved');
-
-      expect(result).toEqual({});
+      await expect(
+        setApprovedStatusList('init-test', ['GTIN1'], ProductStatus.SUPERVISED, 'Approved')
+      ).rejects.toBe(error);
     });
   });
 
@@ -357,10 +382,16 @@ describe('Product Service', () => {
       const mockResponse = { success: true };
       (RegisterApi.setWaitApprovedStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await setWaitApprovedStatusList(['GTIN1'], 'SUPERVISED', 'Waiting');
+      const result = await setWaitApprovedStatusList(
+        'init-test',
+        ['GTIN1'],
+        ProductStatus.SUPERVISED,
+        'Waiting'
+      );
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setWaitApprovedStatusList).toHaveBeenCalledWith(
+        'init-test',
         ['GTIN1'],
         'SUPERVISED',
         'Waiting'
@@ -368,11 +399,12 @@ describe('Product Service', () => {
     });
 
     it('should handle error', async () => {
-      (RegisterApi.setWaitApprovedStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
+      const error = new Error('Failed');
+      (RegisterApi.setWaitApprovedStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setWaitApprovedStatusList(['GTIN1'], 'SUPERVISED', 'Waiting');
-
-      expect(result).toEqual({});
+      await expect(
+        setWaitApprovedStatusList('init-test', ['GTIN1'], ProductStatus.SUPERVISED, 'Waiting')
+      ).rejects.toBe(error);
     });
   });
 
@@ -382,14 +414,16 @@ describe('Product Service', () => {
       (RegisterApi.setRejectedStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await setRejectedStatusList(
+        'init-test',
         ['GTIN1'],
-        'APPROVED',
+        ProductStatus.APPROVED,
         'Rejected reason',
         'Formal rejection'
       );
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setRejectedStatusList).toHaveBeenCalledWith(
+        'init-test',
         ['GTIN1'],
         'APPROVED',
         'Rejected reason',
@@ -398,11 +432,18 @@ describe('Product Service', () => {
     });
 
     it('should handle error', async () => {
-      (RegisterApi.setRejectedStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
+      const error = new Error('Failed');
+      (RegisterApi.setRejectedStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setRejectedStatusList(['GTIN1'], 'APPROVED', 'reason', 'formal');
-
-      expect(result).toEqual({});
+      await expect(
+        setRejectedStatusList(
+          'init-test',
+          ['GTIN1'],
+          ProductStatus.APPROVED,
+          'reason',
+          'formal'
+        )
+      ).rejects.toBe(error);
     });
   });
 
@@ -411,22 +452,29 @@ describe('Product Service', () => {
       const mockResponse = { success: true };
       (RegisterApi.setRestoredStatusList as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await setRestoredStatusList(['GTIN1'], 'REJECTED', 'Restored');
+      const result = await setRestoredStatusList(
+        'init-test',
+        ['GTIN1'],
+        ProductStatus.REJECTED,
+        'Restored'
+      );
 
       expect(result).toEqual(mockResponse);
       expect(RegisterApi.setRestoredStatusList).toHaveBeenCalledWith(
+        'init-test',
         ['GTIN1'],
-        'REJECTED',
+        ProductStatus.REJECTED,
         'Restored'
       );
     });
 
     it('should handle error', async () => {
-      (RegisterApi.setRestoredStatusList as jest.Mock).mockRejectedValue(new Error('Failed'));
+      const error = new Error('Failed');
+      (RegisterApi.setRestoredStatusList as jest.Mock).mockRejectedValue(error);
 
-      const result = await setRestoredStatusList(['GTIN1'], 'REJECTED', 'Restored');
-
-      expect(result).toEqual({});
+      await expect(
+        setRestoredStatusList('init-test', ['GTIN1'], ProductStatus.REJECTED, 'Restored')
+      ).rejects.toBe(error);
     });
   });
 
@@ -435,17 +483,17 @@ describe('Product Service', () => {
       const mockResponse = [{ id: '1', name: 'Batch 1' }];
       (RegisterApi.getBatchFilterItems as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await getBatchFilterList('org-123');
+      const result = await getBatchFilterList('initi-1', 'org-123');
 
       expect(result).toEqual(mockResponse);
-      expect(RegisterApi.getBatchFilterItems).toHaveBeenCalledWith('org-123');
+      expect(RegisterApi.getBatchFilterItems).toHaveBeenCalledWith('initi-1', 'org-123');
     });
 
     it('should handle error and return empty array', async () => {
       const error = new Error('Fetch failed');
       (RegisterApi.getBatchFilterItems as jest.Mock).mockRejectedValue(error);
 
-      const result = await getBatchFilterList('org-123');
+      const result = await getBatchFilterList('initi-1', 'org-123');
 
       expect(result).toEqual([]);
     });
@@ -456,7 +504,7 @@ describe('Product Service', () => {
       const errorWithMessage = { message: 'Test error' };
       (RegisterApi.getProductList as jest.Mock).mockRejectedValue(errorWithMessage);
 
-      await getProducts('org-123');
+      await getProducts('initi-1', 'org-123');
 
       expect(console.error).toHaveBeenCalled();
     });
@@ -467,7 +515,7 @@ describe('Product Service', () => {
       };
       (RegisterApi.getProductList as jest.Mock).mockRejectedValue(errorWithStack);
 
-      await getProducts('org-123');
+      await getProducts('initi-1', 'org-123');
 
       expect(console.error).toHaveBeenCalled();
     });
@@ -479,7 +527,7 @@ describe('Product Service', () => {
       };
       (RegisterApi.getProductList as jest.Mock).mockRejectedValue(errorWithResponse);
 
-      await getProducts('org-123');
+      await getProducts('initi-1', 'org-123');
 
       expect(console.error).toHaveBeenCalled();
     });
@@ -493,7 +541,7 @@ describe('Product Service', () => {
       };
       (RegisterApi.getProductList as jest.Mock).mockRejectedValue(errorWithData);
 
-      await getProducts('org-123');
+      await getProducts('initi-1', 'org-123');
 
       expect(console.error).toHaveBeenCalled();
     });
@@ -504,7 +552,7 @@ describe('Product Service', () => {
       };
       (RegisterApi.getProductList as jest.Mock).mockRejectedValue(errorWithConfig);
 
-      await getProducts('org-123');
+      await getProducts('initi-1', 'org-123');
 
       expect(console.error).toHaveBeenCalled();
     });
@@ -518,7 +566,7 @@ describe('Product Service', () => {
       const error = new Error('Test error');
       (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
 
-      await getProducts('org-123');
+      await getProducts('initi-1', 'org-123');
 
       // Console should still be called from uploadProductList but not logged
       expect(console.error).not.toHaveBeenCalledWith(
@@ -536,7 +584,7 @@ describe('Product Service', () => {
       };
       (RegisterApi.getProductList as jest.Mock).mockRejectedValue(errorWithArrayData);
 
-      await getProducts('org-123');
+      await getProducts('initi-1', 'org-123');
 
       expect(console.error).toHaveBeenCalled();
     });
@@ -548,7 +596,7 @@ describe('Product Service', () => {
     };
     (RegisterApi.uploadProductList as jest.Mock).mockRejectedValue(error);
 
-    await uploadProductList(mockFile, mockCategory);
+    await expect(uploadProductList('initi-1', mockFile, mockCategory)).rejects.toEqual(error);
 
     expect(console.error).toHaveBeenCalledWith('Error Key: ERR_KEY_123');
   });
@@ -559,7 +607,7 @@ describe('Product Service', () => {
     const { getProductFilesList } = await import('../registerService');
     (RegisterApi.getProductFiles as jest.Mock).mockRejectedValue(new Error('test'));
 
-    await getProductFilesList();
+    await getProductFilesList('initi-1');
 
     expect(console.error).not.toHaveBeenCalled();
   });
@@ -582,10 +630,10 @@ describe('Product Service', () => {
         },
       },
     };
-    await getProducts('org-123');
+    await getProducts('initi-1', 'org-123');
     (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
 
-    await getProducts('org-123');
+    await getProducts('initi-1', 'org-123');
     expect(console.error).toHaveBeenCalled();
   });
 
@@ -596,7 +644,7 @@ describe('Product Service', () => {
     const error = { response: { data: responseData } };
     (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
 
-    await getProducts('org-123');
+    await getProducts('initi-1', 'org-123');
 
     expect(console.error).toHaveBeenCalled();
   });
@@ -605,7 +653,7 @@ describe('Product Service', () => {
     const error = { config: {} };
     (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
 
-    await getProducts('org-123');
+    await getProducts('initi-1', 'org-123');
     expect(console.error).toHaveBeenCalled();
   });
 
@@ -622,7 +670,7 @@ describe('Product Service', () => {
     };
     (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
 
-    await getProducts('org-123');
+    await getProducts('initi-1', 'org-123');
     expect(console.error).toHaveBeenCalled();
   });
 });

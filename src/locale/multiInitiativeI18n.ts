@@ -15,12 +15,16 @@ export const loadItNamespace = async (namespace: string): Promise<Resource> => {
       return mod.default as Resource;
     }
 
-    const [initiativeName, file] = namespace.split('/');
-    if (!initiativeName || !file) {
+    const parts = namespace.split('/');
+    const initiativeFolder = parts[0];
+    const file = parts[1] ?? 'copy';
+
+    if (!initiativeFolder) {
       return {};
     }
 
-    const mod = await import(`./it/${initiativeName}/${file}.json`);
+    const basePath = `./it/${initiativeFolder}/`;
+    const mod = await import(`${basePath}${file}.json`);
     return mod.default as Resource;
   } catch (e) {
     return {};

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Box, Breadcrumbs, Link, Paper, Typography } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
-import { ButtonNaked } from '@pagopa/mui-italia';
+import { ButtonNaked, theme } from '@pagopa/mui-italia';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import { useNavigate } from 'react-router-dom';
@@ -41,7 +41,7 @@ const AddProducts: React.FC = () => {
             fontSize: '1rem',
             marginBottom: '3px',
             marginRight: '8px',
-            fontWeight: 700,
+            fontWeight: theme.typography.fontWeightBold,
           }}
           weight="default"
           data-testid="back-button-test"

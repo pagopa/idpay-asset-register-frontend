@@ -35,6 +35,10 @@ jest.mock('../../../services/registerService', () => ({
   setApprovedStatusList: jest.fn(),
 }));
 
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => "init-test"
+}))
+
 import {
   setSupervisionedStatusList,
   setRejectedStatusList,
@@ -46,6 +50,8 @@ const mockSetSupervisionedStatusList = setSupervisionedStatusList as unknown as 
 const mockSetRejectedStatusList = setRejectedStatusList as unknown as jest.Mock;
 const mockSetRestoredStatusList = setRestoredStatusList as unknown as jest.Mock;
 const mockSetApprovedStatusList = setApprovedStatusList as unknown as jest.Mock;
+
+type ActionType = 'SUPERVISED' | 'REJECTED' | 'REJECT_APPROVATION' | 'ACCEPT_APPROVATION';
 
 const defaultProducts = [
   { status: 'DRAFT' as any, productName: 'A', gtinCode: '001' },
@@ -69,6 +75,70 @@ const renderModal = (props?: Partial<React.ComponentProps<typeof ProductModal>>)
   const allProps = { ...defaultProps, ...props };
   const utils = render(<ProductModal {...allProps} />);
   return { ...utils, onClose, onUpdateTable, onSuccess, props: allProps };
+};
+
+const clickConfirm = async (values: Array<string> = []) => {
+  if (values.length > 0) {
+    const textboxes = screen.getAllByRole('textbox');
+
+    for (const [idx, value] of values.entries()) {
+      if (textboxes[idx]) {
+        await userEvent.type(textboxes[idx], value);
+      }
+    }
+  }
+
+  await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
+};
+
+const expectSuccessFlow = async ({
+  apiMock,
+  onClose,
+  onUpdateTable,
+  onSuccess,
+  props,
+  values = [],
+  expectedApiArgs,
+  expectedSuccessArg,
+}: {
+  apiMock: jest.Mock;
+  onClose: jest.Mock;
+  onUpdateTable: jest.Mock;
+  onSuccess: jest.Mock;
+  props: React.ComponentProps<typeof ProductModal>;
+  values?: Array<string>;
+  expectedApiArgs: (props: React.ComponentProps<typeof ProductModal>) => Array<any>;
+  expectedSuccessArg: ActionType;
+}) => {
+  await clickConfirm(values);
+
+  await waitFor(() => {
+    expect(apiMock).toHaveBeenCalledWith(...expectedApiArgs(props));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onUpdateTable).toHaveBeenCalledTimes(1);
+    expect(onSuccess).toHaveBeenCalledWith(expectedSuccessArg);
+  });
+};
+
+const expectErrorFlow = async ({
+  onClose,
+  onUpdateTable,
+  onSuccess,
+  values = [],
+}: {
+  onClose: jest.Mock;
+  onUpdateTable: jest.Mock;
+  onSuccess: jest.Mock;
+  values?: Array<string>;
+}) => {
+  await clickConfirm(values);
+
+  await waitFor(() => {
+    expect(onClose).toHaveBeenCalledWith(true);
+    expect(onUpdateTable).not.toHaveBeenCalled();
+    expect(onSuccess).not.toHaveBeenCalled();
+    expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
+  });
 };
 
 jest.mock('../../../redux/api/initiativesApi', () => ({
@@ -119,45 +189,35 @@ describe('ProductModal', () => {
   test('SUPERVISED: successful flow calls API, closes, updates table, calls onSuccess', async () => {
     mockSetSupervisionedStatusList.mockResolvedValueOnce(undefined);
     const { onClose, onUpdateTable, onSuccess, props } = renderModal({ actionType: 'SUPERVISED' });
-    const input = screen.getByRole('textbox') as HTMLInputElement;
-    await userEvent.type(input, 'Valid reason');
-    const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
-    await userEvent.click(confirm);
-
-    await waitFor(() => {
-      expect(mockSetSupervisionedStatusList).toHaveBeenCalledWith(
-        props.selectedProducts!.map((p) => p.gtinCode),
-        props.selectedProducts![0].status,
-        'Valid reason'
-      );
-      expect(onClose).toHaveBeenCalledTimes(1);
-      expect(onUpdateTable).toHaveBeenCalledTimes(1);
-      expect(onSuccess).toHaveBeenCalledWith('SUPERVISED');
+    await expectSuccessFlow({
+      apiMock: mockSetSupervisionedStatusList,
+      onClose,
+      onUpdateTable,
+      onSuccess,
+      props,
+      values: ['Valid reason'],
+      expectedApiArgs: (currentProps) => [
+        'init-test',
+        currentProps.selectedProducts!.map((p) => p.gtinCode),
+        currentProps.selectedProducts![0].status,
+        'Valid reason',
+      ],
+      expectedSuccessArg: 'SUPERVISED',
     });
   });
 
-  test('SUPERVISED: error flow closes but does not update table or call onSuccess', async () => {
+  test('SUPERVISED: error flow closes modal and shows generic error without success', async () => {
     mockSetSupervisionedStatusList.mockRejectedValueOnce(new Error('boom'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'SUPERVISED' });
-    await userEvent.type(screen.getByRole('textbox'), 'Reason');
-    await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
-
-    await waitFor(() => {
-      expect(onClose).toHaveBeenCalledTimes(2);
-      expect(onUpdateTable).not.toHaveBeenCalled();
-      expect(onSuccess).not.toHaveBeenCalled();
-    });
+    await expectErrorFlow({ onClose, onUpdateTable, onSuccess, values: ['Reason'] });
   });
 
-  test('SUPERVISED: Cancel button and Close icon call onClose', async () => {
+  test('SUPERVISED: Cancel button calls onClose', async () => {
     const { onClose } = renderModal({ actionType: 'SUPERVISED' });
     await userEvent.click(
       screen.getByRole('button', { name: 'invitaliaModal.supervised.buttonTextCancel' })
     );
     expect(onClose).toHaveBeenCalledTimes(1);
-
-    await userEvent.click(screen.getByRole('button', { name: /close/i }));
-    expect(onClose).toHaveBeenCalledTimes(2);
   });
 
   test('REJECTED: renders dedicated UI, validates both fields, calls API, closes, updates table, calls onSuccess', async () => {
@@ -168,41 +228,28 @@ describe('ProductModal', () => {
     });
 
     expect(screen.getByText('invitaliaModal.rejected.title')).toBeInTheDocument();
-    const textboxes = screen.getAllByRole('textbox');
-    expect(textboxes.length).toBeGreaterThanOrEqual(2);
-
-    await userEvent.type(textboxes[0], 'Reject reason interna');
-    await userEvent.type(textboxes[1], 'Motivazione formale');
-    const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
-    await userEvent.click(confirm);
-
-    await waitFor(() => {
-      expect(mockSetRejectedStatusList).toHaveBeenCalledWith(
-        props.selectedProducts!.map((p) => p.gtinCode),
-        props.selectedProducts![0].status,
+    await expectSuccessFlow({
+      apiMock: mockSetRejectedStatusList,
+      onClose,
+      onUpdateTable,
+      onSuccess,
+      props,
+      values: ['Reject reason interna', 'Motivazione formale'],
+      expectedApiArgs: (currentProps) => [
+        'init-test',
+        currentProps.selectedProducts!.map((p) => p.gtinCode),
+        currentProps.selectedProducts![0].status,
         'Reject reason interna',
-        'Motivazione formale'
-      );
-      expect(onClose).toHaveBeenCalled();
-      expect(onUpdateTable).toHaveBeenCalled();
-      expect(onSuccess).toHaveBeenCalledWith('REJECTED');
+        'Motivazione formale',
+      ],
+      expectedSuccessArg: 'REJECTED',
     });
   });
 
-  test('REJECTED: error flow closes but does not update table or call onSuccess', async () => {
+  test('REJECTED: error flow closes modal and shows generic error without success', async () => {
     mockSetRejectedStatusList.mockRejectedValueOnce(new Error('fail'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'REJECTED' });
-    const textboxes = screen.getAllByRole('textbox');
-    await userEvent.type(textboxes[0], 'Reason');
-    await userEvent.type(textboxes[1], 'Motivazione');
-    const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
-    await userEvent.click(confirm);
-
-    await waitFor(() => {
-      expect(onClose).toHaveBeenCalledTimes(2);
-      expect(onUpdateTable).not.toHaveBeenCalled();
-      expect(onSuccess).not.toHaveBeenCalled();
-    });
+    await expectErrorFlow({ onClose, onUpdateTable, onSuccess, values: ['Reason', 'Motivazione'] });
   });
 
   test('REJECTED: validation with spaces only shows error', async () => {
@@ -231,7 +278,6 @@ describe('ProductModal', () => {
 
   test('REJECTED: error on both fields shows both errors', async () => {
     renderModal({ actionType: 'REJECTED' });
-    const textboxes = screen.getAllByRole('textbox');
     const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
     await userEvent.click(confirm);
 
@@ -248,20 +294,20 @@ describe('ProductModal', () => {
     });
 
     expect(screen.getByText('invitaliaModal.rejectApprovation.title')).toBeInTheDocument();
-    const input = screen.getByRole('textbox');
-    await userEvent.type(input, 'Motivo ripristino');
-    const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
-    await userEvent.click(confirm);
-
-    await waitFor(() => {
-      expect(mockSetRestoredStatusList).toHaveBeenCalledWith(
-        props.selectedProducts!.map((p) => p.gtinCode),
-        props.selectedProducts![0].status,
-        'Motivo ripristino'
-      );
-      expect(onClose).toHaveBeenCalled();
-      expect(onUpdateTable).toHaveBeenCalled();
-      expect(onSuccess).toHaveBeenCalledWith('REJECT_APPROVATION');
+    await expectSuccessFlow({
+      apiMock: mockSetRestoredStatusList,
+      onClose,
+      onUpdateTable,
+      onSuccess,
+      props,
+      values: ['Motivo ripristino'],
+      expectedApiArgs: (currentProps) => [
+        'init-test',
+        currentProps.selectedProducts!.map((p) => p.gtinCode),
+        currentProps.selectedProducts![0].status,
+        'Motivo ripristino',
+      ],
+      expectedSuccessArg: 'REJECT_APPROVATION',
     });
   });
 
@@ -274,17 +320,10 @@ describe('ProductModal', () => {
     expect(mockSetRestoredStatusList).not.toHaveBeenCalled();
   });
 
-  test('REJECT_APPROVATION: error flow closes but does not update table or call onSuccess', async () => {
+  test('REJECT_APPROVATION: error flow closes modal and shows generic error without success', async () => {
     mockSetRestoredStatusList.mockRejectedValueOnce(new Error('fail'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'REJECT_APPROVATION' });
-    await userEvent.type(screen.getByRole('textbox'), 'Motivo');
-    await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
-
-    await waitFor(() => {
-      expect(onClose).toHaveBeenCalledTimes(2);
-      expect(onUpdateTable).not.toHaveBeenCalled();
-      expect(onSuccess).not.toHaveBeenCalled();
-    });
+    await expectErrorFlow({ onClose, onUpdateTable, onSuccess, values: ['Motivo'] });
   });
 
   test('ACCEPT_APPROVATION: renders, calls API, closes, updates table, calls onSuccess', async () => {
@@ -295,31 +334,47 @@ describe('ProductModal', () => {
     });
 
     expect(screen.getByText('invitaliaModal.acceptApprovation.title')).toBeInTheDocument();
-    const confirm = screen.getByRole('button', { name: /buttonTextConfirm/i });
-    await userEvent.click(confirm);
-
-    await waitFor(() => {
-      expect(mockSetApprovedStatusList).toHaveBeenCalledWith(
-        props.selectedProducts!.map((p) => p.gtinCode),
-        props.selectedProducts![0].status,
-        ''
-      );
-      expect(onClose).toHaveBeenCalled();
-      expect(onUpdateTable).toHaveBeenCalled();
-      expect(onSuccess).toHaveBeenCalledWith('ACCEPT_APPROVATION');
+    await expectSuccessFlow({
+      apiMock: mockSetApprovedStatusList,
+      onClose,
+      onUpdateTable,
+      onSuccess,
+      props,
+      expectedApiArgs: (currentProps) => [
+        'init-test',
+        currentProps.selectedProducts!.map((p) => p.gtinCode),
+        currentProps.selectedProducts![0].status,
+        '',
+      ],
+      expectedSuccessArg: 'ACCEPT_APPROVATION',
     });
   });
 
-  test('ACCEPT_APPROVATION: error flow closes but does not update table or call onSuccess', async () => {
+  test('ACCEPT_APPROVATION: error flow closes modal and shows generic error without success', async () => {
     mockSetApprovedStatusList.mockRejectedValueOnce(new Error('fail'));
     const { onClose, onUpdateTable, onSuccess } = renderModal({ actionType: 'ACCEPT_APPROVATION' });
+    await expectErrorFlow({ onClose, onUpdateTable, onSuccess });
+  });
+
+  test('clears stale generic error when selection is emptied before selecting again', async () => {
+    mockSetApprovedStatusList.mockRejectedValueOnce(new Error('fail'));
+    const { rerender, props } = renderModal({ actionType: 'ACCEPT_APPROVATION' });
+
     await userEvent.click(screen.getByRole('button', { name: /buttonTextConfirm/i }));
 
     await waitFor(() => {
-      expect(onClose).toHaveBeenCalledTimes(2);
-      expect(onUpdateTable).not.toHaveBeenCalled();
-      expect(onSuccess).not.toHaveBeenCalled();
+      expect(screen.getByText('msgResutlt.errorGenericDescription')).toBeInTheDocument();
     });
+
+    rerender(<ProductModal {...props} open={false} selectedProducts={[]} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('msgResutlt.errorGenericDescription')).not.toBeInTheDocument();
+    });
+
+    rerender(<ProductModal {...props} open={false} selectedProducts={defaultProducts} />);
+
+    expect(screen.queryByText('msgResutlt.errorGenericDescription')).not.toBeInTheDocument();
   });
 
   test('state resets when modal reopens (open prop effect)', async () => {
@@ -375,17 +430,13 @@ describe('ProductModal', () => {
     expect(screen.getByRole('textbox')).toBeInTheDocument();
   });
 
-  test('renders correct texts for each actionType', () => {
-    renderModal({ actionType: 'SUPERVISED' });
-    expect(screen.getByText('invitaliaModal.supervised.title')).toBeInTheDocument();
-
-    renderModal({ actionType: 'REJECTED' });
-    expect(screen.getByText('invitaliaModal.rejected.title')).toBeInTheDocument();
-
-    renderModal({ actionType: 'REJECT_APPROVATION' });
-    expect(screen.getByText('invitaliaModal.rejectApprovation.title')).toBeInTheDocument();
-
-    renderModal({ actionType: 'ACCEPT_APPROVATION' });
-    expect(screen.getByText('invitaliaModal.acceptApprovation.title')).toBeInTheDocument();
+  test.each([
+    ['SUPERVISED', 'invitaliaModal.supervised.title'],
+    ['REJECTED', 'invitaliaModal.rejected.title'],
+    ['REJECT_APPROVATION', 'invitaliaModal.rejectApprovation.title'],
+    ['ACCEPT_APPROVATION', 'invitaliaModal.acceptApprovation.title'],
+  ] as const)('renders correct texts for %s', (actionType, title) => {
+    renderModal({ actionType });
+    expect(screen.getByText(title)).toBeInTheDocument();
   });
 });

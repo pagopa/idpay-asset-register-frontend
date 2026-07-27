@@ -1,8 +1,16 @@
+jest.mock('../../../utils/constants', () => {
+  const actual = jest.requireActual('../../../utils/constants');
+  return {
+    ...actual,
+    DEBUG_CONSOLE: true,
+  };
+});
+
 import { downloadCsv } from '../helpers';
 
 describe('downloadCsv', () => {
-  const originalCreateObjectURL = global.URL.createObjectURL;
-  const originalRevokeObjectURL = global.URL.revokeObjectURL;
+  const originalCreateObjectURL = window.URL.createObjectURL;
+  const originalRevokeObjectURL = window.URL.revokeObjectURL;
   const originalCreateElement = document.createElement;
   const originalAppendChild = document.body.appendChild;
   const originalRemoveChild = document.body.removeChild;
@@ -15,8 +23,8 @@ describe('downloadCsv', () => {
       download: '',
     };
 
-    global.URL.createObjectURL = jest.fn(() => 'blob:http://localhost/fake-url');
-    global.URL.revokeObjectURL = jest.fn();
+    window.URL.createObjectURL = jest.fn(() => 'blob:http://localhost/fake-url');
+    window.URL.revokeObjectURL = jest.fn();
     document.body.appendChild = jest.fn();
     document.body.removeChild = jest.fn();
     jest.spyOn(document, 'createElement').mockImplementation(() => mockAnchor as any);
@@ -33,8 +41,8 @@ describe('downloadCsv', () => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
     jest.restoreAllMocks();
-    global.URL.createObjectURL = originalCreateObjectURL;
-    global.URL.revokeObjectURL = originalRevokeObjectURL;
+    window.URL.createObjectURL = originalCreateObjectURL;
+    window.URL.revokeObjectURL = originalRevokeObjectURL;
     document.createElement = originalCreateElement;
     document.body.appendChild = originalAppendChild;
     document.body.removeChild = originalRemoveChild;

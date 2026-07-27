@@ -2,19 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { buildScopedNamespaces } from '../locale/namespaces';
-import { buildNamespaceKey } from '../utils/buildNamespaceKey';
+import { buildInitiativeFolderName } from '../locale/multiInitiativeBasePath';
 import i18n from '../locale';
-import {useCurrentInitiativeId} from "./useCurrentInitiativeId";
-import {useInitiativesQuery} from "./useInitiativesQuery";
+import { useCurrentInitiative } from './useCurrentInitiative';
 
 const failedNamespaceLoads = new Set<string>();
 
 export type UseScopedTranslationOptions = {
   initiativeName?: string;
-  /**
-   * If true, explicitly loads namespaces via i18next.loadNamespaces at runtime.
-   * Default is true to keep existing pages working (multi-initiative ready).
-   */
   enableNamespaceLoading?: boolean;
 };
 
@@ -26,35 +21,25 @@ export type UseScopedTranslationResult = {
 
 const resolveInitiativeNamespace = (
   initiativeNameProp: string | undefined,
-  initiativeId: string,
-  initiatives: Array<any>
+  currentInitiative: any
 ): string | undefined => {
   if (initiativeNameProp) {
     return initiativeNameProp;
   }
 
-  const currentInitiative = initiatives?.find((i) => i.initiativeId === initiativeId);
-
-  if (!currentInitiative) {
+  if (!currentInitiative?.initiativeName) {
     return undefined;
   }
 
-  const { initiativeName, startDate } = currentInitiative;
-
-  if (!initiativeName || !startDate) {
-    return undefined;
-  }
-
-  return buildNamespaceKey(initiativeName, startDate);
+  return buildInitiativeFolderName(currentInitiative.initiativeName, currentInitiative.startDate);
 };
 
 export const useScopedTranslation = (
   options: UseScopedTranslationOptions = {}
 ): UseScopedTranslationResult => {
   const { initiativeName: initiativeNameProp, enableNamespaceLoading = true } = options;
-  const initiativeId = useCurrentInitiativeId();
-  const { initiatives }  = useInitiativesQuery();
-  const initiativeName = resolveInitiativeNamespace(initiativeNameProp, initiativeId ?? '', initiatives);
+  const currentInitiative = useCurrentInitiative();
+  const initiativeName = resolveInitiativeNamespace(initiativeNameProp, currentInitiative);
 
   const namespaces = useMemo(
     () => buildScopedNamespaces(initiativeName ?? undefined),
@@ -71,11 +56,7 @@ export const useScopedTranslation = (
 
   const namespacesForHook = useMemo((): Array<string> => {
     if (initiativeName) {
-      return [
-        'common',
-        `${initiativeName}/copy`,
-        `${initiativeName}/tos`,
-      ];
+      return ['common', `${initiativeName}/copy`, `${initiativeName}/tos`];
     }
 
     return ['common', 'default/copy'];

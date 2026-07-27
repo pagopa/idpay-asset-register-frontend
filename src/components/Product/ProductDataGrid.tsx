@@ -1,112 +1,441 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Button, Paper, TablePagination, CircularProgress } from '@mui/material';
-import Chip from '@mui/material/Chip';
-import FlagIcon from '@mui/icons-material/Flag';
-import CloseIcon from '@mui/icons-material/Close';
-import { grey } from '@mui/material/colors';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
+import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import { fetchUserFromLocalStorage } from '../../helpers';
 import {
-  getProducts,
-  getBatchFilterList,
-  getInstitutionsList,
-} from '../../services/registerService';
-import {
-  PAGINATION_ROWS_PRODUCTS,
-  EMPTY_DATA,
-  USERS_TYPES,
-  PRODUCTS_STATES,
-  USERS_NAMES,
-  MIDDLE_STATES,
-  // L1_MOTIVATION_OK,
-  DEBUG_CONSOLE,
-} from '../../utils/constants';
+  institutionSelector,
+  setInstitutionList,
+  setInstitution,
+} from '../../redux/slices/invitaliaSlice';
+import { ProductStatus } from '../../api/generated/register';
+import { DEBUG_CONSOLE, EMPTY_DATA, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
+import { setWaitApprovedStatusList } from '../../services/registerService';
 import {
   batchIdSelector,
   batchNameSelector,
   setBatchId,
   setBatchName,
 } from '../../redux/slices/productsSlice';
-import EmptyListTable from '../../pages/components/EmptyListTable';
-import { ProductDTO, ProductStatus } from '../../api/generated/register';
-import { fetchUserFromLocalStorage } from '../../helpers';
-import ProductsTable from '../../pages/components/ProductsTable';
-import { userFromJwtTokenAsJWTUser } from '../../hooks/useLogin';
-import {
-  institutionListSelector,
-  institutionSelector,
-  setInstitution,
-  setInstitutionList,
-} from '../../redux/slices/invitaliaSlice';
-import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
-import { Institution } from '../../model/Institution';
-import { setWaitApprovedStatusList } from '../../services/registerService';
+import { ProductDTO } from '../../api/generated/register';
+
 import DetailDrawer from '../DetailDrawer/DetailDrawer';
-import { BatchFilterItems, Order } from './helpers';
-import { getStatusChecks } from './ProductDataGrid.helpers';
+import FiltersDrawer from '../FiltersDrawer/FiltersDrawer';
+import { SelectProps } from '../FiltersDrawer/filtersRender';
+import EmptyListTable from '../../pages/components/EmptyListTable';
+import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
+import { useProductsTable } from './hooks/useProductsTable';
+import { useProductDataGridInit } from './hooks/useProductDataGridInit';
+
+import ProductDataGridView from './ProductDataGridView';
+import ProductResultMessages from './ProductResultMessages';
 import ProductDetail from './ProductDetail';
-import ProductModal from './ProductModal';
-import NewFilter from './NewFilter';
-import ProductConfirmDialog from './ProductConfirmDialog';
-import MsgResult from './MsgResult';
 
-type ProductDataGridProps = {
+type Props = {
   organizationId: string;
-  children?: React.ReactNode;
+  organizationLabel?: string;
 };
 
-const buttonStyle = {
-  height: 48,
-  fontWeight: 700,
-  fontSize: 16,
-  marginRight: 2,
-};
+import { useResolvedProductTableConfig } from './hooks/useResolvedProductTableConfig';
+import { useEnrichedProductFilters } from './hooks/useEnrichedProductFilters';
+import { useTargetOrganization } from './hooks/useTargetOrganization';
+import ProductModal from './ProductModal';
+import ProductConfirmDialog from './ProductConfirmDialog';
+import { getProductRowKey, getStatusChecks } from './ProductDataGrid.helpers';
 
-const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => {
+const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel }) => {
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
-  const [showMsgRejected, setShowMsgRejected] = useState(false);
-  const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
-  const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
-  const batchName = useSelector(batchNameSelector);
-  const batchId = useSelector(batchIdSelector);
-  const institutions = useSelector(institutionListSelector);
+  const initiativeId = useCurrentInitiativeId();
+  const { config } = useInitiativeConfig();
+  const typedConfig = config as import('../../model/config/ConfigSchema').InitiativeConfig;
+  const { tableConfig, paginationConfig, filtersConfig, templateConfig } =
+    useResolvedProductTableConfig(typedConfig);
+
+  const [activeOrganizationId, setActiveOrganizationId] = useState(organizationId);
+  const [redirectProducer, setRedirectProducer] = useState<{
+    value: string;
+    label?: string;
+  } | null>(null);
+  const [lastRedirectOrganizationId, setLastRedirectOrganizationId] = useState<string | null>(null);
+  const [redirectProducerManuallyCleared, setRedirectProducerManuallyCleared] = useState(false);
+
+  const user = useMemo(() => fetchUserFromLocalStorage(), []);
+
+  const location = useLocation();
+  const batchFromHistory = (location.state as any)?.batchId;
+
+  const currentRoleKey = user?.org_role as string | undefined;
+
+  const subRoleConfig = config?.subRoles?.[currentRoleKey as string];
+  const hasProductsPermission = subRoleConfig?.permissions?.tables?.includes('products');
+
+  const role = currentRoleKey?.toLowerCase();
+
+  const isInvitaliaUser = role === USERS_TYPES.INVITALIA_L1;
+  const isInvitaliaAdmin = role === USERS_TYPES.INVITALIA_L2;
+
   const institution = useSelector(institutionSelector);
-  const [order, setOrder] = useState<Order>('asc');
-  const [refreshKey, setRefreshKey] = useState(0);
+  const batchId = useSelector(batchIdSelector);
+  const batchName = useSelector(batchNameSelector);
+  const initialBatchFilters = useMemo<Record<string, { value: string; label?: string }>>((): Record<
+    string,
+    { value: string; label?: string }
+  > => {
+    if (!batchId) {
+      return {};
+    }
+
+    const displayBatchName = batchName?.replace(/\.csv$/i, '') || batchName || batchId;
+
+    return {
+      productFileId: {
+        value: batchId,
+        label: displayBatchName,
+      },
+    };
+  }, [batchId, batchName]);
+
+  const [filters, setFilters] = useState<Record<string, { value: string; label?: string }>>({
+    ...initialBatchFilters,
+    ...(isInvitaliaAdmin
+      ? {
+          status: {
+            value: PRODUCTS_STATES.WAIT_APPROVED,
+            label: t('chip.productStatusLabel.waitApproved'),
+          },
+        }
+      : {}),
+  });
+
+  const effectiveFilters = useMemo(
+    () => (redirectProducer ? { producer: redirectProducer, ...filters } : filters),
+    [filters, redirectProducer]
+  );
+
+  const filtersSignature = useMemo(
+    () =>
+      Object.entries(effectiveFilters)
+        .map(([key, obj]) => `${key}:${obj?.value}`)
+        .join('|'),
+    [effectiveFilters]
+  );
+
+  const filtersValue: typeof filters & { producer?: string } = Object.keys(effectiveFilters).length
+    ? Object.entries(effectiveFilters)?.reduce(
+        (acc, [key, obj]) => ({ ...acc, [key]: obj?.value }),
+        {}
+      )
+    : {};
+
+  const { targetId } = useTargetOrganization({
+    organizationId: activeOrganizationId,
+    user,
+    filtersValue,
+    tableConfig,
+  });
+  const queryOrganizationId = effectiveFilters.producer?.value || targetId;
+  const apiFilters = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(effectiveFilters)
+          .filter(([key]) => key !== 'producer')
+          .map(([key, value]) => [key, value.value])
+      ),
+    [effectiveFilters]
+  );
+
+  const isReady = useMemo(() => {
+    if (tableConfig?.organizationSource === 'user') {
+      return !!user?.org_id;
+    }
+
+    return true;
+  }, [tableConfig?.organizationSource, user?.org_id]);
+
+  useEffect(() => {
+    if (batchId) {
+      const displayBatchName = batchName?.replace(/\.csv$/i, '') || batchName || batchId;
+
+      setPage(0);
+      setSelected([]);
+      setFilters((prev) => {
+        if (prev.productFileId?.value === batchId) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          productFileId: {
+            value: batchId,
+            label: displayBatchName,
+          },
+        };
+      });
+
+      dispatch(setBatchId(''));
+      dispatch(setBatchName(''));
+    }
+
+    if (batchFromHistory) {
+      setFilters((prev) => {
+        if (prev.productFileId?.value === batchFromHistory) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          productFileId: {
+            value: batchFromHistory,
+            label: batchFromHistory,
+          },
+        };
+      });
+    }
+  }, [batchFromHistory, batchId, batchName, dispatch]);
+
+  useEffect(() => {
+    if ((!isInvitaliaUser && !isInvitaliaAdmin) || !organizationId) {
+      return;
+    }
+
+    if (redirectProducerManuallyCleared && lastRedirectOrganizationId === organizationId) {
+      return;
+    }
+
+    setRedirectProducer({
+      value: organizationId,
+      label: organizationLabel || institution?.description || organizationId,
+    });
+    setActiveOrganizationId(organizationId);
+    setLastRedirectOrganizationId(organizationId);
+    setRedirectProducerManuallyCleared(false);
+  }, [
+    isInvitaliaUser,
+    isInvitaliaAdmin,
+    organizationId,
+    organizationLabel,
+    institution?.description,
+    lastRedirectOrganizationId,
+    redirectProducerManuallyCleared,
+  ]);
+
+  const { batchFilterItems } = useProductDataGridInit({
+    initiativeId,
+    organizationId,
+    isInvitaliaUser,
+    isInvitaliaAdmin,
+    institutionId: institution?.institutionId,
+    dispatch,
+    setInstitutionList,
+  });
+
+  const [trackedInitiativeId, setTrackedInitiativeId] = useState(initiativeId);
+
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [orderBy, setOrderBy] = useState<keyof ProductDTO>('category');
-  const [page, setPage] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [itemsQty, setItemsQty] = useState<number | undefined>(0);
-  const [categoryFilter, setCategoryFilter] = useState<string>('');
-  const [producerFilter, setProducerFilter] = useState<string>('');
-  const [batchFilter, setBatchFilter] = useState<string>('');
-  const [eprelCodeFilter, setEprelCodeFilter] = useState<string>('');
-  const [gtinCodeFilter, setGtinCodeFilter] = useState<string>('');
-  const [drawerOpened, setDrawerOpened] = useState<boolean>(false);
-  const [drawerData, setDrawerData] = useState<ProductDTO>({});
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [filtering, setFiltering] = useState<boolean>(false);
-  const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [paginatorFrom, setPaginatorFrom] = useState<number | undefined>(1);
-  const [paginatorTo, setPaginatorTo] = useState<number | undefined>(0);
-  const [batchFilterItems, setBatchFilterItems] = useState<Array<BatchFilterItems>>([]);
-  const [apiErrorOccurred, setApiErrorOccurred] = useState<boolean>(false);
-  const [filtersDrawerOpened, setFiltersDrawerOpened] = useState<boolean>(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(paginationConfig?.defaultRowsPerPage ?? 10);
   const [selected, setSelected] = useState<Array<string>>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    setSelected([]);
+  }, [filtersSignature, queryOrganizationId, refreshKey]);
+
+  useEffect(() => {
+    if (trackedInitiativeId === initiativeId) {
+      return;
+    }
+
+    setFilters({});
+    setActiveOrganizationId(organizationId);
+    setRedirectProducer(null);
+    setLastRedirectOrganizationId(null);
+    setRedirectProducerManuallyCleared(false);
+    setPage(0);
+    setSelected([]);
+    setTrackedInitiativeId(initiativeId);
+    dispatch(setBatchId(''));
+    dispatch(setBatchName(''));
+    dispatch(setInstitution({ institutionId: '', createdAt: '', updatedAt: '', description: '' }));
+  }, [initiativeId, organizationId, trackedInitiativeId, dispatch]);
+
+  const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const [filtersDrawerOpen, setFiltersDrawerOpen] = useState(false);
+
+  const { tableData, loading, itemsQty, paginatorFrom, paginatorTo } = useProductsTable({
+    refreshKey,
+    initiativeId,
+    organizationId: queryOrganizationId,
+    orderBy,
+    order,
+    page,
+    rowsPerPage,
+    ...apiFilters,
+  });
+
+  const selectedProductsList = useMemo(
+    () =>
+      tableData
+        .filter((row) => selected.includes(getProductRowKey(row)))
+        .map((row) => ({
+          status: row.status as ProductStatus,
+          productName: row.productName,
+          gtinCode: getProductRowKey(row),
+          category: row.category,
+        })) as Array<{
+        status: ProductStatus;
+        productName?: string;
+        gtinCode: string;
+        category?: string;
+      }>,
+    [selected, tableData]
+  );
+
+  // Replace producer label with readable name once products are loaded
+  useEffect(() => {
+    if (
+      organizationId &&
+      filters.producer &&
+      filters.producer.label === organizationId &&
+      tableData?.length > 0
+    ) {
+      const readableName = (tableData[0] as any)?.organizationName;
+
+      if (readableName) {
+        setFilters((prev) => ({
+          ...prev,
+          producer: {
+            value: organizationId,
+            label: readableName,
+          },
+        }));
+      }
+    }
+  }, [organizationId, tableData]);
+
+  const batchFilter: Record<string, SelectProps> = useMemo(
+    () =>
+      batchFilterItems.reduce((acc, batch) => {
+        const batchName = batch?.batchName?.replace(/\.csv$/i, '') || '';
+        return {
+          ...acc,
+          [batch?.productFileId || '']: {
+            label: batchName,
+            value: batchName,
+          },
+        };
+      }, {}),
+    [batchFilterItems]
+  );
+
+  const { enrichedFiltersConfig } = useEnrichedProductFilters({
+    isInvitalia: isInvitaliaAdmin || isInvitaliaUser,
+    typedConfig,
+    filtersConfig,
+    batchFilter,
+    t,
+    currentRoleKey,
+  });
+
+  // Apply role-based default filters (e.g. L2 -> WAIT_APPROVED)
+  useEffect(() => {
+    if (!currentRoleKey) {
+      return;
+    }
+
+    const roleDefaults = tableConfig?.defaultFiltersByRole?.[currentRoleKey];
+
+    if (!roleDefaults) {
+      return;
+    }
+
+    setFilters((prev) => {
+      // do not override manually set filters
+      if (prev && Object.keys(prev).length > 0 && prev.status) {
+        return prev;
+      }
+
+      const mappedDefaults = Object.entries(roleDefaults).reduce<
+        Record<string, { value: string; label?: string }>
+      >((acc, [key, value]) => {
+        const filterConfigItem = enrichedFiltersConfig?.find((f: any) => f.id === key);
+
+        const label =
+          filterConfigItem?.options && value && filterConfigItem.options[value]
+            ? t(filterConfigItem.options[value].labelKey)
+            : (value as string);
+
+        return {
+          ...acc,
+          [key]: { value: value as string, label },
+        };
+      }, {});
+
+      return {
+        ...mappedDefaults,
+        ...prev,
+      };
+    });
+  }, [currentRoleKey, tableConfig]);
+
+  useEffect(() => {
+    if (paginationConfig?.defaultRowsPerPage) {
+      setRowsPerPage(paginationConfig.defaultRowsPerPage);
+    }
+    setPage(0);
+  }, [initiativeId, paginationConfig]);
+
+  useEffect(() => {
+    if (enrichedFiltersConfig) {
+      const defaultValues = enrichedFiltersConfig as Array<
+        import('../../model/config/ConfigSchema').FilterConfig
+      >;
+
+      const filteredDefaults = defaultValues.filter((filter) => !!filter?.defaultValue);
+
+      if (filteredDefaults.length > 0) {
+        const defaultFilters = filteredDefaults.reduce<
+          Record<string, { value: string; label?: string }>
+        >((acc, filter) => {
+          const { id, defaultValue, options } = filter;
+
+          const label =
+            options && defaultValue && options[defaultValue]?.labelKey
+              ? t(options[defaultValue].labelKey)
+              : defaultValue;
+
+          return {
+            ...acc,
+            [id]: { value: defaultValue || '', label },
+          };
+        }, {});
+
+        setFilters((prev) => ({
+          ...defaultFilters,
+          ...prev,
+        }));
+      }
+    }
+  }, [enrichedFiltersConfig, t]);
+
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalAction, setModalAction] = useState<string | undefined>(undefined);
-  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
-  const [ready, setReady] = useState(false);
-  const [adminDefaultApplied, setAdminDefaultApplied] = useState(false);
+  const [modalAction, setModalAction] = useState<string | undefined>();
+  const [showMsgRejected, setShowMsgRejected] = useState(false);
   const [showMsgApproved, setShowMsgApproved] = useState(false);
-  const [showMsgAcceptApprovation, setMsgAcceptApprovation] = useState(false);
+  const [showMsgWaitApproved, setShowMsgWaitApproved] = useState(false);
   const [showMsgSupervised, setShowMsgSupervised] = useState(false);
+  const [showMsgRejectedApprovation, setShowMsgRejectedApprovation] = useState(false);
+  const [showMsgAcceptApprovation, setMsgAcceptApprovation] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [showMixStatusError, setShowMixStatusError] = useState(false);
   const [showYourselfApprovedError, setShowYourselfApprovedError] = useState(false);
-  const MSG_RESULT_BT = 80;
+  const [showGenericError, setShowGenericError] = useState(0);
 
   const resetAllMsgResults = () => {
     setShowMsgRejected(false);
@@ -117,218 +446,41 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
     setMsgAcceptApprovation(false);
   };
 
-  const setMsgResultByAction = (
-    actionType?: string,
-    isInvitaliaUser?: boolean,
-    isInvitaliaAdmin?: boolean
-  ) => {
-    if (actionType === PRODUCTS_STATES.SUPERVISED && isInvitaliaUser) {
-      setShowMsgSupervised(true);
-      return;
+  useEffect(() => {
+    const isMsg =
+      showMsgRejected ||
+      showMsgApproved ||
+      showMsgWaitApproved ||
+      showMsgSupervised ||
+      showMsgRejectedApprovation ||
+      showMsgAcceptApprovation;
+    if (isMsg) {
+      setTimeout(() => resetAllMsgResults(), 3000);
     }
-    if (actionType === PRODUCTS_STATES.WAIT_APPROVED && isInvitaliaUser) {
-      setShowMsgWaitApproved(true);
-      return;
-    }
-    if (actionType === PRODUCTS_STATES.WAIT_APPROVED && isInvitaliaAdmin) {
-      setMsgAcceptApprovation(true);
-      return;
-    }
-    if (actionType === MIDDLE_STATES.REJECT_APPROVATION && isInvitaliaAdmin) {
-      setShowMsgRejectedApprovation(true);
-      return;
-    }
-    if (actionType === PRODUCTS_STATES.REJECTED && isInvitaliaUser) {
-      setShowMsgRejected(true);
-    }
-  };
-
-  const user = useMemo(() => fetchUserFromLocalStorage(), []);
-  const isInvitaliaUser = user?.org_role === USERS_TYPES.INVITALIA_L1;
-  const isInvitaliaAdmin = user?.org_role === USERS_TYPES.INVITALIA_L2;
+  }, [
+    showMsgRejected,
+    showMsgApproved,
+    showMsgWaitApproved,
+    showMsgSupervised,
+    showMsgRejectedApprovation,
+    showMsgAcceptApprovation,
+  ]);
 
   useEffect(() => {
-    setSelected([]);
-  }, [tableData]);
-
-  const fetchProductList = () => {
-    setLoading(true);
-    callProductsApi();
-  };
-
-  const fetchInstitutions = async () => {
-    try {
-      const institutionsData = await getInstitutionsList();
-      const institutionList = institutionsData.data.institutions;
-      dispatch(setInstitutionList(institutionList as Array<Institution>));
-    } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error('Error fetching institutions:', error);
-      }
-    }
-  };
-
-  const updaDataTable = () => {
-    setRefreshKey((k) => k + 1);
-    fetchProductList();
-  };
-
-  const callProductsApi = () => {
-    const sortKey = `${orderBy},${order}`;
-    const user = userFromJwtTokenAsJWTUser(localStorage.getItem('token') || '');
-
-    void getProducts(
-      isInvitaliaUser || isInvitaliaAdmin ? producerFilter : user.org_id,
-      page,
-      rowsPerPage,
-      sortKey,
-      categoryFilter ? t(`pages.products.categories.${categoryFilter}`) : '',
-      statusFilter ? t(`pages.products.categories.${statusFilter}`) : '',
-      eprelCodeFilter,
-      gtinCodeFilter,
-      undefined,
-      batchFilter
-    )
-      .then((res) => {
-        const { content, pageNo, totalElements } = res.data;
-        setTableData(content ? Array.from(content) : []);
-        setItemsQty(totalElements);
-        if (pageNo !== undefined && totalElements) {
-          setPaginatorFrom(pageNo * rowsPerPage + 1);
-          setPaginatorTo(
-            rowsPerPage * (Number(pageNo) + 1) < totalElements
-              ? rowsPerPage * (Number(pageNo) + 1)
-              : totalElements
-          );
-        }
-        setApiErrorOccurred(false);
-      })
-      .catch(() => handleStateForError())
-      .finally(() => {
-        setLoading(false);
-        setFiltering(false);
-      });
-
-    dispatch(setBatchName(''));
-    dispatch(setBatchId(''));
-  };
-
-  const handleStateForError = () => {
-    setApiErrorOccurred(true);
-    setTableData([]);
-  };
-
-  useEffect(() => {
-    if (batchId) {
-      setBatchFilter(batchId);
-      setFiltering(true);
-    }
-  }, [batchName, batchId, batchFilterItems]);
-
-  useEffect(() => {
-    if ((isInvitaliaUser || isInvitaliaAdmin) && institution?.institutionId) {
-      setProducerFilter(institution.institutionId);
-    }
-    setReady(true);
-  }, [isInvitaliaUser, isInvitaliaAdmin, institution?.institutionId]);
-
-  useEffect(() => {
-    if (isInvitaliaAdmin && !adminDefaultApplied) {
-      setStatusFilter('Da approvare');
-      setAdminDefaultApplied(true);
+    if (showGenericError === 0) {
+      return undefined;
     }
 
-    if (isInvitaliaAdmin || isInvitaliaUser) {
-      void fetchInstitutions();
-    }
-
-    const targetId = isInvitaliaUser
-      ? producerFilter || institution?.institutionId || ''
-      : organizationId;
-
-    void getBatchFilterList(targetId)
-      .then((res) => {
-        setBatchFilterItems(res.data as unknown as Array<BatchFilterItems>);
-      })
-      .catch(() => {
-        setBatchFilterItems([]);
-      });
-  }, [ready, isInvitaliaUser, producerFilter, institution?.institutionId, organizationId]);
-  useEffect(() => {
-    if (!ready) {
-      return;
-    }
-    setLoading(true);
-    callProductsApi();
-  }, [ready, page, orderBy, order, rowsPerPage, organizationId]);
-
-  useEffect(() => {
-    if (!ready || !filtering) {
-      return;
-    }
-    setLoading(true);
-    callProductsApi();
-  }, [ready, filtering, organizationId]);
-
-  const handleDeleteFiltersButtonClick = () => {
-    setCategoryFilter('');
-    setStatusFilter('');
-    setProducerFilter('');
-    setBatchFilter('');
-    setEprelCodeFilter('');
-    setGtinCodeFilter('');
-    setApiErrorOccurred(false);
-    setFiltering(true);
-    dispatch(
-      setInstitution({
-        institutionId: '',
-        createdAt: '',
-        updatedAt: '',
-        description: '',
-      })
-    );
-  };
-
-  const handleToggleDrawer = (newOpen: boolean) => {
-    setDrawerOpened(newOpen);
-  };
-
-  const handleToggleFiltersDrawer = (newOpen: boolean) => {
-    setFiltersDrawerOpened(newOpen);
-  };
-
-  const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof ProductDTO) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleListButtonClick = (row: ProductDTO) => {
-    setDrawerData(row);
-    setDrawerOpened(true);
-  };
+    const timer = setTimeout(() => setShowGenericError(0), 5000);
+    return () => clearTimeout(timer);
+  }, [showGenericError]);
 
   const callWaitApprovedApi = async (
     gtinCodes: Array<string>,
     currentStatus: ProductStatus,
     motivation: string
   ) => {
-    try {
-      await setWaitApprovedStatusList(gtinCodes, currentStatus, motivation);
-    } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-    }
+    await setWaitApprovedStatusList(initiativeId, gtinCodes, currentStatus, motivation);
   };
 
   const handleConfirmRestore = async (
@@ -338,17 +490,16 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
   ) => {
     await callWaitApprovedApi(gtinCodes, currentStatus, motivation);
     setRestoreDialogOpen(false);
-    setShowMsgApproved(true);
   };
 
   const handleOpenModal = (action: string) => {
+    setShowGenericError(0);
     if (action === PRODUCTS_STATES.WAIT_APPROVED) {
       setRestoreDialogOpen(true);
     } else {
       setModalAction(action);
       setModalOpen(true);
     }
-    return Promise.resolve();
   };
 
   const handleOpenModalWithStatusCheck = (action: string) => {
@@ -370,276 +521,183 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
       setTimeout(() => setShowMixStatusError(false), 3000);
       return;
     }
-
-    void handleOpenModal(action);
+    handleOpenModal(action);
   };
 
-  const filtersLabel = useMemo(() => {
-    const norm = (s?: string) => (s ? s.trim() : '');
+  function normalizeLegacyColumn(col: any) {
+    if (
+      typeof col?.labelKey === 'string' &&
+      col.labelKey.startsWith('pages.products.listHeader.')
+    ) {
+      const legacyIdMap: Record<string, string> = {
+        organizationName: 'producer',
+      };
 
-    const producer = producerFilter?.trim()
-      ? institutions?.find((p: any) => p.institutionId === producerFilter)?.description ||
-        producerFilter.trim()
-      : '';
+      const mappedId = legacyIdMap[col.id] ?? col.id;
 
-    const batch = batchFilter?.trim()
-      ? batchFilterItems?.find((b) => b?.productFileId === batchFilter)?.batchName ||
-        batchFilter.trim()
-      : '';
-
-    return [
-      norm(categoryFilter),
-      norm(statusFilter),
-      norm(producer),
-      norm(batch),
-      norm(eprelCodeFilter),
-      norm(gtinCodeFilter),
-    ]
-      .filter((s): s is string => !!s)
-      .join(', ');
-  }, [
-    categoryFilter,
-    statusFilter,
-    producerFilter,
-    institutions,
-    batchFilter,
-    batchFilterItems,
-    eprelCodeFilter,
-    gtinCodeFilter,
-  ]);
-
-  const renderActionButtons = () => {
-    if (!(tableData?.length > 0 && !loading && selected.length !== 0)) {
-      return null;
+      return {
+        ...col,
+        labelKey: `tables.products.columns.${mappedId}`,
+      };
     }
-    const isSomeSupervised = selected.some(
-      (gtinCode) =>
-        String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
-        PRODUCTS_STATES.SUPERVISED
-    );
-    return (
-      <>
-        <Box display="flex" flexDirection="row" justifyContent="flex-end">
-          <Button
-            data-testid="rejectedBtn"
-            variant="outlined"
-            color="error"
-            sx={{ ...buttonStyle }}
-            onClick={() => {
-              handleOpenModalWithStatusCheck(
-                isInvitaliaUser ? PRODUCTS_STATES.REJECTED : MIDDLE_STATES.REJECT_APPROVATION
-              );
-            }}
-          >
-            {isInvitaliaUser
-              ? `${t('invitaliaModal.rejected.buttonText')} (${selected.length})`
-              : `${t('invitaliaModal.rejectApprovation.buttonText')} (${selected.length})`}
-          </Button>
-          {isInvitaliaUser && !isSomeSupervised && (
-            <Button
-              data-testid="supervisedBtn"
-              color="primary"
-              variant="outlined"
-              sx={{ ...buttonStyle }}
-              onClick={() => {
-                handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED);
-              }}
-            >
-              <FlagIcon /> {` ${t('invitaliaModal.supervised.buttonText')} (${selected.length})`}
-            </Button>
-          )}
-          <Button
-            data-testid="waitApprovedBtn"
-            color="primary"
-            variant="contained"
-            sx={{ ...buttonStyle }}
-            disabled={
-              selected.length === 0 ||
-              (selected.some(
-                (gtinCode) =>
-                  String(tableData.find((row) => row.gtinCode === gtinCode)?.status) ===
-                  PRODUCTS_STATES.WAIT_APPROVED
-              ) &&
-                isInvitaliaUser)
-            }
-            onClick={() => {
-              handleOpenModalWithStatusCheck(
-                isInvitaliaUser ? PRODUCTS_STATES.WAIT_APPROVED : MIDDLE_STATES.ACCEPT_APPROVATION
-              );
-            }}
-          >
-            {` ${t('invitaliaModal.waitApproved.buttonText')} (${selected.length})`}
-          </Button>
-        </Box>
-      </>
+
+    return col;
+  }
+
+  const effectiveColumns = useMemo(() => {
+    const baseColumns = tableConfig?.columns ?? [];
+
+    const columns = baseColumns.map(normalizeLegacyColumn);
+
+    const hasActionColumn = columns.some((c: any) => c.type === 'action');
+
+    if (hasActionColumn) {
+      return columns;
+    }
+
+    return [...columns, { id: '__detail__', labelKey: '', type: 'action' }];
+  }, [tableConfig]);
+
+  if (!tableConfig || !isReady) {
+    return null;
+  }
+
+  if (!hasProductsPermission) {
+    return <EmptyListTable message="pages.products.noFileLoaded" />;
+  }
+
+  const selectionAllowedStatuses = currentRoleKey
+    ? tableConfig?.selection?.rules?.[currentRoleKey]
+    : undefined;
+
+  const handleListButtonClick = (row: ProductDTO) => {
+    setShowGenericError(0);
+    setSelectedProduct(row);
+    setDetailOpen(true);
+  };
+
+  const clearAppliedFilters = () => {
+    setFilters({});
+    setRedirectProducer(null);
+    setLastRedirectOrganizationId(organizationId || null);
+    setRedirectProducerManuallyCleared(true);
+    setActiveOrganizationId('');
+    setPage(0);
+    setSelected([]);
+    dispatch(setBatchId(''));
+    dispatch(setBatchName(''));
+    dispatch(
+      setInstitution({
+        institutionId: '',
+        createdAt: '',
+        updatedAt: '',
+        description: '',
+      })
     );
   };
 
-  const getMsgResultByActionType = (actionType?: string) => {
-    switch (actionType) {
-      case PRODUCTS_STATES.SUPERVISED:
-        return t('invitaliaModal.supervised.msgResultSupervised');
-      case PRODUCTS_STATES.REJECTED:
-        return t('invitaliaModal.rejected.msgResultRejected');
-      case PRODUCTS_STATES.WAIT_APPROVED:
-        return t('invitaliaModal.waitApproved.msgResultWaitApproved');
-      case MIDDLE_STATES.REJECT_APPROVATION:
-        return t('invitaliaModal.rejectApprovation.msgResultRejectedApprovation');
-      case MIDDLE_STATES.ACCEPT_APPROVATION:
-        return t('invitaliaModal.acceptApprovation.msgResultAcceptApprovation');
-      default:
-        return '';
+  const handleApplyDrawerFilters = (
+    nextFilters: Record<string, { value: string; label?: string }>
+  ) => {
+    setFilters(nextFilters);
+    setPage(0);
+    setSelected([]);
+
+    if (Object.keys(nextFilters).length === 0) {
+      clearAppliedFilters();
+      return;
     }
+
+    if (!nextFilters.producer) {
+      setRedirectProducer(null);
+      setLastRedirectOrganizationId(organizationId || null);
+      setRedirectProducerManuallyCleared(true);
+      setActiveOrganizationId('');
+      return;
+    }
+
+    setRedirectProducer(null);
+    setLastRedirectOrganizationId(null);
+    setRedirectProducerManuallyCleared(false);
   };
 
-  const renderResultMessages = () => (
-    <>
-      {showMsgWaitApproved && (
-        <MsgResult
-          severity="success"
-          message={getMsgResultByActionType(PRODUCTS_STATES.WAIT_APPROVED)}
-          bottom={MSG_RESULT_BT}
-        />
-      )}
-      {showMsgSupervised && (
-        <MsgResult
-          severity="success"
-          message={getMsgResultByActionType(PRODUCTS_STATES.SUPERVISED)}
-          bottom={MSG_RESULT_BT}
-        />
-      )}
-      {showMsgApproved && (
-        <MsgResult
-          severity="success"
-          message={getMsgResultByActionType(PRODUCTS_STATES.WAIT_APPROVED)}
-          bottom={MSG_RESULT_BT}
-        />
-      )}
-      {showMsgAcceptApprovation && (
-        <MsgResult
-          severity="success"
-          message={getMsgResultByActionType(MIDDLE_STATES.ACCEPT_APPROVATION)}
-          bottom={MSG_RESULT_BT}
-        />
-      )}
-      {showMsgRejected && (
-        <MsgResult
-          severity="success"
-          message={getMsgResultByActionType(PRODUCTS_STATES.REJECTED)}
-          bottom={MSG_RESULT_BT}
-        />
-      )}
-      {showMsgRejectedApprovation && (
-        <MsgResult
-          severity="success"
-          message={getMsgResultByActionType(MIDDLE_STATES.REJECT_APPROVATION)}
-          bottom={MSG_RESULT_BT}
-        />
-      )}
-      {showMixStatusError && (
-        <MsgResult
-          severity="error"
-          message={t('msgResutlt.errorMixSelected')}
-          bottom={MSG_RESULT_BT}
-        />
-      )}
-      {showYourselfApprovedError && (
-        <MsgResult
-          severity="error"
-          message={t('msgResutlt.errorYourselfApproved')}
-          bottom={MSG_RESULT_BT}
-        />
-      )}
-    </>
-  );
+  const setMsgResultByAction = (
+    actionType?: string,
+    isInvitaliaUser?: boolean,
+    isInvitaliaAdmin?: boolean
+  ) => {
+    if (actionType === PRODUCTS_STATES.SUPERVISED && isInvitaliaUser) {
+      setShowMsgSupervised(true);
+      return;
+    }
+    if (actionType === PRODUCTS_STATES.WAIT_APPROVED && isInvitaliaUser) {
+      setShowMsgWaitApproved(true);
+      return;
+    }
+    if (actionType === MIDDLE_STATES.ACCEPT_APPROVATION && isInvitaliaAdmin) {
+      setMsgAcceptApprovation(true);
+      return;
+    }
+    if (actionType === MIDDLE_STATES.REJECT_APPROVATION && isInvitaliaAdmin) {
+      setShowMsgRejectedApprovation(true);
+      return;
+    }
+    if (actionType === PRODUCTS_STATES.REJECTED && isInvitaliaUser) {
+      setShowMsgRejected(true);
+    }
+  };
 
   return (
-    <Box width="100%" px={2}>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Box flexGrow={1}>
-          <TitleBox
-            title={t('pages.products.title')}
-            subTitle={
-              isInvitaliaUser || isInvitaliaAdmin
-                ? t('pages.products.subtitleL1L2')
-                : t('pages.products.subtitle')
-            }
-            mtTitle={2}
-            mbSubTitle={5}
-            variantTitle="h4"
-            variantSubTitle="body1"
-            data-testid="title"
-          />
-        </Box>
-        <Box flexShrink={0} ml={2}>
-          {renderActionButtons()}
-        </Box>
-      </Box>
+    <>
+      <ProductDataGridView
+        isInvitaliaUser={isInvitaliaUser}
+        isInvitaliaAdmin={isInvitaliaAdmin}
+        tableData={tableData}
+        hookLoading={loading}
+        itemsQty={itemsQty ?? 0}
+        paginatorFrom={paginatorFrom ?? 0}
+        paginatorTo={paginatorTo ?? 0}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        order={order}
+        orderBy={orderBy}
+        filters={effectiveFilters}
+        enrichedFiltersConfig={enrichedFiltersConfig}
+        selected={selected}
+        effectiveColumns={effectiveColumns}
+        paginationConfig={paginationConfig}
+        tableConfig={tableConfig}
+        selectionAllowedStatuses={selectionAllowedStatuses}
+        refreshKey={refreshKey}
+        onRequestSort={(_event: React.MouseEvent<unknown>, prop: keyof ProductDTO) => {
+          const isAsc = orderBy === prop && order === 'asc';
+          setOrder(isAsc ? 'desc' : 'asc');
+          setOrderBy(prop);
+        }}
+        handleListButtonClick={handleListButtonClick}
+        setSelected={setSelected}
+        handleChangePage={(_event: unknown, p: number) => setPage(p)}
+        handleChangeRowsPerPage={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
+        handleDeleteFiltersButtonClick={clearAppliedFilters}
+        handleToggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
+        handleOpenModalWithStatusCheck={handleOpenModalWithStatusCheck}
+      />
 
-      <Box display="flex" alignItems="end" justifyContent="space-between" gap={2} mb={3}>
-        {filtersLabel ? (
-          <Chip
-            size="medium"
-            label={filtersLabel}
-            sx={{ color: 'white !important', backgroundColor: '#0073E6 !important' }}
-            onDelete={handleDeleteFiltersButtonClick}
-            deleteIcon={<CloseIcon sx={{ color: 'white !important' }} />}
-          />
-        ) : (
-          <span />
-        )}
-        {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
-      </Box>
-
-      <Paper sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: grey.A100 }}>
-        {loading ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <CircularProgress />
-          </Box>
-        ) : tableData?.length === 0 ? (
-          <EmptyListTable message="pages.products.noFileLoaded" />
-        ) : (
-          <Box sx={{ width: '100%' }}>
-            <ProductsTable
-              key={refreshKey}
-              tableData={tableData}
-              emptyData={EMPTY_DATA}
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
-              handleListButtonClick={handleListButtonClick}
-              selected={selected}
-              setSelected={setSelected}
-            />
-          </Box>
-        )}
-
-        {tableData?.length > 0 && !loading && (
-          <TablePagination
-            component="div"
-            count={itemsQty || 0}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={PAGINATION_ROWS_PRODUCTS}
-            labelRowsPerPage={t('pages.products.elementsPerPage')}
-            labelDisplayedRows={() =>
-              `${paginatorFrom} - ${paginatorTo} ${t(
-                'pages.products.tablePaginationFrom'
-              )} ${itemsQty}`
-            }
-            sx={{
-              width: '100%',
-              overflowX: 'hidden',
-              '& .MuiTablePagination-actions button': {
-                backgroundColor: 'transparent',
-                '&:hover': { backgroundColor: 'transparent' },
-              },
-            }}
-          />
-        )}
-      </Paper>
+      <ProductResultMessages
+        showMsgWaitApproved={showMsgWaitApproved}
+        showMsgSupervised={showMsgSupervised}
+        showMsgApproved={showMsgApproved}
+        showMsgAcceptApprovation={showMsgAcceptApprovation}
+        showMsgRejected={showMsgRejected}
+        showMsgRejectedApprovation={showMsgRejectedApprovation}
+        showMixStatusError={showMixStatusError}
+        showYourselfApprovedError={showYourselfApprovedError}
+        showGenericError={showGenericError}
+        bottom={80}
+      />
 
       <ProductModal
         open={modalOpen}
@@ -650,22 +708,8 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
           }
         }}
         actionType={modalAction}
-        onUpdateTable={updaDataTable}
-        selectedProducts={
-          tableData
-            .filter((row) => row.gtinCode && selected.includes(row.gtinCode))
-            .map((row) => ({
-              status: row.status as ProductStatus,
-              productName: row.productName,
-              gtinCode: row.gtinCode,
-              category: row.category,
-            })) as Array<{
-            status: ProductStatus;
-            productName?: string;
-            gtinCode: string;
-            category?: string;
-          }>
-        }
+        onUpdateTable={() => setRefreshKey((prev) => prev + 1)}
+        selectedProducts={selectedProductsList}
         onSuccess={(actionType) => {
           setMsgResultByAction(actionType, isInvitaliaUser, isInvitaliaAdmin);
         }}
@@ -682,103 +726,103 @@ const ProductDataGrid: React.FC<ProductDataGridProps> = ({ organizationId }) => 
         onCancel={() => setRestoreDialogOpen(false)}
         onConfirm={async () => {
           const currentStatus =
-            (tableData.find((row) => row.gtinCode === selected[0])
+            (tableData.find((row) => getProductRowKey(row) === selected[0])
               ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
           try {
             await handleConfirmRestore(selected, currentStatus, EMPTY_DATA);
-            updaDataTable();
+            setRefreshKey((prev) => prev + 1);
             setRestoreDialogOpen(false);
+            resetAllMsgResults();
+            if (isInvitaliaUser && currentStatus === ProductStatus.UPLOADED) {
+              setShowMsgWaitApproved(true);
+            } else {
+              setShowMsgApproved(true);
+            }
           } catch (error) {
             if (DEBUG_CONSOLE) {
               console.error('Error during restore:', error);
             }
-          }
-        }}
-        onSuccess={() => {
-          resetAllMsgResults();
-          const currentStatus =
-            (tableData.find((row) => row.gtinCode === selected[0])
-              ?.status as unknown as ProductStatus) || ProductStatus.SUPERVISED;
-          if (isInvitaliaUser && currentStatus === ProductStatus.UPLOADED) {
-            setShowMsgWaitApproved(true);
-          } else {
-            setShowMsgApproved(true);
+            resetAllMsgResults();
+            setRestoreDialogOpen(false);
+            setShowGenericError((key) => key + 1);
           }
         }}
       />
 
-      <DetailDrawer
-        data-testid="detail-drawer"
-        open={drawerOpened}
-        toggleDrawer={handleToggleDrawer}
-      >
-        <ProductDetail
-          data-testid="product-detail"
-          data={drawerData}
-          isInvitaliaUser={isInvitaliaUser}
-          isInvitaliaAdmin={isInvitaliaAdmin}
-          open={true}
-          onUpdateTable={updaDataTable}
-          onClose={() => handleToggleDrawer(false)}
-          onShowApprovedMsg={() => {
-            setShowMsgApproved(true);
-            setShowMsgWaitApproved(false);
-            setShowMsgRejected(false);
+      {selectedProduct && (
+        <DetailDrawer
+          open={detailOpen}
+          toggleDrawer={(isOpen: boolean) => {
+            setDetailOpen(isOpen);
+            if (!isOpen) {
+              setSelectedProduct(null);
+            }
           }}
-          onShowRejectedMsg={() => {
-            setShowMsgRejected(true);
-            setShowMsgApproved(false);
-            setShowMsgWaitApproved(false);
-          }}
-          onShowWaitApprovedMsg={() => {
-            setShowMsgWaitApproved(true);
-            setShowMsgApproved(false);
-            setShowMsgRejected(false);
-          }}
-          onShowSupervisedMsg={() => {
-            setShowMsgSupervised(true);
-            setShowMsgApproved(false);
-            setShowMsgWaitApproved(false);
-            setShowMsgRejected(false);
-          }}
-          onShowRejectedApprovationMsg={() => {
-            setShowMsgRejectedApprovation(true);
-            setShowMsgApproved(false);
-            setShowMsgWaitApproved(false);
-            setShowMsgRejected(false);
-          }}
-          onShowAcceptApprovationMsg={() => {
-            setMsgAcceptApprovation(true);
-            setShowMsgApproved(false);
-            setShowMsgWaitApproved(false);
-            setShowMsgRejected(false);
-          }}
-        />
-      </DetailDrawer>
+        >
+          <ProductDetail
+            open={detailOpen}
+            data={selectedProduct}
+            detailFields={tableConfig?.detail?.fields}
+            isInvitaliaUser={isInvitaliaUser}
+            isInvitaliaAdmin={isInvitaliaAdmin}
+            onClose={() => {
+              setDetailOpen(false);
+              setSelectedProduct(null);
+            }}
+            onUpdateTable={() => {
+              setDetailOpen(false);
+              setSelectedProduct(null);
+              setRefreshKey((prev) => prev + 1);
+            }}
+            onShowApprovedMsg={() => {
+              setShowMsgApproved(true);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowRejectedMsg={() => {
+              setShowMsgRejected(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+            }}
+            onShowWaitApprovedMsg={() => {
+              setShowMsgWaitApproved(true);
+              setShowMsgApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowSupervisedMsg={() => {
+              setShowMsgSupervised(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowRejectedApprovationMsg={() => {
+              setShowMsgRejectedApprovation(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowAcceptApprovationMsg={() => {
+              setMsgAcceptApprovation(true);
+              setShowMsgApproved(false);
+              setShowMsgWaitApproved(false);
+              setShowMsgRejected(false);
+            }}
+            onShowGenericError={() => setShowGenericError((key) => key + 1)}
+          />
+        </DetailDrawer>
+      )}
 
       <FiltersDrawer
-        open={filtersDrawerOpened}
-        toggleFiltersDrawer={handleToggleFiltersDrawer}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-        producerFilter={producerFilter}
-        setProducerFilter={setProducerFilter}
-        batchFilter={batchFilter}
-        setBatchFilter={setBatchFilter}
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        batchFilterItems={batchFilterItems}
-        eprelCodeFilter={eprelCodeFilter}
-        setEprelCodeFilter={setEprelCodeFilter}
-        gtinCodeFilter={gtinCodeFilter}
-        setGtinCodeFilter={setGtinCodeFilter}
-        errorStatus={apiErrorOccurred}
-        handleDeleteFiltersButtonClick={handleDeleteFiltersButtonClick}
-        setFiltering={setFiltering}
+        open={filtersDrawerOpen}
+        toggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
+        filters={effectiveFilters}
+        setFilters={handleApplyDrawerFilters}
         setPage={setPage}
+        batchFilterItems={batchFilter}
+        filtersConfig={enrichedFiltersConfig}
+        templateConfig={templateConfig}
       />
-      {renderResultMessages()}
-    </Box>
+    </>
   );
 };
 

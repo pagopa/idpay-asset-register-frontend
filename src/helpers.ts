@@ -1,15 +1,8 @@
-import { useTheme, useMediaQuery } from '@mui/material';
 import {
   storageTokenOps,
   storageUserOps,
 } from '@pagopa/selfcare-common-frontend/lib/utils/storage';
-import {
-  EMPTY_DATA,
-  MAX_LENGTH_TABLE_PR,
-  MAX_LENGTH_EMAIL,
-  MIN_LENGTH_TABLE_PR,
-  RESOLUTION_UPSCALING,
-} from './utils/constants';
+import { EMPTY_DATA, MAX_LENGTH_EMAIL } from './utils/constants';
 import { ENV } from './utils/env';
 
 export const formattedCurrency = (
@@ -192,37 +185,19 @@ export function cleanTrailingSpace(value: string): string {
   return value.endsWith(' ') ? value.slice(0, -1) : value;
 }
 
-export const getTablePrLength = () =>
-  typeof window !== 'undefined'
-    ? window.innerWidth > RESOLUTION_UPSCALING
-      ? MAX_LENGTH_TABLE_PR
-      : MIN_LENGTH_TABLE_PR
-    : MAX_LENGTH_TABLE_PR;
+export const getResponsiveTableMaxLength = (config: any): number => {
+  const resolution = config?.ui?.resolutionUpscaling ?? 1440;
+  const lengths = config?.ui?.tables?.products?.style?.lengths;
 
-export const useResponsiveMaxLength = (): number => {
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.only('xs'));
-  const isSm = useMediaQuery(theme.breakpoints.only('sm'));
-  const isMd = useMediaQuery(theme.breakpoints.only('md'));
-  const isLg = useMediaQuery(theme.breakpoints.only('lg'));
-  const isXl = useMediaQuery(theme.breakpoints.only('xl'));
+  if (!lengths) {
+    return 45;
+  }
 
-  if (isXs) {
-    return 15;
+  if (typeof window === 'undefined') {
+    return lengths.maxTable ?? 45;
   }
-  if (isSm) {
-    return 25;
-  }
-  if (isMd) {
-    return 35;
-  }
-  if (isLg) {
-    return 50;
-  }
-  if (isXl) {
-    return 70;
-  }
-  return 70;
+
+  return window.innerWidth > resolution ? lengths.maxTable ?? 45 : lengths.minTable ?? 30;
 };
 
 export const isOnOrBeforeDate = (dmy?: string): boolean => {
@@ -270,8 +245,14 @@ export const customExitAction = () => {
 export const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const createCsv = ({headers, fields}: {headers: Array<string>; fields: Array<string>}) => {
-  const csv = [headers, fields]?.map(row => row?.join(";"))?.join("\n");
+export const createCsv = ({
+  headers,
+  fields,
+}: {
+  headers: Array<string>;
+  fields: Array<string>;
+}) => {
+  const csv = [headers, fields]?.map((row) => row?.join(';'))?.join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   return URL.createObjectURL(blob);
 };

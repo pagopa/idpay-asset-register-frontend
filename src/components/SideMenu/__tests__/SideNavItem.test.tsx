@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore } from '../../../redux/store';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import SidenavItem from '../SidenavItem';
 import { SvgIcon } from '@mui/material';
 

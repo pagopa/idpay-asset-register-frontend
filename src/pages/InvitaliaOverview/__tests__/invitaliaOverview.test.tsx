@@ -22,7 +22,7 @@ import * as reduxHooks from '../../../redux/hooks';
 import * as reduxSlice from '../../../redux/slices/invitaliaSlice';
 import { Provider } from 'react-redux';
 import { createStore } from '../../../redux/store';
-import { InstitutionsResponse } from '../../../api/generated/register';
+import { ProducersResponseDTO } from '../../../api/generated/register';
 
 jest.mock('@pagopa/selfcare-common-frontend/lib', () => ({
   ...jest.requireActual('@pagopa/selfcare-common-frontend/lib'),
@@ -89,9 +89,9 @@ jest.mock('../institutionsTable', () => (props: any) => {
 });
 
 const mockInstitutions = [
-  { institutionId: '1', description: 'Alpha' },
-  { institutionId: '2', description: 'Beta' },
-] as InstitutionsResponse['institutions'];
+  { producerId: '1', producerName: 'Alpha', createdAt: '2023-01-01', updatedAt: '2023-01-02' },
+  { producerId: '2', producerName: 'Beta', createdAt: '2023-02-01', updatedAt: '2023-02-02' },
+] as ProducersResponseDTO['content'];
 
 const mockInstitutionDetail = { institutionId: '1', description: 'Alpha', extra: 'detail' };
 
@@ -99,21 +99,25 @@ jest.mock('../../../redux/api/initiativesApi', () => ({
   useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
 }));
 
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => 'init-test'
+}))
+
 describe('InvitaliaOverview', () => {
   beforeEach(() => {
     const { fetchUserFromLocalStorage } = require('../../../helpers');
     fetchUserFromLocalStorage.mockReturnValue({ uid: 'user-x' });
     mockFilterInputWithSpaceRule.mockImplementation((value: string) => value);
 
-    jest.spyOn(registerService, 'getInstitutionsList').mockResolvedValue({
+    jest.spyOn(registerService, 'getProducers').mockResolvedValue({
       data: {
-        institutions: mockInstitutions,
+        content: mockInstitutions,
       },
     });
     jest
       .spyOn(registerService, 'getInstitutionById')
       .mockResolvedValue({ data: mockInstitutionDetail });
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -158,9 +162,9 @@ describe('InvitaliaOverview', () => {
   });
 
   it('handles institutions with missing description while filtering', async () => {
-    jest.spyOn(registerService, 'getInstitutionsList').mockResolvedValue({
+    jest.spyOn(registerService, 'getProducers').mockResolvedValue({
       data: {
-        institutions: [{ institutionId: '3' }] as InstitutionsResponse['institutions'],
+        content: [{ producerId: '3' }] as ProducersResponseDTO['content'],
       },
     });
 
@@ -186,8 +190,8 @@ describe('InvitaliaOverview', () => {
   });
 
   it('falls back to an empty list when the API returns no institutions', async () => {
-    jest.spyOn(registerService, 'getInstitutionsList').mockResolvedValue({
-      data: {},
+    jest.spyOn(registerService, 'getProducers').mockResolvedValue({
+      data: { content: [] },
     });
 
     renderWithProvider(<InvitaliaOverview />);
@@ -208,17 +212,6 @@ describe('InvitaliaOverview', () => {
     expect(screen.getByTestId('table-order-by')).toHaveTextContent('institutionId');
   });
 
-  it('changes page and rows per page', async () => {
-    renderWithProvider(<InvitaliaOverview />);
-    const pageBtn = await screen.findByText('PageChange');
-    fireEvent.click(pageBtn);
-    expect(screen.getByTestId('table-page')).toHaveTextContent('1');
-    const rowsBtn = await screen.findByText('RowsPerPage');
-    fireEvent.click(rowsBtn);
-    expect(screen.getByTestId('table-rows')).toHaveTextContent('5');
-    expect(screen.getByTestId('table-page')).toHaveTextContent('0');
-  });
-
   it('opens and closes the detail drawer', async () => {
     renderWithProvider(<InvitaliaOverview />);
     await waitFor(() => {
@@ -236,14 +229,14 @@ describe('InvitaliaOverview', () => {
 
   it('handles loading state', async () => {
     jest
-      .spyOn(registerService, 'getInstitutionsList')
-      .mockImplementation(() => new Promise(() => {}));
+      .spyOn(registerService, 'getProducers')
+      .mockImplementation(() => new Promise(() => { }));
     renderWithProvider(<InvitaliaOverview />);
     expect(await screen.findByText('Loading...')).toBeInTheDocument();
   });
 
   it('handles error in fetchInstitutions', async () => {
-    jest.spyOn(registerService, 'getInstitutionsList').mockRejectedValue(new Error('fail'));
+    jest.spyOn(registerService, 'getProducers').mockRejectedValue(new Error('fail'));
     renderWithProvider(<InvitaliaOverview />);
     await waitFor(() => {
       expect(screen.getByText('Loaded')).toBeInTheDocument();

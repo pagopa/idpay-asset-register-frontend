@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -8,10 +8,9 @@ import {
   Typography,
   TextField,
   Button,
-  IconButton,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import FlagIcon from '@mui/icons-material/Flag';
+import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import {
   setSupervisionedStatusList,
@@ -30,6 +29,8 @@ import {
   MIN_LENGTH_TEXTFIELD_POPUP,
   MAX_LENGTH_TEXTFIELD_POPUP,
 } from '../../utils/constants';
+import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
+import MsgResult from './MsgResult';
 
 interface ProductModalProps {
   open: boolean;
@@ -69,13 +70,13 @@ const modalStyles = {
     padding: 0,
     marginBottom: 2,
     fontFamily: 'Titillium Web',
-    fontWeight: 700,
+    fontWeight: theme.typography.fontWeightBold,
     fontSize: 24,
   },
   descriptionText: {
     marginBottom: 2,
     fontFamily: 'Titillium Web',
-    fontWeight: 400,
+    fontWeight: theme.typography.fontWeightRegular,
     fontSize: 18,
     lineHeight: '24px',
   },
@@ -87,7 +88,7 @@ const modalStyles = {
   },
   productText: {
     fontFamily: 'Titillium Web',
-    fontWeight: 400,
+    fontWeight: theme.typography.fontWeightRegular,
     fontSize: 18,
     marginBottom: 1,
   },
@@ -135,25 +136,43 @@ const ProductModal: React.FC<ProductModalProps> = ({
   selectedProducts,
   onSuccess,
 }) => {
+  const initiativeId = useCurrentInitiativeId();
   const [motivationInternal, setMotivationInternal] = useState('');
   const [motivationOfficial, setMotivationOfficial] = useState('');
   const [motivationTouched, setMotivationTouched] = useState(false);
   const [motivationOfficialTouched, setMotivationOfficialTouched] = useState(false);
+  const [errorToastKey, setErrorToastKey] = useState(0);
+  const selectedProductsLength = selectedProducts?.length ?? 0;
 
   const isValidAlphanumeric = (value: string) => {
     const matches = value.match(/[a-zA-Z0-9]/g);
     return matches !== null && matches.length >= 2;
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
       setMotivationInternal('');
       setMotivationOfficial('');
       setMotivationTouched(false);
       setMotivationOfficialTouched(false);
+      setErrorToastKey(0);
     }
   }, [open]);
+
+  useEffect(() => {
+    if (selectedProductsLength === 0) {
+      setErrorToastKey(0);
+    }
+  }, [selectedProductsLength]);
   const { t } = useScopedTranslation();
+
+  const showGenericError = (error: unknown) => {
+    if (DEBUG_CONSOLE) {
+      console.error(error);
+    }
+    setErrorToastKey((key) => key + 1);
+    onClose(true);
+  };
 
   const renderMotivationField = (config: any) => {
     const showError =
@@ -296,7 +315,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const config = MODAL_CONFIG[actionType as keyof typeof MODAL_CONFIG];
 
-  if (!selectedProducts || selectedProducts.length === 0) {
+  if (!selectedProducts || selectedProductsLength === 0) {
     return null;
   }
   const gtinCodes = selectedProducts.map((p) => p.gtinCode);
@@ -311,8 +330,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
+      await setSupervisionedStatusList(initiativeId, gtinCodes, status, motivationInternal);
       onClose(false);
-      await setSupervisionedStatusList(gtinCodes, status, motivationInternal);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -320,10 +339,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-      onClose(false);
+      showGenericError(error);
     }
   };
 
@@ -344,8 +360,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
+      await setRejectedStatusList(initiativeId, gtinCodes, status, motivationInternal, motivationOfficial);
       onClose(false);
-      await setRejectedStatusList(gtinCodes, status, motivationInternal, motivationOfficial);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -353,10 +369,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-      onClose(false);
+      showGenericError(error);
     }
   };
 
@@ -369,8 +382,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
       return;
     }
     try {
+      await setRestoredStatusList(initiativeId, gtinCodes, status, motivationInternal);
       onClose(false);
-      await setRestoredStatusList(gtinCodes, status, motivationInternal);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -378,17 +391,14 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-      onClose(false);
+      showGenericError(error);
     }
   };
 
   const callApprovedApi = async () => {
     try {
+      await setApprovedStatusList(initiativeId, gtinCodes, status, EMPTY_DATA);
       onClose(false);
-      await setApprovedStatusList(gtinCodes, status, EMPTY_DATA);
       if (onUpdateTable) {
         onUpdateTable();
       }
@@ -396,10 +406,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         onSuccess(actionType);
       }
     } catch (error) {
-      if (DEBUG_CONSOLE) {
-        console.error(error);
-      }
-      onClose(false);
+      showGenericError(error);
     }
   };
 
@@ -408,13 +415,22 @@ const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={() => onClose(true)}
-      PaperProps={{
-        sx: modalStyles.dialogPaper,
-      }}
-    >
+    <>
+      {errorToastKey > 0 && (
+        <MsgResult
+          key={errorToastKey}
+          severity="error"
+          message={t('msgResutlt.errorGenericDescription')}
+          bottom={80}
+        />
+      )}
+      <Dialog
+        open={open}
+        onClose={() => onClose(true)}
+        PaperProps={{
+          sx: modalStyles.dialogPaper,
+        }}
+      >
       <DialogTitle sx={modalStyles.dialogTitle}>{config?.title || ''}</DialogTitle>
 
       <DialogContent sx={{ p: 0 }}>
@@ -484,11 +500,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
             {` ${config?.buttonTextConfirm} (${selectedProducts?.length})`}
           </Button>
         )}
-        <IconButton aria-label="close" onClick={handleCloseWithUpdate} sx={modalStyles.closeButton}>
-          <CloseIcon />
-        </IconButton>
       </DialogActions>
-    </Dialog>
+      </Dialog>
+    </>
   );
 };
 

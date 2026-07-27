@@ -37,6 +37,12 @@ import { configureStore, createSlice } from '@reduxjs/toolkit';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MemoryRouter } from 'react-router-dom';
 
+let mockCurrentInitiativeId = 'initiative-current';
+
+jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
+  useCurrentInitiativeId: () => mockCurrentInitiativeId,
+}));
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
@@ -95,14 +101,28 @@ const createMockStore = (institution: any) => {
   });
 };
 
-const renderComponent = (institution = mockInstitution) => {
+const renderComponent = (
+  institution = mockInstitution,
+  navigationState: Record<string, unknown> = {}
+) => {
   const store = createMockStore(institution);
   const theme = createTheme();
 
   return render(
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <MemoryRouter>
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: '/',
+              state: {
+                organizationId: institution?.institutionId ?? '',
+                organizationLabel: institution?.description ?? '',
+                ...navigationState,
+              },
+            } as any,
+          ]}
+        >
           <InvitaliaProductsList />
         </MemoryRouter>
       </ThemeProvider>
@@ -113,6 +133,7 @@ const renderComponent = (institution = mockInstitution) => {
 describe('InvitaliaProductsList', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    mockCurrentInitiativeId = 'initiative-current';
   });
 
   afterEach(() => {
@@ -129,6 +150,19 @@ describe('InvitaliaProductsList', () => {
     renderComponent(null as any);
 
     expect(screen.getByTestId('product-grid')).toHaveTextContent('Org ID:');
+  });
+
+  it('uses navigation organization when the source initiative matches', () => {
+    renderComponent(mockInstitution, { sourceInitiativeId: 'initiative-current' });
+
+    expect(screen.getByTestId('product-grid')).toHaveTextContent('Org ID: 12345');
+  });
+
+  it('ignores navigation organization when it belongs to another initiative', () => {
+    renderComponent(mockInstitution, { sourceInitiativeId: 'initiative-stale' });
+
+    expect(screen.getByTestId('product-grid')).toHaveTextContent('Org ID:');
+    expect(screen.getByTestId('product-grid')).not.toHaveTextContent('12345');
   });
 
   it('shows success MsgResult when INVITALIA_MSG_SHOW event is dispatched', async () => {

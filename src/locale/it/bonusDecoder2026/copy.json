@@ -1,12 +1,12 @@
 {
   "commons": {
-    "title": "Bonus Decoder"
+    "title": "Elenco informatico dei decoder"
   },
-  "pages" : {
-   "addProducts": {
-     "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione ",
-     "manualLink": "https://www.mimit.gov.it/it/incentivi/bonus-decoder-a-casa"
-   },
+  "pages": {
+    "addProducts": {
+      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione ",
+      "manualLink": ""
+    },
     "tos": {
       "and": "e l’",
       "backHome": "Torna alla home",
@@ -15,30 +15,41 @@
       "termsDescription": "Accedendo, accetti i",
       "termsDescription2": "del servizio e confermi di aver letto l’",
       "termsDescriptionChanged": "Recentemente abbiamo cambiato i",
-      "title": "Bonus Decoder"
+      "title": "Elenco informatico dei decoder"
     }
   },
   "categories": {
-    "ds": "Satellitare",
-    "dt": "Terrestre",
-    "dtc": "Terrestre via Cavo",
-    "dts": "Terrestre e Satellitare",
-    "dtsc": "Terrestre, Satellitare e via Cavo"
+    "DS": { "label": "Satellitare" },
+    "DT": { "label": "Terrestre" },
+    "DTC": { "label": "Terrestre via cavo" },
+    "DTS": { "label": "Terrestre e Satellitare" },
+    "DTSC": { "label": "Terrestre, Satellitare e via cavo" }
   },
-  "csv": {
-    "headers": [
-      "Codice GTIN/EAN",
-      "Codice Prodotto",
-      "Categoria",
-      "Marca",
-      "Modello"
-    ],
-    "fields": [
-      "GTIN123ABC4567",
-      "SKU98765",
-      "{{category}}",
-      "MarcaEsempio",
-      "ModelloX100"
-    ]
+  "tables": {
+    "products": {
+      "columns": {
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "category": "Categoria",
+        "producer": "Produttore",
+        "status": "Stato",
+        "batchName": "Lotto"
+      },
+      "filters": {
+        "category": "Categoria",
+        "status": "Stato",
+        "gtinCode": "Codice GTIN/EAN",
+        "productCode": "Codice prodotto",
+        "productFileId": "Lotto"
+      },
+      "invitaliaModal": {
+        "waitApproved": {
+          "description": "Stai per inoltrare i prodotti selezionati a {{L2}} per l'approvazione finale. Quando {{L2}} avrà approvato, i prodotti selezionati verranno pubblicati nel Registro dei beni."
+        },
+        "acceptApprovation": {
+          "description": "Stai per approvare definitivamente i prodotti selezionati. Dopo questa operazione, i prodotti verranno pubblicati nel Registro dei beni."
+        }
+      }
+    }
   }
 }

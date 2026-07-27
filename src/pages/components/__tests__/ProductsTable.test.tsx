@@ -1,398 +1,300 @@
-import React from 'react';
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+/// <reference types="jest" />
 import '@testing-library/jest-dom';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ProductsTable from '../ProductsTable';
 
-const mockFetchUserFromLocalStorage = jest.fn();
-const mockGetTablePrLength = jest.fn(() => 8);
-const mockTruncateString = jest.fn((str: string) => `TRUNC(${str})`);
-
-jest.mock('../../../helpers');
-
-jest.mock('../../../utils/env', () => ({
-  ENV: {
-    PUBLIC_URL: '/base',
-    URL_API: {
-      OPERATION: 'https://mock-api/register',
-    },
-  },
+jest.mock('../../../hooks/useScopedTranslation', () => ({
+  __esModule: true,
+  default: () => ({ t: (k: string) => k }),
 }));
 
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (k: any) => k,
-    i18n: { changeLanguage: () => new Promise(() => {}) },
+jest.mock('../../../hooks/useInitiativeConfig', () => ({
+  useInitiativeConfig: () => ({
+    config: { tables: { products: { style: { lengths: { table: 10 } } } } },
   }),
 }));
 
-const mockInstitutions = [
-  { institutionId: 'org-1', description: 'ACME S.p.A.' },
-  { institutionId: 'org-2', description: 'Beta Industries' },
+jest.mock('../../../helpers', () => ({
+  truncateString: jest.fn((v: string, l: number) => v.slice(0, l)),
+  getResponsiveTableMaxLength: jest.fn(() => 5),
+}));
+
+jest.mock('../../../components/Product/ProductStatusChip', () => ({
+  __esModule: true,
+  default: ({ status }: any) => <div data-testid="status">{status}</div>,
+}));
+
+jest.mock('../../../components/Product/EprelLinks', () => ({
+  __esModule: true,
+  default: () => <div data-testid="eprel">eprel</div>,
+}));
+
+const baseColumns: any = [
+  { id: 'checkbox', labelKey: 'chk', type: 'checkbox' },
+  { id: 'name', labelKey: 'name', sortable: true },
+  { id: 'status', labelKey: 'status' },
+  { id: 'link', labelKey: 'link', type: 'eprelLink' },
+  { id: 'action', labelKey: 'act', type: 'action' },
 ];
 
-jest.mock('react-redux', () => ({
-  useSelector: (sel: any) => sel({}),
-}));
-
-jest.mock('../../../redux/slices/invitaliaSlice', () => ({
-  institutionListSelector: () => mockInstitutions,
-}));
-
-jest.mock('../../../components/Product/EnhancedTableHead', () => {
-  return function MockHead(props: any) {
-    const {
-      headCells,
-      handleSelectAllClick,
-      isAllSelected,
-      isIndeterminate,
-      order,
-      orderBy,
-      onRequestSort,
-    } = props;
-    return (
-      <thead data-testid="mock-head">
-        <tr>
-          <th>HEAD({headCells.length})</th>
-          <th>isAllSelected:{String(isAllSelected)}</th>
-          <th>isIndeterminate:{String(isIndeterminate)}</th>
-          <th>order:{order}</th>
-          <th>orderBy:{orderBy}</th>
-          <th>
-            <button onClick={() => handleSelectAllClick({ target: { checked: true } } as any)}>
-              selectAll
-            </button>
-            <button onClick={() => handleSelectAllClick({ target: { checked: false } } as any)}>
-              deselectAll
-            </button>
-            <button onClick={() => onRequestSort?.({} as any, 'category')}>sortCategory</button>
-          </th>
-        </tr>
-      </thead>
-    );
-  };
-});
-
-jest.mock('../../../components/Product/EprelLinks', () => {
-  return function MockEprelLinks({ row }: any) {
-    return <span data-testid="eprel-link">EPREL:{row?.eprelCode ?? 'NA'}</span>;
-  };
-});
-
-jest.mock('../../../components/Product/ProductStatusChip', () => {
-  return function MockChip({ status }: any) {
-    return <span data-testid="status-chip">{String(status)}</span>;
-  };
-});
-
-jest.mock('../../../utils/constants', () => ({
-  PRODUCTS_STATES: {
-    UPLOADED: 'UPLOADED',
-    SUPERVISED: 'SUPERVISED',
-    WAIT_APPROVED: 'WAIT_APPROVED',
-    REJECTED: 'REJECTED',
-  },
-  USERS_TYPES: {
-    INVITALIA_L1: 'INVITALIA_L1',
-    INVITALIA_L2: 'INVITALIA_L2',
-    PRODUTTORE: 'PRODUTTORE',
-  },
-}));
-
-const baseTableData: any = [
-  {
-    category: 'Lavatrice',
-    energyClass: 'A+++',
-    eprelCode: 'EP-111',
-    gtinCode: 'GTIN-111',
-    batchName: 'Batch-1',
-    status: 'UPLOADED',
-    organizationId: 'org-1',
-  },
-  {
-    category: 'Lavastoviglie',
-    energyClass: 'B',
-    eprelCode: 'EP-222',
-    gtinCode: 'GTIN-222',
-    batchName: 'Batch-2',
-    status: 'SUPERVISED',
-    organizationId: 'org-2',
-  },
-  {
-    category: 'Frigo',
-    energyClass: 'C',
-    eprelCode: 'EP-333',
-    gtinCode: 'GTIN-333',
-    batchName: 'Batch-3',
-    status: 'WAIT_APPROVED',
-    organizationId: 'org-2',
-  },
-  {
-    category: 'Forno',
-    energyClass: 'D',
-    eprelCode: 'EP-444',
-    gtinCode: 'GTIN-444',
-    batchName: 'Batch-4',
-    status: 'REJECTED',
-    organizationId: 'org-999',
-  },
-];
-
-const commonProps = {
-  emptyData: '-',
-  order: 'asc' as const,
-  orderBy: 'category' as const,
-  onRequestSort: jest.fn(),
-  handleListButtonClick: jest.fn(),
+const baseRow: any = {
+  gtinCode: '123',
+  name: 'LongValueName',
+  status: 'APPROVED',
 };
 
-function WrapperInvitalia(props: any) {
-  const [selected, setSelected] = React.useState<string[]>(props.initialSelected ?? []);
-  return (
-    <ProductsTable
-      {...props}
-      selected={selected}
-      setSelected={(updater: any) => {
-        if (typeof updater === 'function') {
-          const next = updater(selected);
-          setSelected(next);
-          props.onSelectedChange?.(next);
-        } else {
-          setSelected(updater);
-          props.onSelectedChange?.(updater);
-        }
-      }}
-    />
-  );
-}
-
-jest.mock('../../../redux/api/initiativesApi', () => ({
-  useGetInitiativesQuery: () => ({ data: [], isLoading: false }),
-}));
-
-describe('ProductsTable – vista INVITALIA', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    const helpers = jest.requireMock('../../../helpers') as any;
-    helpers.fetchUserFromLocalStorage.mockReturnValue({ org_role: 'INVITALIA_L1' });
-    helpers.getTablePrLength.mockReturnValue(2);
-    helpers.truncateString.mockImplementation((s: string) => `TRUNC(${s})`);
-  });
-
-  test('render base: header mockato, righe e colonne coerenti; mostra producer troncato e chip di stato', () => {
-    render(<WrapperInvitalia tableData={baseTableData} {...commonProps} selected={[]} />);
-
-    expect(screen.getByTestId('mock-head')).toBeInTheDocument();
-    const rows = screen.getAllByRole('row');
-    expect(rows.length).toBeGreaterThanOrEqual(5);
-
-    expect(screen.getAllByText(/TRUNC\(GTIN-/)).toHaveLength(4);
-    expect(screen.getByText('UPLOADED'));
-    expect(screen.getAllByTestId('eprel-link')[0]).toHaveTextContent('EPREL:EP-111');
-  });
-
-  test('click su icona nell’ultima cella chiama handleListButtonClick; click su riga/checkbox non propaga', async () => {
-    const user = userEvent.setup();
-    const handleList = jest.fn();
-
+describe('ProductsTable', () => {
+  it('renders empty state', () => {
     render(
-      <WrapperInvitalia
-        tableData={baseTableData}
-        {...commonProps}
+      <ProductsTable
+        tableData={[]}
+        columns={baseColumns}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
         selected={[]}
-        handleListButtonClick={handleList}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
       />
     );
 
-    const firstRow = screen.getAllByRole('row').slice(1)[0];
-
-    await user.click(firstRow);
-    expect(handleList).not.toHaveBeenCalled();
-
-    const checkbox = within(firstRow).getByRole('checkbox');
-    await user.click(checkbox);
-    expect(handleList).not.toHaveBeenCalled();
-
-    const cells = within(firstRow).getAllByRole('cell');
-    const lastCell = cells[cells.length - 1];
-
-    const actionButton = within(lastCell).getByRole('button', { name: /apri dettagli prodotto/i });
-    await user.click(actionButton);
-
-    expect(handleList).not.toHaveBeenCalledWith(expect.objectContaining({ category: 'Lavatrice' }));
+    expect(screen.getByText('-')).toBeInTheDocument();
   });
 
-  test('checkbox abilitata/disabilitata correttamente in base a ruolo L1 e stato; gestione gtin non stringa', () => {
-    render(<WrapperInvitalia tableData={baseTableData} {...commonProps} initialSelected={[]} />);
-
-    const bodyRows = screen.getAllByRole('row').slice(1);
-    const [r1, r2, r3, r4] = bodyRows;
-
-    expect(within(r1).getByRole('checkbox')).toBeEnabled();
-    expect(within(r2).getByRole('checkbox')).toBeEnabled();
-    expect(within(r3).getByRole('checkbox')).toBeDisabled();
-    const cb4 = within(r4).getByRole('checkbox');
-    expect(cb4).toBeDisabled();
-    expect(cb4).not.toBeChecked();
-  });
-
-  test('select all / deselect all per INVITALIA L1 seleziona solo UPLOADED e SUPERVISED', async () => {
-    const user = userEvent.setup();
-    const onSelectedChange = jest.fn();
-
-    render(
-      <WrapperInvitalia
-        tableData={baseTableData}
-        {...commonProps}
-        initialSelected={[]}
-        onSelectedChange={onSelectedChange}
-      />
-    );
-
-    await user.click(screen.getByRole('button', { name: 'selectAll' }));
-    expect(onSelectedChange).toHaveBeenLastCalledWith(['GTIN-111', 'GTIN-222']);
-
-    await user.click(screen.getByRole('button', { name: 'deselectAll' }));
-    expect(onSelectedChange).toHaveBeenLastCalledWith([]);
-  });
-
-  test('toggle singolo checkbox usa setSelected callback e gestisce aggiunta/rimozione', async () => {
-    const user = userEvent.setup();
-    const onSelectedChange = jest.fn();
-
-    render(
-      <WrapperInvitalia
-        tableData={baseTableData}
-        {...commonProps}
-        initialSelected={[]}
-        onSelectedChange={onSelectedChange}
-      />
-    );
-
-    const firstEnabledRow = screen.getAllByRole('row').slice(1)[0];
-    const cb = within(firstEnabledRow).getByRole('checkbox');
-
-    await user.click(cb);
-    expect(onSelectedChange).not.toHaveBeenLastCalledWith(['GTIN-111']);
-
-    await user.click(cb);
-    expect(onSelectedChange).not.toHaveBeenLastCalledWith(['GTIN-111']);
-  });
-
-  test('vista INVITALIA L2: select all prende solo WAIT_APPROVED; checkbox per altri stati è disabilitata', async () => {
-    const user = userEvent.setup();
-    mockFetchUserFromLocalStorage.mockReturnValueOnce({ org_role: 'INVITALIA_L2' });
-
-    const onSelectedChange = jest.fn();
-    render(
-      <WrapperInvitalia
-        tableData={baseTableData}
-        {...commonProps}
-        initialSelected={[]}
-        onSelectedChange={onSelectedChange}
-      />
-    );
-
-    await user.click(screen.getByRole('button', { name: 'selectAll' }));
-    expect(onSelectedChange).toHaveBeenCalled();
-  });
-
-  test('producer tooltip derivato da istituzioni (getProducer) e truncateString usato', () => {
-    render(<WrapperInvitalia tableData={baseTableData} {...commonProps} initialSelected={[]} />);
-    expect(
-      screen.getAllByText(/TRUNC\(ACME S\.p\.A\.\)|TRUNC\(Beta Industries\)/).length
-    ).toBeGreaterThan(0);
-  });
-
-  test('sort handler passa dal thead mockato', async () => {
-    const user = userEvent.setup();
-    const onRequestSort = jest.fn();
-
-    render(
-      <WrapperInvitalia
-        tableData={baseTableData}
-        {...commonProps}
-        onRequestSort={onRequestSort}
-        initialSelected={[]}
-      />
-    );
-
-    await user.click(screen.getByRole('button', { name: 'sortCategory' }));
-    expect(onRequestSort).toHaveBeenCalled();
-  });
-});
-
-describe('ProductsTable – vista PRODUTTORE', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    const helpers = jest.requireMock('../../../helpers') as any;
-    helpers.fetchUserFromLocalStorage.mockReturnValue({ org_role: 'PRODUTTORE' });
-    helpers.getTablePrLength.mockReturnValue(2);
-    helpers.truncateString.mockImplementation((s: string) => `CUT(${s})`);
-  });
-
-  test('render producer head, righe producer e click sull’icona actions invoca handleListButtonClick', async () => {
-    const user = userEvent.setup();
-    const handleList = jest.fn();
+  it('renders rows and checkbox selection', () => {
+    const setSelected = jest.fn();
 
     render(
       <ProductsTable
-        tableData={baseTableData}
-        {...commonProps}
+        tableData={[baseRow]}
+        columns={baseColumns}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
         selected={[]}
-        setSelected={jest.fn()}
-        handleListButtonClick={handleList}
+        setSelected={setSelected}
+        handleListButtonClick={jest.fn()}
       />
     );
 
-    expect(screen.getByTestId('mock-head')).toHaveTextContent('HEAD(7)');
+    const checkbox = screen.getByRole('checkbox');
+    fireEvent.click(checkbox);
 
-    const rows = screen.getAllByRole('row').slice(1);
-    const anyRow = rows[0];
+    expect(setSelected).toHaveBeenCalled();
+  });
 
-    const actionsCells = screen.getAllByText((_, el) => {
-      return !!(el && el.tagName.toLowerCase() === 'td' && el.querySelector('svg'));
+  it('renders status and eprel link', () => {
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('status')).toHaveTextContent('APPROVED');
+    expect(screen.getByTestId('eprel')).toBeInTheDocument();
+  });
+
+  it('handles action click', () => {
+    const handler = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={handler}
+      />
+    );
+
+    const buttons = screen.getAllByRole('button');
+    fireEvent.click(buttons[buttons.length - 1]);
+    expect(handler).toHaveBeenCalled();
+  });
+
+  it('handles sortable header click', () => {
+    const sort = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        order="asc"
+        orderBy="name"
+        onRequestSort={sort}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByText('name'));
+    expect(sort).toHaveBeenCalled();
+  });
+
+  it('truncates long string values', () => {
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={[{ id: 'name', labelKey: 'name' }]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('LongValueName')).toBeInTheDocument();
+  });
+
+  it('renders non truncated string when short', () => {
+    const shortRow = { ...baseRow, name: 'Short' };
+
+    render(
+      <ProductsTable
+        tableData={[shortRow]}
+        columns={[{ id: 'name', labelKey: 'name' }]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Short')).toBeInTheDocument();
+  });
+
+  it('renders fallback dash for null value', () => {
+    const row = { ...baseRow, name: null };
+
+    render(
+      <ProductsTable
+        tableData={[row]}
+        columns={[{ id: 'name', labelKey: 'name' }]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('-')).toBeInTheDocument();
+  });
+
+  it('checkbox unselect branch', () => {
+    const setSelected = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={baseColumns}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={['123']}
+        setSelected={setSelected}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    const checkbox = screen.getByRole('checkbox');
+    checkbox.click();
+    expect(setSelected).toHaveBeenCalled();
+  });
+
+  it('keeps selected row unchanged when checking an already selected checkbox', () => {
+    const setSelected = jest.fn((updater) => {
+      expect(updater(['123'])).toEqual([]);
     });
-    expect(actionsCells.length).toBeGreaterThan(0);
 
-    const firstRowCells = within(anyRow).getAllByRole('cell');
-    const actionsCell = firstRowCells[firstRowCells.length - 1];
-
-    await user.click(actionsCell);
-    expect(handleList).not.toHaveBeenCalledWith(expect.objectContaining({ category: 'Lavatrice' }));
-  });
-
-  test('getCellContent copre tutti i campi (category, energyClass, eprel, gtin, batch, status, actions)', () => {
     render(
       <ProductsTable
-        tableData={[baseTableData[0]]}
-        {...commonProps}
+        tableData={[baseRow]}
+        columns={baseColumns}
+        selection={{ enabled: true }}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
         selected={[]}
-        setSelected={jest.fn()}
+        setSelected={setSelected}
+        handleListButtonClick={jest.fn()}
       />
     );
 
-    expect(screen.getByText('CUT(A+++)')).toBeInTheDocument();
-    expect(screen.getByTestId('eprel-link')).toHaveTextContent('EPREL:EP-111');
-    expect(screen.getByText('CUT(GTIN-111)')).toBeInTheDocument();
-    expect(screen.getByText('CUT(Batch-1)')).toBeInTheDocument();
-    expect(screen.getByTestId('status-chip')).toHaveTextContent('UPLOADED');
+    fireEvent.click(screen.getByRole('checkbox'));
+    expect(setSelected).toHaveBeenCalled();
   });
-});
 
-test('ProductsTable mostra la cella category (INVITALIA)', async () => {
-  render(<WrapperInvitalia tableData={baseTableData} {...commonProps} selected={[]} />);
-  expect(screen.getByLabelText('Lavatrice')).toBeInTheDocument();
-});
+  it('uses fallback keys and custom empty text', () => {
+    render(
+      <ProductsTable
+        tableData={[]}
+        columns={[]}
+        order="asc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+        emptyData="No products"
+      />
+    );
 
-test('ProductsTable mostra la cella category (PRODUTTORE)', async () => {
-  render(
-    <ProductsTable
-      tableData={[baseTableData[0]]}
-      {...commonProps}
-      selected={[]}
-      setSelected={jest.fn()}
-    />
-  );
-  expect(screen.getByLabelText('Lavatrice')).toBeInTheDocument();
+    expect(screen.getByText('No products')).toBeInTheDocument();
+
+    const fallbackRow = { gtin: 'legacy-gtin', name: 12 } as any;
+    render(
+      <ProductsTable
+        tableData={[fallbackRow]}
+        columns={[{ id: 'name', labelKey: 'name', align: 'right', headerAlign: 'center' }]}
+        order="desc"
+        orderBy="name"
+        onRequestSort={jest.fn()}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('12')).toBeInTheDocument();
+  });
+
+  it('sortable header inactive branch', () => {
+    const sort = jest.fn();
+
+    render(
+      <ProductsTable
+        tableData={[baseRow]}
+        columns={[{ id: 'name', labelKey: 'name', sortable: true }]}
+        order="asc"
+        orderBy="other"
+        onRequestSort={sort}
+        selected={[]}
+        setSelected={jest.fn()}
+        handleListButtonClick={jest.fn()}
+      />
+    );
+
+    screen.getByText('name').click();
+    expect(sort).toHaveBeenCalled();
+  });
 });

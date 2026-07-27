@@ -1,36 +1,18 @@
-jest.mock('../../../utils/env', () => ({
-  __esModule: true,
-  ENV: {
-    URL_API: {
-      OPERATION: 'https://mock-api/register',
-    },
-    API_TIMEOUT_MS: {
-      OPERATION: 5000,
-    },
-  },
+import '../__mocks__/pageComponentsCommonMocks';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+
+jest.mock('../../../hooks/useIDPayUser', () => ({
+  useIDPayUser: () => ({
+    id: 'test-user',
+    fiscalCode: 'RSSMRA80A01H501U',
+  }),
 }));
-jest.mock('../../../routes', () => ({
-  __esModule: true,
-  default: {
-    HOME: '/home',
-    PRODUCTS: '/home/:initiativeId/prodotti',
-  },
-  BASE_ROUTE: '/base',
-}));
-jest.mock('../../../api/registerApiClient', () => ({
-  RegisterApi: {
-    getProducts: jest.fn(),
-    getBatchFilterItems: jest.fn(),
-  },
-}));
-import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import * as registerService from '../../../services/registerService';
 import * as helpers from '../../addProducts/helpers';
-import * as redux from 'react-redux';
 import UploadsTable from '../HistoryUploadSection';
 import '@testing-library/jest-dom';
 
@@ -38,10 +20,7 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
-  withTranslation: () => (Component: any) => {
-    Component.defaultProps = { ...(Component.defaultProps || {}), t: (k: string) => k };
-    return Component;
-  },
+  withTranslation: () => (Component: any) => Component,
 }));
 
 jest.mock('../../../services/registerService', () => ({
@@ -65,6 +44,12 @@ jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
   useCurrentInitiativeId: () => 'initiative-1',
 }));
 
+jest.mock('../../../hooks/useInitiativeConfig', () => ({
+  useInitiativeConfig: () => ({
+    initiativeConfig: {},
+  }),
+}));
+
 const mockDispatch = jest.fn();
 
 jest.mock('react-redux', () => ({
@@ -73,12 +58,19 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.spyOn(registerService, 'downloadErrorReport').mockResolvedValue({
-  data: 'csv content',
+  data: {} as any,
   filename: 'report.csv',
-});
+} as any);
 jest.spyOn(helpers, 'downloadCsv').mockImplementation(() => {});
 
-const store = configureStore({ reducer: () => ({}) });
+const store = configureStore({
+  reducer: () => ({
+    initiativeConfig: {
+      activeKey: null,
+      byKey: {},
+    },
+  }),
+});
 const theme = createTheme();
 
 const renderComponent = (props: any) =>
@@ -160,6 +152,39 @@ describe('UploadsTable', () => {
     ).toBeInTheDocument();
   });
 
+  it.each(['IN_PROCESS', 'UPLOADED', 'LOADED', 'UNKNOWN'])(
+    'renders upload status icon branch for %s',
+    (uploadStatus) => {
+      renderComponent({
+        loading: false,
+        error: null,
+        data: {
+          content: [
+            {
+              productFileId: `file-${uploadStatus}`,
+              batchName: `Batch ${uploadStatus}`,
+              dateUpload: undefined,
+              findedProductsNumber: undefined,
+              addedProductNumber: 0,
+              uploadStatus,
+            },
+          ],
+        },
+        page: 0,
+        rowsPerPage: 10,
+        totalElements: 1,
+        onPageChange: jest.fn(),
+        onRowsPerPageChange: jest.fn(),
+      });
+
+      expect(screen.getByText(`Batch ${uploadStatus}`)).toBeInTheDocument();
+      expect(screen.getByText('-')).toBeInTheDocument();
+      expect(
+        screen.getByText('0 pages.uploadHistory.uploadHistoryAddedProducts')
+      ).toBeInTheDocument();
+    }
+  );
+
   it('handles product link click', () => {
     renderComponent({
       loading: false,
@@ -189,7 +214,27 @@ describe('UploadsTable', () => {
 
     fireEvent.click(screen.getByTestId('download-icon'));
 
-    expect(registerService.downloadErrorReport).toHaveBeenCalledWith('file123');
+    expect(registerService.downloadErrorReport).toHaveBeenCalledWith('initiative-1', 'file123');
+  });
+
+  it('swallows download report errors', async () => {
+    jest.spyOn(registerService, 'downloadErrorReport').mockRejectedValueOnce(new Error('fail'));
+
+    renderComponent({
+      loading: false,
+      error: null,
+      data: mockData,
+      page: 0,
+      rowsPerPage: 10,
+      totalElements: 1,
+      onPageChange: jest.fn(),
+      onRowsPerPageChange: jest.fn(),
+    });
+
+    fireEvent.click(screen.getByTestId('download-icon'));
+
+    await waitFor(() => expect(registerService.downloadErrorReport).toHaveBeenCalled());
+    expect(helpers.downloadCsv).not.toHaveBeenCalledWith(undefined, expect.anything());
   });
 
   it('renders empty table message', () => {

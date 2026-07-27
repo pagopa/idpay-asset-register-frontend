@@ -41,4 +41,10 @@ describe('EprelLinks', () => {
     expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
+
+  it('non renderizza link se eprelCode contiene solo spazi', () => {
+    render(<EprelLinks row={{ ...baseRow, eprelCode: '   ' }} />);
+    expect(screen.getByText(EMPTY_DATA)).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
 });
