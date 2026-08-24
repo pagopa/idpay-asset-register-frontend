@@ -18,6 +18,7 @@ import {
   delay,
   createCsv,
   isOnOrBeforeDate,
+  isInitiativeTerminated,
   customExitAction,
 } from '../helpers';
 import { EMPTY_DATA } from '../utils/constants';
@@ -241,6 +242,20 @@ describe('Additional tests for 100% coverage', () => {
   test('isOnOrBeforeDate with today date', () => {
     const todayStr = new Date().toLocaleDateString('it-IT');
     expect(isOnOrBeforeDate(todayStr)).toBe(false);
+  });
+
+  test('isInitiativeTerminated returns true when status is CLOSED even with future endDate', () => {
+    const futureDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    expect(isInitiativeTerminated(futureDate, 'CLOSED')).toBe(true);
+  });
+
+  test('isInitiativeTerminated returns true when endDate is in the past', () => {
+    const pastDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    expect(isInitiativeTerminated(pastDate, 'PUBLISHED')).toBe(true);
+  });
+
+  test('isInitiativeTerminated returns false when status is not CLOSED and endDate is missing', () => {
+    expect(isInitiativeTerminated(undefined, 'PUBLISHED')).toBe(false);
   });
 
   test('customExitAction clears storage and redirects', () => {

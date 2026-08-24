@@ -201,6 +201,21 @@ describe('ProductDetail', () => {
     expect(screen.getAllByTestId('modal').length).toBeGreaterThan(0);
   });
 
+  it('disables invitalia actions when initiative is closed', () => {
+    renderDetail({ ...invitaliaUploaded, isInitiativeClosed: true });
+
+    const approvedBtn = screen.getByTestId('approvedBtn');
+    const supervisedBtn = screen.getByTestId('supervisedBtn');
+    const rejectedBtn = screen.getByTestId('rejectedBtn');
+
+    expect(approvedBtn).toBeDisabled();
+    expect(supervisedBtn).toBeDisabled();
+    expect(rejectedBtn).toBeDisabled();
+
+    fireEvent.click(approvedBtn);
+    expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
+  });
+
   it('renders base information', () => {
     renderDetail();
 
