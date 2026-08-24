@@ -50,6 +50,7 @@ jest.mock('react-i18next', () => ({
 
 jest.mock('../../../helpers', () => ({
   fetchUserFromLocalStorage: jest.fn(),
+  isInitiativeTerminated: jest.fn(() => false),
   truncateString: jest.fn((str?: string, maxLength?: number) => {
     if (str && maxLength && str.length > maxLength) {
       return str.substring(0, maxLength) + '...';

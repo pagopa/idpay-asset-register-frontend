@@ -52,7 +52,10 @@ jest.mock('../../../hooks/useErrorHandling');
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor');
 jest.mock('../../../services/registerService');
 jest.mock('../helpers');
-jest.mock('../../../helpers', () => ({ delay: jest.fn().mockResolvedValue(undefined) }));
+jest.mock('../../../helpers', () => ({
+  delay: jest.fn().mockResolvedValue(undefined),
+  isInitiativeTerminated: jest.fn(() => false),
+}));
 jest.mock('react-dropzone', () => ({ useDropzone: jest.fn() }));
 jest.mock('../../../utils/constants', () => ({ DEBUG_CONSOLE: true }));
 jest.mock('../../../redux/api/initiativesApi', () => ({
