@@ -54,10 +54,14 @@ jest.mock('../ProductInfoRow', () => ({
   ),
 }));
 
+let mockLatestConfirmDialogProps: any;
+let mockLatestProductModalProps: Array<any> = [];
+
 jest.mock('../ProductConfirmDialog', () => ({
   __esModule: true,
-  default: ({ open, onCancel, onConfirm, onSuccess }: any) =>
-    open ? (
+  default: ({ open, onCancel, onConfirm, onSuccess, ...rest }: any) => {
+    mockLatestConfirmDialogProps = { open, onCancel, onConfirm, onSuccess, ...rest };
+    return open ? (
       <div data-testid="confirm-dialog">
         <button onClick={onCancel} data-testid="cancel-confirm">
           cancel
@@ -87,13 +91,15 @@ jest.mock('../ProductConfirmDialog', () => ({
           success accept approval
         </button>
       </div>
-    ) : null,
+    ) : null;
+  },
 }));
 
 jest.mock('../ProductModal', () => ({
   __esModule: true,
-  default: ({ open, onClose, onSuccess, actionType, selectedProducts }: any) =>
-    open ? (
+  default: ({ open, onClose, onSuccess, actionType, selectedProducts, ...rest }: any) => {
+    mockLatestProductModalProps.push({ open, onClose, onSuccess, actionType, selectedProducts, ...rest });
+    return open ? (
       <div data-testid="modal">
         <span data-testid="modal-action">{actionType}</span>
         <span data-testid="modal-gtin-length">{(selectedProducts?.[0]?.gtinCode ?? '').length}</span>
@@ -107,7 +113,8 @@ jest.mock('../ProductModal', () => ({
           modal success
         </button>
       </div>
-    ) : null,
+    ) : null;
+  },
 }));
 
 const baseData: any = {
@@ -176,8 +183,20 @@ const clickSequence = (...testIds: Array<string>) => {
   testIds.forEach((id) => fireEvent.click(screen.getByTestId(id)));
 };
 
+const getReactProps = (element: HTMLElement) => {
+  const reactPropsKey = Object.keys(element).find((key) => key.startsWith('__reactProps$'));
+
+  if (!reactPropsKey) {
+    throw new Error('React props non trovati sul nodo');
+  }
+
+  return (element as any)[reactPropsKey];
+};
+
 describe('ProductDetail', () => {
   beforeEach(() => {
+    mockLatestConfirmDialogProps = undefined;
+    mockLatestProductModalProps = [];
     useInitiativeConfig.mockReturnValue({
       config: {
         tables: { products: { style: { lengths: { detail: 20 } } } },
@@ -226,6 +245,46 @@ describe('ProductDetail', () => {
 
     fireEvent.click(approvedBtn);
     expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
+  });
+
+  it('short-circuits confirm restore when initiative is closed', async () => {
+    const registerService = require('../../../services/registerService');
+    const onUpdateTable = jest.fn();
+    const onClose = jest.fn();
+    const onShowWaitApprovedMsg = jest.fn();
+
+    renderDetail({
+      ...invitaliaUploaded,
+      isInitiativeClosed: true,
+      onUpdateTable,
+      onClose,
+      onShowWaitApprovedMsg,
+    });
+
+    await mockLatestConfirmDialogProps.onConfirm();
+
+    expect(registerService.setWaitApprovedStatusList).not.toHaveBeenCalled();
+    expect(onUpdateTable).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onShowWaitApprovedMsg).not.toHaveBeenCalled();
+  });
+
+  it('short-circuits reject action when initiative is closed even if onClick is invoked directly', () => {
+    renderDetail({ ...invitaliaUploaded, isInitiativeClosed: true });
+
+    const rejectedBtnProps = getReactProps(screen.getByTestId('rejectedBtn'));
+    rejectedBtnProps.onClick();
+
+    expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
+  });
+
+  it('short-circuits supervision action when initiative is closed even if onClick is invoked directly', () => {
+    renderDetail({ ...invitaliaUploaded, isInitiativeClosed: true });
+
+    const supervisedBtnProps = getReactProps(screen.getByTestId('supervisedBtn'));
+    supervisedBtnProps.onClick();
+
+    expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
   });
 
   it('renders base information', () => {
@@ -392,6 +451,7 @@ describe('ProductDetail', () => {
     expect(onShowGenericError).toHaveBeenCalled();
   });
 
+
   it('cancels confirm dialog when onCancel fired', () => {
     renderDetail(invitaliaUploaded);
 
@@ -549,6 +609,21 @@ describe('ProductDetail', () => {
     expect(screen.getByDisplayValue('No date reason')).toBeInTheDocument();
   });
 
+  it('renders formal motivation for operator without header when rejected date is missing', () => {
+    const { fetchUserFromLocalStorage } = require('../../../helpers');
+    fetchUserFromLocalStorage.mockReturnValueOnce({ org_role: 'operatore' });
+
+    renderDetail({
+      data: buildRejectedFormalData('Operator no date reason', {
+        role: undefined,
+        updateDate: undefined,
+      }),
+    });
+
+    expect(screen.getByDisplayValue('Operator no date reason')).toBeInTheDocument();
+    expect(screen.queryByText('Operatore')).not.toBeInTheDocument();
+  });
+
   it('does not render formal motivation for operator when not rejected', () => {
     const { fetchUserFromLocalStorage } = require('../../../helpers');
     fetchUserFromLocalStorage.mockReturnValueOnce({ org_role: 'operatore' });
@@ -558,5 +633,21 @@ describe('ProductDetail', () => {
     });
 
     expect(screen.queryByDisplayValue('Hidden reason')).not.toBeInTheDocument();
+  });
+
+  it('does nothing on modal success when all success callbacks are non-functions', () => {
+    renderDetail({
+      ...invitaliaUploaded,
+      onShowRejectedMsg: null,
+      onShowApprovedMsg: null,
+      onShowWaitApprovedMsg: null,
+      onShowSupervisedMsg: null,
+      onShowRejectedApprovationMsg: null,
+      onShowAcceptApprovationMsg: null,
+    } as any);
+
+    clickSequence('rejectedBtn', 'modal-success');
+
+    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
   });
 });

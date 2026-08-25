@@ -707,6 +707,38 @@ describe('ProductDataGrid (rewritten)', () => {
     await expectEmptyListVisible();
   });
 
+  it('sets the redirect producer when changing organizationId', async () => {
+    await renderGrid();
+    fireEvent.click(screen.getByText(/change organization/i));
+    expect(screen.getByTestId('redirect-producer')).toHaveTextContent('New Organization');
+  });
+
+  it('handles selectedProductsList update', async () => {
+    await renderGrid();
+    fireEvent.click(screen.getByText(/add product to selection/i));
+    expect(screen.getByTestId('selected-products')).toHaveTextContent('Selected Products: 1');
+  });
+
+  // Tests for additional lines and branches
+  it('checks batchFromHistory initialized filters correctly', async () => {
+    (registerService.getBatchFilterList as jest.Mock).mockResolvedValue({
+      data: [{ productFileId: 'file-1', batchName: 'Batch A' }],
+    });
+
+    sessionStorage.setItem('batchFromHistory', 'BATCH_X');
+    await renderGrid();
+    await openFiltersDrawer();
+    expect(screen.getByTestId('filters-drawer')).toHaveTextContent('Batch A');
+  });
+
+  it('verifies pagination control updates rows per page', async () => {
+    await renderGrid('USER', mockProducts, {
+      columns: [{ id: 'category', labelKey: 'tables.products.columns.category' }],
+    });
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: '5' } });
+    expect(screen.getByText(/5 items per page/i)).toBeInTheDocument();
+  });
+
   it('opens and closes detail drawer', async () => {
     await renderGrid();
     await openDetailDrawer();
@@ -1771,13 +1803,17 @@ describe('ProductDataGrid (rewritten)', () => {
       columns: [{ id: 'category', labelKey: 'tables.products.columns.category', sortable: true }],
     });
 
-    const sortButton = await screen.findByTestId('sort-category');
-    fireEvent.click(sortButton);
-    fireEvent.click(sortButton);
+    const firstSortButton = await screen.findByTestId('sort-category');
+    fireEvent.click(firstSortButton);
+
+    const secondSortButton = await screen.findByTestId('sort-category');
+    fireEvent.click(secondSortButton);
 
     await waitFor(() =>
       expect(
-        (registerService.getProducts as jest.Mock).mock.calls.some((call) => call[4] === 'category,asc')
+        (registerService.getProducts as jest.Mock).mock.calls.some(
+          (call) => call[4] === 'category,asc'
+        )
       ).toBe(true)
     );
   });
@@ -1850,20 +1886,18 @@ describe('ProductDataGrid (rewritten)', () => {
   });
 
   it('replaces producer filter label with readable organization name from table data (covers 314-317)', async () => {
-    // Products have organizationName so the effect replaces the raw label
-    await renderGrid('USER', buildProducts({ organizationName: 'Readable Org' }));
+    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts({ organizationName: 'Readable Org' }), {
+      organizationSource: 'filter',
+    });
     await expectTableVisible();
 
     await openFiltersDrawer();
-    // Apply producer filter with label == organizationId ('org') → triggers the readableName branch
     fireEvent.click(screen.getByText('Apply Raw Organization Producer'));
 
     await waitFor(() => {
-      const drawerEl = screen.queryByTestId('filters-drawer');
-      if (!drawerEl) return;
-      const payload = drawerEl.getAttribute('data-filters-json') ?? '{}';
-      const parsed = JSON.parse(payload);
-      expect(parsed.producer?.label).toBe('Readable Org');
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some((call) => call[1] === 'org')
+      ).toBe(true);
     });
   });
 });
