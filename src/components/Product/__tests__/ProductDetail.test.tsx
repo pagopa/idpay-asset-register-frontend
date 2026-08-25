@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ProductDetail from '../ProductDetail';
 
 jest.mock('../../../hooks/useScopedTranslation', () => ({
@@ -8,13 +8,15 @@ jest.mock('../../../hooks/useScopedTranslation', () => ({
 }));
 
 jest.mock('../../../hooks/useInitiativeConfig', () => ({
-  useInitiativeConfig: () => ({
-    config: { 
+  useInitiativeConfig: jest.fn(() => ({
+    config: {
       tables: { products: { style: { lengths: { detail: 20 } } } },
       templates: { categories: { cookinghobs: { name: 'Piano cottura' } } },
     },
-  }),
+  })),
 }));
+
+const { useInitiativeConfig } = require('../../../hooks/useInitiativeConfig');
 
 jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
   useCurrentInitiativeId: () => 'initiative-1',
@@ -90,10 +92,11 @@ jest.mock('../ProductConfirmDialog', () => ({
 
 jest.mock('../ProductModal', () => ({
   __esModule: true,
-  default: ({ open, onClose, onSuccess, actionType }: any) =>
+  default: ({ open, onClose, onSuccess, actionType, selectedProducts }: any) =>
     open ? (
       <div data-testid="modal">
         <span data-testid="modal-action">{actionType}</span>
+        <span data-testid="modal-gtin-length">{(selectedProducts?.[0]?.gtinCode ?? '').length}</span>
         <button onClick={() => onClose?.(false)} data-testid="close-modal-confirmed">
           close confirmed
         </button>
@@ -174,6 +177,15 @@ const clickSequence = (...testIds: Array<string>) => {
 };
 
 describe('ProductDetail', () => {
+  beforeEach(() => {
+    useInitiativeConfig.mockReturnValue({
+      config: {
+        tables: { products: { style: { lengths: { detail: 20 } } } },
+        templates: { categories: { cookinghobs: { name: 'Piano cottura' } } },
+      },
+    });
+  });
+
   it('renders supervised buttons for invitalia user', () => {
     renderDetail(invitaliaSupervised);
 
@@ -403,6 +415,111 @@ describe('ProductDetail', () => {
     renderDetail({ detailFields: [{ id: 'productSheet' }] });
 
     expect(screen.getByText('pages.productDetail.productSheet')).toBeInTheDocument();
+  });
+
+  it('renders default eprel label when cooking hobs config is missing', () => {
+    useInitiativeConfig.mockReturnValueOnce({
+      config: {
+        tables: { products: { style: { lengths: { detail: 20 } } } },
+        templates: { categories: {} },
+      },
+    });
+
+    renderDetail({
+      data: { ...baseData, category: 'Piano cottura' },
+      detailFields: [{ id: 'registrationDate' }],
+    });
+
+    expect(screen.getByText('pages.productDetail.eprelCheckDate')).toBeInTheDocument();
+  });
+
+  it('renders batchName custom field', () => {
+    renderDetail({ detailFields: [{ id: 'batchName' }] });
+
+    expect(screen.getByText('Batch A')).toBeInTheDocument();
+  });
+
+  it('renders empty data for missing registrationDate in base rows', () => {
+    renderDetail({ data: { ...baseData, registrationDate: undefined } });
+
+    expect(screen.getByText('pages.productDetail.eprelCheckDate')).toBeInTheDocument();
+    expect(screen.getAllByText('-').length).toBeGreaterThan(0);
+  });
+
+  it('uses detail max length fallback when config length is missing', () => {
+    const { truncateString } = require('../../../helpers');
+    truncateString.mockClear();
+
+    useInitiativeConfig.mockReturnValueOnce({
+      config: {
+        templates: { categories: { cookinghobs: { name: 'Piano cottura' } } },
+      },
+    });
+
+    renderDetail({ data: buildRejectedFormalData('Formal reason') });
+
+    expect(truncateString).toHaveBeenCalledWith(expect.any(String), 40);
+  });
+
+  it('calls wait-approved API with empty gtin when gtinCode is undefined', async () => {
+    const registerService = require('../../../services/registerService');
+
+    renderDetail({
+      ...invitaliaUploaded,
+      data: { ...baseData, status: 'UPLOADED', gtinCode: undefined },
+    });
+
+    clickSequence('approvedBtn', 'confirm');
+
+    await waitFor(() => {
+      expect(registerService.setWaitApprovedStatusList).toHaveBeenCalled();
+    });
+    expect(registerService.setWaitApprovedStatusList).toHaveBeenCalledWith(
+      'initiative-1',
+      [''],
+      'UPLOADED',
+      '-',
+      )
+  });
+
+  it('closes supervision modal and maps empty gtin in selectedProducts', () => {
+    renderDetail({
+      ...invitaliaUploaded,
+      data: { ...baseData, status: 'UPLOADED', gtinCode: undefined },
+    });
+
+    fireEvent.click(screen.getByTestId('supervisedBtn'));
+    expect(screen.getByTestId('modal-gtin-length')).toHaveTextContent('0');
+    fireEvent.click(screen.getByTestId('close-modal-confirmed'));
+    expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
+  });
+
+  it('closes exclude modal and maps empty gtin in selectedProducts', () => {
+    renderDetail({
+      ...invitaliaUploaded,
+      data: { ...baseData, status: 'UPLOADED', gtinCode: undefined },
+    });
+
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    expect(screen.getByTestId('modal-gtin-length')).toHaveTextContent('0');
+    fireEvent.click(screen.getByTestId('close-modal-cancelled'));
+    expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
+  });
+
+  it('does not fail on modal success when no message callbacks are provided', () => {
+    renderDetail({
+      ...invitaliaUploaded,
+      onShowRejectedMsg: undefined,
+      onShowApprovedMsg: undefined,
+      onShowWaitApprovedMsg: undefined,
+      onShowSupervisedMsg: undefined,
+      onShowRejectedApprovationMsg: undefined,
+      onShowAcceptApprovationMsg: undefined,
+    });
+
+    clickSequence('rejectedBtn', 'modal-success');
+
+    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
   });
 
   it('renders formal motivation header with role for non-operator user', () => {

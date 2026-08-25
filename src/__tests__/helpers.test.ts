@@ -321,6 +321,12 @@ describe('Additional tests for 100% coverage', () => {
     expect(filterInputWithSpaceRule('ab  cd')).toBe('ab cd');
   });
 
+  test('filterInputWithSpaceRule removes all spaces when no alphanumeric chars (line 156 || [])', () => {
+    // value.match(/[a-zA-Z0-9]/g) returns null → || [] → length 0 < 2 → spaces removed
+    expect(filterInputWithSpaceRule('   ')).toBe('');
+    expect(filterInputWithSpaceRule('!@#')).toBe('!@#');
+  });
+
   test('cleanTrailingSpace removes only one final space', () => {
     expect(cleanTrailingSpace('abc ')).toBe('abc');
     expect(cleanTrailingSpace('abc')).toBe('abc');
@@ -387,6 +393,69 @@ describe('Additional tests for 100% coverage', () => {
     });
     expect(createCsv({ headers: ['a', 'b'], fields: ['1', '2'] })).toBe('blob:url');
     expect(URL.createObjectURL).toHaveBeenCalled();
+  });
+
+  // ---- Lines 62-63: second isNaN check via getTime mock ----
+  test('formatDateWithHours covers second isNaN guard (lines 62-63)', () => {
+    // Make the first getTime() call return a valid number (passes line-59 guard),
+    // then make the second getTime() call return NaN (hits line-62 guard).
+    const spy = jest
+      .spyOn(Date.prototype, 'getTime')
+      .mockReturnValueOnce(1_000_000) // line 59: isNaN(1_000_000) → false → proceed
+      .mockReturnValueOnce(NaN);       // line 62: isNaN(NaN)       → true  → return EMPTY_DATA
+
+    expect(formatDateWithHours(new Date('2022-10-01T00:00:00Z'))).toBe(EMPTY_DATA);
+    spy.mockRestore();
+  });
+
+  // ---- Line 76 partially: ?? '' fallback when formatToParts returns no 'day' part ----
+  test('formatDateWithHours covers ?? \'\' fallback on all parts (line 76 and others)', () => {
+    const originalDateTimeFormat = Intl.DateTimeFormat;
+    // Return an empty array → none of the find() calls match → all '?? ""' branches fire
+    (Intl as any).DateTimeFormat = jest.fn(() => ({
+      formatToParts: () => [],
+    }));
+
+    const result = formatDateWithHours(new Date('2022-10-01T00:00:00Z'));
+    // All parts are '' → output is '//, ::'
+    expect(result).toBe('//, ::');
+
+    (Intl as any).DateTimeFormat = originalDateTimeFormat;
+  });
+
+  // ---- Lines 196-197: typeof window === 'undefined' branch ----
+  test('getResponsiveTableMaxLength returns lengths.maxTable when window is undefined (lines 196-197)', () => {
+    const savedWindow = (global as any).window;
+    delete (global as any).window;
+
+    const result = getResponsiveTableMaxLength({
+      ui: {
+        tables: { products: { style: { lengths: { maxTable: 55 } } } },
+      },
+    });
+    expect(result).toBe(55);
+
+    (global as any).window = savedWindow;
+  });
+
+  test('getResponsiveTableMaxLength returns 45 default when maxTable is missing and window is undefined (line 197 ?? 45)', () => {
+    const savedWindow = (global as any).window;
+    delete (global as any).window;
+
+    // lengths exists but has no maxTable → ?? 45 fires
+    const result = getResponsiveTableMaxLength({
+      ui: {
+        tables: { products: { style: { lengths: {} } } },
+      },
+    });
+    expect(result).toBe(45);
+
+    (global as any).window = savedWindow;
+  });
+
+  // ---- Lines 236-237: isNaN(parsedEndDate.getTime()) === true ----
+  test('isInitiativeTerminated returns false for an unparseable endDate string (lines 236-237)', () => {
+    expect(isInitiativeTerminated('not-a-valid-date', 'PUBLISHED')).toBe(false);
   });
 });
 
