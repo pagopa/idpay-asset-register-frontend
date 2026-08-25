@@ -203,14 +203,17 @@ jest.mock('../ProductModal', () => ({
     onClose,
     onSuccess,
     onUpdateTable,
+    selectedProducts,
   }: {
     open: boolean;
     onClose?: (refresh?: boolean) => void;
     onSuccess?: (status: string) => void;
     onUpdateTable?: () => void;
+    selectedProducts?: Array<unknown>;
   }) =>
     open ? (
       <div data-testid="product-modal">
+        <span data-testid="selected-products">Selected Products: {selectedProducts?.length ?? 0}</span>
         <button onClick={() => onClose?.(true)}>Close Modal</button>
         <button onClick={() => onClose?.(false)}>Close Modal Without Reset</button>
         <button onClick={() => onUpdateTable?.()}>Update Modal Table</button>
@@ -708,14 +711,22 @@ describe('ProductDataGrid (rewritten)', () => {
   });
 
   it('sets the redirect producer when changing organizationId', async () => {
-    await renderGrid();
-    fireEvent.click(screen.getByText(/change organization/i));
-    expect(screen.getByTestId('redirect-producer')).toHaveTextContent('New Organization');
+    await renderGrid(USERS_TYPES.INVITALIA_L1, mockProducts, {
+      organizationId: 'new-org',
+      organizationLabel: 'New Organization',
+    });
+    await openFiltersDrawer();
+
+    expect(screen.getByTestId('filters-drawer')).toHaveAttribute(
+      'data-filters-json',
+      JSON.stringify({ producer: { value: 'new-org', label: 'New Organization' } })
+    );
   });
 
   it('handles selectedProductsList update', async () => {
-    await renderGrid();
-    fireEvent.click(screen.getByText(/add product to selection/i));
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await selectRowAndClickAction('rejectedBtn');
+
     expect(screen.getByTestId('selected-products')).toHaveTextContent('Selected Products: 1');
   });
 
@@ -725,18 +736,30 @@ describe('ProductDataGrid (rewritten)', () => {
       data: [{ productFileId: 'file-1', batchName: 'Batch A' }],
     });
 
-    sessionStorage.setItem('batchFromHistory', 'BATCH_X');
-    await renderGrid();
+    await renderGrid('USER', mockProducts, {
+      initialEntries: [{ pathname: '/', state: { batchId: 'file-1' } }],
+      batchFilterItems: [{ productFileId: 'file-1', batchName: 'Batch A' }],
+    });
     await openFiltersDrawer();
-    expect(screen.getByTestId('filters-drawer')).toHaveTextContent('Batch A');
+    expect(screen.getByTestId('filters-drawer')).toHaveAttribute(
+      'data-filters-json',
+      JSON.stringify({ productFileId: { value: 'file-1', label: 'file-1' } })
+    );
   });
 
   it('verifies pagination control updates rows per page', async () => {
     await renderGrid('USER', mockProducts, {
       columns: [{ id: 'category', labelKey: 'tables.products.columns.category' }],
+      paginationConfig: { defaultRowsPerPage: 10, rowsPerPageOptions: [5, 10] },
     });
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: '5' } });
-    expect(screen.getByText(/5 items per page/i)).toBeInTheDocument();
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+    fireEvent.click(await screen.findByRole('option', { name: '5' }));
+
+    await waitFor(() => {
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some((call) => call[3] === 5)
+      ).toBe(true);
+    });
   });
 
   it('opens and closes detail drawer', async () => {
