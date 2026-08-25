@@ -24,6 +24,7 @@ type Props = {
   detailFields?: Array<ProductDetailFieldConfig>;
   isInvitaliaUser: boolean;
   isInvitaliaAdmin: boolean;
+  isInitiativeClosed?: boolean;
   onUpdateTable?: () => void;
   onClose?: () => void;
   children?: React.ReactNode;
@@ -500,7 +501,7 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
             labelVariant={(row as RowConfig).labelVariant}
             valueVariant={(row as RowConfig).valueVariant}
             maxValueLines={
-              (row as RowConfig).truncate === false
+              !(row as RowConfig).truncate
                 ? undefined
                 : (row as RowConfig).valueVariant === 'h6'
                 ? 2
@@ -530,6 +531,7 @@ export default function ProductDetail({
   detailFields,
   isInvitaliaUser,
   isInvitaliaAdmin,
+  isInitiativeClosed = false,
   onUpdateTable,
   onClose,
   onShowApprovedMsg,
@@ -547,6 +549,10 @@ export default function ProductDetail({
   const initiativeId = useCurrentInitiativeId();
 
   const handleConfirmRestore = async () => {
+    if (isInitiativeClosed) {
+      return;
+    }
+
     try {
       await handleOpenModal(
         initiativeId,
@@ -626,6 +632,10 @@ export default function ProductDetail({
   };
 
   const handleExcludeClick = () => {
+    if (isInitiativeClosed) {
+      return;
+    }
+
     setExcludeModalOpen(true);
   };
 
@@ -707,6 +717,7 @@ export default function ProductDetail({
               variant="contained"
               className="btn-approve"
               onClick={() => setRestoreDialogOpen(true)}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.waitApproved.buttonTextConfirm')}
             </Button>
@@ -716,6 +727,7 @@ export default function ProductDetail({
               className="btn-exclude"
               variant="outlined"
               onClick={handleExcludeClick}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.rejected.buttonTextConfirm')}
             </Button>
@@ -743,6 +755,7 @@ export default function ProductDetail({
               variant="contained"
               className="btn-approve"
               onClick={() => setRestoreDialogOpen(true)}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.waitApproved.buttonText')}
             </Button>
@@ -752,8 +765,12 @@ export default function ProductDetail({
               variant="outlined"
               className="btn-exclude"
               onClick={() => {
+                if (isInitiativeClosed) {
+                  return;
+                }
                 setSupervisionModalOpen(true);
               }}
+              disabled={isInitiativeClosed}
             >
               <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}
             </Button>
@@ -763,6 +780,7 @@ export default function ProductDetail({
               className="btn-exclude"
               variant="outlined"
               onClick={handleExcludeClick}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.rejected.buttonText')}
             </Button>
@@ -790,6 +808,7 @@ export default function ProductDetail({
               variant="contained"
               className="btn-approve"
               onClick={() => setSupervisionModalOpen(true)}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.waitApproved.buttonText')}
             </Button>
@@ -799,6 +818,7 @@ export default function ProductDetail({
               className="btn-exclude"
               variant="outlined"
               onClick={handleExcludeClick}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.rejectApprovation.buttonText')}
             </Button>

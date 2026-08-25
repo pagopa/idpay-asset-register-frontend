@@ -69,6 +69,14 @@ describe('ProductStatusActionBar – 100% coverage', () => {
       expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.SUPERVISED);
       expect(handler).toHaveBeenCalledWith(PRODUCTS_STATES.WAIT_APPROVED);
     });
+
+    it('disables all actions when initiative is closed', () => {
+      renderBar({ isInitiativeClosed: true });
+
+      expect(screen.getByTestId('rejectedBtn')).toBeDisabled();
+      expect(screen.getByTestId('waitApprovedBtn')).toBeDisabled();
+      expect(screen.getByTestId('supervisedBtn')).toBeDisabled();
+    });
   });
 
   describe('Invitalia user – disabled states', () => {

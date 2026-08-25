@@ -93,6 +93,7 @@ jest.mock('../../DetailDrawer/DetailDrawer', () => ({
       <div data-testid="detail-drawer">
         {children}
         <button onClick={() => toggleDrawer?.(false)}>Close Drawer</button>
+        <button onClick={() => toggleDrawer?.(true)}>Keep Drawer Open</button>
       </div>
     ) : null,
 }));
@@ -111,7 +112,11 @@ jest.mock('../../FiltersDrawer/FiltersDrawer', () => ({
     filters?: Record<string, { value: string; label?: string }>;
   }) =>
     open ? (
-      <div data-testid="filters-drawer" data-filters={Object.keys(filters ?? {}).join(',')}>
+      <div
+        data-testid="filters-drawer"
+        data-filters={Object.keys(filters ?? {}).join(',')}
+        data-filters-json={JSON.stringify(filters ?? {})}
+      >
         <button onClick={() => toggleFiltersDrawer?.(false)}>Close Filters</button>
         <button onClick={() => setFilters?.({})}>Apply Empty Filters</button>
         <button
@@ -131,6 +136,15 @@ jest.mock('../../FiltersDrawer/FiltersDrawer', () => ({
           }
         >
           Apply Producer Filter
+        </button>
+        <button
+          onClick={() =>
+            setFilters?.({
+              producer: { value: 'org', label: 'org' },
+            })
+          }
+        >
+          Apply Raw Organization Producer
         </button>
       </div>
     ) : null,
@@ -189,14 +203,17 @@ jest.mock('../ProductModal', () => ({
     onClose,
     onSuccess,
     onUpdateTable,
+    selectedProducts,
   }: {
     open: boolean;
     onClose?: (refresh?: boolean) => void;
     onSuccess?: (status: string) => void;
     onUpdateTable?: () => void;
+    selectedProducts?: Array<unknown>;
   }) =>
     open ? (
       <div data-testid="product-modal">
+        <span data-testid="selected-products">Selected Products: {selectedProducts?.length ?? 0}</span>
         <button onClick={() => onClose?.(true)}>Close Modal</button>
         <button onClick={() => onClose?.(false)}>Close Modal Without Reset</button>
         <button onClick={() => onUpdateTable?.()}>Update Modal Table</button>
@@ -416,6 +433,18 @@ const renderProductGrid = (
     </Provider>
   );
 
+const renderProductGridTree = (store = createStore(), organizationId = 'org') => (
+  <Provider store={store}>
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter initialEntries={['/']}>
+        <ThemeProvider theme={theme}>
+          <ProductDataGrid organizationId={organizationId} />
+        </ThemeProvider>
+      </MemoryRouter>
+    </I18nextProvider>
+  </Provider>
+);
+
 const openDetailDrawer = async (index = 0) => {
   await screen.findByTestId('products-table');
   fireEvent.click(screen.getByTestId(`detail-btn-${index}`));
@@ -466,13 +495,20 @@ const configureTableMocks = ({
   defaultFiltersByRole,
   columns = [],
   filtersConfig = [],
+  paginationConfig,
 }: {
   hasPermission?: boolean;
   organizationSource?: string;
   defaultFiltersByRole?: Record<string, Record<string, string>>;
   columns?: Array<Record<string, any>>;
   filtersConfig?: Array<Record<string, any>>;
+  paginationConfig?: { defaultRowsPerPage: number; rowsPerPageOptions: Array<number> };
 } = {}) => {
+  const resolvedPaginationConfig = paginationConfig ?? {
+    defaultRowsPerPage: 10,
+    rowsPerPageOptions: [10],
+  };
+
   (useInitiativeConfigHook.useInitiativeConfig as jest.Mock).mockReturnValue({
     config: {
       subRoles: {
@@ -488,7 +524,7 @@ const configureTableMocks = ({
       },
       tables: {
         products: {
-          pagination: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] },
+          pagination: resolvedPaginationConfig,
           columns,
           selection: {
             [USERS_TYPES.INVITALIA_L1]: ['REJECTED', 'WAIT_APPROVED'],
@@ -516,7 +552,7 @@ const configureTableMocks = ({
       organizationSource,
       defaultFiltersByRole,
     },
-    paginationConfig: { defaultRowsPerPage: 10, rowsPerPageOptions: [10] },
+    paginationConfig: resolvedPaginationConfig,
     filtersConfig,
     templateConfig: {},
   });
@@ -548,6 +584,7 @@ const renderGrid = async (
     organizationLabel,
     initialEntries,
     batchFilterItems = [],
+    paginationConfig,
   }: {
     hasPermission?: boolean;
     organizationSource?: string;
@@ -559,6 +596,7 @@ const renderGrid = async (
     organizationLabel?: string;
     initialEntries?: Array<any>;
     batchFilterItems?: Array<Record<string, any>>;
+    paginationConfig?: { defaultRowsPerPage: number; rowsPerPageOptions: Array<number> };
   } = {}
 ) => {
   (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
@@ -572,6 +610,7 @@ const renderGrid = async (
     defaultFiltersByRole,
     columns,
     filtersConfig,
+    paginationConfig,
   });
   setupProductsResponse(products);
   setupBatchFiltersResponse(batchFilterItems);
@@ -669,6 +708,58 @@ describe('ProductDataGrid (rewritten)', () => {
     });
     await renderGrid();
     await expectEmptyListVisible();
+  });
+
+  it('sets the redirect producer when changing organizationId', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1, mockProducts, {
+      organizationId: 'new-org',
+      organizationLabel: 'New Organization',
+    });
+    await openFiltersDrawer();
+
+    expect(screen.getByTestId('filters-drawer')).toHaveAttribute(
+      'data-filters-json',
+      JSON.stringify({ producer: { value: 'new-org', label: 'New Organization' } })
+    );
+  });
+
+  it('handles selectedProductsList update', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await selectRowAndClickAction('rejectedBtn');
+
+    expect(screen.getByTestId('selected-products')).toHaveTextContent('Selected Products: 1');
+  });
+
+  // Tests for additional lines and branches
+  it('checks batchFromHistory initialized filters correctly', async () => {
+    (registerService.getBatchFilterList as jest.Mock).mockResolvedValue({
+      data: [{ productFileId: 'file-1', batchName: 'Batch A' }],
+    });
+
+    await renderGrid('USER', mockProducts, {
+      initialEntries: [{ pathname: '/', state: { batchId: 'file-1' } }],
+      batchFilterItems: [{ productFileId: 'file-1', batchName: 'Batch A' }],
+    });
+    await openFiltersDrawer();
+    expect(screen.getByTestId('filters-drawer')).toHaveAttribute(
+      'data-filters-json',
+      JSON.stringify({ productFileId: { value: 'file-1', label: 'file-1' } })
+    );
+  });
+
+  it('verifies pagination control updates rows per page', async () => {
+    await renderGrid('USER', mockProducts, {
+      columns: [{ id: 'category', labelKey: 'tables.products.columns.category' }],
+      paginationConfig: { defaultRowsPerPage: 10, rowsPerPageOptions: [5, 10] },
+    });
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+    fireEvent.click(await screen.findByRole('option', { name: '5' }));
+
+    await waitFor(() => {
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some((call) => call[3] === 5)
+      ).toBe(true);
+    });
   });
 
   it('opens and closes detail drawer', async () => {
@@ -774,7 +865,9 @@ describe('ProductDataGrid (rewritten)', () => {
   });
 
   it('validates mixed statuses without opening modal', async () => {
-    getHelpersModule().getStatusChecks.mockReturnValueOnce({
+    // Use mockReturnValue (not Once) so both validateBulkActionPreconditions and
+    // handleOpenModalWithStatusCheck see the mixed status → covers lines 534-536
+    getHelpersModule().getStatusChecks.mockReturnValue({
       selectedStatuses: ['A', 'B'],
       someUploaded: false,
       length: 2,
@@ -1668,5 +1761,166 @@ describe('ProductDataGrid (rewritten)', () => {
     });
 
     jest.useRealTimers();
+  });
+
+  it('resets local state when initiativeId changes', async () => {
+    const currentInitiativeHook = require('../../../hooks/useCurrentInitiativeId');
+    currentInitiativeHook.useCurrentInitiativeId.mockReturnValue('init-1');
+
+    const store = createStore();
+    store.dispatch(productsSlice.actions.setBatchId('batch-before-switch'));
+    store.dispatch(productsSlice.actions.setBatchName('batch-before-switch.csv'));
+    store.dispatch(
+      invitaliaSlice.actions.setInstitution({
+        institutionId: 'inst-1',
+        createdAt: 'now',
+        updatedAt: 'now',
+        description: 'Institution 1',
+      })
+    );
+
+    (helpers.fetchUserFromLocalStorage as jest.Mock).mockReturnValue({
+      org_id: 'org',
+      org_role: USERS_TYPES.INVITALIA_L1,
+    });
+    configureTableMocks();
+    setupProductsResponse(mockProducts);
+    setupBatchFiltersResponse();
+
+    const view = render(renderProductGridTree(store));
+    await expectTableVisible();
+
+    currentInitiativeHook.useCurrentInitiativeId.mockReturnValue('init-2');
+    view.rerender(renderProductGridTree(store));
+
+    await waitFor(() => {
+      expect(store.getState().products.batchId).toBe('');
+      expect(store.getState().products.batchName).toBe('');
+      expect(store.getState().invitalia.institution?.institutionId).toBe('');
+    });
+  });
+
+
+  it('maps legacy column id fallback when id is not in legacy map', async () => {
+    await renderGrid('USER', mockProducts, {
+      columns: [{ id: 'customLegacy', labelKey: 'pages.products.listHeader.customLegacy' }],
+    });
+
+    await expectTableVisible();
+  });
+
+  it('does not open modal actions when initiative is closed', async () => {
+    (helpers.isInitiativeTerminated as jest.Mock).mockReturnValue(true);
+
+    await renderGrid(USERS_TYPES.INVITALIA_L1, mockProducts);
+    await expectTableVisible();
+    selectRow();
+    clickActionButton('rejectedBtn');
+
+    expect(screen.queryByTestId('product-modal')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('product-confirm-dialog')).not.toBeInTheDocument();
+  });
+
+  it('toggles sort direction on the same sortable column', async () => {
+    await renderGrid('USER', mockProducts, {
+      columns: [{ id: 'category', labelKey: 'tables.products.columns.category', sortable: true }],
+    });
+
+    const firstSortButton = await screen.findByTestId('sort-category');
+    fireEvent.click(firstSortButton);
+
+    const secondSortButton = await screen.findByTestId('sort-category');
+    fireEvent.click(secondSortButton);
+
+    await waitFor(() =>
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some(
+          (call) => call[4] === 'category,asc'
+        )
+      ).toBe(true)
+    );
+  });
+
+  it('changes page and rows per page through pagination controls', async () => {
+    // Build >10 products so totalElements > defaultRowsPerPage(10) → next-page button is enabled
+    const manyProducts = Array.from({ length: 15 }, (_, i) => ({
+      ...mockProducts[0],
+      id: String(i + 1),
+      productName: `Prod ${i + 1}`,
+      gtinCode: `GTIN${i + 1}`,
+    }));
+
+    await renderGrid('USER', manyProducts, {
+      columns: [{ id: 'category', labelKey: 'tables.products.columns.category' }],
+    });
+
+    await expectTableVisible();
+
+    const nextPageButton = screen.getByRole('button', { name: /go to next page/i });
+    expect(nextPageButton).not.toBeDisabled();
+    fireEvent.click(nextPageButton);
+
+    await waitFor(() => {
+      expect((registerService.getProducts as jest.Mock).mock.calls.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  it('resets result messages when product modal closes with cancelled=true', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await selectRowAndClickAction('rejectedBtn');
+
+    fireEvent.click(screen.getByText('Success Supervised'));
+    expect(screen.getByText(/msgResultSupervised/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Close Modal'));
+    await waitFor(() => {
+      expect(screen.queryByText(/msgResultSupervised/i)).not.toBeInTheDocument();
+    });
+  });
+
+  it('closes confirm dialog via cancel action', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1);
+    await selectRowAndClickAction('waitApprovedBtn');
+    await screen.findByTestId('product-confirm-dialog');
+
+    fireEvent.click(screen.getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('product-confirm-dialog')).not.toBeInTheDocument();
+    });
+  });
+
+  it('keeps detail drawer open when toggleDrawer(true) is used', async () => {
+    await renderGrid();
+    await openDetailDrawer();
+
+    fireEvent.click(screen.getByText('Keep Drawer Open'));
+    expect(screen.getByTestId('detail-drawer')).toBeInTheDocument();
+  });
+
+  it('passes paginator fallback values when API pagination metadata is missing', async () => {
+    (registerService.getProducts as jest.Mock).mockResolvedValueOnce({
+      data: { content: mockProducts },
+    });
+
+    await renderGrid();
+    await expectTableVisible();
+    expect(screen.getByText(/pages.products.tablePaginationFrom/i)).toBeInTheDocument();
+  });
+
+  it('replaces producer filter label with readable organization name from table data (covers 314-317)', async () => {
+    await renderGrid(USERS_TYPES.INVITALIA_L1, buildProducts({ organizationName: 'Readable Org' }), {
+      organizationSource: 'filter',
+    });
+    await expectTableVisible();
+
+    await openFiltersDrawer();
+    fireEvent.click(screen.getByText('Apply Raw Organization Producer'));
+
+    await waitFor(() => {
+      expect(
+        (registerService.getProducts as jest.Mock).mock.calls.some((call) => call[1] === 'org')
+      ).toBe(true);
+    });
   });
 });
