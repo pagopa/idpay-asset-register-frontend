@@ -118,8 +118,8 @@ const InitiativesList = () => {
         initiativeId: item.initiativeId || '',
         initiativeName: item.initiativeName || '',
         organizationName: item.organizationName || '',
-        createdAt: item.createdAt
-          ? new Date(item.createdAt).toLocaleDateString('it-IT')
+        createdAt: item?.createdAt
+          ? new Date(item?.createdAt).toLocaleDateString('it-IT')
           : EMPTY_DATA,
         serviceId: item.serviceId || '',
         status: (item.status as StatusEnum) ?? '',

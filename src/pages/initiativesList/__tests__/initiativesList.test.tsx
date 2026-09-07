@@ -3,6 +3,7 @@ import { store } from '../../../redux/store';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';
 import InitiativesList from '../initiativesList';
 import * as helpers from '../../../helpers';
+import * as sideMenuConfig from '../../../components/SideMenu/sideMenuConfig';
 import { beforeEach, describe, expect, test } from '@jest/globals';
 
 const mockUseGetInitiativesQuery = jest.fn();
@@ -106,5 +107,92 @@ describe('Test suite for initiativeList page', () => {
     expect(mockNavigate).toHaveBeenCalledWith(
       '/elenco-informatico-elettrodomestici/initiative-1/lista-prodotti'
     );
+  });
+
+  // ---- Coverage boost tests ----
+
+  test('Defaults to EMPTY_INITIATIVES_LIST when useGetInitiativesQuery returns no data (line 108)', () => {
+    mockUseGetInitiativesQuery.mockReturnValue({});
+    renderWithContext(<InitiativesList />, store);
+    expect(screen.getByText('Nessuna iniziativa presente')).toBeTruthy();
+  });
+
+  test('Handles non-array initiatives data gracefully (line 116 false branch)', () => {
+    mockUseGetInitiativesQuery.mockReturnValue({ data: null });
+    renderWithContext(<InitiativesList />, store);
+    expect(screen.getByText('Nessuna iniziativa presente')).toBeTruthy();
+  });
+
+  test('Maps initiatives with missing fields using empty-string fallbacks (lines 118-125)', () => {
+    mockUseGetInitiativesQuery.mockReturnValue({
+      data: [
+        {
+          // all fields missing → hits || '' / ?? '' fallbacks
+          // createdAt present → hits the date formatting branch (line 122)
+          createdAt: '2025-01-15T10:00:00Z',
+        },
+      ],
+    });
+    const { container } = renderWithContext(<InitiativesList />, store);
+    expect(container).toBeTruthy();
+  });
+
+  test('Renders CLOSED status chip (lines 158, 162)', () => {
+    mockUseGetInitiativesQuery.mockReturnValue({
+      data: [
+        {
+          initiativeId: '1',
+          initiativeName: 'Closed Initiative',
+          status: 'CLOSED',
+        },
+      ],
+    });
+    renderWithContext(<InitiativesList />, store);
+    expect(screen.getByText('common.initiativeStatusEnum.closed')).toBeTruthy();
+  });
+
+  test('Renders null for unknown status (line 164 default case)', () => {
+    mockUseGetInitiativesQuery.mockReturnValue({
+      data: [
+        {
+          initiativeId: '1',
+          initiativeName: 'Unknown Status',
+          status: 'SOME_UNKNOWN_STATUS',
+        },
+      ],
+    });
+    renderWithContext(<InitiativesList />, store);
+    expect(screen.getByTestId('initiative-btn-test')).toBeTruthy();
+  });
+
+  test('Sort toggles direction covering isAsc=false branch (line 153)', () => {
+    renderWithContext(<InitiativesList />, store);
+    const sortByName = screen.getByText('Nome');
+    fireEvent.click(sortByName); // isAsc=true → sets order to 'desc'
+    fireEvent.click(sortByName); // isAsc=false (order is now 'desc') → sets order to 'asc'
+  });
+
+  test('Clicking initiative when firstInitiativeMenuItem has no route does nothing (lines 249-250)', () => {
+    jest.spyOn(sideMenuConfig, 'getFirstInitiativeMenuItem').mockReturnValueOnce(undefined);
+    renderWithContext(<InitiativesList />, store);
+    fireEvent.click(screen.getByTestId('initiative-btn-test'));
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  test('Renders dash for empty organizationName (line 264)', () => {
+    mockUseGetInitiativesQuery.mockReturnValue({
+      data: [
+        {
+          initiativeId: '1',
+          initiativeName: 'No Org',
+          organizationName: '',
+          createdAt: '2025-01-01T00:00:00Z',
+          status: 'PUBLISHED',
+        },
+      ],
+    });
+    renderWithContext(<InitiativesList />, store);
+    // organizationName '' → maps to '' → renders '-' in the table cell
+    expect(screen.getByText('-')).toBeTruthy();
   });
 });

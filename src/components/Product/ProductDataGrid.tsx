@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
-import { fetchUserFromLocalStorage } from '../../helpers';
+import { fetchUserFromLocalStorage, isInitiativeTerminated } from '../../helpers';
+import { useCurrentInitiative } from '../../hooks/useCurrentInitiative';
 import {
   institutionSelector,
   setInstitutionList,
@@ -49,6 +50,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
   const { t } = useScopedTranslation();
   const dispatch = useDispatch();
   const initiativeId = useCurrentInitiativeId();
+  const currentInitiative = useCurrentInitiative();
   const { config } = useInitiativeConfig();
   const typedConfig = config as import('../../model/config/ConfigSchema').InitiativeConfig;
   const { tableConfig, paginationConfig, filtersConfig, templateConfig } =
@@ -76,6 +78,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
 
   const isInvitaliaUser = role === USERS_TYPES.INVITALIA_L1;
   const isInvitaliaAdmin = role === USERS_TYPES.INVITALIA_L2;
+  const isInitiativeClosed = isInitiativeTerminated(
+    currentInitiative?.endDate,
+    currentInitiative?.status
+  );
 
   const institution = useSelector(institutionSelector);
   const batchId = useSelector(batchIdSelector);
@@ -493,6 +499,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
   };
 
   const handleOpenModal = (action: string) => {
+    if (isInitiativeClosed) {
+      return;
+    }
+
     setShowGenericError(0);
     if (action === PRODUCTS_STATES.WAIT_APPROVED) {
       setRestoreDialogOpen(true);
@@ -503,6 +513,10 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
   };
 
   const handleOpenModalWithStatusCheck = (action: string) => {
+    if (isInitiativeClosed) {
+      return;
+    }
+
     const { selectedStatuses, someUploaded, length } = getStatusChecks(selected, tableData);
 
     if (length === 0) {
@@ -684,6 +698,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
         handleDeleteFiltersButtonClick={clearAppliedFilters}
         handleToggleFiltersDrawer={(isOpen: boolean) => setFiltersDrawerOpen(isOpen)}
         handleOpenModalWithStatusCheck={handleOpenModalWithStatusCheck}
+        isInitiativeClosed={isInitiativeClosed}
       />
 
       <ProductResultMessages
@@ -765,6 +780,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
             detailFields={tableConfig?.detail?.fields}
             isInvitaliaUser={isInvitaliaUser}
             isInvitaliaAdmin={isInvitaliaAdmin}
+            isInitiativeClosed={isInitiativeClosed}
             onClose={() => {
               setDetailOpen(false);
               setSelectedProduct(null);
