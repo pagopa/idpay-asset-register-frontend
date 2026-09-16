@@ -8,7 +8,7 @@ import useScopedTranslation from '../../hooks/useScopedTranslation';
 import MsgResult from '../../components/Product/MsgResult';
 import OverviewProductionSection from '../components/OverviewProductionSection';
 import OperativeEmailModal from '../components/OperativeEmailModal';
-import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
+import { fetchUserFromLocalStorage, isInitiativeTerminated, truncateString } from '../../helpers';
 import { EMPTY_DATA, MAX_LENGTH_OVERVIEW_PROD } from '../../utils/constants';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { updateOperativeEmail } from '../../services/registerService';
@@ -31,7 +31,12 @@ const Overview: React.FC = () => {
   const { config } = useInitiativeConfig();
   const user = useMemo(() => fetchUserFromLocalStorage(), []);
 
-  const isModifyEmailEnabled = config?.tables?.overviewInfo?.functions?.enableModifyEmail !== false;
+  const isInitiativeClosed = isInitiativeTerminated(
+    currentInitiative?.endDate,
+    currentInitiative?.status
+  );
+  const isModifyEmailEnabled =
+    config?.tables?.overviewInfo?.functions?.enableModifyEmail !== false && !isInitiativeClosed;
   const [operativeEmailModalOpen, setOperativeEmailModalOpen] = useState(false);
   const [operativeEmailLoading, setOperativeEmailLoading] = useState(false);
   const [toast, setToast] = useState<ToastState>({
@@ -233,7 +238,7 @@ const Overview: React.FC = () => {
           </Paper>
         </Box>
 
-        <OverviewProductionSection />
+        <OverviewProductionSection isInitiativeClosed={isInitiativeClosed} />
       </Box>
 
       <OperativeEmailModal

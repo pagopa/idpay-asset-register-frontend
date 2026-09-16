@@ -2,7 +2,7 @@ export interface Data {
   initiativeId: string;
   initiativeName: string;
   organizationName: string;
-  spendingPeriod: string;
+  createdAt: string;
   serviceId: string;
   status: string;
   id: number;

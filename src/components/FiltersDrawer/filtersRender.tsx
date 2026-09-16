@@ -87,7 +87,7 @@ export const filtersRender: Record<
         size="small"
         label={t(labelKey ?? '')}
         variant="outlined"
-        value={filters?.[id]?.value}
+        value={filters?.[id]?.value ?? ''}
         onChange={(e) => {
           const isError = !!e.target.value && !RegExp(regEx || '').test(e.target.value);
           const ruledValue = filterInputWithSpaceRule(e.target.value);

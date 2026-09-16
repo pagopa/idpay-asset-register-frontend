@@ -26,11 +26,12 @@ import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useErrorHandling } from '../../hooks/useErrorHandling';
 import { useFileState } from '../../hooks/useFileState';
 import { UploadProductListParams } from '../../api/generated/register';
-import { delay } from '../../helpers';
+import { delay, isInitiativeTerminated } from '../../helpers';
 import { buildRoute } from '../../components/SideMenu/SideMenu';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { useCategories } from '../../hooks/useCategories';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
+import { useCurrentInitiative } from '../../hooks/useCurrentInitiative';
 import { downloadCsv } from './helpers';
 import FileUploadSection from './fileUploadSection';
 
@@ -52,11 +53,17 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
     const navigate = useNavigate();
     const onExit = useUnloadEventOnExit();
     const initiativeId = useCurrentInitiativeId();
+    const currentInitiative = useCurrentInitiative();
 
     const fileState = useFileState();
     const errorHandling = useErrorHandling(t);
 
-    const isTemplateUploadEnabled = config?.templates?.functions?.enableTemplateUpload !== false;
+    const isInitiativeClosed = isInitiativeTerminated(
+      currentInitiative?.endDate,
+      currentInitiative?.status
+    );
+    const isTemplateUploadEnabled =
+      config?.templates?.functions?.enableTemplateUpload !== false && !isInitiativeClosed;
 
     const validationSchema = Yup.object().shape({
       category: Yup.string().required(t('validation.categoryRequired')),
@@ -105,6 +112,10 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
     };
 
     const processFileUpload = async (files: Array<File>) => {
+      if (!isTemplateUploadEnabled) {
+        return;
+      }
+
       if (!isCategoryValid()) {
         errorHandling.showCategoryError();
         setFileAccepted(false);
@@ -177,6 +188,10 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
     });
 
     const handleContinue = async () => {
+      if (!isTemplateUploadEnabled) {
+        return;
+      }
+
       const isValid = await validateForm();
       if (!isValid) {
         handleValidationErrors();

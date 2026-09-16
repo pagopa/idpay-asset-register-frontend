@@ -1,4 +1,4 @@
-import { ListItem, Box, Typography } from '@mui/material';
+import { ListItem, Box, Typography, Tooltip } from '@mui/material';
 import { ReactNode, forwardRef } from 'react';
 
 type ProductInfoRowProps = {
@@ -8,29 +8,72 @@ type ProductInfoRowProps = {
   valueVariant?: 'body1' | 'body2' | 'h6';
   sx?: object;
   labelColor?: string;
+  maxValueLines?: number;
 };
 
 const ProductInfoRow = forwardRef<HTMLLIElement, ProductInfoRowProps>(
-  ({ label, value, labelVariant = 'body1', valueVariant = 'body2', sx = {}, labelColor }, ref) => (
-    <Box sx={{ width: '100%' }}>
-      <ListItem disablePadding ref={ref} sx={{ width: '100%' }}>
-        <Box sx={{ my: 1, ...sx }}>
+  (
+    {
+      label,
+      value,
+      labelVariant = 'body1',
+      valueVariant = 'body2',
+      sx = {},
+      labelColor,
+      maxValueLines,
+    },
+    ref
+  ) => (
+    <Box sx={{ width: '100%', minWidth: 0 }}>
+      <ListItem disablePadding ref={ref} sx={{ width: '100%', minWidth: 0 }}>
+        <Box sx={{ my: 1, width: '100%', minWidth: 0, ...sx }}>
           <Typography variant={labelVariant} color={labelColor ?? 'text.secondary'}>
             {label}
           </Typography>
-          <Typography
-            variant={valueVariant}
-            fontWeight="fontWeightMedium"
-            component="div"
-            sx={{
-              width: '100%',
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word',
-              whiteSpace: 'pre-line',
+          <Tooltip
+            title={maxValueLines ? value : ''}
+            placement="bottom"
+            arrow
+            slotProps={{
+              tooltip: {
+                sx: { textAlign: 'center' },
+              },
             }}
           >
-            {value}
-          </Typography>
+            <Typography
+              variant={valueVariant}
+              fontWeight="fontWeightMedium"
+              component="div"
+              sx={{
+                width: 'fit-content',
+                maxWidth: '100%',
+                minWidth: 0,
+                ...(maxValueLines === 1
+                  ? {
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }
+                  : maxValueLines
+                  ? {
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: maxValueLines,
+                      whiteSpace: 'normal',
+                      overflowWrap: 'anywhere',
+                    }
+                  : {
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
+                      whiteSpace: 'pre-line',
+                    }),
+              }}
+            >
+              {value}
+            </Typography>
+          </Tooltip>
         </Box>
       </ListItem>
     </Box>

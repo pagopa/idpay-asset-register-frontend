@@ -10,9 +10,9 @@ export const formattedCurrency = (
   symbol: string = EMPTY_DATA,
   cents: boolean = false
 ) => {
-  if (number && cents === false) {
+  if (number && !cents) {
     return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number);
-  } else if (number && cents === true) {
+  } else if (number && cents) {
     const roundedNumberStr = number.toFixed(2);
     const roundedNumber = parseFloat(roundedNumberStr) / 100;
     return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(
@@ -218,6 +218,26 @@ export const isOnOrBeforeDate = (dmy?: string): boolean => {
   const today = new Date(yyyy, mm - 1, dd);
 
   return today < target;
+};
+
+export const isInitiativeTerminated = (
+  endDate?: string | null,
+  status?: string | null
+): boolean => {
+  if (typeof status === 'string' && status.toUpperCase() === 'CLOSED') {
+    return true;
+  }
+
+  if (!endDate) {
+    return false;
+  }
+
+  const parsedEndDate = new Date(endDate);
+  if (isNaN(parsedEndDate.getTime())) {
+    return false;
+  }
+
+  return parsedEndDate.getTime() < Date.now();
 };
 
 export const customExitAction = () => {

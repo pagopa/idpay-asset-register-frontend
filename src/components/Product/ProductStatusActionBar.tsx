@@ -12,6 +12,7 @@ type Props = {
   selected: Array<string>;
   isInvitaliaUser: boolean;
   isInvitaliaAdmin: boolean;
+  isInitiativeClosed?: boolean;
   hookLoading: boolean;
   handleOpenModalWithStatusCheck: (action: string) => void;
 };
@@ -29,6 +30,7 @@ const ProductStatusActionBar: React.FC<Props> = ({
   selected,
   isInvitaliaUser,
   isInvitaliaAdmin,
+  isInitiativeClosed = false,
   hookLoading,
   handleOpenModalWithStatusCheck,
 }) => {
@@ -55,7 +57,8 @@ const ProductStatusActionBar: React.FC<Props> = ({
         sx={{ ...buttonStyle }}
         disabled={
           selected.length === 0 ||
-          (userCheck || adminCheck)
+          (userCheck || adminCheck) ||
+          isInitiativeClosed
         }
         onClick={() => {
           handleOpenModalWithStatusCheck(
@@ -75,7 +78,8 @@ const ProductStatusActionBar: React.FC<Props> = ({
           sx={{ ...buttonStyle }}
           disabled={
             selected.length === 0 ||
-            (userCheck || adminCheck)
+            (userCheck || adminCheck) ||
+            isInitiativeClosed
           }
           onClick={() => {
             handleOpenModalWithStatusCheck(PRODUCTS_STATES.SUPERVISED);
@@ -91,7 +95,8 @@ const ProductStatusActionBar: React.FC<Props> = ({
         sx={{ ...buttonStyle }}
         disabled={
           selected.length === 0 ||
-          (userCheck || adminCheck)
+          (userCheck || adminCheck) ||
+          isInitiativeClosed
         }
         onClick={() => {
           handleOpenModalWithStatusCheck(

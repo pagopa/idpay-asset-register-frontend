@@ -87,12 +87,15 @@ const UploadInfoBox: React.FC<{
   onExit: ReturnType<typeof useUnloadEventOnExit>;
   t: (key: string) => string;
   stopNavigation: boolean;
-}> = ({ loading, error, data, firstUploadDate, onExit, t, stopNavigation }) => {
+  isInitiativeClosed?: boolean;
+}> = ({ loading, error, data, firstUploadDate, onExit, t, stopNavigation, isInitiativeClosed }) => {
   const navigate = useNavigate();
   const initiativeId = useCurrentInitiativeId();
 
   const onClick = () => {
-    if (!initiativeId) { return; }
+    if (!initiativeId || isInitiativeClosed) {
+      return;
+    }
 
     onExit(() =>
       navigate(
@@ -121,6 +124,7 @@ const UploadInfoBox: React.FC<{
           startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
           onClick={onClick}
+          disabled={isInitiativeClosed}
         >
           {t('pages.overview.overviewTitleBoxProdBtn')}
         </Button>
@@ -139,6 +143,7 @@ const UploadInfoBox: React.FC<{
           startIcon={<FileUploadIcon />}
           sx={{ alignSelf: 'flex-start', mt: 2 }}
           onClick={onClick}
+          disabled={isInitiativeClosed}
         >
           {t('pages.overview.overviewTitleBoxProdBtn')}
         </Button>
@@ -306,9 +311,10 @@ const UploadsTable: React.FC<{
 
 type Props = {
   isOperativeEmailMissing?: boolean;
+  isInitiativeClosed?: boolean;
 };
 
-const OverviewProductionSection: React.FC<Props> = () => {
+const OverviewProductionSection: React.FC<Props> = ({ isInitiativeClosed = false }) => {
   const { t } = useScopedTranslation();
   const onExit = useUnloadEventOnExit();
   const initiativeId = useCurrentInitiativeId();
@@ -375,6 +381,7 @@ const OverviewProductionSection: React.FC<Props> = () => {
             onExit={onExit}
             t={t}
             stopNavigation={stopNavigation}
+            isInitiativeClosed={isInitiativeClosed}
           />
           <UploadsTable loading={loading} error={error} data={data} stopNavigation={false} />
         </Box>

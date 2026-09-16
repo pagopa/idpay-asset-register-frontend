@@ -169,6 +169,13 @@ describe('OverviewProductionSection', () => {
     expect(await screen.findByRole('button', { name: /carica prodotti/i })).toBeEnabled();
   });
 
+  it('disables upload button when initiative is closed', async () => {
+    mockUploadsResponse([]);
+    renderSection({ isInitiativeClosed: true });
+
+    expect(await screen.findByRole('button', { name: /carica prodotti/i })).toBeDisabled();
+  });
+
   it('renders PARTIAL status chip', async () => {
     mockUploadsResponse([singleUpload({ uploadStatus: 'PARTIAL' })]);
     renderSection();

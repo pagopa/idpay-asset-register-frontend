@@ -24,6 +24,7 @@ type Props = {
   detailFields?: Array<ProductDetailFieldConfig>;
   isInvitaliaUser: boolean;
   isInvitaliaAdmin: boolean;
+  isInitiativeClosed?: boolean;
   onUpdateTable?: () => void;
   onClose?: () => void;
   children?: React.ReactNode;
@@ -75,6 +76,7 @@ type RowConfig = {
   type?: 'row';
   label: string;
   value: string;
+  truncate?: boolean;
   labelVariant?: ProductInfoRowVariant;
   valueVariant?: ProductInfoValueVariant;
   sx?: SxProps<Theme>;
@@ -158,8 +160,11 @@ const getFieldVariant = (fieldId: string): ProductInfoValueVariant =>
   fieldId === 'productName' ? 'h6' : undefined;
 
 const getFieldSx = (fieldId: string): SxProps<Theme> | undefined => {
-  if (fieldId === 'productName' || fieldId === 'batchName') {
-    return { mb: 1, maxWidth: 350, wordWrap: 'break-word' };
+  if (fieldId === 'productName') {
+    return { mb: 1 };
+  }
+  if (fieldId === 'batchName') {
+    return { mb: 1 };
   }
   return undefined;
 };
@@ -179,6 +184,7 @@ function mapDetailFieldToRowConfig(
     return {
       label: '',
       value: t('pages.productDetail.productSheet'),
+      truncate: false,
       labelVariant: 'body2',
       valueVariant: 'body2',
       sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
@@ -215,7 +221,7 @@ function getProductInfoRowsConfig(
         label: '',
         dataKey: 'productName',
         valueVariant: 'h6',
-        sx: { mb: 1, maxWidth: 350, wordWrap: 'break-word' },
+        sx: { mb: 1 },
       },
       {
         label: '',
@@ -276,6 +282,7 @@ function getProductInfoRowsConfig(
   const productSheetRow: RowConfig = {
     label: '',
     value: t('pages.productDetail.productSheet'),
+    truncate: false,
     labelVariant: 'body2',
     valueVariant: 'body2',
     sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
@@ -493,6 +500,13 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
             value={<span>{(row as RowConfig).value}</span>}
             labelVariant={(row as RowConfig).labelVariant}
             valueVariant={(row as RowConfig).valueVariant}
+            maxValueLines={
+              !(row as RowConfig).truncate
+                ? undefined
+                : (row as RowConfig).valueVariant === 'h6'
+                ? 2
+                : 1
+            }
             sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
           />
         )
@@ -517,6 +531,7 @@ export default function ProductDetail({
   detailFields,
   isInvitaliaUser,
   isInvitaliaAdmin,
+  isInitiativeClosed = false,
   onUpdateTable,
   onClose,
   onShowApprovedMsg,
@@ -534,6 +549,10 @@ export default function ProductDetail({
   const initiativeId = useCurrentInitiativeId();
 
   const handleConfirmRestore = async () => {
+    if (isInitiativeClosed) {
+      return;
+    }
+
     try {
       await handleOpenModal(
         initiativeId,
@@ -613,6 +632,10 @@ export default function ProductDetail({
   };
 
   const handleExcludeClick = () => {
+    if (isInitiativeClosed) {
+      return;
+    }
+
     setExcludeModalOpen(true);
   };
 
@@ -632,7 +655,8 @@ export default function ProductDetail({
           margin-bottom: 16px !important;
         }
         .product-detail-textarea {
-          width: 374px;
+          width: 100%;
+          max-width: 100%;
           box-sizing: border-box;
           resize: none;
           font-family: 'Titillium Web';
@@ -648,17 +672,20 @@ export default function ProductDetail({
       `}</style>
       <Box
         sx={{
-          minWidth: 400,
+          width: '100%',
+          minWidth: 0,
+          boxSizing: 'border-box',
           pl: 2,
           display: 'flex',
           flexDirection: 'column',
-          height: '100vh',
+          flex: '1 1 0',
+          minHeight: 0,
           overflow: 'hidden',
         }}
         role="presentation"
         data-testid="product-detail"
       >
-        <Box sx={{ flex: '1 1 0', overflowY: 'auto' }}>
+        <Box sx={{ flex: '1 1 0', minWidth: 0, overflowY: 'auto', overflowX: 'hidden' }}>
           <List>
             <ProductStatusChip status={data.status} />
             <ProductInfoRows
@@ -690,6 +717,7 @@ export default function ProductDetail({
               variant="contained"
               className="btn-approve"
               onClick={() => setRestoreDialogOpen(true)}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.waitApproved.buttonTextConfirm')}
             </Button>
@@ -699,6 +727,7 @@ export default function ProductDetail({
               className="btn-exclude"
               variant="outlined"
               onClick={handleExcludeClick}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.rejected.buttonTextConfirm')}
             </Button>
@@ -726,6 +755,7 @@ export default function ProductDetail({
               variant="contained"
               className="btn-approve"
               onClick={() => setRestoreDialogOpen(true)}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.waitApproved.buttonText')}
             </Button>
@@ -735,8 +765,12 @@ export default function ProductDetail({
               variant="outlined"
               className="btn-exclude"
               onClick={() => {
+                if (isInitiativeClosed) {
+                  return;
+                }
                 setSupervisionModalOpen(true);
               }}
+              disabled={isInitiativeClosed}
             >
               <FlagIcon /> {t('invitaliaModal.supervised.buttonText')}
             </Button>
@@ -746,6 +780,7 @@ export default function ProductDetail({
               className="btn-exclude"
               variant="outlined"
               onClick={handleExcludeClick}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.rejected.buttonText')}
             </Button>
@@ -773,6 +808,7 @@ export default function ProductDetail({
               variant="contained"
               className="btn-approve"
               onClick={() => setSupervisionModalOpen(true)}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.waitApproved.buttonText')}
             </Button>
@@ -782,6 +818,7 @@ export default function ProductDetail({
               className="btn-exclude"
               variant="outlined"
               onClick={handleExcludeClick}
+              disabled={isInitiativeClosed}
             >
               {t('invitaliaModal.rejectApprovation.buttonText')}
             </Button>

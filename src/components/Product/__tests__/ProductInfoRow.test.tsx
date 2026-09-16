@@ -231,6 +231,14 @@ describe('ProductInfoRow', () => {
   });
 
   describe('Edge Cases', () => {
+    it('adds the full value as a tooltip when the value is truncated', () => {
+      const value = 'A value that is too long for the drawer row';
+
+      render(<ProductInfoRow label="Compact field" value={value} maxValueLines={1} />);
+
+      expect(screen.getByLabelText(value)).toBeInTheDocument();
+    });
+
     it('should handle very long label text', () => {
       const longLabel =
         'This is a very long label that might wrap to multiple lines and should still be rendered correctly without breaking the component layout or functionality';

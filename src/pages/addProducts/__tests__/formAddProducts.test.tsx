@@ -30,6 +30,8 @@ jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
   useCurrentInitiativeId: () => 'initiative-1',
 }));
 jest.mock('../../../hooks/useCategories', () => ({ useCategories: jest.fn() }));
+jest.mock('../../../hooks/useInitiativeConfig', () => ({ useInitiativeConfig: jest.fn() }));
+jest.mock('../../../hooks/useCurrentInitiative', () => ({ useCurrentInitiative: jest.fn() }));
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
   ENV: { URL_API: { OPERATION: 'https://mock-api/register' }, API_TIMEOUT_MS: { OPERATION: 5000 } },
@@ -52,7 +54,10 @@ jest.mock('../../../hooks/useErrorHandling');
 jest.mock('@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor');
 jest.mock('../../../services/registerService');
 jest.mock('../helpers');
-jest.mock('../../../helpers', () => ({ delay: jest.fn().mockResolvedValue(undefined) }));
+jest.mock('../../../helpers', () => ({
+  delay: jest.fn().mockResolvedValue(undefined),
+  isInitiativeTerminated: jest.fn(() => false),
+}));
 jest.mock('react-dropzone', () => ({ useDropzone: jest.fn() }));
 jest.mock('../../../utils/constants', () => ({ DEBUG_CONSOLE: true }));
 jest.mock('../../../redux/api/initiativesApi', () => ({
@@ -72,9 +77,10 @@ jest.mock('../fileUploadSection', () => {
     onChangeFile: React.MouseEventHandler<HTMLButtonElement> | undefined;
     formikCategory: string;
     csvTemplate: { name: string; file: string };
+    disabled?: boolean;
   }) {
     return (
-      <div data-testid="file-upload-section">
+      <div data-testid="file-upload-section" data-disabled={String(Boolean(props.disabled))}>
         <div {...props.getRootProps()}>
           <input {...props.getInputProps()} onClick={props.onInputClick} data-testid="file-input" />
         </div>
@@ -161,6 +167,14 @@ describe('FormAddProducts', () => {
     (useErrorHandling as jest.Mock).mockReturnValue(mockErrorHandling);
     (require('../../../hooks/useCategories').useCategories as jest.Mock).mockReturnValue(
       mockCategoriesReturn
+    );
+    (require('../../../hooks/useInitiativeConfig').useInitiativeConfig as jest.Mock).mockReturnValue(
+      {
+        config: {},
+      }
+    );
+    (require('../../../hooks/useCurrentInitiative').useCurrentInitiative as jest.Mock).mockReturnValue(
+      undefined
     );
     require('react-dropzone').useDropzone.mockImplementation((options: any) => ({
       ...mockDropzone,
@@ -392,6 +406,61 @@ describe('FormAddProducts', () => {
   });
 
   describe('Dropzone callbacks', () => {
+    it('onDropAccepted returns early when template upload is disabled', async () => {
+      (require('../../../hooks/useInitiativeConfig').useInitiativeConfig as jest.Mock).mockReturnValue(
+        {
+          config: { templates: { functions: { enableTemplateUpload: false } } },
+        }
+      );
+      render(<FormAddProducts {...defaultProps} />);
+      await act(async () => {
+        await getDropzoneOptions().onDropAccepted([csvFile]);
+      });
+      expect(uploadProductListVerify).not.toHaveBeenCalled();
+      expect(mockFileState.setFileIsLoading).not.toHaveBeenCalled();
+    });
+
+    it('onDropAccepted catch with missing details and response.data falls back to status undefined', async () => {
+      (uploadProductListVerify as jest.Mock).mockRejectedValue({ details: null, response: {} });
+      render(<FormAddProducts {...defaultProps} />);
+      await selectCategory();
+      await act(async () => {
+        await getLatestDropzoneOptions().onDropAccepted([csvFile]);
+      });
+      expect(mockErrorHandling.handleGenericError).toHaveBeenCalled();
+      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+      expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
+    });
+
+    it('onDropRejected handles missing error code as undefined', () => {
+      render(<FormAddProducts {...defaultProps} />);
+      act(() => {
+        getDropzoneOptions().onDropRejected([{ file: csvFile, errors: [{}] }]);
+      });
+      expect(mockErrorHandling.handleDropRejectedError).toHaveBeenCalledWith(undefined);
+      expect(mockFileState.setFileRejectedState).toHaveBeenCalled();
+      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+    });
+
+    it('disables dropzone and continue button when template upload is disabled', () => {
+      (require('../../../hooks/useInitiativeConfig').useInitiativeConfig as jest.Mock).mockReturnValue(
+        {
+          config: { templates: { functions: { enableTemplateUpload: false } } },
+        }
+      );
+      render(<FormAddProducts {...defaultProps} />);
+      expect(getDropzoneOptions().disabled).toBe(true);
+      expect(screen.getByTestId('continue-button-test')).toBeDisabled();
+      expect(screen.getByTestId('file-upload-section')).toHaveAttribute('data-disabled', 'true');
+    });
+
+    it('disables template upload when initiative is terminated', () => {
+      (require('../../../helpers').isInitiativeTerminated as jest.Mock).mockReturnValue(true);
+      render(<FormAddProducts {...defaultProps} />);
+      expect(getDropzoneOptions().disabled).toBe(true);
+      expect(screen.getByTestId('continue-button-test')).toBeDisabled();
+    });
+
     it('onFileDialogOpen with invalid category shows error', () => {
       render(<FormAddProducts {...defaultProps} />);
       act(() => {
@@ -546,6 +615,35 @@ describe('FormAddProducts', () => {
       expect(localEH.showMissingFileError).not.toHaveBeenCalled();
       expect(mockFileState.setFileRejected).toHaveBeenCalledWith(true);
     });
+    it('continue with valid category but no file - undefined alertDescription skips missing file error', async () => {
+      const localEH = { ...mockErrorHandling, alertDescription: undefined };
+      (useErrorHandling as jest.Mock).mockReturnValue(localEH);
+      render(<FormAddProducts {...defaultProps} />);
+      await selectCategory();
+      jest.clearAllMocks();
+      (useErrorHandling as jest.Mock).mockReturnValue(localEH);
+      require('react-dropzone').useDropzone.mockImplementation((options: any) => ({
+        ...mockDropzone,
+        ...options,
+      }));
+      await userEvent.click(screen.getByTestId('continue-button-test'));
+      expect(localEH.showMissingFileError).not.toHaveBeenCalled();
+      expect(mockFileState.setFileRejected).toHaveBeenCalledWith(true);
+      expect(defaultProps.setFileAccepted).toHaveBeenCalledWith(false);
+    });
+
+    it('continue returns early when template upload is disabled', () => {
+      (require('../../../hooks/useInitiativeConfig').useInitiativeConfig as jest.Mock).mockReturnValue(
+        {
+          config: { templates: { functions: { enableTemplateUpload: false } } },
+        }
+      );
+      render(<FormAddProducts {...defaultProps} />);
+      expect(screen.getByTestId('continue-button-test')).toBeDisabled();
+      expect(mockErrorHandling.showCategoryError).not.toHaveBeenCalled();
+      expect(uploadProductList).not.toHaveBeenCalled();
+    });
+
     it('continue with valid form and file - success navigates', async () => {
       (uploadProductList as jest.Mock).mockResolvedValue({ status: 200 });
       mockOnExit.mockImplementation((cb: () => void) => cb());

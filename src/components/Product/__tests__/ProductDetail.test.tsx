@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ProductDetail from '../ProductDetail';
 
 jest.mock('../../../hooks/useScopedTranslation', () => ({
@@ -8,13 +8,15 @@ jest.mock('../../../hooks/useScopedTranslation', () => ({
 }));
 
 jest.mock('../../../hooks/useInitiativeConfig', () => ({
-  useInitiativeConfig: () => ({
-    config: { 
+  useInitiativeConfig: jest.fn(() => ({
+    config: {
       tables: { products: { style: { lengths: { detail: 20 } } } },
       templates: { categories: { cookinghobs: { name: 'Piano cottura' } } },
     },
-  }),
+  })),
 }));
+
+const { useInitiativeConfig } = require('../../../hooks/useInitiativeConfig');
 
 jest.mock('../../../hooks/useCurrentInitiativeId', () => ({
   useCurrentInitiativeId: () => 'initiative-1',
@@ -52,10 +54,14 @@ jest.mock('../ProductInfoRow', () => ({
   ),
 }));
 
+let mockLatestConfirmDialogProps: any;
+let mockLatestProductModalProps: Array<any> = [];
+
 jest.mock('../ProductConfirmDialog', () => ({
   __esModule: true,
-  default: ({ open, onCancel, onConfirm, onSuccess }: any) =>
-    open ? (
+  default: ({ open, onCancel, onConfirm, onSuccess, ...rest }: any) => {
+    mockLatestConfirmDialogProps = { open, onCancel, onConfirm, onSuccess, ...rest };
+    return open ? (
       <div data-testid="confirm-dialog">
         <button onClick={onCancel} data-testid="cancel-confirm">
           cancel
@@ -85,15 +91,18 @@ jest.mock('../ProductConfirmDialog', () => ({
           success accept approval
         </button>
       </div>
-    ) : null,
+    ) : null;
+  },
 }));
 
 jest.mock('../ProductModal', () => ({
   __esModule: true,
-  default: ({ open, onClose, onSuccess, actionType }: any) =>
-    open ? (
+  default: ({ open, onClose, onSuccess, actionType, selectedProducts, ...rest }: any) => {
+    mockLatestProductModalProps.push({ open, onClose, onSuccess, actionType, selectedProducts, ...rest });
+    return open ? (
       <div data-testid="modal">
         <span data-testid="modal-action">{actionType}</span>
+        <span data-testid="modal-gtin-length">{(selectedProducts?.[0]?.gtinCode ?? '').length}</span>
         <button onClick={() => onClose?.(false)} data-testid="close-modal-confirmed">
           close confirmed
         </button>
@@ -104,7 +113,8 @@ jest.mock('../ProductModal', () => ({
           modal success
         </button>
       </div>
-    ) : null,
+    ) : null;
+  },
 }));
 
 const baseData: any = {
@@ -173,7 +183,28 @@ const clickSequence = (...testIds: Array<string>) => {
   testIds.forEach((id) => fireEvent.click(screen.getByTestId(id)));
 };
 
+const getReactProps = (element: HTMLElement) => {
+  const reactPropsKey = Object.keys(element).find((key) => key.startsWith('__reactProps$'));
+
+  if (!reactPropsKey) {
+    throw new Error('React props non trovati sul nodo');
+  }
+
+  return (element as any)[reactPropsKey];
+};
+
 describe('ProductDetail', () => {
+  beforeEach(() => {
+    mockLatestConfirmDialogProps = undefined;
+    mockLatestProductModalProps = [];
+    useInitiativeConfig.mockReturnValue({
+      config: {
+        tables: { products: { style: { lengths: { detail: 20 } } } },
+        templates: { categories: { cookinghobs: { name: 'Piano cottura' } } },
+      },
+    });
+  });
+
   it('renders supervised buttons for invitalia user', () => {
     renderDetail(invitaliaSupervised);
 
@@ -199,6 +230,61 @@ describe('ProductDetail', () => {
 
     fireEvent.click(screen.getByTestId('supervisedBtn'));
     expect(screen.getAllByTestId('modal').length).toBeGreaterThan(0);
+  });
+
+  it('disables invitalia actions when initiative is closed', () => {
+    renderDetail({ ...invitaliaUploaded, isInitiativeClosed: true });
+
+    const approvedBtn = screen.getByTestId('approvedBtn');
+    const supervisedBtn = screen.getByTestId('supervisedBtn');
+    const rejectedBtn = screen.getByTestId('rejectedBtn');
+
+    expect(approvedBtn).toBeDisabled();
+    expect(supervisedBtn).toBeDisabled();
+    expect(rejectedBtn).toBeDisabled();
+
+    fireEvent.click(approvedBtn);
+    expect(screen.queryByTestId('confirm-dialog')).not.toBeInTheDocument();
+  });
+
+  it('short-circuits confirm restore when initiative is closed', async () => {
+    const registerService = require('../../../services/registerService');
+    const onUpdateTable = jest.fn();
+    const onClose = jest.fn();
+    const onShowWaitApprovedMsg = jest.fn();
+
+    renderDetail({
+      ...invitaliaUploaded,
+      isInitiativeClosed: true,
+      onUpdateTable,
+      onClose,
+      onShowWaitApprovedMsg,
+    });
+
+    await mockLatestConfirmDialogProps.onConfirm();
+
+    expect(registerService.setWaitApprovedStatusList).not.toHaveBeenCalled();
+    expect(onUpdateTable).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onShowWaitApprovedMsg).not.toHaveBeenCalled();
+  });
+
+  it('short-circuits reject action when initiative is closed even if onClick is invoked directly', () => {
+    renderDetail({ ...invitaliaUploaded, isInitiativeClosed: true });
+
+    const rejectedBtnProps = getReactProps(screen.getByTestId('rejectedBtn'));
+    rejectedBtnProps.onClick();
+
+    expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
+  });
+
+  it('short-circuits supervision action when initiative is closed even if onClick is invoked directly', () => {
+    renderDetail({ ...invitaliaUploaded, isInitiativeClosed: true });
+
+    const supervisedBtnProps = getReactProps(screen.getByTestId('supervisedBtn'));
+    supervisedBtnProps.onClick();
+
+    expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
   });
 
   it('renders base information', () => {
@@ -365,6 +451,7 @@ describe('ProductDetail', () => {
     expect(onShowGenericError).toHaveBeenCalled();
   });
 
+
   it('cancels confirm dialog when onCancel fired', () => {
     renderDetail(invitaliaUploaded);
 
@@ -388,6 +475,111 @@ describe('ProductDetail', () => {
     renderDetail({ detailFields: [{ id: 'productSheet' }] });
 
     expect(screen.getByText('pages.productDetail.productSheet')).toBeInTheDocument();
+  });
+
+  it('renders default eprel label when cooking hobs config is missing', () => {
+    useInitiativeConfig.mockReturnValueOnce({
+      config: {
+        tables: { products: { style: { lengths: { detail: 20 } } } },
+        templates: { categories: {} },
+      },
+    });
+
+    renderDetail({
+      data: { ...baseData, category: 'Piano cottura' },
+      detailFields: [{ id: 'registrationDate' }],
+    });
+
+    expect(screen.getByText('pages.productDetail.eprelCheckDate')).toBeInTheDocument();
+  });
+
+  it('renders batchName custom field', () => {
+    renderDetail({ detailFields: [{ id: 'batchName' }] });
+
+    expect(screen.getByText('Batch A')).toBeInTheDocument();
+  });
+
+  it('renders empty data for missing registrationDate in base rows', () => {
+    renderDetail({ data: { ...baseData, registrationDate: undefined } });
+
+    expect(screen.getByText('pages.productDetail.eprelCheckDate')).toBeInTheDocument();
+    expect(screen.getAllByText('-').length).toBeGreaterThan(0);
+  });
+
+  it('uses detail max length fallback when config length is missing', () => {
+    const { truncateString } = require('../../../helpers');
+    truncateString.mockClear();
+
+    useInitiativeConfig.mockReturnValueOnce({
+      config: {
+        templates: { categories: { cookinghobs: { name: 'Piano cottura' } } },
+      },
+    });
+
+    renderDetail({ data: buildRejectedFormalData('Formal reason') });
+
+    expect(truncateString).toHaveBeenCalledWith(expect.any(String), 40);
+  });
+
+  it('calls wait-approved API with empty gtin when gtinCode is undefined', async () => {
+    const registerService = require('../../../services/registerService');
+
+    renderDetail({
+      ...invitaliaUploaded,
+      data: { ...baseData, status: 'UPLOADED', gtinCode: undefined },
+    });
+
+    clickSequence('approvedBtn', 'confirm');
+
+    await waitFor(() => {
+      expect(registerService.setWaitApprovedStatusList).toHaveBeenCalled();
+    });
+    expect(registerService.setWaitApprovedStatusList).toHaveBeenCalledWith(
+      'initiative-1',
+      [''],
+      'UPLOADED',
+      '-',
+      )
+  });
+
+  it('closes supervision modal and maps empty gtin in selectedProducts', () => {
+    renderDetail({
+      ...invitaliaUploaded,
+      data: { ...baseData, status: 'UPLOADED', gtinCode: undefined },
+    });
+
+    fireEvent.click(screen.getByTestId('supervisedBtn'));
+    expect(screen.getByTestId('modal-gtin-length')).toHaveTextContent('0');
+    fireEvent.click(screen.getByTestId('close-modal-confirmed'));
+    expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
+  });
+
+  it('closes exclude modal and maps empty gtin in selectedProducts', () => {
+    renderDetail({
+      ...invitaliaUploaded,
+      data: { ...baseData, status: 'UPLOADED', gtinCode: undefined },
+    });
+
+    fireEvent.click(screen.getByTestId('rejectedBtn'));
+    expect(screen.getByTestId('modal-gtin-length')).toHaveTextContent('0');
+    fireEvent.click(screen.getByTestId('close-modal-cancelled'));
+    expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
+  });
+
+  it('does not fail on modal success when no message callbacks are provided', () => {
+    renderDetail({
+      ...invitaliaUploaded,
+      onShowRejectedMsg: undefined,
+      onShowApprovedMsg: undefined,
+      onShowWaitApprovedMsg: undefined,
+      onShowSupervisedMsg: undefined,
+      onShowRejectedApprovationMsg: undefined,
+      onShowAcceptApprovationMsg: undefined,
+    });
+
+    clickSequence('rejectedBtn', 'modal-success');
+
+    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
   });
 
   it('renders formal motivation header with role for non-operator user', () => {
@@ -417,6 +609,21 @@ describe('ProductDetail', () => {
     expect(screen.getByDisplayValue('No date reason')).toBeInTheDocument();
   });
 
+  it('renders formal motivation for operator without header when rejected date is missing', () => {
+    const { fetchUserFromLocalStorage } = require('../../../helpers');
+    fetchUserFromLocalStorage.mockReturnValueOnce({ org_role: 'operatore' });
+
+    renderDetail({
+      data: buildRejectedFormalData('Operator no date reason', {
+        role: undefined,
+        updateDate: undefined,
+      }),
+    });
+
+    expect(screen.getByDisplayValue('Operator no date reason')).toBeInTheDocument();
+    expect(screen.queryByText('Operatore')).not.toBeInTheDocument();
+  });
+
   it('does not render formal motivation for operator when not rejected', () => {
     const { fetchUserFromLocalStorage } = require('../../../helpers');
     fetchUserFromLocalStorage.mockReturnValueOnce({ org_role: 'operatore' });
@@ -426,5 +633,21 @@ describe('ProductDetail', () => {
     });
 
     expect(screen.queryByDisplayValue('Hidden reason')).not.toBeInTheDocument();
+  });
+
+  it('does nothing on modal success when all success callbacks are non-functions', () => {
+    renderDetail({
+      ...invitaliaUploaded,
+      onShowRejectedMsg: null,
+      onShowApprovedMsg: null,
+      onShowWaitApprovedMsg: null,
+      onShowSupervisedMsg: null,
+      onShowRejectedApprovationMsg: null,
+      onShowAcceptApprovationMsg: null,
+    } as any);
+
+    clickSequence('rejectedBtn', 'modal-success');
+
+    expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
   });
 });
