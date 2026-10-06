@@ -8,6 +8,22 @@ import { beforeEach, describe, expect, test } from '@jest/globals';
 
 const mockUseGetInitiativesQuery = jest.fn();
 const mockNavigate = jest.fn();
+let mockTranslatedStatuses = false;
+
+jest.mock('../../../hooks/useScopedTranslation', () => ({
+  __esModule: true,
+  default: () => ({
+    t: (key: string) => {
+      if (mockTranslatedStatuses) {
+        const labels = jest.requireActual('../../../locale/it/common.json').common.initiativeStatusEnum;
+        if (key === 'common.initiativeStatusEnum.published') return labels.published;
+        if (key === 'common.initiativeStatusEnum.closed') return labels.closed;
+      }
+      return key;
+    },
+    isLoading: false,
+  }),
+}));
 
 jest.mock('../../../redux/api/initiativesApi', () => ({
   useGetInitiativesQuery: () => mockUseGetInitiativesQuery(),
@@ -20,6 +36,7 @@ jest.mock('react-router-dom', () => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockTranslatedStatuses = false;
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
   jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
@@ -76,6 +93,31 @@ describe('Test suite for initiativeList page', () => {
     renderWithContext(<InitiativesList />, store);
     const sortByName = screen.getByText('Nome');
     fireEvent.click(sortByName);
+  });
+
+  test('Sorts status by the displayed Italian label in both directions', () => {
+    mockTranslatedStatuses = true;
+    mockUseGetInitiativesQuery.mockReturnValue({
+      data: [
+        { initiativeId: 'closed', initiativeName: 'A - Terminata', status: 'CLOSED' },
+        { initiativeId: 'published', initiativeName: 'B - In corso', status: 'PUBLISHED' },
+      ],
+    });
+    renderWithContext(<InitiativesList />, store);
+    const visibleNames = () => screen.getAllByTestId('initiative-btn-test').map(
+      (button) => button.textContent
+    );
+
+    expect(screen.getByText('In corso')).toBeTruthy();
+    expect(screen.getByText('Terminata')).toBeTruthy();
+    fireEvent.click(screen.getByText('Stato'));
+    expect(visibleNames()).toEqual(['B - In corso', 'A - Terminata']);
+
+    fireEvent.click(screen.getByText('Stato'));
+    expect(visibleNames()).toEqual(['A - Terminata', 'B - In corso']);
+
+    fireEvent.click(screen.getByText('Nome'));
+    expect(visibleNames()).toEqual(['A - Terminata', 'B - In corso']);
   });
 
   test('Render empty state', () => {
