@@ -154,12 +154,35 @@ const InitiativesList = () => {
     setOrderBy(property);
   };
 
+  const getInitiativeStatusLabel = (status?: StatusEnum) => {
+    switch (status) {
+      case PUBLISHED:
+        return t('common.initiativeStatusEnum.published');
+      case CLOSED:
+        return t('common.initiativeStatusEnum.closed');
+      default:
+        return '';
+    }
+  };
+
+  const compareInitiatives = (a: Data, b: Data) => {
+    if (orderBy === 'status') {
+      const comparison = getInitiativeStatusLabel(a.status as StatusEnum).localeCompare(
+        getInitiativeStatusLabel(b.status as StatusEnum),
+        'it',
+        { sensitivity: 'base' }
+      );
+      return order === 'asc' ? comparison : -comparison;
+    }
+    return getComparator(order, orderBy)(a, b);
+  };
+
   const renderInitiativeStatus = (status?: StatusEnum) => {
     switch (status) {
       case PUBLISHED:
-        return <Chip sx={{ fontSize: '14px' }} label={t('common.initiativeStatusEnum.published')} color="success" />;
+        return <Chip sx={{ fontSize: '14px' }} label={getInitiativeStatusLabel(status)} color="success" />;
       case CLOSED:
-        return <Chip sx={{ fontSize: '14px' }} label={t('common.initiativeStatusEnum.closed')} color="default" />;
+        return <Chip sx={{ fontSize: '14px' }} label={getInitiativeStatusLabel(status)} color="default" />;
       default:
         return null;
     }
@@ -226,7 +249,7 @@ const InitiativesList = () => {
                 onRequestSort={handleRequestSort}
               />
               <TableBody sx={{ backgroundColor: 'white' }}>
-                {stableSort(initiativeListFiltered, getComparator(order, orderBy)).map(
+                {stableSort(initiativeListFiltered, compareInitiatives).map(
                   (row, index) => {
                     const labelId = `enhanced-table-row-${index}`;
                     return (
