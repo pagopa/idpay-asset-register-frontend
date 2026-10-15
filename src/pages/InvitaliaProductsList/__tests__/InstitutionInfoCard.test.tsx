@@ -154,8 +154,10 @@ describe('InstitutionInfoCard', () => {
       expect(mockedGetInstitutionById).toHaveBeenCalled();
     });
 
-    expect(mockedTruncateString).toHaveBeenCalledWith('Test Company S.r.l.', 140);
-    expect(mockedTruncateString).toHaveBeenCalledWith('TSTCMP80A01H501Z', 140);
+    await waitFor(() => {
+      expect(mockedTruncateString).toHaveBeenCalledWith('Test Company S.r.l.', 140);
+      expect(mockedTruncateString).toHaveBeenCalledWith('TSTCMP80A01H501Z', 140);
+    });
   });
 
   it('displays "-" for empty values', async () => {
@@ -214,11 +216,11 @@ describe('InstitutionInfoCard', () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(mockedGetInstitutionById).toHaveBeenCalled();
+      expect(mockedTruncateString).toHaveBeenCalledWith(
+        `${mockInstitutionResponse.address}, ${mockInstitutionResponse.zipCode} ${mockInstitutionResponse.city} (${mockInstitutionResponse.county})`,
+        140
+      );
     });
-
-    const expectedAddress = `${mockInstitutionResponse.address}, ${mockInstitutionResponse.zipCode} ${mockInstitutionResponse.city} (${mockInstitutionResponse.county})`;
-    expect(mockedTruncateString).toHaveBeenCalledWith('Test Company S.r.l.', 140);
   });
 
   it('handles partial address data', async () => {
@@ -235,10 +237,8 @@ describe('InstitutionInfoCard', () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(mockedGetInstitutionById).toHaveBeenCalled();
+      expect(mockedTruncateString).toHaveBeenCalledWith('Via Roma 123 Roma', 140);
     });
-
-    expect(mockedTruncateString).toHaveBeenCalledWith('Test Company S.r.l.', 140);
   });
 
   it('renders all field labels correctly', async () => {
