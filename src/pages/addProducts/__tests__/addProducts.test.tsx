@@ -15,7 +15,7 @@ jest.mock('../../../utils/env', () => ({
   ENV: {
     URL_FE: {
       LOGOUT: 'https://mock-logout-url.com',
-      EIE_MANUAL: 'https://mock-manual-url.com/manual.pdf',
+      RDB_MANUAL: 'https://mock-manual-url.com/manual.pdf',
     },
     URL_API: {
       OPERATION: 'https://mock-api/register',
@@ -26,7 +26,7 @@ jest.mock('../../../utils/env', () => ({
     API_TIMEOUT_MS: {
       OPERATION: 5000,
     },
-    EIE_MANUAL: 'https://mock-manual-url.com/manual.pdf',
+    RDB_MANUAL: 'https://mock-manual-url.com/manual.pdf',
   },
 }));
 
@@ -160,7 +160,7 @@ describe('AddProducts Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockCurrentInitiativeId = 'initiative-1';
-    ENV.URL_FE.EIE_MANUAL = 'https://mock-manual-url.com/manual.pdf';
+    ENV.URL_FE.RDB_MANUAL = 'https://mock-manual-url.com/manual.pdf';
     mockOnExit.mockImplementation((callback) => callback());
     mockValidateForm.mockResolvedValue(true);
   });
@@ -325,7 +325,7 @@ describe('AddProducts Component', () => {
     expect(screen.getByTestId('add-products-container')).toBeInTheDocument();
   });
 
-  test('manual link has correct href when EIE_MANUAL is defined', () => {
+  test('manual link has correct href when RDB_MANUAL is defined', () => {
     render(
       <TestWrapper>
         <AddProducts />
@@ -341,7 +341,7 @@ describe('AddProducts Component', () => {
     expect(manualLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  test('manual link click is not prevented when EIE_MANUAL is defined', async () => {
+  test('manual link click is not prevented when RDB_MANUAL is defined', async () => {
     render(
       <TestWrapper>
         <AddProducts />
@@ -353,8 +353,8 @@ describe('AddProducts Component', () => {
     expect(fireEvent.click(manualLink)).toBe(true);
   });
 
-  test('manual link click is prevented when EIE_MANUAL is missing', () => {
-    ENV.URL_FE.EIE_MANUAL = undefined as any;
+  test('manual link click is prevented when RDB_MANUAL is missing', () => {
+    ENV.URL_FE.RDB_MANUAL = undefined as any;
 
     render(
       <TestWrapper>
@@ -367,7 +367,7 @@ describe('AddProducts Component', () => {
     expect(fireEvent.click(manualLink)).toBe(false);
   });
 
-  test('manual link navigates correctly when EIE_MANUAL is defined', async () => {
+  test('manual link navigates correctly when RDB_MANUAL is defined', async () => {
     const user = userEvent.setup();
 
     render(

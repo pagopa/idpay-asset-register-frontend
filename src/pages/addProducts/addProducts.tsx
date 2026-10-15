@@ -99,7 +99,7 @@ const AddProducts: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {
-                  if (!ENV.URL_FE.EIE_MANUAL) {
+                  if (!ENV.URL_FE.RDB_MANUAL) {
                     e.preventDefault();
                   }
                 }}

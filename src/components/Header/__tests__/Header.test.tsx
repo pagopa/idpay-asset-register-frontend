@@ -88,7 +88,7 @@ describe('Header Component', () => {
       return undefined;
     });
     (CONFIG.HEADER.LINK.PRODUCTURL as any) = 'https://example.com/welfare';
-    (ENV.URL_FE.EIE_MANUAL as any) = 'https://example.com/manual';
+    (ENV.URL_FE.RDB_MANUAL as any) = 'https://example.com/manual';
     (ENV.ASSISTANCE.EMAIL as any) = 'support@example.com';
   });
 
