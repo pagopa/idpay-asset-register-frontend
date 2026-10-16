@@ -206,7 +206,8 @@ stages:
               REACT_APP_URL_FE_LANDING: '$(react_app_url_fe_landing)'
               REACT_APP_URL_FE_ASSISTANCE_PORTAL: '$(react_app_url_fe_assistance)'
               REACT_APP_URL_INSTITUTION_LOGO_PREFIX: '$(react_app_url_storage)/institutions/'
-              REACT_APP_URL_FE_RDB_MANUAL: $(react_app_url_fe_rdb_manual)
+              REACT_APP_URL_FE_RDB_MANUAL: '$(react_app_url_fe_rdb_manual)'
+
               REACT_APP_URL_PRIVACY_DISCLAIMER: '$(react_app_url_privacy_disclaimer)'
               REACT_APP_URL_TERMS_AND_CONDITIONS: '$(react_app_url_terms_and_conditions)'
 
