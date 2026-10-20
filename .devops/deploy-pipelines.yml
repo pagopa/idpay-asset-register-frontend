@@ -25,7 +25,7 @@ variables:
     react_app_url_fe_auth: '$(UAT_REACT_APP_URL_FE_LOGIN)'
     react_app_url_fe_landing: '$(UAT_REACT_APP_URL_FE_LANDING)'
     react_app_url_fe_assistance: '$(UAT_REACT_APP_URL_FE_ASSISTANCE_PORTAL)'
-    react_app_url_fe_eie_manual: '$(UAT_REACT_APP_URL_FE_EIE_MANUAL)'
+    react_app_url_fe_rdb_manual: '$(UAT_REACT_APP_URL_FE_RDB_MANUAL)'
     react_app_url_privacy_disclaimer: '$(UAT_REACT_APP_URL_PRIVACY_DISCLAIMER)'
     react_app_url_terms_and_conditions: '$(UAT_REACT_APP_URL_TERMS_AND_CONDITIONS)'
 
@@ -60,7 +60,7 @@ variables:
     react_app_url_fe_auth: '$(PROD_REACT_APP_URL_FE_LOGIN)'
     react_app_url_fe_landing: '$(PROD_REACT_APP_URL_FE_LANDING)'
     react_app_url_fe_assistance: '$(PROD_REACT_APP_URL_FE_ASSISTANCE_PORTAL)'
-    react_app_url_fe_eie_manual: '$(PROD_REACT_APP_URL_FE_EIE_MANUAL)'
+    react_app_url_fe_rdb_manual: '$(PROD_REACT_APP_URL_FE_RDB_MANUAL)'
     react_app_url_privacy_disclaimer: '$(PROD_REACT_APP_URL_PRIVACY_DISCLAIMER)'
     react_app_url_terms_and_conditions: '$(PROD_REACT_APP_URL_TERMS_AND_CONDITIONS)'
 
@@ -100,7 +100,7 @@ variables:
     react_app_url_fe_landing: '$(DEV_REACT_APP_URL_FE_LANDING)'
     react_app_url_fe_assistance: '$(DEV_REACT_APP_URL_FE_ASSISTANCE_PORTAL)'
     #REACT_APP_URL_API_ASSET_REGISTER_PORTAL: ''
-    react_app_url_fe_eie_manual: '$(DEV_REACT_APP_URL_FE_EIE_MANUAL)'
+    react_app_url_fe_rdb_manual: '$(DEV_REACT_APP_URL_FE_RDB_MANUAL)'
     react_app_url_privacy_disclaimer: '$(DEV_REACT_APP_URL_PRIVACY_DISCLAIMER)'
     react_app_url_terms_and_conditions: '$(DEV_REACT_APP_URL_TERMS_AND_CONDITIONS)'
 
@@ -206,7 +206,8 @@ stages:
               REACT_APP_URL_FE_LANDING: '$(react_app_url_fe_landing)'
               REACT_APP_URL_FE_ASSISTANCE_PORTAL: '$(react_app_url_fe_assistance)'
               REACT_APP_URL_INSTITUTION_LOGO_PREFIX: '$(react_app_url_storage)/institutions/'
-              REACT_APP_URL_FE_EIE_MANUAL: $(react_app_url_fe_eie_manual)
+              REACT_APP_URL_FE_RDB_MANUAL: '$(react_app_url_fe_rdb_manual)'
+
               REACT_APP_URL_PRIVACY_DISCLAIMER: '$(react_app_url_privacy_disclaimer)'
               REACT_APP_URL_TERMS_AND_CONDITIONS: '$(react_app_url_terms_and_conditions)'
 

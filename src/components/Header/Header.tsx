@@ -84,7 +84,7 @@ const Header = ({ withSecondHeader, onExit, loggedUser }: /* , parties */ Props)
             }
           : false
       }
-      onDocumentationClick={() => window.open(ENV.URL_FE.EIE_MANUAL || '', '_blank')}
+      onDocumentationClick={() => window.open(ENV.URL_FE.RDB_MANUAL || '', '_blank')}
       assistanceEmail={ENV.ASSISTANCE.EMAIL}
       enableLogin={true}
       onSelectedProduct={(p) =>
