@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper } from '@mui/material';
+import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper, Tooltip, Link, ListItem } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
@@ -121,6 +121,9 @@ const defaultDetailLabelKeys: Record<string, string> = {
   eprelCode: 'pages.productDetail.eprelCode',
   gtinCode: 'pages.productDetail.gtinCode',
   model: 'pages.productDetail.model',
+  scart: 'pages.productDetail.scart',
+  ipConnection: 'pages.productDetail.ipConnection',
+  link: 'pages.productDetail.link',
   productCode: 'pages.productDetail.productCode',
   productName: '',
   registrationDate: 'pages.productDetail.eprelCheckDate',
@@ -169,6 +172,54 @@ const getFieldSx = (fieldId: string): SxProps<Theme> | undefined => {
   return undefined;
 };
 
+const normalizeHref = (url: string): string =>
+  /^https?:\/\//i.test(url) ? url : `https://${url}`;
+
+function ProductLinkRow({ label, url }: { label: string; url: string }) {
+  const href = normalizeHref(url);
+  return (
+    <Box sx={{ width: '100%', minWidth: 0 }}>
+      <ListItem disablePadding sx={{ width: '100%', minWidth: 0 }}>
+        <Box sx={{ my: 1, width: '100%', minWidth: 0 }}>
+          <Typography variant="body1" color="text.secondary">
+            {label}
+          </Typography>
+          <Tooltip
+            title={url}
+            placement="bottom"
+            arrow
+            slotProps={{
+              tooltip: {
+                sx: { textAlign: 'center', wordBreak: 'break-all' },
+              },
+            }}
+          >
+            <Link
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="body2"
+              fontWeight="fontWeightMedium"
+              data-testid="product-detail-link"
+              sx={{
+                display: 'block',
+                width: 'fit-content',
+                maxWidth: '100%',
+                minWidth: 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {url}
+            </Link>
+          </Tooltip>
+        </Box>
+      </ListItem>
+    </Box>
+  );
+}
+
 function mapDetailFieldToRowConfig(
   field: ProductDetailFieldConfig,
   data: ProductDTO,
@@ -179,6 +230,7 @@ function mapDetailFieldToRowConfig(
   const hasValue = value !== undefined && value !== null && value !== '';
   const isCookinghobs = isCategoryMatch(data?.category, cookingHobsLabel);
   const isProductSheet = field.id === 'productSheet';
+  const isProductLink = field.id === 'link';
 
   if (isProductSheet) {
     return {
@@ -189,6 +241,21 @@ function mapDetailFieldToRowConfig(
       valueVariant: 'body2',
       sx: { mt: 4, mb: 2, fontWeight: theme.typography.fontWeightBold },
     };
+  }
+
+  if (isProductLink && hasValue) {
+    return {
+      label: t(getFieldLabel(field, isCookinghobs)),
+      value: String(value),
+      renderCustom() {
+        return (
+          <ProductLinkRow
+            label={t(getFieldLabel(field, isCookinghobs))}
+            url={String(value)}
+          />
+        );
+      },
+    } as RowConfig & { renderCustom?: () => JSX.Element };
   }
 
   return {

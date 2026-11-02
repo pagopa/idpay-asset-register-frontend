@@ -129,7 +129,10 @@
             { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
             { "id": "category", "labelKey": "pages.productDetail.category" },
             { "id": "brand", "labelKey": "pages.productDetail.brand" },
-            { "id": "model", "labelKey": "pages.productDetail.model" }
+            { "id": "model", "labelKey": "pages.productDetail.model" },
+            { "id": "scart", "labelKey": "pages.productDetail.scart" },
+            { "id": "ipConnection", "labelKey": "pages.productDetail.ipConnection" },
+            { "id": "link", "labelKey": "pages.productDetail.link" }
           ]
         }
       }
