@@ -5,7 +5,7 @@
   "pages": {
     "addProducts": {
       "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione ",
-      "manualLink": ""
+      "manualLink": "https://developer.pagopa.it/it/pari/guides"
     },
     "tos": {
       "and": "e l’",
