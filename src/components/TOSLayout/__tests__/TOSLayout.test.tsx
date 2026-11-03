@@ -18,11 +18,16 @@ jest.mock('../../../utils/env', () => ({
         PRODUCTURL: 'product',
       },
     },
-  },
-}));
+    FOOTER: {
+      LINK: {
+        PRIVACYPOLICY: 'https://www.privacy.com',
+        TERMSANDCONDITIONS: 'https://www.tos.com',
+      }
+    }
+  }}));
 
 beforeEach(() => {
-  jest.spyOn(console, 'warn').mockImplementation(() => {});
+  jest.spyOn(console, 'warn').mockImplementation(() => { });
 });
 
 describe('test suite for TOSLayout', () => {
