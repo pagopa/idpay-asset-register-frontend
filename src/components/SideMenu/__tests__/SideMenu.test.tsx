@@ -5,6 +5,8 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import * as helpers from '../../../helpers';
 
+const mockUseGetInitiativesQuery = jest.fn();
+
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
   ENV: {
@@ -41,14 +43,7 @@ jest.mock('../../../routes', () => ({
 }));
 
 jest.mock('../../../redux/api/initiativesApi', () => ({
-  useGetInitiativesQuery: () => ({
-    data: [
-      {
-        initiativeId: 'initiative-1',
-        initiativeName: 'Initiative One',
-      },
-    ],
-  }),
+  useGetInitiativesQuery: () => mockUseGetInitiativesQuery(),
 }));
 
 const mockOnExit = jest.fn();
@@ -122,6 +117,14 @@ beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
   mockUseLocation.mockReturnValue({ pathname: '/' });
+  mockUseGetInitiativesQuery.mockReturnValue({
+    data: [
+      {
+        initiativeId: 'initiative-1',
+        initiativeName: 'Initiative One',
+      },
+    ],
+  });
 });
 
 describe('Test suite for SideMenu component', () => {
@@ -187,6 +190,20 @@ describe('Test suite for SideMenu component', () => {
     await waitFor(() => {
       expect(mockOnExit).toHaveBeenCalledTimes(1);
       expect(mockNavigate).toHaveBeenCalledWith('/initiative-1/prodotti', { replace: true });
+    });
+  });
+
+  test('does not navigate when clicking a route already selected', async () => {
+    jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
+    mockUseLocation.mockReturnValue({ pathname: '/initiative-1/prodotti' });
+
+    renderWithContext(<SideMenu />);
+    const user = userEvent.setup();
+
+    await user.click(screen.getByText('Prodotti'));
+
+    await waitFor(() => {
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 
@@ -306,6 +323,39 @@ describe('Test suite for SideMenu component', () => {
     expect(screen.getByTestId('sidenav-Storico caricamenti')).toBeInTheDocument();
     expect(screen.getByTestId('sidenav-Prodotti')).toBeInTheDocument();
     expect(screen.queryByTestId('sidenav-Prodotti Invitalia')).not.toBeInTheDocument();
+  });
+
+  test('ignores initiatives with missing id or name', () => {
+    jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
+    mockUseGetInitiativesQuery.mockReturnValue({
+      data: [
+        { initiativeId: 'initiative-1', initiativeName: 'Initiative One' },
+        { initiativeId: 'initiative-2' },
+        { initiativeName: 'Missing Id' },
+      ],
+    });
+
+    renderWithContext(<SideMenu />);
+
+    expect(screen.getByRole('button', { name: /Initiative One/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Missing Id/i })).not.toBeInTheDocument();
+  });
+
+  test('accordion summary click triggers first route navigation', async () => {
+    jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
+    mockOnExit.mockImplementation((cb: () => void) => cb());
+    mockUseLocation.mockReturnValue({ pathname: '/home' });
+
+    renderWithContext(<SideMenu />);
+    const user = userEvent.setup();
+    const initiativeHeader = await screen.findByRole('button', { name: /Initiative One/i });
+
+    await user.click(initiativeHeader);
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/initiative-1/panoramica', { replace: true });
+    });
+
   });
 
   test('Invitalia L1: click su "Prodotti Invitalia" naviga alla lista prodotti', async () => {
