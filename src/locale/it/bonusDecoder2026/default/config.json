@@ -131,8 +131,8 @@
             { "id": "brand", "labelKey": "pages.productDetail.brand" },
             { "id": "model", "labelKey": "pages.productDetail.model" },
             { "id": "scart", "labelKey": "pages.productDetail.scart" },
-            { "id": "ipConnection", "labelKey": "pages.productDetail.ipConnection" },
-            { "id": "link", "labelKey": "pages.productDetail.link" }
+            { "id": "connectivity", "labelKey": "pages.productDetail.connectivity" },
+            { "id": "technicalSheetUrl", "labelKey": "pages.productDetail.technicalSheetUrl" }
           ]
         }
       }

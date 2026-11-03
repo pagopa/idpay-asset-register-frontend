@@ -122,8 +122,8 @@ const defaultDetailLabelKeys: Record<string, string> = {
   gtinCode: 'pages.productDetail.gtinCode',
   model: 'pages.productDetail.model',
   scart: 'pages.productDetail.scart',
-  ipConnection: 'pages.productDetail.ipConnection',
-  link: 'pages.productDetail.link',
+  connectivity: 'pages.productDetail.connectivity',
+  technicalSheetUrl: 'pages.productDetail.technicalSheetUrl',
   productCode: 'pages.productDetail.productCode',
   productName: '',
   registrationDate: 'pages.productDetail.eprelCheckDate',
@@ -230,7 +230,7 @@ function mapDetailFieldToRowConfig(
   const hasValue = value !== undefined && value !== null && value !== '';
   const isCookinghobs = isCategoryMatch(data?.category, cookingHobsLabel);
   const isProductSheet = field.id === 'productSheet';
-  const isProductLink = field.id === 'link';
+  const isProductLink = field.id === 'technicalSheetUrl';
 
   if (isProductSheet) {
     return {
@@ -520,6 +520,7 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
             labelVariant="overline"
             sx={{ marginTop: 3, fontWeight: theme.typography.fontWeightBold }}
             labelColor={theme.palette.text.primary}
+            disableTruncation
             value={
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <Box key={`${header}-formal`} sx={{ mb: 2, width: '100%' }}>

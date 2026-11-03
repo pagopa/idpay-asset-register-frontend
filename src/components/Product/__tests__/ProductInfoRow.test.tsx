@@ -234,9 +234,20 @@ describe('ProductInfoRow', () => {
     it('adds the full value as a tooltip when the value is truncated', () => {
       const value = 'A value that is too long for the drawer row';
 
-      render(<ProductInfoRow label="Compact field" value={value} maxValueLines={1} />);
+      // jsdom does not compute layout, so simulate the text overflowing its container
+      const scrollWidthSpy = jest
+        .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+        .mockReturnValue(1000);
+      const clientWidthSpy = jest
+        .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
+        .mockReturnValue(100);
+
+      render(<ProductInfoRow label="Compact field" value={value} />);
 
       expect(screen.getByLabelText(value)).toBeInTheDocument();
+
+      scrollWidthSpy.mockRestore();
+      clientWidthSpy.mockRestore();
     });
 
     it('should handle very long label text', () => {

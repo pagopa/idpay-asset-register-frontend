@@ -205,7 +205,8 @@ describe('Product Service', () => {
         'EPREL123',
         'GTIN456',
         'PROD789',
-        'FILE123'
+        'FILE123',
+        undefined
       );
     });
 
@@ -225,6 +226,7 @@ describe('Product Service', () => {
       expect(RegisterApi.getProductList).toHaveBeenCalledWith(
         'initi-1',
         organizationId,
+        undefined,
         undefined,
         undefined,
         undefined,
