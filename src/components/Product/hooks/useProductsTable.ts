@@ -20,6 +20,7 @@ export type UseProductsTableParams = {
   status?: string;
   gtinCode?: string;
   productCode?: string;
+  fullProductName?: string;
 };
 
 export const useProductsTable = ({
@@ -38,6 +39,7 @@ export const useProductsTable = ({
   eprelCode,
   status,
   gtinCode,
+  fullProductName,
 }: UseProductsTableParams) => {
   const [tableData, setTableData] = useState<Array<ProductDTO>>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -61,7 +63,8 @@ export const useProductsTable = ({
         eprelCode,
         gtinCode,
         productCode,
-        productFileId
+        productFileId,
+        fullProductName
       );
 
       const { content, pageNo, totalElements } = res.data;
@@ -113,6 +116,7 @@ export const useProductsTable = ({
     eprelCode,
     status,
     gtinCode,
+    fullProductName,
     organizationSource,
   ]);
 
