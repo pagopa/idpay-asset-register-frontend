@@ -372,6 +372,34 @@ describe('ProductDetail', () => {
     expect(screen.getByText('-')).toBeInTheDocument();
   });
 
+  it('renders scart field as Si/No from boolean values', () => {
+    const { rerender } = render(
+      <ProductDetail
+        open
+        data={{ ...baseData, scart: true }}
+        detailFields={[{ id: 'scart' }]}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Si')).toBeInTheDocument();
+
+    rerender(
+      <ProductDetail
+        open
+        data={{ ...baseData, scart: false }}
+        detailFields={[{ id: 'scart' }]}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('No')).toBeInTheDocument();
+  });
+
   it('renders motivation chronology and skips empty motivations', () => {
     renderDetail({
       data: {

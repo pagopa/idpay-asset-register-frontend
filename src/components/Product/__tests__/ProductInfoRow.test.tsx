@@ -250,6 +250,25 @@ describe('ProductInfoRow', () => {
       clientWidthSpy.mockRestore();
     });
 
+    it('does not add truncation tooltip when disableTruncation is true', () => {
+      const value = 'A value that is too long for the drawer row';
+
+      const scrollWidthSpy = jest
+        .spyOn(HTMLElement.prototype, 'scrollWidth', 'get')
+        .mockReturnValue(1000);
+      const clientWidthSpy = jest
+        .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
+        .mockReturnValue(100);
+
+      render(<ProductInfoRow label="Compact field" value={value} disableTruncation />);
+
+      expect(screen.getByText(value)).toBeInTheDocument();
+      expect(screen.queryByLabelText(value)).not.toBeInTheDocument();
+
+      scrollWidthSpy.mockRestore();
+      clientWidthSpy.mockRestore();
+    });
+
     it('should handle very long label text', () => {
       const longLabel =
         'This is a very long label that might wrap to multiple lines and should still be rendered correctly without breaking the component layout or functionality';
