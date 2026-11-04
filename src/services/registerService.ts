@@ -266,7 +266,8 @@ export const getProducts = async (
   eprelCode?: string,
   gtinCode?: string,
   productCode?: string,
-  productFileId?: string
+  productFileId?: string,
+  fullProductName?: string
 ): Promise<AxiosResponse<ProductListDTO>> => {
   try {
     const result = await RegisterApi.getProductList(
@@ -280,7 +281,8 @@ export const getProducts = async (
       eprelCode,
       gtinCode,
       productCode,
-      productFileId
+      productFileId,
+      fullProductName
     );
     return (
       result ?? {
