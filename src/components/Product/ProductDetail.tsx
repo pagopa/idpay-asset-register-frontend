@@ -153,6 +153,10 @@ const formatFieldValue = (
   if (!hasValue) {
     return EMPTY_DATA;
   }
+  if (fieldId === 'scart') {
+    const normalized = typeof value === 'boolean' ? value : String(value).toLowerCase() === 'true';
+    return normalized ? 'Si' : 'No';
+  }
   if (fieldId === 'registrationDate') {
     return String(format(new Date(String(value)), 'dd/MM/yyyy'));
   }
