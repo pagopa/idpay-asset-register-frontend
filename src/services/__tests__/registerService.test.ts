@@ -13,6 +13,8 @@ import {
   setRestoredStatusList,
   getBatchFilterList,
   getProducers,
+  getMerchantInitiativeList,
+  updateOperativeEmail,
 } from '../registerService';
 import { ProductStatus } from '../../api/generated/register';
 
@@ -92,6 +94,17 @@ describe('Product Service', () => {
 
       expect(console.error).toHaveBeenCalled();
     });
+
+    it('should log error key when verify fails with a business error key', async () => {
+      const error = {
+        response: { data: { errorKey: 'ERR_VERIFY' } },
+      };
+      (RegisterApi.uploadProductListVerify as jest.Mock).mockRejectedValue(error);
+
+      await expect(uploadProductListVerify('initi-1', mockFile, mockCategory)).rejects.toEqual(error);
+
+      expect(console.error).toHaveBeenCalledWith('Error Key: ERR_VERIFY');
+    });
   });
 
   describe('downloadErrorReport', () => {
@@ -115,6 +128,18 @@ describe('Product Service', () => {
 
       expect(result).toEqual({ data: {}, filename: '' });
       expect(console.error).toHaveBeenCalled();
+    });
+
+    it('should log error key when report download fails with a business error key', async () => {
+      const error = {
+        response: { data: { errorKey: 'ERR_REPORT' } },
+      };
+      (RegisterApi.downloadErrorReport as jest.Mock).mockRejectedValue(error);
+
+      const result = await downloadErrorReport('initi-1', 'file-123');
+
+      expect(result).toEqual({ data: {}, filename: '' });
+      expect(console.error).toHaveBeenCalledWith('Error Key: ERR_REPORT');
     });
   });
 
@@ -205,7 +230,8 @@ describe('Product Service', () => {
         'EPREL123',
         'GTIN456',
         'PROD789',
-        'FILE123'
+        'FILE123',
+        undefined
       );
     });
 
@@ -225,6 +251,7 @@ describe('Product Service', () => {
       expect(RegisterApi.getProductList).toHaveBeenCalledWith(
         'initi-1',
         organizationId,
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -586,6 +613,71 @@ describe('Product Service', () => {
 
       await getProducts('initi-1', 'org-123');
 
+      expect(console.error).toHaveBeenCalled();
+    });
+  });
+
+  it('should log compact nested array details when depth limit is reached', async () => {
+    const error = {
+      response: {
+        data: { nestedArray: [[1, 2], [3, 4]] },
+      },
+    };
+    (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
+
+    await getProducts('initi-1', 'org-123');
+
+    expect(console.error).toHaveBeenCalled();
+  });
+
+  it('should log fallback object formatting for circular response data', async () => {
+    const circular: any = {};
+    circular.self = circular;
+    const error = {
+      response: {
+        data: { circular },
+      },
+    };
+    (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
+
+    await getProducts('initi-1', 'org-123');
+
+    expect(console.error).toHaveBeenCalled();
+  });
+
+  it('should log primitive response data values', async () => {
+    const error = {
+      response: {
+        data: 'plain-error',
+      },
+    };
+    (RegisterApi.getProductList as jest.Mock).mockRejectedValue(error);
+
+    await getProducts('initi-1', 'org-123');
+
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Response Data: plain-error'));
+  });
+
+  describe('merchant initiatives and operative email', () => {
+    it('returns a default merchant initiative response when API fails', async () => {
+      (RegisterApi.getMerchantInitiativeList as jest.Mock).mockRejectedValue(new Error('failed'));
+
+      const result = await getMerchantInitiativeList();
+
+      expect(result).toEqual({
+        data: [],
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {},
+      });
+    });
+
+    it('rethrows when update operative email fails', async () => {
+      const error = new Error('email failed');
+      (RegisterApi.updateOperativeEmail as jest.Mock).mockRejectedValue(error);
+
+      await expect(updateOperativeEmail('init-1', 'mail@example.com')).rejects.toBe(error);
       expect(console.error).toHaveBeenCalled();
     });
   });
