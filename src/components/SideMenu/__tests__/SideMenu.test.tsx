@@ -4,6 +4,8 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import * as helpers from '../../../helpers';
+import { useGetInitiativesQuery } from '../../../redux/api/initiativesApi';
+import { render } from '@testing-library/react';
 
 jest.mock('../../../utils/env', () => ({
   __esModule: true,
@@ -41,14 +43,14 @@ jest.mock('../../../routes', () => ({
 }));
 
 jest.mock('../../../redux/api/initiativesApi', () => ({
-  useGetInitiativesQuery: () => ({
+  useGetInitiativesQuery: jest.fn(() => ({
     data: [
       {
         initiativeId: 'initiative-1',
         initiativeName: 'Initiative One',
       },
     ],
-  }),
+  })),
 }));
 
 const mockOnExit = jest.fn();
@@ -122,9 +124,44 @@ beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
   mockUseLocation.mockReturnValue({ pathname: '/' });
+  jest.mocked(useGetInitiativesQuery).mockReturnValue({ data: [
+    { initiativeId: 'initiative-1', initiativeName: 'Initiative One' },
+  ] } as any);
 });
 
 describe('Test suite for SideMenu component', () => {
+  test('opens the first visible initiative after loading without navigation and follows route changes', () => {
+    mockUseLocation.mockReturnValue({ pathname: '/home' });
+    jest.mocked(useGetInitiativesQuery).mockReturnValue({ data: [] } as any);
+    const { rerender } = render(<SideMenu />);
+    jest.mocked(useGetInitiativesQuery).mockReturnValue({ data: [
+      { initiativeId: 'invalid' },
+      { initiativeId: 'initiative-1', initiativeName: 'Initiative One' },
+      { initiativeId: 'initiative-2', initiativeName: 'Initiative Two' },
+    ] } as any);
+    rerender(<SideMenu />);
+    const first = () => screen.getByRole('button', { name: 'Initiative One' });
+    const second = () => screen.getByRole('button', { name: 'Initiative Two' });
+    expect(first()).toHaveAttribute('aria-expanded', 'true');
+    expect(second()).toHaveAttribute('aria-expanded', 'false');
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockOnExit).not.toHaveBeenCalled();
+
+    mockUseLocation.mockReturnValue({ pathname: '/initiative-2/prodotti' });
+    rerender(<SideMenu />);
+    expect(first()).toHaveAttribute('aria-expanded', 'false');
+    expect(second()).toHaveAttribute('aria-expanded', 'true');
+    mockUseLocation.mockReturnValue({ pathname: '/home' });
+    rerender(<SideMenu />);
+    expect(first()).toHaveAttribute('aria-expanded', 'true');
+    expect(second()).toHaveAttribute('aria-expanded', 'false');
+    mockUseLocation.mockReturnValue({ pathname: '/unrelated' });
+    rerender(<SideMenu />);
+    expect(first()).toHaveAttribute('aria-expanded', 'false');
+    expect(second()).toHaveAttribute('aria-expanded', 'false');
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   test('renders the component', () => {
     jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue(null);
     renderWithContext(<SideMenu />);
