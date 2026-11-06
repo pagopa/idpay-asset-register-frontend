@@ -45,7 +45,7 @@
     "formats": {
       "csv": {
         "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello", "Scart", "Connessione IP", "Scheda tecnica"],
-        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100","Si", "LAN e WIFI", "www.example.com"]
+        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100","Si", "LAN e WIFI", "https://www.example.com"]
       }
     },
     "categories": {
