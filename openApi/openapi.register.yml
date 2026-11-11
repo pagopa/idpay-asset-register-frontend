@@ -722,6 +722,9 @@ components:
             - Lavastoviglie
             - Cappa da cucina
             - Forno
+            - Terrestre
+            - Satellitare
+            - Terrestre e Satellitare
         fileName:
           type: string
           description: 'ENG: The original name of file <br> IT: Nome originale del
@@ -737,7 +740,7 @@ components:
           type: string
           description: 'ENG: The computed name of file <br> IT: Nome ricalcolato del
             file csv'
-          pattern: ^(Apparecchi_di_refrigerazione|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici)_[a-fA-F0-9]{24}\.csv$
+          pattern: ^(Apparecchi_di_refrigerazione|Cappe_Da_Cucina|Lavatrici|Lavastoviglie|Piani_Cottura|Forni|Lavasciuga|Asciugatrici|Terrestre|Satellitare|Terrestre_e_Satellitare)_[a-fA-F0-9]{24}\.csv$
           maxLength: 255
         uploadStatus:
           type: string
@@ -862,6 +865,9 @@ components:
             - Lavastoviglie
             - Cappa da cucina
             - Forno
+            - Terrestre
+            - Satellitare
+            - Terrestre e Satellitare
         brand:
           type: string
           description: 'ENG: The brand of the product <br> IT: brand del prodotto'
@@ -926,6 +932,25 @@ components:
           description: 'ENG: The name of the product with GTIN (for merchant)  <br> IT: Nome del prodotto con GTIN (per esercenti)'
           maxLength: 255
           pattern: .*
+        scart:
+          type: boolean
+          description: 'ENG: Optional SCART socket <br> IT: Eventuale presa SCART'
+          nullable: false
+        connectivity:
+          type: string
+          description: 'ENG: IP connectivity support <br> IT: Eventuale connessione IP'
+          enum:
+            - LAN
+            - WI-FI
+            - LAN e WI-FI
+            - Nessuna
+          nullable: false
+        technicalSheetUrl:
+          type: string
+          description: 'ENG: Technical sheet link <br> IT: Eventuale link alla scheda tecnica del prodotto'
+          maxLength: 255
+          format: uri
+          nullable: false
         statusChangeChronology:
           type: array
           items:

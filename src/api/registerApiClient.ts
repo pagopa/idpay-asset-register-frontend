@@ -281,7 +281,8 @@ export const RegisterApi = {
     eprelCode?: string,
     gtinCode?: string,
     productCode?: string,
-    productFileId?: string
+    productFileId?: string,
+    fullProductName?: string
   ): Promise<ProductDTO | undefined> => {
     const params = buildParams({
       initiativeId,
@@ -295,6 +296,7 @@ export const RegisterApi = {
       gtinCode,
       productCode,
       productFileId,
+      fullProductName,
     }) as GetProductsParams;
     const productListValidation = await registerClient.initiatives.getProducts(params);
     const productList = (productListValidation as any)?.value ?? {};
@@ -316,7 +318,8 @@ export const RegisterApi = {
     eprelCode?: string,
     gtinCode?: string,
     productCode?: string,
-    productFileId?: string
+    productFileId?: string,
+    fullProductName?: string
   ): Promise<AxiosResponse<ProductListDTO>> => {
     const params = buildParams({
       initiativeId,
@@ -330,6 +333,7 @@ export const RegisterApi = {
       gtinCode,
       productCode,
       productFileId,
+      fullProductName,
     }) as GetProductsParams;
 
     return await registerClient.initiatives.getProducts(params);

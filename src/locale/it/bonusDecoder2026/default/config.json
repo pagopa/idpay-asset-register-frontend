@@ -44,8 +44,8 @@
   "templates": {
     "formats": {
       "csv": {
-        "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello"],
-        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100"]
+        "headers": ["Codice GTIN/EAN", "Codice Prodotto", "Categoria", "Marca", "Modello", "Scart", "Connessione IP", "Scheda tecnica"],
+        "fields": ["GTIN123ABC4567", "SKU98765", "{{category}}", "MarcaEsempio", "ModelloX100","Si", "LAN e WIFI", "https://www.example.com"]
       }
     },
     "categories": {
@@ -129,7 +129,10 @@
             { "id": "productCode", "labelKey": "pages.productDetail.productCode" },
             { "id": "category", "labelKey": "pages.productDetail.category" },
             { "id": "brand", "labelKey": "pages.productDetail.brand" },
-            { "id": "model", "labelKey": "pages.productDetail.model" }
+            { "id": "model", "labelKey": "pages.productDetail.model" },
+            { "id": "scart", "labelKey": "pages.productDetail.scart" },
+            { "id": "connectivity", "labelKey": "pages.productDetail.connectivity" },
+            { "id": "technicalSheetUrl", "labelKey": "pages.productDetail.technicalSheetUrl" }
           ]
         }
       }
