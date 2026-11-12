@@ -4,9 +4,10 @@ import routes from '../../routes';
 
 interface Props {
   idSelector: string;
+  isContentLoaded: boolean;
 }
 
-const OneTrustContentWrapper = ({ idSelector }: Props) => {
+const OneTrustContentWrapper = ({ idSelector, isContentLoaded }: Props) => {
   const { t } = useTranslation();
   return (
     <>
@@ -17,11 +18,13 @@ const OneTrustContentWrapper = ({ idSelector }: Props) => {
         <Grid
           sx={{ display: 'grid', gridColumn: 'span 2', mt: 5, justifyContent: 'center' }}
         ></Grid>
-        <Grid sx={{ display: 'grid', gridColumn: 'span 10', mt: 5, justifyContent: 'center' }}>
-          <Link underline="hover" href={routes.HOME}>
-            {t('pages.tos.backHome')}
-          </Link>
-        </Grid>
+        {isContentLoaded &&
+          <Grid sx={{ display: 'grid', gridColumn: 'span 10', mt: 5, justifyContent: 'center' }}>
+            <Link underline="hover" href={routes.HOME}>
+              {t('pages.tos.backHome')}
+            </Link>
+          </Grid>
+        }
       </Box>
     </>
   );
