@@ -31,11 +31,11 @@ const renderText = ({ text, tooltip, bold }: { text?: string; tooltip?: boolean;
 };
 
 export const OptionalLink = ({ value, tooltip, testId, name }: OptionalLinkProps) => {
-  const text = value?.trim();
+  const text = value?.trim() ?? '';
   const urlRegex = /^(?:https?:\/\/[a-zA-Z0-9.-]+(?:\.[a-zA-Z]{2,})?|(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(?:\/.*)?$/;
   const protocolRegex = /^https?:\/\//i;
-  const isUrl = urlRegex.test(text ?? '');
-  const href = isUrl ? (protocolRegex.test(text ?? '') ? text ?? '' : `https://${text}`) : '';
+  const isUrl = urlRegex.test(text);
+  const href = isUrl ? (protocolRegex.test(text) ? text : `https://${text}`) : '';
 
   return isUrl ? (
     <Link name={name} tooltip={tooltip} label={text} href={href} testId={testId} />

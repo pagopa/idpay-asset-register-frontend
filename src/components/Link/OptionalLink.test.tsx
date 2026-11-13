@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { OptionalLink } from './OptionalLink';
 
@@ -19,10 +19,48 @@ describe('OptionalLink', () => {
     expect(screen.getByRole('link')).toHaveAttribute('href', 'https://example.com');
   });
 
+  it('recognizes www URLs with a path', () => {
+    render(<OptionalLink value="www.example.com/scheda" />);
+
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
+      'https://www.example.com/scheda'
+    );
+  });
+
+  it('recognizes an HTTP URL without a top-level domain', () => {
+    render(<OptionalLink value="http://localhost" />);
+
+    expect(screen.getByRole('link')).toHaveAttribute('href', 'http://localhost');
+  });
+
   it('renders plain text without an anchor for non-URL values', () => {
     render(<OptionalLink value="Nessuna" />);
 
     expect(screen.getByText('Nessuna')).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it('shows a tooltip for plain text when requested', async () => {
+    render(<OptionalLink value="Nessuna" tooltip />);
+
+    fireEvent.mouseOver(screen.getByText('Nessuna'));
+
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('Nessuna');
+  });
+
+  it('uses the missing-data placeholder in the tooltip for an empty value', async () => {
+    render(<OptionalLink value="" tooltip />);
+
+    fireEvent.mouseOver(screen.getByText('-'));
+
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('-');
+  });
+
+  it('does not link unsupported URL schemes', () => {
+    render(<OptionalLink value="ftp://example.com" />);
+
+    expect(screen.getByText('ftp://example.com')).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
