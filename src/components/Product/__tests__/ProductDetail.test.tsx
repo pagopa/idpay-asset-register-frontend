@@ -516,6 +516,20 @@ describe('ProductDetail', () => {
     expect(link).toHaveTextContent('example.com/scheda');
   });
 
+  it.each(['Nessuna', 'Scheda tecnica non disponibile', 'utente@example.com'])(
+    'renders non-URL technical sheet values as plain text: %s',
+    (value) => {
+    renderDetail({
+      data: { ...baseData, technicalSheetUrl: value },
+      detailFields: [{ id: 'technicalSheetUrl' }],
+    });
+
+    expect(screen.getByText(value)).toBeInTheDocument();
+    expect(screen.queryByTestId('product-detail-link')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    }
+  );
+
   it('keeps protocol unchanged for technical sheet links that already include http/https', () => {
     renderDetail({
       data: { ...baseData, technicalSheetUrl: 'https://example.com/scheda' },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper, Tooltip, Link, ListItem } from '@mui/material';
+import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper, ListItem } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
@@ -7,12 +7,19 @@ import FlagIcon from '@mui/icons-material/Flag';
 import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
-import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
+import {
+  EMPTY_DATA,
+  MIDDLE_STATES,
+  PRODUCTS_STATES,
+  USERS_NAMES,
+  USERS_TYPES,
+} from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { statusChangeMessage } from '../../model/Product';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
+import { OptionalLink } from '../Link/OptionalLink';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -176,11 +183,7 @@ const getFieldSx = (fieldId: string): SxProps<Theme> | undefined => {
   return undefined;
 };
 
-const normalizeHref = (url: string): string =>
-  /^https?:\/\//i.test(url) ? url : `https://${url}`;
-
 function ProductLinkRow({ label, url }: { label: string; url: string }) {
-  const href = normalizeHref(url);
   return (
     <Box sx={{ width: '100%', minWidth: 0 }}>
       <ListItem disablePadding sx={{ width: '100%', minWidth: 0 }}>
@@ -188,36 +191,11 @@ function ProductLinkRow({ label, url }: { label: string; url: string }) {
           <Typography variant="body1" color="text.secondary">
             {label}
           </Typography>
-          <Tooltip
-            title={url}
-            placement="bottom"
-            arrow
-            slotProps={{
-              tooltip: {
-                sx: { textAlign: 'center', wordBreak: 'break-all' },
-              },
-            }}
-          >
-            <Link
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="body2"
-              fontWeight="fontWeightMedium"
-              data-testid="product-detail-link"
-              sx={{
-                display: 'block',
-                width: 'fit-content',
-                maxWidth: '100%',
-                minWidth: 0,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {url}
-            </Link>
-          </Tooltip>
+          <OptionalLink
+            value={url}
+            name="technicalSheetUrl"
+            testId="product-detail-link"
+          />
         </Box>
       </ListItem>
     </Box>
@@ -250,12 +228,12 @@ function mapDetailFieldToRowConfig(
   if (isProductLink && hasValue) {
     return {
       label: t(getFieldLabel(field, isCookinghobs)),
-      value: String(value),
+      value: String(value).trim(),
       renderCustom() {
         return (
           <ProductLinkRow
             label={t(getFieldLabel(field, isCookinghobs))}
-            url={String(value)}
+            url={String(value).trim()}
           />
         );
       },
