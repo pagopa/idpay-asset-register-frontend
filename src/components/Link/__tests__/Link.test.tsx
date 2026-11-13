@@ -21,7 +21,7 @@ jest.mock('@pagopa/mui-italia', () => ({
   },
 }));
 
-import { Link } from './Link';
+import { Link } from '../Link';
 
 describe('Link component', () => {
   it('renders a labeled link with the expected href and target', () => {

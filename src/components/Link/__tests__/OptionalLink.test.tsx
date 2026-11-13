@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { OptionalLink } from './OptionalLink';
+import { OptionalLink } from '../OptionalLink';
 
 describe('OptionalLink', () => {
   it.each(['http://example.com', 'https://example.com'])(
