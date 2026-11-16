@@ -1,23 +1,49 @@
-import { buildInitiativeFolderName, getInitiativeBasePath } from '../multiInitiativeBasePath';
+import {
+  getInitiativeFolderName,
+  getInitiativeBasePath,
+} from '../multiInitiativeBasePath';
 
 describe('multiInitiativeBasePath', () => {
-  describe('buildInitiativeFolderName', () => {
-    it('should delegate to buildNamespaceKey and append year', () => {
-      expect(buildInitiativeFolderName('Bonus Decoder', '2026-01-01')).toBe('bonusDecoder2026');
+  const originalElettrodomesticiId = process.env.REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI;
+  const originalDecoderId = process.env.REACT_APP_INITIATIVE_ID_BONUS_DECODER;
 
-      expect(buildInitiativeFolderName('Bonus Elettrodomestici', '2025-03-10')).toBe(
-        'bonusElettrodomestici2025'
-      );
+  beforeEach(() => {
+    process.env.REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI = 'elettrodomestici-id';
+    process.env.REACT_APP_INITIATIVE_ID_BONUS_DECODER = 'decoder-id';
+  });
+
+  afterEach(() => {
+    if (originalElettrodomesticiId === undefined) {
+      delete process.env.REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI;
+    } else {
+      process.env.REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI = originalElettrodomesticiId;
+    }
+
+    if (originalDecoderId === undefined) {
+      delete process.env.REACT_APP_INITIATIVE_ID_BONUS_DECODER;
+    } else {
+      process.env.REACT_APP_INITIATIVE_ID_BONUS_DECODER = originalDecoderId;
+    }
+  });
+
+  describe('getInitiativeFolderName', () => {
+    it('resolves initiative folders by initiative ID', () => {
+      expect(getInitiativeFolderName('elettrodomestici-id')).toBe('bonusElettrodomestici2025');
+      expect(getInitiativeFolderName('decoder-id')).toBe('bonusDecoder2026');
     });
 
-    it('should return empty string if startDate is undefined', () => {
-      expect(buildInitiativeFolderName('Bonus Decoder')).toBe('');
+    it('returns an empty namespace for an unknown initiative ID', () => {
+      expect(getInitiativeFolderName('unknown-id')).toBe('');
     });
   });
 
   describe('getInitiativeBasePath', () => {
-    it('should build correct base path using namespace key', () => {
-      expect(getInitiativeBasePath('Bonus Decoder', '2026-01-01')).toBe('./it/bonusDecoder2026/');
+    it('builds the base path from the initiative ID', () => {
+      expect(getInitiativeBasePath('decoder-id')).toBe('./it/bonusDecoder2026/');
+    });
+
+    it('returns an empty path for an unknown initiative ID', () => {
+      expect(getInitiativeBasePath('unknown-id')).toBe('');
     });
   });
 });

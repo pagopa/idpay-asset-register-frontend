@@ -3,9 +3,8 @@ import type { RootState } from '../store';
 import { loadItInitiativeConfig, InitiativeTablesConfig } from '../../locale/multiInitiativeConfig';
 
 type LoadParams = {
-  initiativeName?: string;
+  initiativeId?: string;
   role?: string;
-  startDate?: string;
 };
 
 type InitiativeConfigState = {
@@ -22,8 +21,8 @@ const initialState: InitiativeConfigState = {
   activeKey: null,
 };
 
-const buildKey = ({ initiativeName, role, startDate }: LoadParams) =>
-  `${initiativeName ?? ''}_${startDate ?? ''}_${role ?? ''}`;
+const buildKey = ({ initiativeId, role }: LoadParams) =>
+  `${initiativeId ?? ''}_${role ?? ''}`;
 
 export const loadInitiativeConfigThunk = createAsyncThunk<
   { key: string; config: InitiativeTablesConfig },
@@ -38,12 +37,7 @@ export const loadInitiativeConfigThunk = createAsyncThunk<
     return { key, config: state.byKey[key] };
   }
 
-  const config = await loadItInitiativeConfig(
-    params.initiativeName,
-    params.role,
-    true,
-    params.startDate
-  );
+  const config = await loadItInitiativeConfig(params.initiativeId, params.role);
 
   return { key, config };
 });
