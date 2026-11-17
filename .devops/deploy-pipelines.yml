@@ -10,6 +10,8 @@ variables:
 
   # global variables
   react_app_pagopa_help_email: '$(REACT_APP_ASSISTANCE_EMAIL)'
+  react_app_initiative_id_bonus_elettrodomestici: '$(BONUS_ELETTRODOMESTICI_2025_ID)'
+  react_app_initiative_id_bonus_decoder: '$(BONUS_DECODER_2026_ID)'
 
   ${{ if or(startsWith(variables['Build.SourceBranch'], 'refs/heads/uat'), startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix')) }}:
     environment: 'UAT'
@@ -30,8 +32,6 @@ variables:
     react_app_url_terms_and_conditions: '$(UAT_REACT_APP_URL_TERMS_AND_CONDITIONS)'
 
     react_app_url_storage: '$(UAT_REACT_APP_URL_STORAGE)'
-    react_app_initiative_id_bonus_elettrodomestici: '$(BONUS_ELETTRODOMESTICI_2025_ID)'
-    react_app_initiative_id_bonus_decoder: '$(BONUS_DECODER_2026_ID)'
     react_app_one_trust_base_url: '$(UAT_ONE_TRUST_BASE_URL)'
     # react_app_analytics_enabled: '$(UAT_ANALYTICS_ENABLED)'
     # react_app_analytics_mocked: '$(UAT_ANALYTICS_MOCKED)'
