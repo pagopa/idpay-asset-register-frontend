@@ -372,6 +372,34 @@ describe('ProductDetail', () => {
     expect(screen.getByText('-')).toBeInTheDocument();
   });
 
+  it('renders scart field as Si/No from boolean values', () => {
+    const { rerender } = render(
+      <ProductDetail
+        open
+        data={{ ...baseData, scart: true }}
+        detailFields={[{ id: 'scart' }]}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('Si')).toBeInTheDocument();
+
+    rerender(
+      <ProductDetail
+        open
+        data={{ ...baseData, scart: false }}
+        detailFields={[{ id: 'scart' }]}
+        isInvitaliaUser={false}
+        isInvitaliaAdmin={false}
+        onShowRejectedMsg={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('No')).toBeInTheDocument();
+  });
+
   it('renders motivation chronology and skips empty motivations', () => {
     renderDetail({
       data: {
@@ -475,6 +503,29 @@ describe('ProductDetail', () => {
     renderDetail({ detailFields: [{ id: 'productSheet' }] });
 
     expect(screen.getByText('pages.productDetail.productSheet')).toBeInTheDocument();
+  });
+
+  it('renders technical sheet link and normalizes missing protocol', () => {
+    renderDetail({
+      data: { ...baseData, technicalSheetUrl: 'example.com/scheda' },
+      detailFields: [{ id: 'technicalSheetUrl' }],
+    });
+
+    const link = screen.getByTestId('product-detail-link');
+    expect(link).toHaveAttribute('href', 'https://example.com/scheda');
+    expect(link).toHaveTextContent('example.com/scheda');
+  });
+
+  it('keeps protocol unchanged for technical sheet links that already include http/https', () => {
+    renderDetail({
+      data: { ...baseData, technicalSheetUrl: 'https://example.com/scheda' },
+      detailFields: [{ id: 'technicalSheetUrl' }],
+    });
+
+    expect(screen.getByTestId('product-detail-link')).toHaveAttribute(
+      'href',
+      'https://example.com/scheda'
+    );
   });
 
   it('renders default eprel label when cooking hobs config is missing', () => {
@@ -581,6 +632,7 @@ describe('ProductDetail', () => {
 
     expect(screen.getByTestId('rejectedBtn')).toBeInTheDocument();
   });
+
 
   it('renders formal motivation header with role for non-operator user', () => {
     renderDetail({ data: buildRejectedFormalData('Formal reason with role') });

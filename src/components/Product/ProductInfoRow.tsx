@@ -1,5 +1,6 @@
-import { ListItem, Box, Typography, Tooltip } from '@mui/material';
+import { ListItem, Box, Typography } from '@mui/material';
 import { ReactNode, forwardRef } from 'react';
+import TruncatedText from '../TruncatedText/TruncatedText';
 
 type ProductInfoRowProps = {
   label: string;
@@ -8,7 +9,10 @@ type ProductInfoRowProps = {
   valueVariant?: 'body1' | 'body2' | 'h6';
   sx?: object;
   labelColor?: string;
+  /** @deprecated kept for backward compatibility; values are always single-line now. */
   maxValueLines?: number;
+  /** Disable single-line truncation for multi-line content (e.g. motivations). */
+  disableTruncation?: boolean;
 };
 
 const ProductInfoRow = forwardRef<HTMLLIElement, ProductInfoRowProps>(
@@ -20,7 +24,7 @@ const ProductInfoRow = forwardRef<HTMLLIElement, ProductInfoRowProps>(
       valueVariant = 'body2',
       sx = {},
       labelColor,
-      maxValueLines,
+      disableTruncation = false,
     },
     ref
   ) => (
@@ -30,50 +34,30 @@ const ProductInfoRow = forwardRef<HTMLLIElement, ProductInfoRowProps>(
           <Typography variant={labelVariant} color={labelColor ?? 'text.secondary'}>
             {label}
           </Typography>
-          <Tooltip
-            title={maxValueLines ? value : ''}
-            placement="bottom"
-            arrow
-            slotProps={{
-              tooltip: {
-                sx: { textAlign: 'center' },
-              },
-            }}
-          >
+          {disableTruncation ? (
             <Typography
               variant={valueVariant}
               fontWeight="fontWeightMedium"
               component="div"
               sx={{
-                width: 'fit-content',
-                maxWidth: '100%',
+                width: '100%',
                 minWidth: 0,
-                ...(maxValueLines === 1
-                  ? {
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }
-                  : maxValueLines
-                  ? {
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitBoxOrient: 'vertical',
-                      WebkitLineClamp: maxValueLines,
-                      whiteSpace: 'normal',
-                      overflowWrap: 'anywhere',
-                    }
-                  : {
-                      wordBreak: 'break-word',
-                      overflowWrap: 'break-word',
-                      whiteSpace: 'pre-line',
-                    }),
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+                whiteSpace: 'pre-line',
               }}
             >
               {value}
             </Typography>
-          </Tooltip>
+          ) : (
+            <TruncatedText
+              variant={valueVariant}
+              fontWeight="fontWeightMedium"
+              component="div"
+            >
+              {value}
+            </TruncatedText>
+          )}
         </Box>
       </ListItem>
     </Box>

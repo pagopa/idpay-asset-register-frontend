@@ -4,9 +4,9 @@ import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks
 import { useSelector } from 'react-redux';
 import { userSelectors } from '@pagopa/selfcare-common-frontend/lib/redux/slices/userSlice';
 import { useLocation } from 'react-router-dom';
-import { Footer } from '@pagopa/selfcare-common-frontend/lib';
 import Header from '../Header/Header';
 import ROUTES from '../../routes';
+import { CustomFooter } from '../Footer/CustomFooter';
 
 type Props = {
   children?: React.ReactNode;
@@ -42,7 +42,7 @@ const TOSLayout = ({ children }: Props) => {
       <Box gridArea="body">{children}</Box>
 
       <Box gridArea="footer">
-        <Footer onExit={onExit} loggedUser={true} />
+        <CustomFooter />
       </Box>
     </Box>
   );

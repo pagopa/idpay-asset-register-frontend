@@ -15,6 +15,10 @@ jest.mock('../ManufacturerDetail', () => (props: any) => (
   <div data-testid="manufacturer-detail">{JSON.stringify(props.data)}</div>
 ));
 
+jest.mock('../../../utils/constants', () => ({
+  DEBUG_CONSOLE: true,
+}));
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import InvitaliaOverview from '../invitaliaOverview';
 import * as registerService from '../../../services/registerService';
@@ -236,15 +240,18 @@ describe('InvitaliaOverview', () => {
   });
 
   it('handles error in fetchInstitutions', async () => {
-    jest.spyOn(registerService, 'getProducers').mockRejectedValue(new Error('fail'));
+    const error = new Error('fail');
+    jest.spyOn(registerService, 'getProducers').mockRejectedValue(error);
     renderWithProvider(<InvitaliaOverview />);
     await waitFor(() => {
       expect(screen.getByText('Loaded')).toBeInTheDocument();
     });
+    expect(console.error).toHaveBeenCalledWith('Error fetching institutions:', error);
   });
 
   it('handles error in handleDetailRequest', async () => {
-    jest.spyOn(registerService, 'getInstitutionById').mockRejectedValue(new Error('fail'));
+    const error = new Error('fail');
+    jest.spyOn(registerService, 'getInstitutionById').mockRejectedValue(error);
     renderWithProvider(<InvitaliaOverview />);
     await waitFor(() => {
       expect(screen.getByTestId('table-count')).toHaveTextContent('2');
@@ -255,5 +262,19 @@ describe('InvitaliaOverview', () => {
       expect(registerService.getInstitutionById).toHaveBeenCalledWith('1');
     });
     expect(screen.queryByTestId('detail-drawer')).not.toBeInTheDocument();
+    expect(console.error).toHaveBeenCalledWith('Error fetching institution detail:', error);
+  });
+
+  it('resets page to 0 when rows per page changes', async () => {
+    renderWithProvider(<InvitaliaOverview />);
+    await screen.findByText('Loaded');
+
+    fireEvent.click(screen.getByText('PageChange'));
+    expect(screen.getByTestId('table-page')).toHaveTextContent('1');
+
+    fireEvent.click(screen.getByText('RowsPerPage'));
+
+    expect(screen.getByTestId('table-rows')).toHaveTextContent('5');
+    expect(screen.getByTestId('table-page')).toHaveTextContent('0');
   });
 });

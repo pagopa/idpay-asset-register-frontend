@@ -55,19 +55,19 @@ export default function SideMenu() {
       ? routeMatch.params.initiativeId
       : undefined;
 
+  const firstInitiativeId = initiatives.find(
+    (initiative) => initiative.initiativeId && initiative.initiativeName
+  )?.initiativeId;
+
   useEffect(() => {
     if (initiativeIdFromRoute) {
       setExpanded(`panel-${initiativeIdFromRoute}`);
-    }
-  }, [initiativeIdFromRoute]);
-
-  useEffect(() => {
-    const firstInitiativeId = initiatives[0]?.initiativeId;
-
-    if (!initiativeIdFromRoute && !expanded && firstInitiativeId && initiatives.length === 1) {
+    } else if (location.pathname === ROUTES.HOME && firstInitiativeId) {
       setExpanded(`panel-${firstInitiativeId}`);
+    } else {
+      setExpanded(false);
     }
-  }, [expanded, initiativeIdFromRoute, initiatives]);
+  }, [initiativeIdFromRoute, firstInitiativeId, location.pathname]);
 
   const handleAccordionChange =
     (initiativeId: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {

@@ -65,6 +65,29 @@ describe('filtersRender - select', () => {
     });
   });
 
+  it('falls back to empty label when template option has no label information', () => {
+    const setFilters = jest.fn();
+    const element = filtersRender.select({
+      item: { id: 'status' },
+      t: t as any,
+      filters: {},
+      setFilters,
+      setErrors: jest.fn(),
+      template: {
+        UNKNOWN: {} as any,
+      },
+    });
+
+    element.props.onChange({
+      target: { value: 'UNKNOWN' },
+    });
+
+    expect(setFilters).toHaveBeenCalledWith('status', {
+      value: 'UNKNOWN',
+      label: '',
+    });
+  });
+
   it('renders colored select options and tolerates missing templates', () => {
     const colored = filtersRender.select({
       item: { id: 'status', labelKey: 'status.label' },
@@ -89,6 +112,21 @@ describe('filtersRender - select', () => {
     });
 
     expect(empty.props.children).toEqual([]);
+  });
+
+  it('renders plain select options when color is missing', () => {
+    const plain = filtersRender.select({
+      item: { id: 'status', labelKey: 'status.label' },
+      t: t as any,
+      filters: {},
+      setFilters: jest.fn(),
+      setErrors: jest.fn(),
+      template: {
+        PLAIN: { label: 'plain.label' },
+      },
+    });
+
+    expect(plain.props.children[0].props.children).toBe('plain.label');
   });
 });
 
@@ -163,8 +201,24 @@ describe('filtersRender - text', () => {
     expect(element.props.slotProps.htmlInput).toEqual({ maxLength: 3 });
   });
 
+  it('uses an empty translated label when labelKey is missing', () => {
+    const element = filtersRender.text({
+      item: {
+        id: 'code',
+      },
+      t: t as any,
+      filters: {},
+      setFilters: jest.fn(),
+      setErrors: jest.fn(),
+    } as any);
+
+    expect(element.props.label).toBe('');
+  });
+
   it('handles paste', () => {
     const setFilters = jest.fn();
+    const setErrors = jest.fn();
+    const preventDefault = jest.fn();
 
     const element = filtersRender.text({
       item: {
@@ -175,17 +229,19 @@ describe('filtersRender - text', () => {
       t: t as any,
       filters: {},
       setFilters,
-      setErrors: jest.fn(),
+      setErrors,
     } as any);
 
     element.props.onPaste({
       clipboardData: {
         getData: () => '1 2 3',
       },
-      preventDefault: jest.fn(),
+      preventDefault,
     });
 
+    expect(preventDefault).toHaveBeenCalled();
     expect(setFilters).toHaveBeenCalledWith('code', { value: undefined });
+    expect(setErrors).toHaveBeenCalledWith('code', false);
   });
 
   it('handles invalid pasted values', () => {

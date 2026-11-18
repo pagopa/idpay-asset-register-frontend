@@ -121,7 +121,8 @@ describe('useProductsTable', () => {
       'eprel',
       'gtin',
       'product',
-      'file'
+      'file',
+      undefined
     );
     expect(result.current.paginatorFrom).toBe(11);
     expect(result.current.paginatorTo).toBe(20);
