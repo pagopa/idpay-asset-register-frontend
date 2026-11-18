@@ -32,9 +32,8 @@ describe('initiativeConfigSlice', () => {
 
     await (store.dispatch as any)(
       loadInitiativeConfigThunk({
-        initiativeName: 'Bonus Decoder',
+        initiativeId: 'decoder-id',
         role: 'invitalia',
-        startDate: '2026-01-01',
       })
     );
 
@@ -43,6 +42,7 @@ describe('initiativeConfigSlice', () => {
     expect(state.loading).toBe(false);
     expect(state.error).toBe(false);
     expect(Object.keys(state.byKey).length).toBe(1);
+    expect(mockedLoader.loadItInitiativeConfig).toHaveBeenCalledWith('decoder-id', 'invitalia');
   });
 
   it('should use cached config if key already exists', async () => {
@@ -51,15 +51,33 @@ describe('initiativeConfigSlice', () => {
     mockedLoader.loadItInitiativeConfig.mockResolvedValue({ test: true } as any);
 
     const params = {
-      initiativeName: 'Bonus Decoder',
+      initiativeId: 'decoder-id',
       role: 'invitalia',
-      startDate: '2026-01-01',
     };
 
     await (store.dispatch as any)(loadInitiativeConfigThunk(params));
     await (store.dispatch as any)(loadInitiativeConfigThunk(params));
 
     expect(mockedLoader.loadItInitiativeConfig).toHaveBeenCalledTimes(1);
+  });
+
+  it('should cache configurations separately by initiative ID', async () => {
+    const store = createTestStore();
+
+    mockedLoader.loadItInitiativeConfig.mockResolvedValue({ test: true } as any);
+
+    await (store.dispatch as any)(
+      loadInitiativeConfigThunk({ initiativeId: 'initiative-a', role: 'invitalia' })
+    );
+    await (store.dispatch as any)(
+      loadInitiativeConfigThunk({ initiativeId: 'initiative-b', role: 'invitalia' })
+    );
+
+    expect(mockedLoader.loadItInitiativeConfig).toHaveBeenCalledTimes(2);
+    expect(Object.keys(store.getState().initiativeConfig.byKey)).toEqual([
+      'initiative-a_invitalia',
+      'initiative-b_invitalia',
+    ]);
   });
 
   it('should set error on rejected thunk', async () => {
@@ -69,9 +87,8 @@ describe('initiativeConfigSlice', () => {
 
     await (store.dispatch as any)(
       loadInitiativeConfigThunk({
-        initiativeName: 'Bonus Decoder',
+        initiativeId: 'decoder-id',
         role: 'invitalia',
-        startDate: '2026-01-01',
       })
     );
 
@@ -89,11 +106,9 @@ describe('initiativeConfigSlice', () => {
 
     expect(mockedLoader.loadItInitiativeConfig).toHaveBeenCalledWith(
       undefined,
-      undefined,
-      true,
       undefined
     );
-    expect(store.getState().initiativeConfig.byKey.__).toEqual(config);
+    expect(store.getState().initiativeConfig.byKey._).toEqual(config);
   });
 
   it('should clear loaded initiative config', async () => {
@@ -101,7 +116,7 @@ describe('initiativeConfigSlice', () => {
     mockedLoader.loadItInitiativeConfig.mockResolvedValue({ test: true } as any);
 
     await (store.dispatch as any)(
-      loadInitiativeConfigThunk({ initiativeName: 'Bonus Decoder' })
+      loadInitiativeConfigThunk({ initiativeId: 'decoder-id' })
     );
     store.dispatch(clearInitiativeConfig());
 
@@ -121,7 +136,7 @@ describe('initiativeConfigSlice', () => {
 
     mockedLoader.loadItInitiativeConfig.mockResolvedValue(config);
     await (store.dispatch as any)(
-      loadInitiativeConfigThunk({ initiativeName: 'Bonus Decoder' })
+      loadInitiativeConfigThunk({ initiativeId: 'decoder-id' })
     );
 
     expect(selectActiveInitiativeConfig(store.getState() as any)).toEqual(config);

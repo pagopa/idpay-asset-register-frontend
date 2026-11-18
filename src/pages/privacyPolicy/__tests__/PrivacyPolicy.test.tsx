@@ -57,7 +57,10 @@ describe('PrivacyPolicy component', () => {
     );
 
     expect(OneTrustContentWrapper).toHaveBeenCalledWith(
-      { idSelector: ENV.ONE_TRUST.PRIVACY_POLICY_ID },
+      {
+        idSelector: ENV.ONE_TRUST.PRIVACY_POLICY_ID,
+        isContentLoaded: false
+      },
       {}
     );
   });
