@@ -78,7 +78,24 @@ export const getLogicalRoleName = (
 const loadGlobalDefaultConfig = async (role?: string): Promise<InitiativeTablesConfig> => {
   const mod = await import(`./it/${DEFAULT_INITIATIVE_NAMESPACE}/config.json`);
   const config = (mod as { default?: InitiativeTablesConfig }).default ?? {};
-  return applySubRolePermissions(config, resolveSubRole(role));
+  const normalizedRole = normalizeRole(role);
+
+  if (!normalizedRole) {
+    return applySubRolePermissions(config, resolveSubRole(role));
+  }
+
+  try {
+    const roleMod = await import(
+      `./it/${DEFAULT_INITIATIVE_NAMESPACE}/${normalizedRole}/config.json`
+    );
+    const roleConfig = (roleMod as { default?: InitiativeTablesConfig }).default ?? {};
+    return applySubRolePermissions(mergeConfigs(config, roleConfig), resolveSubRole(role));
+  } catch (error: any) {
+    if (isModuleNotFoundError(error)) {
+      return applySubRolePermissions(config, resolveSubRole(role));
+    }
+    throw error;
+  }
 };
 
 const loadInitiativeDefaultConfig = async (

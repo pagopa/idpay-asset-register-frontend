@@ -1,0 +1,85 @@
+{
+  "roles": {
+    "name": "support",
+    "logicalName": "Supporto",
+    "subRoles": {
+      "support": {
+        "logicalName": "Supporto",
+        "permissions": {
+          "tables": ["products", "historyUpload","overviewInfo"]
+        }
+      }
+    }
+  },
+  "templates": {
+    "functions":{
+      "enableTemplateUpload":false   
+    }
+   },
+  "ui": {
+    "tables": {
+      "products": {
+        "organizationSource": "user",
+        "bulkRules": {
+          "preventMixedStatus": true
+        },
+        "columns": [
+          { "id": "gtinCode", "labelKey": "tables.products.columns.gtinCode", "sortable": true },
+          {
+            "id": "productCode",
+            "labelKey": "tables.products.columns.productCode",
+            "sortable": true
+          },
+          { "id": "category", "labelKey": "tables.products.columns.category", "sortable": true },
+          { "id": "status", "labelKey": "tables.products.columns.status", "sortable": true },
+          { "id": "batchName", "labelKey": "tables.products.columns.batchName", "sortable": true }
+        ],
+        "filters": [
+          {
+            "id": "status",
+            "type": "select",
+            "labelKey": "tables.products.filters.status",
+            "filtersBehavior": {
+              "statusOptionsByRole": {
+                "support": ["SUPERVISED","UPLOADED","WAIT_APPROVED","APPROVED","REJECTED"]
+              }
+            }
+          },
+          {
+            "id": "productFileId",
+            "type": "select",
+            "labelKey": "tables.products.filters.productFileId"
+          },
+          {
+            "id": "category",
+            "type": "select",
+            "labelKey": "tables.products.filters.category"
+          },
+          {
+            "id": "gtinCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.gtinCode",
+            "regEx": "^[a-zA-Z0-9]{1,14}$",
+            "message": "tables.products.filters.errors.gtinCode",
+            "inputProps": { "maxLength": 14 }
+          },
+          {
+            "id": "productCode",
+            "type": "text",
+            "labelKey": "tables.products.filters.productCode"
+          }
+        ]
+      },
+      "historyUpload":{
+          "functions":{
+            "enableDownloadReport":false
+          }
+      },
+      "overviewInfo":{
+        "functions":{
+          "enableModifyEmail":false
+        }
+      }
+    }
+  }
+}
