@@ -199,6 +199,23 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
       expect(result).toEqual(defaultConfig);
     });
 
+    it('applies the role config of the default folder for the default initiative', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
+      const result = await loadItInitiativeConfig('default', 'operatore');
+
+      expect(result.roles?.name).toBe('operatore');
+      expect(result.ui?.tables?.products).toMatchObject({ organizationSource: 'user' });
+    });
+
+    it('falls back to global default for an unknown role on the default initiative', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
+      const result = await loadItInitiativeConfig('default', 'unknownrole');
+
+      expect(result).toEqual(defaultConfig);
+    });
+
     it('merges global default with initiative default config when loading without role', async () => {
       const mergeSpy = jest.fn((base: any, override: any) => ({ ...base, ...override }));
       jest.doMock('../config/mergeConfigs', () => ({ mergeConfigs: mergeSpy }));
