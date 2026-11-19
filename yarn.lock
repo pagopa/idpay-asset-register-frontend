@@ -11236,9 +11236,7 @@ swagger-schema-official@2.0.0-bab6bed:
   integrity sha512-rCC0NWGKr/IJhtRuPq/t37qvZHI/mH4I4sxflVM+qgVe5Z2uOCivzWaVbuioJaB61kvm5UvB7b49E+oBY0M8jA==
 
 swagger-typescript-api@^13.6.7:
-  version "13.7.2"
-  resolved "https://registry.yarnpkg.com/swagger-typescript-api/-/swagger-typescript-api-13.7.2.tgz#2816a23f4d0ef89fc530d893856ab7bec9f9b879"
-  integrity sha512-LQ6LJ6c7HM2/inzly0whDTwme3yAQa6VAHVLh+lBr6ZqDmKt6Zmdu8zFZM793qxX6Rm/WX5uu9GhjeC71KLUiA==
+  version "13.12.2"
   dependencies:
     "@apidevtools/swagger-parser" "12.1.0"
     "@biomejs/js-api" "4.0.0"
