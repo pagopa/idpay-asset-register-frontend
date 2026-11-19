@@ -384,7 +384,7 @@ describe('ProductDetail', () => {
       />
     );
 
-    expect(screen.getByText('Si')).toBeInTheDocument();
+    expect(screen.getByText('Sì')).toBeInTheDocument();
 
     rerender(
       <ProductDetail
