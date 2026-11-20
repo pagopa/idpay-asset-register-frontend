@@ -138,7 +138,7 @@ const defaultDetailLabelKeys: Record<string, string> = {
 };
 
 const isCategoryMatch = (category: string | undefined, cookingHobsLabel?: string): boolean => {
-  if (!category || !cookingHobsLabel) {return false;}
+  if (!category || !cookingHobsLabel) { return false; }
   return category.toLowerCase() === cookingHobsLabel.toLowerCase();
 };
 
@@ -444,26 +444,25 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
     const d = new Date(date);
     return !isNaN(d.getTime());
   }
+  const rejectedEntry = [...chronology]
+    .reverse()
+    .find((entry: any) => entry?.targetStatus === PRODUCTS_STATES.REJECTED && isValidDateString(entry?.updateDate));
 
-  function getFormalMotivationDateLabel(chronology: Array<any>) {
+  function getFormalMotivationDateLabel() {
     try {
-      const rejectedEntry = chronology.find(
-        (entry: any) => entry?.targetStatus === 'REJECTED' && isValidDateString(entry?.updateDate)
-      );
-      if (rejectedEntry) {
-        return format(new Date(rejectedEntry.updateDate), 'dd/MM/yyyy, HH:mm');
+      if (rejectedEntry?.updateDate) {
+        return format(new Date(rejectedEntry?.updateDate), 'dd/MM/yyyy, HH:mm');
       }
-    } catch (error) {
-      // swallow formatting errors silently
+    } catch {
+      return EMPTY_DATA;
     }
     return EMPTY_DATA;
   }
 
-  function getFormalMotivationOperator(user: any, chronology: Array<any>) {
+  function getFormalMotivationOperator(user: any) {
     if (user?.org_role !== USERS_TYPES.OPERATORE) {
-      return chronology[0]?.role
-        ? `${USERS_NAMES.OPERATORE} ${chronology[0].role}`
-        : USERS_NAMES.OPERATORE;
+      const role = rejectedEntry?.role;
+      return role ? `${USERS_NAMES.OPERATORE} ${role}` : USERS_NAMES.OPERATORE;
     }
     return '';
   }
@@ -492,8 +491,8 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
     ? null
     : ({
       renderCustom(this: RowConfig) {
-        const dateLabel = getFormalMotivationDateLabel(chronology);
-        const operator = getFormalMotivationOperator(user, chronology);
+        const dateLabel = getFormalMotivationDateLabel();
+        const operator = getFormalMotivationOperator(user);
         const header = getFormalMotivationHeader(user, dateLabel, operator);
 
         return (
@@ -554,8 +553,8 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
               !(row as RowConfig).truncate
                 ? undefined
                 : (row as RowConfig).valueVariant === 'h6'
-                ? 2
-                : 1
+                  ? 2
+                  : 1
             }
             sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
           />
