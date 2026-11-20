@@ -39,7 +39,7 @@ export const useScopedTranslation = (
 
   const namespacesToLoad = useMemo(() => {
     const list = initiativeName
-      ? [...namespaces.common, ...namespaces.initiative]
+      ? [...namespaces.common, ...namespaces.initiative, ...namespaces.default]
       : [...namespaces.common, ...namespaces.default];
 
     return Array.from(new Set(list));
@@ -47,7 +47,7 @@ export const useScopedTranslation = (
 
   const namespacesForHook = useMemo((): Array<string> => {
     if (initiativeName) {
-      return ['common', `${initiativeName}/copy`, `${initiativeName}/tos`];
+      return ['common', `${initiativeName}/copy`, `${initiativeName}/tos`, ...namespaces.default];
     }
 
     return ['common', 'default/copy'];
@@ -78,7 +78,16 @@ export const useScopedTranslation = (
           return initiativeValue;
         }
 
-        return rawT(key, options);
+        const commonValue = rawT(key, options);
+
+        if (commonValue === key) {
+          return rawT(key, {
+            ns: 'default/copy',
+            ...options,
+          });
+        }
+
+        return commonValue;
       }) as TFunction,
     [rawT, initiativeName]
   );

@@ -941,8 +941,8 @@ components:
           description: 'ENG: IP connectivity support <br> IT: Eventuale connessione IP'
           enum:
             - LAN
-            - WIFI
-            - LAN e WIFI
+            - WI-FI
+            - LAN e WI-FI
             - Nessuna
           nullable: false
         technicalSheetUrl:
