@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper, Tooltip, Link, ListItem } from '@mui/material';
+import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper, ListItem } from '@mui/material';
 import { TextareaAutosize } from '@mui/base';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
@@ -7,12 +7,19 @@ import FlagIcon from '@mui/icons-material/Flag';
 import { theme } from '@pagopa/mui-italia';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { useInitiativeConfig } from '../../hooks/useInitiativeConfig';
-import { EMPTY_DATA, MIDDLE_STATES, PRODUCTS_STATES, USERS_NAMES, USERS_TYPES } from '../../utils/constants';
+import {
+  EMPTY_DATA,
+  MIDDLE_STATES,
+  PRODUCTS_STATES,
+  USERS_NAMES,
+  USERS_TYPES,
+} from '../../utils/constants';
 import { fetchUserFromLocalStorage, truncateString } from '../../helpers';
 import { statusChangeMessage } from '../../model/Product';
 import { ProductDTO, ProductStatus } from '../../api/generated/register';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { setRejectedStatusList, setWaitApprovedStatusList } from '../../services/registerService';
+import { OptionalLink } from '../Link/OptionalLink';
 import ProductConfirmDialog from './ProductConfirmDialog';
 import ProductModal from './ProductModal';
 import ProductInfoRow from './ProductInfoRow';
@@ -131,7 +138,7 @@ const defaultDetailLabelKeys: Record<string, string> = {
 };
 
 const isCategoryMatch = (category: string | undefined, cookingHobsLabel?: string): boolean => {
-  if (!category || !cookingHobsLabel) {return false;}
+  if (!category || !cookingHobsLabel) { return false; }
   return category.toLowerCase() === cookingHobsLabel.toLowerCase();
 };
 
@@ -155,7 +162,7 @@ const formatFieldValue = (
   }
   if (fieldId === 'scart') {
     const normalized = typeof value === 'boolean' ? value : String(value).toLowerCase() === 'true';
-    return normalized ? 'Si' : 'No';
+    return normalized ? 'Sì' : 'No';
   }
   if (fieldId === 'registrationDate') {
     return String(format(new Date(String(value)), 'dd/MM/yyyy'));
@@ -176,11 +183,7 @@ const getFieldSx = (fieldId: string): SxProps<Theme> | undefined => {
   return undefined;
 };
 
-const normalizeHref = (url: string): string =>
-  /^https?:\/\//i.test(url) ? url : `https://${url}`;
-
 function ProductLinkRow({ label, url }: { label: string; url: string }) {
-  const href = normalizeHref(url);
   return (
     <Box sx={{ width: '100%', minWidth: 0 }}>
       <ListItem disablePadding sx={{ width: '100%', minWidth: 0 }}>
@@ -188,36 +191,11 @@ function ProductLinkRow({ label, url }: { label: string; url: string }) {
           <Typography variant="body1" color="text.secondary">
             {label}
           </Typography>
-          <Tooltip
-            title={url}
-            placement="bottom"
-            arrow
-            slotProps={{
-              tooltip: {
-                sx: { textAlign: 'center', wordBreak: 'break-all' },
-              },
-            }}
-          >
-            <Link
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="body2"
-              fontWeight="fontWeightMedium"
-              data-testid="product-detail-link"
-              sx={{
-                display: 'block',
-                width: 'fit-content',
-                maxWidth: '100%',
-                minWidth: 0,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {url}
-            </Link>
-          </Tooltip>
+          <OptionalLink
+            value={url}
+            name="technicalSheetUrl"
+            testId="product-detail-link"
+          />
         </Box>
       </ListItem>
     </Box>
@@ -250,12 +228,12 @@ function mapDetailFieldToRowConfig(
   if (isProductLink && hasValue) {
     return {
       label: t(getFieldLabel(field, isCookinghobs)),
-      value: String(value),
+      value: String(value).trim(),
       renderCustom() {
         return (
           <ProductLinkRow
             label={t(getFieldLabel(field, isCookinghobs))}
-            url={String(value)}
+            url={String(value).trim()}
           />
         );
       },
@@ -466,26 +444,25 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
     const d = new Date(date);
     return !isNaN(d.getTime());
   }
+  const rejectedEntry = [...chronology]
+    .reverse()
+    .find((entry: any) => entry?.targetStatus === PRODUCTS_STATES.REJECTED && isValidDateString(entry?.updateDate));
 
-  function getFormalMotivationDateLabel(chronology: Array<any>) {
+  function getFormalMotivationDateLabel() {
     try {
-      const rejectedEntry = chronology.find(
-        (entry: any) => entry?.targetStatus === 'REJECTED' && isValidDateString(entry?.updateDate)
-      );
-      if (rejectedEntry) {
-        return format(new Date(rejectedEntry.updateDate), 'dd/MM/yyyy, HH:mm');
+      if (rejectedEntry?.updateDate) {
+        return format(new Date(rejectedEntry?.updateDate), 'dd/MM/yyyy, HH:mm');
       }
-    } catch (error) {
-      // swallow formatting errors silently
+    } catch {
+      return EMPTY_DATA;
     }
     return EMPTY_DATA;
   }
 
-  function getFormalMotivationOperator(user: any, chronology: Array<any>) {
+  function getFormalMotivationOperator(user: any) {
     if (user?.org_role !== USERS_TYPES.OPERATORE) {
-      return chronology[0]?.role
-        ? `${USERS_NAMES.OPERATORE} ${chronology[0].role}`
-        : USERS_NAMES.OPERATORE;
+      const role = rejectedEntry?.role;
+      return role ? `${USERS_NAMES.OPERATORE} ${role}` : USERS_NAMES.OPERATORE;
     }
     return '';
   }
@@ -514,8 +491,8 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
     ? null
     : ({
       renderCustom(this: RowConfig) {
-        const dateLabel = getFormalMotivationDateLabel(chronology);
-        const operator = getFormalMotivationOperator(user, chronology);
+        const dateLabel = getFormalMotivationDateLabel();
+        const operator = getFormalMotivationOperator(user);
         const header = getFormalMotivationHeader(user, dateLabel, operator);
 
         return (
@@ -576,8 +553,8 @@ function ProductInfoRows({ data, detailFields, children }: ProductInfoRowsProps)
               !(row as RowConfig).truncate
                 ? undefined
                 : (row as RowConfig).valueVariant === 'h6'
-                ? 2
-                : 1
+                  ? 2
+                  : 1
             }
             sx={(row as RowConfig).sx != null ? ((row as RowConfig).sx as object) : undefined}
           />

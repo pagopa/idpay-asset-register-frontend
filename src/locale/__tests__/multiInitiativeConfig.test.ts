@@ -3,6 +3,28 @@ import defaultConfig from '../it/default/config.json';
 const importMultiInitiativeConfig = async () => import('../multiInitiativeConfig');
 
 describe('multiInitiativeConfig – real runtime aligned', () => {
+  const originalElettrodomesticiId = process.env.REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI;
+  const originalDecoderId = process.env.REACT_APP_INITIATIVE_ID_BONUS_DECODER;
+
+  beforeAll(() => {
+    process.env.REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI = 'elettrodomestici-id';
+    process.env.REACT_APP_INITIATIVE_ID_BONUS_DECODER = 'decoder-id';
+  });
+
+  afterAll(() => {
+    if (originalElettrodomesticiId === undefined) {
+      delete process.env.REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI;
+    } else {
+      process.env.REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI = originalElettrodomesticiId;
+    }
+
+    if (originalDecoderId === undefined) {
+      delete process.env.REACT_APP_INITIATIVE_ID_BONUS_DECODER;
+    } else {
+      process.env.REACT_APP_INITIATIVE_ID_BONUS_DECODER = originalDecoderId;
+    }
+  });
+
   afterEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
@@ -45,7 +67,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
   });
 
   describe('loadItInitiativeConfig', () => {
-    it('returns {} when initiativeName is undefined', async () => {
+    it('returns {} when initiativeId is undefined', async () => {
       const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
 
       const result = await loadItInitiativeConfig(undefined);
@@ -87,10 +109,8 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
       const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
 
       const result = await loadItInitiativeConfig(
-        'bonusElettrodomestici',
-        'missing_full',
-        true,
-        '2025-01-01'
+        'elettrodomestici-id',
+        'missing_full'
       );
 
       expect(result).toMatchObject({
@@ -118,9 +138,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
-      await expect(fresh('bonusDecoder', 'invitalia_admin', true, '2026-01-01')).resolves.toEqual(
-        {}
-      );
+      await expect(fresh('decoder-id', 'invitalia_admin')).resolves.toEqual({});
     });
 
     it('logs the normalized role when debug console is enabled', async () => {
@@ -133,7 +151,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
-      await fresh('bonusDecoder', 'invitalia_admin', true, '2026-01-01');
+      await fresh('decoder-id', 'invitalia_admin');
 
       expect(consoleSpy).toHaveBeenCalledWith('role normalized:', 'invitalia');
 
@@ -149,9 +167,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
-      await expect(fresh('bonusDecoder', undefined, true, '2026-01-01')).rejects.toThrow(
-        'merge boom'
-      );
+      await expect(fresh('decoder-id')).rejects.toThrow('merge boom');
     });
 
     it('propagates unexpected errors', async () => {
@@ -183,6 +199,23 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
       expect(result).toEqual(defaultConfig);
     });
 
+    it('applies the role config of the default folder for the default initiative', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
+      const result = await loadItInitiativeConfig('default', 'operatore');
+
+      expect(result.roles?.name).toBe('operatore');
+      expect(result.ui?.tables?.products).toMatchObject({ organizationSource: 'user' });
+    });
+
+    it('falls back to global default for an unknown role on the default initiative', async () => {
+      const { loadItInitiativeConfig } = await importMultiInitiativeConfig();
+
+      const result = await loadItInitiativeConfig('default', 'unknownrole');
+
+      expect(result).toEqual(defaultConfig);
+    });
+
     it('merges global default with initiative default config when loading without role', async () => {
       const mergeSpy = jest.fn((base: any, override: any) => ({ ...base, ...override }));
       jest.doMock('../config/mergeConfigs', () => ({ mergeConfigs: mergeSpy }));
@@ -192,7 +225,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
-      const result = await fresh('bonusDecoder');
+      const result = await fresh('decoder-id');
 
       expect(mergeSpy).toHaveBeenCalled();
       expect(result).toMatchObject({ roles: expect.any(Object) });
@@ -207,7 +240,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
-      const result = await fresh('bonusDecoder', 'invitalia_admin');
+      const result = await fresh('decoder-id', 'invitalia_admin');
 
       expect(mergeSpy).toHaveBeenCalledTimes(2);
       expect(result).toMatchObject({ roles: expect.any(Object) });
@@ -225,7 +258,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
-      await expect(fresh('bonusDecoder')).rejects.toThrow('merge type error');
+      await expect(fresh('decoder-id')).rejects.toThrow('merge type error');
     });
 
     it('propagates non-module-not-found error from role-specific config loading (covers lines 126, 184, 207)', async () => {
@@ -240,7 +273,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
-      await expect(fresh('bonusDecoder', 'invitalia_admin')).rejects.toThrow(
+      await expect(fresh('decoder-id', 'invitalia_admin')).rejects.toThrow(
         'permission filter error'
       );
     });
@@ -252,7 +285,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
-      const result = await fresh('noCodeInit');
+      const result = await fresh('decoder-id');
       expect(result).toEqual(defaultConfig);
     });
 
@@ -265,7 +298,7 @@ describe('multiInitiativeConfig – real runtime aligned', () => {
 
       const { loadItInitiativeConfig: fresh } = await importMultiInitiativeConfig();
 
-      const result = await fresh('bonusDecoder', 'unknownrole_admin');
+      const result = await fresh('decoder-id', 'unknownrole_admin');
 
       expect(result).toMatchObject({ roles: expect.any(Object) });
       expect(mergeSpy).toHaveBeenCalledTimes(1);

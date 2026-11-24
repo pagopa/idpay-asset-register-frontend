@@ -8,6 +8,8 @@ declare namespace NodeJS {
 
     REACT_APP_API_MOCK_PARTIES: string;
     REACT_APP_API_MOCK_PRODUCTS: string;
+    REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI: string;
+    REACT_APP_INITIATIVE_ID_BONUS_DECODER: string;
   }
 }
 interface Window {

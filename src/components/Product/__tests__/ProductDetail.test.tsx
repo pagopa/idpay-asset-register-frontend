@@ -384,7 +384,7 @@ describe('ProductDetail', () => {
       />
     );
 
-    expect(screen.getByText('Si')).toBeInTheDocument();
+    expect(screen.getByText('Sì')).toBeInTheDocument();
 
     rerender(
       <ProductDetail
@@ -515,6 +515,20 @@ describe('ProductDetail', () => {
     expect(link).toHaveAttribute('href', 'https://example.com/scheda');
     expect(link).toHaveTextContent('example.com/scheda');
   });
+
+  it.each(['Nessuna', 'Scheda tecnica non disponibile', 'utente@example.com'])(
+    'renders non-URL technical sheet values as plain text: %s',
+    (value) => {
+    renderDetail({
+      data: { ...baseData, technicalSheetUrl: value },
+      detailFields: [{ id: 'technicalSheetUrl' }],
+    });
+
+    expect(screen.getByText(value)).toBeInTheDocument();
+    expect(screen.queryByTestId('product-detail-link')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    }
+  );
 
   it('keeps protocol unchanged for technical sheet links that already include http/https', () => {
     renderDetail({

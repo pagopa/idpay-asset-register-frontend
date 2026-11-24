@@ -1,24 +1,19 @@
-/**
- * Resolves the technical folder name for an initiative.
- *
- * Rules:
- * - Normalize displayName to camelCase.
- * - Append the year extracted from startDate (if provided).
- * - Build the base path as: "./it/" + folderName + "/".
- *
- * Ensures deterministic, scalable, and hardcoding-free folder resolution.
- */
-import { buildNamespaceKey } from '../utils/buildNamespaceKey';
-
-export const buildInitiativeFolderName = (displayName: string, startDate?: string): string => {
-  if (!displayName || !startDate) {
-    return '';
+export const getInitiativeFolderName = (initiativeId?: string): string => {
+  if (
+    initiativeId &&
+    initiativeId === process.env.REACT_APP_INITIATIVE_ID_BONUS_ELETTRODOMESTICI
+  ) {
+    return 'bonusElettrodomestici2025';
   }
 
-  return buildNamespaceKey(displayName, startDate);
+  if (initiativeId && initiativeId === process.env.REACT_APP_INITIATIVE_ID_BONUS_DECODER) {
+    return 'bonusDecoder2026';
+  }
+
+  return '';
 };
 
-export const getInitiativeBasePath = (displayName: string, startDate?: string): string => {
-  const folder = buildInitiativeFolderName(displayName, startDate);
-  return `./it/${folder}/`;
+export const getInitiativeBasePath = (initiativeId?: string): string => {
+  const folder = getInitiativeFolderName(initiativeId);
+  return folder ? `./it/${folder}/` : '';
 };

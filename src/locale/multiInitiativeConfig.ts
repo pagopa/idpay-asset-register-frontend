@@ -78,7 +78,24 @@ export const getLogicalRoleName = (
 const loadGlobalDefaultConfig = async (role?: string): Promise<InitiativeTablesConfig> => {
   const mod = await import(`./it/${DEFAULT_INITIATIVE_NAMESPACE}/config.json`);
   const config = (mod as { default?: InitiativeTablesConfig }).default ?? {};
-  return applySubRolePermissions(config, resolveSubRole(role));
+  const normalizedRole = normalizeRole(role);
+
+  if (!normalizedRole) {
+    return applySubRolePermissions(config, resolveSubRole(role));
+  }
+
+  try {
+    const roleMod = await import(
+      `./it/${DEFAULT_INITIATIVE_NAMESPACE}/${normalizedRole}/config.json`
+    );
+    const roleConfig = (roleMod as { default?: InitiativeTablesConfig }).default ?? {};
+    return applySubRolePermissions(mergeConfigs(config, roleConfig), resolveSubRole(role));
+  } catch (error: any) {
+    if (isModuleNotFoundError(error)) {
+      return applySubRolePermissions(config, resolveSubRole(role));
+    }
+    throw error;
+  }
 };
 
 const loadInitiativeDefaultConfig = async (
@@ -140,28 +157,23 @@ const resolveAndValidate = async (
 };
 
 const handleFallback = async (
-  initiativeName: string,
+  initiativeId: string,
   role?: string,
   allowFallback?: boolean
 ): Promise<InitiativeTablesConfig> => {
-  if (allowFallback && initiativeName !== DEFAULT_INITIATIVE_NAMESPACE) {
+  if (allowFallback && initiativeId !== DEFAULT_INITIATIVE_NAMESPACE) {
     return loadGlobalDefaultConfig(role);
   }
   return {};
 };
 
-const resolveBasePathSafe = (initiativeName: string, startDate?: string): string => {
-  const official = getInitiativeBasePath(initiativeName, startDate);
-  return official && official !== './it//' ? official : `./it/${initiativeName}/`;
-};
-
 const executeInitiativeLoad = async (
   basePath: string,
-  safeInitiativeName: string,
+  initiativeFolder: string,
   role?: string
 ): Promise<InitiativeTablesConfig> => {
   const loadWithoutRole = async (): Promise<InitiativeTablesConfig> =>
-    safeInitiativeName === DEFAULT_INITIATIVE_NAMESPACE
+    initiativeFolder === DEFAULT_INITIATIVE_NAMESPACE
       ? loadGlobalDefaultConfig(role)
       : loadInitiativeDefaultConfig(basePath, role);
 
@@ -191,23 +203,31 @@ const executeInitiativeLoad = async (
 };
 
 export const loadItInitiativeConfig = async (
-  initiativeName?: string,
+  initiativeId?: string,
   role?: string,
-  allowFallback: boolean = true,
-  startDate?: string
+  allowFallback: boolean = true
 ): Promise<InitiativeTablesConfig> => {
-  if (!initiativeName) {
+  if (!initiativeId) {
     return {};
   }
 
-  const basePath = resolveBasePathSafe(initiativeName, startDate);
-  const safeInitiativeName = basePath.replace('./it/', '').replace('/', '');
+  if (initiativeId === DEFAULT_INITIATIVE_NAMESPACE) {
+    return resolveAndValidate(() => loadGlobalDefaultConfig(role));
+  }
+
+  const basePath = getInitiativeBasePath(initiativeId);
+
+  if (!basePath) {
+    return handleFallback(initiativeId, role, allowFallback);
+  }
+
+  const initiativeFolder = basePath.replace('./it/', '').replace('/', '');
 
   try {
-    return await executeInitiativeLoad(basePath, safeInitiativeName, role);
+    return await executeInitiativeLoad(basePath, initiativeFolder, role);
   } catch (error) {
     if (error instanceof InitiativeNotFoundError) {
-      return handleFallback(initiativeName, role, allowFallback);
+      return handleFallback(initiativeId, role, allowFallback);
     }
     throw error;
   }

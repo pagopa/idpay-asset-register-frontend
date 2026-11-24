@@ -26,13 +26,10 @@ export const useInitiativeConfig = (): {
       return;
     }
 
-    const startDate = (initiative as any)?.startDate;
-
     void dispatch(
       loadInitiativeConfigThunk({
-        initiativeName: initiative?.initiativeName,
+        initiativeId: initiative.initiativeId,
         role: user.org_role,
-        startDate,
       })
     );
   }, [initiative, user?.org_role, dispatch]);

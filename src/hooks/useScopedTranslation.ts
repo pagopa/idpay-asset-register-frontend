@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { buildScopedNamespaces } from '../locale/namespaces';
-import { buildInitiativeFolderName } from '../locale/multiInitiativeBasePath';
+import { getInitiativeFolderName } from '../locale/multiInitiativeBasePath';
 import i18n from '../locale';
 import { useCurrentInitiative } from './useCurrentInitiative';
 
 const failedNamespaceLoads = new Set<string>();
 
 export type UseScopedTranslationOptions = {
-  initiativeName?: string;
+  initiativeId?: string;
   enableNamespaceLoading?: boolean;
 };
 
@@ -20,26 +20,17 @@ export type UseScopedTranslationResult = {
 };
 
 const resolveInitiativeNamespace = (
-  initiativeNameProp: string | undefined,
-  currentInitiative: any
-): string | undefined => {
-  if (initiativeNameProp) {
-    return initiativeNameProp;
-  }
-
-  if (!currentInitiative?.initiativeName) {
-    return undefined;
-  }
-
-  return buildInitiativeFolderName(currentInitiative.initiativeName, currentInitiative.startDate);
-};
+  initiativeId: string | undefined
+): string | undefined => getInitiativeFolderName(initiativeId) || undefined;
 
 export const useScopedTranslation = (
   options: UseScopedTranslationOptions = {}
 ): UseScopedTranslationResult => {
-  const { initiativeName: initiativeNameProp, enableNamespaceLoading = true } = options;
+  const { initiativeId: initiativeIdProp, enableNamespaceLoading = true } = options;
   const currentInitiative = useCurrentInitiative();
-  const initiativeName = resolveInitiativeNamespace(initiativeNameProp, currentInitiative);
+  const initiativeName = resolveInitiativeNamespace(
+    initiativeIdProp ?? currentInitiative?.initiativeId
+  );
 
   const namespaces = useMemo(
     () => buildScopedNamespaces(initiativeName ?? undefined),
@@ -48,7 +39,7 @@ export const useScopedTranslation = (
 
   const namespacesToLoad = useMemo(() => {
     const list = initiativeName
-      ? [...namespaces.common, ...namespaces.initiative]
+      ? [...namespaces.common, ...namespaces.initiative, ...namespaces.default]
       : [...namespaces.common, ...namespaces.default];
 
     return Array.from(new Set(list));
@@ -56,7 +47,7 @@ export const useScopedTranslation = (
 
   const namespacesForHook = useMemo((): Array<string> => {
     if (initiativeName) {
-      return ['common', `${initiativeName}/copy`, `${initiativeName}/tos`];
+      return ['common', `${initiativeName}/copy`, `${initiativeName}/tos`, ...namespaces.default];
     }
 
     return ['common', 'default/copy'];
@@ -87,7 +78,16 @@ export const useScopedTranslation = (
           return initiativeValue;
         }
 
-        return rawT(key, options);
+        const commonValue = rawT(key, options);
+
+        if (commonValue === key) {
+          return rawT(key, {
+            ns: 'default/copy',
+            ...options,
+          });
+        }
+
+        return commonValue;
       }) as TFunction,
     [rawT, initiativeName]
   );

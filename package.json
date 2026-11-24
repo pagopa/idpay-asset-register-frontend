@@ -130,8 +130,7 @@
       "src/reportWebVitals.ts",
       "src/api/generated",
       "src/api/registerApiClient.ts",
-      "src/locale/it.ts",
-      "src/hooks/*"
+      "src/locale/it.ts"
     ],
     "moduleNameMapper": {
       "next/router": "<rootDir>/__mocks__/next/router.js",
