@@ -2,6 +2,14 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import DrawerItem from '../DrawerItem';
 
+jest.mock('@pagopa/mui-italia', () => ({
+  CopyToClipboardButton: ({ onCopy }: { onCopy: () => void }) => (
+    <button type="button" onClick={onCopy}>
+      <span data-testid="ContentCopyIcon" />
+    </button>
+  ),
+}));
+
 describe('DrawerItem', () => {
   const itemHeader = 'Header';
   const itemValue = 'Value';

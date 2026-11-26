@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
-import { visuallyHidden } from '@mui/utils';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from '@mui/icons-material';
@@ -32,6 +31,7 @@ import { buildRoute } from '../../components/SideMenu/SideMenu';
 import { useCurrentInitiativeId } from '../../hooks/useCurrentInitiativeId';
 import { useAppDispatch } from '../../redux/hooks';
 import { EMPTY_DATA } from '../../utils/constants';
+import { visuallyHiddenSx } from '../../styles';
 import { EnhancedTableProps, HeadCell } from './helpers';
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -80,7 +80,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             >
               {headCell?.label}
               {orderBy === headCell?.id ? (
-                <Box component="span" sx={visuallyHidden}>
+                <Box component="span" sx={visuallyHiddenSx}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}

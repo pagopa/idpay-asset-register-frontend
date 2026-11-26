@@ -198,7 +198,7 @@ describe('filtersRender - text', () => {
 
     expect(element.props.error).toBe(true);
     expect(element.props.helperText).toBe('code.error');
-    expect(element.props.slotProps.htmlInput).toEqual({ maxLength: 3 });
+    expect(element.props.inputProps).toEqual({ maxLength: 3 });
   });
 
   it('uses an empty translated label when labelKey is missing', () => {

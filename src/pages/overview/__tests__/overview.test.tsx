@@ -89,6 +89,11 @@ const renderWithTheme = (component: React.ReactElement) => {
   return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
 };
 
+const getEmptyValueElements = (): Array<Element> =>
+  Array.from(document.querySelectorAll('p.MuiTypography-body2:not([aria-label])')).filter(
+    (element) => (element.textContent ?? '').trim() === ''
+  );
+
 jest.mock('@reduxjs/toolkit/query/react', () => ({
   createApi: jest.fn(),
   fetchBaseQuery: jest.fn(),
@@ -240,9 +245,7 @@ describe('Overview Component', () => {
 
       renderWithTheme(<Overview />);
 
-      const valueElements = screen.getAllByText('', {
-        selector: 'p.MuiTypography-body2[class*="css-bvuapi"]',
-      });
+      const valueElements = getEmptyValueElements();
       expect(valueElements).toHaveLength(6);
 
       valueElements.forEach((element) => {
@@ -265,9 +268,7 @@ describe('Overview Component', () => {
 
       renderWithTheme(<Overview />);
 
-      const valueElements = screen.getAllByText('', {
-        selector: 'p.MuiTypography-body2[class*="css-bvuapi"]',
-      });
+      const valueElements = getEmptyValueElements();
       expect(valueElements).toHaveLength(6);
 
       valueElements.forEach((element) => {
@@ -291,9 +292,7 @@ describe('Overview Component', () => {
       renderWithTheme(<Overview />);
 
       expect(screen.getByText('Ragione Sociale')).toBeInTheDocument();
-      const valueElements = screen.getAllByText('', {
-        selector: 'p.MuiTypography-body2[class*="css-bvuapi"]',
-      });
+      const valueElements = getEmptyValueElements();
       expect(valueElements).toHaveLength(3);
 
       valueElements.forEach((element) => {
@@ -407,9 +406,7 @@ describe('Overview Component', () => {
 
       renderWithTheme(<Overview />);
 
-      const valueElements = screen.getAllByText('', {
-        selector: 'p.MuiTypography-body2[class*="css-bvuapi"]',
-      });
+      const valueElements = getEmptyValueElements();
       expect(valueElements).toHaveLength(6);
 
       valueElements.forEach((element) => {

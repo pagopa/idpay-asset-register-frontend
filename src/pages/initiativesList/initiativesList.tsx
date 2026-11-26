@@ -12,7 +12,6 @@ import {
   TableSortLabel,
   TextField,
 } from '@mui/material';
-import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import SearchIcon from '@mui/icons-material/Search';
 import { grey } from '@mui/material/colors';
@@ -23,14 +22,14 @@ import EmptyListTable from '../components/EmptyListTable';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { getFirstInitiativeMenuItem } from '../../components/SideMenu/sideMenuConfig';
 import { EMPTY_DATA } from '../../utils/constants';
+import { InitiativeDTO } from '../../api/generated/register';
+import useScopedTranslation from "../../hooks/useScopedTranslation";
+import { visuallyHiddenSx } from '../../styles';
+import { Data, EnhancedTableProps, HeadCell, Order, getComparator, stableSort } from './helpers';
 
 type StatusEnum = InitiativeDTO['status'];
 const PUBLISHED: StatusEnum = 'PUBLISHED';
 const CLOSED: StatusEnum = 'CLOSED';
-import { InitiativeDTO } from '../../api/generated/register';
-import useScopedTranslation from "../../hooks/useScopedTranslation";
-import { Data, EnhancedTableProps, HeadCell, Order, getComparator, stableSort } from './helpers';
-
 const EMPTY_INITIATIVES_LIST: Array<InitiativeDTO> = [];
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -85,7 +84,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box component="span" sx={{ ...visuallyHidden }}>
+                <Box component="span" sx={visuallyHiddenSx}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}
