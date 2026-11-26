@@ -2,6 +2,14 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import ManufacturerDetail from '../ManufacturerDetail';
 
+jest.mock('@pagopa/mui-italia', () => ({
+  CopyToClipboardButton: ({ onCopy }: { onCopy: () => void }) => (
+    <button type="button" onClick={onCopy}>
+      <span data-testid="ContentCopyIcon" />
+    </button>
+  ),
+}));
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
