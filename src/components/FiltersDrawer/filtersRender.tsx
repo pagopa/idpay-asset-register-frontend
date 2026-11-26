@@ -104,7 +104,7 @@ export const filtersRender: Record<
           setFilters(id, { value: ruledValue });
           setErrors(id, isError);
         }}
-        slotProps={{ htmlInput: inputProps }}
+        inputProps={inputProps}
       />
     );
   },
