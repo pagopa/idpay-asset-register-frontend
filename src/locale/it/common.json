@@ -24,10 +24,13 @@
     "exitBtn": "Esci",
     "filterBtn": "Filtra",
     "initiativeStatusEnum": {
-      "closed": "Terminata",
+      "closed": "Conclusa",
       "published": "In corso"
     },
     "removeFiltersBtn": "Rimuovi filtri",
+    "clearSingleFilter": "Rimuovi filtro",
+    "openBtn": "Apri",
+    "requiredField": "* Campo obbligatorio",
     "sendBtn": "Invia",
     "title": "Registro dei beni",
     "advancedFilters": "Filtri avanzati",
@@ -178,7 +181,7 @@
         "categoryPlaceholder": "Categoria",
         "fileUpload": {
           "dragAreaText": "Trascina qui il file csv con la lista dei prodotti o",
-          "dragAreaLink": "selezionalo dal tuo computer",
+          "dragAreaLink": "Carica il file",
           "fileUploadHelpText": "Non sai come preparare il file?",
           "fileUploadHelpLinkLabel": "Scarica l’esempio",
           "fileIsLoading": "Caricamento in corso",
@@ -267,7 +270,12 @@
       "emptyList": "Nessun record corrisponde alla ricerca.",
       "noFileLoaded": "Non ci sono prodotti caricati.",
       "backToTable": "Torna alla tabella",
-      "elementsPerPage": "Elementi per pagina"
+      "elementsPerPage": "Elementi per pagina",
+      "rowsPerPage": "Righe per pagina",
+      "previousPage": "Pagina precedente",
+      "nextPage": "Pagina successiva",
+      "currentPage": "Pagina corrente",
+      "goToPage": "Vai alla pagina"
     },
     "uploadHistory": {
       "sideMenuTitle": "Storico caricamenti",

@@ -1,6 +1,7 @@
 import {
   Box,
   Chip,
+  IconButton,
   InputAdornment,
   Paper,
   Table,
@@ -14,8 +15,11 @@ import {
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
+import { MIChip } from '@pagopa/mui-italia/components/MIChip';
 import SearchIcon from '@mui/icons-material/Search';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { grey } from '@mui/material/colors';
+import { format, isValid, parseISO } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { generatePath, useNavigate } from 'react-router-dom';
 import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
@@ -32,6 +36,12 @@ import useScopedTranslation from "../../hooks/useScopedTranslation";
 import { Data, EnhancedTableProps, HeadCell, Order, getComparator, stableSort } from './helpers';
 
 const EMPTY_INITIATIVES_LIST: Array<InitiativeDTO> = [];
+
+const formatSpendingDate = (value?: string | null) => {
+  if (!value) { return EMPTY_DATA; }
+  const date = parseISO(value);
+  return isValid(date) ? format(date, 'dd/MM/yyyy') : EMPTY_DATA;
+};
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
@@ -53,10 +63,16 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       label: 'Creata da',
     },
     {
-      id: 'createdAt',
+      id: 'spendingPeriod',
       numeric: false,
       disablePadding: false,
-      label: 'Data di adesione',
+      label: 'Periodo di spesa',
+    },
+    {
+      id: 'initiativeId',
+      numeric: false,
+      disablePadding: false,
+      label: 'Codice identificativo',
     },
     {
       id: 'status',
@@ -77,11 +93,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
-              active={orderBy === headCell.id && headCell.id !== 'createdAt'}
+              active={orderBy === headCell.id && headCell.id !== 'spendingPeriod' && headCell.id !== 'initiativeId'}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-              hideSortIcon={headCell.id === 'createdAt'}
-              disabled={headCell.id === 'createdAt'}
+              hideSortIcon={headCell.id === 'spendingPeriod' || headCell.id === 'initiativeId'}
+              disabled={headCell.id === 'spendingPeriod' || headCell.id === 'initiativeId'}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -92,6 +108,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell aria-label="Azioni" />
       </TableRow>
     </TableHead>
   );
@@ -120,6 +137,9 @@ const InitiativesList = () => {
         organizationName: item.organizationName || '',
         createdAt: item?.createdAt
           ? new Date(item?.createdAt).toLocaleDateString('it-IT')
+          : EMPTY_DATA,
+        spendingPeriod: item.startDate || item.endDate
+          ? `${formatSpendingDate(item.startDate)} - ${formatSpendingDate(item.endDate)}`
           : EMPTY_DATA,
         serviceId: item.serviceId || '',
         status: (item.status as StatusEnum) ?? '',
@@ -154,6 +174,12 @@ const InitiativesList = () => {
     setOrderBy(property);
   };
 
+  const openInitiative = (initiativeId: string) => {
+    if (firstInitiativeMenuItem?.route) {
+      navigate(generatePath(firstInitiativeMenuItem.route, { initiativeId }));
+    }
+  };
+
   const getInitiativeStatusLabel = (status?: StatusEnum) => {
     switch (status) {
       case PUBLISHED:
@@ -180,9 +206,9 @@ const InitiativesList = () => {
   const renderInitiativeStatus = (status?: StatusEnum) => {
     switch (status) {
       case PUBLISHED:
-        return <Chip sx={{ fontSize: '14px' }} label={getInitiativeStatusLabel(status)} color="success" />;
+        return <MIChip label={getInitiativeStatusLabel(status)} color="success" />;
       case CLOSED:
-        return <Chip sx={{ fontSize: '14px' }} label={getInitiativeStatusLabel(status)} color="default" />;
+        return <Chip size="small" label={getInitiativeStatusLabel(status)} sx={{ backgroundColor: 'divider', color: 'text.primary' }} />;
       default:
         return null;
     }
@@ -227,7 +253,7 @@ const InitiativesList = () => {
             onChange={(e) => {
               handleSearchInitiatives(e.target.value);
             }}
-            inputProps={{ 'data-testid': 'search-initiatives' }}
+            inputProps={{ 'data-testid': 'search-initiatives', 'aria-label': "Cerca per nome dell'iniziativa" }}
           />
         </Box>
       </Box>
@@ -242,7 +268,7 @@ const InitiativesList = () => {
       >
         <TableContainer>
           {initiativeListFiltered.length > 0 ? (
-            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+            <Table sx={{ minWidth: 750 }} aria-label="Elenco iniziative">
               <EnhancedTableHead
                 order={order}
                 orderBy={orderBy}
@@ -267,26 +293,23 @@ const InitiativesList = () => {
                               border: 'none',
                               padding: 0,
                               cursor: 'pointer',
+                              textDecoration: 'underline',
                             }}
-                            onClick={() => {
-                              if (!firstInitiativeMenuItem?.route) {
-                                return;
-                              }
-
-                              navigate(
-                                generatePath(firstInitiativeMenuItem.route, {
-                                  initiativeId: row.initiativeId,
-                                })
-                              );
-                            }}
+                            onClick={() => openInitiative(row.initiativeId)}
                             data-testid="initiative-btn-test"
                           >
                             {row.initiativeName}
                           </Box>
                         </TableCell>
                         <TableCell>{row.organizationName !== "" && row.organizationName !== null ? row.organizationName : "-"}</TableCell>
-                        <TableCell>{row.createdAt}</TableCell>
+                        <TableCell>{row.spendingPeriod}</TableCell>
+                        <TableCell>{row.initiativeId || EMPTY_DATA}</TableCell>
                         <TableCell>{renderInitiativeStatus(row.status as StatusEnum)}</TableCell>
+                        <TableCell align="right">
+                          <IconButton color="primary" aria-label={`Apri ${row.initiativeName}`} onClick={() => openInitiative(row.initiativeId)}>
+                            <ArrowForwardIcon />
+                          </IconButton>
+                        </TableCell>
                       </TableRow>
                     );
                   }

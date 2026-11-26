@@ -1,9 +1,11 @@
 import React from 'react';
-import { Box, Paper, TablePagination, CircularProgress } from '@mui/material';
+import { Box, Paper, CircularProgress, Typography } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@mui/material/styles';
+import { visuallyHidden } from '@mui/utils';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
+import { MIPagination } from '@pagopa/mui-italia/components/MIPagination';
 import EmptyListTable from '../../pages/components/EmptyListTable';
 import ProductsTable from '../../pages/components/ProductsTable';
 import { ProductDTO } from '../../api/generated/register';
@@ -36,8 +38,8 @@ type Props = {
   onRequestSort: any;
   handleListButtonClick: any;
   setSelected: any;
-  handleChangePage: any;
-  handleChangeRowsPerPage: any;
+  handleChangePage: (event: React.ChangeEvent<unknown>, page: number) => void;
+  handleChangeRowsPerPage: (limit: number) => void;
   handleDeleteFiltersButtonClick: () => void;
   handleToggleFiltersDrawer: (v: boolean) => void;
   handleOpenModalWithStatusCheck: (action: string) => void;
@@ -123,7 +125,7 @@ const ProductDataGridView: React.FC<Props> = ({
         ) : (
           <span />
         )}
-        {tableData?.length > 0 && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
+        {(tableData?.length > 0 || filtersLabel) && <NewFilter onClick={() => handleToggleFiltersDrawer(true)} />}
       </Box>
 
       <Paper elevation={0} sx={{ width: '100%', mb: 2, pb: 3, backgroundColor: 'transparent' }}>
@@ -151,24 +153,51 @@ const ProductDataGridView: React.FC<Props> = ({
           </Box>
         )}
 
-        {!hookLoading && paginationConfig && Array.isArray(paginationConfig.rowsPerPageOptions) && (
-          <TablePagination
-            key={`${paginationConfig.rowsPerPageOptions.join('-')}`}
-            sx={{ backgroundColor: 'transparent' }}
-            component="div"
-            count={itemsQty || 0}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={paginationConfig.rowsPerPageOptions}
-            labelRowsPerPage={t('pages.products.elementsPerPage')}
-            labelDisplayedRows={() =>
-              `${paginatorFrom} - ${paginatorTo} ${t(
-                'pages.products.tablePaginationFrom'
-              )} ${itemsQty}`
-            }
-          />
+        {!hookLoading &&
+          paginationConfig &&
+          Array.isArray(paginationConfig.rowsPerPageOptions) &&
+          paginationConfig.rowsPerPageOptions.length > 0 && (
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={1}
+            px={1}
+            py={1}
+            sx={{ backgroundColor: itemsQty > 0 ? 'divider' : 'transparent' }}
+          >
+            {itemsQty > 0 && (
+              <Typography variant="caption" color="text.secondary" whiteSpace="nowrap">
+                {t('pages.products.rowsPerPage')}
+              </Typography>
+            )}
+            {itemsQty > 0 && (
+              <Box flexGrow={1} minWidth={0}>
+                <MIPagination
+                  count={Math.ceil(itemsQty / rowsPerPage)}
+                  page={page + 1}
+                  onChange={(event, selectedPage) => handleChangePage(event, selectedPage - 1)}
+                  getItemAriaLabel={(type, pageNumber, selected) => {
+                    if (type === 'previous') {
+                      return t('pages.products.previousPage');
+                    }
+                    if (type === 'next') {
+                      return t('pages.products.nextPage');
+                    }
+                    return `${t(selected ? 'pages.products.currentPage' : 'pages.products.goToPage')} ${pageNumber}`;
+                  }}
+                  itemsPerPageOptions={{
+                    options: paginationConfig.rowsPerPageOptions,
+                    limit: rowsPerPage,
+                    onLimitChange: (limit) => handleChangeRowsPerPage(Number(limit)),
+                    inputProps: { 'aria-label': t('pages.products.rowsPerPage') },
+                  }}
+                />
+              </Box>
+            )}
+            <Box component="span" sx={visuallyHidden} aria-live="polite">
+              {`${itemsQty > 0 ? paginatorFrom : 0} - ${itemsQty > 0 ? paginatorTo : 0} ${t('pages.products.tablePaginationFrom')} ${itemsQty}`}
+            </Box>
+          </Box>
         )}
       </Paper>
     </>

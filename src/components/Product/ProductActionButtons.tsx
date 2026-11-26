@@ -1,4 +1,5 @@
-import { Button, Box, ListItem } from '@mui/material';
+import { Box, ListItem } from '@mui/material';
+import { MIButton } from '@pagopa/mui-italia/components/MIButton';
 import { PRODUCTS_STATES } from '../../utils/constants';
 
 type ProductActionButtonsProps = {
@@ -25,7 +26,7 @@ export default function ProductActionButtons({
     return (
       <ListItem sx={{ pl: 0 }}>
         <Box mt={2} display="flex" flexDirection="column" sx={{ width: '100%' }}>
-          <Button
+          <MIButton
             color="primary"
             variant="contained"
             sx={{ ...buttonStyle }}
@@ -33,10 +34,10 @@ export default function ProductActionButtons({
             disabled={!onSupervision}
           >
             Richiedi approvazione
-          </Button>
-          <Button color="error" sx={{ ...buttonStyle }} onClick={onExclude}>
+          </MIButton>
+          <MIButton color="error" variant="text" sx={{ ...buttonStyle }} onClick={onExclude}>
             Escludi
-          </Button>
+          </MIButton>
         </Box>
       </ListItem>
     );

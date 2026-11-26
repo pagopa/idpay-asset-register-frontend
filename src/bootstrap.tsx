@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import '@pagopa/selfcare-common-frontend/index.css';
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import { theme } from '@pagopa/mui-italia';
+import { themeNext } from '@pagopa/mui-italia/theme';
 import { CONFIG } from '@pagopa/selfcare-common-frontend/lib/config/env';
 import { PersistGate } from 'redux-persist/integration/react';
 import { setupListeners } from '@reduxjs/toolkit/query';
@@ -42,7 +42,7 @@ if (container) {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <BrowserRouter>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={themeNext}>
               <CssBaseline />
               <App />
             </ThemeProvider>

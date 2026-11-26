@@ -1,7 +1,7 @@
 import BuildIcon from '@mui/icons-material/Build';
 import HistoryIcon from '@mui/icons-material/History';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import ListAltIcon from '@mui/icons-material/ListAlt';
+import InventoryIcon from '@mui/icons-material/Inventory2Outlined';
+import GridViewIcon from '@mui/icons-material/GridView';
 import type { SvgIconComponent } from '@mui/icons-material';
 import ROUTES from '../../routes';
 import { USERS_TYPES } from '../../utils/constants';
@@ -17,7 +17,7 @@ export const initiativeMenuConfig: Array<SideMenuConfigItem> = [
   {
     titleKey: 'pages.overview.overviewTitle',
     route: ROUTES.OVERVIEW,
-    icon: ListAltIcon,
+    icon: GridViewIcon,
     dataTestId: 'go-to-overview',
   },
   {

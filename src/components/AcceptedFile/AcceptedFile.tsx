@@ -1,6 +1,7 @@
-import { Box, Typography, Chip } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { ButtonNaked } from '@pagopa/mui-italia';
+import { MIChip } from '@pagopa/mui-italia/components/MIChip';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { formatFileName } from '../../helpers';
 
@@ -47,7 +48,7 @@ const AcceptedFile = ({ fileName, fileDate, chipLabel, buttonLabel, buttonHandle
         </Typography>
       </Box>
       <Box sx={{ gridColumn: 'span 3', justifySelf: 'right', px: 2 }}>
-        <Chip label={chipLabel} color="success" />
+        <MIChip label={chipLabel} color="success" />
       </Box>
     </Box>
     <Box sx={{ gridColumn: 'span 12', pt: 2 }}>

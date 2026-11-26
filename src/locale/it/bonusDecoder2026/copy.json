@@ -4,7 +4,14 @@
   },
   "pages": {
     "addProducts": {
-      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Dopo il caricamento, potrai visualizzarli nella sezione ",
+      "boxAddTitle": "Carica i tuoi prodotti",
+      "boxAddText": "Carica un file con al massimo 100 prodotti idonei al Bonus Decoder. Una volta completato il caricamento, potrai consultarli nella sezione ",
+      "form": {
+        "fileUpload": {
+          "dragAreaText": "Trascina qui il file csv con la lista dei prodotti o carica il file dal tuo computer",
+          "dragAreaLink": "Carica il file"
+        }
+      },
       "manualLink": "https://developer.pagopa.it/it/pari/guides"
     },
     "tos": {

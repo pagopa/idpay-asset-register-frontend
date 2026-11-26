@@ -1,4 +1,5 @@
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
+import { MIButton } from '@pagopa/mui-italia/components/MIButton';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import EmptyList from '../../pages/components/EmptyListTable';
 
@@ -32,9 +33,9 @@ const MessagePage: React.FC<MessagePageProps> = ({ message, goBack, onGoBack }) 
       >
         <EmptyList message={message} />
         {goBack && (
-          <Button variant="text" onClick={onGoBack}>
+          <MIButton variant="text" onClick={onGoBack}>
             {t('pages.products.backToTable')}
-          </Button>
+          </MIButton>
         )}
       </Box>
     </Box>

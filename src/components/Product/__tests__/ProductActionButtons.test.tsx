@@ -1,6 +1,13 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render as renderWithTestingLibrary, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '@pagopa/mui-italia/theme';
 import '@testing-library/jest-dom';
 import ProductActionButtons from '../ProductActionButtons';
+
+const render = (ui: React.ReactElement) =>
+  renderWithTestingLibrary(ui, {
+    wrapper: ({ children }) => <ThemeProvider theme={theme}>{children}</ThemeProvider>,
+  });
 
 const mockOnRestore = jest.fn();
 const mockOnExclude = jest.fn();

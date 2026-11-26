@@ -1,4 +1,6 @@
-import { Box, Chip, ChipProps, MenuItem, Select, TextField } from '@mui/material';
+import { Box, Chip, ChipProps, IconButton, InputAdornment, MenuItem, Select, TextField } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { MIChip } from '@pagopa/mui-italia/components/MIChip';
 import { TFunction } from 'i18next';
 import { filterInputWithSpaceRule } from '../../helpers';
 
@@ -23,6 +25,17 @@ type Props = {
   template?: Record<string, SelectProps>;
 };
 
+const renderSelectOption = (id: string, value: SelectProps, t: Props['t']) => {
+  const label = t((value as any)?.labelKey ?? value?.label ?? '');
+  if (!value?.color) {
+    return label;
+  }
+  if (id === 'status' && ['default', 'success', 'info', 'warning', 'error'].includes(value.color)) {
+    return <MIChip color={value.color as 'default' | 'success' | 'info' | 'warning' | 'error'} label={label} />;
+  }
+  return <Chip color={value.color} label={label} />;
+};
+
 export const filtersRender: Record<
   'select' | 'text',
   ({ item, t, filters, setFilters, template }: Props) => JSX.Element
@@ -39,6 +52,23 @@ export const filtersRender: Record<
           PaperProps: { style: { maxHeight: 350 } },
         }}
         value={filters?.[id]?.value ?? ''}
+        endAdornment={filters?.[id]?.value ? (
+          <InputAdornment position="end" sx={{ mr: 3 }}>
+            <IconButton
+              size="small"
+              aria-label={`${t('common.clearSingleFilter')} ${t(labelKey ?? id)}`}
+              onMouseDown={(event) => event.stopPropagation()}
+              onKeyDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                document.getElementById(`${id}-filter-select`)?.focus();
+                setFilters(id, { value: '', label: '' });
+              }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </InputAdornment>
+        ) : undefined}
         renderValue={() => (
           <Box
             sx={{
@@ -54,24 +84,17 @@ export const filtersRender: Record<
         onChange={(e) =>
           setFilters(id, {
             value: e.target.value,
-            label: t(
+            label: e.target.value ? t(
               (template as any)?.[e.target.value]?.labelKey ??
                 (template as any)?.[e.target.value]?.label ??
                 ''
-            ),
+            ) : '',
           })
         }
       >
         {Object.entries(template || {}).map(([key, value]) => (
           <MenuItem key={key} value={key}>
-            {value?.color ? (
-              <Chip
-                color={value.color}
-                label={t((value as any).labelKey ?? (value as any).label)}
-              />
-            ) : (
-              t((value as any).labelKey ?? (value as any).label ?? '')
-            )}
+            {renderSelectOption(id, value, t)}
           </MenuItem>
         ))}
       </Select>
@@ -104,7 +127,7 @@ export const filtersRender: Record<
           setFilters(id, { value: ruledValue });
           setErrors(id, isError);
         }}
-        slotProps={{ htmlInput: inputProps }}
+        inputProps={inputProps}
       />
     );
   },

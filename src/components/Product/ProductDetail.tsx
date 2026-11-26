@@ -1,6 +1,5 @@
 import React from 'react';
-import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper, ListItem } from '@mui/material';
-import { TextareaAutosize } from '@mui/base';
+import { List, Divider, Box, Typography, Button, SxProps, Theme, Paper, ListItem, TextareaAutosize } from '@mui/material';
 import { format } from 'date-fns';
 import { useMemo, useState } from 'react';
 import FlagIcon from '@mui/icons-material/Flag';

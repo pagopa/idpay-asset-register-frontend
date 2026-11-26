@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render as renderWithTestingLibrary, screen } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '@pagopa/mui-italia/theme';
 import ManufacturerDetail from '../ManufacturerDetail';
+
+const render = (ui: React.ReactElement) =>
+  renderWithTestingLibrary(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({

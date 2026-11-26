@@ -89,6 +89,18 @@ const renderWithTheme = (component: React.ReactElement) => {
   return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
 };
 
+const expectEmptyFields = (labels: Array<string>) => {
+  labels.forEach((label) => {
+    const value = screen.getByText(label).parentElement?.nextElementSibling?.querySelector('p');
+    expect(value).toBeInTheDocument();
+    expect(value).toBeEmptyDOMElement();
+  });
+};
+
+const organizationFieldLabels = [
+  'Ragione Sociale', 'Codice Fiscale', 'Partita IVA', 'Sede Legale', 'PEC', 'Email Operativa',
+];
+
 jest.mock('@reduxjs/toolkit/query/react', () => ({
   createApi: jest.fn(),
   fetchBaseQuery: jest.fn(),
@@ -240,14 +252,7 @@ describe('Overview Component', () => {
 
       renderWithTheme(<Overview />);
 
-      const valueElements = screen.getAllByText('', {
-        selector: 'p.MuiTypography-body2[class*="css-bvuapi"]',
-      });
-      expect(valueElements).toHaveLength(6);
-
-      valueElements.forEach((element) => {
-        expect(element).toBeEmptyDOMElement();
-      });
+      expectEmptyFields(organizationFieldLabels);
     });
 
     it('should display empty data placeholder when user object exists but fields are empty', () => {
@@ -265,14 +270,7 @@ describe('Overview Component', () => {
 
       renderWithTheme(<Overview />);
 
-      const valueElements = screen.getAllByText('', {
-        selector: 'p.MuiTypography-body2[class*="css-bvuapi"]',
-      });
-      expect(valueElements).toHaveLength(6);
-
-      valueElements.forEach((element) => {
-        expect(element).toBeEmptyDOMElement();
-      });
+      expectEmptyFields(organizationFieldLabels);
     });
 
     it('should handle partially filled user data', () => {
@@ -291,14 +289,7 @@ describe('Overview Component', () => {
       renderWithTheme(<Overview />);
 
       expect(screen.getByText('Ragione Sociale')).toBeInTheDocument();
-      const valueElements = screen.getAllByText('', {
-        selector: 'p.MuiTypography-body2[class*="css-bvuapi"]',
-      });
-      expect(valueElements).toHaveLength(3);
-
-      valueElements.forEach((element) => {
-        expect(element).toBeEmptyDOMElement();
-      });
+      expectEmptyFields(['Codice Fiscale', 'Sede Legale', 'Email Operativa']);
     });
   });
 
@@ -407,14 +398,7 @@ describe('Overview Component', () => {
 
       renderWithTheme(<Overview />);
 
-      const valueElements = screen.getAllByText('', {
-        selector: 'p.MuiTypography-body2[class*="css-bvuapi"]',
-      });
-      expect(valueElements).toHaveLength(6);
-
-      valueElements.forEach((element) => {
-        expect(element).toBeEmptyDOMElement();
-      });
+      expectEmptyFields(organizationFieldLabels);
     });
   });
 });

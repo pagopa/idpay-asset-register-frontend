@@ -20,6 +20,7 @@ import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks
 import TitleBox from '@pagopa/selfcare-common-frontend/lib/components/TitleBox';
 import { useNavigate } from 'react-router-dom';
 import { ButtonNaked, theme } from '@pagopa/mui-italia';
+import { MIChip } from '@pagopa/mui-italia/components/MIChip';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { ArrowForward } from '@mui/icons-material';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
@@ -39,7 +40,7 @@ function renderUploadStatusChip(status: string) {
     case 'PARTIAL':
       return <Chip color="warning" label="Parziale" size="small" />;
     case 'LOADED':
-      return <Chip color="success" label="Caricato" size="small" />;
+      return <MIChip color="success" label="Caricato" />;
     default:
       return <Chip color="default" label={status} size="small" />;
   }
@@ -244,25 +245,14 @@ const UploadsTable: React.FC<{
                 {data?.content &&
                   data.content.slice(0, rowsPerPage).map((row: UploadDTO) => (
                     <TableRow key={row.productFileId}>
-                      <TableCell
-                        sx={{
-                          padding: 0,
-                          width: '50%',
-                          maxWidth: '50%',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
+                      <TableCell colSpan={3} sx={{ px: 0, py: 1.5 }}>
+                        <Typography variant="caption" color="text.secondary" display="block">
+                          {row.dateUpload ? formatDate(row.dateUpload) : EMPTY_DATA}
+                        </Typography>
                         <Tooltip title={row.batchName}>
-                          <span>{row.batchName}</span>
+                          <Typography variant="body2" fontWeight={600} noWrap>{row.batchName}</Typography>
                         </Tooltip>
-                      </TableCell>
-                      <TableCell align="right" sx={{ width: '25%' }}>
-                        {renderUploadStatusChip(row.uploadStatus ?? EMPTY_DATA)}
-                      </TableCell>
-                      <TableCell align="right" sx={{ width: '25%' }}>
-                        {row.dateUpload ? formatDate(row.dateUpload) : EMPTY_DATA}
+                        <Box mt={0.5}>{renderUploadStatusChip(row.uploadStatus ?? EMPTY_DATA)}</Box>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -354,8 +344,9 @@ const OverviewProductionSection: React.FC<Props> = ({ isInitiativeClosed = false
   }, [loading, error, data]);
 
   return (
-    <Box sx={{ gridColumn: 'span 6' }}>
+    <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
       <Paper
+        elevation={0}
         sx={{
           display: 'grid',
           gridTemplateColumns: 'repeat(12, 1fr)',

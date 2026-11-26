@@ -1,5 +1,4 @@
 import { Link as MUILink, Tooltip, Typography } from '@mui/material';
-import { theme } from '@pagopa/mui-italia';
 import { EMPTY_DATA } from '../../utils/constants';
 
 type LinkProps = {
@@ -16,8 +15,8 @@ export const Link = ({ label, href, tooltip, name, testId }: LinkProps) => (
       <MUILink
         className={`name:${name}-link`}
         sx={{
-          color: theme.palette.primary.main,
-          fontWeight: theme.typography.fontWeightMedium,
+          color: 'primary.main',
+          fontWeight: 'fontWeightMedium',
         }}
         href={href}
         target="_blank"

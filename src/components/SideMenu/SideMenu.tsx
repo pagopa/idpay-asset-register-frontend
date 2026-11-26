@@ -11,7 +11,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ListAltIcon from '@mui/icons-material/ListAlt';
+import MenuIcon from '@mui/icons-material/Menu';
 import ROUTES from '../../routes';
 import { fetchUserFromLocalStorage } from '../../helpers';
 import { useGetInitiativesQuery } from '../../redux/api/initiativesApi';
@@ -92,7 +92,7 @@ export default function SideMenu() {
             title="Iniziative"
             handleClick={() => onExit(() => navigate(ROUTES.HOME, { replace: true }))}
             isSelected={pathname === ROUTES.HOME}
-            icon={ListAltIcon}
+            icon={MenuIcon}
             level={0}
             data-testid="initiativeList-click-test"
           />
@@ -121,7 +121,7 @@ export default function SideMenu() {
                 }}
               >
                 <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
+                  expandIcon={<ExpandMoreIcon color="primary" />}
                   aria-controls={`panel-${initiativeId}-content`}
                   id={`panel-${initiativeId}-header`}
                   onClick={(e) => {

@@ -89,7 +89,7 @@ const Layout = ({ children }: Props) => {
           </Box>
           <Box
             gridColumn="auto"
-            sx={{ backgroundColor: '#F5F5F5' }}
+            sx={{ backgroundColor: '#F4F5F8' }}
             display="grid"
             justifyContent="center"
             pb={16}
@@ -106,6 +106,9 @@ const Layout = ({ children }: Props) => {
           display="grid"
           gridTemplateColumns="repeat(12, 1fr)"
           justifyContent="center"
+          sx={{
+            backgroundColor: matchPath(ROUTES.ADD_PRODUCTS, location.pathname) ? '#F4F5F8' : undefined,
+          }}
         >
           <Box
             display="grid"

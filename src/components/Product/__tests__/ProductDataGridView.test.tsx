@@ -1,5 +1,7 @@
-import React from 'react';
+import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { themeNext } from '@pagopa/mui-italia/theme';
 import ProductDataGridView from '../ProductDataGridView';
 import { ProductDTO } from '../../../api/generated/register';
 
@@ -127,6 +129,15 @@ describe('ProductDataGridView', () => {
     expect(baseProps.handleToggleFiltersDrawer).toHaveBeenCalledWith(true);
   });
 
+  it('allows editing active filters when there are no results', () => {
+    useProductFilters.mockReturnValue({ filtersLabel: 'Approvato' });
+    render(<ProductDataGridView {...baseProps} />);
+
+    expect(screen.getByTestId('empty-list')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('new-filter'));
+    expect(baseProps.handleToggleFiltersDrawer).toHaveBeenCalledWith(true);
+  });
+
   it('renders filter chip and triggers delete', () => {
     useProductFilters.mockReturnValue({ filtersLabel: 'FILTER_LABEL' });
 
@@ -144,14 +155,35 @@ describe('ProductDataGridView', () => {
     useProductFilters.mockReturnValue({ filtersLabel: undefined });
 
     render(
-      <ProductDataGridView
-        {...baseProps}
-        paginationConfig={{ rowsPerPageOptions: [10, 20] }}
-        itemsQty={100}
-      />
+      <ThemeProvider theme={themeNext}>
+        <ProductDataGridView
+          {...baseProps}
+          paginationConfig={{ rowsPerPageOptions: [10, 20] }}
+          itemsQty={100}
+        />
+      </ThemeProvider>
     );
 
-    expect(screen.getByText('pages.products.elementsPerPage')).toBeInTheDocument();
+    expect(screen.getByText('pages.products.rowsPerPage')).toBeInTheDocument();
     expect(screen.getByText('1 - 10 pages.products.tablePaginationFrom 100')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'pages.products.currentPage 1' })).toHaveAttribute('aria-current', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'pages.products.goToPage 2' }));
+    expect(baseProps.handleChangePage).toHaveBeenCalledWith(expect.anything(), 1);
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'pages.products.rowsPerPage' }));
+    fireEvent.click(screen.getByRole('option', { name: '20' }));
+    expect(baseProps.handleChangeRowsPerPage).toHaveBeenCalledWith(20);
+  });
+
+  it('does not render a paginator for an empty result', () => {
+    useProductFilters.mockReturnValue({ filtersLabel: undefined });
+
+    render(
+      <ThemeProvider theme={themeNext}>
+        <ProductDataGridView {...baseProps} paginationConfig={{ rowsPerPageOptions: [10, 20] }} />
+      </ThemeProvider>
+    );
+
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 });

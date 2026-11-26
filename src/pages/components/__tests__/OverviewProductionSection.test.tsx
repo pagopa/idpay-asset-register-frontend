@@ -2,7 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import OverviewProductionSection from '../OverviewProductionSection';
 import { BrowserRouter } from 'react-router-dom';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { themeNext } from '@pagopa/mui-italia/theme';
 import '@testing-library/jest-dom';
 
 const mockTranslations = {
@@ -65,10 +66,9 @@ jest.mock('../../../routes', () => ({
   },
 }));
 
-const theme = createTheme();
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>
-    <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    <ThemeProvider theme={themeNext}>{children}</ThemeProvider>
   </BrowserRouter>
 );
 
@@ -126,6 +126,7 @@ describe('OverviewProductionSection', () => {
     await waitFor(() => {
       expect(screen.getByText('Ultimo caricamento')).toBeInTheDocument();
     });
+    expect(screen.getByText('Caricato').closest('.MuiChip-root')).toHaveStyle({ backgroundColor: '#E1F4E1' });
   });
 
   it('renders in-progress uploads with warning', async () => {

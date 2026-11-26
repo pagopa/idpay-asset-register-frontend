@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { themeNext } from '@pagopa/mui-italia/theme';
 import ProductStatusChip from '../ProductStatusChip';
 
 jest.mock('@mui/icons-material/Warning', () => {
@@ -20,9 +21,8 @@ jest.mock('@mui/icons-material/Error', () => {
   );
 });
 
-const theme = createTheme();
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
+  return render(<ThemeProvider theme={themeNext}>{component}</ThemeProvider>);
 };
 
 jest.mock('../../../redux/api/initiativesApi', () => ({
@@ -64,7 +64,7 @@ describe('ProductStatusChip', () => {
 
       const chip = screen.getByText('chip.productStatusLabel.rejected').closest('.MuiChip-root');
       expect(chip).toBeInTheDocument();
-      expect(chip).toHaveClass('MuiChip-colorError');
+      expect(chip).toHaveStyle({ backgroundColor: '#FFD9D9' });
 
       expect(screen.getByText('chip.productStatusLabel.rejected')).toBeInTheDocument();
     });
@@ -74,7 +74,7 @@ describe('ProductStatusChip', () => {
 
       const chip = screen.getByText('chip.productStatusLabel.rejected').closest('.MuiChip-root');
       expect(chip).toHaveClass('MuiChip-sizeMedium');
-      expect(chip).toHaveClass('MuiChip-colorError');
+      expect(chip).toHaveStyle({ backgroundColor: '#FFD9D9' });
 
       expect(chip).toHaveStyle({ marginBottom: '8px' });
     });
@@ -114,7 +114,7 @@ describe('ProductStatusChip', () => {
 
       const chip = container.querySelector('.MuiChip-root');
       expect(chip).toBeInTheDocument();
-      expect(chip).toHaveClass('MuiChip-colorError');
+      expect(chip).toHaveStyle({ backgroundColor: '#FFD9D9' });
       expect(chip).toHaveClass('MuiChip-sizeMedium');
 
       expect(container).toHaveTextContent('chip.productStatusLabel.rejected');
@@ -135,14 +135,15 @@ describe('ProductStatusChip', () => {
   });
 
   it.each([
-    ['UPLOADED', 'chip.productStatusLabel.uploaded', 'MuiChip-colorDefault'],
-    ['WAIT_APPROVED', 'chip.productStatusLabel.waitApproved', 'MuiChip-colorInfo'],
-    ['SUPERVISED', 'chip.productStatusLabel.supervised', 'MuiChip-colorPrimary'],
-  ])('renders the %s status chip', (status, label, colorClass) => {
+    ['APPROVED', 'chip.productStatusLabel.approved', '#E1F4E1'],
+    ['UPLOADED', 'chip.productStatusLabel.uploaded', '#E7ECFC'],
+    ['WAIT_APPROVED', 'chip.productStatusLabel.waitApproved', '#E1F5FE'],
+    ['SUPERVISED', 'chip.productStatusLabel.supervised', '#0B3EE3'],
+  ])('renders the %s status chip', (status, label, backgroundColor) => {
     renderWithTheme(<ProductStatusChip status={status} />);
 
     const chip = screen.getByText(label).closest('.MuiChip-root');
     expect(chip).toBeInTheDocument();
-    expect(chip).toHaveClass(colorClass);
+    expect(chip).toHaveStyle({ backgroundColor });
   });
 });

@@ -1,5 +1,9 @@
 /// <reference types="jest" />
-import React from 'react';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@mui/material/styles';
+import { themeNext } from '@pagopa/mui-italia/theme';
 import { filtersRender } from '../filtersRender';
 
 jest.mock('../../../helpers', () => ({
@@ -96,7 +100,7 @@ describe('filtersRender - select', () => {
       setFilters: jest.fn(),
       setErrors: jest.fn(),
       template: {
-        APPROVED: { labelKey: 'approved.label', color: 'success' },
+        APPROVED: { label: 'approved.label', color: 'success' },
       },
     });
 
@@ -127,6 +131,64 @@ describe('filtersRender - select', () => {
     });
 
     expect(plain.props.children[0].props.children).toBe('plain.label');
+  });
+
+  it('uses the same light colors as product status chips in the status menu', () => {
+    const select = filtersRender.select({
+      item: { id: 'status' },
+      t: t as any,
+      filters: {},
+      setFilters: jest.fn(),
+      setErrors: jest.fn(),
+      template: {
+        UPLOADED: { label: 'Da esaminare', color: 'default' },
+        APPROVED: { label: 'Approvato', color: 'success' },
+      },
+    });
+
+    render(<ThemeProvider theme={themeNext}>{select}</ThemeProvider>);
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+    expect(screen.getByText('Da esaminare').closest('.MuiChip-root')).toHaveStyle({ backgroundColor: '#E7ECFC' });
+    expect(screen.getByText('Approvato').closest('.MuiChip-root')).toHaveStyle({ backgroundColor: '#E1F4E1' });
+  });
+
+  it('clears only the selected value without opening the menu', async () => {
+    const setFilters = jest.fn();
+    const select = filtersRender.select({
+      item: { id: 'status', labelKey: 'status.label' },
+      t: t as any,
+      filters: { status: { value: 'APPROVED', label: 'Approvato' } },
+      setFilters,
+      setErrors: jest.fn(),
+      template: { APPROVED: { label: 'Approvato', color: 'success' } },
+    });
+    render(<ThemeProvider theme={themeNext}>{select}</ThemeProvider>);
+
+    const clear = screen.getByRole('button', { name: 'common.clearSingleFilter status.label' });
+    await userEvent.click(clear);
+    expect(setFilters).toHaveBeenCalledWith('status', { value: '', label: '' });
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toHaveFocus();
+
+    setFilters.mockClear();
+    clear.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(setFilters).toHaveBeenCalledWith('status', { value: '', label: '' });
+  });
+
+  it('does not render a clear button or an empty option for an unselected value', () => {
+    const select = filtersRender.select({
+      item: { id: 'status' },
+      t: t as any,
+      filters: {},
+      setFilters: jest.fn(),
+      setErrors: jest.fn(),
+      template: { APPROVED: { label: 'Approvato' } },
+    });
+    render(<ThemeProvider theme={themeNext}>{select}</ThemeProvider>);
+    expect(screen.queryByRole('button', { name: /common.clearSingleFilter/ })).not.toBeInTheDocument();
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+    expect(screen.getAllByRole('option', { hidden: true })).toHaveLength(1);
   });
 });
 
@@ -198,7 +260,7 @@ describe('filtersRender - text', () => {
 
     expect(element.props.error).toBe(true);
     expect(element.props.helperText).toBe('code.error');
-    expect(element.props.slotProps.htmlInput).toEqual({ maxLength: 3 });
+    expect(element.props.inputProps).toEqual({ maxLength: 3 });
   });
 
   it('uses an empty translated label when labelKey is missing', () => {

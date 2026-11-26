@@ -110,9 +110,10 @@ export const initUploadBoxStyle = {
   alignItems: 'center',
   justifyItems: 'center',
   width: '100%',
-  border: '1px dashed #0073E6',
+  border: '1px dashed',
+  borderColor: 'primary.main',
   borderRadius: '10px',
-  backgroundColor: 'rgba(0, 115, 230, 0.08)',
+  backgroundColor: 'rgba(11, 62, 227, 0.08)',
   p: 3,
 };
 

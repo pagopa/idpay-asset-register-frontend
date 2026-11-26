@@ -4,7 +4,8 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { I18nextProvider } from 'react-i18next';
 import i18n from 'i18next';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { themeNext as theme } from '@pagopa/mui-italia/theme';
 import { MemoryRouter } from 'react-router-dom';
 
 import ProductDataGrid from '../ProductDataGrid';
@@ -388,7 +389,6 @@ const createStore = () =>
     },
   });
 
-const theme = createTheme();
 
 const buildProduct = (overrides: ProductOverride = {}) => ({
   id: '1',
@@ -1568,6 +1568,28 @@ describe('ProductDataGrid (rewritten)', () => {
     );
   });
 
+  it('keeps a removed default filter cleared when configuration is refreshed', async () => {
+    const config = {
+      defaultFiltersByRole: { USER: { status: 'SUPERVISED' } },
+      filtersConfig: [{ id: 'status' }, { id: 'category' }],
+    };
+    await renderGrid('USER', mockProducts, config);
+    await openFiltersDrawer();
+    expect(screen.getByTestId('filters-drawer')).toHaveAttribute('data-filters', 'status');
+
+    fireEvent.click(screen.getByText('Apply Category Filter'));
+    await waitFor(() => {
+      expect((registerService.getProducts as jest.Mock).mock.calls.some(
+        (call) => call[5] === 'SATELLITARE' && call[6] === undefined
+      )).toBe(true);
+    });
+
+    configureTableMocks(config);
+    fireEvent.click(screen.getByText('Close Filters'));
+    await openFiltersDrawer();
+    expect(screen.getByTestId('filters-drawer')).toHaveAttribute('data-filters', 'category');
+  });
+
   it('builds product file filters from batch filter API response', async () => {
     await renderGrid('USER', mockProducts, {
       filtersConfig: [{ id: 'productFileId' }],
@@ -1852,16 +1874,23 @@ describe('ProductDataGrid (rewritten)', () => {
 
     await renderGrid('USER', manyProducts, {
       columns: [{ id: 'category', labelKey: 'tables.products.columns.category' }],
+      paginationConfig: { defaultRowsPerPage: 10, rowsPerPageOptions: [10, 25] },
     });
 
     await expectTableVisible();
 
-    const nextPageButton = screen.getByRole('button', { name: /go to next page/i });
+    const nextPageButton = screen.getByRole('button', { name: 'pages.products.nextPage' });
     expect(nextPageButton).not.toBeDisabled();
     fireEvent.click(nextPageButton);
 
     await waitFor(() => {
-      expect((registerService.getProducts as jest.Mock).mock.calls.length).toBeGreaterThanOrEqual(2);
+      expect((registerService.getProducts as jest.Mock).mock.calls.some((call) => call[2] === 1)).toBe(true);
+    });
+
+    fireEvent.mouseDown(await screen.findByRole('combobox', { name: 'pages.products.rowsPerPage' }));
+    fireEvent.click(screen.getByRole('option', { name: '25' }));
+    await waitFor(() => {
+      expect((registerService.getProducts as jest.Mock).mock.calls.some((call) => call[2] === 0 && call[3] === 25)).toBe(true);
     });
   });
 

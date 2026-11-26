@@ -1,4 +1,5 @@
 import { Chip } from '@mui/material';
+import { MIChip } from '@pagopa/mui-italia/components/MIChip';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 
 type ProductStatusChipProps = {
@@ -26,28 +27,25 @@ export default function ProductStatusChip({ status }: ProductStatusChipProps) {
   switch (status) {
     case 'APPROVED':
       return (
-        <Chip
+        <MIChip
           color="success"
           label={t('chip.productStatusLabel.approved')}
-          size="medium"
           sx={chipSx}
         />
       );
     case 'UPLOADED':
       return (
-        <Chip
+        <MIChip
           color="default"
           label={t('chip.productStatusLabel.uploaded')}
-          size="medium"
           sx={chipSx}
         />
       );
     case 'WAIT_APPROVED':
       return (
-        <Chip
+        <MIChip
           color="info"
           label={t('chip.productStatusLabel.waitApproved')}
-          size="medium"
           sx={chipSx}
         />
       );
@@ -62,10 +60,9 @@ export default function ProductStatusChip({ status }: ProductStatusChipProps) {
       );
     case 'REJECTED':
       return (
-        <Chip
+        <MIChip
           color="error"
           label={t('chip.productStatusLabel.rejected')}
-          size="medium"
           sx={chipSx}
         />
       );

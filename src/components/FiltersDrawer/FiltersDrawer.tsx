@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import { Button, FormControl, IconButton, InputLabel, Typography } from '@mui/material';
+import { FormControl, InputLabel, Typography } from '@mui/material';
+import { MIButton } from '@pagopa/mui-italia/components/MIButton';
+import { MIIconButton } from '@pagopa/mui-italia/components/MIIconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
@@ -35,13 +37,21 @@ export default function FiltersDrawer({
     productFileId: batchFilterItems,
   };
 
-  useEffect(() => setDraftFilters(filters), [filters]);
+  useEffect(() => {
+    if (open) {
+      setDraftFilters(filters);
+      setErrors([]);
+    }
+  }, [open, filters]);
 
-  const handleFilters = useCallback((filters: typeof draftFilters) => {
-    setPage(0);
-    toggleFiltersDrawer(false);
-    setFilters(filters);
-  }, []);
+  const handleFilters = useCallback(
+    (nextFilters: typeof draftFilters) => {
+      setPage(0);
+      toggleFiltersDrawer(false);
+      setFilters(nextFilters);
+    },
+    [setPage, toggleFiltersDrawer, setFilters]
+  );
 
   const handleErrors = useCallback((id: string, isError: boolean) => {
     setErrors((prev) =>
@@ -64,7 +74,7 @@ export default function FiltersDrawer({
   );
 
   return (
-    <Drawer anchor="right" open={open} data-testid="detail-drawer">
+    <Drawer anchor="right" open={open} onClose={() => toggleFiltersDrawer(false)} data-testid="detail-drawer">
       <Box
         sx={{
           display: 'flex',
@@ -76,14 +86,14 @@ export default function FiltersDrawer({
         }}
       >
         <Typography variant="overline">{t('pages.products.filterLabels.filter')}</Typography>
-        <IconButton
+        <MIIconButton
           data-testid="open-detail-button"
           onClick={() => toggleFiltersDrawer(false)}
           sx={{ color: 'text.secondary', ml: 'auto' }}
           aria-label="Close filters"
         >
           <CloseIcon />
-        </IconButton>
+        </MIIconButton>
       </Box>
       <Box paddingX="24px" maxWidth="417px">
         {filtersConfig &&
@@ -111,8 +121,8 @@ export default function FiltersDrawer({
             );
           })}
 
-        <Button
-          disabled={!Object.keys(draftFilters).length || !!errors.length}
+        <MIButton
+          disabled={(!Object.keys(draftFilters).length && !Object.keys(filters).length) || !!errors.length}
           variant="outlined"
           fullWidth
           sx={{ height: 44, minWidth: 100, marginY: '24px' }}
@@ -120,9 +130,9 @@ export default function FiltersDrawer({
           data-testid="send-btn"
         >
           {t('pages.products.filterLabels.filter')}
-        </Button>
+        </MIButton>
 
-        <Button
+        <MIButton
           disabled={!Object.keys(draftFilters).length}
           variant="text"
           fullWidth
@@ -134,7 +144,7 @@ export default function FiltersDrawer({
           data-testid="cancel-btn"
         >
           {t('pages.products.filterLabels.deleteFilters')}
-        </Button>
+        </MIButton>
       </Box>
     </Drawer>
   );

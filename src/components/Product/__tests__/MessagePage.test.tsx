@@ -1,7 +1,12 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render as renderWithTestingLibrary, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '@pagopa/mui-italia/theme';
 import MessagePage from '../MessagePage';
 import '@testing-library/jest-dom';
 import {jest} from "@jest/globals";
+
+const render = (ui: React.ReactElement) =>
+  renderWithTestingLibrary(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({

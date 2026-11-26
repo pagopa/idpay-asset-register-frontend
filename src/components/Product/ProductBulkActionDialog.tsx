@@ -4,11 +4,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
-  TextField,
   CircularProgress,
   Box,
 } from '@mui/material';
+import { MIButton } from '@pagopa/mui-italia/components/MIButton';
+import { MITextField } from '@pagopa/mui-italia/components/MITextField';
 import { useTranslation } from 'react-i18next';
 import { ProductDTO } from '../../api/generated/register';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../utils/constants';
@@ -124,7 +124,7 @@ const ProductBulkActionDialog: React.FC<Props> = ({
       <DialogContent>
         <Box mb={2}>{t(`${baseKey}.description`, { L2: 'L2' })}</Box>
         {requireReason && (
-          <TextField
+          <MITextField
             fullWidth
             label={t(`${baseKey}.reasonLabel`)}
             placeholder={t(`${baseKey}.reasonPlaceholder`)}
@@ -138,10 +138,10 @@ const ProductBulkActionDialog: React.FC<Props> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>{t(`${baseKey}.buttonTextCancel`)}</Button>
-        <Button variant="contained" onClick={handleConfirm} disabled={loading}>
+        <MIButton variant="text" onClick={onClose}>{t(`${baseKey}.buttonTextCancel`)}</MIButton>
+        <MIButton variant="contained" onClick={handleConfirm} disabled={loading}>
           {loading ? <CircularProgress size={20} /> : t(`${baseKey}.buttonTextConfirm`)}
-        </Button>
+        </MIButton>
       </DialogActions>
     </Dialog>
   );

@@ -1,5 +1,7 @@
 import React from 'react';
 import { render as rtlRender, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '@pagopa/mui-italia/theme';
 import userEvent from '@testing-library/user-event';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +24,11 @@ jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
-const render = (ui: React.ReactElement, options?: any) => rtlRender(ui, options);
+const render = (ui: React.ReactElement, options?: any) =>
+  rtlRender(ui, {
+    ...options,
+    wrapper: ({ children }) => <ThemeProvider theme={theme}>{children}</ThemeProvider>,
+  });
 
 jest.mock('react-i18next', () => ({ useTranslation: jest.fn() }));
 jest.mock('../../../hooks/useScopedTranslation');

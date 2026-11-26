@@ -2,7 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import FiltersDrawer from '../FiltersDrawer';
 import * as FiltersRenderModule from '../filtersRender';
-import { createTheme, ThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
+import { theme } from '@pagopa/mui-italia/theme';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
@@ -48,7 +49,6 @@ jest.mock('../../../helpers', () => ({
   fetchUserFromLocalStorage: () => mockFetchUserFromLocalStorage(),
 }));
 
-const theme = createTheme();
 
 const createTestStore = (preloadedState: any = {}) =>
   configureStore({
@@ -242,7 +242,54 @@ describe('FiltersDrawer Component', () => {
 
       fireEvent.change(select, { target: { value: '' } });
 
+      expect(screen.getByTestId('send-btn')).not.toBeDisabled();
+      fireEvent.click(screen.getByTestId('send-btn'));
+      expect(mockSetFilters).toHaveBeenCalledWith({});
+    });
+
+    it('clears only the selected real select and keeps the other applied filter', () => {
+      selectSpy.mockRestore();
+      renderWithProviders(
+        <FiltersDrawer
+          {...defaultProps}
+          filtersConfig={[
+            { id: 'status', type: 'select', labelKey: 'Stato', options: { APPROVED: { label: 'Approvato' } } },
+            { id: 'category', type: 'select', labelKey: 'Categoria', options: { SAT: { label: 'Satellitare' } } },
+          ]}
+          filters={{
+            status: { value: 'APPROVED', label: 'Approvato' },
+            category: { value: 'SAT', label: 'Satellitare' },
+          }}
+        />
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'common.clearSingleFilter Stato' }));
+      expect(mockSetFilters).not.toHaveBeenCalled();
+      expect(screen.getByRole('button', { name: 'common.clearSingleFilter Categoria' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'common.clearSingleFilter Stato' })).not.toBeInTheDocument();
+      fireEvent.click(screen.getByTestId('send-btn'));
+      expect(mockSetFilters).toHaveBeenCalledWith({ category: { value: 'SAT', label: 'Satellitare' } });
+    });
+
+    it('restores applied filters and discards validation errors when reopened', () => {
+      const props = {
+        ...defaultProps,
+        filtersConfig: [{ id: 'code', type: 'text', labelKey: 'Codice', regEx: '^[0-9]+$', message: 'error' }],
+        filters: { code: { value: '123' } },
+      };
+      const wrap = (open: boolean) => (
+        <Provider store={createTestStore({})}>
+          <ThemeProvider theme={theme}><FiltersDrawer {...props} open={open} /></ThemeProvider>
+        </Provider>
+      );
+      const { rerender } = render(wrap(true));
+      fireEvent.change(screen.getByTestId('code-testId'), { target: { value: 'invalid' } });
       expect(screen.getByTestId('send-btn')).toBeDisabled();
+      rerender(wrap(false));
+      rerender(wrap(true));
+      expect(screen.getByTestId('code-testId')).toHaveValue('123');
+      expect(screen.getByTestId('send-btn')).not.toBeDisabled();
+      expect(mockSetFilters).not.toHaveBeenCalled();
     });
 
     it('should add only new filter keeping safe the others', async () => {

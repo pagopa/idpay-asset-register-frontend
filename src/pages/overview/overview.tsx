@@ -116,7 +116,7 @@ const Overview: React.FC = () => {
         variantTitle="h4"
         variantSubTitle="body1"
         data-testid="title-overview"
-        titleFontSize="42px"
+        titleFontSize="32px"
       />
 
       {isOperativeEmailMissing && (
@@ -141,12 +141,13 @@ const Overview: React.FC = () => {
         sx={{
           display: 'grid',
           gridTemplateColumns: 'repeat(12, 1fr)',
-          columnGap: 3,
+          gap: 2,
           mb: 5,
         }}
       >
-        <Box sx={{ gridColumn: 'span 6' }}>
+        <Box sx={{ gridColumn: { xs: 'span 12', md: 'span 6' } }}>
           <Paper
+            elevation={0}
             sx={{
               display: 'grid',
               gridTemplateColumns: 'repeat(12, 1fr)',
@@ -163,31 +164,35 @@ const Overview: React.FC = () => {
               variantSubTitle="body1"
               data-testid="title-box-overview-info"
               aria-label="title-box-overview-info"
-              titleFontSize="32px"
+              titleFontSize="24px"
             />
             <Box
               sx={{
                 gridColumn: 'span 12',
                 display: 'grid',
                 gridTemplateColumns: 'repeat(12, 1fr)',
-                rowGap: 2,
+                rowGap: 0,
               }}
             >
-              {fields.map(({ label, value, hasValidValue, displayValue }) => {
+              {fields.map(({ label, value, hasValidValue, displayValue }, index) => {
                 const isOperativeEmail = label === 'overviewTitleBoxInfoTitleLblEmailOp';
 
                 return (
                   <React.Fragment key={label}>
-                    <Box sx={{ gridColumn: 'span 3', alignContent: 'center' }}>
-                      <Typography variant="body2">{t(`pages.overview.${label}`)}</Typography>
+                    <Box sx={{ gridColumn: 'span 12' }}>
+                      <Typography variant="caption" color="text.secondary">{t(`pages.overview.${label}`)}</Typography>
                     </Box>
                     <Box
                       sx={{
-                        gridColumn: 'span 9',
+                        gridColumn: 'span 12',
                         display: isOperativeEmail ? 'flex' : 'block',
                         alignItems: isOperativeEmail ? 'center' : undefined,
                         minWidth: isOperativeEmail ? 0 : undefined,
                         gap: isOperativeEmail ? 2 : undefined,
+                        pb: 1,
+                        mb: 1,
+                        borderBottom: index < fields.length - 1 ? '1px solid' : 'none',
+                        borderColor: 'divider',
                       }}
                     >
                       {hasValidValue ? (

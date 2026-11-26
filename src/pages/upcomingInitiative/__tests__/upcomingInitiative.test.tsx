@@ -1,7 +1,12 @@
-import { render, screen } from '@testing-library/react';
+import { render as renderWithTestingLibrary, screen } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '@pagopa/mui-italia/theme';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import UpcomingInitiative from '../upcomingInitiative';
+
+const render = (ui: React.ReactElement) =>
+  renderWithTestingLibrary(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 
 jest.mock('../../../utils/env', () => ({
   __esModule: true,

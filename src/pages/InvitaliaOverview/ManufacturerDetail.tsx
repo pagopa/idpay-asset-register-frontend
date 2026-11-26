@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
+import { MIDivider } from '@pagopa/mui-italia/components/MIDivider';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { InstitutionResponse } from '../../api/generated/register';
 import { buildAddress } from '../../utils/functions';
@@ -19,7 +19,7 @@ const ManufacturerDetail: React.FC<ManufacturerDetailProps> = ({ data }) => {
   return (
     <Box sx={{ width: 400, pl: 2 }} role="presentation" data-testid="manufacturer-detail">
       <DrawerHeader label={data?.description ?? ''} />
-      <Divider />
+      <MIDivider />
       <List>
         <DrawerSubHeader label={t('pages.invitaliaOverview.manufacturerSheet')} />
         <DrawerItem

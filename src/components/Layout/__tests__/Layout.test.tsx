@@ -36,6 +36,7 @@ jest.mock('../../../routes', () => ({
     PRODUCERS: '/producers',
     INVITALIA_PRODUCTS_LIST: '/invitalia-products',
     UPLOADS: '/uploads',
+    ADD_PRODUCTS: '/add-products',
     ASSISTANCE: '/assistance',
     PRIVACY_POLICY: '/privacy-policy',
     TOS: '/tos',

@@ -176,7 +176,8 @@ describe('Additional tests for better coverage', () => {
 
   test('initUploadBoxStyle has correct properties', () => {
     expect(initUploadBoxStyle).toHaveProperty('gridColumn', 'span 12');
-    expect(initUploadBoxStyle).toHaveProperty('border', '1px dashed #0073E6');
+    expect(initUploadBoxStyle).toHaveProperty('border', '1px dashed');
+    expect(initUploadBoxStyle).toHaveProperty('borderColor', 'primary.main');
   });
 
   test('initUploadHelperBoxStyle has correct properties', () => {

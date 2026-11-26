@@ -21,7 +21,20 @@ export default function SidenavItem({
   disabled = false,
 }: Props) {
   return (
-    <ListItemButton selected={isSelected} disabled={disabled} onClick={handleClick}>
+    <ListItemButton
+      selected={isSelected}
+      disabled={disabled}
+      onClick={handleClick}
+      sx={{
+        borderRight: '4px solid transparent',
+        '&.Mui-selected': {
+          color: 'primary.main',
+          backgroundColor: '#E7ECFC',
+          borderRightColor: 'primary.main',
+          '& .MuiListItemIcon-root': { color: 'primary.main' },
+        },
+      }}
+    >
       <ListItemIcon sx={{ ml: level }}>{icon ? createElement(icon as any) : null}</ListItemIcon>
       <ListItemText
         primary={title}

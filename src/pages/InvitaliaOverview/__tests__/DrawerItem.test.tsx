@@ -1,6 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render as renderWithTestingLibrary, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '@pagopa/mui-italia/theme';
 import DrawerItem from '../DrawerItem';
+
+const render = (ui: React.ReactElement) =>
+  renderWithTestingLibrary(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 
 describe('DrawerItem', () => {
   const itemHeader = 'Header';

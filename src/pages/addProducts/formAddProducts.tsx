@@ -2,15 +2,15 @@ import { Dispatch, forwardRef, SetStateAction, useImperativeHandle } from 'react
 import { useDropzone } from 'react-dropzone';
 import {
   Box,
-  Button,
   FormControl,
   FormHelperText,
   InputLabel,
   MenuItem,
-  Paper,
-  Select,
   Typography,
 } from '@mui/material';
+import { MIButton } from '@pagopa/mui-italia/components/MIButton';
+import { MIPaper } from '@pagopa/mui-italia/components/MIPaper';
+import { MISelect } from '@pagopa/mui-italia/components/MISelect';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
@@ -291,7 +291,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
 
     return (
       <>
-        <Paper
+        <MIPaper
           sx={{
             display: 'grid',
             alignItems: 'baseline',
@@ -313,7 +313,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
               <InputLabel id="category-label">
                 {t('pages.addProducts.form.categoryPlaceholder')}
               </InputLabel>
-              <Select
+              <MISelect
                 id="category"
                 name="category"
                 value={formik.values.category}
@@ -334,7 +334,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
                       {value.label}
                     </MenuItem>
                   ))}
-              </Select>
+              </MISelect>
               <FormHelperText
                 error={formik.touched.category && Boolean(formik.errors.category)}
                 sx={{ gridColumn: 'span 12' }}
@@ -364,7 +364,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
               disabled={!isTemplateUploadEnabled}
             />
           </Box>
-        </Paper>
+        </MIPaper>
         <Box
           sx={{
             display: 'flex',
@@ -374,7 +374,7 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
             paddingBottom: 5,
           }}
         >
-          <Button
+          <MIButton
             variant="outlined"
             onClick={() =>
               onExit(() =>
@@ -384,15 +384,15 @@ const FormAddProducts = forwardRef<FormAddProductsRef, Props>(
             data-testid="cancel-button-test"
           >
             {t('common.backBtn')}
-          </Button>
-          <Button
+          </MIButton>
+          <MIButton
             variant="contained"
             onClick={handleContinue}
             disabled={!isTemplateUploadEnabled}
             data-testid="continue-button-test"
           >
             {t('common.continueBtn')}
-          </Button>
+          </MIButton>
         </Box>
       </>
     );

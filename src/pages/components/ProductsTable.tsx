@@ -8,9 +8,9 @@ import {
   TableHead,
   TableSortLabel,
   Checkbox,
-  IconButton,
+  Button,
 } from '@mui/material';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Tooltip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { ProductDTO } from '../../api/generated/register';
@@ -80,8 +80,8 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     productCode: '16%',
     batchName: '19%',
     status: '14%',
-    actions: '5%',
-    __detail__: '5%',
+    actions: '10%',
+    __detail__: '10%',
   };
   const utilityColumns = ['select', 'checkbox', 'status', 'actions', '__detail__'];
   const isUtilityColumn = (columnId: string) => utilityColumns.includes(columnId);
@@ -118,13 +118,15 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
     }
     if (col.type === 'action') {
       return (
-        <IconButton size="small" onClick={() => handleListButtonClick(row)}>
-          <ArrowForwardIosIcon
-            sx={{
-              color: theme.palette.primary.main
-            }}
-          />
-        </IconButton>
+        <Button
+          size="small"
+          variant="text"
+          endIcon={<ArrowForwardIcon />}
+          aria-label={`${t('common.openBtn')} ${row.productCode ?? row.gtinCode ?? ''}`.trim()}
+          onClick={() => handleListButtonClick(row)}
+        >
+          {t('common.openBtn')}
+        </Button>
       );
     }
 
@@ -177,12 +179,13 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
   };
 
   return (
-    <TableContainer sx={{ overflowX: 'hidden' }}>
+    <TableContainer sx={{ overflowX: 'auto' }}>
       <Table
         size="small"
         sx={{
           tableLayout: 'fixed',
           width: '100%',
+          minWidth: 720,
         }}
       >
         <TableHead>

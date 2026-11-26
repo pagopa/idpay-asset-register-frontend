@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { CloudUpload } from '@mui/icons-material';
+import { FileUploadOutlined } from '@mui/icons-material';
 
 interface Props {
   text: string;
@@ -7,17 +7,17 @@ interface Props {
 }
 
 const InitUploadBox = ({ text, link }: Props) => (
-  <Box sx={{ textAlign: 'center', gridColumn: 'span 12' }}>
-    <CloudUpload sx={{ verticalAlign: 'bottom', color: '#0073E6', marginRight: 2 }} />
-    <Typography variant="body2" sx={{ textAlign: 'center', display: 'inline-grid' }}>
-      {text}&#160;
+  <Box sx={{ textAlign: 'center', gridColumn: 'span 12', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+    <FileUploadOutlined color="action" />
+    <Typography variant="body2">
+      {text}
     </Typography>
-    <Typography
-      variant="body2"
-      sx={{ textAlign: 'center', display: 'inline-grid', color: '#0073E6', cursor: 'pointer' }}
+    <Box
+      component="span"
+      sx={{ backgroundColor: 'primary.main', color: 'primary.contrastText', borderRadius: 2, px: 2, py: 1, fontWeight: 600 }}
     >
       {link}
-    </Typography>
+    </Box>
   </Box>
 );
 

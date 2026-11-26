@@ -1,4 +1,5 @@
-import { Alert, AlertTitle, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import { MIAlert } from '@pagopa/mui-italia/components/MIAlert';
 
 interface Props {
   title: string;
@@ -9,8 +10,7 @@ interface Props {
 }
 
 const RejectedFile = ({ title, description, isReport = false, onDownloadReport }: Props) => (
-  <Alert severity="error">
-    <AlertTitle>{title}</AlertTitle>
+  <MIAlert severity="error" title={title}>
     {isReport ? (
       <Typography variant="body2">
         <span
@@ -29,7 +29,7 @@ const RejectedFile = ({ title, description, isReport = false, onDownloadReport }
     ) : (
       <Typography variant="body2">{description}</Typography>
     )}
-  </Alert>
+  </MIAlert>
 );
 
 export default RejectedFile;

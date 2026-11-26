@@ -1,7 +1,14 @@
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render as renderWithTestingLibrary, screen, fireEvent, waitFor } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '@pagopa/mui-italia/theme';
 import ProductBulkActionDialog from '../ProductBulkActionDialog';
 import { PRODUCTS_STATES, MIDDLE_STATES } from '../../../utils/constants';
+
+const render = (ui: React.ReactElement) =>
+  renderWithTestingLibrary(ui, {
+    wrapper: ({ children }) => <ThemeProvider theme={theme}>{children}</ThemeProvider>,
+  });
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({

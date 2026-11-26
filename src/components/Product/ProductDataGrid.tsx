@@ -115,6 +115,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
         }
       : {}),
   });
+  const [filtersEdited, setFiltersEdited] = useState(false);
 
   const effectiveFilters = useMemo(
     () => (redirectProducer ? { producer: redirectProducer, ...filters } : filters),
@@ -349,9 +350,13 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
     currentRoleKey,
   });
 
+  useEffect(() => {
+    setFiltersEdited(false);
+  }, [initiativeId, currentRoleKey]);
+
   // Apply role-based default filters (e.g. L2 -> WAIT_APPROVED)
   useEffect(() => {
-    if (!currentRoleKey) {
+    if (!currentRoleKey || filtersEdited) {
       return;
     }
 
@@ -388,7 +393,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
         ...prev,
       };
     });
-  }, [currentRoleKey, tableConfig]);
+  }, [currentRoleKey, tableConfig, filtersEdited]);
 
   useEffect(() => {
     if (paginationConfig?.defaultRowsPerPage) {
@@ -398,7 +403,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
   }, [initiativeId, paginationConfig]);
 
   useEffect(() => {
-    if (enrichedFiltersConfig) {
+    if (enrichedFiltersConfig && !filtersEdited) {
       const defaultValues = enrichedFiltersConfig as Array<
         import('../../model/config/ConfigSchema').FilterConfig
       >;
@@ -428,7 +433,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
         }));
       }
     }
-  }, [enrichedFiltersConfig, t]);
+  }, [enrichedFiltersConfig, t, filtersEdited]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<string | undefined>();
@@ -591,6 +596,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
   };
 
   const clearAppliedFilters = () => {
+    setFiltersEdited(true);
     setFilters({});
     setRedirectProducer(null);
     setLastRedirectOrganizationId(organizationId || null);
@@ -613,6 +619,7 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
   const handleApplyDrawerFilters = (
     nextFilters: Record<string, { value: string; label?: string }>
   ) => {
+    setFiltersEdited(true);
     setFilters(nextFilters);
     setPage(0);
     setSelected([]);
@@ -691,8 +698,8 @@ const ProductDataGrid: React.FC<Props> = ({ organizationId, organizationLabel })
         handleListButtonClick={handleListButtonClick}
         setSelected={setSelected}
         handleChangePage={(_event: unknown, p: number) => setPage(p)}
-        handleChangeRowsPerPage={(e: React.ChangeEvent<HTMLInputElement>) => {
-          setRowsPerPage(parseInt(e.target.value, 10));
+        handleChangeRowsPerPage={(limit: number) => {
+          setRowsPerPage(limit);
           setPage(0);
         }}
         handleDeleteFiltersButtonClick={clearAppliedFilters}

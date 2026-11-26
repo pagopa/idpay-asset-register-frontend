@@ -1,4 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { themeNext } from '@pagopa/mui-italia/theme';
+import '@testing-library/jest-dom';
 import { store } from '../../../redux/store';
 import { renderWithContext } from '../../../utils/__tests__/test-utils';
 import InitiativesList from '../initiativesList';
@@ -61,10 +64,35 @@ describe('Test suite for initiativeList page', () => {
     renderWithContext(<InitiativesList />);
   });
 
-  test('Shows a dash when the adhesion date is missing', () => {
+  test('Shows the real spending period and initiative identifier', () => {
     renderWithContext(<InitiativesList />, store);
 
-    expect(screen.getByText('-')).toBeTruthy();
+    expect(screen.getByText('Periodo di spesa')).toBeTruthy();
+    expect(screen.getByText('Codice identificativo')).toBeTruthy();
+    expect(screen.getByText('01/10/2025 - 31/10/2025')).toBeTruthy();
+    expect(screen.getByText('initiative-1')).toBeTruthy();
+  });
+
+  test('Shows a fallback for a missing period endpoint', () => {
+    mockUseGetInitiativesQuery.mockReturnValue({
+      data: [{ initiativeId: 'initiative-1', initiativeName: 'Test', startDate: '2025-10-01' }],
+    });
+    renderWithContext(<InitiativesList />, store);
+    expect(screen.getByText('01/10/2025 - -')).toBeTruthy();
+  });
+
+  test('Uses the new theme colors for initiative statuses', () => {
+    mockTranslatedStatuses = true;
+    mockUseGetInitiativesQuery.mockReturnValue({
+      data: [
+        { initiativeId: 'published', initiativeName: 'A', status: 'PUBLISHED' },
+        { initiativeId: 'closed', initiativeName: 'B', status: 'CLOSED' },
+      ],
+    });
+    renderWithContext(<ThemeProvider theme={themeNext}><InitiativesList /></ThemeProvider>, store);
+
+    expect(screen.getByText('In corso').closest('.MuiChip-root')).toHaveStyle({ backgroundColor: '#E1F4E1' });
+    expect(screen.getByText('Conclusa').closest('.MuiChip-root')).toHaveStyle({ backgroundColor: '#E8EBF1' });
   });
 
   test('User searches an initiative by name that shows results', async () => {
@@ -99,7 +127,7 @@ describe('Test suite for initiativeList page', () => {
     mockTranslatedStatuses = true;
     mockUseGetInitiativesQuery.mockReturnValue({
       data: [
-        { initiativeId: 'closed', initiativeName: 'A - Terminata', status: 'CLOSED' },
+        { initiativeId: 'closed', initiativeName: 'A - Conclusa', status: 'CLOSED' },
         { initiativeId: 'published', initiativeName: 'B - In corso', status: 'PUBLISHED' },
       ],
     });
@@ -109,15 +137,15 @@ describe('Test suite for initiativeList page', () => {
     );
 
     expect(screen.getByText('In corso')).toBeTruthy();
-    expect(screen.getByText('Terminata')).toBeTruthy();
+    expect(screen.getByText('Conclusa')).toBeTruthy();
     fireEvent.click(screen.getByText('Stato'));
-    expect(visibleNames()).toEqual(['B - In corso', 'A - Terminata']);
+    expect(visibleNames()).toEqual(['A - Conclusa', 'B - In corso']);
 
     fireEvent.click(screen.getByText('Stato'));
-    expect(visibleNames()).toEqual(['A - Terminata', 'B - In corso']);
+    expect(visibleNames()).toEqual(['B - In corso', 'A - Conclusa']);
 
     fireEvent.click(screen.getByText('Nome'));
-    expect(visibleNames()).toEqual(['A - Terminata', 'B - In corso']);
+    expect(visibleNames()).toEqual(['A - Conclusa', 'B - In corso']);
   });
 
   test('Render empty state', () => {
@@ -138,6 +166,13 @@ describe('Test suite for initiativeList page', () => {
     expect(mockNavigate).toHaveBeenCalledWith(
       '/registro-dei-beni/initiative-1/panoramica'
     );
+  });
+
+  test('The arrow opens the same initiative', () => {
+    jest.spyOn(helpers, 'fetchUserFromLocalStorage').mockReturnValue({ org_role: 'operatore' });
+    renderWithContext(<InitiativesList />, store);
+    fireEvent.click(screen.getByRole('button', { name: 'Apri Iniziativa mock 1234' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/registro-dei-beni/initiative-1/panoramica');
   });
 
   test('User clicks an initiative as Invitalia user and navigates to products list', () => {
@@ -235,6 +270,6 @@ describe('Test suite for initiativeList page', () => {
     });
     renderWithContext(<InitiativesList />, store);
     // organizationName '' → maps to '' → renders '-' in the table cell
-    expect(screen.getByText('-')).toBeTruthy();
+    expect(screen.getAllByText('-').length).toBeGreaterThan(0);
   });
 });

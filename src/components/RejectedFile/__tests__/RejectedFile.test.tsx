@@ -1,6 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render as renderWithTestingLibrary, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '@pagopa/mui-italia/theme';
 import RejectedFile from '../RejectedFile';
 import '@testing-library/jest-dom';
+
+const render = (ui: React.ReactElement) =>
+  renderWithTestingLibrary(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 
 describe('RejectedFile component', () => {
   const baseProps = {

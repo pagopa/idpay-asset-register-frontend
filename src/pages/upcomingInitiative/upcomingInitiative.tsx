@@ -1,4 +1,5 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { MIButton } from '@pagopa/mui-italia/components/MIButton';
 import { useUnloadEventOnExit } from '@pagopa/selfcare-common-frontend/lib/hooks/useUnloadEventInterceptor';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import hourGlassIcon from '../../asset/images/hourglass.png';
@@ -30,13 +31,13 @@ const UpcomingInitiative = () => {
         </Typography>
       </Box>
 
-      <Button
+      <MIButton
         variant="contained"
         sx={{ height: 44, minWidth: 100, mt: 3 }}
         onClick={() => onExit(customExitAction)}
       >
         {t('common.closeBtn')}
-      </Button>
+      </MIButton>
     </Box>
   );
 };
