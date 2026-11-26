@@ -1,8 +1,8 @@
 import React from 'react';
 import { TableHead, TableRow, TableCell, TableSortLabel, Checkbox, Box } from '@mui/material';
-import { visuallyHidden } from '@mui/utils';
 import useScopedTranslation from '../../hooks/useScopedTranslation';
 import { ProductDTO } from '../../api/generated/register';
+import { visuallyHiddenSx } from '../../styles';
 
 interface HeadCell {
   id: keyof ProductDTO | 'selectedStatus' | 'actions' | 'producer';
@@ -83,7 +83,7 @@ const EnhancedTableHead: React.FC<EnhancedTableHeadProps> = ({
               >
                 {t(headCell.label)}
                 {orderBy === headCell?.id ? (
-                  <Box component="span" sx={visuallyHidden}>
+                  <Box component="span" sx={visuallyHiddenSx}>
                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                   </Box>
                 ) : null}

@@ -14,7 +14,6 @@
     "@mui/lab": "^5.0.0-alpha.177",
     "@mui/material": "^5.18.0",
     "@mui/system": "^5.18.0",
-    "@mui/utils": "^5.17.1",
     "@mui/x-date-pickers": "^6.20.2",
     "@pagopa/mui-italia": "2.8.2",
     "@pagopa/selfcare-common-frontend": "1.34.92",

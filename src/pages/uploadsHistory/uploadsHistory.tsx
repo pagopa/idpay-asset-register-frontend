@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AxiosResponse } from 'axios';
-import { Box } from '@mui/system';
 import Paper from '@mui/material/Paper';
-import { Table, TableHead, TableBody, TableRow, TableCell, Alert, Typography } from '@mui/material';
+import { Box, Table, TableHead, TableBody, TableRow, TableCell, Alert, Typography } from '@mui/material';
 import { TitleBox } from '@pagopa/selfcare-common-frontend/lib';
 import { grey } from '@mui/material/colors';
 import CachedIcon from '@mui/icons-material/Cached';
